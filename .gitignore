@@ -1,0 +1,30 @@
+*.class
+
+# Mobile Tools for Java (J2ME)
+.mtj.tmp/
+
+# Package Files #
+*.jar
+*.war
+*.ear
+
+hs_err_pid*
+
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.next
+release.properties
+
+nbactions.xml
+nb-configuration.xml
+
+idea/
+.idea/
+*.iml
+*.iws
+
+Desktop.ini
+
+.svn
+.classpath

@@ -1,0 +1,8 @@
+.button {
+    -fx-font-weight: bold;
+}
+
+.text-area {
+    -fx-font-size: 14;
+    -fx-font-family: Consolas;
+}

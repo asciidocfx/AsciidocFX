@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.web.*?>
+
+<AnchorPane id="AnchorPane" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.kodcu.AsciiDocController">
+  <children>
+    <SplitPane fx:id="splitter" dividerPositions="0.5" focusTraversable="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <items>
+        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+          <children>
+            <TabPane fx:id="tabu" opacity="1.0" prefHeight="701.0" prefWidth="664.0" rotateGraphic="false" tabClosingPolicy="ALL_TABS" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="21.0" />
+          </children>
+        </AnchorPane>
+        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="668.0" prefWidth="676.0">
+          <children>
+            <WebView fx:id="browser" prefHeight="701.0" prefWidth="676.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="21.0" />
+          </children>
+        </AnchorPane>
+      </items>
+    </SplitPane>
+    <MenuBar fx:id="menubar" layoutX="0.0" layoutY="0.0" prefWidth="1360.0">
+      <menus>
+        <Menu mnemonicParsing="false" text="File">
+          <items>
+            <MenuItem fx:id="openItem" mnemonicParsing="false" onAction="#openDoc" text="Open" />
+            <MenuItem fx:id="newItem" mnemonicParsing="false" onAction="#newDoc" text="New" />
+            <MenuItem fx:id="saveItem" mnemonicParsing="false" onAction="#saveDoc" text="Save" /><MenuItem fx:id="exitItem" mnemonicParsing="false" onAction="#closeApp" text="Exit" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" />
+          </items>
+        </Menu>
+        <Menu mnemonicParsing="false" text="View">
+          <items>
+            <MenuItem id="togglePreviewItem" fx:id="hidePreviewItem" mnemonicParsing="false" onAction="#togglePreview" text="Toggle Preview" /><MenuItem id="togglePreviewItem" fx:id="fullScreenItem" mnemonicParsing="false" onAction="#fullScreen" text="Full Screen" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" />
+          </items>
+        </Menu>
+        <Menu mnemonicParsing="false" text="Help">
+          <items>
+            <MenuItem mnemonicParsing="false" text="About" />
+          </items>
+        </Menu>
+      </menus>
+    </MenuBar>
+  </children>
+</AnchorPane>
