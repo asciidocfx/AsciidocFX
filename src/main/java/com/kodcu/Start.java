@@ -5,10 +5,17 @@ import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
+import javafx.scene.Group;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
+import javafx.stage.Modality;
+import javafx.stage.Popup;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import org.springframework.boot.SpringApplication;
@@ -27,14 +34,19 @@ public class Start extends Application {
         setUserAgentStylesheet(STYLESHEET_MODENA);
 
         context = SpringApplication.run(AsciiDocConfig.class);
-        FXMLLoader loader = new FXMLLoader();
-        loader.setControllerFactory(context::getBean);
-        Parent root = loader.load(getClass().getResourceAsStream("/fxml/Scene.fxml"));
+        FXMLLoader parentLoader = new FXMLLoader();
+        FXMLLoader tablePopupLoader = new FXMLLoader();
+        parentLoader.setControllerFactory(context::getBean);
+        tablePopupLoader.setControllerFactory(context::getBean);
 
-        controller = loader.getController();
+        Parent root = parentLoader.load(getClass().getResourceAsStream("/fxml/Scene.fxml"));
+        AnchorPane tableAnchor = tablePopupLoader.load(getClass().getResourceAsStream("/fxml/TablePopup.fxml"));
+
+        controller = parentLoader.getController();
 
 
         Scene scene = new Scene(root);
+
         scene.getStylesheets().add("/styles/Styles.css");
         Rectangle2D bounds = Screen.getPrimary().getVisualBounds();
         System.out.println(bounds.getWidth() + " : " + bounds.getHeight());
@@ -43,9 +55,19 @@ public class Start extends Application {
         stage.setX(0);
         stage.setY(0);
         stage.setTitle("AsciidocFX");
+        stage.getIcons().add(new Image(getClass().getResourceAsStream("/public/favicon.ico")));
+
+        Stage tableStage = new Stage();
+        tableStage.setScene(new Scene(tableAnchor));
+        tableStage.setTitle("Table Generator");
+        tableStage.initModality(Modality.WINDOW_MODAL);
+        tableStage.initOwner(scene.getWindow());
 
         controller.setStage(stage);
         controller.setScene(scene);
+        controller.setTableAnchor(tableAnchor);
+        controller.setTableStage(tableStage);
+
         stage.setScene(scene);
         stage.show();
 

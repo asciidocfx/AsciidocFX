@@ -11,8 +11,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
@@ -40,9 +39,6 @@ import java.util.ResourceBundle;
 
 import static java.nio.file.StandardOpenOption.CREATE;
 import static java.nio.file.StandardOpenOption.TRUNCATE_EXISTING;
-import static javafx.scene.input.KeyCode.B;
-import static javafx.scene.input.KeyCode.I;
-import static javafx.scene.input.KeyCombination.CONTROL_DOWN;
 
 
 @Controller
@@ -54,22 +50,26 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
     public MenuItem newItem;
     public MenuItem saveItem;
     public SplitPane splitter;
+//    public TableView tablePopupTable;
 
-    public TextField address;
+    @Autowired
+    private TablePopupController tablePopupController;
 
     @Autowired
     private Current current;
 
     private Stage stage;
     private WebEngine engine;
-    private StringProperty lastRendered = new SimpleStringProperty("...");
+    private StringProperty lastRendered = new SimpleStringProperty("<b>...</b>");
     private List<WebSocketSession> sessionList = new ArrayList<>();
     private Scene scene;
+    private AnchorPane tableAnchor;
+    private Stage tableStage;
 
 
     @FXML
-    private void print(ActionEvent event) {
-        event = event;
+    private void createTable(ActionEvent event) throws IOException {
+        tableStage.show();
     }
 
     @FXML
@@ -87,7 +87,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
     public void initialize(URL url, ResourceBundle rb) {
 
         lastRendered.addListener((observableValue, old, nev) -> {
-            sessionList.stream().forEach(e -> {
+            sessionList.stream().filter(e -> e.isOpen()).forEach(e -> {
                 try {
                     e.sendMessage(new TextMessage(nev));
                 } catch (IOException ex) {
@@ -95,7 +95,6 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
                 }
             });
         });
-
 
         engine = browser.getEngine();
         engine.load("http://localhost:8080/index.html");
@@ -150,7 +149,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
 
         AnchorPane anchorPane = new AnchorPane();
         TextArea textArea = createTextArea();
-        textArea.textProperty().setValue(IO.readFile(path, true));
+        textArea.textProperty().setValue(IO.readFile(path));
 
         anchorPane.getChildren().add(textArea);
         fitToParent(textArea);
@@ -179,6 +178,14 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
         TextArea textArea = new TextArea();
         textArea.textProperty().addListener(this::textListener);
         textArea.wrapTextProperty().setValue(true);
+
+        textArea.setOnMouseClicked(event -> {
+            if (event.getClickCount() > 1) {
+                String selectedText = textArea.getSelectedText();
+                String[] splitted = selectedText.trim().split("[^a-zA-Z0-9]");
+                textArea.selectRange(textArea.getAnchor(), textArea.getAnchor() + splitted[0].trim().length());
+            }
+        });
 
 
         textArea.scrollTopProperty().addListener((observableValue, old, nev) -> {
@@ -271,4 +278,19 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
         return scene;
     }
 
+    public void setTableAnchor(AnchorPane tableAnchor) {
+        this.tableAnchor = tableAnchor;
+    }
+
+    public AnchorPane getTableAnchor() {
+        return tableAnchor;
+    }
+
+    public void setTableStage(Stage tableStage) {
+        this.tableStage = tableStage;
+    }
+
+    public Stage getTableStage() {
+        return tableStage;
+    }
 }

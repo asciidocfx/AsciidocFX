@@ -1,6 +1,10 @@
 package com.kodcu;
 
-import java.io.*;
+import org.apache.commons.io.IOUtils;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -15,18 +19,14 @@ public class IO {
 
     public static String convert(InputStream is) {
 
-        StringBuffer stringBuffer = new StringBuffer();
+        String content = "";
 
-        String line = null;
-        try (InputStream inputStream = is; InputStreamReader streamReader = new InputStreamReader(inputStream);
-             BufferedReader bufferedReader = new BufferedReader(streamReader);) {
-            while ((line = bufferedReader.readLine()) != null) {
-                stringBuffer.append(line);
-            }
+        try {
+            content = IOUtils.toString(is);
+            IOUtils.closeQuietly(is);
         } catch (IOException e) {
+            e.printStackTrace();
         }
-
-        String content = IO.normalize(stringBuffer.toString());
 
         return content;
     }
@@ -38,25 +38,25 @@ public class IO {
         return content;
     }
 
-    public static String readFile(Path path, Boolean lineBreak) {
-        List<String> lines = new ArrayList<>();
-        try {
-            lines.clear();
-            lines.addAll(Files.readAllLines(path, Charset.forName("UTF-8")));
-        } catch (IOException e) {
-        }
-
-        final StringBuffer buffer = new StringBuffer();
-
-        for (String line : lines) {
-            buffer.append(line);
-            if (lines.size() != buffer.length()) ;
-            if (lineBreak)
-                buffer.append("\n");
-        }
-
-        return buffer.toString();
-    }
+//    public static String readFile(Path path, Boolean lineBreak) {
+//        List<String> lines = new ArrayList<>();
+//        try {
+//            lines.clear();
+//            lines.addAll(Files.readAllLines(path, Charset.forName("UTF-8")));
+//        } catch (IOException e) {
+//        }
+//
+//        final StringBuffer buffer = new StringBuffer();
+//
+//        for (String line : lines) {
+//            buffer.append(line);
+//            if (lines.size() != buffer.length()) ;
+//            if (lineBreak)
+//                buffer.append("\n");
+//        }
+//
+//        return buffer.toString();
+//    }
 
     public static void writeToFile(File file, String content, StandardOpenOption... openOption) {
         try {
@@ -64,5 +64,17 @@ public class IO {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public static String readFile(Path path) {
+        String content = "";
+        try {
+            InputStream is = Files.newInputStream(path, StandardOpenOption.READ);
+            content = IOUtils.toString(is,"UTF-8");
+            IOUtils.closeQuietly(is);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return content;
     }
 }

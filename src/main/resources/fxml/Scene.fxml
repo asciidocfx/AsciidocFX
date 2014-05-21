@@ -27,12 +27,15 @@
           <items>
             <MenuItem fx:id="openItem" mnemonicParsing="false" onAction="#openDoc" text="Open" />
             <MenuItem fx:id="newItem" mnemonicParsing="false" onAction="#newDoc" text="New" />
-            <MenuItem fx:id="saveItem" mnemonicParsing="false" onAction="#saveDoc" text="Save" /><MenuItem fx:id="exitItem" mnemonicParsing="false" onAction="#closeApp" text="Exit" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" />
+            <MenuItem fx:id="saveItem" mnemonicParsing="false" onAction="#saveDoc" text="Save" />
+            <MenuItem fx:id="exitItem" mnemonicParsing="false" onAction="#closeApp" text="Exit" />
           </items>
         </Menu>
         <Menu mnemonicParsing="false" text="View">
           <items>
-            <MenuItem id="togglePreviewItem" fx:id="hidePreviewItem" mnemonicParsing="false" onAction="#togglePreview" text="Toggle Preview" /><MenuItem id="togglePreviewItem" fx:id="fullScreenItem" mnemonicParsing="false" onAction="#fullScreen" text="Full Screen" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" />
+            <MenuItem id="togglePreviewItem" fx:id="hidePreviewItem" mnemonicParsing="false" onAction="#togglePreview" text="Toggle Preview" />
+            <MenuItem id="" fx:id="fullScreenItem" mnemonicParsing="false" onAction="#fullScreen" text="Full Screen" />
+            <MenuItem id="" mnemonicParsing="false" onAction="#createTable" text="Generate Table" />
           </items>
         </Menu>
         <Menu mnemonicParsing="false" text="Help">
