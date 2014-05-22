@@ -88,6 +88,7 @@
                             <executable>${java.home}/../bin/javafxpackager</executable>
                             <arguments>
                                 <argument>-createjar</argument>
+                                <argument>-native</argument>
                                 <argument>-nocss2bin</argument>
                                 <argument>-appclass</argument>
                                 <argument>${mainClass}</argument>
