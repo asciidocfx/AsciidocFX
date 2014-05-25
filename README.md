@@ -23,10 +23,12 @@ Open http://localhost:8080/ and see changes on your favorite Browser.
 
 ### How to Build
 
-1. Install JDK 8 and set JAVA_HOME
-2. Enter AsciidocFX directory and run $ mvn clean install
-3. Follow to target directory and run $ java -jar AsciidocFX.jar
+1. Install JDK 8 and set JAVA_HOME properly
+2. Enter AsciidocFX directory and run
+    * $ mvn clean install
+3. Follow to target directory and run
+    * $ java -jar AsciidocFX.jar
+4. If you want to build native installer (RPM,DKG,DEB,EXE,MSI)
+    * Run $ mvn jfx:native
 
 If you want not to build AsciidocFX, download the Jar with this [Link](http://kodcu.com/AsciidocFX.jar)
-
-

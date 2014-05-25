@@ -41,26 +41,17 @@ import java.util.concurrent.TimeUnit;
 @ComponentScan
 public class AsciiDocConfig extends SpringBootServletInitializer implements WebSocketConfigurer {
 
+    @Autowired
+    private AsciiDocController asciiDocController;
 
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-        registry.addHandler(asciiDocController(), "/ws", "/ws**", "/ws/**").withSockJS();
+        registry.addHandler(asciiDocController, "/ws", "/ws**", "/ws/**").withSockJS();
     }
 
     @Override
     protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
-
         return application.sources(AsciiDocConfig.class);
-    }
-
-    @Bean
-    public AsciiDocController asciiDocController() {
-        return new AsciiDocController();
-    }
-
-    @Bean
-    public LinkedList single() {
-        return new LinkedList();
     }
 
 

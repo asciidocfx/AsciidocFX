@@ -2,7 +2,15 @@
     -fx-font-weight: bold;
 }
 
-.text-area {
+.text-area .scroll-pane .content {
+    /*-fx-background-color: #000000;*/
+
+}
+
+TextArea {
+    /*-fx-text-fill: #dcda26;*/
     -fx-font-size: 14;
-    -fx-font-family: Consolas;
+    -fx-font-family: "Consolas", "Deja Vu Sans Mono", "Bitstream Vera Sans Mono", monospace;
+    /*-fx-highlight-fill:red;*/
+    /*-fx-highlight-text-fill:green;*/
 }

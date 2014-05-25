@@ -50,7 +50,6 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
     public MenuItem newItem;
     public MenuItem saveItem;
     public SplitPane splitter;
-//    public TableView tablePopupTable;
 
     @Autowired
     private TablePopupController tablePopupController;
@@ -187,16 +186,11 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
             }
         });
 
-
         textArea.scrollTopProperty().addListener((observableValue, old, nev) -> {
-
             ScrollBar textAreaScroll = (ScrollBar) tabu.getSelectionModel().selectedItemProperty().getValue().getContent().lookup(".scroll-bar");
-
             double textAreaScrollRatio = (textAreaScroll.getValue() * 100) / textAreaScroll.getMax();
-
             Integer browserMaxScroll = (Integer) engine.executeScript("document.documentElement.scrollHeight - document.documentElement.clientHeight;");
             double browserScrollOffset = (Double.valueOf(browserMaxScroll) * textAreaScrollRatio) / 100.0;
-
             engine.executeScript("window.scrollTo(0," + browserScrollOffset + ");");
         });
 
