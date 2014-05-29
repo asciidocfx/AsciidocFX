@@ -35,8 +35,8 @@ Follow the View > Generate Table
 
 1. Install JDK 8 and set JAVA_HOME properly
 2. Enter AsciidocFX directory and run
-    * $ mvn clean install
-3. Follow to target directory and run
+    * $ mvn jfx:jar
+3. Follow to target/jfx/app directory and run
     * $ java -jar AsciidocFX.jar
 
 ### How to Build Native installer (RPM,DKG,DEB,EXE,MSI)
@@ -48,4 +48,10 @@ Follow the View > Generate Table
     * For Linux
         * RPMBuild or dpkg
 
-If you want not to build AsciidocFX, download the Jar with this [Link](http://kodcu.com/AsciidocFX.jar)
+#### If you want not to build AsciidocFX, download the Native installers:
+<p><b>
+<a href="https://github.com/rahmanusta/AsciidocFX/releases/download/0.0.1/AsciidocFX-1.0.msi.zip">link AsciidocFX (Windows)</a>
+</b></p>
+<p><b>
+<a href="https://github.com/rahmanusta/AsciidocFX/releases/download/0.0.1/AsciidocFX-1.0-1.i386.rpm.zip">AsciidocFX (Linux)</a>
+</b></p>
