@@ -49,7 +49,6 @@ public class Start extends Application {
 
         scene.getStylesheets().add("/styles/Styles.css");
         Rectangle2D bounds = Screen.getPrimary().getVisualBounds();
-        System.out.println(bounds.getWidth() + " : " + bounds.getHeight());
         stage.setWidth(bounds.getWidth());
         stage.setHeight(bounds.getHeight());
         stage.setX(0);

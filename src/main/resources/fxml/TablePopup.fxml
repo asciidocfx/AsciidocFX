@@ -29,6 +29,6 @@
     <Button fx:id="tablePopupApply" layoutX="166.0" layoutY="141.0" mnemonicParsing="false" onAction="#tablePopupApply" prefHeight="23.0" prefWidth="118.0" text="Apply" />
     <Separator layoutX="16.0" layoutY="177.0" prefWidth="286.0" />
     <Separator layoutX="14.0" layoutY="88.0" prefWidth="286.0" />
-    <TextField fx:id="tablePopupTitle" layoutX="30.0" layoutY="52.0" prefHeight="30.0" prefWidth="254.0" promptText="Table Title (Optional)" />
+    <TextField fx:id="tablePopupTitle" focusTraversable="false" layoutX="30.0" layoutY="52.0" prefHeight="30.0" prefWidth="254.0" promptText="Table Title (Optional)" />
   </children>
 </AnchorPane>
