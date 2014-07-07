@@ -7,14 +7,12 @@ import javafx.beans.property.StringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Worker;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.SplitPane;
-import javafx.scene.control.Tab;
-import javafx.scene.control.TabPane;
+import javafx.scene.control.*;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.layout.AnchorPane;
@@ -41,6 +39,7 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static java.nio.file.StandardOpenOption.CREATE;
 import static java.nio.file.StandardOpenOption.TRUNCATE_EXISTING;
@@ -50,11 +49,12 @@ import static java.nio.file.StandardOpenOption.TRUNCATE_EXISTING;
 public class AsciiDocController extends TextWebSocketHandler implements Initializable {
 
     public TabPane tabu;
-    public WebView browser;
+    public WebView previewView;
     public MenuItem openItem;
     public MenuItem newItem;
     public MenuItem saveItem;
     public SplitPane splitter;
+    public Menu recentMenu;
 
     @Autowired
     private TablePopupController tablePopupController;
@@ -70,9 +70,12 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
     private AnchorPane tableAnchor;
     private Stage tableStage;
 
-    Clipboard clipboard = Clipboard.getSystemClipboard();
+    private Clipboard clipboard = Clipboard.getSystemClipboard();
     private Optional<Path> initialDirectory = Optional.empty();
+    private Set<Path> recentFiles = new HashSet<>();
 
+    private String waitForGetValue;
+    private String waitForSetValue;
 
     @FXML
     private void createTable(ActionEvent event) throws IOException {
@@ -93,6 +96,9 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
     @Override
     public void initialize(URL url, ResourceBundle rb) {
 
+        waitForGetValue = IO.convert(AsciiDocController.class.getResourceAsStream("/waitForGetValue.js"));
+        waitForSetValue = IO.convert(AsciiDocController.class.getResourceAsStream("/waitForSetValue.js"));
+
         lastRendered.addListener((observableValue, old, nev) -> {
             sessionList.stream().filter(e -> e.isOpen()).forEach(e -> {
                 try {
@@ -103,7 +109,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
             });
         });
 
-        previewEngine = browser.getEngine();
+        previewEngine = previewView.getEngine();
         previewEngine.load("http://localhost:8080/index.html");
         previewEngine.getLoadWorker().exceptionProperty().addListener((ov, t, t1) -> {
             System.out.println("Received exception: " + t1.getMessage());
@@ -137,89 +143,123 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
         if (chosenFiles != null) {
             initialDirectory = Optional.of(chosenFiles.get(0).toPath());
             chosenFiles.stream().map(e -> e.toPath()).forEach(this::addTab);
+            recentFiles.addAll(chosenFiles.stream().map(e -> e.toPath()).collect(Collectors.toList()));
         }
 
     }
 
     @FXML
+    private void recentFileList(Event event) {
+        List<MenuItem> menuItems = recentFiles.stream().filter(path -> !Files.isDirectory(path)).map(path -> {
+            MenuItem menuItem = new MenuItem();
+            menuItem.setText(path.getFileName().toString());
+            menuItem.setOnAction(actionEvent -> {
+                addTab(path);
+            });
+            return menuItem;
+        }).limit(20).collect(Collectors.toList());
+
+        recentMenu.getItems().clear();
+        recentMenu.getItems().addAll(menuItems);
+
+    }
+
+    @FXML
     private void newDoc(ActionEvent event) {
-        WebView textArea = createEditor();
+        WebView webView = createWebView();
         AnchorPane anchorPane = new AnchorPane();
-        anchorPane.getChildren().add(textArea);
-        fitToParent(textArea);
-        Tab tab = new Tab();
+        anchorPane.getChildren().add(webView);
+        fitToParent(webView);
+        Tab tab = createTab();
         tab.setContent(anchorPane);
         tab.selectedProperty().addListener((observableValue, before, after) -> {
             if (after) {
-                current.putTab(tab, current.getNewTabPaths().get(tab), textArea);
-                if (textArea.getEngine().getLoadWorker().getState() == Worker.State.SUCCEEDED)
-                    textListener(null, null, (String) textArea.getEngine().executeScript("editor.getValue();"));
+                current.putTab(tab, current.getNewTabPaths().get(tab), webView);
+                WebEngine webEngine = webView.getEngine();
+
+                if (webEngine.getLoadWorker().getState() == Worker.State.SUCCEEDED)
+                    webEngine.executeScript(waitForGetValue);
             }
         });
         tab.textProperty().setValue("new");
         tabu.getTabs().add(tab);
 
-        current.putTab(tab, null, textArea);
+        current.putTab(tab, null, webView);
     }
 
 
     private void addTab(Path path) {
 
         AnchorPane anchorPane = new AnchorPane();
-        WebView textArea = createEditor();
-        textArea.getEngine().getLoadWorker().stateProperty().addListener((observableValue1, state, state2) -> {
+        WebView webView = createWebView();
+        WebEngine webEngine = webView.getEngine();
+        webEngine.getLoadWorker().stateProperty().addListener((observableValue1, state, state2) -> {
             if (state2 == Worker.State.SUCCEEDED) {
-                textArea.getEngine().executeScript(String.format("editor.setValue('%s');", IO.readFile(path)));
+                webEngine.executeScript(String.format(waitForSetValue, IO.readFile(path)));
             }
         });
 
-        anchorPane.getChildren().add(textArea);
+        anchorPane.getChildren().add(webView);
 
-        fitToParent(textArea);
+        fitToParent(webView);
 
-        Tab tab = new Tab();
+        Tab tab = createTab();
         tab.textProperty().setValue(path.getFileName().toString());
         tab.setContent(anchorPane);
 
-
         tab.selectedProperty().addListener((observableValue, before, after) -> {
             if (after) {
-                current.putTab(tab, path, textArea);
-
-                if (textArea.getEngine().getLoadWorker().getState() == Worker.State.SUCCEEDED)
-                    textListener(null, null, (String) textArea.getEngine().executeScript("editor.getValue();"));
+                current.putTab(tab, path, webView);
+                webEngine.executeScript(waitForGetValue);
 
             }
         });
 
-        current.putTab(tab, path, textArea);
+        current.putTab(tab, path, webView);
         tabu.getTabs().add(tab);
 
-        Tab lastTab = tabu.getTabs().get(tabu.getTabs().size() - 1);
-        tabu.getSelectionModel().select(lastTab);
+      Tab lastTab = tabu.getTabs().get(tabu.getTabs().size() - 1);
+      tabu.getSelectionModel().select(lastTab);
 
     }
 
+    private Tab createTab() {
+        Tab tab=new Tab();
+        MenuItem menuItem0 = new MenuItem("Close All Tabs");
+        menuItem0.setOnAction(actionEvent -> {
+            tabu.getTabs().clear();
+        });
+        MenuItem menuItem1 = new MenuItem("Close All Other Tabs");
+        menuItem1.setOnAction(actionEvent -> {
+            List<Tab> blackList = new ArrayList<>();
+            blackList.addAll(tabu.getTabs());
+            blackList.remove(tab);
+            tabu.getTabs().removeAll(blackList);
+        });
 
-    private WebView createEditor() {
+        ContextMenu contextMenu = new ContextMenu();
+        contextMenu.getItems().addAll(menuItem0, menuItem1);
 
-        WebView view = new WebView();
+        tab.contextMenuProperty().setValue(contextMenu);
+        return tab;
+    }
 
-        WebEngine webEngine = view.getEngine();
+
+    private WebView createWebView() {
+
+        WebView webView = new WebView();
+
+        WebEngine webEngine = webView.getEngine();
         JSObject window = (JSObject) webEngine.executeScript("window");
         window.setMember("app", this);
         webEngine.load("http://localhost:8080/editor.html");
-
         webEngine.getLoadWorker().stateProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue == Worker.State.SUCCEEDED) {
-                webEngine.executeScript("editor.session.on('changeScrollTop', function () { app.onscroll(editor.getSession().getScrollTop()); });");
-                webEngine.executeScript("editor.getSession().on('change',function(){ app.textListener(null, null, editor.getValue()); });");
-
-                webEngine.executeScript(IO.convert(AsciiDocController.class.getResourceAsStream("/keyboard_fix.js")));
+//                webEngine.executeScript(waitForSetValue);
             }
         });
 
-        return view;
+        return webView;
     }
 
     public void onscroll(Object param) {
@@ -228,6 +268,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
             previewEngine.executeScript(String.format("window.scrollTo(0, %f )", position.doubleValue()));
 
     }
+
 
     @RequestMapping(value = "/notfound/**", method = RequestMethod.GET)
     @ResponseBody
@@ -280,15 +321,17 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
         Path currentPath = current.currentPath();
         if (currentPath == null) {
             FileChooser chooser = new FileChooser();
-            chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Asciidoc", "*.asciidoc"));
+            chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Asciidoc", "*.asciidoc", ".adoc"));
             File file = chooser.showSaveDialog(null);
             if (file == null)
                 return;
-            IO.writeToFile(file, (String) current.currentTextArea().getEngine().executeScript("editor.getValue();"), TRUNCATE_EXISTING, CREATE);
-            current.putTab(current.getCurrentTab(), file.toPath(), current.currentTextArea());
+            IO.writeToFile(file, (String) current.currentEngine().executeScript("editor.getValue();"), TRUNCATE_EXISTING, CREATE);
+            current.putTab(current.getCurrentTab(), file.toPath(), current.currentView());
             current.getCurrentTab().setText(file.toPath().getFileName().toString());
+
+            recentFiles.add(file.toPath());
         } else {
-            IO.writeToFile(currentPath.toFile(), (String) current.currentTextArea().getEngine().executeScript("editor.getValue();"), TRUNCATE_EXISTING, CREATE);
+            IO.writeToFile(currentPath.toFile(), (String) current.currentEngine().executeScript("editor.getValue();"), TRUNCATE_EXISTING, CREATE);
         }
     }
 

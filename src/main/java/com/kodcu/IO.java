@@ -36,26 +36,6 @@ public class IO {
         return content;
     }
 
-//    public static String readFile(Path path, Boolean lineBreak) {
-//        List<String> lines = new ArrayList<>();
-//        try {
-//            lines.clear();
-//            lines.addAll(Files.readAllLines(path, Charset.forName("UTF-8")));
-//        } catch (IOException e) {
-//        }
-//
-//        final StringBuffer buffer = new StringBuffer();
-//
-//        for (String line : lines) {
-//            buffer.append(line);
-//            if (lines.size() != buffer.length()) ;
-//            if (lineBreak)
-//                buffer.append("\n");
-//        }
-//
-//        return buffer.toString();
-//    }
-
     public static void writeToFile(File file, String content, StandardOpenOption... openOption) {
         try {
             Files.write(file.toPath(), content.getBytes(Charset.forName("UTF-8")), openOption);

@@ -5,7 +5,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.web.*?>
 
-<AnchorPane id="AnchorPane" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.kodcu.AsciiDocController">
+<AnchorPane id="AnchorPane" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="com.kodcu.AsciiDocController">
   <children>
     <SplitPane fx:id="splitter" dividerPositions="0.5" focusTraversable="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
       <items>
@@ -16,25 +16,26 @@
         </AnchorPane>
         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="668.0" prefWidth="676.0">
           <children>
-            <WebView fx:id="browser" prefHeight="701.0" prefWidth="676.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="21.0" />
+            <WebView fx:id="previewView" prefHeight="701.0" prefWidth="676.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="21.0" />
           </children>
         </AnchorPane>
       </items>
     </SplitPane>
-    <MenuBar fx:id="menubar" layoutX="0.0" layoutY="0.0" prefWidth="1360.0">
+    <MenuBar fx:id="menubar" layoutX="0.0" layoutY="0.0" onMouseEntered="#recentFileList" prefWidth="1360.0">
       <menus>
         <Menu mnemonicParsing="false" text="File">
           <items>
-            <MenuItem fx:id="openItem" mnemonicParsing="false" onAction="#openDoc" text="Open" />
-            <MenuItem fx:id="newItem" mnemonicParsing="false" onAction="#newDoc" text="New" />
-            <MenuItem fx:id="saveItem" mnemonicParsing="false" onAction="#saveDoc" text="Save" />
-            <MenuItem fx:id="exitItem" mnemonicParsing="false" onAction="#closeApp" text="Exit" />
+            <MenuItem mnemonicParsing="false" onAction="#openDoc" text="Open" fx:id="openItem" />
+            <MenuItem mnemonicParsing="false" onAction="#newDoc" text="New" fx:id="newItem" />
+            <MenuItem mnemonicParsing="false" onAction="#saveDoc" text="Save" fx:id="saveItem" />
+            <MenuItem mnemonicParsing="false" onAction="#closeApp" text="Exit" fx:id="exitItem" />
+            <Menu mnemonicParsing="false" text="Recent files" fx:id="recentMenu" />
           </items>
         </Menu>
         <Menu mnemonicParsing="false" text="View">
           <items>
-            <MenuItem id="togglePreviewItem" fx:id="hidePreviewItem" mnemonicParsing="false" onAction="#togglePreview" text="Toggle Preview" />
-            <MenuItem id="" fx:id="fullScreenItem" mnemonicParsing="false" onAction="#fullScreen" text="Full Screen" />
+            <MenuItem id="togglePreviewItem" mnemonicParsing="false" onAction="#togglePreview" text="Toggle Preview" fx:id="hidePreviewItem" />
+            <MenuItem id="" mnemonicParsing="false" onAction="#fullScreen" text="Full Screen" fx:id="fullScreenItem" />
             <MenuItem id="" mnemonicParsing="false" onAction="#createTable" text="Generate Table" />
           </items>
         </Menu>

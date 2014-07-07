@@ -1,14 +1,11 @@
 package com.kodcu;
 
 
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
-import javafx.scene.control.IndexRange;
 import javafx.scene.control.TextField;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -36,6 +33,7 @@ public class TablePopupController implements Initializable {
 
         StringBuffer stringBuffer = new StringBuffer();
 
+        stringBuffer.append("\n");
         String title = tablePopupTitle.textProperty().getValue();
         // Table title
         if (!"".equals(title))
@@ -84,7 +82,7 @@ public class TablePopupController implements Initializable {
 
         stringBuffer.append("|====================");
 
-        current.currentTextArea().getEngine().executeScript(String.format("editor.insert('%s')",IO.normalize(stringBuffer.toString())));
+        current.currentView().getEngine().executeScript(String.format("editor.insert('%s')",IO.normalize(stringBuffer.toString())));
 
     }
 

@@ -1,7 +1,7 @@
 package com.kodcu;
 
 import javafx.scene.control.Tab;
-import javafx.scene.control.TextArea;
+import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import org.springframework.stereotype.Component;
 
@@ -17,7 +17,7 @@ public class Current {
 
     private Tab currentTab;
     private Map<Tab, Path> newTabPaths = new HashMap<>();
-    private Map<Tab, WebView> newTabTextAreas = new HashMap<>();
+    private Map<Tab, WebView> newTabWebViews = new HashMap<>();
 
     public Tab getCurrentTab() {
         return currentTab;
@@ -27,12 +27,12 @@ public class Current {
         this.currentTab = currentTab;
     }
 
-    public Map<Tab, WebView> getNewTabTextAreas() {
-        return newTabTextAreas;
+    public Map<Tab, WebView> getNewTabWebViews() {
+        return newTabWebViews;
     }
 
-    public void setNewTabTextAreas(Map<Tab, WebView> newTabTextAreas) {
-        this.newTabTextAreas = newTabTextAreas;
+    public void setNewTabWebViews(Map<Tab, WebView> newTabWebViews) {
+        this.newTabWebViews = newTabWebViews;
     }
 
     public Map<Tab, Path> getNewTabPaths() {
@@ -46,15 +46,19 @@ public class Current {
     public void putTab(Tab tab, Path path,WebView textArea) {
         setCurrentTab(tab);
         getNewTabPaths().put(tab, path);
-        getNewTabTextAreas().put(getCurrentTab(), textArea);
+        getNewTabWebViews().put(getCurrentTab(), textArea);
     }
 
     public Path currentPath() {
         return getNewTabPaths().get(getCurrentTab());
     }
 
-    public WebView currentTextArea() {
-        return getNewTabTextAreas().get(getCurrentTab());
+    public WebView currentView() {
+        return getNewTabWebViews().get(getCurrentTab());
+    }
+
+    public WebEngine currentEngine() {
+        return getNewTabWebViews().get(getCurrentTab()).getEngine();
     }
 
     public Path currentRootPath() {
