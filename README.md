@@ -55,3 +55,4 @@ Follow the View > Generate Table
 <p><b>
 <a href="https://github.com/rahmanusta/AsciidocFX/releases/download/0.0.1/AsciidocFX-1.0-1.i386.rpm.zip">AsciidocFX (Linux)</a>
 </b></p>
+Note: Linux installer installes to /opt dir.
