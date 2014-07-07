@@ -2,6 +2,7 @@ package com.kodcu;
 
 import javafx.scene.control.Tab;
 import javafx.scene.control.TextArea;
+import javafx.scene.web.WebView;
 import org.springframework.stereotype.Component;
 
 import java.nio.file.Path;
@@ -16,7 +17,7 @@ public class Current {
 
     private Tab currentTab;
     private Map<Tab, Path> newTabPaths = new HashMap<>();
-    private Map<Tab, TextArea> newTabTextAreas = new HashMap<>();
+    private Map<Tab, WebView> newTabTextAreas = new HashMap<>();
 
     public Tab getCurrentTab() {
         return currentTab;
@@ -26,11 +27,11 @@ public class Current {
         this.currentTab = currentTab;
     }
 
-    public Map<Tab, TextArea> getNewTabTextAreas() {
+    public Map<Tab, WebView> getNewTabTextAreas() {
         return newTabTextAreas;
     }
 
-    public void setNewTabTextAreas(Map<Tab, TextArea> newTabTextAreas) {
+    public void setNewTabTextAreas(Map<Tab, WebView> newTabTextAreas) {
         this.newTabTextAreas = newTabTextAreas;
     }
 
@@ -42,7 +43,7 @@ public class Current {
         this.newTabPaths = newTabPaths;
     }
 
-    public void putTab(Tab tab, Path path,TextArea textArea) {
+    public void putTab(Tab tab, Path path,WebView textArea) {
         setCurrentTab(tab);
         getNewTabPaths().put(tab, path);
         getNewTabTextAreas().put(getCurrentTab(), textArea);
@@ -52,7 +53,7 @@ public class Current {
         return getNewTabPaths().get(getCurrentTab());
     }
 
-    public TextArea currentTextArea() {
+    public WebView currentTextArea() {
         return getNewTabTextAreas().get(getCurrentTab());
     }
 

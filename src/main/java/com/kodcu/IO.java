@@ -9,8 +9,6 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by usta on 09.05.2014.
@@ -70,7 +68,8 @@ public class IO {
         String content = "";
         try {
             InputStream is = Files.newInputStream(path, StandardOpenOption.READ);
-            content = IOUtils.toString(is,"UTF-8");
+            content = IOUtils.toString(is, "UTF-8");
+            content = normalize(content);
             IOUtils.closeQuietly(is);
         } catch (IOException e) {
             e.printStackTrace();

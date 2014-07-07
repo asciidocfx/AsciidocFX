@@ -84,10 +84,7 @@ public class TablePopupController implements Initializable {
 
         stringBuffer.append("|====================");
 
-//        current.currentTextArea().textProperty().setValue();
-
-        current.currentTextArea().replaceSelection(stringBuffer.toString());
-
+        current.currentTextArea().getEngine().executeScript(String.format("editor.insert('%s')",IO.normalize(stringBuffer.toString())));
 
     }
 

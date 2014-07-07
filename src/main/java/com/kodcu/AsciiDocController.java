@@ -5,18 +5,24 @@ import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ObservableValue;
+import javafx.concurrent.Worker;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
-import javafx.scene.input.MouseEvent;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.SplitPane;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import netscape.javascript.JSObject;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -32,10 +38,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.ResourceBundle;
+import java.util.*;
 
 import static java.nio.file.StandardOpenOption.CREATE;
 import static java.nio.file.StandardOpenOption.TRUNCATE_EXISTING;
@@ -58,12 +63,15 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
     private Current current;
 
     private Stage stage;
-    private WebEngine engine;
+    private WebEngine previewEngine;
     private StringProperty lastRendered = new SimpleStringProperty("<b>...</b>");
     private List<WebSocketSession> sessionList = new ArrayList<>();
     private Scene scene;
     private AnchorPane tableAnchor;
     private Stage tableStage;
+
+    Clipboard clipboard = Clipboard.getSystemClipboard();
+    private Optional<Path> initialDirectory = Optional.empty();
 
 
     @FXML
@@ -95,9 +103,9 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
             });
         });
 
-        engine = browser.getEngine();
-        engine.load("http://localhost:8080/index.html");
-        engine.getLoadWorker().exceptionProperty().addListener((ov, t, t1) -> {
+        previewEngine = browser.getEngine();
+        previewEngine.load("http://localhost:8080/index.html");
+        previewEngine.getLoadWorker().exceptionProperty().addListener((ov, t, t1) -> {
             System.out.println("Received exception: " + t1.getMessage());
         });
     }
@@ -118,14 +126,24 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
     @FXML
     private void openDoc(ActionEvent event) {
         FileChooser fileChooser = new FileChooser();
+
+        initialDirectory.ifPresent(e -> {
+            if (Files.isDirectory(e))
+                fileChooser.setInitialDirectory(e.toFile());
+            else
+                fileChooser.setInitialDirectory(e.getParent().toFile());
+        });
         List<File> chosenFiles = fileChooser.showOpenMultipleDialog(stage);
-        if (chosenFiles != null)
+        if (chosenFiles != null) {
+            initialDirectory = Optional.of(chosenFiles.get(0).toPath());
             chosenFiles.stream().map(e -> e.toPath()).forEach(this::addTab);
+        }
+
     }
 
     @FXML
     private void newDoc(ActionEvent event) {
-        TextArea textArea = createTextArea();
+        WebView textArea = createEditor();
         AnchorPane anchorPane = new AnchorPane();
         anchorPane.getChildren().add(textArea);
         fitToParent(textArea);
@@ -134,7 +152,8 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
         tab.selectedProperty().addListener((observableValue, before, after) -> {
             if (after) {
                 current.putTab(tab, current.getNewTabPaths().get(tab), textArea);
-                textListener(null, null, textArea.getText());
+                if (textArea.getEngine().getLoadWorker().getState() == Worker.State.SUCCEEDED)
+                    textListener(null, null, (String) textArea.getEngine().executeScript("editor.getValue();"));
             }
         });
         tab.textProperty().setValue("new");
@@ -147,20 +166,29 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
     private void addTab(Path path) {
 
         AnchorPane anchorPane = new AnchorPane();
-        TextArea textArea = createTextArea();
-        textArea.textProperty().setValue(IO.readFile(path));
+        WebView textArea = createEditor();
+        textArea.getEngine().getLoadWorker().stateProperty().addListener((observableValue1, state, state2) -> {
+            if (state2 == Worker.State.SUCCEEDED) {
+                textArea.getEngine().executeScript(String.format("editor.setValue('%s');", IO.readFile(path)));
+            }
+        });
 
         anchorPane.getChildren().add(textArea);
+
         fitToParent(textArea);
 
         Tab tab = new Tab();
         tab.textProperty().setValue(path.getFileName().toString());
         tab.setContent(anchorPane);
 
+
         tab.selectedProperty().addListener((observableValue, before, after) -> {
             if (after) {
                 current.putTab(tab, path, textArea);
-                textListener(null, null, textArea.getText());
+
+                if (textArea.getEngine().getLoadWorker().getState() == Worker.State.SUCCEEDED)
+                    textListener(null, null, (String) textArea.getEngine().executeScript("editor.getValue();"));
+
             }
         });
 
@@ -173,28 +201,32 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
     }
 
 
-    private TextArea createTextArea() {
-        TextArea textArea = new TextArea();
-        textArea.textProperty().addListener(this::textListener);
-        textArea.wrapTextProperty().setValue(true);
+    private WebView createEditor() {
 
-        textArea.setOnMouseClicked(event -> {
-            if (event.getClickCount() > 1) {
-                String selectedText = textArea.getSelectedText();
-                String[] splitted = selectedText.trim().split("[^a-zA-Z0-9]");
-                textArea.selectRange(textArea.getAnchor(), textArea.getAnchor() + splitted[0].trim().length());
+        WebView view = new WebView();
+
+        WebEngine webEngine = view.getEngine();
+        JSObject window = (JSObject) webEngine.executeScript("window");
+        window.setMember("app", this);
+        webEngine.load("http://localhost:8080/editor.html");
+
+        webEngine.getLoadWorker().stateProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue == Worker.State.SUCCEEDED) {
+                webEngine.executeScript("editor.session.on('changeScrollTop', function () { app.onscroll(editor.getSession().getScrollTop()); });");
+                webEngine.executeScript("editor.getSession().on('change',function(){ app.textListener(null, null, editor.getValue()); });");
+
+                webEngine.executeScript(IO.convert(AsciiDocController.class.getResourceAsStream("/keyboard_fix.js")));
             }
         });
 
-        textArea.scrollTopProperty().addListener((observableValue, old, nev) -> {
-            ScrollBar textAreaScroll = (ScrollBar) tabu.getSelectionModel().selectedItemProperty().getValue().getContent().lookup(".scroll-bar");
-            double textAreaScrollRatio = (textAreaScroll.getValue() * 100) / textAreaScroll.getMax();
-            Integer browserMaxScroll = (Integer) engine.executeScript("document.documentElement.scrollHeight - document.documentElement.clientHeight;");
-            double browserScrollOffset = (Double.valueOf(browserMaxScroll) * textAreaScrollRatio) / 100.0;
-            engine.executeScript("window.scrollTo(0," + browserScrollOffset + ");");
-        });
+        return view;
+    }
 
-        return textArea;
+    public void onscroll(Object param) {
+        Number position = (Number) param;
+        if (Objects.nonNull(position))
+            previewEngine.executeScript(String.format("window.scrollTo(0, %f )", position.doubleValue()));
+
     }
 
     @RequestMapping(value = "/notfound/**", method = RequestMethod.GET)
@@ -221,15 +253,26 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
 
     }
 
-    private void textListener(ObservableValue observableValue, String old, String nev) {
-
+    public void textListener(ObservableValue observableValue, String old, String nev) {
         try {
-            String rendered = (String) engine.executeScript("Opal.Asciidoctor.$render('" + IO.normalize(nev) + "');");
-            lastRendered.setValue(rendered);
+            Platform.runLater(() -> {
+                String rendered = (String) previewEngine.executeScript("Opal.Asciidoctor.$render('" + IO.normalize(nev) + "');");
+                lastRendered.setValue(rendered);
+            });
         } catch (Exception ex) {
             ex.printStackTrace();
         }
 
+    }
+
+    public void cutCopy(String data) {
+        ClipboardContent clipboardContent = new ClipboardContent();
+        clipboardContent.putString(data);
+        clipboard.setContent(clipboardContent);
+    }
+
+    public String paste() {
+        return clipboard.getString();
     }
 
     @FXML
@@ -241,11 +284,11 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
             File file = chooser.showSaveDialog(null);
             if (file == null)
                 return;
-            IO.writeToFile(file, current.currentTextArea().textProperty().getValue(), TRUNCATE_EXISTING, CREATE);
+            IO.writeToFile(file, (String) current.currentTextArea().getEngine().executeScript("editor.getValue();"), TRUNCATE_EXISTING, CREATE);
             current.putTab(current.getCurrentTab(), file.toPath(), current.currentTextArea());
             current.getCurrentTab().setText(file.toPath().getFileName().toString());
         } else {
-            IO.writeToFile(currentPath.toFile(), current.currentTextArea().textProperty().getValue(), TRUNCATE_EXISTING, CREATE);
+            IO.writeToFile(currentPath.toFile(), (String) current.currentTextArea().getEngine().executeScript("editor.getValue();"), TRUNCATE_EXISTING, CREATE);
         }
     }
 
