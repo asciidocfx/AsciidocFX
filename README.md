@@ -50,7 +50,7 @@ Follow the View > Generate Table
 
 #### If you want not to build AsciidocFX, download the Native installers:
 <p><b>
-<a href="https://github.com/rahmanusta/AsciidocFX/releases/download/0.0.1/AsciidocFX-1.0.msi.zip">link AsciidocFX (Windows)</a>
+<a href="https://github.com/rahmanusta/AsciidocFX/releases/download/0.0.1/AsciidocFX-1.0.msi.zip">AsciidocFX (Windows)</a>
 </b></p>
 <p><b>
 <a href="https://github.com/rahmanusta/AsciidocFX/releases/download/0.0.1/AsciidocFX-1.0-1.i386.rpm.zip">AsciidocFX (Linux)</a>
