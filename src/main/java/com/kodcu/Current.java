@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Created by usta on 18.05.2014.
@@ -58,7 +59,8 @@ public class Current {
     }
 
     public WebEngine currentEngine() {
-        return getNewTabWebViews().get(getCurrentTab()).getEngine();
+        WebView webView = getNewTabWebViews().get(getCurrentTab());
+        return Objects.isNull(webView)?null:webView.getEngine();
     }
 
     public Path currentRootPath() {

@@ -36,12 +36,17 @@ public class Start extends Application {
         context = SpringApplication.run(AsciiDocConfig.class);
         FXMLLoader parentLoader = new FXMLLoader();
         FXMLLoader tablePopupLoader = new FXMLLoader();
-        parentLoader.setControllerFactory(context::getBean);
+        FXMLLoader configPopupLoader = new FXMLLoader();
+
         tablePopupLoader.setControllerFactory(context::getBean);
+        configPopupLoader.setControllerFactory(context::getBean);
+        parentLoader.setControllerFactory(context::getBean);
 
-        Parent root = parentLoader.load(getClass().getResourceAsStream("/fxml/Scene.fxml"));
+
+
         AnchorPane tableAnchor = tablePopupLoader.load(getClass().getResourceAsStream("/fxml/TablePopup.fxml"));
-
+        AnchorPane configAnchor = configPopupLoader.load(getClass().getResourceAsStream("/fxml/Config.fxml"));
+        Parent root = parentLoader.load(getClass().getResourceAsStream("/fxml/Scene.fxml"));
         controller = parentLoader.getController();
 
 
@@ -62,10 +67,18 @@ public class Start extends Application {
         tableStage.initModality(Modality.WINDOW_MODAL);
         tableStage.initOwner(scene.getWindow());
 
+        Stage configStage = new Stage();
+        configStage.setScene(new Scene(configAnchor));
+        configStage.setTitle("Configuration");
+        configStage.initModality(Modality.WINDOW_MODAL);
+        configStage.initOwner(scene.getWindow());
+
         controller.setStage(stage);
         controller.setScene(scene);
         controller.setTableAnchor(tableAnchor);
         controller.setTableStage(tableStage);
+        controller.setConfigAnchor(configAnchor);
+        controller.setConfigStage(configStage);
 
         stage.setScene(scene);
         stage.show();

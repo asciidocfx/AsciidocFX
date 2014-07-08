@@ -31,6 +31,7 @@ public class IO {
 
     public static String normalize(String content) {
         content = content.replace("'", "\\'");
+        content = content.replace(System.getProperty("line.separator"), "\\n");
         content = content.replace("\n", "\\n");
         content = content.replace("\r", "\\n");
         return content;

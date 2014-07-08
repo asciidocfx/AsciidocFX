@@ -28,6 +28,7 @@
             <MenuItem mnemonicParsing="false" onAction="#openDoc" text="Open" fx:id="openItem" />
             <MenuItem mnemonicParsing="false" onAction="#newDoc" text="New" fx:id="newItem" />
             <MenuItem mnemonicParsing="false" onAction="#saveDoc" text="Save" fx:id="saveItem" />
+            <MenuItem mnemonicParsing="false" onAction="#openConfig" text="Config" />
             <MenuItem mnemonicParsing="false" onAction="#closeApp" text="Exit" fx:id="exitItem" />
             <Menu mnemonicParsing="false" text="Recent files" fx:id="recentMenu" />
           </items>

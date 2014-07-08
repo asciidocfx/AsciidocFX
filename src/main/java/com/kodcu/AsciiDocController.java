@@ -21,6 +21,8 @@ import javafx.scene.web.WebView;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import netscape.javascript.JSObject;
+import org.apache.commons.configuration.ConfigurationException;
+import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -38,6 +40,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -76,10 +79,26 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
 
     private String waitForGetValue;
     private String waitForSetValue;
+    private String loadConfig;
+
+    private StringProperty fontSize = new SimpleStringProperty("14");
+    private StringProperty scrollSpeed = new SimpleStringProperty("0.1");
+    private StringProperty theme = new SimpleStringProperty("katzenmilch");
+    private AnchorPane configAnchor;
+    private Stage configStage;
+
+    @Autowired
+    private ConfigController configController;
+
 
     @FXML
     private void createTable(ActionEvent event) throws IOException {
         tableStage.show();
+    }
+
+    @FXML
+    private void openConfig(ActionEvent event) {
+        configStage.show();
     }
 
     @FXML
@@ -96,8 +115,22 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
     @Override
     public void initialize(URL url, ResourceBundle rb) {
 
+        try {
+            PropertiesConfiguration configuration = new PropertiesConfiguration(Paths.get(System.getProperty("user.home")).resolve("asciidocfx.properties").toFile());
+            fontSize.setValue(configuration.getString("editor.fontsize", "14"));
+            scrollSpeed.setValue(configuration.getString("editor.scroll.speed", "0.1"));
+            theme.setValue(configuration.getString("editor.theme", "ace"));
+
+            configController.getFontSizeSlider().setValue(Double.valueOf(fontSize.getValue()));
+            configController.getMouseSpeedSlider().setValue(Double.valueOf(scrollSpeed.getValue()));
+            configController.getThemeSelector().getSelectionModel().select(configuration.getString("editor.theme", "ace"));
+
+        } catch (ConfigurationException e) {
+        }
+
         waitForGetValue = IO.convert(AsciiDocController.class.getResourceAsStream("/waitForGetValue.js"));
         waitForSetValue = IO.convert(AsciiDocController.class.getResourceAsStream("/waitForSetValue.js"));
+        loadConfig = IO.convert(AsciiDocController.class.getResourceAsStream("/loadConfig.js"));
 
         lastRendered.addListener((observableValue, old, nev) -> {
             sessionList.stream().filter(e -> e.isOpen()).forEach(e -> {
@@ -132,7 +165,8 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
     @FXML
     private void openDoc(ActionEvent event) {
         FileChooser fileChooser = new FileChooser();
-
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Asciidoc", "*.asciidoc", "*.adoc"));
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("All", "*.*"));
         initialDirectory.ifPresent(e -> {
             if (Files.isDirectory(e))
                 fileChooser.setInitialDirectory(e.toFile());
@@ -152,7 +186,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
     private void recentFileList(Event event) {
         List<MenuItem> menuItems = recentFiles.stream().filter(path -> !Files.isDirectory(path)).map(path -> {
             MenuItem menuItem = new MenuItem();
-            menuItem.setText(path.getFileName().toString());
+            menuItem.setText(path.toAbsolutePath().toString());
             menuItem.setOnAction(actionEvent -> {
                 addTab(path);
             });
@@ -187,6 +221,9 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
         current.putTab(tab, null, webView);
     }
 
+    public String getLoadConfig() {
+        return loadConfig;
+    }
 
     private void addTab(Path path) {
 
@@ -218,13 +255,13 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
         current.putTab(tab, path, webView);
         tabu.getTabs().add(tab);
 
-      Tab lastTab = tabu.getTabs().get(tabu.getTabs().size() - 1);
-      tabu.getSelectionModel().select(lastTab);
+        Tab lastTab = tabu.getTabs().get(tabu.getTabs().size() - 1);
+        tabu.getSelectionModel().select(lastTab);
 
     }
 
     private Tab createTab() {
-        Tab tab=new Tab();
+        Tab tab = new Tab();
         MenuItem menuItem0 = new MenuItem("Close All Tabs");
         menuItem0.setOnAction(actionEvent -> {
             tabu.getTabs().clear();
@@ -255,7 +292,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
         webEngine.load("http://localhost:8080/editor.html");
         webEngine.getLoadWorker().stateProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue == Worker.State.SUCCEEDED) {
-//                webEngine.executeScript(waitForSetValue);
+                webEngine.executeScript(String.format(loadConfig, fontSize.get(), theme.get(), scrollSpeed.get()));
             }
         });
 
@@ -263,8 +300,10 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
     }
 
     public void onscroll(Object param) {
+        if (Objects.isNull(param)) return;
         Number position = (Number) param;
-        if (Objects.nonNull(position))
+
+        if (Objects.nonNull(param))
             previewEngine.executeScript(String.format("window.scrollTo(0, %f )", position.doubleValue()));
 
     }
@@ -297,7 +336,11 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
     public void textListener(ObservableValue observableValue, String old, String nev) {
         try {
             Platform.runLater(() -> {
-                String rendered = (String) previewEngine.executeScript("Opal.Asciidoctor.$render('" + IO.normalize(nev) + "');");
+//                previewEngine.executeScript("var asciidocOpts = Opal.hash2(['attributes'], {'attributes': ['backend=docbook5', 'doctype=book']});");
+//                String rendered = (String) previewEngine.executeScript("Opal.Asciidoctor.$render('" + IO.normalize(nev) + "',asciidocOpts);");
+                String nonnormalize = nev;
+                String normalize = nev;
+                String rendered = (String) previewEngine.executeScript(String.format("Opal.Asciidoctor.$render('%s');", IO.normalize(normalize)));
                 lastRendered.setValue(rendered);
             });
         } catch (Exception ex) {
@@ -305,6 +348,27 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
         }
 
     }
+
+    public StringProperty getFontSize() {
+        return fontSize;
+    }
+
+    public StringProperty fontSizeProperty() {
+        return fontSize;
+    }
+
+    public StringProperty getScrollSpeed() {
+        return scrollSpeed;
+    }
+
+    public StringProperty scrollSpeedProperty() {
+        return scrollSpeed;
+    }
+
+    public StringProperty getTheme() {
+        return theme;
+    }
+
 
     public void cutCopy(String data) {
         ClipboardContent clipboardContent = new ClipboardContent();
@@ -321,7 +385,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
         Path currentPath = current.currentPath();
         if (currentPath == null) {
             FileChooser chooser = new FileChooser();
-            chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Asciidoc", "*.asciidoc", ".adoc"));
+            chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Asciidoc", "*.asciidoc", "*.adoc"));
             File file = chooser.showSaveDialog(null);
             if (file == null)
                 return;
@@ -373,4 +437,22 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
     public Stage getTableStage() {
         return tableStage;
     }
+
+    public void setConfigAnchor(AnchorPane configAnchor) {
+        this.configAnchor = configAnchor;
+    }
+
+    public AnchorPane getConfigAnchor() {
+        return configAnchor;
+    }
+
+    public void setConfigStage(Stage configStage) {
+        this.configStage = configStage;
+    }
+
+    public Stage getConfigStage() {
+        return configStage;
+    }
+
+
 }

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.collections.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.paint.*?>
+
+<AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="172.0" prefWidth="326.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="com.kodcu.ConfigController">
+  <children>
+    <Button fx:id="saveConfig" layoutX="232.0" layoutY="128.0" mnemonicParsing="false" onAction="#saveConfig" prefHeight="28.0" prefWidth="65.0" text="Save" />
+    <Label layoutX="27.0" layoutY="24.0" text="Font Size" />
+    <Slider fx:id="fontSizeSlider" blockIncrement="1.0" layoutX="118.0" layoutY="24.0" majorTickUnit="1.0" max="20.0" min="8.0" minorTickCount="1" showTickMarks="false" snapToTicks="true" value="14.0" />
+    <Label layoutX="27.0" layoutY="55.0" text="Theme" />
+    <ComboBox fx:id="themeSelector" layoutX="118.0" layoutY="51.0" prefWidth="140.0">
+      <items>
+        <FXCollections fx:factory="observableArrayList">
+          <String fx:value="Item 1" />
+          <String fx:value="Item 2" />
+          <String fx:value="Item 3" />
+        </FXCollections>
+      </items>
+    </ComboBox>
+    <Label layoutX="27.0" layoutY="87.0" text="Mouse Speed" />
+    <Slider fx:id="mouseSpeedSlider" blockIncrement="0.1" layoutX="118.0" layoutY="88.0" majorTickUnit="0.1" max="1.0" min="0.0" minorTickCount="1" showTickLabels="false" showTickMarks="false" snapToTicks="true" value="0.1" />
+    <Label fx:id="fontLabel" layoutX="281.0" layoutY="24.0" text="14" />
+    <Label fx:id="mouseSpeedLabel" layoutX="281.0" layoutY="87.0" text="0.1" />
+  </children>
+</AnchorPane>
