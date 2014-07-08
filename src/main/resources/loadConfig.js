@@ -1,3 +1,4 @@
+
 function waitForConfig() {
     try {
         editor.setFontSize(Number('%s'));

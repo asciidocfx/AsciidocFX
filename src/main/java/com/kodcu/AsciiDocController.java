@@ -83,6 +83,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
 
     private StringProperty fontSize = new SimpleStringProperty("14");
     private StringProperty scrollSpeed = new SimpleStringProperty("0.1");
+    private StringProperty divider = new SimpleStringProperty("0.5");
     private StringProperty theme = new SimpleStringProperty("katzenmilch");
     private AnchorPane configAnchor;
     private Stage configStage;
@@ -117,13 +118,17 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
 
         try {
             PropertiesConfiguration configuration = new PropertiesConfiguration(Paths.get(System.getProperty("user.home")).resolve("asciidocfx.properties").toFile());
-            fontSize.setValue(configuration.getString("editor.fontsize", "14"));
-            scrollSpeed.setValue(configuration.getString("editor.scroll.speed", "0.1"));
-            theme.setValue(configuration.getString("editor.theme", "ace"));
+            fontSize.setValue(configuration.getString("editor.fontsize"));
+            scrollSpeed.setValue(configuration.getString("editor.scroll.speed"));
+            theme.setValue(configuration.getString("editor.theme"));
+            divider.setValue(configuration.getString("splitter.division"));
 
             configController.getFontSizeSlider().setValue(Double.valueOf(fontSize.getValue()));
             configController.getMouseSpeedSlider().setValue(Double.valueOf(scrollSpeed.getValue()));
             configController.getThemeSelector().getSelectionModel().select(configuration.getString("editor.theme", "ace"));
+            configController.getDivisionSlider().setValue(Double.valueOf(divider.getValue()));
+
+            splitter.setDividerPositions(Double.valueOf(configuration.getString("splitter.division")));
 
         } catch (ConfigurationException e) {
         }
@@ -454,5 +459,11 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
         return configStage;
     }
 
+    public StringProperty getDivider() {
+        return divider;
+    }
 
+    public SplitPane getSplitter() {
+        return splitter;
+    }
 }
