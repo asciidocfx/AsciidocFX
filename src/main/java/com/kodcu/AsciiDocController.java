@@ -170,7 +170,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
     @FXML
     private void openDoc(ActionEvent event) {
         FileChooser fileChooser = new FileChooser();
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Asciidoc", "*.asciidoc", "*.adoc"));
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Asciidoc", "*.asciidoc", "*.adoc", "*.txt"));
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("All", "*.*"));
         initialDirectory.ifPresent(e -> {
             if (Files.isDirectory(e))
@@ -390,7 +390,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
         Path currentPath = current.currentPath();
         if (currentPath == null) {
             FileChooser chooser = new FileChooser();
-            chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Asciidoc", "*.asciidoc", "*.adoc"));
+            chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Asciidoc", "*.asciidoc", "*.adoc", "*.txt"));
             File file = chooser.showSaveDialog(null);
             if (file == null)
                 return;
