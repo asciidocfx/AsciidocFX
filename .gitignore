@@ -8,6 +8,9 @@
 *.war
 *.ear
 *.zip
+*.rar
+*.mobi
+*.pdf
 
 hs_err_pid*
 
