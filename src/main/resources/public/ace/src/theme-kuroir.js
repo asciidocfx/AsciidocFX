@@ -1,8 +1,8 @@
-define("ace/theme/kuroir",["require","exports","module","ace/lib/dom"], function(require, exports, module) {
+define("ace/theme/kuroir", ["require", "exports", "module", "ace/lib/dom"], function (require, exports, module) {
 
-exports.isDark = false;
-exports.cssClass = "ace-kuroir";
-exports.cssText = "\
+    exports.isDark = false;
+    exports.cssClass = "ace-kuroir";
+    exports.cssText = "\
 .ace-kuroir .ace_gutter {\
 background: #e8e8e8;\
 color: #333;\
@@ -54,6 +54,6 @@ background-color:rgba(220, 220, 220, 0.56);}.ace-kuroir .ace_variable{color:#009
 background-color:rgba(191, 97, 51, 0.051);}.ace-kuroir .ace_markup.ace_list{color:#8F5B26;}\
 ";
 
-var dom = require("../lib/dom");
-dom.importCssString(exports.cssText, exports.cssClass);
+    var dom = require("../lib/dom");
+    dom.importCssString(exports.cssText, exports.cssClass);
 });

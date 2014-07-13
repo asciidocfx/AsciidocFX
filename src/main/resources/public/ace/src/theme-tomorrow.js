@@ -1,8 +1,8 @@
-define("ace/theme/tomorrow",["require","exports","module","ace/lib/dom"], function(require, exports, module) {
+define("ace/theme/tomorrow", ["require", "exports", "module", "ace/lib/dom"], function (require, exports, module) {
 
-exports.isDark = false;
-exports.cssClass = "ace-tomorrow";
-exports.cssText = ".ace-tomorrow .ace_gutter {\
+    exports.isDark = false;
+    exports.cssClass = "ace-tomorrow";
+    exports.cssText = ".ace-tomorrow .ace_gutter {\
 background: #f6f6f6;\
 color: #4D4D4C\
 }\
@@ -104,6 +104,6 @@ color: #8E908C\
 background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAACCAYAAACZgbYnAAAAE0lEQVQImWP4////f4bdu3f/BwAlfgctduB85QAAAABJRU5ErkJggg==) right repeat-y\
 }";
 
-var dom = require("../lib/dom");
-dom.importCssString(exports.cssText, exports.cssClass);
+    var dom = require("../lib/dom");
+    dom.importCssString(exports.cssText, exports.cssClass);
 });

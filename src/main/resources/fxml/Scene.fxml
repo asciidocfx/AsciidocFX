@@ -1,51 +1,83 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
+<?scenebuilder-stylesheet ../styles/Styles.css?>
+
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.web.*?>
-
-<AnchorPane id="AnchorPane" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="com.kodcu.AsciiDocController">
-  <children>
-    <SplitPane fx:id="splitter" dividerPositions="0.5" focusTraversable="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-      <items>
-        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
-          <children>
-            <TabPane fx:id="tabu" opacity="1.0" prefHeight="701.0" prefWidth="664.0" rotateGraphic="false" tabClosingPolicy="ALL_TABS" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="21.0" />
-          </children>
-        </AnchorPane>
-        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="668.0" prefWidth="676.0">
-          <children>
-            <WebView fx:id="previewView" prefHeight="701.0" prefWidth="676.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="21.0" />
-          </children>
-        </AnchorPane>
-      </items>
-    </SplitPane>
-    <MenuBar fx:id="menubar" layoutX="0.0" layoutY="0.0" onMouseEntered="#recentFileList" prefWidth="1360.0">
-      <menus>
-        <Menu mnemonicParsing="false" text="File">
-          <items>
-            <MenuItem mnemonicParsing="false" onAction="#openDoc" text="Open" fx:id="openItem" />
-            <MenuItem mnemonicParsing="false" onAction="#newDoc" text="New" fx:id="newItem" />
-            <MenuItem mnemonicParsing="false" onAction="#saveDoc" text="Save" fx:id="saveItem" />
-            <MenuItem mnemonicParsing="false" onAction="#openConfig" text="Config" />
-            <MenuItem mnemonicParsing="false" onAction="#closeApp" text="Exit" fx:id="exitItem" />
-            <Menu mnemonicParsing="false" text="Recent files" fx:id="recentMenu" />
-          </items>
-        </Menu>
-        <Menu mnemonicParsing="false" text="View">
-          <items>
-            <MenuItem id="togglePreviewItem" mnemonicParsing="false" onAction="#togglePreview" text="Toggle Preview" fx:id="hidePreviewItem" />
-            <MenuItem id="" mnemonicParsing="false" onAction="#fullScreen" text="Full Screen" fx:id="fullScreenItem" />
-            <MenuItem id="" mnemonicParsing="false" onAction="#createTable" text="Generate Table" />
-          </items>
-        </Menu>
-        <Menu mnemonicParsing="false" text="Help">
-          <items>
-            <MenuItem mnemonicParsing="false" text="About" />
-          </items>
-        </Menu>
-      </menus>
-    </MenuBar>
-  </children>
+<?import javafx.scene.web.WebView?>
+<AnchorPane id="AnchorPane" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2"
+            fx:controller="com.kodcu.AsciiDocController">
+    <children>
+        <SplitPane fx:id="splitPane" dividerPositions="0.16483516483516483, 0.6" focusTraversable="true" style=""
+                   AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
+                   AnchorPane.topAnchor="0.0">
+            <items>
+                <AnchorPane id="AnchorPane" minWidth="0.0" opacity="1.0" prefHeight="668.0" prefWidth="404.0" style=""
+                            styleClass="anchor-pane">
+                    <children>
+                        <TreeView fx:id="treeView" opacity="1.0" prefHeight="611.0" prefWidth="223.0" showRoot="true"
+                                  AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
+                                  AnchorPane.topAnchor="57.0"/>
+                        <ToolBar id="" fx:id="workingDirToolbar" layoutY="21.0" minHeight="29.0" minWidth="0.0"
+                                 orientation="HORIZONTAL" pickOnBounds="false" prefWidth="223.0"
+                                 AnchorPane.leftAnchor="-0.5" AnchorPane.rightAnchor="0.5">
+                            <items>
+                                <Button id="changeWorkingDir" fx:id="splitHideButton" cancelButton="false"
+                                        defaultButton="false" mnemonicParsing="false" onAction="#hideLeftSplit"
+                                        prefWidth="35.0" text="">
+                                    <tooltip>
+                                        <Tooltip text="Hide Pane"/>
+                                    </tooltip>
+                                </Button>
+                                <Button fx:id="WorkingDirButton" cancelButton="false" defaultButton="false"
+                                        mnemonicParsing="false" onAction="#changeWorkingDir" prefWidth="35.0" text="">
+                                    <tooltip>
+                                        <Tooltip text="Change Working Directory"/>
+                                    </tooltip>
+                                </Button>
+                            </items>
+                        </ToolBar>
+                    </children>
+                </AnchorPane>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+                    <children>
+                        <TabPane fx:id="tabPane" opacity="1.0" prefHeight="647.0" prefWidth="611.0"
+                                 rotateGraphic="false" tabClosingPolicy="ALL_TABS" AnchorPane.bottomAnchor="0.0"
+                                 AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="21.0"/>
+                    </children>
+                </AnchorPane>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="668.0" prefWidth="676.0" style="">
+                    <children>
+                        <WebView fx:id="previewView" prefHeight="701.0" prefWidth="676.0" AnchorPane.bottomAnchor="0.0"
+                                 AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="21.0"/>
+                    </children>
+                </AnchorPane>
+            </items>
+        </SplitPane>
+        <MenuBar fx:id="menubar" layoutX="0.0" layoutY="0.0" onMouseEntered="#recentFileList" prefWidth="1367.0">
+            <menus>
+                <Menu mnemonicParsing="false" text="File">
+                    <items>
+                        <MenuItem mnemonicParsing="false" onAction="#openDoc" text="Open" fx:id="openItem"/>
+                        <MenuItem mnemonicParsing="false" onAction="#newDoc" text="New" fx:id="newItem"/>
+                        <MenuItem mnemonicParsing="false" onAction="#saveDoc" text="Save" fx:id="saveItem"/>
+                        <MenuItem mnemonicParsing="false" onAction="#closeApp" text="Exit" fx:id="exitItem"/>
+                        <Menu mnemonicParsing="false" text="Recent files" fx:id="recentMenu"/>
+                    </items>
+                </Menu>
+                <Menu mnemonicParsing="false" text="View">
+                    <items>
+                        <MenuItem id="" mnemonicParsing="false" onAction="#fullScreen" text="Full Screen"
+                                  fx:id="fullScreenItem"/>
+                        <MenuItem id="" mnemonicParsing="false" onAction="#createTable" text="Generate Table"/>
+                    </items>
+                </Menu>
+                <Menu mnemonicParsing="false" text="Help">
+                    <items>
+                        <MenuItem mnemonicParsing="false" text="rahmanusta@kodcu.com"/>
+                    </items>
+                </Menu>
+            </menus>
+        </MenuBar>
+    </children>
 </AnchorPane>

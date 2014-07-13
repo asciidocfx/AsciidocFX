@@ -6,7 +6,7 @@
 /* Tomorrow Comment */
 .hljs-comment,
 .hljs-title {
-  color: #7285b7;
+    color: #7285b7;
 }
 
 /* Tomorrow Red */
@@ -22,7 +22,7 @@
 .css .hljs-id,
 .css .hljs-class,
 .css .hljs-pseudo {
-  color: #ff9da4;
+    color: #ff9da4;
 }
 
 /* Tomorrow Orange */
@@ -33,13 +33,13 @@
 .hljs-literal,
 .hljs-params,
 .hljs-constant {
-  color: #ffc58f;
+    color: #ffc58f;
 }
 
 /* Tomorrow Yellow */
 .ruby .hljs-class .hljs-title,
 .css .hljs-rules .hljs-attribute {
-  color: #ffeead;
+    color: #ffeead;
 }
 
 /* Tomorrow Green */
@@ -49,12 +49,12 @@
 .hljs-header,
 .ruby .hljs-symbol,
 .xml .hljs-cdata {
-  color: #d1f1a9;
+    color: #d1f1a9;
 }
 
 /* Tomorrow Aqua */
 .css .hljs-hexcolor {
-  color: #99ffff;
+    color: #99ffff;
 }
 
 /* Tomorrow Blue */
@@ -66,20 +66,20 @@
 .perl .hljs-sub,
 .javascript .hljs-title,
 .coffeescript .hljs-title {
-  color: #bbdaff;
+    color: #bbdaff;
 }
 
 /* Tomorrow Purple */
 .hljs-keyword,
 .javascript .hljs-function {
-  color: #ebbbff;
+    color: #ebbbff;
 }
 
 .hljs {
-  display: block;
-  background: #002451;
-  color: white;
-  padding: 0.5em;
+    display: block;
+    background: #002451;
+    color: white;
+    padding: 0.5em;
 }
 
 .coffeescript .javascript,
@@ -89,5 +89,5 @@
 .xml .vbscript,
 .xml .css,
 .xml .hljs-cdata {
-  opacity: 0.5;
+    opacity: 0.5;
 }

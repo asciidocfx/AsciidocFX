@@ -1,8 +1,8 @@
-define("ace/theme/mono_industrial",["require","exports","module","ace/lib/dom"], function(require, exports, module) {
+define("ace/theme/mono_industrial", ["require", "exports", "module", "ace/lib/dom"], function (require, exports, module) {
 
-exports.isDark = true;
-exports.cssClass = "ace-mono-industrial";
-exports.cssText = ".ace-mono-industrial .ace_gutter {\
+    exports.isDark = true;
+    exports.cssClass = "ace-mono-industrial";
+    exports.cssText = ".ace-mono-industrial .ace_gutter {\
 background: #1d2521;\
 color: #C5C9C9\
 }\
@@ -103,6 +103,6 @@ color: #A65EFF\
 background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAACCAYAAACZgbYnAAAAEklEQVQImWNQ1NbwZfALD/4PAAlTArlEC4r/AAAAAElFTkSuQmCC) right repeat-y\
 }";
 
-var dom = require("../lib/dom");
-dom.importCssString(exports.cssText, exports.cssClass);
+    var dom = require("../lib/dom");
+    dom.importCssString(exports.cssText, exports.cssClass);
 });

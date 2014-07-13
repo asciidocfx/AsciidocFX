@@ -1,6 +1,6 @@
-define("ace/theme/crimson_editor",["require","exports","module","ace/lib/dom"], function(require, exports, module) {
-exports.isDark = false;
-exports.cssText = ".ace-crimson-editor .ace_gutter {\
+define("ace/theme/crimson_editor", ["require", "exports", "module", "ace/lib/dom"], function (require, exports, module) {
+    exports.isDark = false;
+    exports.cssText = ".ace-crimson-editor .ace_gutter {\
 background: #ebebeb;\
 color: #333;\
 overflow : hidden;\
@@ -111,8 +111,8 @@ color: rgb(192, 0, 192);\
 background: url(\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAACCAYAAACZgbYnAAAAE0lEQVQImWP4////f4bLly//BwAmVgd1/w11/gAAAABJRU5ErkJggg==\") right repeat-y;\
 }";
 
-exports.cssClass = "ace-crimson-editor";
+    exports.cssClass = "ace-crimson-editor";
 
-var dom = require("../lib/dom");
-dom.importCssString(exports.cssText, exports.cssClass);
+    var dom = require("../lib/dom");
+    dom.importCssString(exports.cssText, exports.cssClass);
 });

@@ -82,7 +82,7 @@ public class TablePopupController implements Initializable {
 
         stringBuffer.append("|====================");
 
-        current.currentView().getEngine().executeScript(String.format("editor.insert('%s')",IO.normalize(stringBuffer.toString())));
+        current.currentView().getEngine().executeScript(String.format("editor.insert('%s')", IOHelper.normalize(stringBuffer.toString())));
 
     }
 

@@ -1,9 +1,9 @@
-define("ace/theme/textmate",["require","exports","module","ace/lib/dom"], function(require, exports, module) {
-"use strict";
+define("ace/theme/textmate", ["require", "exports", "module", "ace/lib/dom"], function (require, exports, module) {
+    "use strict";
 
-exports.isDark = false;
-exports.cssClass = "ace-tm";
-exports.cssText = ".ace-tm .ace_gutter {\
+    exports.isDark = false;
+    exports.cssClass = "ace-tm";
+    exports.cssText = ".ace-tm .ace_gutter {\
 background: #f0f0f0;\
 color: #333;\
 }\
@@ -125,6 +125,6 @@ background: url(\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAACCAYAAACZ
 }\
 ";
 
-var dom = require("../lib/dom");
-dom.importCssString(exports.cssText, exports.cssClass);
+    var dom = require("../lib/dom");
+    dom.importCssString(exports.cssText, exports.cssClass);
 });

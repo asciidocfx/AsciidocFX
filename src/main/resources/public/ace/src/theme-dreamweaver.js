@@ -1,7 +1,7 @@
-define("ace/theme/dreamweaver",["require","exports","module","ace/lib/dom"], function(require, exports, module) {
-exports.isDark = false;
-exports.cssClass = "ace-dreamweaver";
-exports.cssText = ".ace-dreamweaver .ace_gutter {\
+define("ace/theme/dreamweaver", ["require", "exports", "module", "ace/lib/dom"], function (require, exports, module) {
+    exports.isDark = false;
+    exports.cssClass = "ace-dreamweaver";
+    exports.cssText = ".ace-dreamweaver .ace_gutter {\
 background: #e8e8e8;\
 color: #333;\
 }\
@@ -136,6 +136,6 @@ color: rgb(255, 0, 0)\
 background: url(\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAACCAYAAACZgbYnAAAAE0lEQVQImWP4////f4bLly//BwAmVgd1/w11/gAAAABJRU5ErkJggg==\") right repeat-y;\
 }";
 
-var dom = require("../lib/dom");
-dom.importCssString(exports.cssText, exports.cssClass);
+    var dom = require("../lib/dom");
+    dom.importCssString(exports.cssText, exports.cssClass);
 });

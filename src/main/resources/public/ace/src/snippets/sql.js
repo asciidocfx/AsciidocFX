@@ -1,7 +1,7 @@
-define("ace/snippets/sql",["require","exports","module"], function(require, exports, module) {
-"use strict";
+define("ace/snippets/sql", ["require", "exports", "module"], function (require, exports, module) {
+    "use strict";
 
-exports.snippetText = "snippet tbl\n\
+    exports.snippetText = "snippet tbl\n\
 	create table ${1:table} (\n\
 		${2:columns}\n\
 	);\n\
@@ -28,6 +28,6 @@ snippet seq\n\
 snippet s*\n\
 	select * from ${1:table}\n\
 ";
-exports.scope = "sql";
+    exports.scope = "sql";
 
 });

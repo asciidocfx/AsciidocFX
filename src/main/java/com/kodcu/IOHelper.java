@@ -13,7 +13,7 @@ import java.nio.file.StandardOpenOption;
 /**
  * Created by usta on 09.05.2014.
  */
-public class IO {
+public class IOHelper {
 
     public static String convert(InputStream is) {
 

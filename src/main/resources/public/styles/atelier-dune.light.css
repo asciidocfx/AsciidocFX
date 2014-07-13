@@ -1,12 +1,12 @@
 /* Base16 Atelier Dune Light - Theme */
-/* by Bram de Haan (http://atelierbram.github.io/syntax-highlighting/atelier-schemes/dune) */ 
+/* by Bram de Haan (http://atelierbram.github.io/syntax-highlighting/atelier-schemes/dune) */
 /* Original Base16 color scheme by Chris Kempson (https://github.com/chriskempson/base16) */
 /* https://github.com/jmblog/color-themes-for-highlightjs */
 
 /* Atelier Dune Light Comment */
 .hljs-comment,
 .hljs-title {
-  color: #7d7a68;
+    color: #7d7a68;
 }
 
 /* Atelier Dune Light Red */
@@ -22,7 +22,7 @@
 .css .hljs-id,
 .css .hljs-class,
 .css .hljs-pseudo {
-  color: #d73737;
+    color: #d73737;
 }
 
 /* Atelier Dune Light Orange */
@@ -33,13 +33,13 @@
 .hljs-literal,
 .hljs-params,
 .hljs-constant {
-  color: #b65611;
+    color: #b65611;
 }
 
 /* Atelier Dune Light Yellow */
 .hljs-ruby .hljs-class .hljs-title,
 .css .hljs-rules .hljs-attribute {
-  color: #cfb017;
+    color: #cfb017;
 }
 
 /* Atelier Dune Light Green */
@@ -49,12 +49,12 @@
 .hljs-header,
 .ruby .hljs-symbol,
 .xml .hljs-cdata {
-  color: #60ac39;
+    color: #60ac39;
 }
 
 /* Atelier Dune Light Aqua */
 .css .hljs-hexcolor {
-  color: #1fad83;
+    color: #1fad83;
 }
 
 /* Atelier Dune Light Blue */
@@ -66,20 +66,20 @@
 .perl .hljs-sub,
 .javascript .hljs-title,
 .coffeescript .hljs-title {
-  color: #6684e1;
+    color: #6684e1;
 }
 
 /* Atelier Dune Light Purple */
 .hljs-keyword,
 .javascript .hljs-function {
-  color: #b854d4;
+    color: #b854d4;
 }
 
 .hljs {
-  display: block;
-  background: #fefbec;
-  color: #6e6b5e;
-  padding: 0.5em;
+    display: block;
+    background: #fefbec;
+    color: #6e6b5e;
+    padding: 0.5em;
 }
 
 .coffeescript .javascript,
@@ -89,5 +89,5 @@
 .xml .vbscript,
 .xml .css,
 .xml .hljs-cdata {
-  opacity: 0.5;
+    opacity: 0.5;
 }

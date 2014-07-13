@@ -4,8 +4,10 @@ Visual Studio-like style based on original C# coloring by Jason Diamond <jason@d
 
 */
 .hljs {
-  display: block; padding: 0.5em;
-  background: white; color: black;
+    display: block;
+    padding: 0.5em;
+    background: white;
+    color: black;
 }
 
 .hljs-comment,
@@ -14,7 +16,7 @@ Visual Studio-like style based on original C# coloring by Jason Diamond <jason@d
 .diff .hljs-header,
 .hljs-chunk,
 .apache .hljs-cbracket {
-  color: #008000;
+    color: #008000;
 }
 
 .hljs-keyword,
@@ -29,7 +31,7 @@ Visual Studio-like style based on original C# coloring by Jason Diamond <jason@d
 .nginx .hljs-title,
 .xml .hljs-tag,
 .xml .hljs-tag .hljs-value {
-  color: #00f;
+    color: #00f;
 }
 
 .hljs-string,
@@ -50,7 +52,7 @@ Visual Studio-like style based on original C# coloring by Jason Diamond <jason@d
 .hljs-date,
 .tex .hljs-formula,
 .coffeescript .hljs-attribute {
-  color: #a31515;
+    color: #a31515;
 }
 
 .ruby .hljs-string,
@@ -72,18 +74,31 @@ Visual Studio-like style based on original C# coloring by Jason Diamond <jason@d
 .nginx .hljs-built_in,
 .tex .hljs-special,
 .hljs-prompt {
-  color: #2b91af;
+    color: #2b91af;
 }
 
 .hljs-phpdoc,
 .hljs-javadoc,
 .hljs-xmlDocTag {
-  color: #808080;
+    color: #808080;
 }
 
-.vhdl .hljs-typename { font-weight: bold; }
-.vhdl .hljs-string { color: #666666; }
-.vhdl .hljs-literal { color: #a31515; }
-.vhdl .hljs-attribute { color: #00B0E8; }
+.vhdl .hljs-typename {
+    font-weight: bold;
+}
 
-.xml .hljs-attribute { color: #f00; }
+.vhdl .hljs-string {
+    color: #666666;
+}
+
+.vhdl .hljs-literal {
+    color: #a31515;
+}
+
+.vhdl .hljs-attribute {
+    color: #00B0E8;
+}
+
+.xml .hljs-attribute {
+    color: #f00;
+}

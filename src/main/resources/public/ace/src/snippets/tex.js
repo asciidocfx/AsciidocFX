@@ -1,7 +1,7 @@
-define("ace/snippets/tex",["require","exports","module"], function(require, exports, module) {
-"use strict";
+define("ace/snippets/tex", ["require", "exports", "module"], function (require, exports, module) {
+    "use strict";
 
-exports.snippetText = "#PREAMBLE\n\
+    exports.snippetText = "#PREAMBLE\n\
 #newcommand\n\
 snippet nc\n\
 	\\newcommand{\\${1:cmd}}[${2:opt}]{${3:realcmd}}${4}\n\
@@ -192,6 +192,6 @@ snippet frac\n\
 	\\frac{${1:num}}{${2:denom}}\n\
 snippet sum\n\
 	\\sum^{${1:n}}_{${2:i=1}}{${3}}";
-exports.scope = "tex";
+    exports.scope = "tex";
 
 });

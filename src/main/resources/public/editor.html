@@ -10,12 +10,11 @@
         }
 
         #editor {
-            margin: 0;
             position: absolute;
-            top: 0;
-            left: 0;
-            bottom: 0;
-            right: 0;
+            top: 0px;
+            left: 0px;
+            bottom: 0px;
+            right: 0px;
         }
     </style>
 </head>
@@ -23,6 +22,7 @@
 
 <div id="editor"></div>
 <!--<script type='text/javascript' src='http://getfirebug.com/releases/lite/1.2/firebug-lite-compressed.js'></script>-->
+<script src="/jquery.js"></script>
 <!-- load ace -->
 <script src="ace/src/ace.js" type="text/javascript" charset="utf-8"></script>
 <!-- load ace language tools -->
@@ -32,7 +32,7 @@
     ace.require("ace/ext/language_tools");
 
     var editor = ace.edit("editor");
-    editor.session.setMode("ace/mode/asciidoc");
+    editor.getSession().setMode("ace/mode/asciidoc");
 
     // enable autocompletion and snippets
     editor.setOptions({
@@ -47,16 +47,17 @@
     editor.renderer.setScrollMargin(10, 10, 10, 10);
     editor.setBehavioursEnabled(true);
     editor.session.setFoldStyle("manual");
+    editor.focus();
 
-    editor.session.on('changeScrollTop', function () {
+    editor.getSession().on('changeScrollTop', function () {
         window.scrollTo(0, editor.session.getScrollTop());
     });
 
-    editor.getSession().on('changeScrollTop', function () {
+    editor.getSession().on('changeScrollTop', function (scroll) {
         app.onscroll(editor.getSession().getScrollTop());
     });
 
-    editor.getSession().on('change', function () {
+    editor.getSession().on('change', function (obj) {
         app.textListener(null, null, editor.getValue());
     });
 
@@ -109,6 +110,7 @@
     editor.setFontSize(14);
     editor.setTheme("ace/theme/katzenmilch");
     editor.setScrollSpeed(0.1);
+
 </script>
 </body>
 </html>

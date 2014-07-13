@@ -44,10 +44,10 @@ public class Current {
         this.newTabPaths = newTabPaths;
     }
 
-    public void putTab(Tab tab, Path path,WebView textArea) {
+    public void putTab(Tab tab, Path path, WebView webview) {
         setCurrentTab(tab);
         getNewTabPaths().put(tab, path);
-        getNewTabWebViews().put(getCurrentTab(), textArea);
+        getNewTabWebViews().put(getCurrentTab(), webview);
     }
 
     public Path currentPath() {
@@ -60,10 +60,10 @@ public class Current {
 
     public WebEngine currentEngine() {
         WebView webView = getNewTabWebViews().get(getCurrentTab());
-        return Objects.isNull(webView)?null:webView.getEngine();
+        return Objects.isNull(webView) ? null : webView.getEngine();
     }
 
-    public Path currentRootPath() {
+    public Path currentParentRoot() {
         return currentPath().getParent();
     }
 }

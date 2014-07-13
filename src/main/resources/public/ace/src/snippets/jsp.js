@@ -1,7 +1,7 @@
-define("ace/snippets/jsp",["require","exports","module"], function(require, exports, module) {
-"use strict";
+define("ace/snippets/jsp", ["require", "exports", "module"], function (require, exports, module) {
+    "use strict";
 
-exports.snippetText = "snippet @page\n\
+    exports.snippetText = "snippet @page\n\
 	<%@page contentType=\"text/html\" pageEncoding=\"UTF-8\"%>\n\
 snippet jstl\n\
 	<%@ taglib uri=\"http://java.sun.com/jsp/jstl/core\" prefix=\"c\" %>\n\
@@ -101,6 +101,6 @@ snippet uc\n\
 snippet trim\n\
 	${fn:trim(${1:string})}\n\
 ";
-exports.scope = "jsp";
+    exports.scope = "jsp";
 
 });

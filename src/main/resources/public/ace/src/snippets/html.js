@@ -1,7 +1,7 @@
-define("ace/snippets/html",["require","exports","module"], function(require, exports, module) {
-"use strict";
+define("ace/snippets/html", ["require", "exports", "module"], function (require, exports, module) {
+    "use strict";
 
-exports.snippetText = "# Some useful Unicode entities\n\
+    exports.snippetText = "# Some useful Unicode entities\n\
 # Non-Breaking Space\n\
 snippet nbs\n\
 	&nbsp;\n\
@@ -830,6 +830,6 @@ snippet video\n\
 snippet wbr\n\
 	<wbr />${1}\n\
 ";
-exports.scope = "html";
+    exports.scope = "html";
 
 });

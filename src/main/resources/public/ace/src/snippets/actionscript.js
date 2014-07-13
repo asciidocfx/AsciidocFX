@@ -1,7 +1,7 @@
-define("ace/snippets/actionscript",["require","exports","module"], function(require, exports, module) {
-"use strict";
+define("ace/snippets/actionscript", ["require", "exports", "module"], function (require, exports, module) {
+    "use strict";
 
-exports.snippetText = "snippet main\n\
+    exports.snippetText = "snippet main\n\
 	package {\n\
 		import flash.display.*;\n\
 		import flash.Events.*;\n\
@@ -154,6 +154,6 @@ snippet FlxSprite\n\
 	}\n\
 \n\
 ";
-exports.scope = "actionscript";
+    exports.scope = "actionscript";
 
 });

@@ -1,7 +1,7 @@
-define("ace/ext/menu_tools/overlay_page",["require","exports","module","ace/lib/dom"], function(require, exports, module) {
-'use strict';
-var dom = require("../../lib/dom");
-var cssText = "#ace_settingsmenu, #kbshortcutmenu {\
+define("ace/ext/menu_tools/overlay_page", ["require", "exports", "module", "ace/lib/dom"], function (require, exports, module) {
+    'use strict';
+    var dom = require("../../lib/dom");
+    var cssText = "#ace_settingsmenu, #kbshortcutmenu {\
 background-color: #F7F7F7;\
 color: black;\
 box-shadow: -5px 4px 5px rgba(126, 126, 126, 0.55);\
@@ -46,110 +46,111 @@ font-weight: bold;\
 color: darkcyan;\
 font-weight: normal;\
 }";
-dom.importCssString(cssText);
-module.exports.overlayPage = function overlayPage(editor, contentElement, top, right, bottom, left) {
-    top = top ? 'top: ' + top + ';' : '';
-    bottom = bottom ? 'bottom: ' + bottom + ';' : '';
-    right = right ? 'right: ' + right + ';' : '';
-    left = left ? 'left: ' + left + ';' : '';
+    dom.importCssString(cssText);
+    module.exports.overlayPage = function overlayPage(editor, contentElement, top, right, bottom, left) {
+        top = top ? 'top: ' + top + ';' : '';
+        bottom = bottom ? 'bottom: ' + bottom + ';' : '';
+        right = right ? 'right: ' + right + ';' : '';
+        left = left ? 'left: ' + left + ';' : '';
 
-    var closer = document.createElement('div');
-    var contentContainer = document.createElement('div');
+        var closer = document.createElement('div');
+        var contentContainer = document.createElement('div');
 
-    function documentEscListener(e) {
-        if (e.keyCode === 27) {
-            closer.click();
+        function documentEscListener(e) {
+            if (e.keyCode === 27) {
+                closer.click();
+            }
         }
-    }
 
-    closer.style.cssText = 'margin: 0; padding: 0; ' +
-        'position: fixed; top:0; bottom:0; left:0; right:0;' +
-        'z-index: 9990; ' +
-        'background-color: rgba(0, 0, 0, 0.3);';
-    closer.addEventListener('click', function() {
-        document.removeEventListener('keydown', documentEscListener);
-        closer.parentNode.removeChild(closer);
-        editor.focus();
-        closer = null;
-    });
-    document.addEventListener('keydown', documentEscListener);
+        closer.style.cssText = 'margin: 0; padding: 0; ' +
+            'position: fixed; top:0; bottom:0; left:0; right:0;' +
+            'z-index: 9990; ' +
+            'background-color: rgba(0, 0, 0, 0.3);';
+        closer.addEventListener('click', function () {
+            document.removeEventListener('keydown', documentEscListener);
+            closer.parentNode.removeChild(closer);
+            editor.focus();
+            closer = null;
+        });
+        document.addEventListener('keydown', documentEscListener);
 
-    contentContainer.style.cssText = top + right + bottom + left;
-    contentContainer.addEventListener('click', function(e) {
-        e.stopPropagation();
-    });
+        contentContainer.style.cssText = top + right + bottom + left;
+        contentContainer.addEventListener('click', function (e) {
+            e.stopPropagation();
+        });
 
-    var wrapper = dom.createElement("div");
-    wrapper.style.position = "relative";
-    
-    var closeButton = dom.createElement("div");
-    closeButton.className = "ace_closeButton";
-    closeButton.addEventListener('click', function() {
-        closer.click();
-    });
-    
-    wrapper.appendChild(closeButton);
-    contentContainer.appendChild(wrapper);
-    
-    contentContainer.appendChild(contentElement);
-    closer.appendChild(contentContainer);
-    document.body.appendChild(closer);
-    editor.blur();
-};
+        var wrapper = dom.createElement("div");
+        wrapper.style.position = "relative";
+
+        var closeButton = dom.createElement("div");
+        closeButton.className = "ace_closeButton";
+        closeButton.addEventListener('click', function () {
+            closer.click();
+        });
+
+        wrapper.appendChild(closeButton);
+        contentContainer.appendChild(wrapper);
+
+        contentContainer.appendChild(contentElement);
+        closer.appendChild(contentContainer);
+        document.body.appendChild(closer);
+        editor.blur();
+    };
 
 });
 
-define("ace/ext/menu_tools/get_editor_keyboard_shortcuts",["require","exports","module","ace/lib/keys"], function(require, exports, module) {
-"use strict";
-var keys = require("../../lib/keys");
-module.exports.getEditorKeybordShortcuts = function(editor) {
-    var KEY_MODS = keys.KEY_MODS;
-    var keybindings = [];
-    var commandMap = {};
-    editor.keyBinding.$handlers.forEach(function(handler) {
-        var ckb = handler.commandKeyBinding;
-        for (var i in ckb) {
-            var modifier = parseInt(i);
-            if (modifier == -1) {
-                modifier = "";
-            } else if(isNaN(modifier)) {
-                modifier = i;
-            } else {
-                modifier = "" +
-                    (modifier & KEY_MODS.command ? "Cmd-"   : "") +
-                    (modifier & KEY_MODS.ctrl    ? "Ctrl-"  : "") +
-                    (modifier & KEY_MODS.alt     ? "Alt-"   : "") +
-                    (modifier & KEY_MODS.shift   ? "Shift-" : "");
-            }
-            for (var key in ckb[i]) {
-                var command = ckb[i][key]
-                if (typeof command != "string")
-                    command  = command.name
-                if (commandMap[command]) {
-                    commandMap[command].key += "|" + modifier + key;
+define("ace/ext/menu_tools/get_editor_keyboard_shortcuts", ["require", "exports", "module", "ace/lib/keys"], function (require, exports, module) {
+    "use strict";
+    var keys = require("../../lib/keys");
+    module.exports.getEditorKeybordShortcuts = function (editor) {
+        var KEY_MODS = keys.KEY_MODS;
+        var keybindings = [];
+        var commandMap = {};
+        editor.keyBinding.$handlers.forEach(function (handler) {
+            var ckb = handler.commandKeyBinding;
+            for (var i in ckb) {
+                var modifier = parseInt(i);
+                if (modifier == -1) {
+                    modifier = "";
+                } else if (isNaN(modifier)) {
+                    modifier = i;
                 } else {
-                    commandMap[command] = {key: modifier+key, command: command};
-                    keybindings.push(commandMap[command]);
+                    modifier = "" +
+                        (modifier & KEY_MODS.command ? "Cmd-" : "") +
+                        (modifier & KEY_MODS.ctrl ? "Ctrl-" : "") +
+                        (modifier & KEY_MODS.alt ? "Alt-" : "") +
+                        (modifier & KEY_MODS.shift ? "Shift-" : "");
+                }
+                for (var key in ckb[i]) {
+                    var command = ckb[i][key]
+                    if (typeof command != "string")
+                        command = command.name
+                    if (commandMap[command]) {
+                        commandMap[command].key += "|" + modifier + key;
+                    } else {
+                        commandMap[command] = {key: modifier + key, command: command};
+                        keybindings.push(commandMap[command]);
+                    }
                 }
             }
-        }
-    });
-    return keybindings;
-};
+        });
+        return keybindings;
+    };
 
 });
 
-define("ace/ext/keybinding_menu",["require","exports","module","ace/editor","ace/ext/menu_tools/overlay_page","ace/ext/menu_tools/get_editor_keyboard_shortcuts"], function(require, exports, module) {
+define("ace/ext/keybinding_menu", ["require", "exports", "module", "ace/editor", "ace/ext/menu_tools/overlay_page", "ace/ext/menu_tools/get_editor_keyboard_shortcuts"], function (require, exports, module) {
     "use strict";
     var Editor = require("ace/editor").Editor;
-    function showKeyboardShortcuts (editor) {
-        if(!document.getElementById('kbshortcutmenu')) {
+
+    function showKeyboardShortcuts(editor) {
+        if (!document.getElementById('kbshortcutmenu')) {
             var overlayPage = require('./menu_tools/overlay_page').overlayPage;
             var getEditorKeybordShortcuts = require('./menu_tools/get_editor_keyboard_shortcuts').getEditorKeybordShortcuts;
             var kb = getEditorKeybordShortcuts(editor);
             var el = document.createElement('div');
-            var commands = kb.reduce(function(previous, current) {
-                return previous + '<div class="ace_optionsMenuEntry"><span class="ace_optionsMenuCommand">' 
+            var commands = kb.reduce(function (previous, current) {
+                return previous + '<div class="ace_optionsMenuEntry"><span class="ace_optionsMenuCommand">'
                     + current.command + '</span> : '
                     + '<span class="ace_optionsMenuKey">' + current.key + '</span></div>';
             }, '');
@@ -159,22 +160,25 @@ define("ace/ext/keybinding_menu",["require","exports","module","ace/editor","ace
             overlayPage(editor, el, '0', '0', '0', null);
         }
     };
-    module.exports.init = function(editor) {
-        Editor.prototype.showKeyboardShortcuts = function() {
+    module.exports.init = function (editor) {
+        Editor.prototype.showKeyboardShortcuts = function () {
             showKeyboardShortcuts(this);
         };
-        editor.commands.addCommands([{
-            name: "showKeyboardShortcuts",
-            bindKey: {win: "Ctrl-Alt-h", mac: "Command-Alt-h"},
-            exec: function(editor, line) {
-                editor.showKeyboardShortcuts();
+        editor.commands.addCommands([
+            {
+                name: "showKeyboardShortcuts",
+                bindKey: {win: "Ctrl-Alt-h", mac: "Command-Alt-h"},
+                exec: function (editor, line) {
+                    editor.showKeyboardShortcuts();
+                }
             }
-        }]);
+        ]);
     };
 
 });
 ;
-                (function() {
-                    window.require(["ace/ext/keybinding_menu"], function() {});
-                })();
+(function () {
+    window.require(["ace/ext/keybinding_menu"], function () {
+    });
+})();
             

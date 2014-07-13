@@ -1,8 +1,8 @@
-define("ace/theme/tomorrow_night_eighties",["require","exports","module","ace/lib/dom"], function(require, exports, module) {
+define("ace/theme/tomorrow_night_eighties", ["require", "exports", "module", "ace/lib/dom"], function (require, exports, module) {
 
-exports.isDark = true;
-exports.cssClass = "ace-tomorrow-night-eighties";
-exports.cssText = ".ace-tomorrow-night-eighties .ace_gutter {\
+    exports.isDark = true;
+    exports.cssClass = "ace-tomorrow-night-eighties";
+    exports.cssText = ".ace-tomorrow-night-eighties .ace_gutter {\
 background: #272727;\
 color: #CCC\
 }\
@@ -104,6 +104,6 @@ color: #F2777A\
 background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAACCAYAAACZgbYnAAAAEklEQVQImWPQ09NrYAgMjP4PAAtGAwchHMyAAAAAAElFTkSuQmCC) right repeat-y\
 }";
 
-var dom = require("../lib/dom");
-dom.importCssString(exports.cssText, exports.cssClass);
+    var dom = require("../lib/dom");
+    dom.importCssString(exports.cssText, exports.cssClass);
 });

@@ -1,6 +1,8 @@
 package com.kodcu;
 
 
+import de.jensd.fx.fontawesome.AwesomeDude;
+import de.jensd.fx.fontawesome.AwesomeIcon;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -18,17 +20,20 @@ import javafx.scene.input.ClipboardContent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
+import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import netscape.javascript.JSObject;
-import org.apache.commons.configuration.ConfigurationException;
-import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.context.request.async.DeferredResult;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
@@ -51,13 +56,17 @@ import static java.nio.file.StandardOpenOption.TRUNCATE_EXISTING;
 @Controller
 public class AsciiDocController extends TextWebSocketHandler implements Initializable {
 
-    public TabPane tabu;
+    public TabPane tabPane;
     public WebView previewView;
     public MenuItem openItem;
     public MenuItem newItem;
     public MenuItem saveItem;
-    public SplitPane splitter;
+    public SplitPane splitPane;
     public Menu recentMenu;
+    public TreeView<Item> treeView;
+    public Button splitHideButton;
+    public Button WorkingDirButton;
+
 
     @Autowired
     private TablePopupController tablePopupController;
@@ -65,9 +74,12 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
     @Autowired
     private Current current;
 
+    @Autowired
+    private FileBrowser fileBrowser;
+
     private Stage stage;
     private WebEngine previewEngine;
-    private StringProperty lastRendered = new SimpleStringProperty("<b>...</b>");
+    private StringProperty lastRendered = new SimpleStringProperty();
     private List<WebSocketSession> sessionList = new ArrayList<>();
     private Scene scene;
     private AnchorPane tableAnchor;
@@ -79,22 +91,16 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
 
     private String waitForGetValue;
     private String waitForSetValue;
-    private String loadConfig;
 
-    private StringProperty fontSize = new SimpleStringProperty("14");
-    private StringProperty scrollSpeed = new SimpleStringProperty("0.1");
-    private StringProperty divider = new SimpleStringProperty("0.5");
-    private StringProperty theme = new SimpleStringProperty("katzenmilch");
     private AnchorPane configAnchor;
     private Stage configStage;
 
-    @Autowired
-    private ConfigController configController;
-
+    private Map<Path, TreeItem<Item>> dirTreeMap = new HashMap<>();
 
     @FXML
     private void createTable(ActionEvent event) throws IOException {
         tableStage.show();
+
     }
 
     @FXML
@@ -102,11 +108,6 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
         configStage.show();
     }
 
-    @FXML
-    private void togglePreview(ActionEvent event) {
-        double position = splitter.getDividerPositions()[0];
-        splitter.setDividerPositions((position == 0.5) ? 1 : 0.5);
-    }
 
     @FXML
     private void fullScreen(ActionEvent event) {
@@ -116,26 +117,8 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
     @Override
     public void initialize(URL url, ResourceBundle rb) {
 
-        try {
-            PropertiesConfiguration configuration = new PropertiesConfiguration(Paths.get(System.getProperty("user.home")).resolve("asciidocfx.properties").toFile());
-            fontSize.setValue(configuration.getString("editor.fontsize"));
-            scrollSpeed.setValue(configuration.getString("editor.scroll.speed"));
-            theme.setValue(configuration.getString("editor.theme"));
-            divider.setValue(configuration.getString("splitter.division"));
-
-            configController.getFontSizeSlider().setValue(Double.valueOf(fontSize.getValue()));
-            configController.getMouseSpeedSlider().setValue(Double.valueOf(scrollSpeed.getValue()));
-            configController.getThemeSelector().getSelectionModel().select(configuration.getString("editor.theme", "ace"));
-            configController.getDivisionSlider().setValue(Double.valueOf(divider.getValue()));
-
-            splitter.setDividerPositions(Double.valueOf(configuration.getString("splitter.division")));
-
-        } catch (ConfigurationException e) {
-        }
-
-        waitForGetValue = IO.convert(AsciiDocController.class.getResourceAsStream("/waitForGetValue.js"));
-        waitForSetValue = IO.convert(AsciiDocController.class.getResourceAsStream("/waitForSetValue.js"));
-        loadConfig = IO.convert(AsciiDocController.class.getResourceAsStream("/loadConfig.js"));
+        waitForGetValue = IOHelper.convert(AsciiDocController.class.getResourceAsStream("/waitForGetValue.js"));
+        waitForSetValue = IOHelper.convert(AsciiDocController.class.getResourceAsStream("/waitForSetValue.js"));
 
         lastRendered.addListener((observableValue, old, nev) -> {
             sessionList.stream().filter(e -> e.isOpen()).forEach(e -> {
@@ -147,17 +130,43 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
             });
         });
 
+
         previewEngine = previewView.getEngine();
         previewEngine.load("http://localhost:8080/index.html");
         previewEngine.getLoadWorker().exceptionProperty().addListener((ov, t, t1) -> {
             System.out.println("Received exception: " + t1.getMessage());
         });
+
+
+        /// Treeview
+
+        initialDirectory = Optional.of(Paths.get(System.getProperty("user.home")));
+        fileBrowser.browse(treeView, this, System.getProperty("user.home"));
+
+        //
+
+        AwesomeDude.setIcon(WorkingDirButton, AwesomeIcon.FOLDER_OPEN_ALT);
+        AwesomeDude.setIcon(splitHideButton, AwesomeIcon.CHEVRON_LEFT);
+
+    }
+
+    @FXML
+    public void changeWorkingDir(ActionEvent actionEvent) {
+        DirectoryChooser directoryChooser = new DirectoryChooser();
+        directoryChooser.setTitle("Select Working Directory");
+        File selectedDir = directoryChooser.showDialog(null);
+        if (Objects.nonNull(selectedDir)) {
+            initialDirectory = Optional.of(selectedDir.toPath());
+            fileBrowser.browse(treeView, this, selectedDir.toString());
+        }
     }
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
         sessionList.add(session);
-        session.sendMessage(new TextMessage(lastRendered.getValue()));
+        String value = lastRendered.getValue();
+        if (Objects.nonNull(value))
+            session.sendMessage(new TextMessage(value));
 
     }
 
@@ -170,7 +179,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
     @FXML
     private void openDoc(ActionEvent event) {
         FileChooser fileChooser = new FileChooser();
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Asciidoc", "*.asciidoc", "*.adoc", "*.txt"));
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Asciidoc", "*.asciidoc", "*.adoc", "*.asc", "*.ad", "*.txt"));
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("All", "*.*"));
         initialDirectory.ifPresent(e -> {
             if (Files.isDirectory(e))
@@ -221,23 +230,19 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
             }
         });
         tab.textProperty().setValue("new");
-        tabu.getTabs().add(tab);
+        tabPane.getTabs().add(tab);
 
         current.putTab(tab, null, webView);
     }
 
-    public String getLoadConfig() {
-        return loadConfig;
-    }
 
-    private void addTab(Path path) {
-
+    public void addTab(Path path) {
         AnchorPane anchorPane = new AnchorPane();
         WebView webView = createWebView();
         WebEngine webEngine = webView.getEngine();
         webEngine.getLoadWorker().stateProperty().addListener((observableValue1, state, state2) -> {
             if (state2 == Worker.State.SUCCEEDED) {
-                webEngine.executeScript(String.format(waitForSetValue, IO.readFile(path)));
+                webEngine.executeScript(String.format(waitForSetValue, IOHelper.readFile(path)));
             }
         });
 
@@ -258,25 +263,30 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
         });
 
         current.putTab(tab, path, webView);
-        tabu.getTabs().add(tab);
+        tabPane.getTabs().add(tab);
 
-        Tab lastTab = tabu.getTabs().get(tabu.getTabs().size() - 1);
-        tabu.getSelectionModel().select(lastTab);
+        Tab lastTab = tabPane.getTabs().get(tabPane.getTabs().size() - 1);
+        tabPane.getSelectionModel().select(lastTab);
 
+    }
+
+    @FXML
+    public void hideLeftSplit(ActionEvent event) {
+        splitPane.setDividerPositions(0.001, 0.5);
     }
 
     private Tab createTab() {
         Tab tab = new Tab();
         MenuItem menuItem0 = new MenuItem("Close All Tabs");
         menuItem0.setOnAction(actionEvent -> {
-            tabu.getTabs().clear();
+            tabPane.getTabs().clear();
         });
         MenuItem menuItem1 = new MenuItem("Close All Other Tabs");
         menuItem1.setOnAction(actionEvent -> {
             List<Tab> blackList = new ArrayList<>();
-            blackList.addAll(tabu.getTabs());
+            blackList.addAll(tabPane.getTabs());
             blackList.remove(tab);
-            tabu.getTabs().removeAll(blackList);
+            tabPane.getTabs().removeAll(blackList);
         });
 
         ContextMenu contextMenu = new ContextMenu();
@@ -295,12 +305,6 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
         JSObject window = (JSObject) webEngine.executeScript("window");
         window.setMember("app", this);
         webEngine.load("http://localhost:8080/editor.html");
-        webEngine.getLoadWorker().stateProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue == Worker.State.SUCCEEDED) {
-                webEngine.executeScript(String.format(loadConfig, fontSize.get(), theme.get(), scrollSpeed.get()));
-            }
-        });
-
         return webView;
     }
 
@@ -308,34 +312,55 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
         if (Objects.isNull(param)) return;
         Number position = (Number) param;
 
-        if (Objects.nonNull(param))
-            previewEngine.executeScript(String.format("window.scrollTo(0, %f )", position.doubleValue()));
+//        if (Objects.nonNull(param))
+        previewEngine.executeScript(String.format("window.scrollTo(0, %f )", position.doubleValue()));
 
     }
 
-
-    @RequestMapping(value = "/notfound/**", method = RequestMethod.GET)
+    @RequestMapping(value = {"**.asciidoc", "**.asc", "**.txt", "**.ad", "**.adoc"}, method = RequestMethod.GET)
     @ResponseBody
-    public byte[] hello(HttpServletRequest request) throws IOException {
+    public DeferredResult<String> asciidoc(HttpServletRequest request) {
+
+        DeferredResult<String> deferredResult = new DeferredResult<String>();
 
         String uri = request.getRequestURI();
-        uri = uri.replace("/notfound", "");
-        byte[] temp = new byte[]{};
 
+        if (uri.startsWith("/"))
+            uri = uri.substring(1);
 
-        if (current.currentPath() != null) {
+        if (Objects.nonNull(current.currentPath())) {
+            Path ascFile = current.currentParentRoot().resolve(uri);
 
-            if (uri.startsWith("/"))
-                uri = uri.substring(1);
-            Path resolved = current.currentRootPath().resolve(uri);
+            Platform.runLater(() -> {
+                this.addTab(ascFile);
+            });
 
-            FileInputStream fileInputStream = new FileInputStream(resolved.toFile());
-            temp = IOUtils.toByteArray(fileInputStream);
-            IOUtils.closeQuietly(fileInputStream);
+            deferredResult.setResult("OK");
         }
 
-        return temp;
+        return deferredResult;
+    }
 
+    @RequestMapping(value = {"/**/{extension:(?:\\w|\\W)+\\.(?:jpg|bmp|gif|jpeg|png|webp)$}"}, method = RequestMethod.GET)
+    @ResponseBody
+    public ResponseEntity<byte[]> images(HttpServletRequest request, @PathVariable("extension") String extension) throws IOException {
+
+
+        Enumeration<String> headerNames = request.getHeaderNames();
+        String uri = request.getRequestURI();
+        byte[] temp = new byte[]{};
+        if (uri.startsWith("/"))
+            uri = uri.substring(1);
+
+        if (Objects.nonNull(current.currentPath())) {
+            Path imageFile = current.currentParentRoot().resolve(uri);
+            FileInputStream fileInputStream = new FileInputStream(imageFile.toFile());
+            temp = IOUtils.toByteArray(fileInputStream);
+            IOUtils.closeQuietly(fileInputStream);
+
+        }
+
+        return new ResponseEntity<>(temp, HttpStatus.OK);
     }
 
     public void textListener(ObservableValue observableValue, String old, String nev) {
@@ -345,33 +370,13 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
 //                String rendered = (String) previewEngine.executeScript("Opal.Asciidoctor.$render('" + IO.normalize(nev) + "',asciidocOpts);");
                 String nonnormalize = nev;
                 String normalize = nev;
-                String rendered = (String) previewEngine.executeScript(String.format("Opal.Asciidoctor.$render('%s');", IO.normalize(normalize)));
+                String rendered = (String) previewEngine.executeScript(String.format("Opal.Asciidoctor.$render('%s');", IOHelper.normalize(normalize)));
                 lastRendered.setValue(rendered);
             });
         } catch (Exception ex) {
             ex.printStackTrace();
         }
 
-    }
-
-    public StringProperty getFontSize() {
-        return fontSize;
-    }
-
-    public StringProperty fontSizeProperty() {
-        return fontSize;
-    }
-
-    public StringProperty getScrollSpeed() {
-        return scrollSpeed;
-    }
-
-    public StringProperty scrollSpeedProperty() {
-        return scrollSpeed;
-    }
-
-    public StringProperty getTheme() {
-        return theme;
     }
 
 
@@ -390,17 +395,17 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
         Path currentPath = current.currentPath();
         if (currentPath == null) {
             FileChooser chooser = new FileChooser();
-            chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Asciidoc", "*.asciidoc", "*.adoc", "*.txt"));
+            chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Asciidoc", "*.asciidoc", "*.adoc", "*.asc", "*.ad", "*.txt"));
             File file = chooser.showSaveDialog(null);
             if (file == null)
                 return;
-            IO.writeToFile(file, (String) current.currentEngine().executeScript("editor.getValue();"), TRUNCATE_EXISTING, CREATE);
+            IOHelper.writeToFile(file, (String) current.currentEngine().executeScript("editor.getValue();"), TRUNCATE_EXISTING, CREATE);
             current.putTab(current.getCurrentTab(), file.toPath(), current.currentView());
             current.getCurrentTab().setText(file.toPath().getFileName().toString());
 
             recentFiles.add(file.toPath());
         } else {
-            IO.writeToFile(currentPath.toFile(), (String) current.currentEngine().executeScript("editor.getValue();"), TRUNCATE_EXISTING, CREATE);
+            IOHelper.writeToFile(currentPath.toFile(), (String) current.currentEngine().executeScript("editor.getValue();"), TRUNCATE_EXISTING, CREATE);
         }
     }
 
@@ -459,11 +464,16 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
         return configStage;
     }
 
-    public StringProperty getDivider() {
-        return divider;
+
+    public SplitPane getSplitPane() {
+        return splitPane;
     }
 
-    public SplitPane getSplitter() {
-        return splitter;
+    public TreeView<Item> getTreeView() {
+        return treeView;
+    }
+
+    public Map<Path, TreeItem<Item>> getDirTreeMap() {
+        return dirTreeMap;
     }
 }

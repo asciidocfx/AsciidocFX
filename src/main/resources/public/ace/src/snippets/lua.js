@@ -1,7 +1,7 @@
-define("ace/snippets/lua",["require","exports","module"], function(require, exports, module) {
-"use strict";
+define("ace/snippets/lua", ["require", "exports", "module"], function (require, exports, module) {
+    "use strict";
 
-exports.snippetText = "snippet #!\n\
+    exports.snippetText = "snippet #!\n\
 	#!/usr/bin/env lua\n\
 	$1\n\
 snippet local\n\
@@ -23,6 +23,6 @@ snippet fori\n\
 	   ${4:-- body}\n\
 	end\n\
 ";
-exports.scope = "lua";
+    exports.scope = "lua";
 
 });

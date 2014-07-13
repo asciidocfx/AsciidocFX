@@ -1,8 +1,8 @@
-define("ace/theme/twilight",["require","exports","module","ace/lib/dom"], function(require, exports, module) {
+define("ace/theme/twilight", ["require", "exports", "module", "ace/lib/dom"], function (require, exports, module) {
 
-exports.isDark = true;
-exports.cssClass = "ace-twilight";
-exports.cssText = ".ace-twilight .ace_gutter {\
+    exports.isDark = true;
+    exports.cssClass = "ace-twilight";
+    exports.cssText = ".ace-twilight .ace_gutter {\
 background: #232323;\
 color: #E2E2E2\
 }\
@@ -105,6 +105,6 @@ color: #494949\
 background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAACCAYAAACZgbYnAAAAEklEQVQImWMQERFpYLC1tf0PAAgOAnPnhxyiAAAAAElFTkSuQmCC) right repeat-y\
 }";
 
-var dom = require("../lib/dom");
-dom.importCssString(exports.cssText, exports.cssClass);
+    var dom = require("../lib/dom");
+    dom.importCssString(exports.cssText, exports.cssClass);
 });

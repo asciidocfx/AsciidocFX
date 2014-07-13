@@ -5,8 +5,9 @@ Brown Paper style from goldblog.com.ua (c) Zaripov Yura <yur4ik7@ukr.net>
 */
 
 .hljs {
-  display: block; padding: 0.5em;
-  background:#b7a68e url(./brown_papersq.png);
+    display: block;
+    padding: 0.5em;
+    background: #b7a68e url(./brown_papersq.png);
 }
 
 .hljs-keyword,
@@ -20,14 +21,14 @@ Brown Paper style from goldblog.com.ua (c) Zaripov Yura <yur4ik7@ukr.net>
 .tex .hljs-special,
 .hljs-request,
 .hljs-status {
-  color:#005599;
-  font-weight:bold;
+    color: #005599;
+    font-weight: bold;
 }
 
 .hljs,
 .hljs-subst,
 .hljs-tag .hljs-keyword {
-  color: #363C69;
+    color: #363C69;
 }
 
 .hljs-string,
@@ -58,7 +59,7 @@ Brown Paper style from goldblog.com.ua (c) Zaripov Yura <yur4ik7@ukr.net>
 .apache .hljs-tag,
 .apache .hljs-cbracket,
 .tex .hljs-number {
-  color: #2C009F;
+    color: #2C009F;
 }
 
 .hljs-comment,
@@ -72,7 +73,7 @@ Brown Paper style from goldblog.com.ua (c) Zaripov Yura <yur4ik7@ukr.net>
 .apache .hljs-sqbracket,
 .nginx .hljs-built_in,
 .tex .hljs-formula {
-  color: #802022;
+    color: #802022;
 }
 
 .hljs-keyword,
@@ -91,7 +92,7 @@ Brown Paper style from goldblog.com.ua (c) Zaripov Yura <yur4ik7@ukr.net>
 .bash .hljs-variable,
 .apache .hljs-tag,
 .tex .hljs-command {
-  font-weight: bold;
+    font-weight: bold;
 }
 
 .coffeescript .javascript,
@@ -101,5 +102,5 @@ Brown Paper style from goldblog.com.ua (c) Zaripov Yura <yur4ik7@ukr.net>
 .xml .vbscript,
 .xml .css,
 .xml .hljs-cdata {
-  opacity: 0.8;
+    opacity: 0.8;
 }

@@ -1,7 +1,7 @@
-define("ace/snippets/css",["require","exports","module"], function(require, exports, module) {
-"use strict";
+define("ace/snippets/css", ["require", "exports", "module"], function (require, exports, module) {
+    "use strict";
 
-exports.snippetText = "snippet .\n\
+    exports.snippetText = "snippet .\n\
 	${1} {\n\
 		${2}\n\
 	}\n\
@@ -969,6 +969,6 @@ snippet z:a\n\
 snippet zoo\n\
 	zoom: 1;\n\
 ";
-exports.scope = "css";
+    exports.scope = "css";
 
 });

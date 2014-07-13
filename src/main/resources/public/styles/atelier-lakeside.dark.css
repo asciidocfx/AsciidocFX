@@ -1,12 +1,12 @@
 /* Base16 Atelier Lakeside Dark - Theme */
-/* by Bram de Haan (http://atelierbram.github.io/syntax-highlighting/atelier-schemes/lakeside/) */ 
+/* by Bram de Haan (http://atelierbram.github.io/syntax-highlighting/atelier-schemes/lakeside/) */
 /* Original Base16 color scheme by Chris Kempson (https://github.com/chriskempson/base16) */
 /* https://github.com/jmblog/color-themes-for-highlightjs */
 
 /* Atelier Lakeside Dark Comment */
 .hljs-comment,
 .hljs-title {
-  color: #7195a8;
+    color: #7195a8;
 }
 
 /* Atelier Lakeside Dark Red */
@@ -22,7 +22,7 @@
 .css .hljs-id,
 .css .hljs-class,
 .css .hljs-pseudo {
-  color: #d22d72;
+    color: #d22d72;
 }
 
 /* Atelier Lakeside Dark Orange */
@@ -33,13 +33,13 @@
 .hljs-literal,
 .hljs-params,
 .hljs-constant {
-  color: #935c25;
+    color: #935c25;
 }
 
 /* Atelier Lakeside Dark Yellow */
 .hljs-ruby .hljs-class .hljs-title,
 .css .hljs-rules .hljs-attribute {
-  color: #8a8a0f;
+    color: #8a8a0f;
 }
 
 /* Atelier Lakeside Dark Green */
@@ -49,12 +49,12 @@
 .hljs-header,
 .ruby .hljs-symbol,
 .xml .hljs-cdata {
-  color: #568c3b;
+    color: #568c3b;
 }
 
 /* Atelier Lakeside Dark Aqua */
 .css .hljs-hexcolor {
-  color: #2d8f6f;
+    color: #2d8f6f;
 }
 
 /* Atelier Lakeside Dark Blue */
@@ -66,20 +66,20 @@
 .perl .hljs-sub,
 .javascript .hljs-title,
 .coffeescript .hljs-title {
-  color: #257fad;
+    color: #257fad;
 }
 
 /* Atelier Lakeside Dark Purple */
 .hljs-keyword,
 .javascript .hljs-function {
-  color: #5d5db1;
+    color: #5d5db1;
 }
 
 .hljs {
-  display: block;
-  background: #1f292e;
-  color: #7ea2b4;
-  padding: 0.5em;
+    display: block;
+    background: #1f292e;
+    color: #7ea2b4;
+    padding: 0.5em;
 }
 
 .coffeescript .javascript,
@@ -89,5 +89,5 @@
 .xml .vbscript,
 .xml .css,
 .xml .hljs-cdata {
-  opacity: 0.5;
+    opacity: 0.5;
 }

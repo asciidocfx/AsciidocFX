@@ -1,7 +1,7 @@
-define("ace/snippets/django",["require","exports","module"], function(require, exports, module) {
-"use strict";
+define("ace/snippets/django", ["require", "exports", "module"], function (require, exports, module) {
+    "use strict";
 
-exports.snippetText = "# Model Fields\n\
+    exports.snippetText = "# Model Fields\n\
 \n\
 # Note: Optional arguments are using defaults that match what Django will use\n\
 # as a default, e.g. with max_length fields.  Doing this as a form of self\n\
@@ -110,6 +110,6 @@ snippet r2r\n\
 		}${3:, context_instance=RequestContext(request)}\n\
 	)\n\
 ";
-exports.scope = "django";
+    exports.scope = "django";
 
 });

@@ -1,8 +1,8 @@
-define("ace/theme/katzenmilch",["require","exports","module","ace/lib/dom"], function(require, exports, module) {
+define("ace/theme/katzenmilch", ["require", "exports", "module", "ace/lib/dom"], function (require, exports, module) {
 
-exports.isDark = false;
-exports.cssClass = "ace-katzenmilch";
-exports.cssText = ".ace-katzenmilch .ace_gutter,\
+    exports.isDark = false;
+    exports.cssClass = "ace-katzenmilch";
+    exports.cssText = ".ace-katzenmilch .ace_gutter,\
 .ace-katzenmilch .ace_gutter {\
 background: #e8e8e8;\
 color: #333\
@@ -114,6 +114,6 @@ color: #3976a2;\
 rbackground-color: rgba(73, 166, 210, 0.039)\
 }";
 
-var dom = require("../lib/dom");
-dom.importCssString(exports.cssText, exports.cssClass);
+    var dom = require("../lib/dom");
+    dom.importCssString(exports.cssText, exports.cssClass);
 });

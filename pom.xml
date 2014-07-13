@@ -50,6 +50,11 @@
             <artifactId>commons-configuration</artifactId>
             <version>1.10</version>
         </dependency>
+        <dependency>
+            <groupId>de.jensd</groupId>
+            <artifactId>fontawesomefx</artifactId>
+            <version>8.0.8</version>
+        </dependency>
     </dependencies>
 
     <build>

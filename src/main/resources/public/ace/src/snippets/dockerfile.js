@@ -1,7 +1,7 @@
-define("ace/snippets/dockerfile",["require","exports","module"], function(require, exports, module) {
-"use strict";
+define("ace/snippets/dockerfile", ["require", "exports", "module"], function (require, exports, module) {
+    "use strict";
 
-exports.snippetText =undefined;
-exports.scope = "dockerfile";
+    exports.snippetText = undefined;
+    exports.scope = "dockerfile";
 
 });

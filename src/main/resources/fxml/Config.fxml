@@ -1,33 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.collections.*?>
+<?import javafx.collections.FXCollections?>
 <?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.paint.*?>
-
-<AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="198.0" prefWidth="341.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="com.kodcu.ConfigController">
-  <children>
-    <Button fx:id="saveConfig" layoutX="240.0" layoutY="148.0" mnemonicParsing="false" onAction="#saveConfig" prefHeight="28.0" prefWidth="65.0" text="Save" />
-    <Label layoutX="27.0" layoutY="24.0" text="Font Size" />
-    <Slider fx:id="fontSizeSlider" blockIncrement="1.0" layoutX="127.0" layoutY="24.0" majorTickUnit="1.0" max="20.0" min="8.0" minorTickCount="1" showTickMarks="false" snapToTicks="true" value="14.0" />
-    <Label layoutX="27.0" layoutY="55.0" text="Theme" />
-    <ComboBox fx:id="themeSelector" layoutX="127.0" layoutY="51.0" prefWidth="140.0">
-      <items>
-        <FXCollections fx:factory="observableArrayList">
-          <String fx:value="Item 1" />
-          <String fx:value="Item 2" />
-          <String fx:value="Item 3" />
-        </FXCollections>
-      </items>
-    </ComboBox>
-    <Label layoutX="27.0" layoutY="87.0" text="Mouse Speed" />
-    <Slider fx:id="mouseSpeedSlider" blockIncrement="0.1" layoutX="127.0" layoutY="88.0" majorTickUnit="0.1" max="1.0" min="0.0" minorTickCount="1" showTickLabels="false" showTickMarks="false" snapToTicks="true" value="0.1" />
-    <Label fx:id="fontLabel" layoutX="290.0" layoutY="24.0" text="14" />
-    <Label fx:id="mouseSpeedLabel" layoutX="290.0" layoutY="87.0" text="0.1" />
-    <Label layoutX="27.0" layoutY="115.0" text="Splitter Division" />
-    <Slider id="mouseSpeedSlider" fx:id="divisionSlider" blockIncrement="0.1" layoutX="127.0" layoutY="116.0" majorTickUnit="0.1" max="1.0" min="0.0" minorTickCount="1" showTickLabels="false" showTickMarks="false" snapToTicks="false" value="0.5" />
-    <Label id="mouseSpeedLabel" fx:id="divisionLabel" layoutX="290.0" layoutY="115.0" text="0.5" />
-  </children>
+<?import javafx.scene.layout.AnchorPane?>
+<?import java.lang.String?>
+<AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
+            prefHeight="198.0" prefWidth="341.0" xmlns:fx="http://javafx.com/fxml/1"
+            xmlns="http://javafx.com/javafx/2.2" fx:controller="com.kodcu.ConfigController">
+    <children>
+        <Button fx:id="saveConfig" layoutX="240.0" layoutY="148.0" mnemonicParsing="false" onAction="#saveConfig"
+                prefHeight="28.0" prefWidth="65.0" text="Save"/>
+        <Label layoutX="27.0" layoutY="24.0" text="Font Size"/>
+        <Slider fx:id="fontSizeSlider" blockIncrement="1.0" layoutX="127.0" layoutY="24.0" majorTickUnit="1.0"
+                max="20.0" min="8.0" minorTickCount="1" showTickMarks="false" snapToTicks="true" value="14.0"/>
+        <Label layoutX="27.0" layoutY="55.0" text="Theme"/>
+        <ComboBox fx:id="themeSelector" layoutX="127.0" layoutY="51.0" prefWidth="140.0">
+            <items>
+                <FXCollections fx:factory="observableArrayList">
+                    <String fx:value="Item 1"/>
+                    <String fx:value="Item 2"/>
+                    <String fx:value="Item 3"/>
+                </FXCollections>
+            </items>
+        </ComboBox>
+        <Label layoutX="27.0" layoutY="87.0" text="Mouse Speed"/>
+        <Slider fx:id="mouseSpeedSlider" blockIncrement="0.1" layoutX="127.0" layoutY="88.0" majorTickUnit="0.1"
+                max="1.0" min="0.0" minorTickCount="1" showTickLabels="false" showTickMarks="false" snapToTicks="true"
+                value="0.1"/>
+        <Label fx:id="fontLabel" layoutX="290.0" layoutY="24.0" text="14"/>
+        <Label fx:id="mouseSpeedLabel" layoutX="290.0" layoutY="87.0" text="0.1"/>
+        <Label layoutX="27.0" layoutY="115.0" text="Splitter Division"/>
+        <Slider id="mouseSpeedSlider" fx:id="divisionSlider" blockIncrement="0.1" layoutX="127.0" layoutY="116.0"
+                majorTickUnit="0.1" max="1.0" min="0.0" minorTickCount="1" showTickLabels="false" showTickMarks="false"
+                snapToTicks="false" value="0.5"/>
+        <Label id="mouseSpeedLabel" fx:id="divisionLabel" layoutX="290.0" layoutY="115.0" text="0.5"/>
+    </children>
 </AnchorPane>

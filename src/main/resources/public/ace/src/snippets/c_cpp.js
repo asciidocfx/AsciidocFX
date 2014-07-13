@@ -1,7 +1,7 @@
-define("ace/snippets/c_cpp",["require","exports","module"], function(require, exports, module) {
-"use strict";
+define("ace/snippets/c_cpp", ["require", "exports", "module"], function (require, exports, module) {
+    "use strict";
 
-exports.snippetText = "## STL Collections\n\
+    exports.snippetText = "## STL Collections\n\
 # std::array\n\
 snippet array\n\
 	std::array<${1:T}, ${2:N}> ${3};${4}\n\
@@ -133,6 +133,6 @@ snippet lld\n\
 		${3:/* code */}\n\
 	}${4}\n\
 ";
-exports.scope = "c_cpp";
+    exports.scope = "c_cpp";
 
 });

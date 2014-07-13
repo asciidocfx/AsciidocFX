@@ -1,7 +1,7 @@
-define("ace/snippets/coffee",["require","exports","module"], function(require, exports, module) {
-"use strict";
+define("ace/snippets/coffee", ["require", "exports", "module"], function (require, exports, module) {
+    "use strict";
 
-exports.snippetText = "# Closure loop\n\
+    exports.snippetText = "# Closure loop\n\
 snippet forindo\n\
 	for ${1:name} in ${2:array}\n\
 		do ($1) ->\n\
@@ -97,6 +97,6 @@ snippet req\n\
 snippet exp\n\
 	${1:root} = exports ? this\n\
 ";
-exports.scope = "coffee";
+    exports.scope = "coffee";
 
 });

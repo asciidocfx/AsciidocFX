@@ -7,9 +7,10 @@ Based on Solarized Style from http://ethanschoonover.com/solarized
 */
 
 .hljs {
-  display: block; padding: 0.5em;
-  color: #DCCF8F;
-  background: url(./pojoaque.jpg) repeat scroll left top #181914;
+    display: block;
+    padding: 0.5em;
+    color: #DCCF8F;
+    background: url(./pojoaque.jpg) repeat scroll left top #181914;
 }
 
 .hljs-comment,
@@ -18,8 +19,8 @@ Based on Solarized Style from http://ethanschoonover.com/solarized
 .hljs-doctype,
 .lisp .hljs-string,
 .hljs-javadoc {
-  color: #586e75;
-  font-style: italic;
+    color: #586e75;
+    font-style: italic;
 }
 
 .hljs-keyword,
@@ -31,7 +32,7 @@ Based on Solarized Style from http://ethanschoonover.com/solarized
 .css .hljs-tag,
 .clojure .hljs-title,
 .nginx .hljs-title {
-  color: #B64926;
+    color: #B64926;
 }
 
 .hljs-number,
@@ -42,7 +43,7 @@ Based on Solarized Style from http://ethanschoonover.com/solarized
 .tex .hljs-formula,
 .hljs-regexp,
 .hljs-hexcolor {
-  color: #468966;
+    color: #468966;
 }
 
 .hljs-title,
@@ -55,7 +56,7 @@ Based on Solarized Style from http://ethanschoonover.com/solarized
 .clojure .hljs-built_in,
 .hljs-identifier,
 .hljs-id {
-  color: #FFB03B;
+    color: #FFB03B;
 }
 
 .hljs-attribute,
@@ -66,20 +67,20 @@ Based on Solarized Style from http://ethanschoonover.com/solarized
 .hljs-class .hljs-title,
 .hljs-parent,
 .haskell .hljs-type {
-  color: #b58900;
+    color: #b58900;
 }
 
 .css .hljs-attribute {
-  color: #b89859;
+    color: #b89859;
 }
 
 .css .hljs-number,
 .css .hljs-hexcolor {
-  color: #DCCF8F;
+    color: #DCCF8F;
 }
 
 .css .hljs-class {
-  color: #d3a60c;
+    color: #d3a60c;
 }
 
 .hljs-preprocessor,
@@ -94,13 +95,13 @@ Based on Solarized Style from http://ethanschoonover.com/solarized
 .hljs-important,
 .hljs-subst,
 .hljs-cdata {
-  color: #cb4b16;
+    color: #cb4b16;
 }
 
 .hljs-deletion {
-  color: #dc322f;
+    color: #dc322f;
 }
 
 .tex .hljs-formula {
-  background: #073642;
+    background: #073642;
 }

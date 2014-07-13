@@ -16,13 +16,10 @@
 
 package com.kodcu;
 
-import org.apache.commons.configuration.ConfigurationException;
-import org.apache.commons.configuration.PropertiesConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.web.SpringBootServletInitializer;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;
@@ -45,6 +42,7 @@ public class AsciiDocConfig extends SpringBootServletInitializer implements WebS
 
     @Override
     protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
+
         return application.sources(AsciiDocConfig.class);
     }
 
