@@ -15,13 +15,13 @@ Follow the View > Full Screen
 
 #### Closable Preview Pane
 
-Follow the View > Toggle Preview
+Double click to Tab section editor will be expanded, dblclick again will get previous state
 
 <img src="http://kodcu.com/ascii-toggle-preview.png" width="700" height="371"/>
 
 #### External Browser Support
 
-Open http://localhost:8080/ and see changes on your favorite Browser.
+Click "External Browser" in Preview Pane, your favorite browser will be opened.
 
 <img src="http://kodcu.com/ascii-external.png" width="700" height="371"/>
 
@@ -31,6 +31,19 @@ Follow the View > Generate Table
 
 <img src="http://kodcu.com/ascii-table-generator.png" width="700" height="371"/>
 
+#### Recent Files Feature
+
+Follow the View > Recent files
+
+Your last worked files will be there.
+
+#### Closable Tabs
+
+You can close the tab what you want with close button and after right click to any tab, you can close all or other tabs quickly
+
+#### Working Directory Section
+
+In the left side of application,you can set your working directory. All listed directories and ASciidoc files will be served there. When you dbl click of any item, it will be opened on Tab section.
 ### How to Build executable JAR
 
 1. Install JDK 8 and set JAVA_HOME properly

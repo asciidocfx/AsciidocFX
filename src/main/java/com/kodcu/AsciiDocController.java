@@ -2,6 +2,7 @@ package com.kodcu;
 
 
 import com.sun.javafx.application.HostServicesDelegate;
+import com.sun.javafx.scene.control.skin.LabeledText;
 import de.jensd.fx.fontawesome.AwesomeDude;
 import de.jensd.fx.fontawesome.AwesomeIcon;
 import javafx.application.Platform;
@@ -165,14 +166,6 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
         AwesomeDude.setIcon(WorkingDirButton, AwesomeIcon.FOLDER_OPEN_ALT);
         AwesomeDude.setIcon(splitHideButton, AwesomeIcon.CHEVRON_LEFT);
 
-        tabPane.setOnMouseClicked(mouseEvent -> {
-            if (mouseEvent.getClickCount() > 1) {
-                if (splitPane.getDividerPositions()[0] > 0.1)
-                    splitPane.setDividerPositions(0, 1);
-                else
-                    splitPane.setDividerPositions(0.164, 0.6);
-            }
-        });
 
     }
 
@@ -260,7 +253,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
                     webEngine.executeScript(waitForGetValue);
             }
         });
-        tab.textProperty().setValue("new");
+        ((Label)tab.getGraphic()).setText("new");
         tabPane.getTabs().add(tab);
 
         current.putTab(tab, null, webView);
@@ -282,7 +275,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
         fitToParent(webView);
 
         Tab tab = createTab();
-        tab.textProperty().setValue(path.getFileName().toString());
+        ((Label)tab.getGraphic()).setText(path.getFileName().toString());
         tab.setContent(anchorPane);
 
         tab.selectedProperty().addListener((observableValue, before, after) -> {
@@ -308,6 +301,8 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
 
     private Tab createTab() {
         Tab tab = new Tab();
+
+
         MenuItem menuItem0 = new MenuItem("Close All Tabs");
         menuItem0.setOnAction(actionEvent -> {
             tabPane.getTabs().clear();
@@ -324,6 +319,19 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
         contextMenu.getItems().addAll(menuItem0, menuItem1);
 
         tab.contextMenuProperty().setValue(contextMenu);
+        Label label = new Label();
+
+        label.setOnMouseClicked(mouseEvent -> {
+            if (mouseEvent.getClickCount() > 1) {
+                if (splitPane.getDividerPositions()[0] > 0.1)
+                    splitPane.setDividerPositions(0, 1);
+                else
+                    splitPane.setDividerPositions(0.164, 0.6);
+            }
+        });
+
+        tab.setGraphic(label);
+
 
         return tab;
     }
@@ -434,8 +442,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
                 return;
             IOHelper.writeToFile(file, (String) current.currentEngine().executeScript("editor.getValue();"), TRUNCATE_EXISTING, CREATE);
             current.putTab(current.getCurrentTab(), file.toPath(), current.currentView());
-            current.getCurrentTab().setText(file.toPath().getFileName().toString());
-
+            current.setCurrentTabText(file.toPath().getFileName().toString());
             recentFiles.add(file.toPath());
         } else {
             IOHelper.writeToFile(currentPath.toFile(), (String) current.currentEngine().executeScript("editor.getValue();"), TRUNCATE_EXISTING, CREATE);

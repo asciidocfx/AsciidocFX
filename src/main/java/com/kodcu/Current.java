@@ -1,5 +1,6 @@
 package com.kodcu;
 
+import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
@@ -65,5 +66,12 @@ public class Current {
 
     public Path currentParentRoot() {
         return currentPath().getParent();
+    }
+
+
+    public void setCurrentTabText(String currentTabText) {
+        Tab tab = getCurrentTab();
+        Label label= (Label) tab.getGraphic();
+        label.setText(currentTabText);
     }
 }
