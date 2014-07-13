@@ -11,25 +11,23 @@ It is a basic editor that reflects any changes in editor to Preview Pane immedia
 
 Follow the View > Full Screen
 
-<img src="http://kodcu.com/ascii-full-screen.png" width="700" height="371"/>
+<img src="http://kodcu.com/asciidocfx/ascii-full-screen.png" width="700" height="371"/>
 
 #### Closable Preview Pane
 
 Double click to Tab section editor will be expanded, dblclick again will get previous state
 
-<img src="http://kodcu.com/ascii-toggle-preview.png" width="700" height="371"/>
-
 #### External Browser Support
 
 Click "External Browser" in Preview Pane, your favorite browser will be opened.
 
-<img src="http://kodcu.com/ascii-external.png" width="700" height="371"/>
+<img src="http://kodcu.com/asciidocfx/ascii-external.png" width="700" height="371"/>
 
 #### Table Generator Feature
 
 Follow the View > Generate Table
 
-<img src="http://kodcu.com/ascii-table-generator.png" width="700" height="371"/>
+<img src="http://kodcu.com/asciidocfx/ascii-table-generator.png" width="700" height="371"/>
 
 #### Recent Files Feature
 
@@ -37,13 +35,20 @@ Follow the View > Recent files
 
 Your last worked files will be there.
 
+<img src="http://kodcu.com/asciidocfx/ascii-recent-files.png" width="700" height="371"/>
+
 #### Closable Tabs
 
-You can close the tab what you want with close button and after right click to any tab, you can close all or other tabs quickly
+You can close the tab what you want and after right click to any tab, you can close all or other tabs quickly
+
+<img src="http://kodcu.com/asciidocfx/ascii-closable-tabs.png" width="700" height="371"/>
 
 #### Working Directory Section
 
 In the left side of application,you can set your working directory. All listed directories and ASciidoc files will be served there. When you dbl click of any item, it will be opened on Tab section.
+
+<img src="http://kodcu.com/asciidocfx/ascii-working-directory.png" width="700" height="371"/>
+
 ### How to Build executable JAR
 
 1. Install JDK 8 and set JAVA_HOME properly
