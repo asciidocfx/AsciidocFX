@@ -7,7 +7,6 @@ import de.jensd.fx.fontawesome.AwesomeIcon;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Worker;
 import javafx.event.ActionEvent;
@@ -127,8 +126,6 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
 
         tomcatPort = server.getEmbeddedServletContainer().getPort();
 
-
-
         waitForGetValue = IOHelper.convert(AsciiDocController.class.getResourceAsStream("/waitForGetValue.js"));
         waitForSetValue = IOHelper.convert(AsciiDocController.class.getResourceAsStream("/waitForSetValue.js"));
 
@@ -147,7 +144,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
         previewEngine.load(String.format("http://localhost:%d/index.html", tomcatPort));
 
         previewEngine.getLoadWorker().stateProperty().addListener((observableValue1, state, state2) -> {
-            if(state2== Worker.State.SUCCEEDED){
+            if (state2 == Worker.State.SUCCEEDED) {
                 JSObject window = (JSObject) previewEngine.executeScript("window");
                 window.setMember("app", this);
             }
@@ -167,6 +164,15 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
 
         AwesomeDude.setIcon(WorkingDirButton, AwesomeIcon.FOLDER_OPEN_ALT);
         AwesomeDude.setIcon(splitHideButton, AwesomeIcon.CHEVRON_LEFT);
+
+        tabPane.setOnMouseClicked(mouseEvent -> {
+            if (mouseEvent.getClickCount() > 1) {
+                if (splitPane.getDividerPositions()[0] > 0.1)
+                    splitPane.setDividerPositions(0, 1);
+                else
+                    splitPane.setDividerPositions(0.164, 0.6);
+            }
+        });
 
     }
 
@@ -318,6 +324,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
         contextMenu.getItems().addAll(menuItem0, menuItem1);
 
         tab.contextMenuProperty().setValue(contextMenu);
+
         return tab;
     }
 
