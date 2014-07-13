@@ -1,6 +1,8 @@
 package com.kodcu;
 
 
+import com.sun.deploy.uitoolkit.impl.fx.HostServicesFactory;
+import com.sun.javafx.application.HostServicesDelegate;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
@@ -42,6 +44,8 @@ public class Start extends Application {
         AnchorPane tableAnchor = tablePopupLoader.load(getClass().getResourceAsStream("/fxml/TablePopup.fxml"));
         Parent root = parentLoader.load(getClass().getResourceAsStream("/fxml/Scene.fxml"));
         controller = parentLoader.getController();
+        HostServicesDelegate hostServices = HostServicesFactory.getInstance(this);
+        controller.setHostServices(hostServices);
 
 
         Scene scene = new Scene(root);

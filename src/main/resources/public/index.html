@@ -5,6 +5,7 @@
     <link rel="stylesheet" href="/grid.css" type="text/css"/>
     <!--<link rel="stylesheet" href="/stylesheets/asciidoctor.css" type="text/css"/>-->
     <link rel="stylesheet" href="/stylesheets/github.css" type="text/css"/>
+    <link rel="stylesheet" href="/css/font-awesome.min.css" type="text/css"/>
     <style>
         .hljs {
             display: block;
@@ -51,9 +52,26 @@
         body {
             margin: 10px;
         }
+
+        .external-browser{
+            float: right;
+            font-size: smaller;
+            color: #BDB76B;
+            cursor: pointer;
+        }
+        .external-browser:hover{
+            float: right;
+            font-size: smaller;
+            color: #bdbc32;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
+<div class="external-browser" onclick="externalBrowse()">
+    <i class="fa fa-bolt"></i>
+    External Browser
+</div>
 <div class="row">
     <div class="columns justify  large-9 large-centered medium-12 small-12">
         <div id="placeholder">
@@ -95,6 +113,10 @@
     soket.onerror = soket.onclose = function (e) {
         alert("Close/Error occured.. Start again.");
     };
+
+    var externalBrowse  = function(){
+        app.externalBrowse();
+    }
 
 </script>
 </body>

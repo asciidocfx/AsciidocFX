@@ -1,11 +1,13 @@
 package com.kodcu;
 
 
+import com.sun.javafx.application.HostServicesDelegate;
 import de.jensd.fx.fontawesome.AwesomeDude;
 import de.jensd.fx.fontawesome.AwesomeIcon;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Worker;
 import javafx.event.ActionEvent;
@@ -26,6 +28,7 @@ import javafx.stage.Stage;
 import netscape.javascript.JSObject;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.embedded.EmbeddedWebApplicationContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -95,7 +98,12 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
     private AnchorPane configAnchor;
     private Stage configStage;
 
+    @Autowired
+    private EmbeddedWebApplicationContext server;
+
     private Map<Path, TreeItem<Item>> dirTreeMap = new HashMap<>();
+    private int tomcatPort = 8080;
+    private HostServicesDelegate hostServices;
 
     @FXML
     private void createTable(ActionEvent event) throws IOException {
@@ -117,6 +125,10 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
     @Override
     public void initialize(URL url, ResourceBundle rb) {
 
+        tomcatPort = server.getEmbeddedServletContainer().getPort();
+
+
+
         waitForGetValue = IOHelper.convert(AsciiDocController.class.getResourceAsStream("/waitForGetValue.js"));
         waitForSetValue = IOHelper.convert(AsciiDocController.class.getResourceAsStream("/waitForSetValue.js"));
 
@@ -132,9 +144,17 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
 
 
         previewEngine = previewView.getEngine();
-        previewEngine.load("http://localhost:8080/index.html");
+        previewEngine.load(String.format("http://localhost:%d/index.html", tomcatPort));
+
+        previewEngine.getLoadWorker().stateProperty().addListener((observableValue1, state, state2) -> {
+            if(state2== Worker.State.SUCCEEDED){
+                JSObject window = (JSObject) previewEngine.executeScript("window");
+                window.setMember("app", this);
+            }
+        });
+
         previewEngine.getLoadWorker().exceptionProperty().addListener((ov, t, t1) -> {
-            System.out.println("Received exception: " + t1.getMessage());
+            t1.printStackTrace();
         });
 
 
@@ -148,6 +168,11 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
         AwesomeDude.setIcon(WorkingDirButton, AwesomeIcon.FOLDER_OPEN_ALT);
         AwesomeDude.setIcon(splitHideButton, AwesomeIcon.CHEVRON_LEFT);
 
+    }
+
+    public void externalBrowse() {
+
+        hostServices.showDocument(String.format("http://localhost:%d/index.html", tomcatPort));
     }
 
     @FXML
@@ -304,7 +329,8 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
         WebEngine webEngine = webView.getEngine();
         JSObject window = (JSObject) webEngine.executeScript("window");
         window.setMember("app", this);
-        webEngine.load("http://localhost:8080/editor.html");
+        webEngine.load(String.format("http://localhost:%d/editor.html", tomcatPort));
+
         return webView;
     }
 
@@ -475,5 +501,13 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
 
     public Map<Path, TreeItem<Item>> getDirTreeMap() {
         return dirTreeMap;
+    }
+
+    public void setHostServices(HostServicesDelegate hostServices) {
+        this.hostServices = hostServices;
+    }
+
+    public HostServicesDelegate getHostServices() {
+        return hostServices;
     }
 }
