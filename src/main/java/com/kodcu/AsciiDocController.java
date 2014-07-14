@@ -158,7 +158,6 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
 
         /// Treeview
 
-        initialDirectory = Optional.of(Paths.get(System.getProperty("user.home")));
         fileBrowser.browse(treeView, this, System.getProperty("user.home"));
 
         //
@@ -177,6 +176,12 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
     @FXML
     public void changeWorkingDir(ActionEvent actionEvent) {
         DirectoryChooser directoryChooser = new DirectoryChooser();
+        initialDirectory.ifPresent(path->{
+                if (Files.isDirectory(path))
+                    directoryChooser.setInitialDirectory(path.toFile());
+                else
+                    directoryChooser.setInitialDirectory(path.getParent().toFile());
+        });
         directoryChooser.setTitle("Select Working Directory");
         File selectedDir = directoryChooser.showDialog(null);
         if (Objects.nonNull(selectedDir)) {
@@ -523,5 +528,9 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
 
     public HostServicesDelegate getHostServices() {
         return hostServices;
+    }
+
+    public Optional<Path> getInitialDirectory() {
+        return initialDirectory;
     }
 }
