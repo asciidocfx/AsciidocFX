@@ -5,3 +5,6 @@ os:
   - linux
   - osx
 script: mvn clean install jfx:native
+before_script:
+ - sudo apt-get update -qq
+ - sudo apt-get install -y rpm-build
