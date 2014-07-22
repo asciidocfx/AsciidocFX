@@ -2,7 +2,6 @@ language: java
 jdk:
   - oraclejdk8
 os:
-  - linux
   - osx
 script: mvn clean install jfx:native
 before_script:
