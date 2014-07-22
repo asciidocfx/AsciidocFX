@@ -10,9 +10,11 @@ before_script:
 - sudo apt-get install -y rpm
 deploy:
   provider: releases
+  skip_cleanup: true
   api_key:
     secure: L4y+3fi/yVR7guv7cynzrTOjRbE4+JTK79Fv5J8IQFwtzTP4V2GeW5ZjTdZXAlsFRvak5zhxY4OEYbYI2/riMib5Ea/K28Fd0F/nK8bUDddzxyXPc8zj6VrQINJX8Na2KfPvXT2UR+LtUWkK5HjeR+O/YQPTO4M+7SDGx5P+gog=
   file: "/home/travis/build/rahmanusta/AsciidocFX/target/jfx/native/bundles/AsciidocFX-1.0.deb"
   file: "/home/travis/build/rahmanusta/AsciidocFX/target/jfx/native/bundles/AsciidocFX-1.0-1.x86_64.rpm"
   on:
+    tags: true
     repo: rahmanusta/AsciidocFX
