@@ -17,4 +17,5 @@ deploy:
   file: "/home/travis/build/rahmanusta/AsciidocFX/target/jfx/native/bundles/AsciidocFX-1.0-1.x86_64.rpm"
   on:
     tags: true
+    all_branches: true
     repo: rahmanusta/AsciidocFX
