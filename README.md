@@ -1,6 +1,4 @@
-#AsciidocFX Editor [![Analytics](https://ga-beacon.appspot.com/UA-52823012-1/AsciidocFX/readme)](https://github.com/rahmanusta/AsciidocFX)
-
-### Asciidoc Editor based on JavaFX 8
+## Asciidoc Editor based on JavaFX 8
 
 AsciidocFX is editor for [Asciidoc Markup Language](http://www.methods.co.nz/asciidoc/).
 
@@ -72,4 +70,9 @@ In the left side of application,you can set your working directory. All listed d
 <p><b>
 <a href="http://kodcu.com/asciidocfx/AsciidocFX-1.0.rpm">AsciidocFX (Linux)</a>
 </b></p>
-Note: Linux installer installes to /opt dir.
+Note:
+* Linux installer installes to /opt dir.
+* I dont have Mac, you can build yourself :)
+
+
+[![Analytics](https://ga-beacon.appspot.com/UA-52823012-1/AsciidocFX/readme)](https://github.com/rahmanusta/AsciidocFX)
