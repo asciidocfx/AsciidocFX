@@ -4,3 +4,4 @@ jdk:
 os:
   - linux
   - osx
+script: mvn clean install jfx:native
