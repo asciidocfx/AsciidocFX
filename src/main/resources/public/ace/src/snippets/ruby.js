@@ -594,10 +594,10 @@ snippet defcreate\n\
 			if @$1.save\n\
 				flash[:notice] = '$2 was successfully created.'\n\
 				wants.html { redirect_to(@$1) }\n\
-				wants.xml  { render :xml => @$1, :status => :created, :location => @$1 }\n\
+				wants.xml  { asciidocToHtml :xml => @$1, :status => :created, :location => @$1 }\n\
 			else\n\
-				wants.html { render :action => \"new\" }\n\
-				wants.xml  { render :xml => @$1.errors, :status => :unprocessable_entity }\n\
+				wants.html { asciidocToHtml :action => \"new\" }\n\
+				wants.xml  { asciidocToHtml :xml => @$1.errors, :status => :unprocessable_entity }\n\
 			end\n\
 		end\n\
 	end${3}\n\
@@ -621,7 +621,7 @@ snippet defindex\n\
 \n\
 		respond_to do |wants|\n\
 			wants.html # index.html.erb\n\
-			wants.xml  { render :xml => @$1s }\n\
+			wants.xml  { asciidocToHtml :xml => @$1s }\n\
 		end\n\
 	end${3}\n\
 snippet defnew\n\
@@ -630,7 +630,7 @@ snippet defnew\n\
 \n\
 		respond_to do |wants|\n\
 			wants.html # new.html.erb\n\
-			wants.xml  { render :xml => @$1 }\n\
+			wants.xml  { asciidocToHtml :xml => @$1 }\n\
 		end\n\
 	end${3}\n\
 snippet defshow\n\
@@ -639,7 +639,7 @@ snippet defshow\n\
 \n\
 		respond_to do |wants|\n\
 			wants.html # show.html.erb\n\
-			wants.xml  { render :xml => @$1 }\n\
+			wants.xml  { asciidocToHtml :xml => @$1 }\n\
 		end\n\
 	end${3}\n\
 snippet defupdate\n\
@@ -652,8 +652,8 @@ snippet defupdate\n\
 				wants.html { redirect_to(@$1) }\n\
 				wants.xml  { head :ok }\n\
 			else\n\
-				wants.html { render :action => \"edit\" }\n\
-				wants.xml  { render :xml => @$1.errors, :status => :unprocessable_entity }\n\
+				wants.html { asciidocToHtml :action => \"edit\" }\n\
+				wants.xml  { asciidocToHtml :xml => @$1.errors, :status => :unprocessable_entity }\n\
 			end\n\
 		end\n\
 	end${3}\n\
@@ -716,55 +716,55 @@ snippet od\n\
 snippet pa\n\
 	params[:${1:id}]${2}\n\
 snippet ra\n\
-	render :action => \"${1:action}\"\n\
+	asciidocToHtml :action => \"${1:action}\"\n\
 snippet ral\n\
-	render :action => \"${1:action}\", :layout => \"${2:layoutname}\"\n\
+	asciidocToHtml :action => \"${1:action}\", :layout => \"${2:layoutname}\"\n\
 snippet rest\n\
 	respond_to do |wants|\n\
 		wants.${1:html} { ${2} }\n\
 	end\n\
 snippet rf\n\
-	render :file => \"${1:filepath}\"\n\
+	asciidocToHtml :file => \"${1:filepath}\"\n\
 snippet rfu\n\
-	render :file => \"${1:filepath}\", :use_full_path => ${2:false}\n\
+	asciidocToHtml :file => \"${1:filepath}\", :use_full_path => ${2:false}\n\
 snippet ri\n\
-	render :inline => \"${1:<%= 'hello' %>}\"\n\
+	asciidocToHtml :inline => \"${1:<%= 'hello' %>}\"\n\
 snippet ril\n\
-	render :inline => \"${1:<%= 'hello' %>}\", :locals => { ${2::name} => \"${3:value}\"${4} }\n\
+	asciidocToHtml :inline => \"${1:<%= 'hello' %>}\", :locals => { ${2::name} => \"${3:value}\"${4} }\n\
 snippet rit\n\
-	render :inline => \"${1:<%= 'hello' %>}\", :type => ${2::rxml}\n\
+	asciidocToHtml :inline => \"${1:<%= 'hello' %>}\", :type => ${2::rxml}\n\
 snippet rjson\n\
-	render :json => ${1:text to render}\n\
+	asciidocToHtml :json => ${1:text to asciidocToHtml}\n\
 snippet rl\n\
-	render :layout => \"${1:layoutname}\"\n\
+	asciidocToHtml :layout => \"${1:layoutname}\"\n\
 snippet rn\n\
-	render :nothing => ${1:true}\n\
+	asciidocToHtml :nothing => ${1:true}\n\
 snippet rns\n\
-	render :nothing => ${1:true}, :status => ${2:401}\n\
+	asciidocToHtml :nothing => ${1:true}, :status => ${2:401}\n\
 snippet rp\n\
-	render :partial => \"${1:item}\"\n\
+	asciidocToHtml :partial => \"${1:item}\"\n\
 snippet rpc\n\
-	render :partial => \"${1:item}\", :collection => ${2:@$1s}\n\
+	asciidocToHtml :partial => \"${1:item}\", :collection => ${2:@$1s}\n\
 snippet rpl\n\
-	render :partial => \"${1:item}\", :locals => { :${2:$1} => ${3:@$1}\n\
+	asciidocToHtml :partial => \"${1:item}\", :locals => { :${2:$1} => ${3:@$1}\n\
 snippet rpo\n\
-	render :partial => \"${1:item}\", :object => ${2:@$1}\n\
+	asciidocToHtml :partial => \"${1:item}\", :object => ${2:@$1}\n\
 snippet rps\n\
-	render :partial => \"${1:item}\", :status => ${2:500}\n\
+	asciidocToHtml :partial => \"${1:item}\", :status => ${2:500}\n\
 snippet rt\n\
-	render :text => \"${1:text to render}\"\n\
+	asciidocToHtml :text => \"${1:text to asciidocToHtml}\"\n\
 snippet rtl\n\
-	render :text => \"${1:text to render}\", :layout => \"${2:layoutname}\"\n\
+	asciidocToHtml :text => \"${1:text to asciidocToHtml}\", :layout => \"${2:layoutname}\"\n\
 snippet rtlt\n\
-	render :text => \"${1:text to render}\", :layout => ${2:true}\n\
+	asciidocToHtml :text => \"${1:text to asciidocToHtml}\", :layout => ${2:true}\n\
 snippet rts\n\
-	render :text => \"${1:text to render}\", :status => ${2:401}\n\
+	asciidocToHtml :text => \"${1:text to asciidocToHtml}\", :status => ${2:401}\n\
 snippet ru\n\
-	render :update do |${1:page}|\n\
+	asciidocToHtml :update do |${1:page}|\n\
 		$1.${2}\n\
 	end\n\
 snippet rxml\n\
-	render :xml => ${1:text to render}\n\
+	asciidocToHtml :xml => ${1:text to asciidocToHtml}\n\
 snippet sc\n\
 	scope :${1:name}, :where(:@${2:field} => ${3:value})\n\
 snippet sl\n\

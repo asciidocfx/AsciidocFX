@@ -38,8 +38,12 @@ public class IOHelper {
     }
 
     public static void writeToFile(File file, String content, StandardOpenOption... openOption) {
+        writeToFile(file.toPath(), content, openOption);
+    }
+
+    public static void writeToFile(Path path, String content, StandardOpenOption... openOption) {
         try {
-            Files.write(file.toPath(), content.getBytes(Charset.forName("UTF-8")), openOption);
+            Files.write(path, content.getBytes(Charset.forName("UTF-8")), openOption);
         } catch (IOException e) {
             e.printStackTrace();
         }

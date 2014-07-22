@@ -15,11 +15,11 @@ snippet ul\n\
 			${1:item}\n\
 		%li\n\
 snippet =rp\n\
-	= render :partial => '${1:partial}'\n\
+	= asciidocToHtml :partial => '${1:partial}'\n\
 snippet =rpl\n\
-	= render :partial => '${1:partial}', :locals => {}\n\
+	= asciidocToHtml :partial => '${1:partial}', :locals => {}\n\
 snippet =rpc\n\
-	= render :partial => '${1:partial}', :collection => @$1\n\
+	= asciidocToHtml :partial => '${1:partial}', :collection => @$1\n\
 \n\
 ";
     exports.scope = "haml";

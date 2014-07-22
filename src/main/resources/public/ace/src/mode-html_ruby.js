@@ -964,7 +964,7 @@ define("ace/mode/ruby_highlight_rules", ["require", "exports", "module", "ace/li
                 "raw|readline|readlines|redirect?|request_via_redirect|require|scan|select|" +
                 "set_trace_func|sleep|split|sprintf|srand|String|stylesheet_link_tag|syscall|system|sub|sub!|test|" +
                 "throw|trace_var|trap|untrace_var|atan2|cos|exp|frexp|ldexp|log|log10|sin|sqrt|tan|" +
-                "render|javascript_include_tag|csrf_meta_tag|label_tag|text_field_tag|submit_tag|check_box_tag|" +
+                "asciidocToHtml|javascript_include_tag|csrf_meta_tag|label_tag|text_field_tag|submit_tag|check_box_tag|" +
                 "content_tag|radio_button_tag|text_area_tag|password_field_tag|hidden_field_tag|" +
                 "fields_for|select_tag|options_for_select|options_from_collection_for_select|collection_select|" +
                 "time_zone_select|select_date|select_time|select_datetime|date_select|time_select|datetime_select|" +

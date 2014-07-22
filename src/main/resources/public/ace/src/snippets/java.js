@@ -181,7 +181,7 @@ snippet println\n\
 ##\n\
 ## Render Methods\n\
 snippet ren\n\
-	render(${1:param});${2}\n\
+	asciidocToHtml(${1:param});${2}\n\
 snippet rena\n\
 	renderArgs.put(\"${1}\", ${2});${3}\n\
 snippet renb\n\
