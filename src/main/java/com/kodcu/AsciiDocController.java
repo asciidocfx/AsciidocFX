@@ -14,16 +14,20 @@ import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 import netscape.javascript.JSObject;
 import org.apache.commons.io.IOUtils;
@@ -49,8 +53,6 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -72,7 +74,8 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
     public Button splitHideButton;
     public Button WorkingDirButton;
     public Button convertDocbook;
-
+    public MenuBar menubar;
+    public HBox windowHBox;
 
     @Autowired
     private TablePopupController tablePopupController;
@@ -112,6 +115,9 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
 
     private int tomcatPort = 8080;
     private HostServicesDelegate hostServices;
+    private double sceneXOffset;
+    private double sceneYOffset;
+
 
     @FXML
     private void createTable(ActionEvent event) throws IOException {
@@ -124,7 +130,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
 
         Path currentPath = initialDirectory.map(path -> Files.isDirectory(path) ? path : path.getParent()).get();
 
-        String docbook=docBookController.generateDocbook(previewEngine,currentPath);
+        String docbook = docBookController.generateDocbook(previewEngine, currentPath);
 
         IOHelper.writeToFile(currentPath.resolve("book.xml"), docbook, CREATE, TRUNCATE_EXISTING);
     }
@@ -137,11 +143,57 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
 
     @FXML
     private void fullScreen(ActionEvent event) {
+
         getStage().setFullScreen(!getStage().isFullScreen());
+    }
+
+    @FXML
+    private void directoryView(ActionEvent event) {
+        splitPane.setDividerPositions(0.1393, 0.5898);
+    }
+
+    @FXML
+    private void menubar(MouseEvent mouseEvent) {
+        if (mouseEvent.getClickCount() > 1) {
+            maximize(mouseEvent);
+        }
+    }
+
+
+    @FXML
+    private void maximize(Event event) {
+
+        // Get current screen of the stage
+        Rectangle2D rectangle2D = new Rectangle2D(stage.getX(), stage.getY(), stage.getWidth(), stage.getHeight());
+        ObservableList<Screen> screens = Screen.getScreensForRectangle(rectangle2D);
+
+        // Change stage properties
+        Rectangle2D bounds = screens.get(0).getVisualBounds();
+
+        if (bounds.getHeight() == stage.getHeight() && bounds.getWidth() == stage.getWidth()) {
+            stage.setX(50);
+            stage.setY(50);
+            stage.setWidth(bounds.getWidth() * 0.8);
+            stage.setHeight(bounds.getHeight() * 0.8);
+        } else {
+            stage.setX(bounds.getMinX());
+            stage.setY(bounds.getMinY());
+            stage.setWidth(bounds.getWidth());
+            stage.setHeight(bounds.getHeight());
+        }
+    }
+
+    @FXML
+    private void minimize(ActionEvent event) {
+        getStage().setIconified(true);
     }
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+
+        Platform.runLater(()->{
+//            splitPane.setDividerPositions(0, 0.5);
+        });
 
         tomcatPort = server.getEmbeddedServletContainer().getPort();
 
@@ -183,7 +235,6 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
         AwesomeDude.setIcon(WorkingDirButton, AwesomeIcon.FOLDER_OPEN_ALT);
         AwesomeDude.setIcon(splitHideButton, AwesomeIcon.CHEVRON_LEFT);
         AwesomeDude.setIcon(convertDocbook, AwesomeIcon.FILE_TEXT_ALT);
-
 
     }
 
@@ -262,6 +313,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
 
     @FXML
     private void newDoc(ActionEvent event) {
+
         WebView webView = createWebView();
         AnchorPane anchorPane = new AnchorPane();
         anchorPane.getChildren().add(webView);
@@ -277,7 +329,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
                     webEngine.executeScript(waitForGetValue);
             }
         });
-        ((Label) tab.getGraphic()).setText("new");
+        ((Label) tab.getGraphic()).setText("new *");
         tabPane.getTabs().add(tab);
 
         current.putTab(tab, null, webView);
@@ -320,7 +372,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
 
     @FXML
     public void hideLeftSplit(ActionEvent event) {
-        splitPane.setDividerPositions(0.001, 0.5);
+        splitPane.setDividerPositions(0, 0.5);
     }
 
     private Tab createTab() {
@@ -437,9 +489,13 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
         try {
             Platform.runLater(() -> {
 
-                String rendered= docConverter.asciidocToHtml(previewEngine, nev);
+                String rendered = docConverter.asciidocToHtml(previewEngine, nev);
 
                 lastRendered.setValue(rendered);
+
+                Label label = (Label) current.getCurrentTab().getGraphic();
+                if (!label.getText().contains(" *"))
+                    label.setText(label.getText() + " *");
             });
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -474,6 +530,9 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
         } else {
             IOHelper.writeToFile(currentPath.toFile(), (String) current.currentEngine().executeScript("editor.getValue();"), TRUNCATE_EXISTING, CREATE);
         }
+
+        Label label = (Label) current.getCurrentTab().getGraphic();
+        label.setText(label.getText().replace(" *", ""));
     }
 
     private void fitToParent(Node node) {

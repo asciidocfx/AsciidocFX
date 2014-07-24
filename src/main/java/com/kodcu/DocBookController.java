@@ -17,6 +17,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringReader;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 
@@ -33,7 +34,12 @@ public class DocBookController {
 
     public String generateDocbook(WebEngine webEngine, Path path) throws IOException, SAXException {
 
-        String bookRoot = docConverter.asciidocToDocbook(webEngine, IOHelper.readFile(path.resolve("book.asc")), true);
+        Path bookAsc = path.resolve("book.asc");
+
+        if(!Files.exists(bookAsc))
+            return "There is no book.asc file..";
+
+        String bookRoot = docConverter.asciidocToDocbook(webEngine, IOHelper.readFile(bookAsc), true);
 
         Match rootDocument ;
 

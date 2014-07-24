@@ -1,0 +1,95 @@
+/*
+    Document   : Undecorator
+    Created on : Jan 15, 2013, 8:42:25 AM
+    Author     : In-SideFX
+    Description:
+        Demo purpose
+*/
+
+/*
+    The Stage background.
+    Currently a Rectangle node
+*/
+
+.undecorator-background {
+    -fx-fill:#ffffff;
+    /* -fx-fill: radial-gradient(focus-angle 45deg, focus-distance 20%, center 25% 25%, radius 50%, reflect, #eeeeee88, #55555588 75%, dimgray);*/
+    -fx-arc-width:5;
+    -fx-arc-height:5;
+}
+/*
+    The title bar label
+*/
+.undecorator-label-titlebar{
+    /* -fx-text-fill: #000000; if defined here, so way to override it in external apps*/
+}
+/*
+
+
+/*
+*	Minimize button
+*/
+.decoration-button-minimize{
+    -fx-background-radius: 0;
+    -fx-border-style: null;
+    -fx-background-image:url("../images/minimize.png");
+    -fx-background-repeat:no-repeat;
+    -fx-background-color: transparent;
+    -fx-background-position: center;
+}
+
+.decoration-button-minimize:hover{
+    -fx-background-repeat:no-repeat;
+    -fx-background-color: #fbfbfb;
+}
+
+.decoration-button-restore{
+    -fx-background-radius: 0;
+    -fx-border-style: null;
+    -fx-background-image:url("../images/restore.png");
+    -fx-background-repeat:no-repeat;
+    -fx-background-color: transparent;
+    -fx-background-position: center;
+}
+.decoration-button-restore:hover{
+    -fx-background-repeat:no-repeat;
+    -fx-background-color: #fbfbfb;
+}
+/*
+*	Close button
+*/
+.decoration-button-close{
+    -fx-background-radius: 0;
+
+    -fx-background-image:url("../images/close.png");
+    -fx-background-repeat:no-repeat;
+    -fx-background-color: transparent;
+    -fx-background-position: center;
+}
+.decoration-button-close:hover{
+    -fx-background-repeat:no-repeat;
+    -fx-background-color: #fbfbfb;
+}
+
+/*
+*	Resize button
+*/
+.decoration-button-resize{
+    -fx-background-radius: 0;
+    -fx-border-style: null;
+    -fx-background-color: transparent;
+    -fx-background-image:url("../images/resizeSE.png");
+    -fx-background-repeat:no-repeat;
+    -fx-background-position: center;
+    -fx-cursor: nw_resize;
+}
+
+.decoration-button-resize:hover{
+    -fx-background-repeat:no-repeat;
+    -fx-background-color: #fbfbfb;
+}
+
+.close-reveal-minimize > button{
+    -fx-border-style: solid;
+    -fx-border-color: #ddd;
+}

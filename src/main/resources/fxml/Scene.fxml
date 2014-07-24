@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?scenebuilder-stylesheet ../styles/Styles.css?>
 <?import java.lang.*?>
+<?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.web.*?>
 <?import javafx.scene.web.WebView?>
 
-<AnchorPane id="AnchorPane" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="com.kodcu.AsciiDocController">
+<AnchorPane id="AnchorPane" style="" styleClass="rootAnchor" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="com.kodcu.AsciiDocController">
   <children>
-    <SplitPane fx:id="splitPane" dividerPositions="0.1641025641025641, 0.6" focusTraversable="true" style="" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+    <SplitPane fx:id="splitPane" dividerPositions="0.13966480446927373, 0.5899441340782123" focusTraversable="true" prefHeight="642.0" style="" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="28.0">
       <items>
-        <AnchorPane id="AnchorPane" minWidth="0.0" opacity="1.0" prefHeight="668.0" prefWidth="404.0" style="" styleClass="anchor-pane">
+        <AnchorPane id="AnchorPane" minWidth="0.0" opacity="1.0" prefHeight="641.0" prefWidth="107.0" style="" styleClass="anchor-pane" visible="true">
           <children>
-            <TreeView fx:id="treeView" opacity="1.0" prefHeight="611.0" prefWidth="223.0" showRoot="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="57.0" />
-            <ToolBar id="" fx:id="workingDirToolbar" layoutY="21.0" minHeight="29.0" minWidth="0.0" orientation="HORIZONTAL" pickOnBounds="false" prefWidth="223.0" AnchorPane.leftAnchor="-0.5" AnchorPane.rightAnchor="0.5">
+            <ToolBar id="" fx:id="workingDirToolbar" maxHeight="-Infinity" minHeight="-Infinity" minWidth="0.0" orientation="HORIZONTAL" pickOnBounds="false" prefHeight="35.0" prefWidth="107.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
               <items>
                 <Button id="changeWorkingDir" fx:id="splitHideButton" cancelButton="false" defaultButton="false" mnemonicParsing="false" onAction="#hideLeftSplit" prefWidth="35.0" text="">
                   <tooltip>
@@ -33,22 +33,32 @@
                 </Button>
               </items>
             </ToolBar>
+            <TreeView fx:id="treeView" minWidth="0.0" opacity="1.0" prefHeight="600.0" prefWidth="107.0" showRoot="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="46.0" />
           </children>
         </AnchorPane>
         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
           <children>
-            <TabPane fx:id="tabPane" opacity="1.0" prefHeight="647.0" prefWidth="611.0" rotateGraphic="false" tabClosingPolicy="ALL_TABS" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="21.0" />
+            <TabPane fx:id="tabPane" opacity="1.0" prefHeight="646.0" prefWidth="531.0" rotateGraphic="false" tabClosingPolicy="ALL_TABS" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
           </children>
         </AnchorPane>
         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="668.0" prefWidth="676.0" style="">
           <children>
-            <WebView fx:id="previewView" prefHeight="701.0" prefWidth="676.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="21.0" />
+            <WebView fx:id="previewView" prefHeight="648.0" prefWidth="486.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="-2.0" />
           </children>
         </AnchorPane>
       </items>
     </SplitPane>
-    <MenuBar fx:id="menubar" layoutX="0.0" layoutY="0.0" onMouseEntered="#recentFileList" prefWidth="1367.0">
+    <MenuBar fx:id="menubar" maxHeight="-1.0" maxWidth="-1.0" minHeight="-1.0" onMouseClicked="#menubar" onMouseEntered="#recentFileList" prefHeight="-1.0" prefWidth="-1.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
       <menus>
+        <Menu mnemonicParsing="false" text="">
+          <graphic>
+            <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+              <image>
+                <Image url="@logo.png" />
+              </image>
+            </ImageView>
+          </graphic>
+        </Menu>
         <Menu mnemonicParsing="false" text="File">
           <items>
             <MenuItem mnemonicParsing="false" onAction="#openDoc" text="Open" fx:id="openItem" />
@@ -62,6 +72,7 @@
           <items>
             <MenuItem id="" mnemonicParsing="false" onAction="#fullScreen" text="Full Screen" fx:id="fullScreenItem" />
             <MenuItem id="" mnemonicParsing="false" onAction="#createTable" text="Generate Table" />
+            <MenuItem mnemonicParsing="false" onAction="#directoryView" text="Directory View" fx:id="directoryItem" />
           </items>
         </Menu>
         <Menu mnemonicParsing="false" text="Help">
@@ -71,5 +82,15 @@
         </Menu>
       </menus>
     </MenuBar>
+    <HBox id="HBox" fx:id="windowHBox" alignment="CENTER" spacing="5.0" styleClass="close-reveal-minimize" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <children>
+        <Button id="" fx:id="minimize" maxHeight="20.0" maxWidth="20.0" minHeight="20.0" minWidth="20.0" mnemonicParsing="false" onAction="#minimize" prefHeight="20.0" prefWidth="20.0" styleClass="decoration-button-minimize" text="" />
+        <Button id="" fx:id="restore" maxHeight="20.0" maxWidth="20.0" minHeight="20.0" minWidth="20.0" mnemonicParsing="false" onAction="#maximize" prefHeight="20.0" prefWidth="20.0" styleClass="decoration-button-restore" text="" />
+        <Button id="" fx:id="close" maxHeight="20.0" maxWidth="20.0" minHeight="20.0" minWidth="20.0" mnemonicParsing="false" onAction="#closeApp" prefHeight="20.0" prefWidth="20.0" styleClass="decoration-button-close" text="" />
+      </children>
+      <padding>
+        <Insets bottom="1.0" top="1.0" />
+      </padding>
+    </HBox>
   </children>
 </AnchorPane>

@@ -3,6 +3,8 @@ package com.kodcu;
 
 import com.sun.deploy.uitoolkit.impl.fx.HostServicesFactory;
 import com.sun.javafx.application.HostServicesDelegate;
+import fxdecorate.FxDecorateController;
+import fxdecorate.FxDecorateScene;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
@@ -31,7 +33,8 @@ public class Start extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         setUserAgentStylesheet(STYLESHEET_MODENA);
-        stage.initStyle(StageStyle.DECORATED);
+        stage.initStyle(StageStyle.TRANSPARENT);
+
 
         context = SpringApplication.run(AsciiDocConfig.class);
         FXMLLoader parentLoader = new FXMLLoader();
@@ -48,9 +51,11 @@ public class Start extends Application {
         controller.setHostServices(hostServices);
 
 
-        Scene scene = new Scene(root);
+        Scene scene = new FxDecorateScene(root,stage);
+
 
         scene.getStylesheets().add("/styles/Styles.css");
+        scene.getStylesheets().add("/styles/Undecorator.css");
         Rectangle2D bounds = Screen.getPrimary().getVisualBounds();
         stage.setWidth(bounds.getWidth());
         stage.setHeight(bounds.getHeight());
@@ -65,13 +70,15 @@ public class Start extends Application {
         tableStage.initModality(Modality.WINDOW_MODAL);
         tableStage.initOwner(scene.getWindow());
 
-
         controller.setStage(stage);
         controller.setScene(scene);
         controller.setTableAnchor(tableAnchor);
         controller.setTableStage(tableStage);
 
         stage.setScene(scene);
+
+
+
         stage.show();
 
         scene.getAccelerators().put(new KeyCodeCombination(KeyCode.S, CONTROL_DOWN), controller::saveDoc);

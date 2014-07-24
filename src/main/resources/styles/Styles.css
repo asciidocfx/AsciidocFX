@@ -1,15 +1,7 @@
-.button {
-    /*-fx-font-weight: bold;*/
-    /*-fx-background-color:*/
-    /*rgba(0,0,0,0.08),*/
-    /*linear-gradient(#9a9a9a, #909090),*/
-    /*linear-gradient(white 0%, #f3f3f3 50%, #ececec 51%, #f2f2f2 100%);*/
-    /*-fx-background-insets: 0 0 -1 0,0,1;*/
-    /*-fx-background-radius: 5,5,4;*/
-    /*-fx-padding: 3 15 3 15;*/
-    /*-fx-text-fill: #242d35;*/
-    /*-fx-font-size: 12px;*/
-
+.rootAnchor {
+    -fx-border-color: #ddd, transparent;
+    -fx-border-width: 1px, 1px;
+    -fx-border-insets: 0px, 1px;
 }
 
 .split-pane .split-pane-divider {
