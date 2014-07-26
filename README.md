@@ -4,6 +4,10 @@ AsciidocFX is editor for [Asciidoc Markup Language](http://www.methods.co.nz/asc
 
 It is a basic editor that reflects any changes in editor to Preview Pane immediately.
 
+#### Docbook and PDF support
+
+You can convert your Asciidoc Books to Docbook and PDF with single click.
+
 #### FullScreen Support
 
 Follow the View > Full Screen
@@ -25,14 +29,6 @@ Click "External Browser" in Preview Pane, your favorite browser will be opened.
 Follow the View > Generate Table
 
 <img src="http://kodcu.com/asciidocfx/ascii-table-generator.png" width="700" height="371"/>
-
-#### Recent Files Feature
-
-Follow the View > Recent files
-
-Your last worked files will be there.
-
-<img src="http://kodcu.com/asciidocfx/ascii-recent-files.png" width="700" height="371"/>
 
 #### Closable Tabs
 
