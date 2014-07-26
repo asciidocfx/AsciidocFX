@@ -61,10 +61,10 @@ In the left side of application,you can set your working directory. All listed d
 
 #### If you want not to build AsciidocFX, download the Native installers:
 <p><b>
-<a href="http://kodcu.com/asciidocfx/AsciidocFX-1.0.msi">AsciidocFX (Windows)</a>
+<a href="https://github.com/rahmanusta/AsciidocFX/releases/download/v1.0.1/AsciidocFX-1.0.1.msi.zip">AsciidocFX (Windows)</a>
 </b></p>
 <p><b>
-<a href="https://github.com/rahmanusta/AsciidocFX/releases/download/v1.0.0/AsciidocFX-1.0-1.x86_64.rpm">AsciidocFX (Linux)</a>
+<a href="https://github.com/rahmanusta/AsciidocFX/releases/download/v1.0.1/AsciidocFX-1.0-1.x86_64.rpm">AsciidocFX (Linux)</a>
 </b></p>
 Note:
 * Linux installer installes to /opt dir.
