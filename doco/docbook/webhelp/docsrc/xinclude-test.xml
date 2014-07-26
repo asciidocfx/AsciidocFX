@@ -1,0 +1,22 @@
+<!-- Converted by db4-upgrade version 1.0 -->
+
+<chapter xmlns="http://docbook.org/ns/docbook" version="5.0">
+    <info>
+        <title>Test section</title>
+    </info>
+
+    <section>
+        <info>
+            <title>Some search words for testing</title>
+        </info>
+
+        <para>arsenal, arsenic, buy, say, by, vary, try, sky, nucleus, day, key, currency, currencies, build.xml</para>
+    </section>
+    <section>
+        <info>
+            <title>Some search words for testing (inflected)</title>
+        </info>
+
+        <para>arsenal, arsenic, buys, says, varies, tries, skies, nuclei, days, keys, currencies, build.xml</para>
+    </section>
+</chapter>

@@ -52,14 +52,14 @@
     editor.setBehavioursEnabled(true);
     editor.session.setFoldStyle("manual");
     editor.focus();
-//
-//    editor.getSession().on('changeScrollTop', function () {
-//        window.scrollTo(0, editor.session.getScrollTop());
-//    });
+    //
+    //    editor.getSession().on('changeScrollTop', function () {
+    //        window.scrollTo(0, editor.session.getScrollTop());
+    //    });
 
     editor.getSession().on('changeScrollTop', function (scroll) {
         var maxTop = editor.renderer.layerConfig.maxHeight - editor.renderer.$size.scrollerHeight + editor.renderer.scrollMargin.bottom;
-        app.onscroll(editor.getSession().getScrollTop(),maxTop);
+        app.onscroll(editor.getSession().getScrollTop(), maxTop);
     });
 
     editor.getSession().on('change', function (obj) {

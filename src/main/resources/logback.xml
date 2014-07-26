@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <property name="LOG_FILE" value="usta.log"/>
+    <include resource="org/springframework/boot/logging/logback/base.xml"/>
+    <logger name="org.springframework" level="ERROR"/>
+    <logger name="org.apache.fop" level="DEBUG"/>
+    <logger name="com.kodcu" level="DEBUG"/>
+</configuration>

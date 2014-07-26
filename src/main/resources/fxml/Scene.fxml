@@ -2,38 +2,47 @@
 
 <?import java.lang.*?>
 <?import javafx.geometry.*?>
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.image.*?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.web.*?>
 <?import javafx.scene.web.WebView?>
 
-<AnchorPane id="AnchorPane" style="" styleClass="rootAnchor" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="com.kodcu.AsciiDocController">
+<AnchorPane id="AnchorPane" style="" styleClass="rootAnchor" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="com.kodcu.controller.AsciiDocController">
   <children>
-    <SplitPane fx:id="splitPane" dividerPositions="0.13966480446927373, 0.5899441340782123" focusTraversable="true" prefHeight="642.0" style="" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="28.0">
+    <SplitPane fx:id="splitPane" dividerPositions="0.07039106145251396, 0.5363128491620112" focusTraversable="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="28.0">
       <items>
         <AnchorPane id="AnchorPane" minWidth="0.0" opacity="1.0" prefHeight="641.0" prefWidth="107.0" style="" styleClass="anchor-pane" visible="true">
           <children>
             <ToolBar id="" fx:id="workingDirToolbar" maxHeight="-Infinity" minHeight="-Infinity" minWidth="0.0" orientation="HORIZONTAL" pickOnBounds="false" prefHeight="35.0" prefWidth="107.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
               <items>
-                <Button id="changeWorkingDir" fx:id="splitHideButton" cancelButton="false" defaultButton="false" mnemonicParsing="false" onAction="#hideLeftSplit" prefWidth="35.0" text="">
+                <Button id="changeWorkingDir" fx:id="splitHideButton" cancelButton="false" defaultButton="false" minWidth="-Infinity" mnemonicParsing="false" onAction="#hideLeftSplit" prefWidth="35.0" text="">
                   <tooltip>
                     <Tooltip text="Hide Pane" />
                   </tooltip>
                 </Button>
-                <Button fx:id="WorkingDirButton" cancelButton="false" defaultButton="false" mnemonicParsing="false" onAction="#changeWorkingDir" prefWidth="35.0" text="">
+                <Button fx:id="WorkingDirButton" cancelButton="false" defaultButton="false" minWidth="-Infinity" mnemonicParsing="false" onAction="#changeWorkingDir" prefWidth="35.0" text="">
                   <tooltip>
                     <Tooltip text="Change Working Directory" />
                   </tooltip>
                 </Button>
-                <Button fx:id="convertDocbook" mnemonicParsing="false" onAction="#convertDocbook" prefWidth="35.0" text="">
+                <Button fx:id="convertDocbook" minWidth="-Infinity" mnemonicParsing="false" onAction="#convertDocbook" prefWidth="35.0" text="">
                   <tooltip>
                     <Tooltip text="Generate Docbook" />
                   </tooltip>
                 </Button>
+                <Button fx:id="generatePdf" minWidth="-Infinity" mnemonicParsing="false" onAction="#generatePdf" prefWidth="35.0" text="">
+                  <tooltip>
+                    <Tooltip text="Generate PDF" />
+                  </tooltip>
+                </Button>
+                <ProgressIndicator fx:id="indikator" disable="false" focusTraversable="false" opacity="1.0" progress="-1.0" visible="false" />
               </items>
             </ToolBar>
-            <TreeView fx:id="treeView" minWidth="0.0" opacity="1.0" prefHeight="600.0" prefWidth="107.0" showRoot="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="46.0" />
+            <TreeView fx:id="treeView" minWidth="0.0" opacity="1.0" prefHeight="605.0" prefWidth="69.0" showRoot="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="35.0" />
           </children>
         </AnchorPane>
         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
@@ -48,7 +57,7 @@
         </AnchorPane>
       </items>
     </SplitPane>
-    <MenuBar fx:id="menubar" maxHeight="-1.0" maxWidth="-1.0" minHeight="-1.0" onMouseClicked="#menubar" onMouseEntered="#recentFileList" prefHeight="-1.0" prefWidth="-1.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+    <MenuBar fx:id="menubar" maxHeight="-1.0" maxWidth="-1.0" minHeight="-1.0" onMouseEntered="#recentFileList" prefHeight="-1.0" prefWidth="-1.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
       <menus>
         <Menu mnemonicParsing="false" text="">
           <graphic>

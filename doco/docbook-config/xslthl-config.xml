@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+
+xslthl - XSLT Syntax Highlighting
+http://sourceforge.net/projects/xslthl/
+Copyright (C) 2005-2012 Michal Molhanec, Jirka Kosek, Michiel Hendriks
+
+This software is provided 'as-is', without any express or implied
+warranty.  In no event will the authors be held liable for any damages
+arising from the use of this software.
+
+Permission is granted to anyone to use this software for any purpose,
+including commercial applications, and to alter it and redistribute it
+freely, subject to the following restrictions:
+
+1. The origin of this software must not be misrepresented; you must not
+   claim that you wrote the original software. If you use this software
+   in a product, an acknowledgment in the product documentation would be
+   appreciated but is not required.
+2. Altered source versions must be plainly marked as such, and must not be
+   misrepresented as being the original software.
+3. This notice may not be removed or altered from any source distribution.
+
+Michal Molhanec <mol1111 at users.sourceforge.net>
+Jirka Kosek <kosek at users.sourceforge.net>
+Michiel Hendriks <elmuerte at users.sourceforge.net>
+
+Customized for the Asciidoctor project (http://asciidoctor.org).
+Several of the lesser used languages have been removed.
+-->
+<xslthl-config>
+    <highlighter id="java" file="./xslthl/java-hl.xml"/>
+    <highlighter id="groovy" file="./xslthl/java-hl.xml"/>
+    <highlighter id="html" file="./xslthl/html-hl.xml"/>
+    <highlighter id="ini" file="./xslthl/ini-hl.xml"/>
+    <highlighter id="php" file="./xslthl/php-hl.xml"/>
+    <highlighter id="c" file="./xslthl/c-hl.xml"/>
+    <highlighter id="cpp" file="./xslthl/cpp-hl.xml"/>
+    <highlighter id="csharp" file="./xslthl/csharp-hl.xml"/>
+    <highlighter id="python" file="./xslthl/python-hl.xml"/>
+    <highlighter id="ruby" file="./xslthl/ruby-hl.xml"/>
+    <highlighter id="perl" file="./xslthl/perl-hl.xml"/>
+    <highlighter id="javascript" file="./xslthl/javascript-hl.xml"/>
+    <highlighter id="bash" file="./xslthl/bourne-hl.xml"/>
+    <highlighter id="css" file="./xslthl/css-hl.xml"/>
+    <highlighter id="sql" file="./xslthl/sql2003-hl.xml"/>
+    <highlighter id="asciidoc" file="./xslthl/asciidoc-hl.xml"/>
+    <namespace prefix="xslthl" uri="http://xslthl.sf.net"/>
+</xslthl-config>
