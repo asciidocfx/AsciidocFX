@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<catalog xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog">
-    <!-- XML Catalog file for DocBook XSL-NS v1.78.1 -->
-    <rewriteURI uriStartString="http://docbook.sourceforge.net/release/xsl-ns/current/" rewritePrefix="./"/>
-    <rewriteSystem systemIdStartString="http://docbook.sourceforge.net/release/xsl-ns/current/" rewritePrefix="./"/>
-    <rewriteURI uriStartString="http://docbook.sourceforge.net/release/xsl-ns/1.78.1/" rewritePrefix="./"/>
-    <rewriteSystem systemIdStartString="http://docbook.sourceforge.net/release/xsl-ns/1.78.1/" rewritePrefix="./"/>
-</catalog>
