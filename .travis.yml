@@ -2,7 +2,6 @@ language: java
 jdk:
 - oraclejdk8
 os:
-- osx
 - linux
 script: mvn clean install jfx:native
 before_script:
@@ -16,6 +15,6 @@ deploy:
   file: "/home/travis/build/rahmanusta/AsciidocFX/target/jfx/native/bundles/AsciidocFX-1.0.deb"
   file: "/home/travis/build/rahmanusta/AsciidocFX/target/jfx/native/bundles/AsciidocFX-1.0-2.x86_64.rpm"
   on:
-    tags: false
+    tags: true
     all_branches: true
     repo: rahmanusta/AsciidocFX
