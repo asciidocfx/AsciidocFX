@@ -29,7 +29,7 @@ public class DocoJarExtractorService {
 
         Path current = Paths.get("").toAbsolutePath();
 
-        if (Files.exists(current.resolve("doco/")))
+        if (Files.exists(current.resolve("doco/doco.cache")))
             return;
 
         Task<Void> task = new Task<Void>() {
@@ -70,6 +70,8 @@ public class DocoJarExtractorService {
                     }
 
                 }
+
+                Files.createFile(current.resolve("doco/doco.cache"));
 
                 logger.debug("***Doco extraction completed***");
 

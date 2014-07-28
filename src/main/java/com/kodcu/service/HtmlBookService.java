@@ -25,7 +25,7 @@ import static org.joox.JOOX.$;
  * Created by usta on 19.07.2014.
  */
 @Component
-public class DocBookService {
+public class HtmlBookService {
 
     @Autowired
     private AsciiDoctorRenderService docConverter;
@@ -33,13 +33,12 @@ public class DocBookService {
     @Autowired
     private AsciiDocController asciiDocController;
 
-
-    public void generateDocbook(WebEngine webEngine, Path currentPath, boolean showIndicator) {
+    public void generateHtml(WebEngine webEngine, Path currentPath, boolean showIndicator) {
         try {
             Path bookAsc = currentPath.resolve("book.asc");
 
             if (!Files.exists(bookAsc)) {
-                IOHelper.writeToFile(currentPath.resolve("book.xml"), "There is no book.asc file..", CREATE, TRUNCATE_EXISTING);
+                IOHelper.writeToFile(currentPath.resolve("book.html"), "There is no book.asc file..", CREATE, TRUNCATE_EXISTING);
                 return;
             }
 
@@ -55,8 +54,12 @@ public class DocBookService {
                     fadeIn.playFromStart();
                 });
 
+            StringBuffer allAscPart = new StringBuffer();
 
-            String bookRoot = docConverter.asciidocToDocbook(webEngine, IOHelper.readFile(bookAsc), true);
+            String rootAsc = IOHelper.readFile(bookAsc);
+            allAscPart.append(rootAsc);
+
+            String bookRoot = docConverter.asciidocToDocbook(webEngine, rootAsc, true);
 
             Match rootDocument;
 
@@ -68,34 +71,18 @@ public class DocBookService {
 
             for (Element elem : simparas) {
                 Path chapterPath = currentPath.resolve($(elem).find("link").attr("href"));
-                String chapterPart = docConverter.asciidocToDocbook(webEngine, IOHelper.readFile(currentPath.resolve(chapterPath)), true);
+                String chapterPart = IOHelper.readFile(currentPath.resolve(chapterPath));
+                allAscPart.append("\n");
+                allAscPart.append(chapterPart);
 
-                try (StringReader chapterReader = new StringReader(chapterPart);) {
-                    Match chapterPartial = $(new InputSource(chapterReader)).find("chapter");
-                    chapterPartial
-                            .find("imagedata");
-//                            .attr("width", "100%")
-//                            .attr("contentwidth", "100%")
-//                            .attr("scalefit", "1");
-                    $(elem).replaceWith(chapterPartial);
-                }
-            }
-            ;
+            };
 
+            String allHtml = docConverter.asciidocToHtml(webEngine, allAscPart.toString());
 
-            StringBuilder builder = new StringBuilder();
-            builder.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-            builder.append("\n");
-            builder.append("<?asciidoc-toc?>");
-            builder.append("\n");
-            builder.append("<?asciidoc-numbered?>");
-            builder.append("\n");
-            builder.append(rootDocument.content());
-
-            IOHelper.writeToFile(currentPath.resolve("book.xml"), builder.toString(), CREATE, TRUNCATE_EXISTING);
+            IOHelper.writeToFile(currentPath.resolve("book.html"), allHtml, CREATE, TRUNCATE_EXISTING);
 
             if (showIndicator)
-                asciiDocController.getHostServices().showDocument(currentPath.resolve("book.xml").toUri().toString());
+                asciiDocController.getHostServices().showDocument(currentPath.resolve("book.html").toUri().toString());
 
             if (showIndicator)
                 Platform.runLater(() -> {

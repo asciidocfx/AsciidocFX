@@ -4,10 +4,7 @@ package com.kodcu.controller;
 import com.kodcu.other.Current;
 import com.kodcu.other.IOHelper;
 import com.kodcu.other.Item;
-import com.kodcu.service.AsciiDoctorRenderService;
-import com.kodcu.service.DocBookService;
-import com.kodcu.service.FileBrowseService;
-import com.kodcu.service.FopPdfService;
+import com.kodcu.service.*;
 import com.sun.javafx.application.HostServicesDelegate;
 import de.jensd.fx.fontawesome.AwesomeDude;
 import de.jensd.fx.fontawesome.AwesomeIcon;
@@ -100,6 +97,9 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
     private DocBookService docBookController;
 
     @Autowired
+    private HtmlBookService htmlBookService;
+
+    @Autowired
     private FopPdfService fopServiceRunner;
 
     @Autowired
@@ -182,6 +182,14 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
         };
         new Thread(task).start();
 
+    }
+
+//    @FXML
+    private void generateHtml(ActionEvent event) {
+
+        Path currentPath = initialDirectory.map(path -> Files.isDirectory(path) ? path : path.getParent()).get();
+
+        htmlBookService.generateHtml(previewEngine, currentPath, true);
     }
 
 
@@ -406,7 +414,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
         WebEngine webEngine = webView.getEngine();
         webEngine.getLoadWorker().stateProperty().addListener((observableValue1, state, state2) -> {
             if (state2 == Worker.State.SUCCEEDED) {
-                webEngine.executeScript(String.format(waitForSetValue, IOHelper.readFile(path)));
+                webEngine.executeScript(String.format(waitForSetValue, IOHelper.normalize(IOHelper.readFile(path))));
             }
         });
 
@@ -528,7 +536,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
 
     @RequestMapping(value = {"/**/{extension:(?:\\w|\\W)+\\.(?:jpg|bmp|gif|jpeg|png|webp)$}"}, method = RequestMethod.GET)
     @ResponseBody
-    public ResponseEntity<byte[]> images(HttpServletRequest request, @PathVariable("extension") String extension) throws IOException {
+    public ResponseEntity<byte[]> images(HttpServletRequest request, @PathVariable("extension") String extension)  {
 
 
         Enumeration<String> headerNames = request.getHeaderNames();
@@ -538,11 +546,15 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
             uri = uri.substring(1);
 
         if (Objects.nonNull(current.currentPath())) {
-            Path imageFile = current.currentParentRoot().resolve(uri);
-            FileInputStream fileInputStream = new FileInputStream(imageFile.toFile());
-            temp = IOUtils.toByteArray(fileInputStream);
-            IOUtils.closeQuietly(fileInputStream);
-
+           try{
+               Path imageFile = current.currentParentRoot().resolve(uri);
+               FileInputStream fileInputStream = new FileInputStream(imageFile.toFile());
+               temp = IOUtils.toByteArray(fileInputStream);
+               IOUtils.closeQuietly(fileInputStream);
+           }
+           catch (Exception ex){
+               logger.debug(ex.getMessage(),ex);
+           }
         }
 
         return new ResponseEntity<>(temp, HttpStatus.OK);

@@ -54,7 +54,7 @@ public class IOHelper {
         try {
             InputStream is = Files.newInputStream(path, StandardOpenOption.READ);
             content = IOUtils.toString(is, "UTF-8");
-            content = normalize(content);
+//            content = normalize(content);
             IOUtils.closeQuietly(is);
         } catch (IOException e) {
             e.printStackTrace();
