@@ -15,7 +15,6 @@ import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ObservableValue;
-import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.concurrent.Worker;
 import javafx.event.ActionEvent;
@@ -189,12 +188,8 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
     @FXML
     private void maximize(Event event) {
 
-        // Get current screen of the stage
-        Rectangle2D rectangle2D = new Rectangle2D(stage.getX(), stage.getY(), stage.getWidth(), stage.getHeight());
-        ObservableList<Screen> screens = Screen.getScreensForRectangle(rectangle2D);
-
         // Change stage properties
-        Rectangle2D bounds = screens.get(0).getVisualBounds();
+        Rectangle2D bounds = Screen.getPrimary().getVisualBounds();
 
         if (bounds.getHeight() == stage.getHeight() && bounds.getWidth() == stage.getWidth()) {
             stage.setX(50);
@@ -271,8 +266,35 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
             sceneYOffset = event.getSceneY();
         });
         menubar.setOnMouseDragged(event -> {
-            getStage().setX(event.getScreenX() - sceneXOffset);
-            getStage().setY(event.getScreenY() - sceneYOffset);
+
+            double maxWidth = Screen.getPrimary().getVisualBounds().getWidth();
+            double maxHeight = Screen.getPrimary().getVisualBounds().getHeight();
+            double currentWidth = getStage().getWidth();
+            double currentXPosition = getStage().getX();
+
+
+            double kose = (getStage().getX() + event.getSceneX()) - maxWidth;
+
+            // Sag tarafa yaslan
+            if (kose >= -2 && kose <= 2 && ((100 * event.getSceneX()) / currentWidth) > 50) {
+                getStage().setHeight(maxHeight);
+                getStage().setY(0);
+                getStage().setX(maxWidth - currentWidth);
+            }
+            // Sol tarafa yaslan
+            else if ((getStage().getX() + event.getSceneX()) <= 2
+                    && (getStage().getX() + event.getSceneX()) >= -2
+                    && ((100 * event.getSceneX()) / currentWidth) < 50) {
+                getStage().setHeight(maxHeight);
+                getStage().setY(0);
+                getStage().setX(0);
+            }
+            // Dolan
+            else {
+                getStage().setX(event.getScreenX() - sceneXOffset);
+                getStage().setY(event.getScreenY() - sceneYOffset);
+            }
+
         });
 
         //

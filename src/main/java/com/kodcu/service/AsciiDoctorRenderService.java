@@ -2,6 +2,8 @@ package com.kodcu.service;
 
 import com.kodcu.other.IOHelper;
 import javafx.scene.web.WebEngine;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 /**
@@ -9,6 +11,8 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class AsciiDoctorRenderService {
+
+    private static Logger logger = LoggerFactory.getLogger(DocoJarExtractorService.class);
 
     public String asciidocToHtml(WebEngine webEngine, String text) {
         return (String) webEngine.executeScript(String.format("Opal.Asciidoctor.$render('%s');", IOHelper.normalize(text)));
@@ -21,7 +25,10 @@ public class AsciiDoctorRenderService {
             webEngine.executeScript("var headfoot=false;");
 
         webEngine.executeScript("var docbookOpts = Opal.hash2(['attributes','header_footer'], {'attributes': ['backend=docbook5', 'doctype=book'],'header_footer':headfoot});");
-        return (String) webEngine.executeScript("Opal.Asciidoctor.$render('" + IOHelper.normalize(text) + "',docbookOpts);");
+
+        String rendered = (String) webEngine.executeScript("Opal.Asciidoctor.$render('" + text + "',docbookOpts);");
+
+        return rendered;
 
     }
 }

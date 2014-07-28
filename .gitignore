@@ -10,6 +10,7 @@
 *.zip
 *.rar
 *.mobi
+*.epub
 *.pdf
 
 hs_err_pid*
@@ -32,3 +33,5 @@ Desktop.ini
 
 .svn
 .classpath
+
+*.log

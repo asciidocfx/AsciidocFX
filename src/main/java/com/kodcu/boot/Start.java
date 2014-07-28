@@ -23,6 +23,8 @@ import javafx.stage.StageStyle;
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 
+import java.awt.*;
+
 import static javafx.scene.input.KeyCombination.CONTROL_DOWN;
 
 
