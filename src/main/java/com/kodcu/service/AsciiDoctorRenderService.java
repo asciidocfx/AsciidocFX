@@ -26,7 +26,7 @@ public class AsciiDoctorRenderService {
 
         webEngine.executeScript("var docbookOpts = Opal.hash2(['attributes','header_footer'], {'attributes': ['backend=docbook5', 'doctype=book'],'header_footer':headfoot});");
 
-        String rendered = (String) webEngine.executeScript("Opal.Asciidoctor.$render('" + IOHelper.normalize(text) + "',docbookOpts);");
+        String rendered = (String) webEngine.executeScript(String.format("Opal.Asciidoctor.$render('%s',docbookOpts);",IOHelper.normalize(text)));
 
         return rendered;
 

@@ -1,43 +1,1001 @@
-(function(a){var b=a.nil,H=a.breaker,l=a.slice,p=a.module,q=a.klass,s=a.hash2,I=a.range,J=a.hash;return function(K){(function(k){k=p(k,"Extensions");var h=k._scope;(function(g,$super){function e(){}var f=e=q(g,$super,"Processor",e),c=f._proto,v=f._scope,n,z,t;c.config=b;(function(a){a._proto.$config=function(){var a;null==this.config&&(this.config=b);return!1!==(a=this.config)&&a!==b?a:this.config=s([],{})};a._proto.$option=function(b,a){return this.$config()["$[]="](b,a)};a._proto.$use_dsl=function(){var a;
-    return(a=this.$name()["$nil_or_empty?"]())===b||a._isBoolean&&!0!=a?(a=this.$constants().$grep("DSL"))===b||a._isBoolean&&!0!=a?b:this.$extend(this.$const_get("DSL")):(a=this.$constants().$grep("DSL"))===b||a._isBoolean&&!0!=a?b:this.$include(this.$const_get("DSL"))};a._proto.$extend_dsl=a._proto.$use_dsl;return a._proto.$include_dsl=a._proto.$use_dsl})(f.$singleton_class());f.$attr_reader("config");c.$initialize=function(b){null==b&&(b=s([],{}));return this.config=this.$class().$config().$merge(b)};
-    c.$update_config=function(b){return this.config.$update(b)};c.$process=function(b){var f;b=l.call(arguments,0);return this.$raise(null==(f=a.Object._scope.NotImplementedError)?a.cm("NotImplementedError"):f)};c.$create_block=function(b,a,f,c,e){null==e&&(e=s([],{}));return v.Block.$new(b,a,s(["source","attributes"],{source:f,attributes:c}).$merge(e))};c.$create_image_block=function(a,f,c){null==c&&(c=s([],{}));return this.$create_block(a,"image",b,f,c)};c.$create_inline=function(b,a,f,c){null==c&&
-    (c=s([],{}));return v.Inline.$new(b,a,f,c)};c.$parse_content=function(a,f,c){var e,g,n=b,C=b;null==c&&(c=s([],{}));for(n=(e=f["$is_a?"](v.Reader))===b||e._isBoolean&&!0!=e?v.Reader.$new(f):n;(g=n["$has_more_lines?"]())!==b&&(!g._isBoolean||!0==g);)if(C=v.Parser.$next_block(n,a,c),!1!==C&&C!==b)a["$<<"](C);return b};return(n=(z=[["create_paragraph","create_block","paragraph"],["create_open_block","create_block","open"],["create_example_block","create_block","example"],["create_pass_block","create_block",
-        "pass"],["create_listing_block","create_block","listing"],["create_literal_block","create_block","literal"],["create_anchor","create_inline","anchor"]]).$each,n._p=(t=function(a,c,f){var e=t._s||this,g,v;null==a&&(a=b);null==c&&(c=b);null==f&&(f=b);return(g=e.$define_method,g._p=(v=function(b){var a=v._s||this,d;b=l.call(arguments,0);return(d=a).$send.apply(d,[c].concat(b.$dup().$insert(1,f)))},v._s=e,v),g).call(e,a)},t._s=f,t),n).call(z)})(k,null);(function(g){g=p(g,"ProcessorDsl");var x=g._proto,
-    e;x.$option=function(b,a){return this.$config()["$[]="](b,a)};x.$process=e=function(f){var c,g,n=e._p||b;null==this.process_block&&(this.process_block=b);f=l.call(arguments,0);e._p=null;return n!==b?this.process_block=n:(c=this.process_block)===b||c._isBoolean&&!0!=c?this.$raise(null==(g=a.Object._scope.NotImplementedError)?a.cm("NotImplementedError"):g):(c=this.process_block).$call.apply(c,[].concat(f))};x["$process_block_given?"]=function(){var a;return(a=this.process_block,null!=a&&a!==b)?"instance-variable":
-    b};a.donate(g,["$option","$process","$process_block_given?"])})(k);(function(g,$super){function e(){}return((e=q(g,$super,"Preprocessor",e))._proto.$process=function(b,c){var e;return this.$raise(null==(e=a.Object._scope.NotImplementedError)?a.cm("NotImplementedError"):e)},b)&&"process"})(k,h.Processor);a.casgn(h.Preprocessor,"DSL",h.ProcessorDsl);(function(g,$super){function e(){}return((e=q(g,$super,"Treeprocessor",e))._proto.$process=function(b){var c;return this.$raise(null==(c=a.Object._scope.NotImplementedError)?
-    a.cm("NotImplementedError"):c)},b)&&"process"})(k,h.Processor);a.casgn(h.Treeprocessor,"DSL",h.ProcessorDsl);(function(g,$super){function e(){}return((e=q(g,$super,"Postprocessor",e))._proto.$process=function(b,c){var e;return this.$raise(null==(e=a.Object._scope.NotImplementedError)?a.cm("NotImplementedError"):e)},b)&&"process"})(k,h.Processor);a.casgn(h.Postprocessor,"DSL",h.ProcessorDsl);(function(g,$super){function e(){}var f=(e=q(g,$super,"IncludeProcessor",e))._proto;f.$process=function(b,f,
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      e){var g;return this.$raise(null==(g=a.Object._scope.NotImplementedError)?a.cm("NotImplementedError"):g)};return(f["$handles?"]=function(b){return!0},b)&&"handles?"})(k,h.Processor);a.casgn(h.IncludeProcessor,"DSL",h.ProcessorDsl);(function(g,$super){function e(){}var f=e=q(g,$super,"BlockProcessor",e),c=f._proto,v;c.config=b;f.$attr_accessor("name");c.$initialize=v=function(c,f){var e,g,h,k=b;null==c&&(c=b);null==f&&(f=s([],{}));v._p=null;a.find_super_dispatcher(this,"initialize",v,null).apply(this,
-    [f]);this.name=!1!==(e=c)&&e!==b?e:this.config["$[]"]("name");k=this.config["$[]"]("contexts");if((null==(e=a.Object._scope.NilClass)?a.cm("NilClass"):e)["$==="](k))e="contexts",g=this.config,!1!==(h=g["$[]"](e))&&h!==b?h:g["$[]="](e,["open","paragraph"].$to_set());else if((null==(e=a.Object._scope.Symbol)?a.cm("Symbol"):e)["$==="](k))this.config["$[]="]("contexts",[this.config["$[]"]("contexts")].$to_set());else this.config["$[]="]("contexts",this.config["$[]"]("contexts").$to_set());return e="content_model",
-    g=this.config,!1!==(h=g["$[]"](e))&&h!==b?h:g["$[]="](e,"compound")};return(c.$process=function(b,c,f){var e;return this.$raise(null==(e=a.Object._scope.NotImplementedError)?a.cm("NotImplementedError"):e)},b)&&"process"})(k,h.Processor);(function(g){g=p(g,"BlockProcessorDsl");var x=g._proto,e=g._scope;g.$include(e.ProcessorDsl);x.$named=function(a){var c;return(c=this["$is_a?"](e.Processor))===b||c._isBoolean&&!0!=c?this.$option("name",a):this.name=a};a.defn(g,"$match_name",x.$named);a.defn(g,"$bind_to",
-    x.$named);x.$contexts=function(b){b=l.call(arguments,0);return this.$option("contexts",b.$flatten())};a.defn(g,"$on_contexts",x.$contexts);a.defn(g,"$on_context",x.$contexts);x.$content_model=function(b){return this.$option("content_model",b)};a.defn(g,"$parse_content_as",x.$content_model);x.$pos_attrs=function(b){b=l.call(arguments,0);return this.$option("pos_attrs",b.$flatten())};a.defn(g,"$map_attributes",x.$pos_attrs);a.defn(g,"$name_positional_attributes",x.$pos_attrs);x.$default_attrs=function(b){return this.$option("default_attrs",
-    b)};a.defn(g,"$seed_attributes_with",x.$default_attrs);a.donate(g,"$named $match_name $bind_to $contexts $on_contexts $on_context $content_model $parse_content_as $pos_attrs $map_attributes $name_positional_attributes $default_attrs $seed_attributes_with".split(" "))})(k);a.casgn(h.BlockProcessor,"DSL",h.BlockProcessorDsl);(function(g,$super){function e(){}var f=e=q(g,$super,"MacroProcessor",e),c=f._proto,v;c.config=b;f.$attr_accessor("name");c.$initialize=v=function(c,e){var f,g,h;null==c&&(c=b);
-    null==e&&(e=s([],{}));v._p=null;a.find_super_dispatcher(this,"initialize",v,null).apply(this,[e]);this.name=!1!==(f=c)&&f!==b?f:this.config["$[]"]("name");return f="content_model",g=this.config,!1!==(h=g["$[]"](f))&&h!==b?h:g["$[]="](f,"attributes")};return(c.$process=function(b,c,e){var f;return this.$raise(null==(f=a.Object._scope.NotImplementedError)?a.cm("NotImplementedError"):f)},b)&&"process"})(k,h.Processor);(function(g){g=p(g,"MacroProcessorDsl");var h=g._proto,e=g._scope;g.$include(e.ProcessorDsl);
-    h.$named=function(a){var c;return(c=this["$is_a?"](e.Processor))===b||c._isBoolean&&!0!=c?this.$option("name",a):this.name=a};a.defn(g,"$match_name",h.$named);a.defn(g,"$bind_to",h.$named);h.$content_model=function(b){return this.$option("content_model",b)};a.defn(g,"$parse_content_as",h.$content_model);h.$pos_attrs=function(b){b=l.call(arguments,0);return this.$option("pos_attrs",b.$flatten())};a.defn(g,"$map_attributes",h.$pos_attrs);a.defn(g,"$name_positional_attributes",h.$pos_attrs);h.$default_attrs=
-        function(b){return this.$option("default_attrs",b)};a.defn(g,"$seed_attributes_with",h.$default_attrs);a.donate(g,"$named $match_name $bind_to $content_model $parse_content_as $pos_attrs $map_attributes $name_positional_attributes $default_attrs $seed_attributes_with".split(" "))})(k);(function(a,$super){function e(){}e=q(a,$super,"BlockMacroProcessor",e);return b})(k,h.MacroProcessor);a.casgn(h.BlockMacroProcessor,"DSL",h.MacroProcessorDsl);(function(g,$super){function e(){}var f=(e=q(g,$super,"InlineMacroProcessor",
-    e))._proto,c;f.config=f.name=b;f.$initialize=c=function(e,f){var g=l.call(arguments,0),h,k,q=c._p;null==f&&(f=s([],{}));c._p=null;a.find_super_dispatcher(this,"initialize",c,q).apply(this,g);return h=this.config,!1!==(k=h["$[]"]("regexp"))&&k!==b?k:h["$[]="]("regexp",this.$resolve_regexp(this.name,this.config["$[]"]("format")))};return(f.$resolve_regexp=function(b,a){return a["$=="]("short")?new RegExp("\\\\?"+b+":\\[((?:\\\\\\]|[^\\]])*?)\\]"):new RegExp("\\\\?"+b+":(\\S+?)\\[((?:\\\\\\]|[^\\]])*?)\\]")},
-    b)&&"resolve_regexp"})(k,h.MacroProcessor);(function(b){b=p(b,"InlineMacroProcessorDsl");var h=b._proto;b.$include(b._scope.MacroProcessorDsl);h.$using_format=function(b){return this.$option("format",b)};h.$match=function(b){return this.$option("regexp",b)};a.donate(b,["$using_format","$match"])})(k);a.casgn(h.InlineMacroProcessor,"DSL",h.InlineMacroProcessorDsl);(function(a,$super){function e(){}var f=e=q(a,$super,"Extension",e),c=f._proto;f.$attr("kind");f.$attr("config");f.$attr("instance");return(c.$initialize=
-    function(b,a,c){this.kind=b;this.instance=a;return this.config=c},b)&&"initialize"})(k,null);(function(g,$super){function e(){}var f=e=q(g,$super,"ProcessorExtension",e),c=f._proto,h;f.$attr("process_method");return(c.$initialize=h=function(c,e,f){var g;null==f&&(f=b);h._p=null;a.find_super_dispatcher(this,"initialize",h,null).apply(this,[c,e,e.$config()]);return this.process_method=!1!==(g=f)&&g!==b?g:e.$method("process")},b)&&"initialize"})(k,h.Extension);(function(g,$super){function e(){}var f=
-    e=q(g,$super,"Group",e),c=f._proto;(function(a){var c=a._scope;return(a._proto.$register=function(a){null==a&&(a=b);return c.Extensions.$register(a,this)},b)&&"register"})(f.$singleton_class());return(c.$activate=function(b){var c;return this.$raise(null==(c=a.Object._scope.NotImplementedError)?a.cm("NotImplementedError"):c)},b)&&"activate"})(k,null);(function(g,$super){function e(){}var f=e=q(g,$super,"Registry",e),c=f._proto,h=f._scope,n,k,t,B,p,D,E,F,G;c.groups=c.preprocessor_extensions=c.treeprocessor_extensions=
-    c.postprocessor_extensions=c.include_processor_extensions=c.block_extensions=c.block_macro_extensions=c.inline_macro_extensions=b;f.$attr_reader("document");f.$attr_reader("groups");c.$initialize=function(a){null==a&&(a=s([],{}));this.groups=a;return this.document=this.block_extensions=this.block_macro_extensions=this.inline_macro_extensions=this.preprocessor_extensions=this.treeprocessor_extensions=this.postprocessor_extensions=this.include_processor_extensions=b};c.$activate=function(c){var e,d,
-    f;this.document=c;(e=(d=h.Extensions.$groups().$values()["$+"](this.groups.$values())).$each,e._p=(f=function(c){var d=f._s||this,e,g=b;null==c&&(c=b);g=c;(null==(e=a.Object._scope.Proc)?a.cm("Proc"):e)["$==="](g)?(g=c.$arity(),c=0["$==="](g)||-1["$==="](g)?(e=d.$instance_exec,e._p=c.$to_proc(),e).call(d):1["$==="](g)?c.$call(d):b):c=(null==(e=a.Object._scope.Class)?a.cm("Class"):e)["$==="](g)?c.$new().$activate(d):c.$activate(d);return c},f._s=this,f),e).call(d);return this};c.$preprocessor=n=function(a){var c,
-    d=n._p||b;a=l.call(arguments,0);n._p=null;return(c=this.$add_document_processor,c._p=d.$to_proc(),c).call(this,"preprocessor",a)};c["$preprocessors?"]=function(){return this.preprocessor_extensions["$!"]()["$!"]()};c.$preprocessors=function(){return this.preprocessor_extensions};c.$treeprocessor=k=function(a){var c,d=k._p||b;a=l.call(arguments,0);k._p=null;return(c=this.$add_document_processor,c._p=d.$to_proc(),c).call(this,"treeprocessor",a)};c["$treeprocessors?"]=function(){return this.treeprocessor_extensions["$!"]()["$!"]()};
-    c.$treeprocessors=function(){return this.treeprocessor_extensions};c.$postprocessor=t=function(a){var c,d=t._p||b;a=l.call(arguments,0);t._p=null;return(c=this.$add_document_processor,c._p=d.$to_proc(),c).call(this,"postprocessor",a)};c["$postprocessors?"]=function(){return this.postprocessor_extensions["$!"]()["$!"]()};c.$postprocessors=function(){return this.postprocessor_extensions};c.$include_processor=B=function(a){var c,d=B._p||b;a=l.call(arguments,0);B._p=null;return(c=this.$add_document_processor,
-        c._p=d.$to_proc(),c).call(this,"include_processor",a)};c["$include_processors?"]=function(){return this.include_processor_extensions["$!"]()["$!"]()};c.$include_processors=function(){return this.include_processor_extensions};c.$block=p=function(a){var c,d=p._p||b;a=l.call(arguments,0);p._p=null;return(c=this.$add_syntax_processor,c._p=d.$to_proc(),c).call(this,"block",a)};c["$blocks?"]=function(){return this.block_extensions["$!"]()["$!"]()};c["$registered_for_block?"]=function(a,c){var d,e=b;return(d=
-        e=this.block_extensions["$[]"](a.$to_sym()))===b||d._isBoolean&&!0!=d?!1:(d=e.$config()["$[]"]("contexts")["$include?"](c))===b||d._isBoolean&&!0!=d?!1:e};c.$find_block_extension=function(b){return this.block_extensions["$[]"](b.$to_sym())};c.$block_macro=D=function(a){var c,d=D._p||b;a=l.call(arguments,0);D._p=null;return(c=this.$add_syntax_processor,c._p=d.$to_proc(),c).call(this,"block_macro",a)};c["$block_macros?"]=function(){return this.block_macro_extensions["$!"]()["$!"]()};c["$registered_for_block_macro?"]=
-        function(a){var c,d=b;return(c=d=this.block_macro_extensions["$[]"](a.$to_sym()))===b||c._isBoolean&&!0!=c?!1:d};c.$find_block_macro_extension=function(b){return this.block_macro_extensions["$[]"](b.$to_sym())};c.$inline_macro=E=function(a){var c,d=E._p||b;a=l.call(arguments,0);E._p=null;return(c=this.$add_syntax_processor,c._p=d.$to_proc(),c).call(this,"inline_macro",a)};c["$inline_macros?"]=function(){return this.inline_macro_extensions["$!"]()["$!"]()};c["$registered_for_inline_macro?"]=function(a){var c,
-        d=b;return(c=d=this.inline_macro_extensions["$[]"](a.$to_sym()))===b||c._isBoolean&&!0!=c?!1:d};c.$find_inline_macro_extension=function(b){return this.inline_macro_extensions["$[]"](b.$to_sym())};c.$inline_macros=function(){return this.inline_macro_extensions.$values()};f.$private();c.$add_document_processor=F=function(c,e){var d,f,g,k,n,A,z,l=this,q=F._p||b,w=b,y=b,s=b,r=b,p=y=b,m=b,u=b,t=b;F._p=null;w=c.$to_s().$tr("_"," ");y=(d=(f=w.$split(" ")).$map,d._p=(g=function(a){null==a&&(a=b);return""+
-        a.$chr().$upcase()+a["$[]"](I(1,-1,!1))},g._s=l,g),d).call(f).$join().$to_sym();s=h.Extensions.$const_get(y);r=(d=null==a.Object._scope.AsciidoctorJ?b:"constant")===b||d._isBoolean&&!0!=d?b:(null==(d=a.Object._scope.AsciidoctorJ)?a.cm("AsciidoctorJ"):d)._scope.Extensions.$const_get(y);y=!1!==(d=l.$instance_variable_get(("@"+c+"_extensions").$to_sym()))&&d!==b?d:l.$instance_variable_set(("@"+c+"_extensions").$to_sym(),[]);p=function(){if(q!==b)return m=l.$resolve_args(e,1),u=s.$new(m),u.$singleton_class().$include_dsl(),
-        (d=(k=u).$instance_exec,d._p=q.$to_proc(),d).call(k),u.$freeze(),((d=u["$process_block_given?"]())===b||d._isBoolean&&!0!=d)&&l.$raise((null==(d=a.Object._scope.ArgumentError)?a.cm("ArgumentError"):d).$new("No block specified to process "+w+" extension at "+q.$source_location())),h.ProcessorExtension.$new(c,u);d=a.to_ary(l.$resolve_args(e,2));u=null==d[0]?b:d[0];m=null==d[1]?b:d[1];if((d=!1!==(n=u["$is_a?"](null==(A=a.Object._scope.Class)?a.cm("Class"):A))&&n!==b?n:(A=u["$is_a?"](null==(z=a.Object._scope.String)?
-        a.cm("String"):z),!1!==A&&A!==b?u=h.Extensions.$class_for_name(u):A))===b||d._isBoolean&&!0!=d){if((d=!1!==(n=u["$is_a?"](s))&&n!==b?n:(A=!1!==r&&r!==b)?u["$is_a?"](r):A)===b||d._isBoolean&&!0!=d)return l.$raise((null==(d=a.Object._scope.ArgumentError)?a.cm("ArgumentError"):d).$new("Invalid arguments specified for registering "+w+" extension: "+e));u.$update_config(m);u.$freeze();return h.ProcessorExtension.$new(c,u)}((d=!1!==(n=u["$<"](s))&&n!==b?n:(A=!1!==r&&r!==b)?u["$<"](r):A)===b||d._isBoolean&&
-        !0!=d)&&l.$raise((null==(d=a.Object._scope.ArgumentError)?a.cm("ArgumentError"):d).$new("Invalid type for "+w+" extension: "+u));t=u.$new(m);t.$freeze();return h.ProcessorExtension.$new(c,t)}();return p.$config()["$[]"]("position")["$=="](">>")?y.$unshift(p):y["$<<"](p)};c.$add_syntax_processor=G=function(c,e){var d,f,g,n,k,l,q,z=G._p||b,p=b,w=b,y=b,t=w=b,r=y=b,B=b,m=b,w=b;G._p=null;p=c.$to_s().$tr("_"," ");w=(d=(f=p.$split(" ")).$map,d._p=(g=function(a){null==a&&(a=b);return""+a.$chr().$upcase()+
-        a["$[]"](I(1,-1,!1))},g._s=this,g),d).call(f).$join();y=(""+w+"Processor").$to_sym();w=h.Extensions.$const_get(y);t=(d=null==a.Object._scope.AsciidoctorJ?b:"constant")===b||d._isBoolean&&!0!=d?b:(null==(d=a.Object._scope.AsciidoctorJ)?a.cm("AsciidoctorJ"):d)._scope.Extensions.$const_get(y);y=!1!==(d=this.$instance_variable_get(("@"+c+"_extensions").$to_sym()))&&d!==b?d:this.$instance_variable_set(("@"+c+"_extensions").$to_sym(),s([],{}));if(z!==b){d=a.to_ary(this.$resolve_args(e,2));r=null==d[0]?
-        b:d[0];B=null==d[1]?b:d[1];m=w.$new(this.$as_symbol(r),B);(function(b){return b.$include_dsl()})(m.$singleton_class());if(z.$arity()["$=="](1)){if(a.$yield1(z,m)===H)return H.$v}else(d=(n=m).$instance_exec,d._p=z.$to_proc(),d).call(n);((d=r=this.$as_symbol(m.$name()))===b||d._isBoolean&&!0!=d)&&this.$raise((null==(d=a.Object._scope.ArgumentError)?a.cm("ArgumentError"):d).$new("No name specified for "+p+" extension at "+z.$source_location()));((d=m["$process_block_given?"]())===b||d._isBoolean&&!0!=
-        d)&&this.$raise((null==(d=a.Object._scope.NoMethodError)?a.cm("NoMethodError"):d).$new("No block specified to process "+p+" extension at "+z.$source_location()));m.$freeze();return y["$[]="](r,h.ProcessorExtension.$new(c,m))}d=a.to_ary(this.$resolve_args(e,3));m=null==d[0]?b:d[0];r=null==d[1]?b:d[1];B=null==d[2]?b:d[2];if((d=!1!==(k=m["$is_a?"](null==(l=a.Object._scope.Class)?a.cm("Class"):l))&&k!==b?k:(l=m["$is_a?"](null==(q=a.Object._scope.String)?a.cm("String"):q),!1!==l&&l!==b?m=h.Extensions.$class_for_name(m):
-        l))===b||d._isBoolean&&!0!=d){if((d=!1!==(k=m["$is_a?"](w))&&k!==b?k:(l=!1!==t&&t!==b)?m["$is_a?"](t):l)===b||d._isBoolean&&!0!=d)return this.$raise((null==(d=a.Object._scope.ArgumentError)?a.cm("ArgumentError"):d).$new("Invalid arguments specified for registering "+p+" extension: "+e));m.$update_config(B);((d=r=!1!==r&&r!==b?m["$name="](this.$as_symbol(r)):this.$as_symbol(m.$name()))===b||d._isBoolean&&!0!=d)&&this.$raise((null==(d=a.Object._scope.ArgumentError)?a.cm("ArgumentError"):d).$new("No name specified for "+
-        p+" extension: "+m));m.$freeze();return y["$[]="](r,h.ProcessorExtension.$new(c,m))}((d=!1!==(k=m["$<"](w))&&k!==b?k:(l=!1!==t&&t!==b)?m["$<"](t):l)===b||d._isBoolean&&!0!=d)&&this.$raise((null==(d=a.Object._scope.ArgumentError)?a.cm("ArgumentError"):d).$new("Class specified for "+p+" extension does not inherit from "+w+": "+m));w=m.$new(this.$as_symbol(r),B);((d=r=this.$as_symbol(w.$name()))===b||d._isBoolean&&!0!=d)&&this.$raise((null==(d=a.Object._scope.ArgumentError)?a.cm("ArgumentError"):d).$new("No name specified for "+
-        p+" extension: "+m));m.$freeze();return y["$[]="](r,h.ProcessorExtension.$new(c,w))};c.$resolve_args=function(c,e){var d,f,g=b,h=b,k=b,g=(d=c["$[]"](-1)["$is_a?"](null==(f=a.Object._scope.Hash)?a.cm("Hash"):f))===b||d._isBoolean&&!0!=d?s([],{}):c.$pop();if(e["$=="](1))return g;h=c.$size();(k=e["$-"](1)["$-"](h))["$>"](0)?c.$fill(b,h,k):k["$<"](0)&&c.$pop(k["$-@"]());c["$<<"](g);return c};return(c.$as_symbol=function(c){var e,d;return!1!==c&&c!==b?(e=c["$is_a?"](null==(d=a.Object._scope.Symbol)?a.cm("Symbol"):
-        d))===b||e._isBoolean&&!0!=e?c.$to_sym():c:b},b)&&"as_symbol"})(k,null);(function(g){var h=g._scope;g._proto.$generate_name=function(){return"extgrp"+this.$next_auto_id()};g._proto.$next_auto_id=function(){var a;null==this.auto_id&&(this.auto_id=b);!1!==(a=this.auto_id)&&a!==b?a:this.auto_id=-1;return this.auto_id=this.auto_id["$+"](1)};g._proto.$groups=function(){var a;null==this.groups&&(this.groups=b);return!1!==(a=this.groups)&&a!==b?a:this.groups=s([],{})};g._proto.$build_registry=TMP_20=function(a){var f,
-    c=TMP_20._p||b;null==a&&(a=b);TMP_20._p=null;return c!==b?(!1!==(f=a)&&f!==b?f:a=this.$generate_name(),h.Registry.$new(J(a,c))):h.Registry.$new()};g._proto.$register=TMP_21=function(e){var f,c=TMP_21._p||b,g=b,h=b,k=h=b,k=b;e=l.call(arguments,0);TMP_21._p=null;g=e.$length();c===b&&((f=(h=e.$pop())["$!"]())===b||f._isBoolean&&!0!=f?(k=h,c=(null==(f=a.Object._scope.Class)?a.cm("Class"):f)["$==="](k)?h:(null==(f=a.Object._scope.String)?a.cm("String"):f)["$==="](k)?this.$class_for_name(h):(null==(f=a.Object._scope.Symbol)?
-    a.cm("Symbol"):f)["$==="](k)?this.$class_for_name(h.$to_s()):h):c=this.$raise((null==(f=a.Object._scope.ArgumentError)?a.cm("ArgumentError"):f).$new("Extension group to register not specified")));h=c;k=!1!==(f=e.$pop())&&f!==b?f:this.$generate_name();((f=e["$empty?"]())===b||f._isBoolean&&!0!=f)&&this.$raise((null==(f=a.Object._scope.ArgumentError)?a.cm("ArgumentError"):f).$new("Wrong number of arguments ("+g+" for 1..2)"));return this.$groups()["$[]="](k,h)};g._proto.$unregister_all=function(){return this.groups=
-    s([],{})};g._proto.$resolve_class=function(e){var f,c;return(f=e["$is_a?"](null==(c=a.Object._scope.Class)?a.cm("Class"):c))===b||f._isBoolean&&!0!=f?this.$class_for_name(e.$to_s()):e};return(g._proto.$class_for_name=function(e){var f,c,g,h=b,h=null==(f=a.Object._scope.Object)?a.cm("Object"):f;(f=(c=e.$split("::")).$each,f._p=(g=function(a){var c=g._s||this,f;null==a&&(a=b);return(f=a["$empty?"]())===b||f._isBoolean&&!0!=f?(f=h["$const_defined?"](a))===b||f._isBoolean&&!0!=f?c.$raise("Could not resolve class for name: "+
-    e):h=h.$const_get(a):b},g._s=this,g),f).call(c);return h},b)&&"class_for_name"})(k.$singleton_class())})(p(K,"Asciidoctor"))}(a.top)})(Opal);
+/* Generated by Opal 0.6.2 */
+(function($opal) {
+    var self = $opal.top, $scope = $opal, nil = $opal.nil, $breaker = $opal.breaker, $slice = $opal.slice, $module = $opal.module, $klass = $opal.klass, $hash2 = $opal.hash2, $range = $opal.range, $hash = $opal.hash;
+
+    return (function($base) {
+        var self = $module($base, 'Asciidoctor');
+
+        var def = self._proto, $scope = self._scope;
+
+        (function($base) {
+            var self = $module($base, 'Extensions');
+
+            var def = self._proto, $scope = self._scope;
+
+            (function($base, $super) {
+                function $Processor(){};
+                var self = $Processor = $klass($base, $super, 'Processor', $Processor);
+
+                var def = self._proto, $scope = self._scope, $a, $b, TMP_1;
+
+                def.config = nil;
+                (function(self) {
+                    var $scope = self._scope, def = self._proto;
+
+                    self._proto.$config = function() {
+                        var $a, self = this;
+                        if (self.config == null) self.config = nil;
+
+                        return ((($a = self.config) !== false && $a !== nil) ? $a : self.config = $hash2([], {}));
+                    };
+                    self._proto.$option = function(key, default_value) {
+                        var self = this;
+
+                        return self.$config()['$[]='](key, default_value);
+                    };
+                    self._proto.$use_dsl = function() {
+                        var $a, self = this;
+
+                        if ((($a = self.$name()['$nil_or_empty?']()) !== nil && (!$a._isBoolean || $a == true))) {
+                            if ((($a = self.$constants().$grep("DSL")) !== nil && (!$a._isBoolean || $a == true))) {
+                                return self.$include(self.$const_get("DSL"))
+                            } else {
+                                return nil
+                            }
+                        } else if ((($a = self.$constants().$grep("DSL")) !== nil && (!$a._isBoolean || $a == true))) {
+                            return self.$extend(self.$const_get("DSL"))
+                        } else {
+                            return nil
+                        };
+                    };
+                    self._proto.$extend_dsl = self._proto.$use_dsl;
+                    return self._proto.$include_dsl = self._proto.$use_dsl;
+                })(self.$singleton_class());
+
+                self.$attr_reader("config");
+
+                def.$initialize = function(config) {
+                    var self = this;
+
+                    if (config == null) {
+                        config = $hash2([], {})
+                    }
+                    return self.config = self.$class().$config().$merge(config);
+                };
+
+                def.$update_config = function(config) {
+                    var self = this;
+
+                    return self.config.$update(config);
+                };
+
+                def.$process = function(args) {
+                    var $a, self = this;
+
+                    args = $slice.call(arguments, 0);
+                    return self.$raise((($a = $opal.Object._scope.NotImplementedError) == null ? $opal.cm('NotImplementedError') : $a));
+                };
+
+                def.$create_block = function(parent, context, source, attrs, opts) {
+                    var self = this;
+
+                    if (opts == null) {
+                        opts = $hash2([], {})
+                    }
+                    return $scope.Block.$new(parent, context, $hash2(["source", "attributes"], {"source": source, "attributes": attrs}).$merge(opts));
+                };
+
+                def.$create_image_block = function(parent, attrs, opts) {
+                    var self = this;
+
+                    if (opts == null) {
+                        opts = $hash2([], {})
+                    }
+                    return self.$create_block(parent, "image", nil, attrs, opts);
+                };
+
+                def.$create_inline = function(parent, context, text, opts) {
+                    var self = this;
+
+                    if (opts == null) {
+                        opts = $hash2([], {})
+                    }
+                    return $scope.Inline.$new(parent, context, text, opts);
+                };
+
+                def.$parse_content = function(parent, content, attributes) {
+                    var $a, $b, self = this, reader = nil, block = nil;
+
+                    if (attributes == null) {
+                        attributes = $hash2([], {})
+                    }
+                    reader = (function() {if ((($a = (content['$is_a?']($scope.Reader))) !== nil && (!$a._isBoolean || $a == true))) {
+                        return reader
+                    } else {
+                        return ($scope.Reader.$new(content))
+                    }; return nil; })();
+                    while ((($b = reader['$has_more_lines?']()) !== nil && (!$b._isBoolean || $b == true))) {
+                        block = $scope.Parser.$next_block(reader, parent, attributes);
+                        if (block !== false && block !== nil) {
+                            parent['$<<'](block)};};
+                    return nil;
+                };
+
+                return ($a = ($b = [["create_paragraph", "create_block", "paragraph"], ["create_open_block", "create_block", "open"], ["create_example_block", "create_block", "example"], ["create_pass_block", "create_block", "pass"], ["create_listing_block", "create_block", "listing"], ["create_literal_block", "create_block", "literal"], ["create_anchor", "create_inline", "anchor"]]).$each, $a._p = (TMP_1 = function(method_name, delegate_method_name, context){var self = TMP_1._s || this, $a, $b, TMP_2;
+                    if (method_name == null) method_name = nil;if (delegate_method_name == null) delegate_method_name = nil;if (context == null) context = nil;
+                    return ($a = ($b = self).$define_method, $a._p = (TMP_2 = function(args){var self = TMP_2._s || this, $a;
+                        args = $slice.call(arguments, 0);
+                        return ($a = self).$send.apply($a, [delegate_method_name].concat(args.$dup().$insert(1, context)))}, TMP_2._s = self, TMP_2), $a).call($b, method_name)}, TMP_1._s = self, TMP_1), $a).call($b);
+            })(self, null);
+
+            (function($base) {
+                var self = $module($base, 'ProcessorDsl');
+
+                var def = self._proto, $scope = self._scope, TMP_3;
+
+                def.$option = function(key, value) {
+                    var self = this;
+
+                    return self.$config()['$[]='](key, value);
+                };
+
+                def.$process = TMP_3 = function(args) {
+                    var $a, $b, self = this, $iter = TMP_3._p, block = $iter || nil;
+                    if (self.process_block == null) self.process_block = nil;
+
+                    args = $slice.call(arguments, 0);
+                    TMP_3._p = null;
+                    if ((block !== nil)) {
+                        return self.process_block = block
+                    } else if ((($a = self.process_block) !== nil && (!$a._isBoolean || $a == true))) {
+                        return ($a = self.process_block).$call.apply($a, [].concat(args))
+                    } else {
+                        return self.$raise((($b = $opal.Object._scope.NotImplementedError) == null ? $opal.cm('NotImplementedError') : $b))
+                    };
+                };
+
+                def['$process_block_given?'] = function() {
+                    var $a, self = this;
+
+                    return (($a = self['process_block'], $a != null && $a !== nil) ? 'instance-variable' : nil);
+                };
+                ;$opal.donate(self, ["$option", "$process", "$process_block_given?"]);
+            })(self);
+
+            (function($base, $super) {
+                function $Preprocessor(){};
+                var self = $Preprocessor = $klass($base, $super, 'Preprocessor', $Preprocessor);
+
+                var def = self._proto, $scope = self._scope;
+
+                return (def.$process = function(document, reader) {
+                    var $a, self = this;
+
+                    return self.$raise((($a = $opal.Object._scope.NotImplementedError) == null ? $opal.cm('NotImplementedError') : $a));
+                }, nil) && 'process'
+            })(self, $scope.Processor);
+
+            $opal.casgn($scope.Preprocessor, 'DSL', $scope.ProcessorDsl);
+
+            (function($base, $super) {
+                function $Treeprocessor(){};
+                var self = $Treeprocessor = $klass($base, $super, 'Treeprocessor', $Treeprocessor);
+
+                var def = self._proto, $scope = self._scope;
+
+                return (def.$process = function(document) {
+                    var $a, self = this;
+
+                    return self.$raise((($a = $opal.Object._scope.NotImplementedError) == null ? $opal.cm('NotImplementedError') : $a));
+                }, nil) && 'process'
+            })(self, $scope.Processor);
+
+            $opal.casgn($scope.Treeprocessor, 'DSL', $scope.ProcessorDsl);
+
+            (function($base, $super) {
+                function $Postprocessor(){};
+                var self = $Postprocessor = $klass($base, $super, 'Postprocessor', $Postprocessor);
+
+                var def = self._proto, $scope = self._scope;
+
+                return (def.$process = function(document, output) {
+                    var $a, self = this;
+
+                    return self.$raise((($a = $opal.Object._scope.NotImplementedError) == null ? $opal.cm('NotImplementedError') : $a));
+                }, nil) && 'process'
+            })(self, $scope.Processor);
+
+            $opal.casgn($scope.Postprocessor, 'DSL', $scope.ProcessorDsl);
+
+            (function($base, $super) {
+                function $IncludeProcessor(){};
+                var self = $IncludeProcessor = $klass($base, $super, 'IncludeProcessor', $IncludeProcessor);
+
+                var def = self._proto, $scope = self._scope;
+
+                def.$process = function(reader, target, attributes) {
+                    var $a, self = this;
+
+                    return self.$raise((($a = $opal.Object._scope.NotImplementedError) == null ? $opal.cm('NotImplementedError') : $a));
+                };
+
+                return (def['$handles?'] = function(target) {
+                    var self = this;
+
+                    return true;
+                }, nil) && 'handles?';
+            })(self, $scope.Processor);
+
+            $opal.casgn($scope.IncludeProcessor, 'DSL', $scope.ProcessorDsl);
+
+            (function($base, $super) {
+                function $BlockProcessor(){};
+                var self = $BlockProcessor = $klass($base, $super, 'BlockProcessor', $BlockProcessor);
+
+                var def = self._proto, $scope = self._scope, TMP_4;
+
+                def.config = nil;
+                self.$attr_accessor("name");
+
+                def.$initialize = TMP_4 = function(name, config) {
+                    var $a, $b, $c, self = this, $iter = TMP_4._p, $yield = $iter || nil, $case = nil;
+
+                    if (name == null) {
+                        name = nil
+                    }
+                    if (config == null) {
+                        config = $hash2([], {})
+                    }
+                    TMP_4._p = null;
+                    $opal.find_super_dispatcher(self, 'initialize', TMP_4, null).apply(self, [config]);
+                    self.name = ((($a = name) !== false && $a !== nil) ? $a : self.config['$[]']("name"));
+                    $case = self.config['$[]']("contexts");if ((($a = $opal.Object._scope.NilClass) == null ? $opal.cm('NilClass') : $a)['$===']($case)) {($a = "contexts", $b = self.config, ((($c = $b['$[]']($a)) !== false && $c !== nil) ? $c : $b['$[]=']($a, ["open", "paragraph"].$to_set())))}else if ((($a = $opal.Object._scope.Symbol) == null ? $opal.cm('Symbol') : $a)['$===']($case)) {self.config['$[]=']("contexts", [self.config['$[]']("contexts")].$to_set())}else {self.config['$[]=']("contexts", self.config['$[]']("contexts").$to_set())};
+                    return ($a = "content_model", $b = self.config, ((($c = $b['$[]']($a)) !== false && $c !== nil) ? $c : $b['$[]=']($a, "compound")));
+                };
+
+                return (def.$process = function(parent, reader, attributes) {
+                    var $a, self = this;
+
+                    return self.$raise((($a = $opal.Object._scope.NotImplementedError) == null ? $opal.cm('NotImplementedError') : $a));
+                }, nil) && 'process';
+            })(self, $scope.Processor);
+
+            (function($base) {
+                var self = $module($base, 'BlockProcessorDsl');
+
+                var def = self._proto, $scope = self._scope;
+
+                self.$include($scope.ProcessorDsl);
+
+                def.$named = function(value) {
+                    var $a, self = this;
+
+                    if ((($a = self['$is_a?']($scope.Processor)) !== nil && (!$a._isBoolean || $a == true))) {
+                        return self.name = value
+                    } else {
+                        return self.$option("name", value)
+                    };
+                };
+
+                $opal.defn(self, '$match_name', def.$named);
+
+                $opal.defn(self, '$bind_to', def.$named);
+
+                def.$contexts = function(value) {
+                    var self = this;
+
+                    value = $slice.call(arguments, 0);
+                    return self.$option("contexts", value.$flatten());
+                };
+
+                $opal.defn(self, '$on_contexts', def.$contexts);
+
+                $opal.defn(self, '$on_context', def.$contexts);
+
+                def.$content_model = function(value) {
+                    var self = this;
+
+                    return self.$option("content_model", value);
+                };
+
+                $opal.defn(self, '$parse_content_as', def.$content_model);
+
+                def.$pos_attrs = function(value) {
+                    var self = this;
+
+                    value = $slice.call(arguments, 0);
+                    return self.$option("pos_attrs", value.$flatten());
+                };
+
+                $opal.defn(self, '$map_attributes', def.$pos_attrs);
+
+                $opal.defn(self, '$name_positional_attributes', def.$pos_attrs);
+
+                def.$default_attrs = function(value) {
+                    var self = this;
+
+                    return self.$option("default_attrs", value);
+                };
+
+                $opal.defn(self, '$seed_attributes_with', def.$default_attrs);
+                ;$opal.donate(self, ["$named", "$match_name", "$bind_to", "$contexts", "$on_contexts", "$on_context", "$content_model", "$parse_content_as", "$pos_attrs", "$map_attributes", "$name_positional_attributes", "$default_attrs", "$seed_attributes_with"]);
+            })(self);
+
+            $opal.casgn($scope.BlockProcessor, 'DSL', $scope.BlockProcessorDsl);
+
+            (function($base, $super) {
+                function $MacroProcessor(){};
+                var self = $MacroProcessor = $klass($base, $super, 'MacroProcessor', $MacroProcessor);
+
+                var def = self._proto, $scope = self._scope, TMP_5;
+
+                def.config = nil;
+                self.$attr_accessor("name");
+
+                def.$initialize = TMP_5 = function(name, config) {
+                    var $a, $b, $c, self = this, $iter = TMP_5._p, $yield = $iter || nil;
+
+                    if (name == null) {
+                        name = nil
+                    }
+                    if (config == null) {
+                        config = $hash2([], {})
+                    }
+                    TMP_5._p = null;
+                    $opal.find_super_dispatcher(self, 'initialize', TMP_5, null).apply(self, [config]);
+                    self.name = ((($a = name) !== false && $a !== nil) ? $a : self.config['$[]']("name"));
+                    return ($a = "content_model", $b = self.config, ((($c = $b['$[]']($a)) !== false && $c !== nil) ? $c : $b['$[]=']($a, "attributes")));
+                };
+
+                return (def.$process = function(parent, target, attributes) {
+                    var $a, self = this;
+
+                    return self.$raise((($a = $opal.Object._scope.NotImplementedError) == null ? $opal.cm('NotImplementedError') : $a));
+                }, nil) && 'process';
+            })(self, $scope.Processor);
+
+            (function($base) {
+                var self = $module($base, 'MacroProcessorDsl');
+
+                var def = self._proto, $scope = self._scope;
+
+                self.$include($scope.ProcessorDsl);
+
+                def.$named = function(value) {
+                    var $a, self = this;
+
+                    if ((($a = self['$is_a?']($scope.Processor)) !== nil && (!$a._isBoolean || $a == true))) {
+                        return self.name = value
+                    } else {
+                        return self.$option("name", value)
+                    };
+                };
+
+                $opal.defn(self, '$match_name', def.$named);
+
+                $opal.defn(self, '$bind_to', def.$named);
+
+                def.$content_model = function(value) {
+                    var self = this;
+
+                    return self.$option("content_model", value);
+                };
+
+                $opal.defn(self, '$parse_content_as', def.$content_model);
+
+                def.$pos_attrs = function(value) {
+                    var self = this;
+
+                    value = $slice.call(arguments, 0);
+                    return self.$option("pos_attrs", value.$flatten());
+                };
+
+                $opal.defn(self, '$map_attributes', def.$pos_attrs);
+
+                $opal.defn(self, '$name_positional_attributes', def.$pos_attrs);
+
+                def.$default_attrs = function(value) {
+                    var self = this;
+
+                    return self.$option("default_attrs", value);
+                };
+
+                $opal.defn(self, '$seed_attributes_with', def.$default_attrs);
+                ;$opal.donate(self, ["$named", "$match_name", "$bind_to", "$content_model", "$parse_content_as", "$pos_attrs", "$map_attributes", "$name_positional_attributes", "$default_attrs", "$seed_attributes_with"]);
+            })(self);
+
+            (function($base, $super) {
+                function $BlockMacroProcessor(){};
+                var self = $BlockMacroProcessor = $klass($base, $super, 'BlockMacroProcessor', $BlockMacroProcessor);
+
+                var def = self._proto, $scope = self._scope;
+
+                return nil;
+            })(self, $scope.MacroProcessor);
+
+            $opal.casgn($scope.BlockMacroProcessor, 'DSL', $scope.MacroProcessorDsl);
+
+            (function($base, $super) {
+                function $InlineMacroProcessor(){};
+                var self = $InlineMacroProcessor = $klass($base, $super, 'InlineMacroProcessor', $InlineMacroProcessor);
+
+                var def = self._proto, $scope = self._scope, TMP_6;
+
+                def.config = def.name = nil;
+                def.$initialize = TMP_6 = function(name, config) {var $zuper = $slice.call(arguments, 0);
+                    var $a, $b, $c, self = this, $iter = TMP_6._p, $yield = $iter || nil;
+
+                    if (config == null) {
+                        config = $hash2([], {})
+                    }
+                    TMP_6._p = null;
+                    $opal.find_super_dispatcher(self, 'initialize', TMP_6, $iter).apply(self, $zuper);
+                    return ($a = "regexp", $b = self.config, ((($c = $b['$[]']($a)) !== false && $c !== nil) ? $c : $b['$[]=']($a, (self.$resolve_regexp(self.name, self.config['$[]']("format"))))));
+                };
+
+                return (def.$resolve_regexp = function(name, format) {
+                    var self = this;
+
+                    if (format['$==']("short")) {
+                        return (new RegExp("\\\\?" + name + ":\\[((?:\\\\\\]|[^\\]])*?)\\]"))
+                    } else {
+                        return (new RegExp("\\\\?" + name + ":(\\S+?)\\[((?:\\\\\\]|[^\\]])*?)\\]"))
+                    };
+                }, nil) && 'resolve_regexp';
+            })(self, $scope.MacroProcessor);
+
+            (function($base) {
+                var self = $module($base, 'InlineMacroProcessorDsl');
+
+                var def = self._proto, $scope = self._scope;
+
+                self.$include($scope.MacroProcessorDsl);
+
+                def.$using_format = function(value) {
+                    var self = this;
+
+                    return self.$option("format", value);
+                };
+
+                def.$match = function(value) {
+                    var self = this;
+
+                    return self.$option("regexp", value);
+                };
+                ;$opal.donate(self, ["$using_format", "$match"]);
+            })(self);
+
+            $opal.casgn($scope.InlineMacroProcessor, 'DSL', $scope.InlineMacroProcessorDsl);
+
+            (function($base, $super) {
+                function $Extension(){};
+                var self = $Extension = $klass($base, $super, 'Extension', $Extension);
+
+                var def = self._proto, $scope = self._scope;
+
+                self.$attr("kind");
+
+                self.$attr("config");
+
+                self.$attr("instance");
+
+                return (def.$initialize = function(kind, instance, config) {
+                    var self = this;
+
+                    self.kind = kind;
+                    self.instance = instance;
+                    return self.config = config;
+                }, nil) && 'initialize';
+            })(self, null);
+
+            (function($base, $super) {
+                function $ProcessorExtension(){};
+                var self = $ProcessorExtension = $klass($base, $super, 'ProcessorExtension', $ProcessorExtension);
+
+                var def = self._proto, $scope = self._scope, TMP_7;
+
+                self.$attr("process_method");
+
+                return (def.$initialize = TMP_7 = function(kind, instance, process_method) {
+                    var $a, self = this, $iter = TMP_7._p, $yield = $iter || nil;
+
+                    if (process_method == null) {
+                        process_method = nil
+                    }
+                    TMP_7._p = null;
+                    $opal.find_super_dispatcher(self, 'initialize', TMP_7, null).apply(self, [kind, instance, instance.$config()]);
+                    return self.process_method = ((($a = process_method) !== false && $a !== nil) ? $a : instance.$method("process"));
+                }, nil) && 'initialize';
+            })(self, $scope.Extension);
+
+            (function($base, $super) {
+                function $Group(){};
+                var self = $Group = $klass($base, $super, 'Group', $Group);
+
+                var def = self._proto, $scope = self._scope;
+
+                (function(self) {
+                    var $scope = self._scope, def = self._proto;
+
+                    return (self._proto.$register = function(name) {
+                        var self = this;
+
+                        if (name == null) {
+                            name = nil
+                        }
+                        return $scope.Extensions.$register(name, self);
+                    }, nil) && 'register'
+                })(self.$singleton_class());
+
+                return (def.$activate = function(registry) {
+                    var $a, self = this;
+
+                    return self.$raise((($a = $opal.Object._scope.NotImplementedError) == null ? $opal.cm('NotImplementedError') : $a));
+                }, nil) && 'activate';
+            })(self, null);
+
+            (function($base, $super) {
+                function $Registry(){};
+                var self = $Registry = $klass($base, $super, 'Registry', $Registry);
+
+                var def = self._proto, $scope = self._scope, TMP_9, TMP_10, TMP_11, TMP_12, TMP_13, TMP_14, TMP_15, TMP_16, TMP_18;
+
+                def.groups = def.preprocessor_extensions = def.treeprocessor_extensions = def.postprocessor_extensions = def.include_processor_extensions = def.block_extensions = def.block_macro_extensions = def.inline_macro_extensions = nil;
+                self.$attr_reader("document");
+
+                self.$attr_reader("groups");
+
+                def.$initialize = function(groups) {
+                    var self = this;
+
+                    if (groups == null) {
+                        groups = $hash2([], {})
+                    }
+                    self.groups = groups;
+                    self.preprocessor_extensions = self.treeprocessor_extensions = self.postprocessor_extensions = self.include_processor_extensions = nil;
+                    self.block_extensions = self.block_macro_extensions = self.inline_macro_extensions = nil;
+                    return self.document = nil;
+                };
+
+                def.$activate = function(document) {
+                    var $a, $b, TMP_8, self = this;
+
+                    self.document = document;
+                    ($a = ($b = ($scope.Extensions.$groups().$values()['$+'](self.groups.$values()))).$each, $a._p = (TMP_8 = function(group){var self = TMP_8._s || this, $a, $b, $case = nil;
+                        if (group == null) group = nil;
+                        return (function() {$case = group;if ((($a = $opal.Object._scope.Proc) == null ? $opal.cm('Proc') : $a)['$===']($case)) {return (function() {$case = group.$arity();if ((0)['$===']($case) || (-1)['$===']($case)) {return ($a = ($b = self).$instance_exec, $a._p = group.$to_proc(), $a).call($b)}else if ((1)['$===']($case)) {return group.$call(self)}else { return nil }})()}else if ((($a = $opal.Object._scope.Class) == null ? $opal.cm('Class') : $a)['$===']($case)) {return group.$new().$activate(self)}else {return group.$activate(self)}})()}, TMP_8._s = self, TMP_8), $a).call($b);
+                    return self;
+                };
+
+                def.$preprocessor = TMP_9 = function(args) {
+                    var $a, $b, self = this, $iter = TMP_9._p, block = $iter || nil;
+
+                    args = $slice.call(arguments, 0);
+                    TMP_9._p = null;
+                    return ($a = ($b = self).$add_document_processor, $a._p = block.$to_proc(), $a).call($b, "preprocessor", args);
+                };
+
+                def['$preprocessors?'] = function() {
+                    var self = this;
+
+                    return self.preprocessor_extensions['$!']()['$!']();
+                };
+
+                def.$preprocessors = function() {
+                    var self = this;
+
+                    return self.preprocessor_extensions;
+                };
+
+                def.$treeprocessor = TMP_10 = function(args) {
+                    var $a, $b, self = this, $iter = TMP_10._p, block = $iter || nil;
+
+                    args = $slice.call(arguments, 0);
+                    TMP_10._p = null;
+                    return ($a = ($b = self).$add_document_processor, $a._p = block.$to_proc(), $a).call($b, "treeprocessor", args);
+                };
+
+                def['$treeprocessors?'] = function() {
+                    var self = this;
+
+                    return self.treeprocessor_extensions['$!']()['$!']();
+                };
+
+                def.$treeprocessors = function() {
+                    var self = this;
+
+                    return self.treeprocessor_extensions;
+                };
+
+                def.$postprocessor = TMP_11 = function(args) {
+                    var $a, $b, self = this, $iter = TMP_11._p, block = $iter || nil;
+
+                    args = $slice.call(arguments, 0);
+                    TMP_11._p = null;
+                    return ($a = ($b = self).$add_document_processor, $a._p = block.$to_proc(), $a).call($b, "postprocessor", args);
+                };
+
+                def['$postprocessors?'] = function() {
+                    var self = this;
+
+                    return self.postprocessor_extensions['$!']()['$!']();
+                };
+
+                def.$postprocessors = function() {
+                    var self = this;
+
+                    return self.postprocessor_extensions;
+                };
+
+                def.$include_processor = TMP_12 = function(args) {
+                    var $a, $b, self = this, $iter = TMP_12._p, block = $iter || nil;
+
+                    args = $slice.call(arguments, 0);
+                    TMP_12._p = null;
+                    return ($a = ($b = self).$add_document_processor, $a._p = block.$to_proc(), $a).call($b, "include_processor", args);
+                };
+
+                def['$include_processors?'] = function() {
+                    var self = this;
+
+                    return self.include_processor_extensions['$!']()['$!']();
+                };
+
+                def.$include_processors = function() {
+                    var self = this;
+
+                    return self.include_processor_extensions;
+                };
+
+                def.$block = TMP_13 = function(args) {
+                    var $a, $b, self = this, $iter = TMP_13._p, block = $iter || nil;
+
+                    args = $slice.call(arguments, 0);
+                    TMP_13._p = null;
+                    return ($a = ($b = self).$add_syntax_processor, $a._p = block.$to_proc(), $a).call($b, "block", args);
+                };
+
+                def['$blocks?'] = function() {
+                    var self = this;
+
+                    return self.block_extensions['$!']()['$!']();
+                };
+
+                def['$registered_for_block?'] = function(name, context) {
+                    var $a, self = this, ext = nil;
+
+                    if ((($a = (ext = self.block_extensions['$[]'](name.$to_sym()))) !== nil && (!$a._isBoolean || $a == true))) {
+                        if ((($a = (ext.$config()['$[]']("contexts")['$include?'](context))) !== nil && (!$a._isBoolean || $a == true))) {
+                            return ext
+                        } else {
+                            return false
+                        }
+                    } else {
+                        return false
+                    };
+                };
+
+                def.$find_block_extension = function(name) {
+                    var self = this;
+
+                    return self.block_extensions['$[]'](name.$to_sym());
+                };
+
+                def.$block_macro = TMP_14 = function(args) {
+                    var $a, $b, self = this, $iter = TMP_14._p, block = $iter || nil;
+
+                    args = $slice.call(arguments, 0);
+                    TMP_14._p = null;
+                    return ($a = ($b = self).$add_syntax_processor, $a._p = block.$to_proc(), $a).call($b, "block_macro", args);
+                };
+
+                def['$block_macros?'] = function() {
+                    var self = this;
+
+                    return self.block_macro_extensions['$!']()['$!']();
+                };
+
+                def['$registered_for_block_macro?'] = function(name) {
+                    var $a, self = this, ext = nil;
+
+                    if ((($a = (ext = self.block_macro_extensions['$[]'](name.$to_sym()))) !== nil && (!$a._isBoolean || $a == true))) {
+                        return ext
+                    } else {
+                        return false
+                    };
+                };
+
+                def.$find_block_macro_extension = function(name) {
+                    var self = this;
+
+                    return self.block_macro_extensions['$[]'](name.$to_sym());
+                };
+
+                def.$inline_macro = TMP_15 = function(args) {
+                    var $a, $b, self = this, $iter = TMP_15._p, block = $iter || nil;
+
+                    args = $slice.call(arguments, 0);
+                    TMP_15._p = null;
+                    return ($a = ($b = self).$add_syntax_processor, $a._p = block.$to_proc(), $a).call($b, "inline_macro", args);
+                };
+
+                def['$inline_macros?'] = function() {
+                    var self = this;
+
+                    return self.inline_macro_extensions['$!']()['$!']();
+                };
+
+                def['$registered_for_inline_macro?'] = function(name) {
+                    var $a, self = this, ext = nil;
+
+                    if ((($a = (ext = self.inline_macro_extensions['$[]'](name.$to_sym()))) !== nil && (!$a._isBoolean || $a == true))) {
+                        return ext
+                    } else {
+                        return false
+                    };
+                };
+
+                def.$find_inline_macro_extension = function(name) {
+                    var self = this;
+
+                    return self.inline_macro_extensions['$[]'](name.$to_sym());
+                };
+
+                def.$inline_macros = function() {
+                    var self = this;
+
+                    return self.inline_macro_extensions.$values();
+                };
+
+                self.$private();
+
+                def.$add_document_processor = TMP_16 = function(kind, args) {
+                    var $a, $b, TMP_17, $c, $d, $e, $f, self = this, $iter = TMP_16._p, block = $iter || nil, kind_name = nil, kind_class_symbol = nil, kind_class = nil, kind_java_class = nil, kind_store = nil, extension = nil, config = nil, processor = nil, processor_instance = nil;
+
+                    TMP_16._p = null;
+                    kind_name = kind.$to_s().$tr("_", " ");
+                    kind_class_symbol = ($a = ($b = kind_name.$split(" ")).$map, $a._p = (TMP_17 = function(word){var self = TMP_17._s || this;
+                        if (word == null) word = nil;
+                        return "" + (word.$chr().$upcase()) + (word['$[]']($range(1, -1, false)))}, TMP_17._s = self, TMP_17), $a).call($b).$join().$to_sym();
+                    kind_class = $scope.Extensions.$const_get(kind_class_symbol);
+                    kind_java_class = (function() {if ((($a = (($opal.Object._scope.AsciidoctorJ == null ? nil : 'constant'))) !== nil && (!$a._isBoolean || $a == true))) {
+                        return (((($a = $opal.Object._scope.AsciidoctorJ) == null ? $opal.cm('AsciidoctorJ') : $a))._scope.Extensions.$const_get(kind_class_symbol))
+                    } else {
+                        return nil
+                    }; return nil; })();
+                    kind_store = ((($a = self.$instance_variable_get(((("@") + (kind)) + "_extensions").$to_sym())) !== false && $a !== nil) ? $a : self.$instance_variable_set(((("@") + (kind)) + "_extensions").$to_sym(), []));
+                    extension = (function() {if ((block !== nil)) {
+                        config = self.$resolve_args(args, 1);
+                        processor = kind_class.$new(config);
+                        (function(self) {
+                            var $scope = self._scope, def = self._proto;
+
+                            return self.$include_dsl()
+                        })(processor.$singleton_class());
+                        ($a = ($c = processor).$instance_exec, $a._p = block.$to_proc(), $a).call($c);
+                        processor.$freeze();
+                        if ((($a = processor['$process_block_given?']()) !== nil && (!$a._isBoolean || $a == true))) {
+                        } else {
+                            self.$raise((($a = $opal.Object._scope.ArgumentError) == null ? $opal.cm('ArgumentError') : $a).$new("No block specified to process " + (kind_name) + " extension at " + (block.$source_location())))
+                        };
+                        return $scope.ProcessorExtension.$new(kind, processor);
+                    } else {
+                        $a = $opal.to_ary(self.$resolve_args(args, 2)), processor = ($a[0] == null ? nil : $a[0]), config = ($a[1] == null ? nil : $a[1]);
+                        if ((($a = ((($d = (processor['$is_a?']((($e = $opal.Object._scope.Class) == null ? $opal.cm('Class') : $e)))) !== false && $d !== nil) ? $d : (($e = (processor['$is_a?']((($f = $opal.Object._scope.String) == null ? $opal.cm('String') : $f))), $e !== false && $e !== nil ?(processor = $scope.Extensions.$class_for_name(processor)) : $e)))) !== nil && (!$a._isBoolean || $a == true))) {
+                            if ((($a = ((($d = processor['$<'](kind_class)) !== false && $d !== nil) ? $d : ((($e = kind_java_class !== false && kind_java_class !== nil) ? processor['$<'](kind_java_class) : $e)))) !== nil && (!$a._isBoolean || $a == true))) {
+                            } else {
+                                self.$raise((($a = $opal.Object._scope.ArgumentError) == null ? $opal.cm('ArgumentError') : $a).$new("Invalid type for " + (kind_name) + " extension: " + (processor)))
+                            };
+                            processor_instance = processor.$new(config);
+                            processor_instance.$freeze();
+                            return $scope.ProcessorExtension.$new(kind, processor_instance);
+                        } else if ((($a = ((($d = (processor['$is_a?'](kind_class))) !== false && $d !== nil) ? $d : ((($e = kind_java_class !== false && kind_java_class !== nil) ? (processor['$is_a?'](kind_java_class)) : $e)))) !== nil && (!$a._isBoolean || $a == true))) {
+                            processor.$update_config(config);
+                            processor.$freeze();
+                            return $scope.ProcessorExtension.$new(kind, processor);
+                        } else {
+                            return self.$raise((($a = $opal.Object._scope.ArgumentError) == null ? $opal.cm('ArgumentError') : $a).$new("Invalid arguments specified for registering " + (kind_name) + " extension: " + (args)))
+                        };
+                    }; return nil; })();
+                    if (extension.$config()['$[]']("position")['$=='](">>")) {
+                        return kind_store.$unshift(extension)
+                    } else {
+                        return kind_store['$<<'](extension)
+                    };
+                };
+
+                def.$add_syntax_processor = TMP_18 = function(kind, args) {
+                    var $a, $b, TMP_19, $c, $d, $e, $f, self = this, $iter = TMP_18._p, block = $iter || nil, kind_name = nil, kind_class_basename = nil, kind_class_symbol = nil, kind_class = nil, kind_java_class = nil, kind_store = nil, name = nil, config = nil, processor = nil, processor_instance = nil;
+
+                    TMP_18._p = null;
+                    kind_name = kind.$to_s().$tr("_", " ");
+                    kind_class_basename = ($a = ($b = kind_name.$split(" ")).$map, $a._p = (TMP_19 = function(word){var self = TMP_19._s || this;
+                        if (word == null) word = nil;
+                        return "" + (word.$chr().$upcase()) + (word['$[]']($range(1, -1, false)))}, TMP_19._s = self, TMP_19), $a).call($b).$join();
+                    kind_class_symbol = ((("") + (kind_class_basename)) + "Processor").$to_sym();
+                    kind_class = $scope.Extensions.$const_get(kind_class_symbol);
+                    kind_java_class = (function() {if ((($a = (($opal.Object._scope.AsciidoctorJ == null ? nil : 'constant'))) !== nil && (!$a._isBoolean || $a == true))) {
+                        return (((($a = $opal.Object._scope.AsciidoctorJ) == null ? $opal.cm('AsciidoctorJ') : $a))._scope.Extensions.$const_get(kind_class_symbol))
+                    } else {
+                        return nil
+                    }; return nil; })();
+                    kind_store = ((($a = self.$instance_variable_get(((("@") + (kind)) + "_extensions").$to_sym())) !== false && $a !== nil) ? $a : self.$instance_variable_set(((("@") + (kind)) + "_extensions").$to_sym(), $hash2([], {})));
+                    if ((block !== nil)) {
+                        $a = $opal.to_ary(self.$resolve_args(args, 2)), name = ($a[0] == null ? nil : $a[0]), config = ($a[1] == null ? nil : $a[1]);
+                        processor = kind_class.$new(self.$as_symbol(name), config);
+                        (function(self) {
+                            var $scope = self._scope, def = self._proto;
+
+                            return self.$include_dsl()
+                        })(processor.$singleton_class());
+                        if (block.$arity()['$=='](1)) {
+                            if ($opal.$yield1(block, processor) === $breaker) return $breaker.$v
+                        } else {
+                            ($a = ($c = processor).$instance_exec, $a._p = block.$to_proc(), $a).call($c)
+                        };
+                        if ((($a = (name = self.$as_symbol(processor.$name()))) !== nil && (!$a._isBoolean || $a == true))) {
+                        } else {
+                            self.$raise((($a = $opal.Object._scope.ArgumentError) == null ? $opal.cm('ArgumentError') : $a).$new("No name specified for " + (kind_name) + " extension at " + (block.$source_location())))
+                        };
+                        if ((($a = processor['$process_block_given?']()) !== nil && (!$a._isBoolean || $a == true))) {
+                        } else {
+                            self.$raise((($a = $opal.Object._scope.NoMethodError) == null ? $opal.cm('NoMethodError') : $a).$new("No block specified to process " + (kind_name) + " extension at " + (block.$source_location())))
+                        };
+                        processor.$freeze();
+                        return kind_store['$[]='](name, $scope.ProcessorExtension.$new(kind, processor));
+                    } else {
+                        $a = $opal.to_ary(self.$resolve_args(args, 3)), processor = ($a[0] == null ? nil : $a[0]), name = ($a[1] == null ? nil : $a[1]), config = ($a[2] == null ? nil : $a[2]);
+                        if ((($a = ((($d = (processor['$is_a?']((($e = $opal.Object._scope.Class) == null ? $opal.cm('Class') : $e)))) !== false && $d !== nil) ? $d : (($e = (processor['$is_a?']((($f = $opal.Object._scope.String) == null ? $opal.cm('String') : $f))), $e !== false && $e !== nil ?(processor = $scope.Extensions.$class_for_name(processor)) : $e)))) !== nil && (!$a._isBoolean || $a == true))) {
+                            if ((($a = ((($d = processor['$<'](kind_class)) !== false && $d !== nil) ? $d : ((($e = kind_java_class !== false && kind_java_class !== nil) ? processor['$<'](kind_java_class) : $e)))) !== nil && (!$a._isBoolean || $a == true))) {
+                            } else {
+                                self.$raise((($a = $opal.Object._scope.ArgumentError) == null ? $opal.cm('ArgumentError') : $a).$new("Class specified for " + (kind_name) + " extension does not inherit from " + (kind_class) + ": " + (processor)))
+                            };
+                            processor_instance = processor.$new(self.$as_symbol(name), config);
+                            if ((($a = (name = self.$as_symbol(processor_instance.$name()))) !== nil && (!$a._isBoolean || $a == true))) {
+                            } else {
+                                self.$raise((($a = $opal.Object._scope.ArgumentError) == null ? $opal.cm('ArgumentError') : $a).$new("No name specified for " + (kind_name) + " extension: " + (processor)))
+                            };
+                            processor.$freeze();
+                            return kind_store['$[]='](name, $scope.ProcessorExtension.$new(kind, processor_instance));
+                        } else if ((($a = ((($d = (processor['$is_a?'](kind_class))) !== false && $d !== nil) ? $d : ((($e = kind_java_class !== false && kind_java_class !== nil) ? (processor['$is_a?'](kind_java_class)) : $e)))) !== nil && (!$a._isBoolean || $a == true))) {
+                            processor.$update_config(config);
+                            if ((($a = (name = (function() {if (name !== false && name !== nil) {
+                                return (processor['$name='](self.$as_symbol(name)))
+                            } else {
+                                return (self.$as_symbol(processor.$name()))
+                            }; return nil; })())) !== nil && (!$a._isBoolean || $a == true))) {
+                            } else {
+                                self.$raise((($a = $opal.Object._scope.ArgumentError) == null ? $opal.cm('ArgumentError') : $a).$new("No name specified for " + (kind_name) + " extension: " + (processor)))
+                            };
+                            processor.$freeze();
+                            return kind_store['$[]='](name, $scope.ProcessorExtension.$new(kind, processor));
+                        } else {
+                            return self.$raise((($a = $opal.Object._scope.ArgumentError) == null ? $opal.cm('ArgumentError') : $a).$new("Invalid arguments specified for registering " + (kind_name) + " extension: " + (args)))
+                        };
+                    };
+                };
+
+                def.$resolve_args = function(args, expect) {
+                    var $a, $b, self = this, opts = nil, num_args = nil, missing = nil;
+
+                    opts = (function() {if ((($a = (args['$[]'](-1)['$is_a?']((($b = $opal.Object._scope.Hash) == null ? $opal.cm('Hash') : $b)))) !== nil && (!$a._isBoolean || $a == true))) {
+                        return args.$pop()
+                    } else {
+                        return $hash2([], {})
+                    }; return nil; })();
+                    if (expect['$=='](1)) {
+                        return opts};
+                    num_args = args.$size();
+                    if (((missing = expect['$-'](1)['$-'](num_args)))['$>'](0)) {
+                        args.$fill(nil, num_args, missing)
+                    } else if (missing['$<'](0)) {
+                        args.$pop(missing['$-@']())};
+                    args['$<<'](opts);
+                    return args;
+                };
+
+                return (def.$as_symbol = function(name) {
+                    var $a, $b, self = this;
+
+                    if (name !== false && name !== nil) {
+                        return ((function() {if ((($a = (name['$is_a?']((($b = $opal.Object._scope.Symbol) == null ? $opal.cm('Symbol') : $b)))) !== nil && (!$a._isBoolean || $a == true))) {
+                            return name
+                        } else {
+                            return name.$to_sym()
+                        }; return nil; })())
+                    } else {
+                        return nil
+                    };
+                }, nil) && 'as_symbol';
+            })(self, null);
+
+            (function(self) {
+                var $scope = self._scope, def = self._proto;
+
+                self._proto.$generate_name = function() {
+                    var self = this;
+
+                    return "extgrp" + (self.$next_auto_id());
+                };
+                self._proto.$next_auto_id = function() {
+                    var $a, self = this;
+                    if (self.auto_id == null) self.auto_id = nil;
+
+                    ((($a = self.auto_id) !== false && $a !== nil) ? $a : self.auto_id = -1);
+                    return self.auto_id = self.auto_id['$+'](1);
+                };
+                self._proto.$groups = function() {
+                    var $a, self = this;
+                    if (self.groups == null) self.groups = nil;
+
+                    return ((($a = self.groups) !== false && $a !== nil) ? $a : self.groups = $hash2([], {}));
+                };
+                self._proto.$build_registry = TMP_20 = function(name) {
+                    var $a, self = this, $iter = TMP_20._p, block = $iter || nil;
+
+                    if (name == null) {
+                        name = nil
+                    }
+                    TMP_20._p = null;
+                    if ((block !== nil)) {
+                        ((($a = name) !== false && $a !== nil) ? $a : name = self.$generate_name());
+                        return $scope.Registry.$new($hash(name, block));
+                    } else {
+                        return $scope.Registry.$new()
+                    };
+                };
+                self._proto.$register = TMP_21 = function(args) {
+                    var $a, self = this, $iter = TMP_21._p, block = $iter || nil, argc = nil, resolved_group = nil, group = nil, $case = nil, name = nil;
+
+                    args = $slice.call(arguments, 0);
+                    TMP_21._p = null;
+                    argc = args.$length();
+                    resolved_group = (function() {if ((block !== nil)) {
+                        return block
+                    } else if ((($a = ((group = args.$pop()))['$!']()) !== nil && (!$a._isBoolean || $a == true))) {
+                        return self.$raise((($a = $opal.Object._scope.ArgumentError) == null ? $opal.cm('ArgumentError') : $a).$new("Extension group to register not specified"))
+                    } else {
+                        return (function() {$case = group;if ((($a = $opal.Object._scope.Class) == null ? $opal.cm('Class') : $a)['$===']($case)) {return group}else if ((($a = $opal.Object._scope.String) == null ? $opal.cm('String') : $a)['$===']($case)) {return self.$class_for_name(group)}else if ((($a = $opal.Object._scope.Symbol) == null ? $opal.cm('Symbol') : $a)['$===']($case)) {return self.$class_for_name(group.$to_s())}else {return group}})()
+                    }; return nil; })();
+                    name = ((($a = args.$pop()) !== false && $a !== nil) ? $a : self.$generate_name());
+                    if ((($a = args['$empty?']()) !== nil && (!$a._isBoolean || $a == true))) {
+                    } else {
+                        self.$raise((($a = $opal.Object._scope.ArgumentError) == null ? $opal.cm('ArgumentError') : $a).$new("Wrong number of arguments (" + (argc) + " for 1..2)"))
+                    };
+                    return self.$groups()['$[]='](name, resolved_group);
+                };
+                self._proto.$unregister_all = function() {
+                    var self = this;
+
+                    return self.groups = $hash2([], {});
+                };
+                self._proto.$resolve_class = function(object) {
+                    var $a, $b, self = this;
+
+                    if ((($a = (object['$is_a?']((($b = $opal.Object._scope.Class) == null ? $opal.cm('Class') : $b)))) !== nil && (!$a._isBoolean || $a == true))) {
+                        return object
+                    } else {
+                        return (self.$class_for_name(object.$to_s()))
+                    };
+                };
+                return (self._proto.$class_for_name = function(qualified_name) {
+                    var $a, $b, TMP_22, self = this, resolved_class = nil;
+
+                    resolved_class = (($a = $opal.Object._scope.Object) == null ? $opal.cm('Object') : $a);
+                    ($a = ($b = qualified_name.$split("::")).$each, $a._p = (TMP_22 = function(name){var self = TMP_22._s || this, $a;
+                        if (name == null) name = nil;
+                        if ((($a = name['$empty?']()) !== nil && (!$a._isBoolean || $a == true))) {
+                            return nil
+                        } else if ((($a = resolved_class['$const_defined?'](name)) !== nil && (!$a._isBoolean || $a == true))) {
+                            return resolved_class = resolved_class.$const_get(name)
+                        } else {
+                            return self.$raise("Could not resolve class for name: " + (qualified_name))
+                        }}, TMP_22._s = self, TMP_22), $a).call($b);
+                    return resolved_class;
+                }, nil) && 'class_for_name';
+            })(self.$singleton_class());
+
+        })(self)
+
+    })(self)
+})(Opal);
