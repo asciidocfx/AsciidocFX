@@ -46,7 +46,7 @@ public class DocoJarExtractorService {
 
                 String jarDir = getClass().getResource("").getPath().split("!")[0];
 
-                JarFile zipFile = new JarFile(new File(jarDir));
+                JarFile zipFile = new JarFile(new File(new URI(jarDir).getPath()));
 
                 Enumeration<JarEntry> entries = zipFile.entries();
 
