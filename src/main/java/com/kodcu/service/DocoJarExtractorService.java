@@ -30,7 +30,7 @@ public class DocoJarExtractorService {
 
     public static void extract() {
 
-        Path userDir = Paths.get(System.getProperty("user.dir"));
+        Path userDir = Paths.get(System.getProperty("user.home"));
 
         if (Files.exists(userDir.resolve("doco/.doco.cache")))
             return;
