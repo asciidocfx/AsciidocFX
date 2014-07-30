@@ -133,6 +133,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
     private HostServicesDelegate hostServices;
     private double sceneXOffset;
     private double sceneYOffset;
+    private Path userHome = Paths.get(System.getProperty("user.home"));
 
 
     @FXML
@@ -176,7 +177,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
         Task<Boolean> task = new Task<Boolean>() {
             @Override
             protected Boolean call() throws Exception {
-                fopServiceRunner.generate(currentPath, Paths.get("").toAbsolutePath());
+                fopServiceRunner.generate(currentPath, userHome);
                 return null;
             }
         };
