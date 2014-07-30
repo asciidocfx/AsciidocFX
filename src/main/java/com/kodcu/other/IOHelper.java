@@ -31,9 +31,10 @@ public class IOHelper {
 
     public static String normalize(String content) {
         content = content.replace("'", "\\'");
-        content = content.replace(System.getProperty("line.separator"), "\\n");
+        content = content.replace("\r\n", "\\r\\n");
+        content = content.replace("\n\r", "\\n\\r");
         content = content.replace("\n", "\\n");
-        content = content.replace("\r", "\\n");
+        content = content.replace("\r", "\\r");
         return content;
     }
 

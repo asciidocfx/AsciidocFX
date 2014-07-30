@@ -1,5 +1,7 @@
 package com.kodcu.service;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Task;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -7,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.InputStream;
+import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -27,19 +30,21 @@ public class DocoJarExtractorService {
 
     public static void extract() {
 
-        Path current = Paths.get("").toAbsolutePath();
+        Path userDir = Paths.get(System.getProperty("user.dir"));
 
-        if (Files.exists(current.resolve("doco/doco.cache")))
+        if (Files.exists(userDir.resolve("doco/.doco.cache")))
             return;
 
         Task<Void> task = new Task<Void>() {
             @Override
             protected Void call() throws Exception {
                 logger.debug("***Doco extraction started***");
+//
+//                CodeSource codeSource = DocoJarExtractorService.class.getProtectionDomain().getCodeSource();
+//                File jarFile = new File(codeSource.getLocation().toURI().getPath());
+//                String jarDir = jarFile.getPath();
 
-                CodeSource codeSource = DocoJarExtractorService.class.getProtectionDomain().getCodeSource();
-                File jarFile = new File(codeSource.getLocation().toURI().getPath());
-                String jarDir = jarFile.getPath();
+                String jarDir = getClass().getResource("").getPath().split("!")[0];
 
                 JarFile zipFile = new JarFile(new File(jarDir));
 
@@ -51,7 +56,7 @@ public class DocoJarExtractorService {
                     if (!ze.getName().contains("doco/"))
                         continue;
 
-                    Path path = current.resolve(ze.getName());
+                    Path path = userDir.resolve(ze.getName());
 
                     if (ze.isDirectory()) {
                         Files.createDirectories(path);
@@ -71,7 +76,7 @@ public class DocoJarExtractorService {
 
                 }
 
-                Files.createFile(current.resolve("doco/doco.cache"));
+                Files.createFile(userDir.resolve("doco/.doco.cache"));
 
                 logger.debug("***Doco extraction completed***");
 
@@ -79,8 +84,13 @@ public class DocoJarExtractorService {
             }
         };
 
+        task.exceptionProperty().addListener((observable, oldValue, newValue) -> {
+            logger.debug(newValue.getMessage(),newValue);
+        });
+
         Thread thread = new Thread(task);
         thread.setDaemon(true);
+
         thread.start();
     }
 }

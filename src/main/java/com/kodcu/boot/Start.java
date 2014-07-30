@@ -36,15 +36,12 @@ public class Start extends Application {
     @Override
     public void start(Stage stage) throws Exception {
 
-        SpringApplication.run(Config.class);
-
-        setUserAgentStylesheet(STYLESHEET_MODENA);
         stage.initStyle(StageStyle.TRANSPARENT);
 
-        context = SpringApplication.run(Config.class);
         FXMLLoader parentLoader = new FXMLLoader();
         FXMLLoader tablePopupLoader = new FXMLLoader();
 
+        context = SpringApplication.run(Config.class);
         tablePopupLoader.setControllerFactory(context::getBean);
         parentLoader.setControllerFactory(context::getBean);
 

@@ -5,7 +5,7 @@
 
     <groupId>com.kodcu</groupId>
     <artifactId>AsciidocFX</artifactId>
-    <version>1.0.2</version>
+    <version>1.0.3</version>
     <packaging>jar</packaging>
 
     <name>AsciidocFX</name>
@@ -116,7 +116,7 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
-            <plugin>
+            <!--<plugin>
                 <groupId>com.zenjava</groupId>
                 <artifactId>javafx-maven-plugin</artifactId>
                 <version>2.0</version>
@@ -124,7 +124,7 @@
                     <mainClass>com.kodcu.boot.Start</mainClass>
                     <needShortcut>true</needShortcut>
                 </configuration>
-            </plugin>
+            </plugin>-->
         </plugins>
     </build>
 
