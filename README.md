@@ -45,7 +45,7 @@ In the left side of application,you can set your working directory. All listed d
 ### How to Run AsciidocFX (For Users)
 
 1. Firstly, install  [JRE 8](http://www.oracle.com/technetwork/java/javase/downloads/index.html)
-2. Download the AsciidocFX.jar file
+2. Download the [AsciidocFX.jar](https://github.com/rahmanusta/AsciidocFX/releases/download/v1.0.3/AsciidocFX.jar) file
 3. Run
     * java -jar AsciidocFX.jar
 
