@@ -47,13 +47,13 @@ opts.banner = "Usage: #{File.basename($0)} [OPTIONS] [DocBook Files]
 - Open Container Format (OCF)
 
 Specific options:"
-opts.on("-c", "--css [FILE]", "Use FILE for CSS on generated XHTML.") { |f| css_file = f }
-opts.on("-d", "--debug", "Show debugging output.") { debug = true; verbose = true }
-opts.on("-f", "--font [OTF FILE]", "Embed OTF FILE in .epub.") { |f| otf_files << f }
-opts.on("-h", "--help", "Display usage info.") { puts opts.to_s; exit 0 }
-opts.on("-o", "--output [OUTPUT FILE]", "Output ePub file as OUTPUT FILE.") { |f| output_file = f }
-opts.on("-s", "--stylesheet [XSL FILE]", "Use XSL FILE as a customization layer (imports epub/docbook.xsl).") { |f| customization_layer = f }
-opts.on("-v", "--verbose", "Make output verbose.") { verbose = true }
+opts.on("-c", "--css [FILE]", "Use FILE for CSS on generated XHTML.") {|f| css_file = f}
+opts.on("-d", "--debug", "Show debugging output.") {debug = true; verbose = true}
+opts.on("-f", "--font [OTF FILE]", "Embed OTF FILE in .epub.") {|f| otf_files << f}
+opts.on("-h", "--help", "Display usage info.") {puts opts.to_s; exit 0}
+opts.on("-o", "--output [OUTPUT FILE]", "Output ePub file as OUTPUT FILE.") {|f| output_file = f}
+opts.on("-s", "--stylesheet [XSL FILE]", "Use XSL FILE as a customization layer (imports epub/docbook.xsl).") {|f| customization_layer = f}
+opts.on("-v", "--verbose", "Make output verbose.") {verbose = true}
 
 db_files = opts.parse(ARGV)
 if db_files.size == 0
@@ -61,16 +61,16 @@ if db_files.size == 0
   exit 0
 end
 
-db_files.each { |docbook_file|
+db_files.each {|docbook_file|
   dir = File.expand_path(File.join(Dir.tmpdir, ".epubtmp#{Time.now.to_f.to_s}"))
   FileUtils.mkdir_p(dir)
   e = DocBook::Epub.new(docbook_file, dir, css_file, customization_layer, otf_files)
 
   if output_file
     epub_file = output_file
-  else
+  else  
     epub_file = File.basename(docbook_file, ".xml") + ".epub"
-  end
+  end  
   puts "Rendering DocBook file #{docbook_file} to #{epub_file}" if verbose
   e.render_to_file(epub_file)
 }  

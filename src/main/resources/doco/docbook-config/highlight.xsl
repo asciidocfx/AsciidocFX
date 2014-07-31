@@ -9,7 +9,8 @@
                 xmlns:xslthl="http://xslthl.sf.net"
                 exclude-result-prefixes="xslthl">
 
-    <xsl:import href="http://docbook.sourceforge.net/release/xsl/current/highlighting/common.xsl"/>
+    <xsl:import href="../docbook/highlighting/common.xsl"/>
+    <!--<xsl:import href="http://docbook.sourceforge.net/release/xsl/current/highlighting/common.xsl"/>-->
 
     <xsl:param name="highlight.source" select="1"/>
 

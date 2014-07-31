@@ -1,6 +1,7 @@
 # docbook.py: extension module
 # $Id: docbook.py 8353 2009-03-17 16:57:50Z mzjn $
 
+import sys
 import string
 import libxml2
 import libxslt
@@ -9,12 +10,12 @@ import math
 
 # Some globals
 pixelsPerInch = 96.0
-unitHash = {'in': pixelsPerInch,
-            'cm': pixelsPerInch / 2.54,
-            'mm': pixelsPerInch / 25.4,
-            'pc': (pixelsPerInch / 72.0) * 12,
-            'pt': pixelsPerInch / 72.0,
-            'px': 1}
+unitHash = { 'in': pixelsPerInch,
+             'cm': pixelsPerInch / 2.54,
+             'mm': pixelsPerInch / 25.4,
+             'pc': (pixelsPerInch / 72.0) * 12,
+             'pt': pixelsPerInch / 72.0,
+             'px': 1 }
 
 # ======================================================================
 
@@ -47,7 +48,7 @@ def adjustColumnWidths(ctx, nodeset):
     absTotal = 0
     absParts = []
 
-    colgroup = libxml2.xmlNode(_obj=nodeset[0])
+    colgroup = libxml2.xmlNode(_obj = nodeset[0])
     # If this is an foStylesheet, we've been passed a list of fo:table-columns.
     # Otherwise we've been passed a colgroup that contains a list of cols.
     if foStylesheet:
@@ -149,11 +150,10 @@ def adjustColumnWidths(ctx, nodeset):
         else:
             col.setProp("width", widths[count])
 
-        count = count + 1
+        count = count+1
         col = col.next
 
     return nodeset
-
 
 def convertLength(length):
     # Given "3.4in" return the width in pixels
@@ -173,7 +173,6 @@ def convertLength(length):
         pixels = 0
 
     return pixels
-
 
 def correctRoundingError(floatWidths):
     # The widths are currently floating point numbers, we have to truncate
@@ -201,7 +200,6 @@ def correctRoundingError(floatWidths):
             widths[count] = "%d%%" % width
 
     return widths
-
 
 def lookupVariable(tctxt, varName, default):
     varString = tctxt.variableLookup(varName, None)

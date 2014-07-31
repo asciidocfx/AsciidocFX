@@ -12,7 +12,7 @@ usage = "Usage: %s xmlfile.xml xslfile.xsl [outputfile] [param1=val [param2=val]
 xmlfile = None
 xslfile = None
 outfile = "-"
-params = {}
+params  = {}
 
 try:
     xmlfile = sys.argv[1]
@@ -21,13 +21,11 @@ except IndexError:
     print usage
     sys.exit(1)
 
-
 def quote(astring):
     if astring.find("'") < 0:
         return "'" + astring + "'"
     else:
         return '"' + astring + '"'
-
 
 try:
     outfile = sys.argv[3]
@@ -47,7 +45,7 @@ try:
             print "Invalid parameter specification: '" + sys.argv[count] + "'"
             print usage
             sys.exit(1)
-        count = count + 1
+        count = count+1
 except IndexError:
     pass
 
