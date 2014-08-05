@@ -174,13 +174,15 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
 
         docBookController.generateDocbook(previewEngine, currentPath, false);
 
-        Task<Boolean> task = new Task<Boolean>() {
+        Task<Void> task = new Task<Void>() {
             @Override
-            protected Boolean call() throws Exception {
+            protected Void call() throws Exception {
+
                 fopServiceRunner.generate(currentPath, userHome);
                 return null;
             }
         };
+
         new Thread(task).start();
 
     }

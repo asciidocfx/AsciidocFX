@@ -31,6 +31,7 @@ public class IOHelper {
 
     public static String normalize(String content) {
         content = content.replace("'", "\\'");
+        content = content.replace("\\\\'", "\\'");
         content = content.replace("\r\n", "\\r\\n");
         content = content.replace("\n\r", "\\n\\r");
         content = content.replace("\n", "\\n");

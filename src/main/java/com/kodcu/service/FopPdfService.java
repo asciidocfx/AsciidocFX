@@ -1,6 +1,7 @@
 package com.kodcu.service;
 
 import com.kodcu.controller.AsciiDocController;
+import com.kodcu.other.InputHandlerExtended;
 import javafx.animation.FadeTransition;
 import javafx.application.Platform;
 import javafx.util.Duration;
@@ -13,8 +14,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.FileOutputStream;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Vector;
 
 /**
