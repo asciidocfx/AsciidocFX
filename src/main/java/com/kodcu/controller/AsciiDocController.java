@@ -11,6 +11,7 @@ import de.jensd.fx.fontawesome.AwesomeIcon;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Task;
 import javafx.concurrent.Worker;
@@ -55,10 +56,11 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.security.CodeSource;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -133,8 +135,8 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
     private HostServicesDelegate hostServices;
     private double sceneXOffset;
     private double sceneYOffset;
-    private Path userHome = Paths.get(System.getProperty("user.home"));
-
+    private Path configPath;
+    private ChangeListener<? super String> wildcardAppendListener;
 
     @FXML
     private void createTable(ActionEvent event) throws IOException {
@@ -178,7 +180,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
             @Override
             protected Void call() throws Exception {
 
-                fopServiceRunner.generate(currentPath, userHome);
+                fopServiceRunner.generate(currentPath, configPath);
                 return null;
             }
         };
@@ -187,7 +189,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
 
     }
 
-//    @FXML
+    //    @FXML
     private void generateHtml(ActionEvent event) {
 
         Path currentPath = initialDirectory.map(path -> Files.isDirectory(path) ? path : path.getParent()).get();
@@ -222,6 +224,14 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+
+        try {
+            CodeSource codeSource = AsciiDocController.class.getProtectionDomain().getCodeSource();
+            File jarFile = new File(codeSource.getLocation().toURI().getPath());
+            configPath = jarFile.toPath().getParent().getParent().resolve("conf");
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
 
         tomcatPort = server.getEmbeddedServletContainer().getPort();
 
@@ -410,8 +420,24 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
         current.putTab(tab, null, webView);
     }
 
+    public void wildcardAppendListener(){
+
+        wildcardAppendListener = (observable, old, nev) -> {
+            if (Objects.nonNull(old))
+                if (!old.contentEquals(nev)) {
+                    Label label = (Label) current.getCurrentTab().getGraphic();
+
+                    if (!label.getText().contains(" *"))
+                        label.setText(label.getText() + " *");
+                }
+        };
+        lastRendered.addListener(wildcardAppendListener);
+    }
 
     public void addTab(Path path) {
+        if(Objects.nonNull(wildcardAppendListener))
+            lastRendered.removeListener(wildcardAppendListener);
+
         AnchorPane anchorPane = new AnchorPane();
         WebView webView = createWebView();
         WebEngine webEngine = webView.getEngine();
@@ -433,6 +459,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
             if (after) {
                 current.putTab(tab, path, webView);
                 webEngine.executeScript(waitForGetValue);
+
 
             }
         });
@@ -539,7 +566,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
 
     @RequestMapping(value = {"/**/{extension:(?:\\w|\\W)+\\.(?:jpg|bmp|gif|jpeg|png|webp)$}"}, method = RequestMethod.GET)
     @ResponseBody
-    public ResponseEntity<byte[]> images(HttpServletRequest request, @PathVariable("extension") String extension)  {
+    public ResponseEntity<byte[]> images(HttpServletRequest request, @PathVariable("extension") String extension) {
 
 
         Enumeration<String> headerNames = request.getHeaderNames();
@@ -549,15 +576,14 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
             uri = uri.substring(1);
 
         if (Objects.nonNull(current.currentPath())) {
-           try{
-               Path imageFile = current.currentParentRoot().resolve(uri);
-               FileInputStream fileInputStream = new FileInputStream(imageFile.toFile());
-               temp = IOUtils.toByteArray(fileInputStream);
-               IOUtils.closeQuietly(fileInputStream);
-           }
-           catch (Exception ex){
-               logger.debug(ex.getMessage(),ex);
-           }
+            try {
+                Path imageFile = current.currentParentRoot().resolve(uri);
+                FileInputStream fileInputStream = new FileInputStream(imageFile.toFile());
+                temp = IOUtils.toByteArray(fileInputStream);
+                IOUtils.closeQuietly(fileInputStream);
+            } catch (Exception ex) {
+                logger.debug(ex.getMessage(), ex);
+            }
         }
 
         return new ResponseEntity<>(temp, HttpStatus.OK);
@@ -569,11 +595,16 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
 
                 String rendered = docConverter.asciidocToHtml(previewEngine, nev);
 
+                Label label = (Label) current.getCurrentTab().getGraphic();
+
+//                if(Objects.nonNull(lastRendered.getValue()))
+//                if (lastRendered.getValue().length() + 1 == rendered.length())
+//                    if (!label.getText().contains(" *"))
+//                        label.setText(label.getText() + " *");
+
                 lastRendered.setValue(rendered);
 
-                Label label = (Label) current.getCurrentTab().getGraphic();
-                if (!label.getText().contains(" *"))
-                    label.setText(label.getText() + " *");
+
             });
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -671,7 +702,6 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
     public Stage getConfigStage() {
         return configStage;
     }
-
 
     public SplitPane getSplitPane() {
         return splitPane;

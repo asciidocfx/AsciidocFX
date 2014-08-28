@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class AsciiDoctorRenderService {
 
-    private static Logger logger = LoggerFactory.getLogger(DocoJarExtractorService.class);
+    private static Logger logger = LoggerFactory.getLogger(AsciiDoctorRenderService.class);
 
     public String asciidocToHtml(WebEngine webEngine, String text) {
         return (String) webEngine.executeScript(String.format("Opal.Asciidoctor.$render('%s');", IOHelper.normalize(text)));

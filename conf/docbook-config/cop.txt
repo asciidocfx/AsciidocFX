@@ -1,0 +1,44 @@
+
+<xsl:param name="page.height.portrait">9in</xsl:param> 
+<xsl:param name="page.width.portrait">6in</xsl:param>
+<xsl:param name="page.margin.inner">0.75in</xsl:param>
+<xsl:param name="page.margin.outer">0.50in</xsl:param>
+<xsl:param name= "page.margin.top">0.17in</xsl:param> 
+<xsl:param name="region.before.extent">0.17in</xsl:param>  
+<xsl:param name="body.margin.top">0.33in</xsl:param>  
+<xsl:param name="region.after.extent">0.35in</xsl:param>
+<xsl:param name="page.margin.bottom">0.50in</xsl:param>
+<xsl:param name="body.margin.bottom">0.65in</xsl:param>
+<xsl:param name="double.sided">0</xsl:param>
+
+  <!-- <xsl:param name="paper.type">A4</xsl:param> -->
+    <xsl:param name="paper.width.portrait">7in</xsl:param> 
+    <xsl:param name="paper.height.portrait">9in</xsl:param>
+    <!-- alternative size is USletter -->
+    <xsl:param name="headers.on.blank.pages">1</xsl:param>
+    <xsl:param name="footers.on.blank.pages">1</xsl:param>
+    <xsl:param name="page.margin.top">0.33in</xsl:param>
+    <!-- top margin of page -->
+    <xsl:param name="page.margin.bottom">0.65in</xsl:param>
+    <!-- top margin of page -->
+    <xsl:param name="page.margin.inner">0.75in</xsl:param>
+    <!-- side margin of page (left, towards binding) -->
+    <xsl:param name="page.margin.outer">0.50in</xsl:param>
+    <!-- side margin of page (right, away from binding) -->
+    <xsl:param name="body.margin.top">0.33in</xsl:param>
+    <!-- top margin of content -->
+    <xsl:param name="body.margin.bottom">0.65in</xsl:param>
+    <!-- bottom margin of content -->
+    <xsl:param name="body.margin.inner">4mm</xsl:param>
+    <!-- side margin of content (left, towards binding) -->
+    <xsl:param name="body.margin.outer">6mm</xsl:param>
+    <!-- side margin of content (right, away from binding) -->
+    <xsl:param name="body.start.indent">0</xsl:param>
+    <!-- text indentation -->
+    <xsl:param name="body.end.indent">0</xsl:param>
+    <!-- text recess from right -->
+    <xsl:param name="region.before.extent">10mm</xsl:param>
+    <!-- height of page header -->
+    <xsl:param name="region.after.extent">10mm</xsl:param>
+    <!-- height of page footer -->
+    <!-- height of page footer -->

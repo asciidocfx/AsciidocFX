@@ -3,7 +3,6 @@ package com.kodcu.boot;
 
 import com.kodcu.controller.AsciiDocController;
 import com.kodcu.fxdecorate.FxDecorateScene;
-import com.kodcu.service.DocoJarExtractorService;
 import com.sun.deploy.uitoolkit.impl.fx.HostServicesFactory;
 import com.sun.javafx.application.HostServicesDelegate;
 import javafx.application.Application;
@@ -23,7 +22,9 @@ import javafx.stage.StageStyle;
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 
-import java.awt.*;
+import java.io.File;
+import java.nio.file.Paths;
+import java.security.CodeSource;
 
 import static javafx.scene.input.KeyCombination.CONTROL_DOWN;
 
@@ -76,8 +77,6 @@ public class Start extends Application {
 
         stage.setScene(scene);
         stage.show();
-
-        DocoJarExtractorService.extract();
 
         scene.getAccelerators().put(new KeyCodeCombination(KeyCode.S, CONTROL_DOWN), controller::saveDoc);
 

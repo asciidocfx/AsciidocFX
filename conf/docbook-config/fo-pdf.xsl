@@ -108,7 +108,7 @@
     -->
     <xsl:param name="alignment">justify</xsl:param>
     <xsl:param name="line-height">1.5</xsl:param>
-    <xsl:param name="body.font.master">12</xsl:param>
+    <xsl:param name="body.font.master">10</xsl:param>
     <xsl:param name="body.font.size">
         <xsl:value-of select="$body.font.master"/><xsl:text>pt</xsl:text>
     </xsl:param>
@@ -160,10 +160,11 @@
             <xsl:value-of select="$text.color"/>
         </xsl:attribute>
         <xsl:attribute name="font-weight">normal</xsl:attribute>
-        <xsl:attribute name="border-top-style">dotted</xsl:attribute>
-        <xsl:attribute name="border-bottom-style">dotted</xsl:attribute>
+        <xsl:attribute name="border-top-style">solid</xsl:attribute>
+        <xsl:attribute name="border-bottom-style">solid</xsl:attribute>
         <xsl:attribute name="border-width">1pt</xsl:attribute>
         <xsl:attribute name="border-color">#BFBFBF</xsl:attribute>
+        <xsl:attribute name="background-color">#BFBFBF</xsl:attribute>
         <xsl:attribute name="space-before.minimum">0</xsl:attribute>
         <xsl:attribute name="space-before.optimum">.2em</xsl:attribute>
         <xsl:attribute name="space-before.maximum">.4em</xsl:attribute>
@@ -180,10 +181,10 @@
 
     <xsl:attribute-set name="monospace.verbatim.properties"
                        use-attribute-sets="monospace.properties verbatim.properties">
-        <!--
-        <xsl:attribute name="keep-together.within-column">always</xsl:attribute>
-        -->
-        <xsl:attribute name="font-size">10pt</xsl:attribute>
+        
+      <!--  <xsl:attribute name="keep-together.within-column">always</xsl:attribute> -->
+        
+        <xsl:attribute name="font-size">8pt</xsl:attribute>
         <xsl:attribute name="text-align">start</xsl:attribute>
         <xsl:attribute name="wrap-option">wrap</xsl:attribute>
         <!--
@@ -195,7 +196,7 @@
     <xsl:param name="shade.verbatim">1</xsl:param>
 
     <xsl:attribute-set name="shade.verbatim.style">
-        <xsl:attribute name="background-color">transparent</xsl:attribute>
+        <xsl:attribute name="background-color">#FBFBFB</xsl:attribute>
         <!--
         <xsl:attribute name="background-color">
           <xsl:choose>
@@ -257,35 +258,50 @@
     <!--
       Page layout
     -->
+	
+<xsl:param name="page.height.portrait">10in</xsl:param> 
+<xsl:param name="page.width.portrait">7in</xsl:param>
 
-    <xsl:param name="paper.type">A4</xsl:param>
-    <!-- alternative size is USletter -->
-    <xsl:param name="headers.on.blank.pages">1</xsl:param>
-    <xsl:param name="footers.on.blank.pages">1</xsl:param>
-    <xsl:param name="page.margin.top">10mm</xsl:param>
-    <!-- top margin of page -->
-    <xsl:param name="page.margin.bottom">10mm</xsl:param>
-    <!-- top margin of page -->
-    <xsl:param name="page.margin.inner">20mm</xsl:param>
-    <!-- side margin of page (left, towards binding) -->
-    <xsl:param name="page.margin.outer">20mm</xsl:param>
-    <!-- side margin of page (right, away from binding) -->
-    <xsl:param name="body.margin.top">15mm</xsl:param>
-    <!-- top margin of content -->
-    <xsl:param name="body.margin.bottom">15mm</xsl:param>
-    <!-- bottom margin of content -->
-    <xsl:param name="body.margin.inner">4mm</xsl:param>
-    <!-- side margin of content (left, towards binding) -->
-    <xsl:param name="body.margin.outer">6mm</xsl:param>
-    <!-- side margin of content (right, away from binding) -->
-    <xsl:param name="body.start.indent">0</xsl:param>
-    <!-- text indentation -->
-    <xsl:param name="body.end.indent">0</xsl:param>
-    <!-- text recess from right -->
-    <xsl:param name="region.before.extent">10mm</xsl:param>
-    <!-- height of page header -->
-    <xsl:param name="region.after.extent">10mm</xsl:param>
-    <!-- height of page footer -->
+<xsl:param name="page.margin.inner">1.9cm</xsl:param>
+<xsl:param name="page.margin.outer">1.27cm</xsl:param>
+
+<xsl:param name="body.margin.inner">1mm</xsl:param>
+<xsl:param name="body.margin.outer">1mm</xsl:param>
+
+<xsl:param name="page.margin.top">10mm</xsl:param> 
+<xsl:param name="body.margin.top">15mm</xsl:param>  
+
+<xsl:param name="region.before.extent">10mm</xsl:param>  
+<xsl:param name="region.after.extent">10mm</xsl:param>
+
+<xsl:param name="page.margin.bottom">10mm</xsl:param>
+<xsl:param name="body.margin.bottom">15mm</xsl:param>
+
+<xsl:param name="body.start.indent">0</xsl:param>
+<!-- text indentation -->
+<xsl:param name="body.end.indent">0</xsl:param>
+<xsl:param name="double.sided">1</xsl:param>
+
+<xsl:param name="generate.toc">
+appendix  toc,title
+article/appendix  nop
+article   toc,title,figure
+book      toc,title,figure,table,example,equation
+chapter   nop
+part      toc,title
+preface   toc,title
+qandadiv  toc
+qandaset  toc
+reference toc,title
+sect1     toc
+sect2     toc
+sect3     toc
+sect4     toc
+sect5     toc
+section   toc
+set       toc,title
+</xsl:param>
+  
 
     <!--
       Table of Contents
@@ -352,12 +368,21 @@
         <!-- Make examples, tables etc. break across pages -->
         <xsl:attribute name="keep-together.within-column">auto</xsl:attribute>
     </xsl:attribute-set>
-
+<!--
     <xsl:param name="formal.title.placement">
         figure after
         example before
         table before
     </xsl:param>
+	-->
+	
+	<xsl:param name="formal.title.placement">
+figure after
+example before
+equation before
+table before
+procedure before
+</xsl:param>
 
     <xsl:attribute-set name="formal.title.properties">
         <xsl:attribute name="color">
@@ -461,7 +486,7 @@
     <!--
     <xsl:param name="graphicsize.extension">1</xsl:param>
     -->
-    <xsl:param name="default.image.width">6.3in</xsl:param>
+    <xsl:param name="default.image.width">4in</xsl:param>
     <xsl:param name="default.inline.image.height">1em</xsl:param>
 
     <!--

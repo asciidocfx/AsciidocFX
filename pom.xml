@@ -112,19 +112,60 @@
     <build>
         <finalName>AsciidocFX</finalName>
         <plugins>
+            <!--   <plugin>
+                   <groupId>org.springframework.boot</groupId>
+                   <artifactId>spring-boot-maven-plugin</artifactId>
+               </plugin>
+           <plugin>
+                   <groupId>com.zenjava</groupId>
+                   <artifactId>javafx-maven-plugin</artifactId>
+                   <version>2.0</version>
+                   <configuration>
+                       <mainClass>com.kodcu.boot.Start</mainClass>
+                       <needShortcut>true</needShortcut>
+                   </configuration>
+               </plugin>-->
             <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-            </plugin>
-            <!--<plugin>
-                <groupId>com.zenjava</groupId>
-                <artifactId>javafx-maven-plugin</artifactId>
-                <version>2.0</version>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>appassembler-maven-plugin</artifactId>
+                <version>1.8.1</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>assemble</goal>
+                        </goals>
+                    </execution>
+                </executions>
                 <configuration>
-                    <mainClass>com.kodcu.boot.Start</mainClass>
-                    <needShortcut>true</needShortcut>
+                    <programs>
+                        <program>
+                            <mainClass>com.kodcu.boot.Start</mainClass>
+                            <id>asciidocfx</id>
+                        </program>
+                    </programs>
+                    <repositoryLayout>flat</repositoryLayout>
+                    <useWildcardClassPath>true</useWildcardClassPath>
+                    <binFileExtensions>
+                        <unix>.sh</unix>
+                    </binFileExtensions>
+                    <repositoryName>lib</repositoryName>
+                    <configurationDirectory>conf</configurationDirectory>
+                    <configurationSourceDirectory>${project.basedir}/conf</configurationSourceDirectory>
+                    <copyConfigurationDirectory>true</copyConfigurationDirectory>
+                    <logsDirectory>log</logsDirectory>
+                    <!--<assembleDirectory>/</assembleDirectory>-->
                 </configuration>
-            </plugin>-->
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>2.4</version>
+                <configuration>
+
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 

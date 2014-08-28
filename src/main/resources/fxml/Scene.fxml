@@ -67,8 +67,6 @@
               </image>
             </ImageView>
           </graphic>
-        </Menu>
-        <Menu mnemonicParsing="false" text="File">
           <items>
             <MenuItem mnemonicParsing="false" onAction="#openDoc" text="Open" fx:id="openItem" />
             <MenuItem mnemonicParsing="false" onAction="#newDoc" text="New" fx:id="newItem" />

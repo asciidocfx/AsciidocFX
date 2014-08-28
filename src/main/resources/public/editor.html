@@ -112,7 +112,11 @@
         readOnly: true
     });
 
-    editor.setFontSize(14);
+//    editor.setFontSize(14);
+    editor.setOptions({
+        fontFamily: "'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace",
+        fontSize: "14px"
+    });
     editor.setTheme("ace/theme/ace");
     editor.setScrollSpeed(0.1);
 

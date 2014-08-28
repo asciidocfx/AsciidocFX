@@ -15,6 +15,7 @@ import org.xml.sax.InputSource;
 import java.io.StringReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.List;
 
 import static java.nio.file.StandardOpenOption.CREATE;
@@ -67,7 +68,10 @@ public class DocBookService {
             List<Element> simparas = rootDocument.find("simpara").get();
 
             for (Element elem : simparas) {
-                Path chapterPath = currentPath.resolve($(elem).find("link").attr("href"));
+                Match link = $(elem).find("link");
+                if(link.isEmpty())
+                    continue; // chapter link değilse
+                Path chapterPath = currentPath.resolve(link.attr("href"));
                 String chapterPart = docConverter.asciidocToDocbook(webEngine, IOHelper.readFile(currentPath.resolve(chapterPath)), true);
 
                 try (StringReader chapterReader = new StringReader(chapterPart);) {
@@ -77,11 +81,22 @@ public class DocBookService {
 //                            .attr("width", "100%")
 //                            .attr("contentwidth", "100%")
 //                            .attr("scalefit", "1");
+
+                    /// formparam to figure fix
+                    chapterPartial.find("imageobject").parents("formalpara").each((context)->{
+                        $(context).rename("figure");
+                    });
+
+                    ///
                     $(elem).replaceWith(chapterPartial);
                 }
-            }
-            ;
+            };
 
+
+            List<String> chapterExtractList=Arrays.asList("dedication","preface","appendix","bibliography","glossary","colophon","index");
+            chapterExtractList.forEach(wrapper->{
+                rootDocument.find(wrapper).after(rootDocument.find(wrapper).find("chapter"));
+            });
 
             StringBuilder builder = new StringBuilder();
             builder.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");

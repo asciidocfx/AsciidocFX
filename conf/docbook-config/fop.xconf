@@ -19,13 +19,13 @@ the location of this file.
   <base>.</base>
   
   <!-- Source resolution in dpi (dots/pixels per inch) for determining the size of pixels in SVG and bitmap images, default: 72dpi -->
-  <source-resolution>72</source-resolution>
+  <source-resolution>300</source-resolution>
   <!-- Target resolution in dpi (dots/pixels per inch) for specifying the target resolution for generated bitmaps, default: 72dpi -->
-  <target-resolution>72</target-resolution>
+  <target-resolution>300</target-resolution>
   
   <!-- Default page-height and page-width, in case
        value is specified as auto -->
-  <default-page-settings height="11in" width="8.26in"/>
+  <default-page-settings height="9in" width="6in"/> 
   
   <!-- Information for specific renderers -->
   <!-- Uses renderer mime type for renderers -->
