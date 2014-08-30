@@ -1,5 +1,5 @@
 !Config
-directoryPanel: false
+directoryPanel: true
 fontFamily: "'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace"
 fontSize: 14px
 recentFileListSize: 10
