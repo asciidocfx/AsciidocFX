@@ -62,8 +62,18 @@
         app.onscroll(editor.getSession().getScrollTop(), maxTop);
     });
 
+    var newlyInitialized = true;
+
     editor.getSession().on('change', function (obj) {
+        if (!newlyInitialized)
+            app.appendWildcard();
+
         app.textListener(null, null, editor.getValue());
+
+        if (newlyInitialized)
+            setTimeout(function () {
+                newlyInitialized = false;
+            }, 1000);
     });
 
     editor.commands.addCommand({
@@ -112,7 +122,7 @@
         readOnly: true
     });
 
-//    editor.setFontSize(14);
+    //    editor.setFontSize(14);
     editor.setOptions({
         fontFamily: "'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace",
         fontSize: "14px"

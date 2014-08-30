@@ -136,7 +136,6 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
     private double sceneXOffset;
     private double sceneYOffset;
     private Path configPath;
-    private ChangeListener<? super String> wildcardAppendListener;
 
     @FXML
     private void createTable(ActionEvent event) throws IOException {
@@ -420,23 +419,9 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
         current.putTab(tab, null, webView);
     }
 
-    public void wildcardAppendListener(){
 
-        wildcardAppendListener = (observable, old, nev) -> {
-            if (Objects.nonNull(old))
-                if (!old.contentEquals(nev)) {
-                    Label label = (Label) current.getCurrentTab().getGraphic();
-
-                    if (!label.getText().contains(" *"))
-                        label.setText(label.getText() + " *");
-                }
-        };
-        lastRendered.addListener(wildcardAppendListener);
-    }
 
     public void addTab(Path path) {
-        if(Objects.nonNull(wildcardAppendListener))
-            lastRendered.removeListener(wildcardAppendListener);
 
         AnchorPane anchorPane = new AnchorPane();
         WebView webView = createWebView();
@@ -459,7 +444,6 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
             if (after) {
                 current.putTab(tab, path, webView);
                 webEngine.executeScript(waitForGetValue);
-
 
             }
         });
@@ -589,21 +573,24 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
         return new ResponseEntity<>(temp, HttpStatus.OK);
     }
 
+    public void appendWildcard(){
+        Label label = (Label) current.getCurrentTab().getGraphic();
+
+        if (!label.getText().contains(" *"))
+            label.setText(label.getText() + " *");
+    }
+
     public void textListener(ObservableValue observableValue, String old, String nev) {
         try {
             Platform.runLater(() -> {
 
-                String rendered = docConverter.asciidocToHtml(previewEngine, nev);
-
                 Label label = (Label) current.getCurrentTab().getGraphic();
 
-//                if(Objects.nonNull(lastRendered.getValue()))
-//                if (lastRendered.getValue().length() + 1 == rendered.length())
-//                    if (!label.getText().contains(" *"))
-//                        label.setText(label.getText() + " *");
+
+                String rendered = docConverter.asciidocToHtml(previewEngine, nev);
+
 
                 lastRendered.setValue(rendered);
-
 
             });
         } catch (Exception ex) {
