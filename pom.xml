@@ -15,7 +15,7 @@
         <java.version>1.8</java.version>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
-        <mainClass>com.kodcu.boot.Start</mainClass>
+        <mainClass>com.kodcu.boot.AppStarter</mainClass>
     </properties>
 
     <organization>
@@ -107,6 +107,11 @@
             <artifactId>fop-hyph</artifactId>
             <version>2.0</version>
         </dependency>
+        <dependency>
+            <groupId>com.esotericsoftware.yamlbeans</groupId>
+            <artifactId>yamlbeans</artifactId>
+            <version>1.08</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -140,7 +145,7 @@
                 <configuration>
                     <programs>
                         <program>
-                            <mainClass>com.kodcu.boot.Start</mainClass>
+                            <mainClass>com.kodcu.boot.AppStarter</mainClass>
                             <id>asciidocfx</id>
                         </program>
                     </programs>

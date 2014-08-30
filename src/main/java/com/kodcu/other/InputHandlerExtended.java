@@ -48,7 +48,6 @@ public class InputHandlerExtended extends InputHandler {
             }
             URIResolver temp = transformer.getURIResolver();
             transformer.setURIResolver((href, base) -> {
-                System.out.format("hmm %s - %s %n", href, base);
                 return new StreamSource(InputHandlerExtended.class.getResourceAsStream(base));
             });
 

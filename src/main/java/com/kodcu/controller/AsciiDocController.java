@@ -1,6 +1,11 @@
 package com.kodcu.controller;
 
 
+import com.esotericsoftware.yamlbeans.YamlException;
+import com.esotericsoftware.yamlbeans.YamlReader;
+import com.esotericsoftware.yamlbeans.YamlWriter;
+import com.kodcu.bean.Config;
+import com.kodcu.bean.RecentFiles;
 import com.kodcu.other.Current;
 import com.kodcu.other.IOHelper;
 import com.kodcu.other.Item;
@@ -11,7 +16,6 @@ import de.jensd.fx.fontawesome.AwesomeIcon;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Task;
 import javafx.concurrent.Worker;
@@ -53,13 +57,12 @@ import org.springframework.web.socket.handler.TextWebSocketHandler;
 import org.xml.sax.SAXException;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.CodeSource;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -136,6 +139,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
     private double sceneXOffset;
     private double sceneYOffset;
     private Path configPath;
+    private Config config;
 
     @FXML
     private void createTable(ActionEvent event) throws IOException {
@@ -232,6 +236,10 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
             e.printStackTrace();
         }
 
+        loadConfigurations();
+        loadRecentFileList();
+
+
         tomcatPort = server.getEmbeddedServletContainer().getPort();
 
         waitForGetValue = IOHelper.convert(AsciiDocController.class.getResourceAsStream("/waitForGetValue.js"));
@@ -322,6 +330,42 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
 
     }
 
+    private void loadConfigurations() {
+        try {
+            YamlReader yamlReader =
+                    new YamlReader(new FileReader(configPath.resolve("config.yml").toFile()));
+            yamlReader.getConfig().setClassTag("Config", Config.class);
+            config = yamlReader.read(Config.class);
+
+        } catch (YamlException | FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        if (!config.getDirectoryPanel())
+            Platform.runLater(()->{
+                splitPane.setDividerPositions(0, 0.5);
+            });
+    }
+
+    private void loadRecentFileList() {
+
+        try {
+            YamlReader yamlReader =
+                    new YamlReader(new FileReader(configPath.resolve("recentFiles.yml").toFile()));
+            yamlReader.getConfig().setClassTag("RecentFiles", RecentFiles.class);
+            RecentFiles readed = yamlReader.read(RecentFiles.class);
+
+            readed.getFiles()
+                    .stream()
+                    .map(path -> Paths.get(path))
+                    .forEach(recentFiles::add);
+        } catch (YamlException e) {
+            e.printStackTrace();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
     public void externalBrowse() {
 
         hostServices.showDocument(String.format("http://localhost:%d/index.html", tomcatPort));
@@ -354,9 +398,24 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
     }
 
     @FXML
-    private void closeApp(ActionEvent event) {
+    private void closeApp(ActionEvent event) throws IOException {
+
+        List<String> fileList = recentFiles
+                .stream()
+                .collect(Collectors.toList())
+                .stream()
+                .map(path -> path.toString())
+                .collect(Collectors.toList());
+
+        File recentFileYml = configPath.resolve("recentFiles.yml").toFile();
+        YamlWriter yamlWriter = new YamlWriter(new FileWriter(recentFileYml));
+        yamlWriter.getConfig().setClassTag("RecentFiles", RecentFiles.class);
+        yamlWriter.write(new RecentFiles(fileList));
+        yamlWriter.close();
+
         Platform.exit();
         System.exit(0);
+
     }
 
     @FXML
@@ -388,7 +447,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
                 addTab(path);
             });
             return menuItem;
-        }).limit(20).collect(Collectors.toList());
+        }).limit(config.getRecentFileListSize()).collect(Collectors.toList());
 
         recentMenu.getItems().clear();
         recentMenu.getItems().addAll(menuItems);
@@ -418,7 +477,6 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
 
         current.putTab(tab, null, webView);
     }
-
 
 
     public void addTab(Path path) {
@@ -453,6 +511,8 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
 
         Tab lastTab = tabPane.getTabs().get(tabPane.getTabs().size() - 1);
         tabPane.getSelectionModel().select(lastTab);
+
+        recentFiles.add(path);
 
     }
 
@@ -573,7 +633,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
         return new ResponseEntity<>(temp, HttpStatus.OK);
     }
 
-    public void appendWildcard(){
+    public void appendWildcard() {
         Label label = (Label) current.getCurrentTab().getGraphic();
 
         if (!label.getText().contains(" *"))
@@ -710,5 +770,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
         return initialDirectory;
     }
 
-
+    public Config getConfig() {
+        return config;
+    }
 }

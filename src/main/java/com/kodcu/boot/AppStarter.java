@@ -22,14 +22,10 @@ import javafx.stage.StageStyle;
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 
-import java.io.File;
-import java.nio.file.Paths;
-import java.security.CodeSource;
-
 import static javafx.scene.input.KeyCombination.CONTROL_DOWN;
 
 
-public class Start extends Application {
+public class AppStarter extends Application {
 
     private AsciiDocController controller;
     private ConfigurableApplicationContext context;
@@ -42,7 +38,7 @@ public class Start extends Application {
         FXMLLoader parentLoader = new FXMLLoader();
         FXMLLoader tablePopupLoader = new FXMLLoader();
 
-        context = SpringApplication.run(Config.class);
+        context = SpringApplication.run(SpringAppConfig.class);
         tablePopupLoader.setControllerFactory(context::getBean);
         parentLoader.setControllerFactory(context::getBean);
 

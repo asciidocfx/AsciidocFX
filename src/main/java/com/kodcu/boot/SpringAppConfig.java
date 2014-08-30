@@ -21,18 +21,27 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.web.SpringBootServletInitializer;
+import org.springframework.boot.env.YamlPropertySourceLoader;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.PropertySource;
+import org.springframework.core.io.PathResource;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;
 import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
 import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
+
+import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.security.CodeSource;
 
 
 @Configuration
 @EnableAutoConfiguration
 @EnableWebSocket
 @ComponentScan(basePackages = "com.kodcu.**")
-public class Config extends SpringBootServletInitializer implements WebSocketConfigurer {
+public class SpringAppConfig extends SpringBootServletInitializer implements WebSocketConfigurer {
 
     @Autowired
     private AsciiDocController asciiDocController;
@@ -45,7 +54,7 @@ public class Config extends SpringBootServletInitializer implements WebSocketCon
     @Override
     protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
 
-        return application.sources(Config.class);
+        return application.sources(SpringAppConfig.class);
     }
 
 
