@@ -45,9 +45,9 @@ In the left side of application,you can set your working directory. All listed d
 ### How to Run AsciidocFX (For Users)
 
 1. Firstly, install  [JRE 8](http://www.oracle.com/technetwork/java/javase/downloads/index.html)
-2. Download the [AsciidocFX.jar](https://github.com/rahmanusta/AsciidocFX/releases/download/v1.0.4/AsciidocFX.jar) file
+2. Download the [AsciidocFX.zip](https://github.com/rahmanusta/AsciidocFX/releases/download/v1.0.5/AsciidocFX.zip) and Extract it
 3. Run
-    * java -jar AsciidocFX.jar
+    * bin/asciidocfx.bat or bin/asciidocfx.sh
 
 ### How to Build executable JAR (For Developers)
 
@@ -55,7 +55,6 @@ In the left side of application,you can set your working directory. All listed d
 2. Install [Apache Maven](http://maven.apache.org/download.cgi) and set /bin directory to environment variables
 3. Enter AsciidocFX directory and run
     * $ mvn clean install
-4. Follow to target/ directory and run
-    * $ java -jar AsciidocFX.jar
+4. Follow to target/ directory and you will see AsciidocFX.zip
 
 [![Analytics](https://ga-beacon.appspot.com/UA-52823012-1/AsciidocFX/readme)](https://github.com/rahmanusta/AsciidocFX)
