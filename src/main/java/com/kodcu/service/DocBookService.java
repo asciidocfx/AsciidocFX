@@ -7,6 +7,8 @@ import javafx.application.Platform;
 import javafx.scene.web.WebEngine;
 import javafx.util.Duration;
 import org.joox.Match;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.w3c.dom.Element;
@@ -28,11 +30,16 @@ import static org.joox.JOOX.$;
 @Component
 public class DocBookService {
 
+    private static final Logger logger = LoggerFactory.getLogger(DocBookService.class);
+
     @Autowired
     private AsciiDoctorRenderService docConverter;
 
     @Autowired
     private AsciiDocController asciiDocController;
+
+    @Autowired
+    private IndikatorService indikatorService;
 
 
     public void generateDocbook(WebEngine webEngine, Path currentPath, boolean showIndicator) {
@@ -45,16 +52,7 @@ public class DocBookService {
             }
 
             if (showIndicator)
-                Platform.runLater(() -> {
-                    asciiDocController.getIndikator().setVisible(true);
-                    FadeTransition fadeIn = new FadeTransition(Duration.seconds(4));
-                    fadeIn.setNode(asciiDocController.getIndikator());
-                    fadeIn.setFromValue(0.0);
-                    fadeIn.setToValue(1.0);
-                    fadeIn.setCycleCount(1);
-                    fadeIn.setAutoReverse(false);
-                    fadeIn.playFromStart();
-                });
+                indikatorService.startCycle();
 
 
             String bookRoot = docConverter.asciidocToDocbook(webEngine, IOHelper.readFile(bookAsc), true);
@@ -109,29 +107,15 @@ public class DocBookService {
 
             IOHelper.writeToFile(currentPath.resolve("book.xml"), builder.toString(), CREATE, TRUNCATE_EXISTING);
 
-            if (showIndicator)
-                asciiDocController.getHostServices().showDocument(currentPath.resolve("book.xml").toUri().toString());
+//            if (showIndicator)
+//                asciiDocController.getHostServices().showDocument(currentPath.resolve("book.xml").toUri().toString());
 
             if (showIndicator)
-                Platform.runLater(() -> {
-
-                    asciiDocController.getIndikator().setProgress(1);
-                    FadeTransition fadeOut = new FadeTransition(Duration.seconds(4));
-                    fadeOut.setNode(asciiDocController.getIndikator());
-                    fadeOut.setFromValue(1.0);
-                    fadeOut.setToValue(0.0);
-                    fadeOut.setCycleCount(1);
-                    fadeOut.setAutoReverse(false);
-                    fadeOut.playFromStart();
-
-                });
+                indikatorService.completeCycle();
         } catch (Exception ex) {
-            ex.printStackTrace();
+            logger.error(ex.getMessage(),ex);
         } finally {
-            Platform.runLater(() -> {
-                asciiDocController.getIndikator().setProgress(-1);
-                asciiDocController.getIndikator().setVisible(false);
-            });
+            indikatorService.hideIndikator();
         }
     }
 }

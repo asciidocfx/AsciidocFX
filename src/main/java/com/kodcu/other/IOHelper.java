@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
+import java.nio.file.FileSystem;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
@@ -62,5 +63,12 @@ public class IOHelper {
             e.printStackTrace();
         }
         return content;
+    }
+
+    public static void createDirectories(FileSystem fileSystem, Path path) {
+        if(Files.isDirectory(path)){
+            System.out.println(path.relativize(fileSystem.getPath("/")));
+        }
+
     }
 }

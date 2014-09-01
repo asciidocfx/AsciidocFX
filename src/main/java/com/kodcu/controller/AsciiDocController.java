@@ -11,11 +11,13 @@ import com.kodcu.other.IOHelper;
 import com.kodcu.other.Item;
 import com.kodcu.service.*;
 import com.sun.javafx.application.HostServicesDelegate;
+import com.sun.javafx.scene.control.skin.ProgressIndicatorSkin;
 import de.jensd.fx.fontawesome.AwesomeDude;
 import de.jensd.fx.fontawesome.AwesomeIcon;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Task;
 import javafx.concurrent.Worker;
@@ -31,6 +33,7 @@ import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.text.Text;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import javafx.stage.DirectoryChooser;
@@ -55,6 +58,7 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 import org.xml.sax.SAXException;
+import org.zeroturnaround.exec.ProcessExecutor;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.*;
@@ -65,6 +69,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.CodeSource;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import static java.nio.file.StandardOpenOption.CREATE;
@@ -86,10 +91,9 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
     public TreeView<Item> treeView;
     public Button splitHideButton;
     public Button WorkingDirButton;
-    public Button convertDocbook;
+
     public MenuBar menubar;
     public HBox windowHBox;
-    public Button generatePdf;
     public ProgressIndicator indikator;
 
     @Autowired
@@ -106,6 +110,9 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
 
     @Autowired
     private FopPdfService fopServiceRunner;
+
+    @Autowired
+    private Epub3Service epub3Service;
 
     @Autowired
     private Current current;
@@ -140,19 +147,13 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
     private double sceneYOffset;
     private Path configPath;
     private Config config;
+    private Optional<String> workingDirectory;
 
     @FXML
     private void createTable(ActionEvent event) throws IOException {
         tableStage.show();
     }
 
-    @FXML
-    private void convertDocbook(ActionEvent event) {
-
-        Path currentPath = initialDirectory.map(path -> Files.isDirectory(path) ? path : path.getParent()).get();
-        docBookController.generateDocbook(previewEngine, currentPath, true);
-
-    }
 
     @FXML
     private void openConfig(ActionEvent event) {
@@ -175,15 +176,41 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
     @FXML
     private void generatePdf(ActionEvent event) throws IOException, SAXException {
 
-        Path currentPath = initialDirectory.map(path -> Files.isDirectory(path) ? path : path.getParent()).get();
-
+//        Path currentPath = initialDirectory.map(path -> Files.isDirectory(path) ? path : path.getParent()).get();
+        Path currentPath = Paths.get(workingDirectory.get());
         docBookController.generateDocbook(previewEngine, currentPath, false);
 
-        Task<Void> task = new Task<Void>() {
-            @Override
-            protected Void call() throws Exception {
+        invokeTask((task) -> {
+            fopServiceRunner.generate(currentPath, configPath);
+        });
+    }
 
-                fopServiceRunner.generate(currentPath, configPath);
+    @FXML
+    private void convertDocbook(ActionEvent event) {
+        Path currentPath = Paths.get(workingDirectory.get());
+//        Path currentPath = initialDirectory.map(path -> Files.isDirectory(path) ? path : path.getParent()).get();
+        docBookController.generateDocbook(previewEngine, currentPath, true);
+
+    }
+
+    @FXML
+    private void convertEpub(ActionEvent event) throws Exception {
+
+//        Path currentPath = initialDirectory.map(path -> Files.isDirectory(path) ? path : path.getParent()).get();
+        Path currentPath = Paths.get(workingDirectory.get());
+        docBookController.generateDocbook(previewEngine, currentPath, false);
+
+        invokeTask((task) -> {
+            epub3Service.produceEpub3(currentPath, configPath);
+        });
+    }
+
+    private <T> void invokeTask(Consumer<Task<T>> consumer) {
+
+        Task<T> task = new Task<T>() {
+            @Override
+            protected T call() throws Exception {
+                consumer.accept(this);
                 return null;
             }
         };
@@ -192,11 +219,17 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
 
     }
 
+    @FXML
+    private void convertMobi(ActionEvent event) {
+        Path currentPath = Paths.get(workingDirectory.get());
+        new ProcessExecutor().command("kindlegen",currentPath.resolve("book.epub").toString());
+    }
+
     //    @FXML
     private void generateHtml(ActionEvent event) {
 
-        Path currentPath = initialDirectory.map(path -> Files.isDirectory(path) ? path : path.getParent()).get();
-
+//        Path currentPath = initialDirectory.map(path -> Files.isDirectory(path) ? path : path.getParent()).get();
+        Path currentPath = Paths.get(workingDirectory.get());
         htmlBookService.generateHtml(previewEngine, currentPath, true);
     }
 
@@ -272,15 +305,17 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
 
 
         /// Treeview
+
+        workingDirectory = Optional.of(config.getWorkingDirectory());
+
+        String workDir = workingDirectory.orElse(System.getProperty("user.home"));
 //
-        fileBrowser.browse(treeView, this, System.getProperty("user.home"));
+        fileBrowser.browse(treeView, this, workDir);
 
         //
 
         AwesomeDude.setIcon(WorkingDirButton, AwesomeIcon.FOLDER_OPEN_ALT);
         AwesomeDude.setIcon(splitHideButton, AwesomeIcon.CHEVRON_LEFT);
-        AwesomeDude.setIcon(convertDocbook, AwesomeIcon.FILE_TEXT_ALT);
-        AwesomeDude.setIcon(generatePdf, AwesomeIcon.FILE_PDF_ALT);
 
         //
 
@@ -327,7 +362,6 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
 
         //
 
-
     }
 
     private void loadConfigurations() {
@@ -342,9 +376,10 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
         }
 
         if (!config.getDirectoryPanel())
-            Platform.runLater(()->{
+            Platform.runLater(() -> {
                 splitPane.setDividerPositions(0, 0.5);
             });
+
     }
 
     private void loadRecentFileList() {
@@ -383,6 +418,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
         directoryChooser.setTitle("Select Working Directory");
         File selectedDir = directoryChooser.showDialog(null);
         if (Objects.nonNull(selectedDir)) {
+            config.setWorkingDirectory(selectedDir.toString());
             initialDirectory = Optional.of(selectedDir.toPath());
             fileBrowser.browse(treeView, this, selectedDir.toString());
         }
@@ -411,6 +447,14 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
         YamlWriter yamlWriter = new YamlWriter(new FileWriter(recentFileYml));
         yamlWriter.getConfig().setClassTag("RecentFiles", RecentFiles.class);
         yamlWriter.write(new RecentFiles(fileList));
+        yamlWriter.close();
+
+        //
+
+        File configYml = configPath.resolve("config.yml").toFile();
+        yamlWriter = new YamlWriter(new FileWriter(configYml));
+        yamlWriter.getConfig().setClassTag("Config", Config.class);
+        yamlWriter.write(config);
         yamlWriter.close();
 
         Platform.exit();

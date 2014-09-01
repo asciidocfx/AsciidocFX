@@ -1,10 +1,6 @@
 package com.kodcu.service;
 
 import com.kodcu.controller.AsciiDocController;
-import com.kodcu.other.InputHandlerExtended;
-import javafx.animation.FadeTransition;
-import javafx.application.Platform;
-import javafx.util.Duration;
 import org.apache.fop.apps.FOUserAgent;
 import org.apache.fop.apps.FopFactory;
 import org.apache.fop.cli.InputHandler;
@@ -14,10 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.FileOutputStream;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Vector;
 
 /**
@@ -29,9 +23,12 @@ public class FopPdfService {
     @Autowired
     private AsciiDocController asciiDocController;
 
-    Logger logger = LoggerFactory.getLogger(FopPdfService.class);
+    @Autowired
+    private IndikatorService indikatorService;
 
-    public void generate(Path currentPath, Path appDir) {
+    private static final Logger logger = LoggerFactory.getLogger(FopPdfService.class);
+
+    public void generate(Path currentPath, Path configPath) {
 
         Path bookXml = currentPath.resolve("book.xml");
 
@@ -39,16 +36,7 @@ public class FopPdfService {
             return;
         }
 
-        Platform.runLater(() -> {
-            asciiDocController.getIndikator().setVisible(true);
-            FadeTransition fadeIn = new FadeTransition(Duration.seconds(4));
-            fadeIn.setNode(asciiDocController.getIndikator());
-            fadeIn.setFromValue(0.0);
-            fadeIn.setToValue(1.0);
-            fadeIn.setCycleCount(1);
-            fadeIn.setAutoReverse(false);
-            fadeIn.playFromStart();
-        });
+        indikatorService.startCycle();
 
         try {
 
@@ -58,44 +46,33 @@ public class FopPdfService {
             params.add("title.font.family");
             params.add("Arial");
             params.add("highlight.xslthl.config");
-            params.add(appDir.resolve("docbook-config/xslthl-config.xml").toUri().toString());
+            params.add(configPath.resolve("docbook-config/xslthl-config.xml").toUri().toString());
             params.add("admon.graphics.path");
-            params.add(appDir.resolve("docbook/images/").toUri().toString());
+            params.add(configPath.resolve("docbook/images/").toUri().toString());
             params.add("callout.graphics.path");
-            params.add(appDir.resolve("docbook/images/callouts/").toUri().toString());
+            params.add(configPath.resolve("docbook/images/callouts/").toUri().toString());
 
-            InputHandler handler = new InputHandler(bookXml.toFile(), appDir.resolve("docbook-config/fo-pdf.xsl").toFile(), params);
+            InputHandler handler = new InputHandler(bookXml.toFile(), configPath.resolve("docbook-config/fo-pdf.xsl").toFile(), params);
 
             FopFactory fopFactory = FopFactory.newInstance();
 
-            fopFactory.setUserConfig(appDir.resolve("docbook-config/fop.xconf").toFile());
+            fopFactory.setUserConfig(configPath.resolve("docbook-config/fop.xconf").toFile());
             try (FileOutputStream outputStream = new FileOutputStream(currentPath.resolve("book.pdf").toFile());) {
                 FOUserAgent userAgent = new FOUserAgent(fopFactory);
                 handler.renderTo(userAgent, "application/pdf", outputStream);
             } finally {
 
-                Platform.runLater(() -> {
-                    asciiDocController.getIndikator().setProgress(1);
-                    FadeTransition fadeOut = new FadeTransition(Duration.seconds(4));
-                    fadeOut.setNode(asciiDocController.getIndikator());
-                    fadeOut.setFromValue(1.0);
-                    fadeOut.setToValue(0.0);
-                    fadeOut.setCycleCount(1);
-                    fadeOut.setAutoReverse(false);
-                    fadeOut.playFromStart();
-                });
+                indikatorService.completeCycle();
 
-                asciiDocController.getHostServices().showDocument(currentPath.resolve("book.pdf").toUri().toString());
+
+//                asciiDocController.getHostServices().showDocument(currentPath.resolve("book.pdf").toUri().toString());
             }
 
         } catch (Exception ex) {
             logger.debug(ex.getMessage(), ex);
             ex.printStackTrace();
         } finally {
-            Platform.runLater(() -> {
-                asciiDocController.getIndikator().setProgress(-1);
-                asciiDocController.getIndikator().setVisible(false);
-            });
+            indikatorService.hideIndikator();
         }
     }
 }

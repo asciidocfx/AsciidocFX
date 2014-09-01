@@ -16,6 +16,7 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <mainClass>com.kodcu.boot.AppStarter</mainClass>
+        <tomcat.version>8.0.8</tomcat.version>
     </properties>
 
     <organization>
@@ -103,6 +104,11 @@
             </exclusions>
         </dependency>
         <dependency>
+            <groupId>saxon</groupId>
+            <artifactId>saxon</artifactId>
+            <version>6.5.3</version>
+        </dependency>
+        <dependency>
             <groupId>net.sf.offo</groupId>
             <artifactId>fop-hyph</artifactId>
             <version>2.0</version>
@@ -111,6 +117,16 @@
             <groupId>com.esotericsoftware.yamlbeans</groupId>
             <artifactId>yamlbeans</artifactId>
             <version>1.08</version>
+        </dependency>
+        <dependency>
+            <groupId>org.zeroturnaround</groupId>
+            <artifactId>zt-zip</artifactId>
+            <version>1.8</version>
+        </dependency>
+        <dependency>
+            <groupId>org.zeroturnaround</groupId>
+            <artifactId>zt-exec</artifactId>
+            <version>1.7</version>
         </dependency>
     </dependencies>
 

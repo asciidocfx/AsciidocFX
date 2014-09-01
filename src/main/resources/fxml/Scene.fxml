@@ -29,16 +29,6 @@
                     <Tooltip text="Change Working Directory" />
                   </tooltip>
                 </Button>
-                <Button fx:id="convertDocbook" minWidth="-Infinity" mnemonicParsing="false" onAction="#convertDocbook" prefWidth="35.0" text="">
-                  <tooltip>
-                    <Tooltip text="Generate Docbook" />
-                  </tooltip>
-                </Button>
-                <Button fx:id="generatePdf" minWidth="-Infinity" mnemonicParsing="false" onAction="#generatePdf" prefWidth="35.0" text="">
-                  <tooltip>
-                    <Tooltip text="Generate PDF" />
-                  </tooltip>
-                </Button>
                 <ProgressIndicator fx:id="indikator" disable="false" focusTraversable="false" opacity="1.0" progress="-1.0" visible="false" />
               </items>
             </ToolBar>
@@ -80,6 +70,14 @@
             <MenuItem id="" mnemonicParsing="false" onAction="#fullScreen" text="Full Screen" fx:id="fullScreenItem" />
             <MenuItem id="" mnemonicParsing="false" onAction="#createTable" text="Generate Table" />
             <MenuItem mnemonicParsing="false" onAction="#directoryView" text="Directory View" fx:id="directoryItem" />
+          </items>
+        </Menu>
+        <Menu mnemonicParsing="false" text="Convert">
+          <items>
+            <MenuItem mnemonicParsing="false" onAction="#generatePdf" text="PDF" />
+            <MenuItem mnemonicParsing="false" onAction="#convertEpub" text="Epub3" />
+            <MenuItem mnemonicParsing="false" onAction="#convertMobi" text="Kindle MOBI" />
+            <MenuItem mnemonicParsing="false" onAction="#convertDocbook" text="Docbook5" />
           </items>
         </Menu>
         <Menu mnemonicParsing="false" text="Help">
