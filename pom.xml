@@ -5,7 +5,7 @@
 
     <groupId>com.kodcu</groupId>
     <artifactId>AsciidocFX</artifactId>
-    <version>1.0.5</version>
+    <version>1.0.6</version>
     <packaging>jar</packaging>
 
     <name>AsciidocFX</name>
@@ -201,8 +201,7 @@
                                 <!-- now do what you need to any of unpacked files under target/tmp/ -->
                                 <zip basedir="${project.build.directory}/saxon_tmp"
                                      excludes="META-INF/services/**"
-                                     destfile="${project.build.directory}/appassembler/lib/saxon-${saxon.version}.jar"
-                                        />
+                                     destfile="${project.build.directory}/appassembler/lib/saxon-${saxon.version}.jar"/>
                                 <!-- now the modified jar is available  -->
                             </target>
                         </configuration>
