@@ -11,7 +11,6 @@ import com.kodcu.other.IOHelper;
 import com.kodcu.other.Item;
 import com.kodcu.service.*;
 import com.sun.javafx.application.HostServicesDelegate;
-import com.sun.javafx.scene.control.skin.ProgressIndicatorSkin;
 import de.jensd.fx.fontawesome.AwesomeDude;
 import de.jensd.fx.fontawesome.AwesomeIcon;
 import javafx.application.Platform;
@@ -33,7 +32,6 @@ import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.text.Text;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import javafx.stage.DirectoryChooser;
@@ -58,7 +56,6 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 import org.xml.sax.SAXException;
-import org.zeroturnaround.exec.ProcessExecutor;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.*;
@@ -69,6 +66,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.CodeSource;
 import java.util.*;
+import java.util.concurrent.TimeoutException;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -95,6 +93,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
     public MenuBar menubar;
     public HBox windowHBox;
     public ProgressIndicator indikator;
+    public Hyperlink lastConvertedFileLink;
 
     @Autowired
     private TablePopupController tablePopupController;
@@ -119,6 +118,15 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
 
     @Autowired
     private FileBrowseService fileBrowser;
+
+    @Autowired
+    private IndikatorService indikatorService;
+
+    @Autowired
+    private KindleMobiService kindleMobiService;
+
+    @Autowired
+    private SampleBookService sampleBookService;
 
     private Stage stage;
     private WebEngine previewEngine;
@@ -148,6 +156,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
     private Path configPath;
     private Config config;
     private Optional<String> workingDirectory;
+    private Optional<Path> lastConvertedFile = Optional.empty();
 
     @FXML
     private void createTable(ActionEvent event) throws IOException {
@@ -186,10 +195,36 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
     }
 
     @FXML
+    private void generateSampleBook(ActionEvent event){
+
+        DirectoryChooser directoryChooser = new DirectoryChooser();
+        directoryChooser.setTitle("Select a New Directory for sample book");
+        File file = directoryChooser.showDialog(null);
+        invokeTask((task) -> {
+            sampleBookService.produceSampleBook(configPath, file.toPath());
+            workingDirectory = Optional.of(file.toString());
+            initialDirectory = Optional.of(file.toPath());
+            fileBrowser.browse(treeView, this, file.toString());
+            Platform.runLater(()->{
+                directoryView(null);
+                addTab(file.toPath().resolve("book.asc"));
+            });
+        });
+    }
+
+    @FXML
     private void convertDocbook(ActionEvent event) {
         Path currentPath = Paths.get(workingDirectory.get());
 //        Path currentPath = initialDirectory.map(path -> Files.isDirectory(path) ? path : path.getParent()).get();
         docBookController.generateDocbook(previewEngine, currentPath, true);
+
+    }
+
+    @FXML
+    private void openLastConvertedFile(ActionEvent event){
+        lastConvertedFile.ifPresent(path->{
+            getHostServices().showDocument(path.toUri().toString());
+        });
 
     }
 
@@ -220,9 +255,30 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
     }
 
     @FXML
-    private void convertMobi(ActionEvent event) {
+    private void convertMobi(ActionEvent event) throws InterruptedException, TimeoutException, IOException {
         Path currentPath = Paths.get(workingDirectory.get());
-        new ProcessExecutor().command("kindlegen",currentPath.resolve("book.epub").toString());
+
+        if(Objects.nonNull(config.getKindlegenDir())){
+            if(!Files.exists(Paths.get(config.getKindlegenDir()))){
+                config.setKindlegenDir(null);
+            }
+        }
+
+        if (Objects.isNull(config.getKindlegenDir())) {
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("Select 'kindlegen' File");
+            File kindlegenFile = fileChooser.showOpenDialog(null);
+            if (Objects.isNull(kindlegenFile))
+                return;
+
+            config.setKindlegenDir(kindlegenFile.toPath().getParent().toString());
+
+        }
+
+        invokeTask((task) -> {
+            kindleMobiService.produceMobi(currentPath,config.getKindlegenDir());
+        });
+
     }
 
     //    @FXML
@@ -306,7 +362,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
 
         /// Treeview
 
-        workingDirectory = Optional.of(config.getWorkingDirectory());
+        workingDirectory = Optional.ofNullable(config.getWorkingDirectory());
 
         String workDir = workingDirectory.orElse(System.getProperty("user.home"));
 //
@@ -361,6 +417,13 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
         });
 
         //
+
+
+        indikator.visibleProperty().addListener((observable, oldValue, newValue) -> {
+            lastConvertedFile.ifPresent(path->{
+                lastConvertedFileLink.setVisible(!newValue);
+            });
+        });
 
     }
 
@@ -419,6 +482,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
         File selectedDir = directoryChooser.showDialog(null);
         if (Objects.nonNull(selectedDir)) {
             config.setWorkingDirectory(selectedDir.toString());
+            workingDirectory = Optional.of(selectedDir.toString());
             initialDirectory = Optional.of(selectedDir.toPath());
             fileBrowser.browse(treeView, this, selectedDir.toString());
         }
@@ -816,5 +880,13 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
 
     public Config getConfig() {
         return config;
+    }
+
+    public Optional<Path> getLastConvertedFile() {
+        return lastConvertedFile;
+    }
+
+    public void setLastConvertedFile(Optional<Path> lastConvertedFile) {
+        this.lastConvertedFile = lastConvertedFile;
     }
 }

@@ -19,7 +19,7 @@ public class Config {
     private String theme;
     private String scrollSpeed;
     private String workingDirectory;
-
+    private String kindlegenDir;
 
     public String getFontSize() {
         return fontSize;
@@ -96,5 +96,11 @@ public class Config {
         this.workingDirectory = workingDirectory;
     }
 
+    public String getKindlegenDir() {
+        return kindlegenDir;
+    }
 
+    public void setKindlegenDir(String kindlegenDir) {
+        this.kindlegenDir = kindlegenDir;
+    }
 }

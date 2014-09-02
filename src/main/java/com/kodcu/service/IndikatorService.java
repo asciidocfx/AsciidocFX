@@ -7,6 +7,8 @@ import javafx.util.Duration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.nio.file.Path;
+
 /**
  * Created by usta on 01.09.2014.
  */
@@ -48,4 +50,6 @@ public class IndikatorService {
             asciiDocController.getIndikator().setVisible(false);
         });
     }
+
+
 }

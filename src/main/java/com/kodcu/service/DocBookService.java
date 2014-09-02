@@ -19,6 +19,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import static java.nio.file.StandardOpenOption.CREATE;
 import static java.nio.file.StandardOpenOption.TRUNCATE_EXISTING;
@@ -111,7 +112,10 @@ public class DocBookService {
 //                asciiDocController.getHostServices().showDocument(currentPath.resolve("book.xml").toUri().toString());
 
             if (showIndicator)
+            {
                 indikatorService.completeCycle();
+                asciiDocController.setLastConvertedFile(Optional.of(currentPath.resolve("book.xml")));
+            }
         } catch (Exception ex) {
             logger.error(ex.getMessage(),ex);
         } finally {

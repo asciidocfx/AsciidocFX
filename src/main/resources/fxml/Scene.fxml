@@ -30,6 +30,7 @@
                   </tooltip>
                 </Button>
                 <ProgressIndicator fx:id="indikator" disable="false" focusTraversable="false" opacity="1.0" progress="-1.0" visible="false" />
+                <Hyperlink fx:id="lastConvertedFileLink" onAction="#openLastConvertedFile" opacity="1.0" styleClass="last-converted-file" text="Last Converted File" textFill="#ff3d00" visible="false" wrapText="false" />
               </items>
             </ToolBar>
             <TreeView fx:id="treeView" minWidth="0.0" opacity="1.0" prefHeight="605.0" prefWidth="69.0" showRoot="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="35.0" />
@@ -72,12 +73,13 @@
             <MenuItem mnemonicParsing="false" onAction="#directoryView" text="Directory View" fx:id="directoryItem" />
           </items>
         </Menu>
-        <Menu mnemonicParsing="false" text="Convert">
+        <Menu mnemonicParsing="false" text="Generate">
           <items>
-            <MenuItem mnemonicParsing="false" onAction="#generatePdf" text="PDF" />
-            <MenuItem mnemonicParsing="false" onAction="#convertEpub" text="Epub3" />
-            <MenuItem mnemonicParsing="false" onAction="#convertMobi" text="Kindle MOBI" />
-            <MenuItem mnemonicParsing="false" onAction="#convertDocbook" text="Docbook5" />
+            <MenuItem mnemonicParsing="false" onAction="#generatePdf" text="Generate PDF" />
+            <MenuItem mnemonicParsing="false" onAction="#convertEpub" text="Generate Epub3" />
+            <MenuItem mnemonicParsing="false" onAction="#convertMobi" text="Generate Mobi" />
+            <MenuItem mnemonicParsing="false" onAction="#convertDocbook" text="Generate Docbook5" />
+            <MenuItem mnemonicParsing="false" onAction="#generateSampleBook" text="Generate Sample Book" />
           </items>
         </Menu>
         <Menu mnemonicParsing="false" text="Help">

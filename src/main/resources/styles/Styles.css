@@ -4,6 +4,15 @@
     -fx-border-insets: 0px, 1px;
 }
 
+.last-converted-file {
+    -fx-text-fill: #c6c6c6;
+    -fx-border-style: none;
+}
+
+.last-converted-file:hover {
+    -fx-text-fill: #cd0a0a;
+}
+
 .split-pane .split-pane-divider {
     -fx-padding: 0 1 0 1;
     -fx-background-color: #DDD;

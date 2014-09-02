@@ -3,6 +3,7 @@ package com.kodcu.service;
 import com.icl.saxon.TransformerFactoryImpl;
 import com.kodcu.controller.AsciiDocController;
 import com.kodcu.other.IOHelper;
+import org.apache.commons.io.FileUtils;
 import org.joox.Match;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,6 +19,7 @@ import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.Optional;
 
 import static java.nio.file.StandardOpenOption.TRUNCATE_EXISTING;
 import static java.nio.file.StandardOpenOption.WRITE;
@@ -29,13 +31,13 @@ import static org.joox.JOOX.$;
 @Component
 public class Epub3Service {
 
+    private static final Logger logger = LoggerFactory.getLogger(Epub3Service.class);
+
     @Autowired
     private AsciiDocController asciiDocController;
 
     @Autowired
     private IndikatorService indikatorService;
-
-    private static final Logger logger = LoggerFactory.getLogger(Epub3Service.class);
 
     public void produceEpub3(Path currentPath, Path configPath) {
 
@@ -77,10 +79,13 @@ public class Epub3Service {
             IOHelper.writeToFile(containerXml, builder.toString(), TRUNCATE_EXISTING, WRITE);
 
             Path epubOut = epubTemp.resolve("book.epub");
+
+            FileUtils.copyDirectoryToDirectory(currentPath.resolve("images").toFile(), epubTemp.resolve("OEBPS").toFile());
             ZipUtil.pack(epubTemp.toFile(), epubOut.toFile());
             Files.move(epubOut, currentPath.resolve("book.epub"), StandardCopyOption.REPLACE_EXISTING);
 
             indikatorService.completeCycle();
+            asciiDocController.setLastConvertedFile(Optional.of(currentPath.resolve("book.epub")));
 
         } catch (Exception ex) {
             logger.error(ex.getMessage(),ex);

@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 import java.io.FileOutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Optional;
 import java.util.Vector;
 
 /**
@@ -63,6 +64,8 @@ public class FopPdfService {
             } finally {
 
                 indikatorService.completeCycle();
+
+                asciiDocController.setLastConvertedFile(Optional.of(currentPath.resolve("book.pdf")));
 
 
 //                asciiDocController.getHostServices().showDocument(currentPath.resolve("book.pdf").toUri().toString());

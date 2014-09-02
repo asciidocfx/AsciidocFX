@@ -16,7 +16,9 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <mainClass>com.kodcu.boot.AppStarter</mainClass>
-        <tomcat.version>8.0.8</tomcat.version>
+        <tomcat.version>8.0.11</tomcat.version>
+        <servlet-api.version>3.1.0</servlet-api.version>
+        <saxon.version>6.5.3</saxon.version>
     </properties>
 
     <organization>
@@ -106,7 +108,7 @@
         <dependency>
             <groupId>saxon</groupId>
             <artifactId>saxon</artifactId>
-            <version>6.5.3</version>
+            <version>${saxon.version}</version>
         </dependency>
         <dependency>
             <groupId>net.sf.offo</groupId>
@@ -132,7 +134,9 @@
 
     <build>
         <finalName>AsciidocFX</finalName>
+
         <plugins>
+
             <!--   <plugin>
                    <groupId>org.springframework.boot</groupId>
                    <artifactId>spring-boot-maven-plugin</artifactId>
@@ -178,7 +182,33 @@
                     <!--<assembleDirectory>/</assembleDirectory>-->
                 </configuration>
             </plugin>
-
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.7</version>
+                <executions>
+                    <execution>
+                        <id>repack</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <!-- note that here we reference previously declared dependency -->
+                                <unzip src="${saxon:saxon:jar}"
+                                       dest="${project.build.directory}/saxon_tmp"/>
+                                <!-- now do what you need to any of unpacked files under target/tmp/ -->
+                                <zip basedir="${project.build.directory}/saxon_tmp"
+                                     excludes="META-INF/services/**"
+                                     destfile="${project.build.directory}/appassembler/lib/saxon-${saxon.version}.jar"
+                                        />
+                                <!-- now the modified jar is available  -->
+                            </target>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
@@ -201,6 +231,7 @@
                     </execution>
                 </executions>
             </plugin>
+
         </plugins>
     </build>
 
