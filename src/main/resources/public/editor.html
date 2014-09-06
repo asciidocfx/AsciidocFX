@@ -21,7 +21,7 @@
 <body>
 
 <div id="editor"></div>
-<!--<script type='text/javascript' src='http://getfirebug.com/releases/lite/1.2/firebug-lite-compressed.js'></script>-->
+<script type='text/javascript' src='http://getfirebug.com/releases/lite/1.2/firebug-lite-compressed.js'></script>
 <script src="/jquery.js"></script>
 <!-- load ace -->
 <script src="ace/src/ace.js" type="text/javascript" charset="utf-8"></script>
@@ -76,12 +76,22 @@
             }, 1000);
     });
 
+    // default keys https://searchcode.com/codesearch/view/58959997/
     editor.commands.addCommand({
         name: 'cut-1',
         bindKey: {win: 'Ctrl-X'},
         exec: function (editor) {
-            app.cutCopy(editor.session.getTextRange(editor.getSelectionRange()));
+
+            var textRange = editor.session.getTextRange(editor.getSelectionRange());
+
+            if (textRange.length == 0) {
+                editor.removeLines();
+                return;
+            }
+
+            app.cutCopy(textRange);
             editor.remove(editor.getSelectionRange());
+
         },
         readOnly: true
     });
@@ -114,6 +124,15 @@
     });
 
     editor.commands.addCommand({
+        name: 'ctrl-duplicate',
+        bindKey: {win: 'Ctrl-D'},
+        exec: function (editor) {
+            editor.copyLinesDown();
+        },
+        readOnly: true
+    });
+
+    editor.commands.addCommand({
         name: 'right-brace-1',
         bindKey: {win: 'Ctrl-Alt-0'},
         exec: function (editor) {
@@ -122,13 +141,83 @@
         readOnly: true
     });
 
+    editor.commands.addCommand({
+        name: 'bold-selected',
+        bindKey: {win: 'Ctrl-B'},
+        exec: function (editor) {
+            var text=editor.session.getTextRange(editor.getSelectionRange());
+            editor.session.replace(editor.selection.getRange(), "*"+text+"*")
+        },
+        readOnly: true
+    });
+
+
+    editor.commands.addCommand({
+        name: 'italicize-selected',
+        bindKey: {win: 'Ctrl-i|Ctrl-İ|Ctrl-ı|Ctrl-I'},
+        exec: function (editor) {
+            var text=editor.session.getTextRange(editor.getSelectionRange());
+            editor.session.replace(editor.selection.getRange(), "_"+text+"_")
+        },
+        readOnly: true
+    });
+
+    editor.commands.addCommand({
+        name: 'source-generate',
+        bindKey: {win: 'Tab'},
+        exec: function (editor, selection) {
+
+            var cursorPosition = editor.getCursorPosition();
+            var currentRow = cursorPosition.row;
+            var currentColumn = cursorPosition.column;
+
+            var range = editor.getSelectionRange();
+            range.start.row = currentRow;
+            range.start.column = 0;
+            range.end.row = currentRow;
+            range.end.column = currentColumn;
+
+            var textRange = editor.session.getTextRange(range);
+
+            if (textRange == "src") { // source generator
+                editor.removeToLineStart();
+
+                editor.insert("[source,java]\n----\n\n----");
+
+                editor.gotoLine(range.end.row + 3, 0, true);
+                return;
+            }
+
+//            "tbl3,2"
+            var tableMatch = textRange.match(/tbl(\d+)(\.|,)(\d+)/);
+
+            if (Array.isArray(tableMatch))
+                if (tableMatch.length == 4) { // table generator
+
+                    editor.removeToLineStart();
+
+                    var row = tableMatch[1];
+                    var column = tableMatch[3];
+
+                    var tablePopupCtrl = app.getTablePopupController();
+                    tablePopupCtrl.createBasicTable(row, column);
+                    return;
+                }
+
+            editor.indent();
+        },
+        readOnly: true
+    });
+
     //    editor.setFontSize(14);
     editor.setOptions({
-        fontFamily: "'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace",
+        fontFamily: app.getConfig().getFontFamily(),
         fontSize: app.getConfig().getFontSize()
     });
+
     editor.setTheme(app.getConfig().getTheme());
     editor.setScrollSpeed(app.getConfig().getScrollSpeed());
+
 
 </script>
 </body>

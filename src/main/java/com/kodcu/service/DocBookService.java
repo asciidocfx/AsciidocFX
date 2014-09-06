@@ -20,6 +20,8 @@ import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static java.nio.file.StandardOpenOption.CREATE;
 import static java.nio.file.StandardOpenOption.TRUNCATE_EXISTING;
@@ -33,6 +35,8 @@ public class DocBookService {
 
     private static final Logger logger = LoggerFactory.getLogger(DocBookService.class);
 
+    private Pattern compiledRegex = Pattern.compile("(?<=include::)(.*?)(?=\\[(.*?)\\])");
+
     @Autowired
     private AsciiDoctorRenderService docConverter;
 
@@ -41,7 +45,6 @@ public class DocBookService {
 
     @Autowired
     private IndikatorService indikatorService;
-
 
     public void generateDocbook(WebEngine webEngine, Path currentPath, boolean showIndicator) {
         try {
@@ -55,46 +58,47 @@ public class DocBookService {
             if (showIndicator)
                 indikatorService.startCycle();
 
+            List<String> bookAscLines = Files.readAllLines(bookAsc);
+            StringBuffer allAscChapters=new StringBuffer();
 
-            String bookRoot = docConverter.asciidocToDocbook(webEngine, IOHelper.readFile(bookAsc), true);
+            for (int i = 0; i < bookAscLines.size(); i++) {
+                String bookAscLine = bookAscLines.get(i);
 
-            Match rootDocument;
+                Matcher matcher = compiledRegex.matcher(bookAscLine);
 
-            try (StringReader bookReader = new StringReader(bookRoot);) {
-                rootDocument = $(new InputSource(bookReader));
+                if(matcher.find())
+                {
+                    String chapterPath = matcher.group();
+                    String chapterContent = IOHelper.readFile(currentPath.resolve(chapterPath));
+                    allAscChapters.append(chapterContent);
+                    allAscChapters.append("\n");
+                    bookAscLines.remove(i);
+                }
+
             }
 
-            List<Element> simparas = rootDocument.find("simpara").get();
+            StringBuffer allAscContent=new StringBuffer();
+            bookAscLines.forEach(content->{
+                allAscContent.append(content);
+                allAscContent.append("\n");
+            });
 
-            for (Element elem : simparas) {
-                Match link = $(elem).find("link");
-                if(link.isEmpty())
-                    continue; // chapter link değilse
-                Path chapterPath = currentPath.resolve(link.attr("href"));
-                String chapterPart = docConverter.asciidocToDocbook(webEngine, IOHelper.readFile(currentPath.resolve(chapterPath)), true);
+            String docBookHeaderContent = docConverter.asciidocToDocbook(webEngine, allAscContent.toString(), true);
+            String docBookChapterContent = docConverter.asciidocToDocbook(webEngine, allAscChapters.toString(), true);
 
-                try (StringReader chapterReader = new StringReader(chapterPart);) {
-                    Match chapterPartial = $(new InputSource(chapterReader)).find("chapter");
-                    chapterPartial
-                            .find("imagedata");
-//                            .attr("width", "100%")
-//                            .attr("contentwidth", "100%")
-//                            .attr("scalefit", "1");
+            StringReader bookReader = new StringReader(docBookHeaderContent);
+            Match rootDocument=  $(new InputSource(bookReader));
+            bookReader.close();
 
-                    /// formparam to figure fix
-                    chapterPartial.find("imageobject").parents("formalpara").each((context)->{
-                        $(context).rename("figure");
-                    });
+            bookReader = new StringReader(docBookChapterContent);
+            Match chapterDocument=  $(new InputSource(bookReader));
+            bookReader.close();
 
-                    ///
-                    $(elem).replaceWith(chapterPartial);
-                }
-            };
+            rootDocument.append(chapterDocument.find("chapter"));
 
-
-            List<String> chapterExtractList=Arrays.asList("dedication","preface","appendix","bibliography","glossary","colophon","index");
-            chapterExtractList.forEach(wrapper->{
-                rootDocument.find(wrapper).after(rootDocument.find(wrapper).find("chapter"));
+            // changes formalpara to figure bug fix
+            rootDocument.find("imageobject").parents("formalpara").each((context)->{
+                $(context).rename("figure");
             });
 
             StringBuilder builder = new StringBuilder();
@@ -120,6 +124,7 @@ public class DocBookService {
             logger.error(ex.getMessage(),ex);
         } finally {
             indikatorService.hideIndikator();
+
         }
     }
 }

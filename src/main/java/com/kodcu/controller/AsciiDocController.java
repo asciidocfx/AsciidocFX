@@ -889,4 +889,8 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
     public void setLastConvertedFile(Optional<Path> lastConvertedFile) {
         this.lastConvertedFile = lastConvertedFile;
     }
+
+    public TablePopupController getTablePopupController() {
+        return tablePopupController;
+    }
 }

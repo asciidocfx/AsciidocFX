@@ -30,6 +30,12 @@ public class TablePopupController implements Initializable {
     public TextField tablePopupTitle;
     public Button tablePopupApply;
 
+    public void createBasicTable(String row, String column){
+        tablePopupRows.textProperty().setValue(row);
+        tablePopupColumns.textProperty().setValue(column);
+        tablePopupApply(null);
+    }
+
     @FXML
     private void tablePopupApply(ActionEvent actionEvent) {
 
@@ -77,7 +83,7 @@ public class TablePopupController implements Initializable {
 
         for (int i = 0; i < row; i++) {
             for (int j = 0; j < column; j++) {
-                stringBuffer.append("|abcdefq ");
+                stringBuffer.append("|abc ");
             }
             stringBuffer.append("\n");
         }

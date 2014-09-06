@@ -5,3 +5,4 @@ fontSize: 14px
 recentFileListSize: 10
 scrollSpeed: 0.1
 theme: ace/theme/ace
+workingDirectory: E:\java-ile-websocket
