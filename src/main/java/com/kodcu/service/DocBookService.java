@@ -19,6 +19,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -41,6 +42,9 @@ public class DocBookService {
     private AsciiDoctorRenderService docConverter;
 
     @Autowired
+    private BookPathResolverService bookPathResolver;
+
+    @Autowired
     private AsciiDocController asciiDocController;
 
     @Autowired
@@ -48,9 +52,10 @@ public class DocBookService {
 
     public void generateDocbook(WebEngine webEngine, Path currentPath, boolean showIndicator) {
         try {
-            Path bookAsc = currentPath.resolve("book.asc");
 
-            if (!Files.exists(bookAsc)) {
+            Path bookAsc = bookPathResolver.resolve(currentPath);
+
+            if (Objects.isNull(bookAsc)) {
                 IOHelper.writeToFile(currentPath.resolve("book.xml"), "There is no book.asc file..", CREATE, TRUNCATE_EXISTING);
                 return;
             }

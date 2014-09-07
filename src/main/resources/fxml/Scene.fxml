@@ -78,6 +78,7 @@
             <MenuItem mnemonicParsing="false" onAction="#generatePdf" text="Generate PDF" />
             <MenuItem mnemonicParsing="false" onAction="#convertEpub" text="Generate Epub3" />
             <MenuItem mnemonicParsing="false" onAction="#convertMobi" text="Generate Mobi" />
+            <!--<MenuItem mnemonicParsing="false" onAction="#generateHtml" text="Generate HTML" />-->
             <MenuItem mnemonicParsing="false" onAction="#convertDocbook" text="Generate Docbook5" />
             <MenuItem mnemonicParsing="false" onAction="#generateSampleBook" text="Generate Sample Book" />
           </items>

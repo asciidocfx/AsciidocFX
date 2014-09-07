@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
-    <property name="LOG_FILE" value="${user.home}/asciidocfx.log"/>
+    <property name="LOG_FILE" value="../log/asciidocfx.log"/>
     <include resource="org/springframework/boot/logging/logback/base.xml"/>
     <logger name="org.springframework" level="ERROR"/>
     <logger name="org.apache.fop" level="ERROR"/>

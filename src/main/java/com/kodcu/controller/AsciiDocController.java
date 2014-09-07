@@ -105,7 +105,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
     private DocBookService docBookController;
 
     @Autowired
-    private HtmlBookService htmlBookService;
+    private Html5BookService htmlBookService;
 
     @Autowired
     private FopPdfService fopServiceRunner;
@@ -255,7 +255,9 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
     }
 
     @FXML
-    private void convertMobi(ActionEvent event) throws InterruptedException, TimeoutException, IOException {
+    private void convertMobi(ActionEvent event) throws Exception {
+
+
         Path currentPath = Paths.get(workingDirectory.get());
 
         if(Objects.nonNull(config.getKindlegenDir())){
@@ -275,18 +277,21 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
 
         }
 
+
+        convertEpub(null);
+
         invokeTask((task) -> {
             kindleMobiService.produceMobi(currentPath,config.getKindlegenDir());
         });
 
     }
 
-    //    @FXML
+//    @FXML
     private void generateHtml(ActionEvent event) {
 
-//        Path currentPath = initialDirectory.map(path -> Files.isDirectory(path) ? path : path.getParent()).get();
+        convertDocbook(null);
         Path currentPath = Paths.get(workingDirectory.get());
-        htmlBookService.generateHtml(previewEngine, currentPath, true);
+        htmlBookService.produceXhtml5(currentPath, configPath);
     }
 
 

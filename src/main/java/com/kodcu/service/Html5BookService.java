@@ -15,12 +15,15 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.nio.file.StandardOpenOption;
 import java.util.Optional;
 
+import static java.nio.file.StandardOpenOption.CREATE;
 import static java.nio.file.StandardOpenOption.TRUNCATE_EXISTING;
 import static java.nio.file.StandardOpenOption.WRITE;
 import static org.joox.JOOX.$;
@@ -29,9 +32,9 @@ import static org.joox.JOOX.$;
  * Created by usta on 30.08.2014.
  */
 @Component
-public class Epub3Service {
+public class Html5BookService {
 
-    private static final Logger logger = LoggerFactory.getLogger(Epub3Service.class);
+    private static final Logger logger = LoggerFactory.getLogger(Html5BookService.class);
 
     @Autowired
     private AsciiDocController asciiDocController;
@@ -39,7 +42,7 @@ public class Epub3Service {
     @Autowired
     private IndikatorService indikatorService;
 
-    public void produceEpub3(Path currentPath, Path configPath) {
+    public void produceXhtml5(Path currentPath, Path configPath) {
 
         Path bookXml = currentPath.resolve("book.xml");
 
@@ -53,37 +56,14 @@ public class Epub3Service {
             Path epubTemp = Files.createTempDirectory("epub");
 
             TransformerFactory factory = new TransformerFactoryImpl();
-            File xslFile = configPath.resolve("docbook/epub3/chunk.xsl").toFile();
+            File xslFile = configPath.resolve("docbook/xhtml5/docbook.xsl").toFile();
             StreamSource xslSource = new StreamSource(xslFile);
             Transformer transformer = factory.newTransformer(xslSource);
-            transformer.setParameter("base.dir", epubTemp.resolve("OEBPS").toString());
             StreamSource xmlSource = new StreamSource(currentPath.resolve("book.xml").toFile());
-            transformer.transform(xmlSource, new StreamResult());
 
-            Path containerXml = epubTemp.resolve("META-INF/container.xml");
-
-            Match root = $(containerXml.toFile());
-            root
-                .find("rootfile")
-                .attr("full-path", "OEBPS/package.opf");
-
-            StringBuilder builder = new StringBuilder();
-            builder.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-
-            Match wrapper = $("wrapper");
-            wrapper.append(root);
-            builder.append(wrapper.content());
-
-            root.write(containerXml.toFile());
-
-            IOHelper.writeToFile(containerXml, builder.toString(), TRUNCATE_EXISTING, WRITE);
-
-            Path epubOut = epubTemp.resolve("book.epub");
-
-            FileUtils.copyDirectoryToDirectory(currentPath.resolve("images").toFile(), epubTemp.resolve("OEBPS").toFile());
-            ZipUtil.pack(epubTemp.toFile(), epubOut.toFile());
-            ZipUtil.removeEntry(epubOut.toFile(),"book.epub");
-            Files.move(epubOut, currentPath.resolve("book.epub"), StandardCopyOption.REPLACE_EXISTING);
+            try(BufferedWriter bufferedWriter = Files.newBufferedWriter(currentPath.resolve("book.html"), CREATE, WRITE, TRUNCATE_EXISTING);){
+                transformer.transform(xmlSource, new StreamResult(bufferedWriter));
+            }
 
             indikatorService.completeCycle();
             asciiDocController.setLastConvertedFile(Optional.of(currentPath.resolve("book.epub")));

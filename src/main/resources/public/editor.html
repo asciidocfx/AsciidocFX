@@ -21,7 +21,7 @@
 <body>
 
 <div id="editor"></div>
-<script type='text/javascript' src='http://getfirebug.com/releases/lite/1.2/firebug-lite-compressed.js'></script>
+<!--<script type='text/javascript' src='http://getfirebug.com/releases/lite/1.2/firebug-lite-compressed.js'></script>-->
 <script src="/jquery.js"></script>
 <!-- load ace -->
 <script src="ace/src/ace.js" type="text/javascript" charset="utf-8"></script>
@@ -179,6 +179,14 @@
 
             var textRange = editor.session.getTextRange(range);
 
+            // img tab
+            if(textRange=="img"){
+                editor.removeToLineStart();
+                editor.insert("image::images/image.png[]");
+                return;
+            }
+
+            // src tab
             if (textRange == "src") { // source generator
                 editor.removeToLineStart();
 
@@ -188,7 +196,7 @@
                 return;
             }
 
-//            "tbl3,2"
+//            "tbl3,2" tab
             var tableMatch = textRange.match(/tbl(\d+)(\.|,)(\d+)/);
 
             if (Array.isArray(tableMatch))
