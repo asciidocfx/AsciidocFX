@@ -1,0 +1,37 @@
+body{
+    margin-top: 10px;
+}
+.external-browser {
+    float: right;
+    color: #BDB76B;
+    cursor: pointer;
+}
+
+.external-browser:hover {
+    color: #cdc778;
+}
+
+.row.connection-closed{
+    display: none;
+}
+
+p, blockquote, dt, td.content {
+    font-size: 0.9rem;
+}
+
+code, kbd, pre, samp {
+    font-size: 0.9em;
+}
+
+.sidebarblock p, .sidebarblock dt, .sidebarblock td.content, p.tableblock {
+    font-size: 0.9em;
+}
+
+pre.highlight {
+    padding: 0px !important;
+}
+
+pre.highlight > code {
+    padding: 10px;
+    border-radius: 4px;
+}

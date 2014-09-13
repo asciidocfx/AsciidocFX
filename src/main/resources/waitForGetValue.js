@@ -1,7 +1,7 @@
 function waitForGetValue() {
 
     try {
-        app.textListener(null, null, editor.getValue());
+        app.textListener(editor.getValue());
     }
     catch (e) {
         setTimeout(waitForGetValue, 100);

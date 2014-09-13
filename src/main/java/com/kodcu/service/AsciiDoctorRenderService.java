@@ -2,9 +2,14 @@ package com.kodcu.service;
 
 import com.kodcu.other.IOHelper;
 import javafx.scene.web.WebEngine;
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+
+import javax.annotation.PostConstruct;
+import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * Created by usta on 19.07.2014.
@@ -12,10 +17,18 @@ import org.springframework.stereotype.Component;
 @Component
 public class AsciiDoctorRenderService {
 
+    private String htmlRenderer;
     private static Logger logger = LoggerFactory.getLogger(AsciiDoctorRenderService.class);
 
-    public String asciidocToHtml(WebEngine webEngine, String text) {
-        return (String) webEngine.executeScript(String.format("Opal.Asciidoctor.$render('%s');", IOHelper.normalize(text)));
+    @PostConstruct
+    public void init() throws IOException {
+        try (InputStream stream = getClass().getResourceAsStream("/htmlRenderer.js");) {
+            htmlRenderer = IOUtils.toString(stream);
+        }
+    }
+
+    public void asciidocToHtml(WebEngine webEngine, String text) {
+        webEngine.executeScript(String.format(htmlRenderer, IOHelper.normalize(text)));
     }
 
     public String asciidocToDocbook(WebEngine webEngine, String text, boolean includeHeader) {
@@ -26,7 +39,7 @@ public class AsciiDoctorRenderService {
 
         webEngine.executeScript("var docbookOpts = Opal.hash2(['attributes','header_footer'], {'attributes': ['backend=docbook5', 'doctype=book'],'header_footer':headfoot});");
 
-        String rendered = (String) webEngine.executeScript(String.format("Opal.Asciidoctor.$render('%s',docbookOpts);",IOHelper.normalize(text)));
+        String rendered = (String) webEngine.executeScript(String.format("Opal.Asciidoctor.$render('%s',docbookOpts);", IOHelper.normalize(text)));
 
         return rendered;
 

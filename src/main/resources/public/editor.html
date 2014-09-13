@@ -68,7 +68,7 @@
         if (!newlyInitialized)
             app.appendWildcard();
 
-        app.textListener(null, null, editor.getValue());
+        app.textListener(editor.getValue());
 
         if (newlyInitialized)
             setTimeout(function () {
@@ -151,6 +151,16 @@
         readOnly: true
     });
 
+    editor.commands.addCommand({
+        name: 'codify-selected',
+        bindKey: {win: 'Shift-C'},
+        exec: function (editor) {
+            var text=editor.session.getTextRange(editor.getSelectionRange());
+            editor.session.replace(editor.selection.getRange(), "`"+text+"`")
+        },
+        readOnly: true
+    });
+
 
     editor.commands.addCommand({
         name: 'italicize-selected',
@@ -225,7 +235,7 @@
 
     editor.setTheme(app.getConfig().getTheme());
     editor.setScrollSpeed(app.getConfig().getScrollSpeed());
-
+    editor.setOption("dragEnabled", false);
 
 </script>
 </body>

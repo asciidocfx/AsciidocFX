@@ -2,19 +2,33 @@
 <html>
 <head>
     <title>AsciidocFX Editor</title>
-    <link rel="stylesheet" href="/grid.css" type="text/css"/>
-    <link rel="stylesheet" href="/hljs.css" type="text/css"/>
-    <!--<link rel="stylesheet" href="/stylesheets/asciidoctor.css" type="text/css"/>-->
-    <link rel="stylesheet" href="/stylesheets/github.css" type="text/css"/>
-    <link rel="stylesheet" href="/css/font-awesome.min.css" type="text/css"/>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic&subset=latin,latin-ext|Noto+Serif:400,400italic,700,700italic&subset=latin,latin-ext|Droid+Sans+Mono:400&subset=latin,latin-ext">
+    <link rel="stylesheet" href="/css/grid.css" type="text/css"/>
+    <link rel="stylesheet" href="/css/hljs.css" type="text/css"/>
+    <link rel="stylesheet" href="/css/font-awesome.css"/>
+    <link rel="stylesheet" href="/css/asciidoctor-default.css"/>
+    <link rel="stylesheet" href="/css/custom.css"/>
 </head>
 <body>
-<div class="external-browser" style="margin: 5px;" onclick="externalBrowse()">
-    <i class="fa fa-bolt"></i>
-    External Browser
+
+<div class="row connection-closed">
+    <div class="columns justify large-10 large-centered medium-12 small-12">
+        <strong>
+            <i class="fa fa-exclamation-triangle"></i>
+            Connection Closed
+        </strong>
+    </div>
 </div>
 <div class="row">
-    <div class="columns justify  large-9 large-centered medium-12 small-12">
+    <div class="columns justify large-10 large-centered medium-12 small-12">
+        <a class="external-browser" onclick="externalBrowse()">
+            <i class="fa fa-bolt"></i>
+            External Browser
+        </a>
+    </div>
+</div>
+<div class="row">
+    <div class="columns justify large-10 large-centered medium-12 small-12">
         <div id="placeholder">
             ...
         </div>
@@ -25,12 +39,12 @@
 <!--<script src="/asciidoctor.js"></script>-->
 <!--<script src="/asciidoctor_extensions.js"></script>-->
 
-<script src="/asciidoctor-all.js"></script>
-<script src="/asciidoctor-docbook.js"></script>
+<script src="/js/asciidoctor-all.js"></script>
+<script src="/js/asciidoctor-docbook.js"></script>
 
-<script src="/jquery.js"></script>
-<script src="/sockjs.js"></script>
-<script src="/highlight.pack.js"></script>
+<script src="/js/jquery.js"></script>
+<script src="/js/sockjs.js"></script>
+<script src="/js/highlight.pack.js"></script>
 
 <script>
 
@@ -57,11 +71,15 @@
     };
 
     soket.onerror = soket.onclose = function (e) {
-        alert("Close/Error occured.. Start again.");
+        $(".row.connection-closed").show();
     };
 
     var externalBrowse = function () {
         app.externalBrowse();
+    }
+
+    var printJob = function(){
+        app.printJob();
     }
 
 </script>

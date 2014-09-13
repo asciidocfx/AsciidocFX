@@ -20,9 +20,10 @@ public class FileBrowseService {
     private TreeItem<Item> rootItem;
     private PathMatcher matcher = FileSystems.getDefault().getPathMatcher("glob:**.{asciidoc,adoc,asc,ad,txt}");
 
-    public void browse(TreeView<Item> treeView, AsciiDocController controller, String browserPath) {
+    public void browse(TreeView<Item> treeView, AsciiDocController controller, String browserPath)   {
 
         Platform.runLater(() -> {
+
 
             rootItem = new TreeItem<>(new Item(Paths.get(browserPath), String.format("Working Directory (%s)", browserPath)));
             rootItem.setExpanded(true);
@@ -64,7 +65,7 @@ public class FileBrowseService {
 
     private void addToTreeView(Path path) {
 
-        if (Files.isDirectory(path))
+        if (Files.isDirectory(path) && !path.getFileName().toString().startsWith("."))
             rootItem.getChildren().add(new TreeItem<>(new Item(path)));
         else if (matcher.matches(path))
             rootItem.getChildren().add(new TreeItem<>(new Item(path)));

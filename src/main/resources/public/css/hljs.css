@@ -40,20 +40,3 @@
     opacity: .5
 }
 
-body {
-    margin: 10px;
-}
-
-.external-browser {
-    float: right;
-    font-size: smaller;
-    color: #BDB76B;
-    cursor: pointer;
-}
-
-.external-browser:hover {
-    float: right;
-    font-size: smaller;
-    color: #bdbc32;
-    cursor: pointer;
-}

@@ -16,8 +16,6 @@ import de.jensd.fx.fontawesome.AwesomeIcon;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Task;
 import javafx.concurrent.Worker;
 import javafx.event.ActionEvent;
@@ -66,7 +64,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.CodeSource;
 import java.util.*;
-import java.util.concurrent.TimeoutException;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -195,7 +192,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
     }
 
     @FXML
-    private void generateSampleBook(ActionEvent event){
+    private void generateSampleBook(ActionEvent event) {
 
         DirectoryChooser directoryChooser = new DirectoryChooser();
         directoryChooser.setTitle("Select a New Directory for sample book");
@@ -205,7 +202,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
             workingDirectory = Optional.of(file.toString());
             initialDirectory = Optional.of(file.toPath());
             fileBrowser.browse(treeView, this, file.toString());
-            Platform.runLater(()->{
+            Platform.runLater(() -> {
                 directoryView(null);
                 addTab(file.toPath().resolve("book.asc"));
             });
@@ -221,8 +218,8 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
     }
 
     @FXML
-    private void openLastConvertedFile(ActionEvent event){
-        lastConvertedFile.ifPresent(path->{
+    private void openLastConvertedFile(ActionEvent event) {
+        lastConvertedFile.ifPresent(path -> {
             getHostServices().showDocument(path.toUri().toString());
         });
 
@@ -260,8 +257,8 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
 
         Path currentPath = Paths.get(workingDirectory.get());
 
-        if(Objects.nonNull(config.getKindlegenDir())){
-            if(!Files.exists(Paths.get(config.getKindlegenDir()))){
+        if (Objects.nonNull(config.getKindlegenDir())) {
+            if (!Files.exists(Paths.get(config.getKindlegenDir()))) {
                 config.setKindlegenDir(null);
             }
         }
@@ -281,12 +278,12 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
         convertEpub(null);
 
         invokeTask((task) -> {
-            kindleMobiService.produceMobi(currentPath,config.getKindlegenDir());
+            kindleMobiService.produceMobi(currentPath, config.getKindlegenDir());
         });
 
     }
 
-//    @FXML
+    //    @FXML
     private void generateHtml(ActionEvent event) {
 
         convertDocbook(null);
@@ -321,6 +318,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+
 
         try {
             CodeSource codeSource = AsciiDocController.class.getProtectionDomain().getCodeSource();
@@ -425,7 +423,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
 
 
         indikator.visibleProperty().addListener((observable, oldValue, newValue) -> {
-            lastConvertedFile.ifPresent(path->{
+            lastConvertedFile.ifPresent(path -> {
                 lastConvertedFileLink.setVisible(!newValue);
             });
         });
@@ -675,6 +673,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
 
         WebView webView = new WebView();
 
+
         WebEngine webEngine = webView.getEngine();
         JSObject window = (JSObject) webEngine.executeScript("window");
         window.setMember("app", this);
@@ -753,22 +752,11 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
             label.setText(label.getText() + " *");
     }
 
-    public void textListener(ObservableValue observableValue, String old, String nev) {
-        try {
-            Platform.runLater(() -> {
+    public void textListener(String text) {
 
-                Label label = (Label) current.getCurrentTab().getGraphic();
-
-
-                String rendered = docConverter.asciidocToHtml(previewEngine, nev);
-
-
-                lastRendered.setValue(rendered);
-
-            });
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
+        Platform.runLater(() -> {
+            docConverter.asciidocToHtml(previewEngine, text);
+        });
 
     }
 
@@ -898,4 +886,10 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
     public TablePopupController getTablePopupController() {
         return tablePopupController;
     }
+
+    public StringProperty getLastRendered() {
+        return lastRendered;
+    }
+
+
 }
