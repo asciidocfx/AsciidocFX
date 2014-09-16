@@ -1,0 +1,70 @@
+== Asciidoc Editor based on JavaFX 8
+
+=== Features
+
+* Multi-platform (Windows, Mac, Linux ..)
+* Creating Asciidoc Books
+* PDF, Epub, Mobi, Docbook Converters
+* Full-Screen Support
+* Real-Time Preview
+* External Browser Support
+* Table Generator
+
+=== Used Technologies
+
+AsciidocFX uses Java, JavaScript and XML related technologies.
+
+* Java 8
+* Java FX 8
+* Nashorn JavaScript Engine
+* Asciidoctor.js
+* Spring Boot
+* Spring WebSocket
+* Docbook
+* Apache Fop
+* Saxon 6.5
+* Ace editor
+
+=== Some Shortcuts
+
+AsciidocFX has some custom shortcuts. If you suggest us any shortcut request, we can implement i.t
+
+[width="100%",options="header,footer"]
+|====================
+|Shortcut |Detail 
+|*tblx,y* _press Tab_ |Generates asciidoc table (x=row,y=column)
+|*tblx,y* _press Tab_ |Generates asciidoc table (x=row,y=column)
+|*src* _press Tab_ |Generates asciidoc source block 
+|*img* _press Tab_ |Generates image section 
+|*Ctrl+B* |Bolds selection 
+|*Ctrl+I* |Italices selection 
+|*Ctrl+D* |Duplicates selection 
+|*Ctrl+X* |Removes current line 
+|*Ctrl-Shift-C* |Surrounds backtick `` selection 
+|====================
+
+=== AsciidocFX Configuration
+
+You can configurate AsciidocFX with `config.yml` file in `/conf` directory
+
+You can change Ace theme, font size, font family and other sections by editing it.
+
+=== How to Run AsciidocFX (For Users)
+
+1. Firstly, install http://www.oracle.com/technetwork/java/javase/downloads/index.html[JRE 8]
+2. Download the latest https://github.com/rahmanusta/AsciidocFX/releases[AsciidocFX.zip] and Extract it 
+3. Run
+    * `bin/asciidocfx.bat` or `bin/asciidocfx.sh`
+
+=== How to Build executable JAR (For Developers)
+
+1. Firstly, install http://www.oracle.com/technetwork/java/javase/downloads/index.html[JDK 8]
+2. Download http://maven.apache.org/download.cgi[Apache Maven] and set `/bin` directory to environment variables
+3. Enter `AsciidocFX` directory and run `$ mvn clean install`
+4. Follow to `target/` directory and you will see `AsciidocFX.zip`
+
+=== Contact
+
+Support AsciidocFX with pull request or open an issue for feautre request.
+
+Thanks.

@@ -28,214 +28,217 @@
 <!-- load ace language tools -->
 <script src="ace/src/ext-language_tools.js" charset="utf-8"></script>
 <script>
-    // trigger extension
-    ace.require("ace/ext/language_tools");
+// trigger extension
+ace.require("ace/ext/language_tools");
 
-    var editor = ace.edit("editor");
-    editor.renderer.on("afterRender", function () {
+var editor = ace.edit("editor");
+editor.renderer.on("afterRender", function () {
 
-    });
+});
 
-    editor.getSession().setMode("ace/mode/asciidoc");
+editor.getSession().setMode("ace/mode/asciidoc");
 
-    // enable autocompletion and snippets
-    editor.setOptions({
-        enableSnippets: true
-    });
+// enable autocompletion and snippets
+editor.setOptions({
+    enableSnippets: true
+});
 
-    editor.getSession().setUseWrapMode(true);
+editor.getSession().setUseWrapMode(true);
 
-    editor.setHighlightActiveLine(false);
-    editor.renderer.setShowGutter(false);
-    editor.setShowPrintMargin(false);
-    editor.renderer.setScrollMargin(10, 10, 10, 10);
-    editor.setBehavioursEnabled(true);
-    editor.session.setFoldStyle("manual");
-    editor.focus();
-    //
-    //    editor.getSession().on('changeScrollTop', function () {
-    //        window.scrollTo(0, editor.session.getScrollTop());
-    //    });
+editor.setHighlightActiveLine(false);
+editor.renderer.setShowGutter(false);
+editor.setShowPrintMargin(false);
+editor.renderer.setScrollMargin(10, 10, 10, 10);
+editor.setBehavioursEnabled(true);
+editor.session.setFoldStyle("manual");
+editor.focus();
+//
+//    editor.getSession().on('changeScrollTop', function () {
+//        window.scrollTo(0, editor.session.getScrollTop());
+//    });
 
-    editor.getSession().on('changeScrollTop', function (scroll) {
-        var maxTop = editor.renderer.layerConfig.maxHeight - editor.renderer.$size.scrollerHeight + editor.renderer.scrollMargin.bottom;
-        app.onscroll(editor.getSession().getScrollTop(), maxTop);
-    });
+editor.getSession().on('changeScrollTop', function (scroll) {
+    var maxTop = editor.renderer.layerConfig.maxHeight - editor.renderer.$size.scrollerHeight + editor.renderer.scrollMargin.bottom;
+    app.onscroll(editor.getSession().getScrollTop(), maxTop);
+});
 
-    var newlyInitialized = true;
+var newlyInitialized = true;
 
-    editor.getSession().on('change', function (obj) {
-        if (!newlyInitialized)
-            app.appendWildcard();
+editor.getSession().on('change', function (obj) {
+    if (!newlyInitialized)
+        app.appendWildcard();
 
-        app.textListener(editor.getValue());
+    app.textListener(editor.getValue());
 
-        if (newlyInitialized)
-            setTimeout(function () {
-                newlyInitialized = false;
-            }, 1000);
-    });
+    if (newlyInitialized)
+        setTimeout(function () {
+            newlyInitialized = false;
+        }, 1000);
+});
 
-    // default keys https://searchcode.com/codesearch/view/58959997/
-    editor.commands.addCommand({
-        name: 'cut-1',
-        bindKey: {win: 'Ctrl-X'},
-        exec: function (editor) {
+// default keys https://searchcode.com/codesearch/view/58959997/
+editor.commands.addCommand({
+    name: 'cut-1',
+    bindKey: {win: 'Ctrl-X', mac: 'Command-X'},
+    exec: function (editor) {
 
-            var textRange = editor.session.getTextRange(editor.getSelectionRange());
+        var textRange = editor.session.getTextRange(editor.getSelectionRange());
 
-            if (textRange.length == 0) {
-                editor.removeLines();
-                return;
-            }
+        if (textRange.length == 0) {
+            editor.removeLines();
+            return;
+        }
 
-            app.cutCopy(textRange);
-            editor.remove(editor.getSelectionRange());
+        app.cutCopy(textRange);
+        editor.remove(editor.getSelectionRange());
 
-        },
-        readOnly: true
-    });
+    },
+    readOnly: true
+});
 
-    editor.commands.addCommand({
-        name: 'copy-1',
-        bindKey: {win: 'Ctrl-C'},
-        exec: function (editor) {
-            app.cutCopy(editor.session.getTextRange(editor.getSelectionRange()));
-        },
-        readOnly: false
-    });
+editor.commands.addCommand({
+    name: 'copy-1',
+    bindKey: {win: 'Ctrl-C'},
+    exec: function (editor) {
+        app.cutCopy(editor.session.getTextRange(editor.getSelectionRange()));
+    },
+    readOnly: false
+});
 
-    editor.commands.addCommand({
-        name: 'paste-1',
-        bindKey: {win: 'Ctrl-V'},
-        exec: function (editor) {
-            editor.insert(app.paste());
-        },
-        readOnly: true
-    });
+editor.commands.addCommand({
+    name: 'paste-1',
+    bindKey: {win: 'Ctrl-V', mac: 'Command-V'},
+    exec: function (editor) {
+        editor.insert(app.paste());
+    },
+    readOnly: true
+});
 
-    editor.commands.addCommand({
-        name: 'ctrl-enter-1',
-        bindKey: {win: 'Ctrl-Enter'},
-        exec: function (editor) {
-            editor.insert("\r\n");
-        },
-        readOnly: true
-    });
+editor.commands.addCommand({
+    name: 'ctrl-enter-1',
+    bindKey: {win: 'Ctrl-Enter', mac: 'Command-Enter'},
+    exec: function (editor) {
+        editor.insert("\r\n");
+    },
+    readOnly: true
+});
 
-    editor.commands.addCommand({
-        name: 'ctrl-duplicate',
-        bindKey: {win: 'Ctrl-D'},
-        exec: function (editor) {
-            editor.copyLinesDown();
-        },
-        readOnly: true
-    });
+editor.commands.addCommand({
+    name: 'ctrl-duplicate',
+    bindKey: {win: 'Ctrl-D', mac: 'Command-D'},
+    exec: function (editor) {
+        editor.copyLinesDown();
+    },
+    readOnly: true
+});
 
-    editor.commands.addCommand({
-        name: 'right-brace-1',
-        bindKey: {win: 'Ctrl-Alt-0'},
-        exec: function (editor) {
-            editor.insert("}");
-        },
-        readOnly: true
-    });
+editor.commands.addCommand({
+    name: 'right-brace-1',
+    bindKey: {win: 'Ctrl-Alt-0', mac: 'Command-Alt-0'},
+    exec: function (editor) {
+        editor.insert("}");
+    },
+    readOnly: true
+});
 
-    editor.commands.addCommand({
-        name: 'bold-selected',
-        bindKey: {win: 'Ctrl-B'},
-        exec: function (editor) {
-            var text=editor.session.getTextRange(editor.getSelectionRange());
-            editor.session.replace(editor.selection.getRange(), "*"+text+"*")
-        },
-        readOnly: true
-    });
+editor.commands.addCommand({
+    name: 'bold-selected',
+    bindKey: {win: 'Ctrl-B', mac: 'Command-B'},
+    exec: function (editor) {
+        var text = editor.session.getTextRange(editor.getSelectionRange());
+        editor.session.replace(editor.selection.getRange(), "*" + text + "*")
+    },
+    readOnly: true
+});
 
-    editor.commands.addCommand({
-        name: 'codify-selected',
-        bindKey: {win: 'Shift-C'},
-        exec: function (editor) {
-            var text=editor.session.getTextRange(editor.getSelectionRange());
-            editor.session.replace(editor.selection.getRange(), "`"+text+"`")
-        },
-        readOnly: true
-    });
+editor.commands.addCommand({
+    name: 'codify-selected',
+    bindKey: {win: 'Ctrl-Shift-C', mac: 'Command-Shift-C'},
+    exec: function (editor) {
+        var text = editor.session.getTextRange(editor.getSelectionRange());
+        editor.session.replace(editor.selection.getRange(), "`" + text + "`")
+    },
+    readOnly: true
+});
 
 
-    editor.commands.addCommand({
-        name: 'italicize-selected',
-        bindKey: {win: 'Ctrl-i|Ctrl-İ|Ctrl-ı|Ctrl-I'},
-        exec: function (editor) {
-            var text=editor.session.getTextRange(editor.getSelectionRange());
-            editor.session.replace(editor.selection.getRange(), "_"+text+"_")
-        },
-        readOnly: true
-    });
+editor.commands.addCommand({
+    name: 'italicize-selected',
+    bindKey: {
+        win: 'Ctrl-i|Ctrl-İ|Ctrl-ı|Ctrl-I',
+        mac: 'Command-i|Command-İ|Command-ı|Command-I'
+    },
+    exec: function (editor) {
+        var text = editor.session.getTextRange(editor.getSelectionRange());
+        editor.session.replace(editor.selection.getRange(), "_" + text + "_")
+    },
+    readOnly: true
+});
 
-    editor.commands.addCommand({
-        name: 'source-generate',
-        bindKey: {win: 'Tab'},
-        exec: function (editor, selection) {
+editor.commands.addCommand({
+    name: 'source-generate',
+    bindKey: {win: 'Tab',mac: 'Tab'},
+    exec: function (editor, selection) {
 
-            var cursorPosition = editor.getCursorPosition();
-            var currentRow = cursorPosition.row;
-            var currentColumn = cursorPosition.column;
+        var cursorPosition = editor.getCursorPosition();
+        var currentRow = cursorPosition.row;
+        var currentColumn = cursorPosition.column;
 
-            var range = editor.getSelectionRange();
-            range.start.row = currentRow;
-            range.start.column = 0;
-            range.end.row = currentRow;
-            range.end.column = currentColumn;
+        var range = editor.getSelectionRange();
+        range.start.row = currentRow;
+        range.start.column = 0;
+        range.end.row = currentRow;
+        range.end.column = currentColumn;
 
-            var textRange = editor.session.getTextRange(range);
+        var textRange = editor.session.getTextRange(range);
 
-            // img tab
-            if(textRange=="img"){
-                editor.removeToLineStart();
-                editor.insert("image::images/image.png[]");
-                return;
-            }
+        // img tab
+        if (textRange == "img") {
+            editor.removeToLineStart();
+            editor.insert("image::images/image.png[]");
+            return;
+        }
 
-            // src tab
-            if (textRange == "src") { // source generator
-                editor.removeToLineStart();
+        // src tab
+        if (textRange == "src") { // source generator
+            editor.removeToLineStart();
 
-                editor.insert("[source,java]\n----\n\n----");
+            editor.insert("[source,java]\n----\n\n----");
 
-                editor.gotoLine(range.end.row + 3, 0, true);
-                return;
-            }
+            editor.gotoLine(range.end.row + 3, 0, true);
+            return;
+        }
 
 //            "tbl3,2" tab
-            var tableMatch = textRange.match(/tbl(\d+)(\.|,)(\d+)/);
+        var tableMatch = textRange.match(/tbl(\d+)(\.|,)(\d+)/);
 
-            if (Array.isArray(tableMatch))
-                if (tableMatch.length == 4) { // table generator
+        if (Array.isArray(tableMatch))
+            if (tableMatch.length == 4) { // table generator
 
-                    editor.removeToLineStart();
+                editor.removeToLineStart();
 
-                    var row = tableMatch[1];
-                    var column = tableMatch[3];
+                var row = tableMatch[1];
+                var column = tableMatch[3];
 
-                    var tablePopupCtrl = app.getTablePopupController();
-                    tablePopupCtrl.createBasicTable(row, column);
-                    return;
-                }
+                var tablePopupCtrl = app.getTablePopupController();
+                tablePopupCtrl.createBasicTable(row, column);
+                return;
+            }
 
-            editor.indent();
-        },
-        readOnly: true
-    });
+        editor.indent();
+    },
+    readOnly: true
+});
 
-    //    editor.setFontSize(14);
-    editor.setOptions({
-        fontFamily: app.getConfig().getFontFamily(),
-        fontSize: app.getConfig().getFontSize()
-    });
+//    editor.setFontSize(14);
+editor.setOptions({
+    fontFamily: app.getConfig().getFontFamily(),
+    fontSize: app.getConfig().getFontSize()
+});
 
-    editor.setTheme(app.getConfig().getTheme());
-    editor.setScrollSpeed(app.getConfig().getScrollSpeed());
-    editor.setOption("dragEnabled", false);
+editor.setTheme(app.getConfig().getTheme());
+editor.setScrollSpeed(app.getConfig().getScrollSpeed());
+editor.setOption("dragEnabled", false);
 
 </script>
 </body>
