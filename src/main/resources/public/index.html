@@ -21,6 +21,10 @@
 </div>
 <div class="row">
     <div class="columns justify large-10 large-centered medium-12 small-12">
+        <a class="copy-source" onclick="copySource()">
+            <i class="fa fa-clipboard"></i>
+            Copy Source
+        </a>
         <a class="external-browser" onclick="externalBrowse()">
             <i class="fa fa-bolt"></i>
             External Browser
@@ -76,6 +80,10 @@
 
     var externalBrowse = function () {
         app.externalBrowse();
+    }
+
+    var copySource = function(){
+        app.cutCopy($("#placeholder").html());
     }
 
     var printJob = function(){

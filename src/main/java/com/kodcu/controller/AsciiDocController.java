@@ -154,6 +154,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
     private Config config;
     private Optional<String> workingDirectory;
     private Optional<Path> lastConvertedFile = Optional.empty();
+    private String scrollerJs;
 
     @FXML
     private void createTable(ActionEvent event) throws IOException {
@@ -336,6 +337,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
 
         waitForGetValue = IOHelper.convert(AsciiDocController.class.getResourceAsStream("/waitForGetValue.js"));
         waitForSetValue = IOHelper.convert(AsciiDocController.class.getResourceAsStream("/waitForSetValue.js"));
+        scrollerJs = IOHelper.convert(AsciiDocController.class.getResourceAsStream("/scroller.js"));
 
         lastRendered.addListener((observableValue, old, nev) -> {
             sessionList.stream().filter(e -> e.isOpen()).forEach(e -> {
@@ -694,6 +696,15 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
         double browserScrollOffset = (Double.valueOf(browserMaxScroll) * ratio) / 100.0;
         previewEngine.executeScript(String.format("window.scrollTo(0, %f )", browserScrollOffset));
 
+    }
+
+    public void scrollToCurrentLine(String text) {
+
+        if ("".equals(text))
+            return;
+
+        String format = String.format(scrollerJs, text);
+        previewEngine.executeScript(format);
     }
 
     @RequestMapping(value = {"**.asciidoc", "**.asc", "**.txt", "**.ad", "**.adoc"}, method = RequestMethod.GET)

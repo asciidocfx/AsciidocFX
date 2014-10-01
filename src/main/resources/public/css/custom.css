@@ -11,6 +11,16 @@ body{
     color: #cdc778;
 }
 
+.copy-source {
+    float: left;
+    color: #dddddd;
+    cursor: pointer;
+}
+
+.copy-source:hover {
+    color: #b0b0b0;
+}
+
 .row.connection-closed{
     display: none;
 }

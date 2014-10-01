@@ -96,6 +96,14 @@ editor.commands.addCommand({
     readOnly: true
 });
 
+editor.getSession().selection.on('changeCursor', function (e) {
+
+    var lineText = editor.session.getLine(editor.getCursorPosition().row);
+
+    app.scrollToCurrentLine(lineText);
+
+});
+
 editor.commands.addCommand({
     name: 'copy-1',
     bindKey: {win: 'Ctrl-C'},
@@ -177,7 +185,7 @@ editor.commands.addCommand({
 
 editor.commands.addCommand({
     name: 'source-generate',
-    bindKey: {win: 'Tab',mac: 'Tab'},
+    bindKey: {win: 'Tab', mac: 'Tab'},
     exec: function (editor, selection) {
 
         var cursorPosition = editor.getCursorPosition();
