@@ -220,6 +220,15 @@ editor.commands.addCommand({
             return;
         }
 
+        // book tab
+        if (textRange == "book") { // source generator
+            editor.removeToLineStart();
+
+            editor.insert("= Book Name\nAuthor's Name\n:doctype: book\n:encoding: utf-8\n:lang: tr\n\n\n");
+
+            return;
+        }
+
         // src tab
         if (textRange == "src") { // source generator
             editor.removeToLineStart();
