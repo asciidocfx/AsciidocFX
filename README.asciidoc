@@ -36,7 +36,8 @@ AsciidocFX has some custom shortcuts. If you suggest us any shortcut request, we
 |*tblx.y* _press Tab_ |Generates asciidoc table (x=row,y=column)
 |*src* _press Tab_ |Generates asciidoc source block 
 |*img* _press Tab_ |Generates image section 
-|*Ctrl+B* |Bolds selection 
+|*book* _press Tab_ |Generates book header section
+|*Ctrl+B* |Bolds selection
 |*Ctrl+I* |Italices selection 
 |*Ctrl+D* |Duplicates selection 
 |*Ctrl+X* |Removes current line 
