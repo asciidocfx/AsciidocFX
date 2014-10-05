@@ -29,6 +29,7 @@ Customized for the Asciidoctor project (http://asciidoctor.org).
 Several of the lesser used languages have been removed.
 -->
 <xslthl-config>
+	<highlighter id="aspectj" file="./xslthl/aspectj-hl.xml"/>
     <highlighter id="java" file="./xslthl/java-hl.xml"/>
     <highlighter id="groovy" file="./xslthl/java-hl.xml"/>
     <highlighter id="html" file="./xslthl/html-hl.xml"/>
