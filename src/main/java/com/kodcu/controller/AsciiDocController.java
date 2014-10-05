@@ -16,6 +16,7 @@ import de.jensd.fx.fontawesome.AwesomeIcon;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.collections.ListChangeListener;
 import javafx.concurrent.Task;
 import javafx.concurrent.Worker;
 import javafx.event.ActionEvent;
@@ -428,6 +429,15 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
             lastConvertedFile.ifPresent(path -> {
                 lastConvertedFileLink.setVisible(!newValue);
             });
+        });
+
+        newDoc(null); // Open a new empty doc
+
+        tabPane.getTabs().addListener((ListChangeListener<Tab>) c -> {
+            if (tabPane.getTabs().isEmpty())
+                Platform.runLater(() -> {
+                    newDoc(null);
+                });
         });
 
     }
