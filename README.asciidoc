@@ -4,7 +4,7 @@
 
 * Multi-platform (Windows, Mac, Linux ..)
 * Creating Asciidoc Books
-* PDF, Epub, Mobi, Docbook Converters
+* Creating PDF, Epub, Mobi, Docbook
 * Full-Screen Support
 * Real-Time Preview
 * External Browser Support
@@ -33,14 +33,15 @@ AsciidocFX has some custom shortcuts. If you suggest us any shortcut request, we
 |====================
 |Shortcut |Detail 
 |*tblx,y* _press Tab_ |Generates asciidoc table (x=row,y=column)
-|*tblx,y* _press Tab_ |Generates asciidoc table (x=row,y=column)
+|*tblx.y* _press Tab_ |Generates asciidoc table (x=row,y=column)
 |*src* _press Tab_ |Generates asciidoc source block 
 |*img* _press Tab_ |Generates image section 
 |*Ctrl+B* |Bolds selection 
 |*Ctrl+I* |Italices selection 
 |*Ctrl+D* |Duplicates selection 
 |*Ctrl+X* |Removes current line 
-|*Ctrl-Shift-C* |Surrounds backtick `` selection 
+|*Ctrl-Shift-C* |Surrounds backtick `` selection
+|*F12* | Opens Firebug Lite
 |====================
 
 === AsciidocFX Configuration
@@ -63,8 +64,8 @@ You can change Ace theme, font size, font family and other sections by editing i
 3. Enter `AsciidocFX` directory and run `$ mvn clean install`
 4. Follow to `target/` directory and you will see `AsciidocFX.zip`
 
-=== Contact
+=== Support
 
-Support AsciidocFX with pull request or open an issue for feautre request.
+Support AsciidocFX with pull request or open an issue for bug & feature request.
 
 Thanks.

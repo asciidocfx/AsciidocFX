@@ -76,7 +76,7 @@ public class DocBookService {
                     String chapterPath = matcher.group();
                     String chapterContent = IOHelper.readFile(currentPath.resolve(chapterPath));
                     allAscChapters.append(chapterContent);
-                    allAscChapters.append("\n");
+                    allAscChapters.append("\n\n");
                     bookAscLines.remove(i);
                 }
 
@@ -105,6 +105,9 @@ public class DocBookService {
             rootDocument.find("imageobject").parents("formalpara").each((context)->{
                 $(context).rename("figure");
             });
+
+            // makes figure centering
+            rootDocument.find("figure").find("imagedata").attr("align","center");
 
             StringBuilder builder = new StringBuilder();
             builder.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");

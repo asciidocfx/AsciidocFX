@@ -73,18 +73,23 @@
             <MenuItem mnemonicParsing="false" onAction="#directoryView" text="Directory View" fx:id="directoryItem" />
           </items>
         </Menu>
-        <Menu mnemonicParsing="false" text="Generate">
+        <Menu mnemonicParsing="false" text="Book">
           <items>
-            <MenuItem mnemonicParsing="false" onAction="#generatePdf" text="Generate PDF" />
-            <MenuItem mnemonicParsing="false" onAction="#convertEpub" text="Generate Epub3" />
-            <MenuItem mnemonicParsing="false" onAction="#convertMobi" text="Generate Mobi" />
+            <MenuItem mnemonicParsing="false" onAction="#generateSampleBook" text="Sample Book" />
+            <MenuItem mnemonicParsing="false" onAction="#generatePdf" text="PDF Book" />
+            <Menu mnemonicParsing="false" text="Ebook">
+              <items>
+                <MenuItem mnemonicParsing="false" onAction="#convertEpub" text="Epub Book" />
+                <MenuItem mnemonicParsing="false" onAction="#convertMobi" text="Mobi Book" />
+              </items>
+            </Menu>
             <!--<MenuItem mnemonicParsing="false" onAction="#generateHtml" text="Generate HTML" />-->
-            <MenuItem mnemonicParsing="false" onAction="#convertDocbook" text="Generate Docbook5" />
-            <MenuItem mnemonicParsing="false" onAction="#generateSampleBook" text="Generate Sample Book" />
+            <MenuItem mnemonicParsing="false" onAction="#convertDocbook" text="Docbook" />
           </items>
         </Menu>
-        <Menu mnemonicParsing="false" text="Help">
+        <Menu mnemonicParsing="false" text="About">
           <items>
+            <MenuItem mnemonicParsing="false" text="Developed by Rahman Usta" />
             <MenuItem mnemonicParsing="false" text="rahmanusta@kodcu.com" />
           </items>
         </Menu>

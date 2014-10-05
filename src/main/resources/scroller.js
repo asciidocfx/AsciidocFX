@@ -1,22 +1,30 @@
+function scrollToo(position){
+    $(window).scrollTop(position - 60 );
+}
+
 function runScroller() {
-    
+
     var renderedSelection = Opal.Asciidoctor.$render('%s');
+
+    console.log(renderedSelection);
 
     renderedSelection = renderedSelection.replace(new RegExp("\n|\r|\n\r", "ig"), "");
 
-    var search = $("*:contains(" + $(renderedSelection).text() + "):last");
-
-    if (search.length == 1) {
-        var top = search.offset().top;
-        $(window).scrollTop(search.offset().top);
+    if($(renderedSelection).is(".imageblock")){
+        var src = $(renderedSelection).find("img").attr("src");
+        scrollToo($("img[src='"+ src+"']").offset().top);
+        return;
     }
 
+    if($(renderedSelection).is(".admonitionblock")){
+        renderedSelection = $(renderedSelection).find(".content");
+    }
+
+    var search = $("*:contains(" + $(renderedSelection).text() + "):last");
+    scrollToo(search.offset().top);
+
 }
 
-try{
-    runScroller();
-}
-catch (e){}
-
+runScroller();
 
 

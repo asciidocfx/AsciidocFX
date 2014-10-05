@@ -21,7 +21,7 @@
 <body>
 
 <div id="editor"></div>
-<!--<script type='text/javascript' src='http://getfirebug.com/releases/lite/1.2/firebug-lite-compressed.js'></script>-->
+<script type="text/javascript" src="https://getfirebug.com/firebug-lite.js"></script>
 <script src="/jquery.js"></script>
 <!-- load ace -->
 <script src="ace/src/ace.js" type="text/javascript" charset="utf-8"></script>
@@ -38,11 +38,6 @@ editor.renderer.on("afterRender", function () {
 
 editor.getSession().setMode("ace/mode/asciidoc");
 
-// enable autocompletion and snippets
-editor.setOptions({
-    enableSnippets: true
-});
-
 editor.getSession().setUseWrapMode(true);
 
 editor.setHighlightActiveLine(false);
@@ -52,6 +47,10 @@ editor.renderer.setScrollMargin(10, 10, 10, 10);
 editor.setBehavioursEnabled(true);
 editor.session.setFoldStyle("manual");
 editor.focus();
+editor.setOptions({
+    enableSnippets: true
+});
+lastEditorRow = 0;
 //
 //    editor.getSession().on('changeScrollTop', function () {
 //        window.scrollTo(0, editor.session.getScrollTop());
@@ -60,6 +59,27 @@ editor.focus();
 editor.getSession().on('changeScrollTop', function (scroll) {
     var maxTop = editor.renderer.layerConfig.maxHeight - editor.renderer.$size.scrollerHeight + editor.renderer.scrollMargin.bottom;
     app.onscroll(editor.getSession().getScrollTop(), maxTop);
+});
+
+
+editor.getSession().selection.on('changeCursor', function (e) {
+
+    var row = editor.getCursorPosition().row;
+
+    if (lastEditorRow == row)
+        return;
+
+    lastEditorRow = row;
+
+    var lineText = editor.session.getLine(row);
+
+    try {
+        app.scrollToCurrentLine(lineText);
+    }
+    catch (e) {
+    }
+
+
 });
 
 var newlyInitialized = true;
@@ -96,13 +116,6 @@ editor.commands.addCommand({
     readOnly: true
 });
 
-editor.getSession().selection.on('changeCursor', function (e) {
-
-    var lineText = editor.session.getLine(editor.getCursorPosition().row);
-
-    app.scrollToCurrentLine(lineText);
-
-});
 
 editor.commands.addCommand({
     name: 'copy-1',

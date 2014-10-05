@@ -45,3 +45,15 @@ pre.highlight > code {
     padding: 10px;
     border-radius: 4px;
 }
+
+.imageblock > .title {
+    text-align: center;
+}
+
+.imageblock {
+    text-align: center;
+}
+
+.imageblock img {
+    max-width: 80%;
+}

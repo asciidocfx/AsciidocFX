@@ -181,9 +181,9 @@
 
     <xsl:attribute-set name="monospace.verbatim.properties"
                        use-attribute-sets="monospace.properties verbatim.properties">
-        
-      <!--  <xsl:attribute name="keep-together.within-column">always</xsl:attribute> -->
-        
+
+        <!--  <xsl:attribute name="keep-together.within-column">always</xsl:attribute> -->
+
         <xsl:attribute name="font-size">8pt</xsl:attribute>
         <xsl:attribute name="text-align">start</xsl:attribute>
         <xsl:attribute name="wrap-option">wrap</xsl:attribute>
@@ -258,50 +258,50 @@
     <!--
       Page layout
     -->
-	
-<xsl:param name="page.height.portrait">10in</xsl:param> 
-<xsl:param name="page.width.portrait">7in</xsl:param>
 
-<xsl:param name="page.margin.inner">1.9cm</xsl:param>
-<xsl:param name="page.margin.outer">1.27cm</xsl:param>
+    <xsl:param name="page.height.portrait">10in</xsl:param>
+    <xsl:param name="page.width.portrait">7in</xsl:param>
 
-<xsl:param name="body.margin.inner">1mm</xsl:param>
-<xsl:param name="body.margin.outer">1mm</xsl:param>
+    <xsl:param name="page.margin.inner">1.9cm</xsl:param>
+    <xsl:param name="page.margin.outer">1.27cm</xsl:param>
 
-<xsl:param name="page.margin.top">10mm</xsl:param> 
-<xsl:param name="body.margin.top">15mm</xsl:param>  
+    <xsl:param name="body.margin.inner">1mm</xsl:param>
+    <xsl:param name="body.margin.outer">1mm</xsl:param>
 
-<xsl:param name="region.before.extent">10mm</xsl:param>  
-<xsl:param name="region.after.extent">10mm</xsl:param>
+    <xsl:param name="page.margin.top">10mm</xsl:param>
+    <xsl:param name="body.margin.top">15mm</xsl:param>
 
-<xsl:param name="page.margin.bottom">10mm</xsl:param>
-<xsl:param name="body.margin.bottom">15mm</xsl:param>
+    <xsl:param name="region.before.extent">10mm</xsl:param>
+    <xsl:param name="region.after.extent">10mm</xsl:param>
 
-<xsl:param name="body.start.indent">0</xsl:param>
-<!-- text indentation -->
-<xsl:param name="body.end.indent">0</xsl:param>
-<xsl:param name="double.sided">1</xsl:param>
+    <xsl:param name="page.margin.bottom">10mm</xsl:param>
+    <xsl:param name="body.margin.bottom">15mm</xsl:param>
 
-<xsl:param name="generate.toc">
-appendix  toc,title
-article/appendix  nop
-article   toc,title,figure
-book      toc,title,figure,table,example,equation
-chapter   nop
-part      toc,title
-preface   toc,title
-qandadiv  toc
-qandaset  toc
-reference toc,title
-sect1     toc
-sect2     toc
-sect3     toc
-sect4     toc
-sect5     toc
-section   toc
-set       toc,title
-</xsl:param>
-  
+    <xsl:param name="body.start.indent">0</xsl:param>
+    <!-- text indentation -->
+    <xsl:param name="body.end.indent">0</xsl:param>
+    <xsl:param name="double.sided">1</xsl:param>
+
+    <xsl:param name="generate.toc">
+        appendix toc,title
+        article/appendix nop
+        article toc,title,figure
+        book toc,title,figure,table,example,equation
+        chapter nop
+        part toc,title
+        preface toc,title
+        qandadiv toc
+        qandaset toc
+        reference toc,title
+        sect1 toc
+        sect2 toc
+        sect3 toc
+        sect4 toc
+        sect5 toc
+        section toc
+        set toc,title
+    </xsl:param>
+
 
     <!--
       Table of Contents
@@ -368,21 +368,21 @@ set       toc,title
         <!-- Make examples, tables etc. break across pages -->
         <xsl:attribute name="keep-together.within-column">auto</xsl:attribute>
     </xsl:attribute-set>
-<!--
+    <!--
+        <xsl:param name="formal.title.placement">
+            figure after
+            example before
+            table before
+        </xsl:param>
+        -->
+
     <xsl:param name="formal.title.placement">
         figure after
         example before
+        equation before
         table before
+        procedure before
     </xsl:param>
-	-->
-	
-	<xsl:param name="formal.title.placement">
-figure after
-example before
-equation before
-table before
-procedure before
-</xsl:param>
 
     <xsl:attribute-set name="formal.title.properties">
         <xsl:attribute name="color">
@@ -877,4 +877,13 @@ procedure before
     </xsl:attribute-set>
     -->
 
+    <!--Centering figure title-->
+    <xsl:attribute-set name="formal.title.properties">
+        <xsl:attribute name="text-align">
+            <xsl:choose>
+                <xsl:when test="self::figure">center</xsl:when>
+                <xsl:otherwise>left</xsl:otherwise>
+            </xsl:choose>
+        </xsl:attribute>
+    </xsl:attribute-set>
 </xsl:stylesheet>

@@ -375,7 +375,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
 
         //
 
-        AwesomeDude.setIcon(WorkingDirButton, AwesomeIcon.FOLDER_OPEN_ALT);
+        AwesomeDude.setIcon(WorkingDirButton, AwesomeIcon.FOLDER_ALT);
         AwesomeDude.setIcon(splitHideButton, AwesomeIcon.CHEVRON_LEFT);
 
         //
@@ -704,7 +704,11 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
             return;
 
         String format = String.format(scrollerJs, text);
-        previewEngine.executeScript(format);
+        try {
+            previewEngine.executeScript(format);
+        } catch (Exception e) {
+
+        }
     }
 
     @RequestMapping(value = {"**.asciidoc", "**.asc", "**.txt", "**.ad", "**.adoc"}, method = RequestMethod.GET)
@@ -901,6 +905,5 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
     public StringProperty getLastRendered() {
         return lastRendered;
     }
-
 
 }
