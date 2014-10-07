@@ -41,6 +41,8 @@ AsciidocFX has some custom shortcuts. If you suggest us any shortcut request, we
 |*Ctrl+I* |Italices selection 
 |*Ctrl+D* |Duplicates selection 
 |*Ctrl+X* |Removes current line 
+|*Ctrl+N* |Creates new empty doc
+|*Ctrl+S* |Saves current doc
 |*Ctrl-Shift-C* |Surrounds backtick `` selection
 |*F12* | Opens Firebug Lite
 |====================

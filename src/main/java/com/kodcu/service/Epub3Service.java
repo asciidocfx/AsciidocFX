@@ -79,8 +79,8 @@ public class Epub3Service {
             IOHelper.writeToFile(containerXml, builder.toString(), TRUNCATE_EXISTING, WRITE);
 
             Path epubOut = epubTemp.resolve("book.epub");
-
             FileUtils.copyDirectoryToDirectory(currentPath.resolve("images").toFile(), epubTemp.resolve("OEBPS").toFile());
+            FileUtils.copyDirectoryToDirectory(configPath.resolve("docbook/images/callouts").toFile(), epubTemp.resolve("OEBPS/images").toFile());
             ZipUtil.pack(epubTemp.toFile(), epubOut.toFile());
             ZipUtil.removeEntry(epubOut.toFile(),"book.epub");
             Files.move(epubOut, currentPath.resolve("book.epub"), StandardCopyOption.REPLACE_EXISTING);

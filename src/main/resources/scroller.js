@@ -6,8 +6,6 @@ function runScroller() {
 
     var renderedSelection = Opal.Asciidoctor.$render('%s');
 
-    console.log(renderedSelection);
-
     renderedSelection = renderedSelection.replace(new RegExp("\n|\r|\n\r", "ig"), "");
 
     if($(renderedSelection).is(".imageblock")){

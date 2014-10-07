@@ -60,8 +60,8 @@
 <l:gentext key="equation" text="Denklem"/>
 <l:gentext key="Example" text="Örnek"/>
 <l:gentext key="example" text="Örnek"/>
-<l:gentext key="Figure" text="Görsel"/>
-<l:gentext key="figure" text="Görsel"/>
+<l:gentext key="Figure" text="Şekil"/>
+<l:gentext key="figure" text="Şekil"/>
 <l:gentext key="Glossary" text="Sözlük"/>
 <l:gentext key="glossary" text="Sözlük"/>
 <l:gentext key="GlossSee" text="Bkz."/>
@@ -275,7 +275,7 @@
 <l:template name="dedication" text="%t"/>
 <l:template name="equation" text="Denklem %n. %t"/>
 <l:template name="example" text="Örnek %n. %t"/>
-<l:template name="figure" text="Görsel %n. %t"/>
+<l:template name="figure" text="Şekil %n. %t"/>
 <l:template name="foil" text="%t" lang="en"/>
 <l:template name="foilgroup" text="%t" lang="en"/>
 <l:template name="formalpara" text="%t"/>

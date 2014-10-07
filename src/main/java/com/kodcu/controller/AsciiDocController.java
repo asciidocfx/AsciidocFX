@@ -126,6 +126,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
     @Autowired
     private SampleBookService sampleBookService;
 
+
     private Stage stage;
     private WebEngine previewEngine;
     private StringProperty lastRendered = new SimpleStringProperty();
@@ -321,6 +322,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
     @Override
     public void initialize(URL url, ResourceBundle rb) {
 
+        runActionLater(this::newDoc);
 
         try {
             CodeSource codeSource = AsciiDocController.class.getProtectionDomain().getCodeSource();
@@ -431,15 +433,17 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
             });
         });
 
-        newDoc(null); // Open a new empty doc
-
         tabPane.getTabs().addListener((ListChangeListener<Tab>) c -> {
             if (tabPane.getTabs().isEmpty())
-                Platform.runLater(() -> {
-                    newDoc(null);
-                });
+                runActionLater(this::newDoc);
         });
 
+    }
+
+    private void runActionLater(Consumer<ActionEvent> consumer) {
+        Platform.runLater(() -> {
+            consumer.accept(null);
+        });
     }
 
     private void loadConfigurations() {
@@ -578,7 +582,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
     }
 
     @FXML
-    private void newDoc(ActionEvent event) {
+    public void newDoc(ActionEvent event) {
 
         WebView webView = createWebView();
         AnchorPane anchorPane = new AnchorPane();
@@ -596,11 +600,10 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
             }
         });
         ((Label) tab.getGraphic()).setText("new *");
+        current.putTab(tab, null, webView);
         tabPane.getTabs().add(tab);
 
-        current.putTab(tab, null, webView);
     }
-
 
     public void addTab(Path path) {
 
