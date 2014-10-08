@@ -1,5 +1,7 @@
 == Asciidoc Editor based on JavaFX 8
 
+Asciidoc FX is a book editor to build PDF, Epub or Mobi ebooks.
+
 === Features
 
 * Multi-platform (Windows, Mac, Linux ..)
