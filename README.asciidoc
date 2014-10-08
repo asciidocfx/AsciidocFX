@@ -12,6 +12,8 @@ Asciidoc FX is a book editor to build PDF, Epub or Mobi ebooks.
 * External Browser Support
 * Table Generator
 
+http://youtu.be/2goMtz_vdtM[Video - Writing Books with Asciidoc FX]
+
 === Used Technologies
 
 AsciidocFX uses Java, JavaScript and XML related technologies.
