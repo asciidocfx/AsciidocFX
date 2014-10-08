@@ -20,7 +20,7 @@
 //ace.require("ace/ext/language_tools");
 
 var editor = ace.edit("editor");
-
+editor.focus();
 editor.getSession().setMode("ace/mode/asciidoc");
 
 editor.getSession().setUseWrapMode(true);
@@ -31,7 +31,6 @@ editor.setShowPrintMargin(false);
 editor.renderer.setScrollMargin(10, 10, 10, 10);
 editor.setBehavioursEnabled(true);
 editor.session.setFoldStyle("manual");
-editor.focus();
 editor.setOptions({
     enableSnippets: true
 });
@@ -252,6 +251,6 @@ editor.setScrollSpeed(app.getConfig().getScrollSpeed());
 editor.setOption("dragEnabled", false);
 
 </script>
-<script type="text/javascript" src="/js/firebug-lite.js"></script>
+<script type="text/javascript" src="https://getfirebug.com/firebug-lite.js"></script>
 </body>
 </html>
