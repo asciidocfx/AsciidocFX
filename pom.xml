@@ -179,7 +179,8 @@
                     <configurationSourceDirectory>${project.basedir}/conf</configurationSourceDirectory>
                     <copyConfigurationDirectory>true</copyConfigurationDirectory>
                     <logsDirectory>log</logsDirectory>
-                    <!--<assembleDirectory>/</assembleDirectory>-->
+                    <showConsoleWindow>true</showConsoleWindow>
+                    <unixScriptTemplate>${project.basedir}/src/main/resources/assembly/unixBinTemplate.sh</unixScriptTemplate>
                 </configuration>
             </plugin>
             <plugin>
