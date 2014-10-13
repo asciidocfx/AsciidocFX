@@ -7,9 +7,9 @@ import javafx.scene.web.WebView;
 import org.springframework.stereotype.Component;
 
 import java.nio.file.Path;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created by usta on 18.05.2014.
@@ -18,8 +18,8 @@ import java.util.Objects;
 public class Current {
 
     private Tab currentTab;
-    private Map<Tab, Path> newTabPaths = new HashMap<>();
-    private Map<Tab, WebView> newTabWebViews = new HashMap<>();
+    private Map<Tab, Path> newTabPaths = new ConcurrentHashMap<>();
+    private Map<Tab, WebView> newTabWebViews = new ConcurrentHashMap<>();
 
     public Tab getCurrentTab() {
         return currentTab;
@@ -47,7 +47,8 @@ public class Current {
 
     public void putTab(Tab tab, Path path, WebView webview) {
         setCurrentTab(tab);
-        getNewTabPaths().put(tab, path);
+        if (Objects.nonNull(path))
+            getNewTabPaths().put(tab, path);
         getNewTabWebViews().put(getCurrentTab(), webview);
     }
 

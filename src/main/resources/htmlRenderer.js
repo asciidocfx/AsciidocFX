@@ -1,7 +1,7 @@
-function renderToHtml() {
+function renderToHtml(content) {
 
     try {
-        var rendered = Opal.Asciidoctor.$render('%s');
+        var rendered = Opal.Asciidoctor.$render(content);
         app.getLastRendered().setValue(rendered);
     }
     catch (e) {
@@ -9,4 +9,4 @@ function renderToHtml() {
     }
 }
 
-renderToHtml();
+renderToHtml('%s');

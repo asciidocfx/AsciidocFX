@@ -280,21 +280,19 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
 
         }
 
-
-        convertEpub(null);
-
         invokeTask((task) -> {
+            epub3Service.produceEpub3(currentPath, configPath);
             kindleMobiService.produceMobi(currentPath, config.getKindlegenDir());
         });
 
     }
 
-    //    @FXML
+    @FXML
     private void generateHtml(ActionEvent event) {
 
-        convertDocbook(null);
         Path currentPath = Paths.get(workingDirectory.get());
-        htmlBookService.produceXhtml5(currentPath, configPath);
+
+        htmlBookService.produceXhtml5(previewEngine,currentPath, configPath);
     }
 
 

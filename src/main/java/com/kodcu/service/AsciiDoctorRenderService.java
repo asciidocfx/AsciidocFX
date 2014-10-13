@@ -31,6 +31,11 @@ public class AsciiDoctorRenderService {
         webEngine.executeScript(String.format(htmlRenderer, IOHelper.normalize(text)));
     }
 
+    public String generateHtml(WebEngine webEngine, String text) {
+        String rendered = (String) webEngine.executeScript(String.format("Opal.Asciidoctor.$render('%s',Opal.hash2(['attributes','header_footer'], {'attributes': ['backend=html', 'doctype=book'],'header_footer':true}));", IOHelper.normalize(text)));
+        return rendered;
+    }
+
     public String asciidocToDocbook(WebEngine webEngine, String text, boolean includeHeader) {
         if (includeHeader)
             webEngine.executeScript("var headfoot=true;");
