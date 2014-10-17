@@ -120,6 +120,14 @@ Syntax highlighting definition for AspectJ
 		<keyword>pertarget</keyword>
 		<keyword>percflow</keyword>
 		<keyword>percflowbelow</keyword>
-		<keyword>pertypewithin</keyword>
+		<keyword>warning</keyword>
+		<keyword>error</keyword>
+		<keyword>soft</keyword>
+		<keyword>parents</keyword>
+		<keyword>thisJoinPoint</keyword>
+		<keyword>thisJoinPointStaticPart</keyword>
+		<keyword>thisEnclosingJoinPointStaticPart</keyword>
+		<keyword>getWithinTypeName</keyword>
+		<keyword>aspectOf</keyword>
 	</highlighter>
 </highlighters>
