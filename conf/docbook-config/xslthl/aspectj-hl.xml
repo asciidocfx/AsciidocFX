@@ -120,6 +120,7 @@ Syntax highlighting definition for AspectJ
 		<keyword>pertarget</keyword>
 		<keyword>percflow</keyword>
 		<keyword>percflowbelow</keyword>
+		<keyword>pertypewithin</keyword>
 		<keyword>warning</keyword>
 		<keyword>error</keyword>
 		<keyword>soft</keyword>
