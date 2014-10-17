@@ -828,6 +828,13 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
         AnchorPane.setRightAnchor(node, 0.0);
     }
 
+    public void saveAndCloseCurrentTab(){
+            this.saveDoc();
+            List<Tab> trash = new ArrayList<>();
+            trash.add(current.getCurrentTab());
+            tabPane.getTabs().removeAll(trash);        
+    }
+
     public ProgressIndicator getIndikator() {
         return indikator;
     }
