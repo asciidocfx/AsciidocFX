@@ -218,6 +218,22 @@ editor.commands.addCommand({
             editor.gotoLine(range.end.row + 3, 0, true);
             return;
         }
+        else {
+            // src,ruby or src.ruby tab
+            var srcMatch = textRange.match(/src(\.|,)(\w+)/);
+            if(Array.isArray(srcMatch)){
+                if(srcMatch.length == 3){
+                    editor.removeToLineStart();
+                    
+                    var langName = srcMatch[2];
+
+                    editor.insert("[source,"+ langName +"]\n----\n\n----");
+
+                    editor.gotoLine(range.end.row + 3, 0, true);
+                    return;
+                }
+            }
+        }
 
 //            "tbl3,2" tab
         var tableMatch = textRange.match(/tbl(\d+)(\.|,)(\d+)/);
