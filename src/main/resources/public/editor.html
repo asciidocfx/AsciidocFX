@@ -97,6 +97,14 @@ editor.commands.addCommand({
     readOnly: true
 });
 
+editor.commands.addCommand({
+    name: 'close-1',
+    bindKey: {win: 'Ctrl-W', mac: 'Command-W'},
+    exec: function (editor) {
+       app.saveAndCloseCurrentTab();
+    },
+    readOnly: true
+});
 
 editor.commands.addCommand({
     name: 'copy-1',
@@ -218,6 +226,22 @@ editor.commands.addCommand({
 
             editor.gotoLine(range.end.row + 3, 0, true);
             return;
+        }
+        else {
+            // src,ruby or src.ruby tab
+            var srcMatch = textRange.match(/src(\.|,)(\w+)/);
+            if(Array.isArray(srcMatch)){
+                if(srcMatch.length == 3){
+                    editor.removeToLineStart();
+                    
+                    var langName = srcMatch[2];
+
+                    editor.insert("[source,"+ langName +"]\n----\n\n----");
+
+                    editor.gotoLine(range.end.row + 3, 0, true);
+                    return;
+                }
+            }
         }
 
 //            "tbl3,2" tab
