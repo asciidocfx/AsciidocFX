@@ -896,9 +896,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
 
     public void saveAndCloseCurrentTab(){
             this.saveDoc();
-            List<Tab> trash = new ArrayList<>();
-            trash.add(current.getCurrentTab());
-            tabPane.getTabs().removeAll(trash);        
+            tabPane.getTabs().remove(current.getCurrentTab());
     }
 
     public ProgressIndicator getIndikator() {
