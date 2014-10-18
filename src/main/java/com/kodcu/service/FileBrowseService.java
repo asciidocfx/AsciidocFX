@@ -3,8 +3,13 @@ package com.kodcu.service;
 import com.kodcu.controller.AsciiDocController;
 import com.kodcu.other.Item;
 import javafx.application.Platform;
-import javafx.scene.control.TreeItem;
-import javafx.scene.control.TreeView;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.scene.control.*;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
+import javafx.util.Callback;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -17,13 +22,15 @@ import java.util.Objects;
 @Component
 public class FileBrowseService {
 
+    @Autowired
+    AsciiDocController asciiDocController;
+
     private TreeItem<Item> rootItem;
     private PathMatcher matcher = FileSystems.getDefault().getPathMatcher("glob:**.{asciidoc,adoc,asc,ad,txt}");
 
     public void browse(TreeView<Item> treeView, AsciiDocController controller, String browserPath)   {
 
         Platform.runLater(() -> {
-
 
             rootItem = new TreeItem<>(new Item(Paths.get(browserPath), String.format("Working Directory (%s)", browserPath)));
             rootItem.setExpanded(true);
@@ -41,25 +48,6 @@ public class FileBrowseService {
                 addToTreeView(path);
             });
 
-            treeView.setOnMouseClicked(event -> {
-                TreeItem<Item> selectedItem = treeView.getSelectionModel().getSelectedItem();
-                if (Objects.isNull(selectedItem))
-                    return;
-                Path selectedPath = selectedItem.getValue().getPath();
-                if (Files.isDirectory(selectedPath)) {
-                    try {
-                        if (selectedItem.getChildren().size() == 0)
-                            Files.newDirectoryStream(selectedPath).forEach(path -> {
-                                selectedItem.getChildren().add(new TreeItem<>(new Item(path)));
-                            });
-                        selectedItem.setExpanded(!selectedItem.isExpanded());
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                } else if (event.getClickCount() > 1) {
-                    controller.addTab(selectedPath);
-                }
-            });
         });
     }
 

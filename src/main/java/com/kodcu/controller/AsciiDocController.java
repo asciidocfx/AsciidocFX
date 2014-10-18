@@ -29,6 +29,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
+import javafx.scene.input.MouseButton;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.web.WebEngine;
@@ -56,10 +57,7 @@ import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 import org.xml.sax.SAXException;
 
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -292,7 +290,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
 
         Path currentPath = Paths.get(workingDirectory.get());
 
-        htmlBookService.produceXhtml5(previewEngine,currentPath, configPath);
+        htmlBookService.produceXhtml5(previewEngine, currentPath, configPath);
     }
 
 
@@ -439,6 +437,62 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
                 runActionLater(this::newDoc);
         });
 
+
+        ContextMenu contextMenu = new ContextMenu();
+        MenuItem openFileItem = new MenuItem("Open");
+        MenuItem copyPathItem = new MenuItem("Copy Path");
+        MenuItem copyItem = new MenuItem("Copy");
+
+        contextMenu.getItems().addAll(openFileItem, copyPathItem, copyItem);
+
+        treeView.setOnMouseClicked(event -> {
+            TreeItem<Item> selectedItem = treeView.getSelectionModel().getSelectedItem();
+            if (Objects.isNull(selectedItem))
+                return;
+            Path selectedPath = selectedItem.getValue().getPath();
+            if(event.getButton()== MouseButton.PRIMARY)
+                if (Files.isDirectory(selectedPath)) {
+                    try {
+                        if (selectedItem.getChildren().size() == 0)
+                            Files.newDirectoryStream(selectedPath).forEach(path -> {
+                                selectedItem.getChildren().add(new TreeItem<>(new Item(path)));
+                            });
+                        selectedItem.setExpanded(!selectedItem.isExpanded());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                } else if (event.getClickCount() > 1) {
+                    this.addTab(selectedPath);
+                }
+        });
+
+        treeView.contextMenuProperty().setValue(contextMenu);
+
+        openFileItem.setOnAction(event -> {
+            Path path = getSelectedTabPath();
+            if (!Files.isDirectory(path))
+                this.addTab(path);
+
+        });
+
+        copyPathItem.setOnAction(event -> {
+            Path path = getSelectedTabPath();
+            this.cutCopy(path.toString());
+        });
+
+        copyItem.setOnAction(event -> {
+
+            Path path = getSelectedTabPath();
+            this.copyFile(path);
+        });
+
+    }
+
+    private Path getSelectedTabPath() {
+        TreeItem<Item> selectedItem = treeView.getSelectionModel().getSelectedItem();
+        Item value = selectedItem.getValue();
+        Path path = value.getPath();
+        return path;
     }
 
     private void runActionLater(Consumer<ActionEvent> consumer) {
@@ -651,12 +705,17 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
     private Tab createTab() {
         Tab tab = new Tab();
 
-        MenuItem menuItem0 = new MenuItem("Close All Tabs");
+        MenuItem menuItem0 = new MenuItem("Close");
         menuItem0.setOnAction(actionEvent -> {
+            tabPane.getTabs().remove(current.getCurrentTab());
+        });
+
+        MenuItem menuItem1 = new MenuItem("Close All");
+        menuItem1.setOnAction(actionEvent -> {
             tabPane.getTabs().clear();
         });
-        MenuItem menuItem1 = new MenuItem("Close All Other Tabs");
-        menuItem1.setOnAction(actionEvent -> {
+        MenuItem menuItem2 = new MenuItem("Close Others");
+        menuItem2.setOnAction(actionEvent -> {
             List<Tab> blackList = new ArrayList<>();
             blackList.addAll(tabPane.getTabs());
             blackList.remove(tab);
@@ -664,7 +723,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
         });
 
         ContextMenu contextMenu = new ContextMenu();
-        contextMenu.getItems().addAll(menuItem0, menuItem1);
+        contextMenu.getItems().addAll(menuItem0,menuItem1, menuItem2);
 
         tab.contextMenuProperty().setValue(contextMenu);
         Label label = new Label();
@@ -795,6 +854,13 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
         clipboardContent.putString(data);
         clipboard.setContent(clipboardContent);
     }
+
+    public void copyFile(Path path) {
+        ClipboardContent clipboardContent = new ClipboardContent();
+        clipboardContent.putFiles(Arrays.asList(path.toFile()));
+        clipboard.setContent(clipboardContent);
+    }
+
 
     public String paste() {
         return clipboard.getString();
