@@ -1,10 +1,13 @@
 package com.kodcu.service;
 
+import com.kodcu.controller.AsciiDocController;
 import com.kodcu.other.IOHelper;
+import javafx.application.Platform;
 import javafx.scene.web.WebEngine;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -17,18 +20,14 @@ import java.io.InputStream;
 @Component
 public class AsciiDoctorRenderService {
 
-    private String htmlRenderer;
+    @Autowired
+    AsciiDocController controller;
+
     private static Logger logger = LoggerFactory.getLogger(AsciiDoctorRenderService.class);
 
-    @PostConstruct
-    public void init() throws IOException {
-        try (InputStream stream = getClass().getResourceAsStream("/htmlRenderer.js");) {
-            htmlRenderer = IOUtils.toString(stream);
-        }
-    }
+    public String asciidocToHtml(WebEngine webEngine, String text) {
 
-    public void asciidocToHtml(WebEngine webEngine, String text) {
-        webEngine.executeScript(String.format(htmlRenderer, IOHelper.normalize(text)));
+       return (String) webEngine.executeScript(String.format("renderToHtml('%s')", IOHelper.normalize(text)));
     }
 
     public String generateHtml(WebEngine webEngine, String text) {

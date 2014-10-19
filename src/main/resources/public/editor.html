@@ -12,7 +12,7 @@
 <script type="text/javascript" src="/js/jquery.js"></script>
 <!-- load ace -->
 <script src="ace/src/ace.js" type="text/javascript" charset="utf-8"></script>
-<!--<script src="ace/src/ext-modelist.js" type="text/javascript" charset="utf-8"></script>-->
+<script src="js/editor.js" type="text/javascript" charset="utf-8"></script>
 <!-- load ace language tools -->
 <!--<script src="ace/src/ext-language_tools.js" charset="utf-8"></script>-->
 <script>
@@ -64,12 +64,18 @@ editor.getSession().selection.on('changeCursor', function (e) {
 });
 
 var newlyInitialized = true;
+var timeouter;
 
 editor.getSession().on('change', function (obj) {
     if (!newlyInitialized)
         app.appendWildcard();
 
-    app.textListener(editor.getValue());
+    if (timeouter)
+        clearTimeout(timeouter);
+
+    timeouter = setTimeout(function () {
+        app.textListener(editor.getValue());
+    }, 80);
 
     if (newlyInitialized)
         setTimeout(function () {
@@ -108,7 +114,7 @@ editor.commands.addCommand({
 
 editor.commands.addCommand({
     name: 'copy-1',
-    bindKey: {win: 'Ctrl-C'},
+    bindKey: {win: 'Ctrl-C', mac: 'Command-C'},
     exec: function (editor) {
         app.cutCopy(editor.session.getTextRange(editor.getSelectionRange()));
     },
@@ -275,10 +281,5 @@ editor.setOption("dragEnabled", false);
 
 </script>
 <script type="text/javascript" src="https://getfirebug.com/firebug-lite.js"></script>
-<script>
-    //    var modelist = ace.require("ace/ext/modelist");
-    //    var filePath = "blahblah/weee/some.asc";
-    //    var mode = modelist.getModeForPath(filePath).mode;
-</script>
 </body>
 </html>

@@ -76,7 +76,7 @@ public class AppStarter extends Application {
 
         scene.getAccelerators().put(new KeyCodeCombination(KeyCode.S, CONTROL_DOWN), controller::saveDoc);
         scene.getAccelerators().put(new KeyCodeCombination(KeyCode.N,CONTROL_DOWN), () -> {
-            controller.newDoc(null);
+                controller.newDoc(null);
         });
 
     }

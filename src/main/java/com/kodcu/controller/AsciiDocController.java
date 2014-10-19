@@ -66,6 +66,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.CodeSource;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -127,6 +129,13 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
     @Autowired
     private SampleBookService sampleBookService;
 
+    @Autowired
+    private NashornService nashornService;
+
+    private ExecutorService singleWorker = Executors.newSingleThreadExecutor();
+
+    private ExecutorService threadPollWorker = Executors.newFixedThreadPool(4);
+
 
     private Stage stage;
     private WebEngine previewEngine;
@@ -139,9 +148,6 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
     private Clipboard clipboard = Clipboard.getSystemClipboard();
     private Optional<Path> initialDirectory = Optional.empty();
     private Set<Path> recentFiles = new HashSet<>();
-
-    private String waitForGetValue;
-    private String waitForSetValue;
 
     private AnchorPane configAnchor;
     private Stage configStage;
@@ -157,7 +163,6 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
     private Config config;
     private Optional<String> workingDirectory;
     private Optional<Path> lastConvertedFile = Optional.empty();
-    private String scrollerJs;
 
     @FXML
     private void createTable(ActionEvent event) throws IOException {
@@ -190,7 +195,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
         Path currentPath = Paths.get(workingDirectory.get());
         docBookController.generateDocbook(previewEngine, currentPath, false);
 
-        invokeTask((task) -> {
+        runTaskLater((task) -> {
             fopServiceRunner.generate(currentPath, configPath);
         });
     }
@@ -201,7 +206,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
         DirectoryChooser directoryChooser = new DirectoryChooser();
         directoryChooser.setTitle("Select a New Directory for sample book");
         File file = directoryChooser.showDialog(null);
-        invokeTask((task) -> {
+        runTaskLater((task) -> {
             sampleBookService.produceSampleBook(configPath, file.toPath());
             workingDirectory = Optional.of(file.toString());
             initialDirectory = Optional.of(file.toPath());
@@ -236,12 +241,12 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
         Path currentPath = Paths.get(workingDirectory.get());
         docBookController.generateDocbook(previewEngine, currentPath, false);
 
-        invokeTask((task) -> {
+        runTaskLater((task) -> {
             epub3Service.produceEpub3(currentPath, configPath);
         });
     }
 
-    private <T> void invokeTask(Consumer<Task<T>> consumer) {
+    public <T> void runTaskLater(Consumer<Task<T>> consumer) {
 
         Task<T> task = new Task<T>() {
             @Override
@@ -251,8 +256,20 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
             }
         };
 
-        new Thread(task).start();
+        threadPollWorker.submit(task);
+    }
 
+    public <T> void runSingleTaskLater(Consumer<Task<T>> consumer) {
+
+        Task<T> task = new Task<T>() {
+            @Override
+            protected T call() throws Exception {
+                consumer.accept(this);
+                return null;
+            }
+        };
+
+        singleWorker.submit(task);
     }
 
     @FXML
@@ -278,7 +295,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
 
         }
 
-        invokeTask((task) -> {
+        runTaskLater((task) -> {
             epub3Service.produceEpub3(currentPath, configPath);
             kindleMobiService.produceMobi(currentPath, config.getKindlegenDir());
         });
@@ -321,8 +338,6 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
     @Override
     public void initialize(URL url, ResourceBundle rb) {
 
-        runActionLater(this::newDoc);
-
         try {
             CodeSource codeSource = AsciiDocController.class.getProtectionDomain().getCodeSource();
             File jarFile = new File(codeSource.getLocation().toURI().getPath());
@@ -337,18 +352,19 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
 
         tomcatPort = server.getEmbeddedServletContainer().getPort();
 
-        waitForGetValue = IOHelper.convert(AsciiDocController.class.getResourceAsStream("/waitForGetValue.js"));
-        waitForSetValue = IOHelper.convert(AsciiDocController.class.getResourceAsStream("/waitForSetValue.js"));
-        scrollerJs = IOHelper.convert(AsciiDocController.class.getResourceAsStream("/scroller.js"));
-
         lastRendered.addListener((observableValue, old, nev) -> {
-            sessionList.stream().filter(e -> e.isOpen()).forEach(e -> {
-                try {
-                    e.sendMessage(new TextMessage(nev));
-                } catch (IOException ex) {
-                    ex.printStackTrace();
-                }
-            });
+          runSingleTaskLater(task->{
+              sessionList.stream().filter(e -> e.isOpen()).forEach(e -> {
+                  try {
+                      e.sendMessage(new TextMessage(nev));
+                  } catch (IOException ex) {
+                      ex.printStackTrace();
+                  }
+              });
+          });
+//            Platform.runLater(() -> {
+//                previewEngine.executeScript(String.format("refreshUI('%s')", IOHelper.normalize(nev)));
+//            });
         });
 
 
@@ -450,7 +466,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
             if (Objects.isNull(selectedItem))
                 return;
             Path selectedPath = selectedItem.getValue().getPath();
-            if(event.getButton()== MouseButton.PRIMARY)
+            if (event.getButton() == MouseButton.PRIMARY)
                 if (Files.isDirectory(selectedPath)) {
                     try {
                         if (selectedItem.getChildren().size() == 0)
@@ -485,6 +501,8 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
             Path path = getSelectedTabPath();
             this.copyFile(path);
         });
+
+        runActionLater(this::newDoc);
 
     }
 
@@ -650,8 +668,9 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
                 current.putTab(tab, current.getNewTabPaths().get(tab), webView);
                 WebEngine webEngine = webView.getEngine();
 
-                if (webEngine.getLoadWorker().getState() == Worker.State.SUCCEEDED)
-                    webEngine.executeScript(waitForGetValue);
+                Worker.State state = webEngine.getLoadWorker().getState();
+                if (state == Worker.State.SUCCEEDED)
+                    webEngine.executeScript("waitForGetValue()");
             }
         });
         ((Label) tab.getGraphic()).setText("new *");
@@ -667,7 +686,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
         WebEngine webEngine = webView.getEngine();
         webEngine.getLoadWorker().stateProperty().addListener((observableValue1, state, state2) -> {
             if (state2 == Worker.State.SUCCEEDED) {
-                webEngine.executeScript(String.format(waitForSetValue, IOHelper.normalize(IOHelper.readFile(path))));
+                webEngine.executeScript(String.format("waitForSetValue('%s')", IOHelper.normalize(IOHelper.readFile(path))));
             }
         });
 
@@ -682,8 +701,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
         tab.selectedProperty().addListener((observableValue, before, after) -> {
             if (after) {
                 current.putTab(tab, path, webView);
-                webEngine.executeScript(waitForGetValue);
-
+                webEngine.executeScript("if((typeof waitForGetValue)!='undefined') waitForGetValue()");
             }
         });
 
@@ -723,7 +741,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
         });
 
         ContextMenu contextMenu = new ContextMenu();
-        contextMenu.getItems().addAll(menuItem0,menuItem1, menuItem2);
+        contextMenu.getItems().addAll(menuItem0, menuItem1, menuItem2);
 
         tab.contextMenuProperty().setValue(contextMenu);
         Label label = new Label();
@@ -776,7 +794,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
         if ("".equals(text))
             return;
 
-        String format = String.format(scrollerJs, text);
+        String format = String.format("runScroller('%s')", text);
         try {
             previewEngine.executeScript(format);
         } catch (Exception e) {
@@ -842,8 +860,14 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
 
     public void textListener(String text) {
 
-        Platform.runLater(() -> {
-            docConverter.asciidocToHtml(previewEngine, text);
+        runActionLater(run->{
+            String rendered = docConverter.asciidocToHtml(previewEngine, text);
+
+            runSingleTaskLater(task -> {
+//            String rendered = nashornService.renderToHtml(text);
+                if (Objects.nonNull(rendered))
+                    lastRendered.setValue(rendered);
+            });
         });
 
     }
@@ -894,9 +918,9 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
         AnchorPane.setRightAnchor(node, 0.0);
     }
 
-    public void saveAndCloseCurrentTab(){
-            this.saveDoc();
-            tabPane.getTabs().remove(current.getCurrentTab());
+    public void saveAndCloseCurrentTab() {
+        this.saveDoc();
+        tabPane.getTabs().remove(current.getCurrentTab());
     }
 
     public ProgressIndicator getIndikator() {
