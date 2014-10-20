@@ -2,22 +2,17 @@ package com.kodcu.service;
 
 import com.kodcu.controller.AsciiDocController;
 import com.kodcu.other.IOHelper;
-import javafx.animation.FadeTransition;
-import javafx.application.Platform;
 import javafx.scene.web.WebEngine;
-import javafx.util.Duration;
 import org.joox.Match;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.w3c.dom.Element;
 import org.xml.sax.InputSource;
 
 import java.io.StringReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -64,15 +59,14 @@ public class DocBookService {
                 indikatorService.startCycle();
 
             List<String> bookAscLines = Files.readAllLines(bookAsc);
-            StringBuffer allAscChapters=new StringBuffer();
+            StringBuffer allAscChapters = new StringBuffer();
 
             for (int i = 0; i < bookAscLines.size(); i++) {
                 String bookAscLine = bookAscLines.get(i);
 
                 Matcher matcher = compiledRegex.matcher(bookAscLine);
 
-                if(matcher.find())
-                {
+                if (matcher.find()) {
                     String chapterPath = matcher.group();
                     String chapterContent = IOHelper.readFile(currentPath.resolve(chapterPath));
                     allAscChapters.append(chapterContent);
@@ -82,8 +76,8 @@ public class DocBookService {
 
             }
 
-            StringBuffer allAscContent=new StringBuffer();
-            bookAscLines.forEach(content->{
+            StringBuffer allAscContent = new StringBuffer();
+            bookAscLines.forEach(content -> {
                 allAscContent.append(content);
                 allAscContent.append("\n");
             });
@@ -92,22 +86,30 @@ public class DocBookService {
             String docBookChapterContent = docConverter.asciidocToDocbook(webEngine, allAscChapters.toString(), true);
 
             StringReader bookReader = new StringReader(docBookHeaderContent);
-            Match rootDocument=  $(new InputSource(bookReader));
+            Match rootDocument = $(new InputSource(bookReader));
             bookReader.close();
 
             bookReader = new StringReader(docBookChapterContent);
-            Match chapterDocument=  $(new InputSource(bookReader));
+            Match chapterDocument = $(new InputSource(bookReader));
             bookReader.close();
 
             rootDocument.append(chapterDocument.find("chapter"));
 
             // changes formalpara to figure bug fix
-            rootDocument.find("imageobject").parents("formalpara").each((context)->{
+            rootDocument.find("imageobject").parents("formalpara").each((context) -> {
                 $(context).rename("figure");
             });
 
             // makes figure centering
-            rootDocument.find("figure").find("imagedata").attr("align","center");
+            rootDocument.find("figure").find("imagedata").attr("align", "center");
+
+            // remove callout's duplicated refs and pick last
+            rootDocument.find("callout").forEach(elem -> {
+                String arearefs = $(elem).attr("arearefs");
+                String[] cos = arearefs.split(" ");
+                if (cos.length > 1)
+                    $(elem).attr("arearefs", cos[cos.length - 1]);
+            });
 
             StringBuilder builder = new StringBuilder();
             builder.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
@@ -123,13 +125,12 @@ public class DocBookService {
 //            if (showIndicator)
 //                asciiDocController.getHostServices().showDocument(currentPath.resolve("book.xml").toUri().toString());
 
-            if (showIndicator)
-            {
+            if (showIndicator) {
                 indikatorService.completeCycle();
                 asciiDocController.setLastConvertedFile(Optional.of(currentPath.resolve("book.xml")));
             }
         } catch (Exception ex) {
-            logger.error(ex.getMessage(),ex);
+            logger.error(ex.getMessage(), ex);
         } finally {
             indikatorService.hideIndikator();
 

@@ -37,9 +37,6 @@
         </div>
     </div>
 </div>
-<!--<script src="/opal.js"></script>-->
-<!--<script src="/asciidoctor.js"></script>-->
-<!--<script src="/asciidoctor_extensions.js"></script>-->
 
 <script src="/js/asciidoctor-all.js"></script>
 <script src="/js/asciidoctor-docbook.js"></script>
@@ -53,7 +50,7 @@
     var soket = new SockJS("/ws");
 
     function refreshUI($data) {
-        console.log($data,"data");
+
         $data = $($data);
         $("#placeholder").html($data);
         $('pre code').each(function (i, e) {
