@@ -38,7 +38,9 @@ AsciidocFX has some custom shortcuts. If you suggest us any shortcut request, we
 |Shortcut |Detail 
 |*tblx,y* _press Tab_ |Generates asciidoc table (x=row,y=column)
 |*tblx.y* _press Tab_ |Generates asciidoc table (x=row,y=column)
-|*src* _press Tab_ |Generates asciidoc source block 
+|*src* _press Tab_ |Generates asciidoc source block (default lang: java)
+|*src.lang* _press Tab_ |Generates asciidoc source block by lang
+|*src,lang* _press Tab_ |Generates asciidoc source block by lang
 |*img* _press Tab_ |Generates image section 
 |*book* _press Tab_ |Generates book header section
 |*Ctrl+B* |Bolds selection
@@ -47,6 +49,7 @@ AsciidocFX has some custom shortcuts. If you suggest us any shortcut request, we
 |*Ctrl+X* |Removes current line 
 |*Ctrl+N* |Creates new empty doc
 |*Ctrl+S* |Saves current doc
+|*Ctrl+W* |Saves and closes current doc
 |*Ctrl-Shift-C* |Surrounds backtick `` selection
 |*F12* | Opens Firebug Lite
 |====================
