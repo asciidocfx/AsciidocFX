@@ -132,7 +132,7 @@
     <xsl:param name="generate.toc">
         <xsl:choose>
             <xsl:when test="/processing-instruction('asciidoc-toc')">
-                article toc,title
+                article title
                 book toc,title,figure,table,example,equation
             </xsl:when>
             <xsl:otherwise>

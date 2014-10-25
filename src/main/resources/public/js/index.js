@@ -1,6 +1,41 @@
-function renderToHtml(content) {
+function convertBasicHtml(content) {
 
     var rendered = Opal.Asciidoctor.$render(content);
+
+    return rendered;
+}
+
+function convertHtmlBook(content) {
+    var hash2 = Opal.hash2(['attributes', 'header_footer'],
+        {
+            'attributes': ['backend=html', 'doctype=book'],
+            'header_footer': true
+        });
+    var rendered = Opal.Asciidoctor.$render(content, hash2);
+
+    return rendered;
+}
+
+function convertDocbook(content,includeHeader) {
+
+    var hash2 = Opal.hash2(['attributes', 'header_footer'],
+        {
+            'attributes': ['backend=docbook5', 'doctype=book'],
+            'header_footer': includeHeader
+        });
+    var rendered = Opal.Asciidoctor.$render(content, hash2);
+
+    return rendered;
+}
+
+function convertDocbookArticle(content) {
+
+    var hash2 = Opal.hash2(['attributes', 'header_footer'],
+        {
+            'attributes': ['backend=docbook5', 'doctype=article'],
+            'header_footer': true
+        });
+    var rendered = Opal.Asciidoctor.$render(content, hash2);
 
     return rendered;
 }

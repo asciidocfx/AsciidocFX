@@ -285,7 +285,7 @@
     <xsl:param name="generate.toc">
         appendix toc,title
         article/appendix nop
-        article toc,title,figure
+        article title
         book toc,title,figure,table,example,equation
         chapter nop
         part toc,title

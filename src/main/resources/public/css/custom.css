@@ -11,6 +11,20 @@ body{
     color: #cdc778;
 }
 
+.save-pdf{
+    cursor: pointer;
+    color: rgba(255, 0, 0, 0.43);
+}
+
+.save-pdf:hover{
+    color: rgba(255, 0, 0, 0.87);
+}
+
+.save-pdf{
+    margin-left: 20px;
+    margin-right: 20px;
+}
+
 .copy-source {
     float: left;
     color: #dddddd;

@@ -1,28 +1,15 @@
 package com.kodcu.service;
 
-import com.icl.saxon.TransformerFactoryImpl;
 import com.kodcu.controller.AsciiDocController;
 import com.kodcu.other.IOHelper;
 import javafx.scene.web.WebEngine;
-import org.apache.commons.io.FileUtils;
-import org.joox.Match;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.zeroturnaround.zip.ZipUtil;
 
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.stream.StreamSource;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
-import java.nio.file.StandardOpenOption;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -31,7 +18,6 @@ import java.util.regex.Pattern;
 
 import static java.nio.file.StandardOpenOption.CREATE;
 import static java.nio.file.StandardOpenOption.TRUNCATE_EXISTING;
-import static java.nio.file.StandardOpenOption.WRITE;
 import static org.joox.JOOX.$;
 
 /**
@@ -92,7 +78,7 @@ public class Html5BookService {
 
             String bookXmlAsciidoc = allAscChapters.toString();
 
-            String htmlContent = docConverter.generateHtml(webEngine, bookXmlAsciidoc);
+            String htmlContent = docConverter.convertHtmlBook(webEngine, bookXmlAsciidoc);
 
             IOHelper.writeToFile(currentPath.resolve("book.html"), htmlContent, CREATE, TRUNCATE_EXISTING);
 

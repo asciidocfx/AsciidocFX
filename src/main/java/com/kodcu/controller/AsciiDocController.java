@@ -100,7 +100,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
     private TablePopupController tablePopupController;
 
     @Autowired
-    private AsciiDoctorRenderService docConverter;
+    private AsciiDoctorRenderService renderService;
 
     @Autowired
     private DocBookService docBookController;
@@ -196,7 +196,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
         docBookController.generateDocbook(previewEngine, currentPath, false);
 
         runTaskLater((task) -> {
-            fopServiceRunner.generate(currentPath, configPath);
+            fopServiceRunner.generateBook(currentPath, configPath);
         });
     }
 
@@ -861,7 +861,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
     public void textListener(String text) {
 
         runActionLater(run->{
-            String rendered = docConverter.asciidocToHtml(previewEngine, text);
+            String rendered = renderService.convertBasicHtml(previewEngine, text);
 
             runSingleTaskLater(task -> {
 //            String rendered = nashornService.renderToHtml(text);
@@ -877,6 +877,22 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
         ClipboardContent clipboardContent = new ClipboardContent();
         clipboardContent.putString(data);
         clipboard.setContent(clipboardContent);
+    }
+
+    public void pdfOnePage(){
+//        webEngine.executeScript("waitForGetValue()")
+
+        Path currentPath = Paths.get(workingDirectory.get());
+
+        String docbook = renderService.convertDocbookArticle(previewEngine);
+
+        runTaskLater(task->{
+            fopServiceRunner.generateArticle(currentPath,configPath,docbook);
+        });
+
+
+
+
     }
 
     public void copyFile(Path path) {

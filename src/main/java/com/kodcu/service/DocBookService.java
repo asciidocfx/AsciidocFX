@@ -82,8 +82,8 @@ public class DocBookService {
                 allAscContent.append("\n");
             });
 
-            String docBookHeaderContent = docConverter.asciidocToDocbook(webEngine, allAscContent.toString(), true);
-            String docBookChapterContent = docConverter.asciidocToDocbook(webEngine, allAscChapters.toString(), true);
+            String docBookHeaderContent = docConverter.convertDocbook(webEngine, allAscContent.toString(), true);
+            String docBookChapterContent = docConverter.convertDocbook(webEngine, allAscChapters.toString(), true);
 
             StringReader bookReader = new StringReader(docBookHeaderContent);
             Match rootDocument = $(new InputSource(bookReader));
