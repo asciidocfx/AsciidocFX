@@ -22,6 +22,7 @@ body{
 
 .save-pdf{
     margin-left: 15px;
+    float: left;
 }
 
 .copy-source {
@@ -69,4 +70,17 @@ pre.highlight > code {
 
 .imageblock img {
     max-width: 80%;
+}
+
+.utility {
+    background-color: white;
+    position: fixed;
+    height: 30px;
+    width: 100%;
+    z-index: 1;
+    top: 0;
+}
+
+.columns > a {
+    padding-top: 10px;
 }
