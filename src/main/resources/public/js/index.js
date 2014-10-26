@@ -16,6 +16,17 @@ function convertHtmlBook(content) {
     return rendered;
 }
 
+function convertHtmlArticle(content) {
+    var hash2 = Opal.hash2(['attributes', 'header_footer'],
+        {
+            'attributes': ['backend=html', 'doctype=article'],
+            'header_footer': true
+        });
+    var rendered = Opal.Asciidoctor.$render(content, hash2);
+
+    return rendered;
+}
+
 function convertDocbook(content,includeHeader) {
 
     var hash2 = Opal.hash2(['attributes', 'header_footer'],

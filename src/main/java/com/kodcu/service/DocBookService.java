@@ -136,4 +136,46 @@ public class DocBookService {
 
         }
     }
+
+    public String generateDocbookArticle(WebEngine webEngine, Path currentPath) {
+        StringBuilder builder = new StringBuilder();
+        try {
+
+            String docbook = docConverter.convertDocbookArticle(webEngine);
+
+            StringReader bookReader = new StringReader(docbook);
+            Match rootDocument = $(new InputSource(bookReader));
+            bookReader.close();
+
+            // changes formalpara to figure bug fix
+            rootDocument.find("imageobject").parents("formalpara").each((context) -> {
+                $(context).rename("figure");
+            });
+
+            // makes figure centering
+            rootDocument.find("figure").find("imagedata").attr("align", "center");
+
+            // remove callout's duplicated refs and pick last
+            rootDocument.find("callout").forEach(elem -> {
+                String arearefs = $(elem).attr("arearefs");
+                String[] cos = arearefs.split(" ");
+                if (cos.length > 1)
+                    $(elem).attr("arearefs", cos[cos.length - 1]);
+            });
+
+
+            builder.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+            builder.append("\n");
+            builder.append("<?asciidoc-toc?>\n");
+            builder.append("<?asciidoc-numbered?>\n");
+            builder.append(rootDocument.content());
+
+
+        } catch (Exception ex) {
+            logger.error(ex.getMessage(), ex);
+        }
+
+
+        return builder.toString();
+    }
 }

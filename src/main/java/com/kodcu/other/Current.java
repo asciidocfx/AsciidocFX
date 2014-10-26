@@ -75,4 +75,16 @@ public class Current {
         Label label = (Label) tab.getGraphic();
         label.setText(currentTabText);
     }
+
+    public String getCurrentTabText() {
+        Tab tab = getCurrentTab();
+        Label label = (Label) tab.getGraphic();
+
+        return label.getText();
+    }
+
+    public String currentEditorValue() {
+        String value = (String) currentEngine().executeScript("editor.getValue()");
+        return value;
+    }
 }

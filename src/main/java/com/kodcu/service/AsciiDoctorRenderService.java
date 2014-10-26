@@ -29,6 +29,12 @@ public class AsciiDoctorRenderService {
         return rendered;
     }
 
+    public String convertHtmlArticle(WebEngine webEngine, String text) {
+
+        String rendered = (String) webEngine.executeScript(String.format("convertHtmlArticle('%s')", IOHelper.normalize(text)));
+        return rendered;
+    }
+
     public String convertHtmlBook(WebEngine webEngine, String text) {
         String rendered = (String) webEngine.executeScript(String.format("convertHtmlBook('%s')", IOHelper.normalize(text)));
         return rendered;
@@ -44,7 +50,7 @@ public class AsciiDoctorRenderService {
 
     public String convertDocbookArticle(WebEngine webEngine) {
 
-        String asciidoc = (String) current.currentEngine().executeScript("editor.getValue()");
+        String asciidoc = current.currentEditorValue();
 
         String rendered = (String) webEngine.executeScript(String.format("convertDocbookArticle('%s')", IOHelper.normalize(asciidoc)));
 

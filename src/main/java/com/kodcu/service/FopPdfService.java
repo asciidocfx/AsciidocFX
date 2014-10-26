@@ -109,7 +109,7 @@ public class FopPdfService {
             params.add("callout.graphics.path");
             params.add(configPath.resolve("docbook/images/callouts/").toUri().toString());
 
-            String tabText = current.currentPath().getFileName().toString().replace("*", "").trim();
+            String tabText = current.getCurrentTabText().replace("*", "").trim();
             String tabTextDocbook = tabText.concat(".xml");
             Path articlePath = currentPath.resolve(tabTextDocbook);
             Files.write(articlePath, docBook.getBytes(Charset.forName("UTF-8")), CREATE, TRUNCATE_EXISTING, WRITE);

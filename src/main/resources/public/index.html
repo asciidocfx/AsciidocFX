@@ -20,9 +20,9 @@
 </div>
 <div class="row">
     <div class="columns justify large-10 large-centered medium-12 small-12">
-        <a class="copy-source" onclick="copySource()">
-            <i class="fa fa-clipboard"></i>
-            Copy Source
+        <a class="copy-source" onclick="htmlOnePage()">
+            <i class="fa fa-html5"></i>
+            HTML
         </a>
         <a class="save-pdf" onclick="pdfOnePage()">
             <i class="fa fa-file-pdf-o"></i>
@@ -84,8 +84,8 @@
         app.externalBrowse();
     }
 
-    var copySource = function(){
-        app.cutCopy($("#placeholder").html());
+    var htmlOnePage = function(){
+        app.htmlOnePage();
     }
 
     var pdfOnePage = function () {

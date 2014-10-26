@@ -61,6 +61,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.*;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -73,6 +74,7 @@ import java.util.stream.Collectors;
 
 import static java.nio.file.StandardOpenOption.CREATE;
 import static java.nio.file.StandardOpenOption.TRUNCATE_EXISTING;
+import static java.nio.file.StandardOpenOption.WRITE;
 
 
 @Controller
@@ -164,6 +166,8 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
     private Optional<String> workingDirectory;
     private Optional<Path> lastConvertedFile = Optional.empty();
 
+    List<String> bookNames =Arrays.asList("book.asc", "book.txt", "book.asciidoc", "book.adoc", "book.ad");
+
     @FXML
     private void createTable(ActionEvent event) throws IOException {
         tableStage.show();
@@ -189,9 +193,8 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
 
 
     @FXML
-    private void generatePdf(ActionEvent event) throws IOException, SAXException {
+    private void generatePdf(ActionEvent event) {
 
-//        Path currentPath = initialDirectory.map(path -> Files.isDirectory(path) ? path : path.getParent()).get();
         Path currentPath = Paths.get(workingDirectory.get());
         docBookController.generateDocbook(previewEngine, currentPath, false);
 
@@ -621,7 +624,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
     @FXML
     private void openDoc(ActionEvent event) {
         FileChooser fileChooser = new FileChooser();
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Asciidoc", "*.asciidoc", "*.adoc", "*.asc", "*.ad", "*.txt"));
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Asciidoc","*.asc", "*.asciidoc", "*.adoc", "*.ad", "*.txt"));
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("All", "*.*"));
         initialDirectory.ifPresent(e -> {
             if (Files.isDirectory(e))
@@ -872,6 +875,34 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
 
     }
 
+    public void htmlOnePage(){
+
+        if(bookNames.contains(current.getCurrentTabText())){
+            generateHtml(null);
+            return;
+        }
+
+        Path currentPath = Paths.get(workingDirectory.get());
+
+        String asciidoc = current.currentEditorValue();
+
+        String html = renderService.convertHtmlArticle(previewEngine, IOHelper.normalize(asciidoc));
+
+        this.cutCopy(html);
+
+        runTaskLater(task -> {
+            indikatorService.startCycle();
+            String tabText = current.getCurrentTabText().replace("*", "").trim();
+
+            Path path = currentPath.resolve(tabText.concat(".html"));
+            IOHelper.writeToFile(path, html, CREATE, TRUNCATE_EXISTING, WRITE);
+            setLastConvertedFile(Optional.of(path));
+
+            indikatorService.hideIndikator();
+
+        });
+
+    }
 
     public void cutCopy(String data) {
         ClipboardContent clipboardContent = new ClipboardContent();
@@ -880,18 +911,19 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
     }
 
     public void pdfOnePage(){
-//        webEngine.executeScript("waitForGetValue()")
+
+        if(bookNames.contains(current.getCurrentTabText())){
+            generatePdf(null);
+            return;
+        }
 
         Path currentPath = Paths.get(workingDirectory.get());
 
-        String docbook = renderService.convertDocbookArticle(previewEngine);
+        String docbook = docBookController.generateDocbookArticle(previewEngine,currentPath);
 
         runTaskLater(task->{
             fopServiceRunner.generateArticle(currentPath,configPath,docbook);
         });
-
-
-
 
     }
 
@@ -911,7 +943,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
         Path currentPath = current.currentPath();
         if (currentPath == null) {
             FileChooser chooser = new FileChooser();
-            chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Asciidoc", "*.asciidoc", "*.adoc", "*.asc", "*.ad", "*.txt"));
+            chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Asciidoc","*.asc", "*.asciidoc", "*.adoc", "*.ad", "*.txt"));
             File file = chooser.showSaveDialog(null);
             if (file == null)
                 return;
