@@ -1,2 +1,3 @@
 *.xml linguist-language=JAVA
+*.xsl linguist-language=JAVA
 *.xsd linguist-language=JAVA
