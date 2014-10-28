@@ -1,2 +1,2 @@
-/conf linguist-language=JAVA
-/src/main/resources/public/ace linguist-language=JAVA
+**/conf/ linguist-language=JAVA
+**/ace linguist-language=JAVA
