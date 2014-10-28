@@ -1,3 +1,2 @@
-*.xml linguist-language=JAVA
-*.xsl linguist-language=JAVA
-*.xsd linguist-language=JAVA
+/conf linguist-language=JAVA
+/src/main/resources/public/ace linguist-language=JAVA
