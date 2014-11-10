@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
  * Created by usta on 19.07.2014.
  */
 @Component
-public class AsciiDoctorRenderService {
+public class RenderService {
 
     @Autowired
     AsciiDocController controller;
@@ -21,7 +21,7 @@ public class AsciiDoctorRenderService {
     @Autowired
     Current current;
 
-    private static Logger logger = LoggerFactory.getLogger(AsciiDoctorRenderService.class);
+    private static Logger logger = LoggerFactory.getLogger(RenderService.class);
 
     public String convertBasicHtml(WebEngine webEngine, String text) {
 

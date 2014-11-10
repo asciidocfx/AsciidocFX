@@ -12,7 +12,7 @@
 <div class="utility">
     <div class="row">
         <div class="columns justify large-10 large-centered medium-12 small-12"  style="height:30px">
-            <a class="copy-source" onclick="htmlOnePage()">
+            <a class="save-html" onclick="htmlOnePage()">
                 <i class="fa fa-html5"></i>
                 HTML
             </a>
@@ -20,9 +20,13 @@
                 <i class="fa fa-file-pdf-o"></i>
                 PDF
             </a>
+            <a class="copy-source" onclick="copySource()">
+                <i class="fa fa-file-code-o"></i>
+                Source
+            </a>
             <a class="external-browser" onclick="externalBrowse()">
                 <i class="fa fa-bolt"></i>
-                External Browser
+                Browser
             </a>
         </div>
     </div>
@@ -87,6 +91,10 @@
 
     var htmlOnePage = function(){
         app.htmlOnePage();
+    }
+
+    var copySource = function(){
+        app.cutCopy($("#placeholder").html());
     }
 
     var pdfOnePage = function () {

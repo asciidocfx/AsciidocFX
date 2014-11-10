@@ -25,7 +25,18 @@ body{
     float: left;
 }
 
+.save-html {
+    float: left;
+    color: #dddddd;
+    cursor: pointer;
+}
+
+.save-html:hover {
+    color: #b0b0b0;
+}
+
 .copy-source {
+    margin-left: 15px;
     float: left;
     color: #dddddd;
     cursor: pointer;
@@ -83,4 +94,8 @@ pre.highlight > code {
 
 .columns > a {
     padding-top: 10px;
+}
+
+#placeholder{
+    margin-top: 30px;
 }

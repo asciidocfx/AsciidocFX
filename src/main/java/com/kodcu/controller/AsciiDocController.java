@@ -55,13 +55,11 @@ import org.springframework.web.context.request.async.DeferredResult;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
-import org.xml.sax.SAXException;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.*;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -70,6 +68,7 @@ import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import static java.nio.file.StandardOpenOption.CREATE;
@@ -98,11 +97,26 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
     public ProgressIndicator indikator;
     public Hyperlink lastConvertedFileLink;
 
+    private Supplier<String> workindDirectorySupplier = () -> {
+
+        DirectoryChooser directoryChooser=new DirectoryChooser();
+        directoryChooser.setTitle("Select working directory");
+        File file = directoryChooser.showDialog(null);
+
+        workingDirectory = Optional.ofNullable(file.toPath().toString());
+
+        this.workingDirectory.ifPresent(path->{
+            this.fileBrowser.browse(treeView, this, path);
+        });
+
+        return file.toPath().toString();
+    };
+
     @Autowired
     private TablePopupController tablePopupController;
 
     @Autowired
-    private AsciiDoctorRenderService renderService;
+    private RenderService renderService;
 
     @Autowired
     private DocBookService docBookController;
@@ -130,9 +144,6 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
 
     @Autowired
     private SampleBookService sampleBookService;
-
-    @Autowired
-    private NashornService nashornService;
 
     private ExecutorService singleWorker = Executors.newSingleThreadExecutor();
 
@@ -195,7 +206,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
     @FXML
     private void generatePdf(ActionEvent event) {
 
-        Path currentPath = Paths.get(workingDirectory.get());
+        Path currentPath = Paths.get(workingDirectory.orElseGet(workindDirectorySupplier));
         docBookController.generateDocbook(previewEngine, currentPath, false);
 
         runTaskLater((task) -> {
@@ -223,7 +234,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
 
     @FXML
     private void convertDocbook(ActionEvent event) {
-        Path currentPath = Paths.get(workingDirectory.get());
+        Path currentPath = Paths.get(workingDirectory.orElseGet(workindDirectorySupplier));
 //        Path currentPath = initialDirectory.map(path -> Files.isDirectory(path) ? path : path.getParent()).get();
         docBookController.generateDocbook(previewEngine, currentPath, true);
 
@@ -241,7 +252,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
     private void convertEpub(ActionEvent event) throws Exception {
 
 //        Path currentPath = initialDirectory.map(path -> Files.isDirectory(path) ? path : path.getParent()).get();
-        Path currentPath = Paths.get(workingDirectory.get());
+        Path currentPath = Paths.get(workingDirectory.orElseGet(workindDirectorySupplier));
         docBookController.generateDocbook(previewEngine, currentPath, false);
 
         runTaskLater((task) -> {
@@ -279,7 +290,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
     private void convertMobi(ActionEvent event) throws Exception {
 
 
-        Path currentPath = Paths.get(workingDirectory.get());
+        Path currentPath = Paths.get(workingDirectory.orElseGet(workindDirectorySupplier));
 
         if (Objects.nonNull(config.getKindlegenDir())) {
             if (!Files.exists(Paths.get(config.getKindlegenDir()))) {
@@ -308,7 +319,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
     @FXML
     private void generateHtml(ActionEvent event) {
 
-        Path currentPath = Paths.get(workingDirectory.get());
+        Path currentPath = Paths.get(workingDirectory.orElseGet(workindDirectorySupplier));
 
         htmlBookService.produceXhtml5(previewEngine, currentPath, configPath);
     }
@@ -882,13 +893,12 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
             return;
         }
 
-        Path currentPath = Paths.get(workingDirectory.get());
+
+        Path currentPath = Paths.get(workingDirectory.orElseGet(workindDirectorySupplier));
 
         String asciidoc = current.currentEditorValue();
 
         String html = renderService.convertHtmlArticle(previewEngine, IOHelper.normalize(asciidoc));
-
-        this.cutCopy(html);
 
         runTaskLater(task -> {
             indikatorService.startCycle();
@@ -917,7 +927,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
             return;
         }
 
-        Path currentPath = Paths.get(workingDirectory.get());
+        Path currentPath = Paths.get(workingDirectory.orElseGet(workindDirectorySupplier));
 
         String docbook = docBookController.generateDocbookArticle(previewEngine,currentPath);
 
@@ -943,6 +953,9 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
         Path currentPath = current.currentPath();
         if (currentPath == null) {
             FileChooser chooser = new FileChooser();
+            workingDirectory.ifPresent(path->{
+                chooser.setInitialDirectory(Paths.get(path).toFile());
+            });
             chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Asciidoc","*.asc", "*.asciidoc", "*.adoc", "*.ad", "*.txt"));
             File file = chooser.showSaveDialog(null);
             if (file == null)

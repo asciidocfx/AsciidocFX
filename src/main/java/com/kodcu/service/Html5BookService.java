@@ -34,10 +34,10 @@ public class Html5BookService {
     private AsciiDocController asciiDocController;
 
     @Autowired
-    private BookPathResolverService bookPathResolver;
+    private PathResolverService bookPathResolver;
 
     @Autowired
-    private AsciiDoctorRenderService docConverter;
+    private RenderService docConverter;
 
     @Autowired
     private IndikatorService indikatorService;

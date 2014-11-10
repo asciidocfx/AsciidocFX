@@ -34,10 +34,10 @@ public class DocBookService {
     private Pattern compiledRegex = Pattern.compile("(?<=include::)(.*?)(?=\\[(.*?)\\])");
 
     @Autowired
-    private AsciiDoctorRenderService docConverter;
+    private RenderService docConverter;
 
     @Autowired
-    private BookPathResolverService bookPathResolver;
+    private PathResolverService bookPathResolver;
 
     @Autowired
     private AsciiDocController asciiDocController;
@@ -59,7 +59,7 @@ public class DocBookService {
                 indikatorService.startCycle();
 
             List<String> bookAscLines = Files.readAllLines(bookAsc);
-            StringBuffer allAscChapters = new StringBuffer();
+//            StringBuffer allAscChapters = new StringBuffer();
 
             for (int i = 0; i < bookAscLines.size(); i++) {
                 String bookAscLine = bookAscLines.get(i);
@@ -69,9 +69,10 @@ public class DocBookService {
                 if (matcher.find()) {
                     String chapterPath = matcher.group();
                     String chapterContent = IOHelper.readFile(currentPath.resolve(chapterPath));
-                    allAscChapters.append(chapterContent);
-                    allAscChapters.append("\n\n");
-                    bookAscLines.remove(i);
+//                    allAscChapters.append(chapterContent);
+//                    allAscChapters.append("\n\n");
+//                    bookAscLines.remove(i);
+                    bookAscLines.set(i,"\n\n"+chapterContent+"\n\n");
                 }
 
             }
@@ -83,17 +84,17 @@ public class DocBookService {
             });
 
             String docBookHeaderContent = docConverter.convertDocbook(webEngine, allAscContent.toString(), true);
-            String docBookChapterContent = docConverter.convertDocbook(webEngine, allAscChapters.toString(), true);
+//            String docBookChapterContent = docConverter.convertDocbook(webEngine, allAscChapters.toString(), true);
 
             StringReader bookReader = new StringReader(docBookHeaderContent);
             Match rootDocument = $(new InputSource(bookReader));
             bookReader.close();
 
-            bookReader = new StringReader(docBookChapterContent);
-            Match chapterDocument = $(new InputSource(bookReader));
-            bookReader.close();
+//            bookReader = new StringReader(docBookChapterContent);
+//            Match chapterDocument = $(new InputSource(bookReader));
+//            bookReader.close();
 
-            rootDocument.append(chapterDocument.find("chapter"));
+//            rootDocument.append(chapterDocument.find("chapter"));
 
             // changes formalpara to figure bug fix
             rootDocument.find("imageobject").parents("formalpara").each((context) -> {

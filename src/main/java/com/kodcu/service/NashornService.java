@@ -16,7 +16,7 @@ import java.io.FileReader;
 /**
  * Created by usta on 19.10.2014.
  */
-@Component
+//@Component
 public class NashornService {
 
 

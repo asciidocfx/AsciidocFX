@@ -12,7 +12,7 @@ import java.util.*;
  * Created by usta on 07.09.2014.
  */
 @Component
-public class BookPathResolverService {
+public class PathResolverService {
 
     private static final List<String> rootList =
             Arrays.asList("book.asc", "book.txt", "book.asciidoc", "book.adoc", "book.ad");

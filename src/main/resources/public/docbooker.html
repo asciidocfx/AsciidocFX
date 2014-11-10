@@ -15,7 +15,7 @@
 <button onclick="convert()">Convert</button>
 <script>
     function convert(){
-        var docbookOpts = Opal.hash2(['attributes','header_footer'], {'attributes': ['backend=docbook5', 'doctype=article'],'header_footer':true});
+        var docbookOpts = Opal.hash2(['attributes','header_footer'], {'attributes': ['backend=docbook5', 'doctype=book'],'header_footer':true});
         var result = Opal.Asciidoctor.$render($("#input").val(),docbookOpts);
         $("#output").val(result);
     }
