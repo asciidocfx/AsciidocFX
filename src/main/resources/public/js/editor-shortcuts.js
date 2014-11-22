@@ -246,14 +246,14 @@ editor.commands.addCommand({
     readOnly: true
 });
 
-var matchBoldText = function(text){
+function matchBoldText(text){
     return text.match(/\*.*\*/g) != null;
 } 
 
-var matchItalicizedText = function(text){
+function matchItalicizedText(text){
     return text.match(/\_.*\_/g) != null;
 }
 
-var matchCode = function(text){
+function matchCode(text){
     return text.match(/\`.*\`/g) != null;
 }
