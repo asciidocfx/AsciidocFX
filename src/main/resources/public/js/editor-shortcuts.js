@@ -72,33 +72,39 @@ editor.commands.addCommand({
     readOnly: true
 });
 
+function formatText(editor,matcher,character){
+    var range = editor.getSelectionRange();
+    var text = editor.session.getTextRange(range);
+
+    if(matcher(text)){
+        text = text.substring(1,text.length -1);
+        editor.session.replace(range, text);
+    }
+    else {
+        var virtualRange = editor.getSelectionRange();
+        virtualRange.setStart(range.start.row,range.start.column - 1);
+        virtualRange.setEnd(range.end.row,range.end.column + 1);
+
+        var virtual_text = editor.session.getTextRange(virtualRange);
+        if(matcher(virtual_text)){
+            editor.session.replace(virtualRange, text);
+        }
+        else{
+            editor.session.replace(range, character + text + character);
+            if(range.end.column == range.start.column){
+                editor.navigateTo(range.end.row, range.end.column + 1);
+            }
+        }
+    }
+}
+
 editor.commands.addCommand({
     name: 'bold-selected',
     bindKey: {win: 'Ctrl-B', mac: 'Command-B'},
     exec: function (editor) {
-        var range = editor.getSelectionRange();
-        var text = editor.session.getTextRange(range);            
 
-        if(matchBoldText(text)){
-            text = text.substring(1,text.length -1);
-            editor.session.replace(range, text);
-        }
-        else {
-            var virtual_range = editor.getSelectionRange();
-            virtual_range.setStart(range.start.row,range.start.column - 1);
-            virtual_range.setEnd(range.end.row,range.end.column + 1);
+        formatText(editor,matchBoldText,"*");
 
-            var virtual_text = editor.session.getTextRange(virtual_range); 
-            if(matchBoldText(virtual_text)){
-                editor.session.replace(virtual_range, text);
-            }
-            else{
-                editor.session.replace(range, "*" + text + "*");
-                 if(range.end.column == range.start.column){
-                    editor.navigateTo(range.end.row, range.end.column + 1);
-                }
-            }
-        }           
     },
     readOnly: true
 });
@@ -107,29 +113,8 @@ editor.commands.addCommand({
     name: 'codify-selected',
     bindKey: {win: 'Ctrl-Shift-C', mac: 'Command-Shift-C'},
     exec: function (editor) {
-        var range = editor.getSelectionRange();
-        var text = editor.session.getTextRange(range);            
 
-        if(matchCode(text)){
-            text = text.substring(1,text.length -1);
-            editor.session.replace(range, text);
-        }
-        else {
-            var virtual_range = editor.getSelectionRange();
-            virtual_range.setStart(range.start.row,range.start.column - 1);
-            virtual_range.setEnd(range.end.row,range.end.column + 1);
-
-            var virtual_text = editor.session.getTextRange(virtual_range); 
-            if(matchCode(virtual_text)){
-                editor.session.replace(virtual_range, text);
-            }
-            else{
-                editor.session.replace(range, "`" + text + "`");
-                 if(range.end.column == range.start.column){
-                    editor.navigateTo(range.end.row, range.end.column + 1);
-                }
-            }
-        }
+        formatText(editor,matchCode,"`");
     },
     readOnly: true
 });
@@ -141,29 +126,8 @@ editor.commands.addCommand({
         mac: 'Command-i|Command-İ|Command-ı|Command-I'
     },
     exec: function (editor) {
-        var range = editor.getSelectionRange();
-        var text = editor.session.getTextRange(range);            
+        formatText(editor,matchItalicizedText,"_");
 
-        if(matchItalicizedText(text)){
-            text = text.substring(1,text.length -1);
-            editor.session.replace(range, text);
-        }
-        else {
-            var virtual_range = editor.getSelectionRange();
-            virtual_range.setStart(range.start.row,range.start.column - 1);
-            virtual_range.setEnd(range.end.row,range.end.column + 1);
-
-            var virtual_text = editor.session.getTextRange(virtual_range);
-            if(matchItalicizedText(virtual_text)){
-                editor.session.replace(virtual_range, text);
-            }
-            else{
-                editor.session.replace(range, "_" + text + "_");
-                 if(range.end.column == range.start.column){
-                    editor.navigateTo(range.end.row, range.end.column + 1);
-                }
-            }
-        }           
     },
     readOnly: true
 });
@@ -196,7 +160,7 @@ editor.commands.addCommand({
         if (textRange == "book") { // source generator
             editor.removeToLineStart();
 
-            editor.insert("= Book Name\nAuthor's Name\n:doctype: book\n:encoding: utf-8\n:lang: tr\n\n\n");
+            editor.insert("= Book Name\nAuthor's Name\n:doctype: book\n:encoding: utf-8\n:lang: tr\n:toc:\n:numbered:\n\n\n");
 
             return;
         }
@@ -247,13 +211,13 @@ editor.commands.addCommand({
 });
 
 function matchBoldText(text){
-    return text.match(/\*.*\*/g) != null;
+    return text.match(/\*.*\*/g);
 } 
 
 function matchItalicizedText(text){
-    return text.match(/\_.*\_/g) != null;
+    return text.match(/\_.*\_/g);
 }
 
 function matchCode(text){
-    return text.match(/\`.*\`/g) != null;
+    return text.match(/\`.*\`/g);
 }
