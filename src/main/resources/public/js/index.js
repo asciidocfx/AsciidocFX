@@ -1,8 +1,11 @@
 function convertBasicHtml(content) {
+    var options = Opal.hash2(['backend', 'safe', 'attributes'], {
+      backend: 'html5',
+      safe: 'safe',
+      attributes: 'showtitle icons=font@ source-highlighter=highlight.js platform=opal platform-opal env=browser env-browser'
+    });
 
-    var rendered = Opal.Asciidoctor.$render(content);
-
-    return rendered;
+    return Opal.Asciidoctor.$convert(content, options);
 }
 
 function convertHtmlBook(content) {
