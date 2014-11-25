@@ -1,7 +1,7 @@
 function convertBasicHtml(content) {
     var options = Opal.hash2(['backend', 'safe', 'attributes'], {
       backend: 'html5',
-      safe: 'safe',
+      safe: 'safeMode',
       attributes: 'showtitle icons=font@ source-highlighter=highlight.js platform=opal platform-opal env=browser env-browser'
     });
 
@@ -11,7 +11,7 @@ function convertBasicHtml(content) {
 function convertHtmlBook(content) {
     var hash2 = Opal.hash2(['attributes', 'header_footer'],
         {
-            'attributes': ['backend=html', 'doctype=book'],
+            'attributes': ['backend=html5', 'doctype=book'],
             'header_footer': true
         });
     var rendered = Opal.Asciidoctor.$render(content, hash2);
@@ -22,7 +22,7 @@ function convertHtmlBook(content) {
 function convertHtmlArticle(content) {
     var hash2 = Opal.hash2(['attributes', 'header_footer'],
         {
-            'attributes': ['backend=html', 'doctype=article'],
+            'attributes': ['backend=html5', 'doctype=article'],
             'header_footer': true
         });
     var rendered = Opal.Asciidoctor.$render(content, hash2);
