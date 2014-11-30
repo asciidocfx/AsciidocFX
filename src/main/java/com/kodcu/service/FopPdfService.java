@@ -2,6 +2,7 @@ package com.kodcu.service;
 
 import com.kodcu.controller.AsciiDocController;
 import com.kodcu.other.Current;
+import javafx.application.Platform;
 import org.apache.fop.apps.FOUserAgent;
 import org.apache.fop.apps.FopFactory;
 import org.apache.fop.cli.InputHandler;
@@ -76,10 +77,10 @@ public class FopPdfService {
 
                 indikatorService.completeCycle();
 
-                asciiDocController.setLastConvertedFile(Optional.of(currentPath.resolve("book.pdf")));
+                Platform.runLater(()->{
+                    asciiDocController.getRecentFiles().add(0, currentPath.resolve("book.pdf").toString());
+                });
 
-
-//                asciiDocController.getHostServices().showDocument(currentPath.resolve("book.pdf").toUri().toString());
             }
 
         } catch (Exception ex) {
@@ -125,7 +126,9 @@ public class FopPdfService {
 
                 indikatorService.completeCycle();
 
-                asciiDocController.setLastConvertedFile(Optional.of(currentPath.resolve(tabText.concat(".pdf"))));
+                Platform.runLater(()->{
+                    asciiDocController.getRecentFiles().add(0, currentPath.resolve(tabText.concat(".pdf")).toString());
+                });
 
 
 //                asciiDocController.getHostServices().showDocument(currentPath.resolve("book.pdf").toUri().toString());

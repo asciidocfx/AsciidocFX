@@ -2,6 +2,7 @@ package com.kodcu.service;
 
 import com.kodcu.controller.AsciiDocController;
 import com.kodcu.other.IOHelper;
+import javafx.application.Platform;
 import javafx.scene.web.WebEngine;
 import org.joox.Match;
 import org.slf4j.Logger;
@@ -128,7 +129,11 @@ public class DocBookService {
 
             if (showIndicator) {
                 indikatorService.completeCycle();
-                asciiDocController.setLastConvertedFile(Optional.of(currentPath.resolve("book.xml")));
+
+                Platform.runLater(()->{
+                    asciiDocController.getRecentFiles().add(0,currentPath.resolve("book.xml").toString());
+                });
+
             }
         } catch (Exception ex) {
             logger.error(ex.getMessage(), ex);

@@ -16,7 +16,9 @@ import de.jensd.fx.fontawesome.AwesomeIcon;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.concurrent.Worker;
 import javafx.event.ActionEvent;
@@ -32,6 +34,8 @@ import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import javafx.stage.DirectoryChooser;
@@ -71,9 +75,7 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-import static java.nio.file.StandardOpenOption.CREATE;
-import static java.nio.file.StandardOpenOption.TRUNCATE_EXISTING;
-import static java.nio.file.StandardOpenOption.WRITE;
+import static java.nio.file.StandardOpenOption.*;
 
 
 @Controller
@@ -83,29 +85,34 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
 
     public TabPane tabPane;
     public WebView previewView;
-    public MenuItem openItem;
-    public MenuItem newItem;
-    public MenuItem saveItem;
     public SplitPane splitPane;
+    public SplitPane splitPaneVertical;
     public Menu recentMenu;
     public TreeView<Item> treeView;
-    public Button splitHideButton;
-    public Button WorkingDirButton;
+    public Label splitHideButton;
+    public Label WorkingDirButton;
 
-    public MenuBar menubar;
+    public MenuBar recentFilesBar;
     public HBox windowHBox;
-    public ProgressIndicator indikator;
+    public ProgressBar indikator;
     public Hyperlink lastConvertedFileLink;
+    public ListView<String> recentListView;
+    public MenuItem openFileTreeItem;
+    public MenuItem openFileListItem;
+    public MenuItem copyPathTreeItem;
+    public MenuItem copyPathListItem;
+    public MenuItem copyTreeItem;
+    public MenuItem copyListItem;
 
     private Supplier<String> workindDirectorySupplier = () -> {
 
-        DirectoryChooser directoryChooser=new DirectoryChooser();
+        DirectoryChooser directoryChooser = new DirectoryChooser();
         directoryChooser.setTitle("Select working directory");
         File file = directoryChooser.showDialog(null);
 
         workingDirectory = Optional.ofNullable(file.toPath().toString());
 
-        this.workingDirectory.ifPresent(path->{
+        this.workingDirectory.ifPresent(path -> {
             this.fileBrowser.browse(treeView, this, path);
         });
 
@@ -114,6 +121,9 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
 
     @Autowired
     private TablePopupController tablePopupController;
+
+    @Autowired
+    private PathResolverService pathResolver;
 
     @Autowired
     private RenderService renderService;
@@ -160,7 +170,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
 
     private Clipboard clipboard = Clipboard.getSystemClipboard();
     private Optional<Path> initialDirectory = Optional.empty();
-    private Set<Path> recentFiles = new HashSet<>();
+    private ObservableList<String> recentFiles = FXCollections.observableArrayList();
 
     private AnchorPane configAnchor;
     private Stage configStage;
@@ -175,12 +185,11 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
     private Path configPath;
     private Config config;
     private Optional<String> workingDirectory;
-    private Optional<Path> lastConvertedFile = Optional.empty();
 
-    List<String> bookNames =Arrays.asList("book.asc", "book.txt", "book.asciidoc", "book.adoc", "book.ad");
+    List<String> bookNames = Arrays.asList("book.asc", "book.txt", "book.asciidoc", "book.adoc", "book.ad");
 
     @FXML
-    private void createTable(ActionEvent event) throws IOException {
+    private void createTable(Event event) {
         tableStage.show();
     }
 
@@ -237,14 +246,6 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
         Path currentPath = Paths.get(workingDirectory.orElseGet(workindDirectorySupplier));
 //        Path currentPath = initialDirectory.map(path -> Files.isDirectory(path) ? path : path.getParent()).get();
         docBookController.generateDocbook(previewEngine, currentPath, true);
-
-    }
-
-    @FXML
-    private void openLastConvertedFile(ActionEvent event) {
-        lastConvertedFile.ifPresent(path -> {
-            getHostServices().showDocument(path.toUri().toString());
-        });
 
     }
 
@@ -363,22 +364,30 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
         loadConfigurations();
         loadRecentFileList();
 
+        recentListView.setItems(recentFiles);
+        recentFiles.addListener((ListChangeListener<String>) c -> {
+            recentListView.visibleProperty().setValue(c.getList().size() > 0);
+            recentListView.getSelectionModel().selectFirst();
+        });
+
+        recentListView.setOnMouseClicked(event -> {
+            if (event.getClickCount() > 1) {
+                openRecentListFile(event);
+            }
+        });
 
         tomcatPort = server.getEmbeddedServletContainer().getPort();
 
         lastRendered.addListener((observableValue, old, nev) -> {
-          runSingleTaskLater(task->{
-              sessionList.stream().filter(e -> e.isOpen()).forEach(e -> {
-                  try {
-                      e.sendMessage(new TextMessage(nev));
-                  } catch (IOException ex) {
-                      ex.printStackTrace();
-                  }
-              });
-          });
-//            Platform.runLater(() -> {
-//                previewEngine.executeScript(String.format("refreshUI('%s')", IOHelper.normalize(nev)));
-//            });
+            runSingleTaskLater(task -> {
+                sessionList.stream().filter(e -> e.isOpen()).forEach(e -> {
+                    try {
+                        e.sendMessage(new TextMessage(nev));
+                    } catch (IOException ex) {
+                        ex.printStackTrace();
+                    }
+                });
+            });
         });
 
 
@@ -407,73 +416,40 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
 
         //
 
-        AwesomeDude.setIcon(WorkingDirButton, AwesomeIcon.FOLDER_ALT);
-        AwesomeDude.setIcon(splitHideButton, AwesomeIcon.CHEVRON_LEFT);
-
-        //
-
-        menubar.setOnMouseClicked(event -> {
-            if (event.getClickCount() > 1)
-                maximize(event);
-        });
-
-        menubar.setOnMousePressed(event -> {
-            sceneXOffset = event.getSceneX();
-            sceneYOffset = event.getSceneY();
-        });
-        menubar.setOnMouseDragged(event -> {
-
-            double maxWidth = Screen.getPrimary().getVisualBounds().getWidth();
-            double maxHeight = Screen.getPrimary().getVisualBounds().getHeight();
-            double currentWidth = getStage().getWidth();
-            double currentXPosition = getStage().getX();
-
-
-            double kose = (getStage().getX() + event.getSceneX()) - maxWidth;
-
-            // Sag tarafa yaslan
-            if (kose >= -2 && kose <= 2 && ((100 * event.getSceneX()) / currentWidth) > 50) {
-                getStage().setHeight(maxHeight);
-                getStage().setY(0);
-                getStage().setX(maxWidth - currentWidth);
-            }
-            // Sol tarafa yaslan
-            else if ((getStage().getX() + event.getSceneX()) <= 2
-                    && (getStage().getX() + event.getSceneX()) >= -2
-                    && ((100 * event.getSceneX()) / currentWidth) < 50) {
-                getStage().setHeight(maxHeight);
-                getStage().setY(0);
-                getStage().setX(0);
-            }
-            // Dolan
-            else {
-                getStage().setX(event.getScreenX() - sceneXOffset);
-                getStage().setY(event.getScreenY() - sceneYOffset);
-            }
-
-        });
-
-        //
-
-
-        indikator.visibleProperty().addListener((observable, oldValue, newValue) -> {
-            lastConvertedFile.ifPresent(path -> {
-                lastConvertedFileLink.setVisible(!newValue);
-            });
-        });
+        AwesomeDude.setIcon(WorkingDirButton, AwesomeIcon.FOLDER_ALT, "14.0");
+        AwesomeDude.setIcon(splitHideButton, AwesomeIcon.CHEVRON_LEFT, "14.0");
 
         tabPane.getTabs().addListener((ListChangeListener<Tab>) c -> {
             if (tabPane.getTabs().isEmpty())
                 runActionLater(this::newDoc);
         });
 
+        openFileTreeItem.setOnAction(event -> {
+            Path path = getSelectedTabPath();
+            if (!Files.isDirectory(path))
+                this.addTab(path);
+        });
 
-        ContextMenu contextMenu = new ContextMenu();
-        MenuItem openFileItem = new MenuItem("Open");
-        MenuItem copyPathItem = new MenuItem("Copy Path");
-        MenuItem copyItem = new MenuItem("Copy");
+        openFileListItem.setOnAction(this::openRecentListFile);
 
-        contextMenu.getItems().addAll(openFileItem, copyPathItem, copyItem);
+        copyPathTreeItem.setOnAction(event -> {
+            Path path = getSelectedTabPath();
+            this.cutCopy(path.toString());
+        });
+
+        copyPathListItem.setOnAction(event -> {
+            this.cutCopy(recentListView.getSelectionModel().getSelectedItem());
+        });
+
+        copyTreeItem.setOnAction(event -> {
+            Path path = getSelectedTabPath();
+            this.copyFile(path);
+        });
+
+        copyListItem.setOnAction(event -> {
+            Path path = Paths.get(recentListView.getSelectionModel().getSelectedItem());
+            this.copyFile(path);
+        });
 
         treeView.setOnMouseClicked(event -> {
             TreeItem<Item> selectedItem = treeView.getSelectionModel().getSelectedItem();
@@ -485,7 +461,11 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
                     try {
                         if (selectedItem.getChildren().size() == 0)
                             Files.newDirectoryStream(selectedPath).forEach(path -> {
-                                selectedItem.getChildren().add(new TreeItem<>(new Item(path)));
+                                if (pathResolver.isHidden(path))
+                                    return;
+
+                                if (Files.isDirectory(path) || pathResolver.isAsciidoc(path))
+                                    selectedItem.getChildren().add(new TreeItem<>(new Item(path)));
                             });
                         selectedItem.setExpanded(!selectedItem.isExpanded());
                     } catch (IOException e) {
@@ -496,28 +476,17 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
                 }
         });
 
-        treeView.contextMenuProperty().setValue(contextMenu);
-
-        openFileItem.setOnAction(event -> {
-            Path path = getSelectedTabPath();
-            if (!Files.isDirectory(path))
-                this.addTab(path);
-
-        });
-
-        copyPathItem.setOnAction(event -> {
-            Path path = getSelectedTabPath();
-            this.cutCopy(path.toString());
-        });
-
-        copyItem.setOnAction(event -> {
-
-            Path path = getSelectedTabPath();
-            this.copyFile(path);
-        });
-
         runActionLater(this::newDoc);
 
+    }
+
+    private void openRecentListFile(Event event) {
+        Path path = Paths.get(recentListView.getSelectionModel().getSelectedItem());
+
+        if (pathResolver.isAsciidoc(path))
+            addTab(path);
+        else
+            getHostServices().showDocument(path.toUri().toString());
     }
 
     private Path getSelectedTabPath() {
@@ -546,7 +515,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
 
         if (!config.getDirectoryPanel())
             Platform.runLater(() -> {
-                splitPane.setDividerPositions(0, 0.5);
+                splitPane.setDividerPositions(0, 0.55);
             });
 
     }
@@ -559,10 +528,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
             yamlReader.getConfig().setClassTag("RecentFiles", RecentFiles.class);
             RecentFiles readed = yamlReader.read(RecentFiles.class);
 
-            readed.getFiles()
-                    .stream()
-                    .map(path -> Paths.get(path))
-                    .forEach(recentFiles::add);
+            recentFiles.addAll(readed.getFiles());
         } catch (YamlException e) {
             e.printStackTrace();
         } catch (FileNotFoundException e) {
@@ -576,7 +542,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
     }
 
     @FXML
-    public void changeWorkingDir(ActionEvent actionEvent) {
+    public void changeWorkingDir(Event actionEvent) {
         DirectoryChooser directoryChooser = new DirectoryChooser();
         initialDirectory.ifPresent(path -> {
             if (Files.isDirectory(path))
@@ -604,19 +570,12 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
     }
 
     @FXML
-    private void closeApp(ActionEvent event) throws IOException {
-
-        List<String> fileList = recentFiles
-                .stream()
-                .collect(Collectors.toList())
-                .stream()
-                .map(path -> path.toString())
-                .collect(Collectors.toList());
+    public void closeApp(ActionEvent event) throws IOException {
 
         File recentFileYml = configPath.resolve("recentFiles.yml").toFile();
         YamlWriter yamlWriter = new YamlWriter(new FileWriter(recentFileYml));
         yamlWriter.getConfig().setClassTag("RecentFiles", RecentFiles.class);
-        yamlWriter.write(new RecentFiles(fileList));
+        yamlWriter.write(new RecentFiles(recentFiles));
         yamlWriter.close();
 
         //
@@ -627,15 +586,12 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
         yamlWriter.write(config);
         yamlWriter.close();
 
-        Platform.exit();
-        System.exit(0);
-
     }
 
     @FXML
-    private void openDoc(ActionEvent event) {
+    private void openDoc(Event event) {
         FileChooser fileChooser = new FileChooser();
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Asciidoc","*.asc", "*.asciidoc", "*.adoc", "*.ad", "*.txt"));
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Asciidoc", "*.asc", "*.asciidoc", "*.adoc", "*.ad", "*.txt"));
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("All", "*.*"));
         initialDirectory.ifPresent(e -> {
             if (Files.isDirectory(e))
@@ -647,14 +603,16 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
         if (chosenFiles != null) {
             initialDirectory = Optional.of(chosenFiles.get(0).toPath());
             chosenFiles.stream().map(e -> e.toPath()).forEach(this::addTab);
-            recentFiles.addAll(chosenFiles.stream().map(e -> e.toPath()).collect(Collectors.toList()));
+            chosenFiles.stream()
+                    .map(File::toString).filter(file -> !recentFiles.contains(file))
+                    .forEach(recentFiles::addAll);
         }
 
     }
 
     @FXML
     private void recentFileList(Event event) {
-        List<MenuItem> menuItems = recentFiles.stream().filter(path -> !Files.isDirectory(path)).map(path -> {
+        List<MenuItem> menuItems = recentFiles.stream().map(path -> Paths.get(path)).filter(path -> !Files.isDirectory(path)).map(path -> {
             MenuItem menuItem = new MenuItem();
             menuItem.setText(path.toAbsolutePath().toString());
             menuItem.setOnAction(actionEvent -> {
@@ -669,12 +627,13 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
     }
 
     @FXML
-    public void newDoc(ActionEvent event) {
+    public void newDoc(Event event) {
 
         WebView webView = createWebView();
         AnchorPane anchorPane = new AnchorPane();
-        anchorPane.getChildren().add(webView);
-        fitToParent(webView);
+        Node editorVBox = createEditorVBox(webView);
+        fitToParent(editorVBox);
+        anchorPane.getChildren().add(editorVBox);
         Tab tab = createTab();
         tab.setContent(anchorPane);
         tab.selectedProperty().addListener((observableValue, before, after) -> {
@@ -693,6 +652,91 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
 
     }
 
+    private Node createEditorVBox(WebView webView) {
+        MenuBar menuBar = new MenuBar();
+        menuBar.getStyleClass().add("editorToolsBar");
+        String iconSize = "14.0";
+
+        Label saveLabel = AwesomeDude.createIconLabel(AwesomeIcon.SAVE, iconSize);
+        Label newLabel = AwesomeDude.createIconLabel(AwesomeIcon.FILE_TEXT_ALT, iconSize);
+        Label openLabel = AwesomeDude.createIconLabel(AwesomeIcon.FOLDER_ALTPEN_ALT, iconSize);
+        Label boldLabel = AwesomeDude.createIconLabel(AwesomeIcon.BOLD, iconSize);
+        Label italicLabel = AwesomeDude.createIconLabel(AwesomeIcon.ITALIC, iconSize);
+        Label headerLabel = AwesomeDude.createIconLabel(AwesomeIcon.HEADER, iconSize);
+        Label codeLabel = AwesomeDude.createIconLabel(AwesomeIcon.CODE, iconSize);
+        Label ulListLabel = AwesomeDude.createIconLabel(AwesomeIcon.LIST_UL, iconSize);
+        Label olListLabel = AwesomeDude.createIconLabel(AwesomeIcon.LIST_ALTL, iconSize);
+        Label tableLabel = AwesomeDude.createIconLabel(AwesomeIcon.TABLE, iconSize);
+        Label imageLabel = AwesomeDude.createIconLabel(AwesomeIcon.IMAGE, iconSize);
+        Label subscriptLabel = AwesomeDude.createIconLabel(AwesomeIcon.SUBSCRIPT, iconSize);
+        Label superScriptLabel = AwesomeDude.createIconLabel(AwesomeIcon.SUPERSCRIPT, iconSize);
+
+
+        // Events
+        newLabel.setOnMouseClicked(this::newDoc);
+        openLabel.setOnMouseClicked(this::openDoc);
+        saveLabel.setOnMouseClicked(this::saveDoc);
+        boldLabel.setOnMouseClicked(event -> {
+            current.currentEngine().executeScript("boldText()");
+        });
+        italicLabel.setOnMouseClicked(event -> {
+            current.currentEngine().executeScript("italicizeText()");
+        });
+
+        codeLabel.setOnMouseClicked(event -> {
+            current.currentEngine().executeScript("addSourceCode()");
+        });
+
+        tableLabel.setOnMouseClicked(this::createTable);
+
+        subscriptLabel.setOnMouseClicked(event -> {
+            current.currentEngine().executeScript("subScript()");
+        });
+
+        superScriptLabel.setOnMouseClicked(event -> {
+            current.currentEngine().executeScript("superScript()");
+        });
+
+        imageLabel.setOnMouseClicked(event -> {
+            current.currentEngine().executeScript("addImageSection()");
+        });
+
+        headerLabel.setOnMouseClicked(event -> {
+            current.currentEngine().executeScript("addHeading()");
+        });
+
+        ulListLabel.setOnMouseClicked(event -> {
+            current.currentEngine().executeScript("addUlList()");
+        });
+
+        olListLabel.setOnMouseClicked(event -> {
+            current.currentEngine().executeScript("addOlList()");
+        });
+
+        menuBar.getMenus().addAll(
+                new Menu("", newLabel),
+                new Menu("", openLabel),
+                new Menu("", saveLabel),
+                new Menu("", boldLabel),
+                new Menu("", italicLabel),
+                new Menu("", headerLabel),
+                new Menu("", codeLabel),
+                new Menu("", ulListLabel),
+                new Menu("", olListLabel),
+                new Menu("", tableLabel),
+                new Menu("", imageLabel),
+                new Menu("", subscriptLabel),
+                new Menu("", superScriptLabel));
+
+        ScrollPane scrollPane = new ScrollPane();
+        scrollPane.setContent(webView);
+        scrollPane.setFitToHeight(true);
+        scrollPane.setFitToWidth(true);
+        VBox.setVgrow(scrollPane, Priority.ALWAYS);
+
+        return new VBox(menuBar, scrollPane);
+    }
+
     public void addTab(Path path) {
 
         AnchorPane anchorPane = new AnchorPane();
@@ -704,9 +748,10 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
             }
         });
 
-        anchorPane.getChildren().add(webView);
+        Node editorVBox = createEditorVBox(webView);
+        fitToParent(editorVBox);
 
-        fitToParent(webView);
+        anchorPane.getChildren().add(editorVBox);
 
         Tab tab = createTab();
         ((Label) tab.getGraphic()).setText(path.getFileName().toString());
@@ -725,13 +770,14 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
         Tab lastTab = tabPane.getTabs().get(tabPane.getTabs().size() - 1);
         tabPane.getSelectionModel().select(lastTab);
 
-        recentFiles.add(path);
+        recentFiles.remove(path.toString());
+        recentFiles.add(0, path.toString());
 
     }
 
     @FXML
-    public void hideLeftSplit(ActionEvent event) {
-        splitPane.setDividerPositions(0, 0.5);
+    public void hideLeftSplit(Event event) {
+        splitPane.setDividerPositions(0, 0.55);
     }
 
     private Tab createTab() {
@@ -761,11 +807,13 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
         Label label = new Label();
 
         label.setOnMouseClicked(mouseEvent -> {
+
             if (mouseEvent.getClickCount() > 1) {
                 if (splitPane.getDividerPositions()[0] > 0.1)
                     splitPane.setDividerPositions(0, 1);
                 else
-                    splitPane.setDividerPositions(0.1610294117647059, 0.5823529411764706);
+                    splitPane.setDividerPositions(0.18, 0.60);
+
             }
         });
 
@@ -874,7 +922,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
 
     public void textListener(String text) {
 
-        runActionLater(run->{
+        runActionLater(run -> {
             String rendered = renderService.convertBasicHtml(previewEngine, text);
 
             runSingleTaskLater(task -> {
@@ -886,13 +934,12 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
 
     }
 
-    public void htmlOnePage(){
+    public void htmlOnePage() {
 
-        if(bookNames.contains(current.getCurrentTabText())){
+        if (bookNames.contains(current.getCurrentTabText())) {
             generateHtml(null);
             return;
         }
-
 
         Path currentPath = Paths.get(workingDirectory.orElseGet(workindDirectorySupplier));
 
@@ -906,7 +953,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
 
             Path path = currentPath.resolve(tabText.concat(".html"));
             IOHelper.writeToFile(path, html, CREATE, TRUNCATE_EXISTING, WRITE);
-            setLastConvertedFile(Optional.of(path));
+            recentFiles.add(0, path.toString());
 
             indikatorService.hideIndikator();
 
@@ -920,19 +967,19 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
         clipboard.setContent(clipboardContent);
     }
 
-    public void pdfOnePage(){
+    public void pdfOnePage() {
 
-        if(bookNames.contains(current.getCurrentTabText())){
+        if (bookNames.contains(current.getCurrentTabText())) {
             generatePdf(null);
             return;
         }
 
         Path currentPath = Paths.get(workingDirectory.orElseGet(workindDirectorySupplier));
 
-        String docbook = docBookController.generateDocbookArticle(previewEngine,currentPath);
+        String docbook = docBookController.generateDocbookArticle(previewEngine, currentPath);
 
-        runTaskLater(task->{
-            fopServiceRunner.generateArticle(currentPath,configPath,docbook);
+        runTaskLater(task -> {
+            fopServiceRunner.generateArticle(currentPath, configPath, docbook);
         });
 
     }
@@ -948,22 +995,27 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
         return clipboard.getString();
     }
 
-    @FXML
     public void saveDoc() {
+        saveDoc(null);
+    }
+
+    @FXML
+    public void saveDoc(Event actionEvent) {
         Path currentPath = current.currentPath();
         if (currentPath == null) {
             FileChooser chooser = new FileChooser();
-            workingDirectory.ifPresent(path->{
+            workingDirectory.ifPresent(path -> {
                 chooser.setInitialDirectory(Paths.get(path).toFile());
             });
-            chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Asciidoc","*.asc", "*.asciidoc", "*.adoc", "*.ad", "*.txt"));
+            chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Asciidoc", "*.asc", "*.asciidoc", "*.adoc", "*.ad", "*.txt"));
             File file = chooser.showSaveDialog(null);
             if (file == null)
                 return;
             IOHelper.writeToFile(file, (String) current.currentEngine().executeScript("editor.getValue();"), TRUNCATE_EXISTING, CREATE);
             current.putTab(current.getCurrentTab(), file.toPath(), current.currentView());
             current.setCurrentTabText(file.toPath().getFileName().toString());
-            recentFiles.add(file.toPath());
+            recentFiles.remove(file.toString());
+            recentFiles.add(0, file.toString());
         } else {
             IOHelper.writeToFile(currentPath.toFile(), (String) current.currentEngine().executeScript("editor.getValue();"), TRUNCATE_EXISTING, CREATE);
         }
@@ -1060,14 +1112,6 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
         return config;
     }
 
-    public Optional<Path> getLastConvertedFile() {
-        return lastConvertedFile;
-    }
-
-    public void setLastConvertedFile(Optional<Path> lastConvertedFile) {
-        this.lastConvertedFile = lastConvertedFile;
-    }
-
     public TablePopupController getTablePopupController() {
         return tablePopupController;
     }
@@ -1076,4 +1120,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
         return lastRendered;
     }
 
+    public ObservableList<String> getRecentFiles() {
+        return recentFiles;
+    }
 }

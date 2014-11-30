@@ -72,40 +72,90 @@ editor.commands.addCommand({
     readOnly: true
 });
 
-function formatText(editor,matcher,character){
+function formatText(editor, matcher, character) {
     var range = editor.getSelectionRange();
     var text = editor.session.getTextRange(range);
 
-    if(matcher(text)){
-        text = text.substring(1,text.length -1);
+    if (matcher(text)) {
+        text = text.substring(1, text.length - 1);
         editor.session.replace(range, text);
     }
     else {
         var virtualRange = editor.getSelectionRange();
-        virtualRange.setStart(range.start.row,range.start.column - 1);
-        virtualRange.setEnd(range.end.row,range.end.column + 1);
+        virtualRange.setStart(range.start.row, range.start.column - 1);
+        virtualRange.setEnd(range.end.row, range.end.column + 1);
 
         var virtual_text = editor.session.getTextRange(virtualRange);
-        if(matcher(virtual_text)){
+        if (matcher(virtual_text)) {
             editor.session.replace(virtualRange, text);
         }
-        else{
+        else {
             editor.session.replace(range, character + text + character);
-            if(range.end.column == range.start.column){
+            if (range.end.column == range.start.column) {
                 editor.navigateTo(range.end.row, range.end.column + 1);
             }
         }
     }
 }
 
+function boldText() {
+    formatText(editor, matchBoldText, "*");
+}
+
+function italicizeText() {
+    formatText(editor, matchItalicizedText, "_");
+}
+
+function superScript() {
+    formatText(editor, matchSuperScriptText, "^");
+}
+
+function subScript() {
+    formatText(editor, matchSubScriptText, "~");
+}
+
+function addSourceCode() {
+    var range = editor.getSelectionRange();
+    editor.removeToLineStart();
+
+    editor.insert("[source,java]\n----\n\n----");
+
+
+    editor.gotoLine(range.end.row + 3, 0, true);
+}
+
+function addImageSection() {
+    editor.removeToLineStart();
+    editor.insert("image::images/image.png[]");
+}
+
+function addHeading() {
+    var cursorPosition = editor.getCursorPosition();
+    cursorPosition.column = 0;
+    var session = editor.getSession();
+    var line = session.getLine(cursorPosition.row);
+    var first = line[0] || "";
+    session.insert(cursorPosition, (first == "=") ? "=" : "= ");
+}
+
+function addOlList(){
+    var cursorPosition = editor.getCursorPosition();
+    cursorPosition.column = 0;
+    var session = editor.getSession();
+    session.insert(cursorPosition,"1. ");
+}
+
+function addUlList(){
+    var cursorPosition = editor.getCursorPosition();
+    cursorPosition.column = 0;
+    var session = editor.getSession();
+    session.insert(cursorPosition,"* ");
+}
+
 editor.commands.addCommand({
     name: 'bold-selected',
     bindKey: {win: 'Ctrl-B', mac: 'Command-B'},
-    exec: function (editor) {
-
-        formatText(editor,matchBoldText,"*");
-
-    },
+    exec: boldText,
     readOnly: true
 });
 
@@ -114,7 +164,7 @@ editor.commands.addCommand({
     bindKey: {win: 'Ctrl-Shift-C', mac: 'Command-Shift-C'},
     exec: function (editor) {
 
-        formatText(editor,matchCode,"`");
+        formatText(editor, matchCode, "`");
     },
     readOnly: true
 });
@@ -125,10 +175,7 @@ editor.commands.addCommand({
         win: 'Ctrl-i|Ctrl-İ|Ctrl-ı|Ctrl-I',
         mac: 'Command-i|Command-İ|Command-ı|Command-I'
     },
-    exec: function (editor) {
-        formatText(editor,matchItalicizedText,"_");
-
-    },
+    exec: italicizeText,
     readOnly: true
 });
 
@@ -151,8 +198,7 @@ editor.commands.addCommand({
 
         // img tab
         if (textRange == "img") {
-            editor.removeToLineStart();
-            editor.insert("image::images/image.png[]");
+            addImageSection();
             return;
         }
 
@@ -167,11 +213,7 @@ editor.commands.addCommand({
 
         // src tab
         if (textRange == "src") { // source generator
-            editor.removeToLineStart();
-
-            editor.insert("[source,java]\n----\n\n----");
-
-            editor.gotoLine(range.end.row + 3, 0, true);
+            addSourceCode();
             return;
         }
         // src,ruby or src.ruby tab
@@ -210,14 +252,22 @@ editor.commands.addCommand({
     readOnly: true
 });
 
-function matchBoldText(text){
+function matchBoldText(text) {
     return text.match(/\*.*\*/g);
-} 
+}
 
-function matchItalicizedText(text){
+function matchItalicizedText(text) {
     return text.match(/\_.*\_/g);
 }
 
-function matchCode(text){
+function matchSuperScriptText(text) {
+    return text.match(/\^.*\^/g);
+}
+
+function matchSubScriptText(text) {
+    return text.match(/\~.*\~/g);
+}
+
+function matchCode(text) {
     return text.match(/\`.*\`/g);
 }

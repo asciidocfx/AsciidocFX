@@ -37,21 +37,6 @@ public class Config {
         this.fontFamily = fontFamily;
     }
 
-    public static void main(String[] args) throws IOException {
-        YamlWriter writer = new YamlWriter(new FileWriter("C:\\Users\\usta\\Dropbox\\AsciidocFX\\conf\\config.yml"));
-        writer.getConfig().setClassTag("Config", Config.class);
-        Config config = new Config();
-        config.setTheme("ace/theme/ace");
-        config.setFontSize("14px");
-        config.setDirectoryPanel(true);
-        config.setRecentFileListSize(10);
-        config.setScrollSpeed("0.1");
-        config.setFontFamily("monospace");
-        config.setWorkingDirectory(null);
-        writer.write(config);
-        writer.close();
-    }
-
     public void setDirectoryPanel(boolean directoryPanel) {
         this.directoryPanel = directoryPanel;
     }

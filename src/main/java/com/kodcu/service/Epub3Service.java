@@ -3,6 +3,7 @@ package com.kodcu.service;
 import com.icl.saxon.TransformerFactoryImpl;
 import com.kodcu.controller.AsciiDocController;
 import com.kodcu.other.IOHelper;
+import javafx.application.Platform;
 import org.apache.commons.io.FileUtils;
 import org.joox.Match;
 import org.slf4j.Logger;
@@ -86,7 +87,11 @@ public class Epub3Service {
             Files.move(epubOut, currentPath.resolve("book.epub"), StandardCopyOption.REPLACE_EXISTING);
 
             indikatorService.completeCycle();
-            asciiDocController.setLastConvertedFile(Optional.of(currentPath.resolve("book.epub")));
+
+            Platform.runLater(() -> {
+                asciiDocController.getRecentFiles().add(0,currentPath.resolve("book.epub").toString());
+            });
+
 
         } catch (Exception ex) {
             logger.error(ex.getMessage(),ex);

@@ -3,18 +3,13 @@ package com.kodcu.service;
 import com.kodcu.controller.AsciiDocController;
 import com.kodcu.other.Item;
 import javafx.application.Platform;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-import javafx.scene.control.*;
-import javafx.scene.input.MouseButton;
-import javafx.scene.input.MouseEvent;
-import javafx.util.Callback;
+import javafx.scene.control.TreeItem;
+import javafx.scene.control.TreeView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.nio.file.*;
-import java.util.Objects;
 
 /**
  * Created by usta on 12.07.2014.
@@ -23,12 +18,14 @@ import java.util.Objects;
 public class FileBrowseService {
 
     @Autowired
-    AsciiDocController asciiDocController;
+    private AsciiDocController asciiDocController;
+
+    @Autowired
+    private PathResolverService pathResolver;
 
     private TreeItem<Item> rootItem;
-    private PathMatcher matcher = FileSystems.getDefault().getPathMatcher("glob:**.{asciidoc,adoc,asc,ad,txt}");
 
-    public void browse(TreeView<Item> treeView, AsciiDocController controller, String browserPath)   {
+    public void browse(TreeView<Item> treeView, AsciiDocController controller, String browserPath) {
 
         Platform.runLater(() -> {
 
@@ -53,9 +50,10 @@ public class FileBrowseService {
 
     private void addToTreeView(Path path) {
 
-        if (Files.isDirectory(path) && !path.getFileName().toString().startsWith("."))
-            rootItem.getChildren().add(new TreeItem<>(new Item(path)));
-        else if (matcher.matches(path))
+        if (pathResolver.isHidden(path))
+            return;
+
+        if (Files.isDirectory(path) || pathResolver.isAsciidoc(path))
             rootItem.getChildren().add(new TreeItem<>(new Item(path)));
 
     }

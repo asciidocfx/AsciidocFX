@@ -9,12 +9,13 @@ function convertBasicHtml(content) {
 }
 
 function convertHtmlBook(content) {
-    var hash2 = Opal.hash2(['attributes', 'header_footer'],
-        {
-            'attributes': ['backend=html5', 'doctype=book'],
-            'header_footer': true
-        });
-    var rendered = Opal.Asciidoctor.$render(content, hash2);
+    var options = Opal.hash2(['backend', 'safe', 'attributes',"header_footer"], {
+        backend: 'html5',
+        safe: 'safeMode',
+        attributes: 'showtitle icons=font@ source-highlighter=highlight.js platform=opal platform-opal env=browser env-browser'
+    , 'header_footer': true
+    });
+    var rendered = Opal.Asciidoctor.$render(content, options);
 
     return rendered;
 }

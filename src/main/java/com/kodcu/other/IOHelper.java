@@ -34,7 +34,6 @@ public class IOHelper {
         content = content.replace("'", "\\'");
         content = content.replace("\\\\'", "\\'");
         content = content.replace("\r\n", "\\r\\n");
-        content = content.replace("\n\r", "\\n\\r");
         content = content.replace("\n", "\\n");
         content = content.replace("\r", "\\r");
         return content;

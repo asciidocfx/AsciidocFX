@@ -2,6 +2,7 @@ package com.kodcu.service;
 
 import com.kodcu.controller.AsciiDocController;
 import com.kodcu.other.IOHelper;
+import javafx.application.Platform;
 import javafx.scene.web.WebEngine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -82,7 +83,9 @@ public class Html5BookService {
 
             IOHelper.writeToFile(currentPath.resolve("book.html"), htmlContent, CREATE, TRUNCATE_EXISTING);
 
-            asciiDocController.setLastConvertedFile(Optional.of(currentPath.resolve("book.html")));
+            Platform.runLater(() -> {
+                asciiDocController.getRecentFiles().add(0, currentPath.resolve("book.html").toString());
+            });
 
             indikatorService.completeCycle();
 

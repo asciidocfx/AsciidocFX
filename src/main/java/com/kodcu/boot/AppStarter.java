@@ -2,7 +2,6 @@ package com.kodcu.boot;
 
 
 import com.kodcu.controller.AsciiDocController;
-import com.kodcu.fxdecorate.FxDecorateScene;
 import com.sun.deploy.uitoolkit.impl.fx.HostServicesFactory;
 import com.sun.javafx.application.HostServicesDelegate;
 import javafx.application.Application;
@@ -31,9 +30,17 @@ public class AppStarter extends Application {
     private ConfigurableApplicationContext context;
 
     @Override
-    public void start(Stage stage) throws Exception {
+    public void start(Stage stage)   {
 
-        stage.initStyle(StageStyle.TRANSPARENT);
+        try {
+            startApp(stage);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    private void startApp(Stage stage) throws Exception{
 
         FXMLLoader parentLoader = new FXMLLoader();
         FXMLLoader tablePopupLoader = new FXMLLoader();
@@ -48,17 +55,16 @@ public class AppStarter extends Application {
         HostServicesDelegate hostServices = HostServicesFactory.getInstance(this);
         controller.setHostServices(hostServices);
 
-        Scene scene = new FxDecorateScene(root, stage);
+        Scene scene = new Scene(root);
 
         scene.getStylesheets().add("/styles/Styles.css");
-        scene.getStylesheets().add("/styles/Undecorator.css");
         Rectangle2D bounds = Screen.getPrimary().getVisualBounds();
         stage.setWidth(bounds.getWidth());
         stage.setHeight(bounds.getHeight());
         stage.setX(0);
         stage.setY(0);
         stage.setTitle("AsciidocFX");
-        stage.getIcons().add(new Image(getClass().getResourceAsStream("/public/favicon.ico")));
+        stage.getIcons().add(new Image(getClass().getResourceAsStream("/logo.png")));
 
         Stage tableStage = new Stage();
         tableStage.setScene(new Scene(tableAnchor));
@@ -76,13 +82,13 @@ public class AppStarter extends Application {
 
         scene.getAccelerators().put(new KeyCodeCombination(KeyCode.S, CONTROL_DOWN), controller::saveDoc);
         scene.getAccelerators().put(new KeyCodeCombination(KeyCode.N,CONTROL_DOWN), () -> {
-                controller.newDoc(null);
+            controller.newDoc(null);
         });
-
     }
 
     @Override
     public void stop() throws Exception {
+        controller.closeApp(null);
         context.registerShutdownHook();
         Platform.exit();
         System.exit(0);

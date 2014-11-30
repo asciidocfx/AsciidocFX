@@ -1,6 +1,7 @@
 package com.kodcu.service;
 
 import com.kodcu.controller.AsciiDocController;
+import javafx.application.Platform;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,7 +10,6 @@ import org.zeroturnaround.exec.ProcessExecutor;
 
 import java.io.File;
 import java.nio.file.Path;
-import java.util.Optional;
 
 /**
  * Created by usta on 02.09.2014.
@@ -25,7 +25,7 @@ public class KindleMobiService {
     @Autowired
     private IndikatorService indikatorService;
 
-    public void produceMobi(Path currentPath,String kindlegenDir) {
+    public void produceMobi(Path currentPath, String kindlegenDir) {
 
         try {
             indikatorService.startCycle();
@@ -38,7 +38,11 @@ public class KindleMobiService {
                     .outputUTF8();
             logger.debug(message);
             indikatorService.completeCycle();
-            asciiDocController.setLastConvertedFile(Optional.of(currentPath.resolve("book.mobi")));
+
+            Platform.runLater(() -> {
+                asciiDocController.getRecentFiles().add(0, currentPath.resolve("book.mobi").toString());
+            });
+
         } catch (Exception e) {
             e.printStackTrace();
             logger.error(e.getMessage(), e);

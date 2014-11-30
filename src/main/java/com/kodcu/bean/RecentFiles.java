@@ -34,35 +34,5 @@ public class RecentFiles {
         this.files = files;
     }
 
-    public static void main(String[] args) throws IOException {
 
-
-//       writeYaml();
-       readYaml();
-    }
-
-    private static void readYaml() throws FileNotFoundException, YamlException {
-
-        YamlReader yamlReader =
-                new YamlReader(new FileReader("C:\\Users\\usta\\Dropbox\\AsciidocFX\\conf\\recentFiles.yml"));
-        yamlReader.getConfig().setClassTag("RecentFiles", RecentFiles.class);
-        RecentFiles readed=yamlReader.read(RecentFiles.class);
-        readed=readed;
-    }
-
-    private static void writeYaml() throws IOException {
-        YamlWriter writer = new YamlWriter(new FileWriter("C:\\Users\\usta\\Dropbox\\AsciidocFX\\conf\\recentFiles.yml"));
-        writer.getConfig().setClassTag("Recent Files", RecentFiles.class);
-
-
-        RecentFiles recentFiles=new RecentFiles();
-
-        recentFiles.getFiles().add("01-chap.asc");
-        recentFiles.getFiles().add("02-chap.asc");
-        recentFiles.getFiles().add("03-chap.asc");
-        recentFiles.getFiles().add("05-chap.asc");
-
-        writer.write(recentFiles);
-        writer.close();
-    }
 }
