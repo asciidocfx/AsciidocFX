@@ -260,17 +260,16 @@ function mouseWheelHandler(event) {
     event = window.event;
 
     if(event.ctrlKey && editor.getValue().length){
-        var divEditor = document.getElementById('editor');
-        var editorStyle = window.getComputedStyle(divEditor, null).getPropertyValue("font-size");
-        var fontSize = parseInt(editorStyle); 
+
+        var fontSize = parseInt(editor.getFontSize());
 
         if(event.wheelDelta < 0 && fontSize > 8){
             //mouse scroll down - min size 8
-            divEditor.style.fontSize = (fontSize - 1) + "px";
+            editor.setFontSize((fontSize - 1) + "px");
         }
         else if(event.wheelDelta >= 0 && fontSize < 24){ 
             //mouse scroll up - max size 24
-            divEditor.style.fontSize = (fontSize + 1) + "px";
+            editor.setFontSize((fontSize + 1) + "px");
         }
     }
 }

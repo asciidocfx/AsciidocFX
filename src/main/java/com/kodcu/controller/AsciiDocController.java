@@ -23,6 +23,7 @@ import javafx.concurrent.Task;
 import javafx.concurrent.Worker;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Rectangle2D;
@@ -32,10 +33,12 @@ import javafx.scene.control.*;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import javafx.stage.DirectoryChooser;
@@ -713,6 +716,8 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
             current.currentEngine().executeScript("addOlList()");
         });
 
+//        ColorPicker colorPicker=new ColorPicker(Color.BLACK);
+
         menuBar.getMenus().addAll(
                 new Menu("", newLabel),
                 new Menu("", openLabel),
@@ -726,7 +731,8 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
                 new Menu("", tableLabel),
                 new Menu("", imageLabel),
                 new Menu("", subscriptLabel),
-                new Menu("", superScriptLabel));
+                new Menu("", superScriptLabel)
+        );
 
         ScrollPane scrollPane = new ScrollPane();
         scrollPane.setContent(webView);
