@@ -1,10 +1,12 @@
 .hljs {
     display: block;
-    padding: .5em;
-    background: #f0f0f0
+    overflow-x: auto;
+    padding: 0.5em;
+    background: #f0f0f0;
+    -webkit-text-size-adjust: none
 }
 
-.hljs, .hljs-subst, .hljs-tag .hljs-title, .lisp .hljs-title, .clojure .hljs-built_in, .nginx .hljs-title {
+.hljs, .hljs-subst, .hljs-tag .hljs-title, .nginx .hljs-title {
     color: black
 }
 
@@ -12,7 +14,7 @@
     color: #800
 }
 
-.smartquote, .hljs-comment, .hljs-annotation, .hljs-template_comment, .diff .hljs-header, .hljs-chunk, .asciidoc .hljs-blockquote, .markdown .hljs-blockquote {
+.smartquote, .hljs-comment, .hljs-annotation, .diff .hljs-header, .hljs-chunk, .asciidoc .hljs-blockquote, .markdown .hljs-blockquote {
     color: #888
 }
 
@@ -21,10 +23,10 @@
 }
 
 .hljs-label, .hljs-javadoc, .ruby .hljs-string, .hljs-decorator, .hljs-filter .hljs-argument, .hljs-localvars, .hljs-array, .hljs-attr_selector, .hljs-important, .hljs-pseudo, .hljs-pi, .haml .hljs-bullet, .hljs-doctype, .hljs-deletion, .hljs-envvar, .hljs-shebang, .apache .hljs-sqbracket, .nginx .hljs-built_in, .tex .hljs-formula, .erlang_repl .hljs-reserved, .hljs-prompt, .asciidoc .hljs-link_label, .markdown .hljs-link_label, .vhdl .hljs-attribute, .clojure .hljs-attribute, .asciidoc .hljs-attribute, .lasso .hljs-attribute, .coffeescript .hljs-property, .hljs-phony {
-    color: #88F
+    color: #88f
 }
 
-.hljs-keyword, .hljs-id, .hljs-title, .hljs-built_in, .css .hljs-tag, .hljs-javadoctag, .hljs-phpdoc, .hljs-yardoctag, .smalltalk .hljs-class, .hljs-winutils, .bash .hljs-variable, .apache .hljs-tag, .go .hljs-typename, .tex .hljs-command, .asciidoc .hljs-strong, .markdown .hljs-strong, .hljs-request, .hljs-status {
+.hljs-keyword, .hljs-id, .hljs-title, .hljs-built_in, .css .hljs-tag, .hljs-javadoctag, .hljs-phpdoc, .hljs-dartdoc, .hljs-yardoctag, .smalltalk .hljs-class, .hljs-winutils, .bash .hljs-variable, .apache .hljs-tag, .hljs-type, .hljs-typename, .tex .hljs-command, .asciidoc .hljs-strong, .markdown .hljs-strong, .hljs-request, .hljs-status {
     font-weight: bold
 }
 
@@ -37,6 +39,5 @@
 }
 
 .coffeescript .javascript, .javascript .xml, .lasso .markup, .tex .hljs-formula, .xml .javascript, .xml .vbscript, .xml .css, .xml .hljs-cdata {
-    opacity: .5
+    opacity: 0.5
 }
-
