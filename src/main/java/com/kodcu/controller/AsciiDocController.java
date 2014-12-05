@@ -23,7 +23,6 @@ import javafx.concurrent.Task;
 import javafx.concurrent.Worker;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Rectangle2D;
@@ -33,18 +32,19 @@ import javafx.scene.control.*;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.MouseButton;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+import net.sourceforge.plantuml.FileFormat;
+import net.sourceforge.plantuml.FileFormatOption;
+import net.sourceforge.plantuml.SourceStringReader;
 import netscape.javascript.JSObject;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
@@ -183,8 +183,6 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
 
     private int tomcatPort = 8080;
     private HostServicesDelegate hostServices;
-    private double sceneXOffset;
-    private double sceneYOffset;
     private Path configPath;
     private Config config;
     private Optional<String> workingDirectory;
@@ -398,10 +396,9 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
         previewEngine.load(String.format("http://localhost:%d/index.html", tomcatPort));
 
         previewEngine.getLoadWorker().stateProperty().addListener((observableValue1, state, state2) -> {
-            if (state2 == Worker.State.SUCCEEDED) {
                 JSObject window = (JSObject) previewEngine.executeScript("window");
+                if (Objects.isNull(window.getMember("app"))) ;
                 window.setMember("app", this);
-            }
         });
 
         previewEngine.getLoadWorker().exceptionProperty().addListener((ov, t, t1) -> {
@@ -837,6 +834,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
 
         WebEngine webEngine = webView.getEngine();
         JSObject window = (JSObject) webEngine.executeScript("window");
+        if (Objects.isNull(window.getMember("app"))) ;
         window.setMember("app", this);
         webEngine.load(String.format("http://localhost:%d/editor.html", tomcatPort));
 
@@ -905,18 +903,46 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
         if (uri.startsWith("/"))
             uri = uri.substring(1);
 
-        if (Objects.nonNull(current.currentPath())) {
-            try {
-                Path imageFile = current.currentParentRoot().resolve(uri);
-                FileInputStream fileInputStream = new FileInputStream(imageFile.toFile());
-                temp = IOUtils.toByteArray(fileInputStream);
-                IOUtils.closeQuietly(fileInputStream);
-            } catch (Exception ex) {
-                logger.debug(ex.getMessage(), ex);
-            }
+        Path imageFile = null;
+        if (Objects.nonNull(current.currentPath()))
+            imageFile = current.currentParentRoot().resolve(uri);
+        else
+            imageFile = workingDirectory.map(Paths::get).get().resolve(uri);
+
+        try {
+            FileInputStream fileInputStream = new FileInputStream(imageFile.toFile());
+            temp = IOUtils.toByteArray(fileInputStream);
+            IOUtils.closeQuietly(fileInputStream);
+        } catch (Exception ex) {
+            logger.debug(ex.getMessage(), ex);
         }
 
+
         return new ResponseEntity<>(temp, HttpStatus.OK);
+    }
+
+    public String plantUml(String uml) throws IOException {
+
+        uml = "@startuml\n" + uml + "\n@enduml";
+
+        SourceStringReader reader = new SourceStringReader(uml);
+        try (ByteArrayOutputStream os = new ByteArrayOutputStream()) {
+
+            String desc = reader.generateImage(os, new FileFormatOption(FileFormat.PNG));
+
+            Path path = Paths.get(workingDirectory.orElseGet(workindDirectorySupplier));
+
+            Files.createDirectories(path.resolve("images"));
+
+            Path umlPath = IOHelper.createTempFile(path.resolve("images"), "uml", ".png");
+
+            IOHelper.writeToFile(umlPath, os.toByteArray());
+
+            String umlRelativePath = Paths.get("images") + "/" + umlPath.getFileName();
+
+            return umlRelativePath;
+        }
+
     }
 
     public void appendWildcard() {
@@ -932,7 +958,6 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
             String rendered = renderService.convertBasicHtml(previewEngine, text);
 
             runSingleTaskLater(task -> {
-//            String rendered = nashornService.renderToHtml(text);
                 if (Objects.nonNull(rendered))
                     lastRendered.setValue(rendered);
             });

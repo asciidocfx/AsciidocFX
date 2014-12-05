@@ -28,7 +28,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>1.1.8.RELEASE</version>
+        <version>1.1.9.RELEASE</version>
     </parent>
 
     <dependencies>
@@ -50,11 +50,6 @@
             <artifactId>spring-boot-starter-logging</artifactId>
         </dependency>
         <dependency>
-            <groupId>commons-configuration</groupId>
-            <artifactId>commons-configuration</artifactId>
-            <version>1.10</version>
-        </dependency>
-        <dependency>
             <groupId>de.jensd</groupId>
             <artifactId>fontawesomefx</artifactId>
             <version>8.0.10</version>
@@ -63,11 +58,6 @@
             <groupId>org.jooq</groupId>
             <artifactId>joox</artifactId>
             <version>1.2.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.jersey.core</groupId>
-            <artifactId>jersey-client</artifactId>
-            <version>2.13</version>
         </dependency>
         <!--PDF Generate with Apache FOP-->
         <dependency>
@@ -110,11 +100,11 @@
             <artifactId>saxon</artifactId>
             <version>${saxon.version}</version>
         </dependency>
-        <dependency>
+    <!--    <dependency>
             <groupId>net.sf.offo</groupId>
             <artifactId>fop-hyph</artifactId>
             <version>2.0</version>
-        </dependency>
+        </dependency>-->
         <dependency>
             <groupId>com.esotericsoftware.yamlbeans</groupId>
             <artifactId>yamlbeans</artifactId>
@@ -130,26 +120,18 @@
             <artifactId>zt-exec</artifactId>
             <version>1.7</version>
         </dependency>
+        <dependency>
+            <groupId>net.sourceforge.plantuml</groupId>
+            <artifactId>plantuml</artifactId>
+            <version>8010</version>
+        </dependency>
+
     </dependencies>
 
     <build>
         <finalName>AsciidocFX</finalName>
 
         <plugins>
-
-            <!--   <plugin>
-                   <groupId>org.springframework.boot</groupId>
-                   <artifactId>spring-boot-maven-plugin</artifactId>
-               </plugin>
-           <plugin>
-                   <groupId>com.zenjava</groupId>
-                   <artifactId>javafx-maven-plugin</artifactId>
-                   <version>2.0</version>
-                   <configuration>
-                       <mainClass>com.kodcu.boot.Start</mainClass>
-                       <needShortcut>true</needShortcut>
-                   </configuration>
-               </plugin>-->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>appassembler-maven-plugin</artifactId>

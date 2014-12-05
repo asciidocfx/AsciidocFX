@@ -52,6 +52,14 @@ public class IOHelper {
         }
     }
 
+    public static void writeToFile(Path path, byte[] content, StandardOpenOption... openOption) {
+        try {
+            Files.write(path, content, openOption);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public static String readFile(Path path) {
         String content = "";
         try {
@@ -70,5 +78,15 @@ public class IOHelper {
             System.out.println(path.relativize(fileSystem.getPath("/")));
         }
 
+    }
+
+    public static Path createTempFile(Path path, String prefix,String suffix) {
+        try {
+            return Files.createTempFile(path,prefix,suffix);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return null;
     }
 }
