@@ -17,4 +17,7 @@ function waitForSetValue(content) {
     editor.session.setScrollTop(0);
     editor.focus();
 
+    sketch.collectSpecificConstructs();
+    sketch.setActive(true);
+
 }
