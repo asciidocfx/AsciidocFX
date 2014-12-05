@@ -13,6 +13,7 @@
 <!-- load ace -->
 <script src="ace/src/ace.js" type="text/javascript" charset="utf-8"></script>
 <script src="js/editor.js" type="text/javascript" charset="utf-8"></script>
+<script src="js/sketch.js" type="text/javascript" charset="utf-8"></script>
 <script>
 
 var editor = ace.edit("editor");
@@ -50,8 +51,14 @@ editor.getSession().selection.on('changeCursor', function (e) {
 
     var lineText = editor.session.getLine(row);
 
+    if(lineText.trim() == "")
+        return;
+
     try {
-        app.scrollToCurrentLine(lineText);
+        var excluded = sketch.excludedPosition(row);
+        if(!excluded){
+            app.scrollToCurrentLine(lineText);
+        }
     }
     catch (e) {
     }
@@ -65,6 +72,9 @@ editor.getSession().on('change', function (obj) {
 
     if (timeouter)
         clearTimeout(timeouter);
+
+    if(sketch.active)
+        sketch.refreshExcludedConstructList();
 
     timeouter = setTimeout(function () {
         app.textListener(editor.getValue());

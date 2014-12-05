@@ -859,9 +859,11 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
 
     public void scrollToCurrentLine(String text) {
 
-        if ("".equals(text))
-            return;
-
+        //if ("".equals(text))
+        //    return;
+        //normalize apostrophe if presents otherwise the inevitable exception comes up
+        text = IOHelper.normalize(text);
+        
         String format = String.format("runScroller('%s')", text);
         try {
             previewEngine.executeScript(format);
