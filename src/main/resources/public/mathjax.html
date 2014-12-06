@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <!--<script src="js/MathJax.js?config=TeX-AMS-MML_SVG"></script>-->
+
+</head>
+<body>
+<div id="hmm">
+    $${x}^{2}$$
+</div>
+<canvas width="200" height="200"></canvas>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_SVG.js"></script>
+
+<script type="text/javascript" >
+
+    MathJax.Hub.Typeset('hmm', function() {
+        //here include your additional javascript code
+        console.log("OK");
+    });
+
+    /*  var canvas = document.getElementsByTagName("canvas")[0];
+      var ctx = canvas.getContext("2d");
+
+      MathJax.Hub.Register.StartupHook("End",function(){
+          var svg = document.querySelector('.MathJax_SVG svg');
+          svg.setAttribute("xmlns","http://www.w3.org/2000/svg")
+          svg.insertBefore(document.querySelector("#MathJax_SVG_glyphs"),svg.firstChild);
+
+          var svgStrings = new XMLSerializer().serializeToString(svg);
+          var img = new Image();
+          var svg = new Blob([svgStrings], {type: "image/svg+xml;charset=utf-8"});
+          var url = URL.createObjectURL(svg);
+          img.onload = function() {
+              ctx.drawImage(img, 0, 0,200,200);
+              var png = canvas.toDataURL("image/png");
+              console.log(png)
+              //URL.revokeObjectURL(url);
+          };
+          img.src = url;
+      });*/
+</script>
+</body>
+</html>

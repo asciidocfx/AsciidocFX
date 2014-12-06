@@ -70,6 +70,7 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.security.CodeSource;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
@@ -396,9 +397,11 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
         previewEngine.load(String.format("http://localhost:%d/index.html", tomcatPort));
 
         previewEngine.getLoadWorker().stateProperty().addListener((observableValue1, state, state2) -> {
+            if(state2 == Worker.State.SUCCEEDED){
                 JSObject window = (JSObject) previewEngine.executeScript("window");
                 if (Objects.isNull(window.getMember("app"))) ;
                 window.setMember("app", this);
+            }
         });
 
         previewEngine.getLoadWorker().exceptionProperty().addListener((ov, t, t1) -> {
@@ -833,11 +836,16 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
 
 
         WebEngine webEngine = webView.getEngine();
-        JSObject window = (JSObject) webEngine.executeScript("window");
-        if (Objects.isNull(window.getMember("app"))) ;
-        window.setMember("app", this);
-        webEngine.load(String.format("http://localhost:%d/editor.html", tomcatPort));
 
+        webEngine.getLoadWorker().stateProperty().addListener((observable, oldValue, newValue) -> {
+            if(newValue == Worker.State.SUCCEEDED){
+                JSObject window = (JSObject) webEngine.executeScript("window");
+                if (Objects.isNull(window.getMember("app"))) ;
+                window.setMember("app", this);
+
+            }
+        });
+        webEngine.load(String.format("http://localhost:%d/editor.html", tomcatPort));
         return webView;
     }
 
@@ -861,7 +869,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
         //    return;
         //normalize apostrophe if presents otherwise the inevitable exception comes up
         text = IOHelper.normalize(text);
-        
+
         String format = String.format("runScroller('%s')", text);
         try {
             previewEngine.executeScript(format);
@@ -923,26 +931,49 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
         return new ResponseEntity<>(temp, HttpStatus.OK);
     }
 
-    public String plantUml(String uml) throws IOException {
+    public String  normalize(String content){
+        return IOHelper.normalize(content);
+    }
 
-        uml = "@startuml\n" + uml + "\n@enduml";
+    public String plantUml(String uml, String type, String fileName) throws IOException {
+        Objects.requireNonNull(fileName);
+
+        if(!fileName.equals(""))
+            if(!fileName.endsWith(".png"))
+                return "";
+
+        if (!uml.contains("@startuml") && !uml.contains("@enduml"))
+            uml = "@startuml\n" + uml + "\n@enduml";
 
         SourceStringReader reader = new SourceStringReader(uml);
+
         try (ByteArrayOutputStream os = new ByteArrayOutputStream()) {
 
-            String desc = reader.generateImage(os, new FileFormatOption(FileFormat.PNG));
+            if ("ascii".equalsIgnoreCase(type)) {
+                String desc = reader.generateImage(os, new FileFormatOption(FileFormat.ATXT));
 
-            Path path = Paths.get(workingDirectory.orElseGet(workindDirectorySupplier));
+                return os.toString("UTF-8");
+            }
+            // default: png
+            else {
+                String desc = reader.generateImage(os, new FileFormatOption(FileFormat.PNG));
+                Path path = Paths.get(workingDirectory.orElseGet(workindDirectorySupplier));
+                Files.createDirectories(path.resolve("images"));
 
-            Files.createDirectories(path.resolve("images"));
+                Path umlPath = null;
 
-            Path umlPath = IOHelper.createTempFile(path.resolve("images"), "uml", ".png");
+                if (Objects.isNull(fileName) || "".equals(fileName))
+                    umlPath = IOHelper.createTempFile(path.resolve("images"), "uml", ".png");
+                else
+                    umlPath = path.resolve("images/").resolve(fileName);
 
-            IOHelper.writeToFile(umlPath, os.toByteArray());
+                IOHelper.writeToFile(umlPath, os.toByteArray(), CREATE, WRITE, TRUNCATE_EXISTING);
 
-            String umlRelativePath = Paths.get("images") + "/" + umlPath.getFileName();
+                String umlRelativePath = Paths.get("images") + "/" + umlPath.getFileName();
 
-            return umlRelativePath;
+                return umlRelativePath;
+            }
+
         }
 
     }

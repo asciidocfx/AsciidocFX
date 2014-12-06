@@ -5,37 +5,38 @@
   if ($scope.RUBY_ENGINE['$==']("opal")) {};
   self.$include((($a = $opal.Object._scope.Asciidoctor) == null ? $opal.cm('Asciidoctor') : $a));
   return (function($base, $super) {
-    function $UmlBlock(){};
-    var self = $UmlBlock = $klass($base, $super, 'UmlBlock', $UmlBlock);
+    function $MathBlock(){};
+    var self = $MathBlock = $klass($base, $super, 'MathBlock', $MathBlock);
 
     var def = self._proto, $scope = self._scope;
 
     self.$use_dsl();
 
-    self.$named("uml");
+    self.$named("math");
 
     self.$on_context("open");
 
-    self.$parse_content_as("literal");
+    self.$parse_content_as("simple");
 
     return (def.$process = function(parent, reader, attrs) {
-      var $a, self = this, content = nil, type = nil, title = nil, filename = nil;
+      var self = this, content = nil;
 
       content = nil;
-      type = "" + (attrs['$[]']("type"));
-      title = "" + (attrs['$[]']("title"));
-      filename = "" + (attrs['$[]']("filename"));
-
-          console.log(parent.document);
-          console.log(parent._id);
-
-        content = app.plantUml(reader.$read(),type,filename);
-     ;
-      if ((($a = (type['$==']("ascii"))) !== nil && (!$a._isBoolean || $a == true))) {
-        return self.$create_pass_block(parent, content, attrs, $hash2(["subs"], {"subs": nil}))
-        } else {
-        return self.$create_image_block(parent, $hash2(["target", "title"], {"target": content, "title": title}))
-      };
+      
+        content = reader.$read();
+          content = content.replace("\\", "\\\\");
+          content = content.replace("'", "\\'");
+          content = content.replace("\\\\'", "\\'");
+          content = content.replace("\r\n", "\\r\\n");
+          content = content.replace("\n", "\\n");
+          content = content.replace("\r", "\\r");
+        console.log(encodeURI(app.normalize(content)));
+        console.log(encodeURI("c = \\pm\\sqrt{a^2 + b^2}"));
+        console.log(content);
+        console.log(content == "c = \\pm\\sqrt{a^2 + b^2}");
+        content = katex.renderToString(content);
+    ;
+      return self.$create_paragraph(parent, content, attrs, $hash2(["subs"], {"subs": nil}));
     }, nil) && 'process';
   })(self, ($scope.Extensions)._scope.BlockProcessor);
 })(Opal);
@@ -47,5 +48,5 @@
     };
   return ($a = ($b = $scope.Extensions).$register, $a._p = (TMP_1 = function(){var self = TMP_1._s || this;
 
-  return self.$block($scope.UmlBlock)}, TMP_1._s = self, TMP_1), $a).call($b);
+  return self.$block($scope.MathBlock)}, TMP_1._s = self, TMP_1), $a).call($b);
 })(Opal);
