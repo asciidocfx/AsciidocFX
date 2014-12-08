@@ -13,9 +13,11 @@ import com.kodcu.service.*;
 import com.sun.javafx.application.HostServicesDelegate;
 import de.jensd.fx.fontawesome.AwesomeDude;
 import de.jensd.fx.fontawesome.AwesomeIcon;
+import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -46,7 +48,11 @@ import net.sourceforge.plantuml.FileFormat;
 import net.sourceforge.plantuml.FileFormatOption;
 import net.sourceforge.plantuml.SourceStringReader;
 import netscape.javascript.JSObject;
-import org.apache.commons.io.IOUtils;
+import org.apache.batik.dom.svg.SAXSVGDocumentFactory;
+import org.apache.batik.transcoder.TranscoderInput;
+import org.apache.batik.transcoder.TranscoderOutput;
+import org.apache.batik.transcoder.image.PNGTranscoder;
+import org.apache.batik.util.XMLResourceDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,6 +68,7 @@ import org.springframework.web.context.request.async.DeferredResult;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
+import org.w3c.dom.svg.SVGDocument;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.*;
@@ -70,11 +77,10 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
 import java.security.CodeSource;
 import java.util.*;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.*;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -95,6 +101,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
     public TreeView<Item> treeView;
     public Label splitHideButton;
     public Label WorkingDirButton;
+    public AnchorPane rootAnchor;
 
     public MenuBar recentFilesBar;
     public HBox windowHBox;
@@ -107,6 +114,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
     public MenuItem copyPathListItem;
     public MenuItem copyTreeItem;
     public MenuItem copyListItem;
+    public ReentrantLock lock = new ReentrantLock();
 
     private Supplier<String> workindDirectorySupplier = () -> {
 
@@ -143,6 +151,9 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
 
     @Autowired
     private Epub3Service epub3Service;
+
+    CompletableFuture future = new CompletableFuture();
+    ScheduledExecutorService sch = Executors.newSingleThreadScheduledExecutor();
 
     @Autowired
     private Current current;
@@ -189,6 +200,21 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
     private Optional<String> workingDirectory;
 
     List<String> bookNames = Arrays.asList("book.asc", "book.txt", "book.asciidoc", "book.adoc", "book.ad");
+    private ScheduledFuture<?> scheduledFuture;
+    private Timeline fiveSecondsWonder;
+    private WebView mathjaxView;
+
+    ChangeListener<String> lastRenderedChangeListener = (observableValue, old, nev) -> {
+        runSingleTaskLater(task -> {
+            sessionList.stream().filter(e -> e.isOpen()).forEach(e -> {
+                try {
+                    e.sendMessage(new TextMessage(nev));
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+            });
+        });
+    };
 
     @FXML
     private void createTable(Event event) {
@@ -261,6 +287,63 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
         runTaskLater((task) -> {
             epub3Service.produceEpub3(currentPath, configPath);
         });
+    }
+
+    public synchronized String appendFormula(String fileName, String formula) {
+
+        if (fileName.endsWith(".png")) {
+            WebEngine engine = mathjaxView.getEngine();
+            engine.executeScript(String.format("appendFormula('%s','%s')", fileName, IOHelper.normalize(formula)));
+            return "/images/" + fileName;
+        }
+
+        return "";
+
+    }
+
+    public synchronized void svgToPng(String fileName, String svg, String formula) {
+
+        if (!fileName.endsWith(".png") || !svg.startsWith("<svg"))
+            return;
+
+        Integer cacheHit = current.getCache().get(fileName);
+        int hashCode = fileName.concat(formula).hashCode();
+        if (Objects.nonNull(cacheHit))
+            if (hashCode == cacheHit)
+                return;
+
+        current.getCache().put(fileName, hashCode);
+
+        runSingleTaskLater(task -> {
+            try {
+                StringReader reader = new StringReader(svg);
+                String uri = "http://www.w3.org/2000/svg";
+                String parser = XMLResourceDescriptor.getXMLParserClassName();
+                SAXSVGDocumentFactory f = new SAXSVGDocumentFactory(parser);
+                SVGDocument doc = f.createSVGDocument(uri, reader);
+
+                TranscoderInput transcoderInput = new TranscoderInput(doc);
+                ByteArrayOutputStream ostream = new ByteArrayOutputStream();
+                TranscoderOutput transcoderOutput = new TranscoderOutput(ostream);
+
+                PNGTranscoder transcoder = new PNGTranscoder();
+                transcoder.transcode(transcoderInput, transcoderOutput);
+                ostream.flush();
+                ostream.close();
+
+                Path path = Paths.get(workingDirectory.orElseGet(workindDirectorySupplier));
+                Files.createDirectories(path.resolve("images"));
+
+                Files.write(path.resolve("images/").resolve(fileName), ostream.toByteArray(), CREATE, WRITE, TRUNCATE_EXISTING);
+
+                lastRenderedChangeListener.changed(null, lastRendered.getValue(), lastRendered.getValue());
+
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+
     }
 
     public <T> void runTaskLater(Consumer<Task<T>> consumer) {
@@ -380,24 +463,31 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
 
         tomcatPort = server.getEmbeddedServletContainer().getPort();
 
-        lastRendered.addListener((observableValue, old, nev) -> {
-            runSingleTaskLater(task -> {
-                sessionList.stream().filter(e -> e.isOpen()).forEach(e -> {
-                    try {
-                        e.sendMessage(new TextMessage(nev));
-                    } catch (IOException ex) {
-                        ex.printStackTrace();
-                    }
-                });
-            });
+        lastRendered.addListener(lastRenderedChangeListener);
+
+        // MathJax
+        mathjaxView = new WebView();
+        mathjaxView.setVisible(false);
+        rootAnchor.getChildren().add(mathjaxView);
+
+        WebEngine mathjaxEngine = mathjaxView.getEngine();
+        mathjaxEngine.getLoadWorker().stateProperty().addListener((observableValue1, state, state2) -> {
+            if (state2 == Worker.State.SUCCEEDED) {
+                JSObject window = (JSObject) mathjaxEngine.executeScript("window");
+                if (Objects.isNull(window.getMember("app"))) ;
+                window.setMember("app", this);
+            }
         });
+        //
+
+        mathjaxView.getEngine().load(String.format("http://localhost:%d/mathjax.html", tomcatPort));
 
 
         previewEngine = previewView.getEngine();
         previewEngine.load(String.format("http://localhost:%d/index.html", tomcatPort));
 
         previewEngine.getLoadWorker().stateProperty().addListener((observableValue1, state, state2) -> {
-            if(state2 == Worker.State.SUCCEEDED){
+            if (state2 == Worker.State.SUCCEEDED) {
                 JSObject window = (JSObject) previewEngine.executeScript("window");
                 if (Objects.isNull(window.getMember("app"))) ;
                 window.setMember("app", this);
@@ -838,7 +928,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
         WebEngine webEngine = webView.getEngine();
 
         webEngine.getLoadWorker().stateProperty().addListener((observable, oldValue, newValue) -> {
-            if(newValue == Worker.State.SUCCEEDED){
+            if (newValue == Worker.State.SUCCEEDED) {
                 JSObject window = (JSObject) webEngine.executeScript("window");
                 if (Objects.isNull(window.getMember("app"))) ;
                 window.setMember("app", this);
@@ -906,7 +996,6 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
     @ResponseBody
     public ResponseEntity<byte[]> images(HttpServletRequest request, @PathVariable("extension") String extension) {
 
-
         Enumeration<String> headerNames = request.getHeaderNames();
         String uri = request.getRequestURI();
         byte[] temp = new byte[]{};
@@ -920,9 +1009,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
             imageFile = workingDirectory.map(Paths::get).get().resolve(uri);
 
         try {
-            FileInputStream fileInputStream = new FileInputStream(imageFile.toFile());
-            temp = IOUtils.toByteArray(fileInputStream);
-            IOUtils.closeQuietly(fileInputStream);
+            temp = Files.readAllBytes(imageFile);
         } catch (Exception ex) {
             logger.debug(ex.getMessage(), ex);
         }
@@ -931,16 +1018,15 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
         return new ResponseEntity<>(temp, HttpStatus.OK);
     }
 
-    public String  normalize(String content){
+    public String normalize(String content) {
         return IOHelper.normalize(content);
     }
 
     public String plantUml(String uml, String type, String fileName) throws IOException {
         Objects.requireNonNull(fileName);
 
-        if(!fileName.equals(""))
-            if(!fileName.endsWith(".png"))
-                return "";
+        if (!fileName.endsWith(".png"))
+            return "";
 
         if (!uml.contains("@startuml") && !uml.contains("@enduml"))
             uml = "@startuml\n" + uml + "\n@enduml";
@@ -956,18 +1042,32 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
             }
             // default: png
             else {
-                String desc = reader.generateImage(os, new FileFormatOption(FileFormat.PNG));
+
                 Path path = Paths.get(workingDirectory.orElseGet(workindDirectorySupplier));
-                Files.createDirectories(path.resolve("images"));
+                Path umlPath = path.resolve("images/").resolve(fileName);
 
-                Path umlPath = null;
+                Integer cacheHit = current.getCache().get(fileName);
 
-                if (Objects.isNull(fileName) || "".equals(fileName))
-                    umlPath = IOHelper.createTempFile(path.resolve("images"), "uml", ".png");
-                else
-                    umlPath = path.resolve("images/").resolve(fileName);
+                int hashCode = (fileName + type + uml).hashCode();
+                if (Objects.isNull(cacheHit) || hashCode != cacheHit) {
 
-                IOHelper.writeToFile(umlPath, os.toByteArray(), CREATE, WRITE, TRUNCATE_EXISTING);
+                    runTaskLater(task -> {
+                        try {
+                            String desc = reader.generateImage(os, new FileFormatOption(FileFormat.PNG));
+
+                            Files.createDirectories(path.resolve("images"));
+
+                            IOHelper.writeToFile(umlPath, os.toByteArray(), CREATE, WRITE, TRUNCATE_EXISTING);
+
+                            lastRenderedChangeListener.changed(null, lastRendered.getValue(), lastRendered.getValue());
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    });
+                }
+
+
+                current.getCache().put(fileName, hashCode);
 
                 String umlRelativePath = Paths.get("images") + "/" + umlPath.getFileName();
 

@@ -125,6 +125,11 @@
             <artifactId>plantuml</artifactId>
             <version>8010</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.xmlgraphics</groupId>
+            <artifactId>batik-codec</artifactId>
+            <version>1.7</version>
+        </dependency>
 
     </dependencies>
 
@@ -161,7 +166,7 @@
                     <configurationSourceDirectory>${project.basedir}/conf</configurationSourceDirectory>
                     <copyConfigurationDirectory>true</copyConfigurationDirectory>
                     <logsDirectory>log</logsDirectory>
-                    <showConsoleWindow>true</showConsoleWindow>
+                    <showConsoleWindow>false</showConsoleWindow>
                     <!--<unixScriptTemplate>${project.basedir}/src/main/resources/assembly/unixBinTemplate.sh</unixScriptTemplate>-->
                 </configuration>
             </plugin>

@@ -18,8 +18,9 @@ import java.util.concurrent.ConcurrentHashMap;
 public class Current {
 
     private Tab currentTab;
-    private Map<Tab, Path> newTabPaths = new ConcurrentHashMap<>();
-    private Map<Tab, WebView> newTabWebViews = new ConcurrentHashMap<>();
+    private Map<Tab, Path> newTabPaths;
+    private Map<Tab, WebView> newTabWebViews ;
+    private Map<String, Integer> cache;
 
     public Tab getCurrentTab() {
         return currentTab;
@@ -30,6 +31,8 @@ public class Current {
     }
 
     public Map<Tab, WebView> getNewTabWebViews() {
+        if(Objects.isNull(newTabWebViews))
+            newTabWebViews = new ConcurrentHashMap<>();
         return newTabWebViews;
     }
 
@@ -38,11 +41,24 @@ public class Current {
     }
 
     public Map<Tab, Path> getNewTabPaths() {
+        if(Objects.isNull(newTabPaths))
+            newTabPaths  = new ConcurrentHashMap<>();;
         return newTabPaths;
     }
 
     public void setNewTabPaths(Map<Tab, Path> newTabPaths) {
         this.newTabPaths = newTabPaths;
+    }
+
+    public Map<String, Integer> getCache() {
+
+        if (Objects.isNull(cache))
+            cache = new ConcurrentHashMap<String, Integer>();
+        return cache;
+    }
+
+    public void setCache(Map<String, Integer> cache) {
+        this.cache = cache;
     }
 
     public void putTab(Tab tab, Path path, WebView webview) {

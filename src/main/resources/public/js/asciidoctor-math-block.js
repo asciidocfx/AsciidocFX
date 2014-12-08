@@ -19,24 +19,15 @@
     self.$parse_content_as("simple");
 
     return (def.$process = function(parent, reader, attrs) {
-      var self = this, content = nil;
+      var self = this, content = nil, title = nil,filename=nil;
 
       content = nil;
-      
-        content = reader.$read();
-          content = content.replace("\\", "\\\\");
-          content = content.replace("'", "\\'");
-          content = content.replace("\\\\'", "\\'");
-          content = content.replace("\r\n", "\\r\\n");
-          content = content.replace("\n", "\\n");
-          content = content.replace("\r", "\\r");
-        console.log(encodeURI(app.normalize(content)));
-        console.log(encodeURI("c = \\pm\\sqrt{a^2 + b^2}"));
-        console.log(content);
-        console.log(content == "c = \\pm\\sqrt{a^2 + b^2}");
-        content = katex.renderToString(content);
-    ;
-      return self.$create_paragraph(parent, content, attrs, $hash2(["subs"], {"subs": nil}));
+      title = "" + (attrs['$[]']("title"));
+        filename = "" + (attrs['$[]']("file"));
+
+        content = app.appendFormula(filename,reader.$read());
+
+      return self.$create_image_block(parent, $hash2(["target", "title"], {"target": content, "title": title}));
     }, nil) && 'process';
   })(self, ($scope.Extensions)._scope.BlockProcessor);
 })(Opal);

@@ -11,7 +11,7 @@
 <?import javafx.scene.web.*?>
 <?import javafx.scene.web.WebView?>
 
-<AnchorPane id="AnchorPane" styleClass="rootAnchor" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="com.kodcu.controller.AsciiDocController">
+<AnchorPane id="AnchorPane" fx:id="rootAnchor" styleClass="rootAnchor" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="com.kodcu.controller.AsciiDocController">
   <children>
     <SplitPane fx:id="splitPane" dividerPositions="0.11320754716981132, 0.5807127882599581" focusTraversable="true" prefHeight="694.0" AnchorPane.bottomAnchor="1.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="-1.0">
       <items>

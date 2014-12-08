@@ -24,7 +24,7 @@
       content = nil;
       type = "" + (attrs['$[]']("type"));
       title = "" + (attrs['$[]']("title"));
-      filename = "" + (attrs['$[]']("filename"));
+      filename = "" + (attrs['$[]']("file"));
 
           console.log(parent.document);
           console.log(parent._id);
