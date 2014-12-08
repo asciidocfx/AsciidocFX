@@ -472,11 +472,9 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
 
         WebEngine mathjaxEngine = mathjaxView.getEngine();
         mathjaxEngine.getLoadWorker().stateProperty().addListener((observableValue1, state, state2) -> {
-            if (state2 == Worker.State.SUCCEEDED) {
                 JSObject window = (JSObject) mathjaxEngine.executeScript("window");
                 if (Objects.isNull(window.getMember("app"))) ;
                 window.setMember("app", this);
-            }
         });
         //
 
@@ -487,11 +485,9 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
         previewEngine.load(String.format("http://localhost:%d/index.html", tomcatPort));
 
         previewEngine.getLoadWorker().stateProperty().addListener((observableValue1, state, state2) -> {
-            if (state2 == Worker.State.SUCCEEDED) {
                 JSObject window = (JSObject) previewEngine.executeScript("window");
                 if (Objects.isNull(window.getMember("app"))) ;
                 window.setMember("app", this);
-            }
         });
 
         previewEngine.getLoadWorker().exceptionProperty().addListener((ov, t, t1) -> {
@@ -924,16 +920,12 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
 
         WebView webView = new WebView();
 
-
         WebEngine webEngine = webView.getEngine();
 
         webEngine.getLoadWorker().stateProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue == Worker.State.SUCCEEDED) {
                 JSObject window = (JSObject) webEngine.executeScript("window");
                 if (Objects.isNull(window.getMember("app"))) ;
                 window.setMember("app", this);
-
-            }
         });
         webEngine.load(String.format("http://localhost:%d/editor.html", tomcatPort));
         return webView;

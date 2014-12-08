@@ -120,6 +120,23 @@ function addSourceCode() {
 
     editor.insert("[source,java]\n----\n\n----");
 
+    editor.gotoLine(range.end.row + 3, 0, true);
+}
+
+function addMathBlock() {
+    var range = editor.getSelectionRange();
+    editor.removeToLineStart();
+
+    editor.insert("[math,file=\"\"]\n--\n\n--");
+
+    editor.gotoLine(range.end.row + 3, 0, true);
+}
+
+function addUmlBlock() {
+    var range = editor.getSelectionRange();
+    editor.removeToLineStart();
+
+    editor.insert("[uml,file=\"\"]\n--\n\n--");
 
     editor.gotoLine(range.end.row + 3, 0, true);
 }
@@ -210,6 +227,21 @@ editor.commands.addCommand({
 
             return;
         }
+
+
+        // math tab
+        if (textRange == "math") { // math block generator
+            addMathBlock();
+            return;
+        }
+
+        // uml tab
+        if (textRange == "uml") { // uml block generator
+            addUmlBlock();
+            return;
+        }
+
+
 
         // src tab
         if (textRange == "src") { // source generator
