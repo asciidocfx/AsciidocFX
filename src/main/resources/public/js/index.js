@@ -63,22 +63,98 @@ function runScroller(content) {
 
     var renderedSelection = Opal.Asciidoctor.$render(content);
 
-    if(renderedSelection.trim() == "")
+    if(renderedSelection.trim() == ""){
         return;
-    
-    renderedSelection = renderedSelection.replace(new RegExp("\n|\r|\n\r", "ig"), "");
-
-    if ($(renderedSelection).is(".imageblock")) {
+    }
+    else if($(renderedSelection).css("page-break-after")){
+        //page break element
+        return;
+    }
+    else if($(renderedSelection).is("hr")){
+        // horizontal rules
+        return;
+    }    
+    else if ($(renderedSelection).is(".imageblock")) {
         var src = $(renderedSelection).find("img").attr("src");
         scrollTo60($("img[src='" + src + "']").offset().top);
         return;
     }
 
     if ($(renderedSelection).is(".admonitionblock")) {
-        renderedSelection = $(renderedSelection).find(".content");
+        scrollToElement(".admonitionblock",$(renderedSelection).find(".content").text());
     }
+    else if ($(renderedSelection).is(".exampleblock")) {
+        scrollToElement(".exampleblock",$(renderedSelection).text());
+    }
+    else if ($(renderedSelection).is(".listingblock")) {
+        scrollToElement(".listingblock",$(renderedSelection).text());
+    }
+    else if ($(renderedSelection).is(".literalblock")) {
+        scrollToElement(".literalblock",$(renderedSelection).text());
+    }
+    else if ($(renderedSelection).is(".openblock")) {
+        scrollToElement(".listingblock, .openblock",$(renderedSelection).find(".content").text());
+    }
+    else if ($(renderedSelection).is(".sidebarblock")) {
+        scrollToElement(".sidebarblock",$(renderedSelection).text());
+    }
+    else if ($(renderedSelection).is(".quoteblock")) {
+        scrollToElement(".quoteblock > blockquote",$(renderedSelection).find(".paragraph").text());
+    }
+    else if ($(renderedSelection).is(".paragraph")) {
+        scrollToElement(".paragraph",$(renderedSelection).text());
+    }
+    else if ($(renderedSelection).is(".ulist")) {
+        scrollToElement(".ulist:not(.checklist) > ul > li",$(renderedSelection).text());
+    }
+    else if ($(renderedSelection).is(".olist")) {
+        scrollToElement(".olist > ol > li",$(renderedSelection).text());
+    }
+    else if ($(renderedSelection).is(".colist")) {
+        $(".colist > table > tbody > tr").each(function(){
+            var callout = $(this).text().trim().replace(/^\d+ */,"").trim();
+            if(callout == $(renderedSelection).text().trim()) {
+                scrollTo60($(this).offset().top);
+                return false;
+            }
+        });
+    }
+    else if ($(renderedSelection).is(".tableblock")) {
+        $("table.tableblock, table.frame-all").each(function(){
+            var tabletext = $(this).text().trim().replace(/^(T|t)able \d+\./,"Table 1.");
+            if(simplify(tabletext) == simplify($(renderedSelection).text())) {
+                scrollTo60($(this).offset().top);
+                return false;
+            }
+        });
+    }
+    else {
+        var header = false;
 
-    var search = $("*:contains(" + $(renderedSelection).text() + "):last");
-    scrollTo60(search.offset().top);
+        $("*:header").each(function(){
+            if($(this).text().trim() == $(renderedSelection).text().trim()) {
+                header = true;
+                scrollTo60($(this).offset().top);
+                return false;
+            }
+        });
 
+        if(!header){
+            var search = $("*:contains(" + $(renderedSelection).text().trim() + "):last");
+            scrollTo60(search.offset().top);
+        }
+    }
+}
+
+function scrollToElement(className,content){
+    $(className).each(function(){
+        if(simplify($(this).text()) == simplify(content)) {
+            scrollTo60($(this).offset().top);
+            return false;
+        }
+    });
+}
+
+function simplify(text){
+    return text.replace(/( |\n|\r|\t)/g, "");
 }

@@ -46,24 +46,27 @@ editor.getSession().selection.on('changeCursor', function (e) {
 
     if (lastEditorRow == row)
         return;
+    
+    var range = sketch.searchBlockPosition(row);          
+    if(range){
 
-    lastEditorRow = row;
+        if(lastEditorRow == range.start.row)
+            return;
+        lastEditorRow = range.start.row;
 
-    var lineText = editor.session.getLine(row);
-
-    if(lineText.trim() == "")
-        return;
-
-    try {
-        var excluded = sketch.excludedPosition(row);
-        if(!excluded){
-            app.scrollToCurrentLine(lineText);
-        }
+        var blockText = editor.session.getTextRange(range);
+        app.scrollToCurrentLine(blockText);
     }
-    catch (e) {
+    else{
+        lastEditorRow = row;
+        
+        var lineText = editor.session.getLine(row);
+
+        if(lineText.trim() == "")
+            return;
+
+        app.scrollToCurrentLine(lineText);
     }
-
-
 });
 
 editor.getSession().on('change', function (obj) {
@@ -73,8 +76,7 @@ editor.getSession().on('change', function (obj) {
     if (timeouter)
         clearTimeout(timeouter);
 
-    if(sketch.active)
-        sketch.refreshExcludedConstructList();
+    sketch.refreshConstructList();
 
     timeouter = setTimeout(function () {
         app.textListener(editor.getValue());
