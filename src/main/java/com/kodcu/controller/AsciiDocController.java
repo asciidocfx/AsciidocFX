@@ -13,7 +13,6 @@ import com.kodcu.service.*;
 import com.sun.javafx.application.HostServicesDelegate;
 import de.jensd.fx.fontawesome.AwesomeDude;
 import de.jensd.fx.fontawesome.AwesomeIcon;
-import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -49,6 +48,7 @@ import net.sourceforge.plantuml.FileFormatOption;
 import net.sourceforge.plantuml.SourceStringReader;
 import netscape.javascript.JSObject;
 import org.apache.batik.dom.svg.SAXSVGDocumentFactory;
+import org.apache.batik.transcoder.TranscoderException;
 import org.apache.batik.transcoder.TranscoderInput;
 import org.apache.batik.transcoder.TranscoderOutput;
 import org.apache.batik.transcoder.image.PNGTranscoder;
@@ -79,10 +79,10 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.CodeSource;
 import java.util.*;
-import java.util.concurrent.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 import static java.nio.file.StandardOpenOption.*;
 
@@ -169,7 +169,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
     private HostServicesDelegate hostServices;
     private Path configPath;
     private Config config;
-    private Optional<Path> workingDirectory = Optional.empty();
+    private Optional<Path> workingDirectory = Optional.of(Paths.get(System.getProperty("user.home")));
     private Optional<File> initialDirectory = Optional.empty();
 
     private List<String> bookNames = Arrays.asList("book.asc", "book.txt", "book.asciidoc", "book.adoc", "book.ad");
@@ -191,8 +191,8 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
     private DirectoryChooser newDirectoryChooser(String title) {
         DirectoryChooser directoryChooser = new DirectoryChooser();
         directoryChooser.setTitle(title);
-        initialDirectory.ifPresent(file-> {
-            if(Files.isDirectory(file.toPath()))
+        initialDirectory.ifPresent(file -> {
+            if (Files.isDirectory(file.toPath()))
                 directoryChooser.setInitialDirectory(file);
             else
                 directoryChooser.setInitialDirectory(file.toPath().getParent().toFile());
@@ -210,8 +210,8 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
     private FileChooser newFileChooser(String title) {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle(title);
-        initialDirectory.ifPresent(file->{
-            if(Files.isDirectory(file.toPath()))
+        initialDirectory.ifPresent(file -> {
+            if (Files.isDirectory(file.toPath()))
                 fileChooser.setInitialDirectory(file);
             else
                 fileChooser.setInitialDirectory(file.toPath().getParent().toFile());
@@ -303,19 +303,19 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
         });
     }
 
-    public synchronized String appendFormula(String fileName, String formula) {
+    public String appendFormula(String fileName, String formula) {
 
         if (fileName.endsWith(".png")) {
             WebEngine engine = mathjaxView.getEngine();
             engine.executeScript(String.format("appendFormula('%s','%s')", fileName, IOHelper.normalize(formula)));
-            return "/images/" + fileName;
+            return "images/" + fileName;
         }
 
         return "";
 
     }
 
-    public synchronized void svgToPng(String fileName, String svg, String formula) {
+    public void svgToPng(String fileName, String svg, String formula) throws IOException, TranscoderException {
 
         if (!fileName.endsWith(".png") || !svg.startsWith("<svg"))
             return;
@@ -328,37 +328,30 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
 
         current.getCache().put(fileName, hashCode);
 
-        runSingleTaskLater(task -> {
-            try {
-                StringReader reader = new StringReader(svg);
-                String uri = "http://www.w3.org/2000/svg";
-                String parser = XMLResourceDescriptor.getXMLParserClassName();
-                SAXSVGDocumentFactory f = new SAXSVGDocumentFactory(parser);
-                SVGDocument doc = f.createSVGDocument(uri, reader);
+        StringReader reader = new StringReader(svg);
+        String uri = "http://www.w3.org/2000/svg";
+        String parser = XMLResourceDescriptor.getXMLParserClassName();
+        SAXSVGDocumentFactory f = new SAXSVGDocumentFactory(parser);
+        SVGDocument doc = f.createSVGDocument(uri, reader);
 
-                TranscoderInput transcoderInput = new TranscoderInput(doc);
-                ByteArrayOutputStream ostream = new ByteArrayOutputStream();
-                TranscoderOutput transcoderOutput = new TranscoderOutput(ostream);
+        try (ByteArrayOutputStream ostream = new ByteArrayOutputStream();) {
+            TranscoderInput transcoderInput = new TranscoderInput(doc);
+            TranscoderOutput transcoderOutput = new TranscoderOutput(ostream);
 
-                PNGTranscoder transcoder = new PNGTranscoder();
-                transcoder.transcode(transcoderInput, transcoderOutput);
-                ostream.flush();
-                ostream.close();
+            PNGTranscoder transcoder = new PNGTranscoder();
+            transcoder.transcode(transcoderInput, transcoderOutput);
 
-                if (!current.currentPath().isPresent())
-                   saveDoc();
+            if (!current.currentPath().isPresent())
+                saveDoc();
 
-                Path path = current.currentPathParent().get();
-                Files.createDirectories(path.resolve("images"));
+            Path path = current.currentPathParent().get();
+            Files.createDirectories(path.resolve("images"));
 
-                Files.write(path.resolve("images/").resolve(fileName), ostream.toByteArray(), CREATE, WRITE, TRUNCATE_EXISTING);
+            Files.write(path.resolve("images/").resolve(fileName), ostream.toByteArray(), CREATE, WRITE, TRUNCATE_EXISTING);
 
-                lastRenderedChangeListener.changed(null, lastRendered.getValue(), lastRendered.getValue());
+            lastRenderedChangeListener.changed(null, lastRendered.getValue(), lastRendered.getValue());
 
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        });
+        }
 
     }
 
@@ -512,8 +505,8 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
 
         /// Treeview
 
-        if(Objects.nonNull(config.getWorkingDirectory()))
-        workingDirectory = Optional.ofNullable(Paths.get(config.getWorkingDirectory()));
+        if (Objects.nonNull(config.getWorkingDirectory()))
+            workingDirectory = Optional.ofNullable(Paths.get(config.getWorkingDirectory()));
 
         Path workDir = workingDirectory.orElse(Paths.get(System.getProperty("user.home")));
 //
@@ -1090,7 +1083,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
             return;
         }
 
-        if(!current.currentPath().isPresent())
+        if (!current.currentPath().isPresent())
             saveDoc();
 
         Path currentPath = current.currentPath().orElseGet(pathSaveSupplier);
@@ -1106,7 +1099,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
             Path path = currentPath.getParent().resolve(tabText.concat(".html"));
             IOHelper.writeToFile(path, html, CREATE, TRUNCATE_EXISTING, WRITE);
 
-            runActionLater(run->{
+            runActionLater(run -> {
                 indikatorService.hideIndikator();
                 recentFiles.remove(path.toString());
                 recentFiles.add(0, path.toString());
@@ -1129,7 +1122,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
             return;
         }
 
-        if(!current.currentPath().isPresent())
+        if (!current.currentPath().isPresent())
             saveDoc();
 
         Path currentPath = current.currentPath().orElseGet(pathSaveSupplier);
