@@ -14,32 +14,33 @@
 <script type="text/javascript">
 
     function afterRender(finishCallback) {
-        MathJax.Hub.Queue(["Typeset", MathJax.Hub],finishCallback);
+        if ((typeof MathJax) != "undefined")
+            MathJax.Hub.Queue(["Typeset", MathJax.Hub], finishCallback);
     }
 
     function appendFormula(fileName, formula) {
 
-        fileName = fileName.replace(".","-");
+        fileName = fileName.replace(".", "-----");
 
-        $("#formulas").find("#"+fileName).remove();
+        $("#formulas").find("#" + fileName).remove();
 
         var $div = $("<div class='formulaz'></div>");
-        $div.attr("id",fileName);
+        $div.attr("id", fileName);
         $div.append(formula);
 
         $("#formulas").append($div);
 
-        afterRender(function(){
-            $.each($("#formulas").children("div.formulaz"),function(index,elem){
+        afterRender(function () {
+            $.each($("#formulas").children("div.formulaz"), function (index, elem) {
 
                 var svg = $(this).find(".MathJax_SVG svg");
 
-                if(svg.length){
+                if (svg.length) {
                     var fileName = $(this).attr("id");
-                    svg.attr("xmlns","http://www.w3.org/2000/svg")
-                    svg.get(0).insertBefore($("#MathJax_SVG_glyphs").clone().get(0),svg.firstChild);
+                    svg.attr("xmlns", "http://www.w3.org/2000/svg")
+                    svg.get(0).insertBefore($("#MathJax_SVG_glyphs").clone().get(0), svg.firstChild);
                     var svgStrings = new XMLSerializer().serializeToString(svg.get(0));
-                    app.svgToPng(fileName.replace("-","."),svgStrings,formula);
+                    app.svgToPng(fileName.replace("-----", "."), svgStrings, formula);
                 }
 
             });

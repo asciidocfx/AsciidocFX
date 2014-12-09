@@ -89,6 +89,7 @@ public class Epub3Service {
             indikatorService.completeCycle();
 
             Platform.runLater(() -> {
+                asciiDocController.getRecentFiles().remove(currentPath.resolve("book.epub").toString());
                 asciiDocController.getRecentFiles().add(0,currentPath.resolve("book.epub").toString());
             });
 

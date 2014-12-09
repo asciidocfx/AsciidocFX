@@ -25,16 +25,15 @@ public class FileBrowseService {
 
     private TreeItem<Item> rootItem;
 
-    public void browse(TreeView<Item> treeView, AsciiDocController controller, String browserPath) {
+    public void browse(TreeView<Item> treeView, AsciiDocController controller, Path browserPath) {
 
         Platform.runLater(() -> {
 
-            rootItem = new TreeItem<>(new Item(Paths.get(browserPath), String.format("Working Directory (%s)", browserPath)));
+            rootItem = new TreeItem<>(new Item(browserPath, String.format("Working Directory (%s)", browserPath)));
             rootItem.setExpanded(true);
             DirectoryStream<Path> files = null;
             try {
-                Path dir = Paths.get(browserPath);
-                files = Files.newDirectoryStream(dir);
+                files = Files.newDirectoryStream(browserPath);
             } catch (IOException e) {
                 e.printStackTrace();
             }

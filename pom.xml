@@ -5,7 +5,7 @@
 
     <groupId>com.kodcu</groupId>
     <artifactId>AsciidocFX</artifactId>
-    <version>1.0.10</version>
+    <version>1.2</version>
     <packaging>jar</packaging>
 
     <name>AsciidocFX</name>
@@ -166,7 +166,7 @@
                     <configurationSourceDirectory>${project.basedir}/conf</configurationSourceDirectory>
                     <copyConfigurationDirectory>true</copyConfigurationDirectory>
                     <logsDirectory>log</logsDirectory>
-                    <showConsoleWindow>false</showConsoleWindow>
+                    <showConsoleWindow>true</showConsoleWindow>
                     <!--<unixScriptTemplate>${project.basedir}/src/main/resources/assembly/unixBinTemplate.sh</unixScriptTemplate>-->
                 </configuration>
             </plugin>

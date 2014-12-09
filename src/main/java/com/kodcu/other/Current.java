@@ -7,8 +7,10 @@ import javafx.scene.web.WebView;
 import org.springframework.stereotype.Component;
 
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -18,7 +20,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class Current {
 
     private Tab currentTab;
-    private Map<Tab, Path> newTabPaths;
+    private Map<Tab, Optional<Path>> newTabPaths;
     private Map<Tab, WebView> newTabWebViews ;
     private Map<String, Integer> cache;
 
@@ -40,13 +42,13 @@ public class Current {
         this.newTabWebViews = newTabWebViews;
     }
 
-    public Map<Tab, Path> getNewTabPaths() {
+    public Map<Tab, Optional<Path>> getNewTabPaths() {
         if(Objects.isNull(newTabPaths))
             newTabPaths  = new ConcurrentHashMap<>();;
         return newTabPaths;
     }
 
-    public void setNewTabPaths(Map<Tab, Path> newTabPaths) {
+    public void setNewTabPaths(Map<Tab, Optional<Path>> newTabPaths) {
         this.newTabPaths = newTabPaths;
     }
 
@@ -62,14 +64,19 @@ public class Current {
     }
 
     public void putTab(Tab tab, Path path, WebView webview) {
+        putTab(tab, Optional.ofNullable(path), webview);
+    }
+
+    public void putTab(Tab tab, Optional<Path> path, WebView webview) {
         setCurrentTab(tab);
         if (Objects.nonNull(path))
             getNewTabPaths().put(tab, path);
         getNewTabWebViews().put(getCurrentTab(), webview);
     }
 
-    public Path currentPath() {
-        return getNewTabPaths().get(getCurrentTab());
+    public Optional<Path> currentPath() {
+        Optional<Path> path = getNewTabPaths().get(getCurrentTab());
+        return Objects.nonNull(path)?path:Optional.ofNullable(null);
     }
 
     public WebView currentView() {
@@ -81,8 +88,8 @@ public class Current {
         return Objects.isNull(webView) ? null : webView.getEngine();
     }
 
-    public Path currentParentRoot() {
-        return currentPath().getParent();
+    public Optional<Path> currentPathParent() {
+        return currentPath().map(Path::getParent);
     }
 
 

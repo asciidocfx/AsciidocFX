@@ -40,6 +40,7 @@ public class KindleMobiService {
             indikatorService.completeCycle();
 
             Platform.runLater(() -> {
+                asciiDocController.getRecentFiles().remove(currentPath.resolve("book.mobi").toString());
                 asciiDocController.getRecentFiles().add(0, currentPath.resolve("book.mobi").toString());
             });
 

@@ -84,7 +84,9 @@ public class Html5BookService {
             IOHelper.writeToFile(currentPath.resolve("book.html"), htmlContent, CREATE, TRUNCATE_EXISTING);
 
             Platform.runLater(() -> {
+                asciiDocController.getRecentFiles().remove(currentPath.resolve("book.html").toString());
                 asciiDocController.getRecentFiles().add(0, currentPath.resolve("book.html").toString());
+
             });
 
             indikatorService.completeCycle();

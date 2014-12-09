@@ -35,13 +35,13 @@ import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
+import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import net.sourceforge.plantuml.FileFormat;
@@ -80,7 +80,6 @@ import java.nio.file.Paths;
 import java.security.CodeSource;
 import java.util.*;
 import java.util.concurrent.*;
-import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -91,22 +90,18 @@ import static java.nio.file.StandardOpenOption.*;
 @Controller
 public class AsciiDocController extends TextWebSocketHandler implements Initializable {
 
-    Logger logger = LoggerFactory.getLogger(AsciiDocController.class);
+    private Logger logger = LoggerFactory.getLogger(AsciiDocController.class);
 
     public TabPane tabPane;
     public WebView previewView;
     public SplitPane splitPane;
     public SplitPane splitPaneVertical;
-    public Menu recentMenu;
     public TreeView<Item> treeView;
     public Label splitHideButton;
     public Label WorkingDirButton;
     public AnchorPane rootAnchor;
-
     public MenuBar recentFilesBar;
-    public HBox windowHBox;
     public ProgressBar indikator;
-    public Hyperlink lastConvertedFileLink;
     public ListView<String> recentListView;
     public MenuItem openFileTreeItem;
     public MenuItem openFileListItem;
@@ -114,22 +109,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
     public MenuItem copyPathListItem;
     public MenuItem copyTreeItem;
     public MenuItem copyListItem;
-    public ReentrantLock lock = new ReentrantLock();
-
-    private Supplier<String> workindDirectorySupplier = () -> {
-
-        DirectoryChooser directoryChooser = new DirectoryChooser();
-        directoryChooser.setTitle("Select working directory");
-        File file = directoryChooser.showDialog(null);
-
-        workingDirectory = Optional.ofNullable(file.toPath().toString());
-
-        this.workingDirectory.ifPresent(path -> {
-            this.fileBrowser.browse(treeView, this, path);
-        });
-
-        return file.toPath().toString();
-    };
+    private WebView mathjaxView;
 
     @Autowired
     private TablePopupController tablePopupController;
@@ -152,9 +132,6 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
     @Autowired
     private Epub3Service epub3Service;
 
-    CompletableFuture future = new CompletableFuture();
-    ScheduledExecutorService sch = Executors.newSingleThreadScheduledExecutor();
-
     @Autowired
     private Current current;
 
@@ -170,10 +147,11 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
     @Autowired
     private SampleBookService sampleBookService;
 
+    @Autowired
+    private EmbeddedWebApplicationContext server;
+
     private ExecutorService singleWorker = Executors.newSingleThreadExecutor();
-
     private ExecutorService threadPollWorker = Executors.newFixedThreadPool(4);
-
 
     private Stage stage;
     private WebEngine previewEngine;
@@ -182,27 +160,65 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
     private Scene scene;
     private AnchorPane tableAnchor;
     private Stage tableStage;
-
     private Clipboard clipboard = Clipboard.getSystemClipboard();
-    private Optional<Path> initialDirectory = Optional.empty();
-    private ObservableList<String> recentFiles = FXCollections.observableArrayList();
-
+    private Optional<Path> initialDirectoryy = Optional.ofNullable(null);
+    private ObservableList<String> recentFiles = FXCollections.synchronizedObservableList(FXCollections.observableArrayList());
     private AnchorPane configAnchor;
     private Stage configStage;
-
-    @Autowired
-    private EmbeddedWebApplicationContext server;
-
     private int tomcatPort = 8080;
     private HostServicesDelegate hostServices;
     private Path configPath;
     private Config config;
-    private Optional<String> workingDirectory;
+    private Optional<Path> workingDirectory = Optional.empty();
+    private Optional<File> initialDirectory = Optional.empty();
 
-    List<String> bookNames = Arrays.asList("book.asc", "book.txt", "book.asciidoc", "book.adoc", "book.ad");
-    private ScheduledFuture<?> scheduledFuture;
-    private Timeline fiveSecondsWonder;
-    private WebView mathjaxView;
+    private List<String> bookNames = Arrays.asList("book.asc", "book.txt", "book.asciidoc", "book.adoc", "book.ad");
+
+    private Supplier<Path> workingDirectorySupplier = () -> {
+
+        DirectoryChooser directoryChooser = newDirectoryChooser("Select working directory");
+        File file = directoryChooser.showDialog(null);
+
+        workingDirectory = Optional.ofNullable(file.toPath());
+
+        this.workingDirectory.ifPresent(path -> {
+            this.fileBrowser.browse(treeView, this, path);
+        });
+
+        return Objects.nonNull(file) ? file.toPath() : null;
+    };
+
+    private DirectoryChooser newDirectoryChooser(String title) {
+        DirectoryChooser directoryChooser = new DirectoryChooser();
+        directoryChooser.setTitle(title);
+        initialDirectory.ifPresent(file-> {
+            if(Files.isDirectory(file.toPath()))
+                directoryChooser.setInitialDirectory(file);
+            else
+                directoryChooser.setInitialDirectory(file.toPath().getParent().toFile());
+        });
+        return directoryChooser;
+    }
+
+    private Supplier<Path> pathSaveSupplier = () -> {
+        FileChooser chooser = newFileChooser("Save Document");
+        chooser.getExtensionFilters().add(new ExtensionFilter("Asciidoc", "*.asc", "*.asciidoc", "*.adoc", "*.ad", "*.txt"));
+        File file = chooser.showSaveDialog(null);
+        return Objects.nonNull(file) ? file.toPath() : null;
+    };
+
+    private FileChooser newFileChooser(String title) {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle(title);
+        initialDirectory.ifPresent(file->{
+            if(Files.isDirectory(file.toPath()))
+                fileChooser.setInitialDirectory(file);
+            else
+                fileChooser.setInitialDirectory(file.toPath().getParent().toFile());
+        });
+
+        return fileChooser;
+    }
 
     ChangeListener<String> lastRenderedChangeListener = (observableValue, old, nev) -> {
         runSingleTaskLater(task -> {
@@ -243,7 +259,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
     @FXML
     private void generatePdf(ActionEvent event) {
 
-        Path currentPath = Paths.get(workingDirectory.orElseGet(workindDirectorySupplier));
+        Path currentPath = workingDirectory.orElseGet(workingDirectorySupplier);
         docBookController.generateDocbook(previewEngine, currentPath, false);
 
         runTaskLater((task) -> {
@@ -254,14 +270,12 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
     @FXML
     private void generateSampleBook(ActionEvent event) {
 
-        DirectoryChooser directoryChooser = new DirectoryChooser();
-        directoryChooser.setTitle("Select a New Directory for sample book");
+        DirectoryChooser directoryChooser = newDirectoryChooser("Select a New Directory for sample book");
         File file = directoryChooser.showDialog(null);
         runTaskLater((task) -> {
             sampleBookService.produceSampleBook(configPath, file.toPath());
-            workingDirectory = Optional.of(file.toString());
-            initialDirectory = Optional.of(file.toPath());
-            fileBrowser.browse(treeView, this, file.toString());
+            workingDirectory = Optional.of(file.toPath());
+            fileBrowser.browse(treeView, this, file.toPath());
             Platform.runLater(() -> {
                 directoryView(null);
                 addTab(file.toPath().resolve("book.asc"));
@@ -271,7 +285,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
 
     @FXML
     private void convertDocbook(ActionEvent event) {
-        Path currentPath = Paths.get(workingDirectory.orElseGet(workindDirectorySupplier));
+        Path currentPath = workingDirectory.orElseGet(workingDirectorySupplier);
 //        Path currentPath = initialDirectory.map(path -> Files.isDirectory(path) ? path : path.getParent()).get();
         docBookController.generateDocbook(previewEngine, currentPath, true);
 
@@ -281,7 +295,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
     private void convertEpub(ActionEvent event) throws Exception {
 
 //        Path currentPath = initialDirectory.map(path -> Files.isDirectory(path) ? path : path.getParent()).get();
-        Path currentPath = Paths.get(workingDirectory.orElseGet(workindDirectorySupplier));
+        Path currentPath = workingDirectory.orElseGet(workingDirectorySupplier);
         docBookController.generateDocbook(previewEngine, currentPath, false);
 
         runTaskLater((task) -> {
@@ -331,13 +345,15 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
                 ostream.flush();
                 ostream.close();
 
-                Path path = Paths.get(workingDirectory.orElseGet(workindDirectorySupplier));
+                if (!current.currentPath().isPresent())
+                   saveDoc();
+
+                Path path = current.currentPathParent().get();
                 Files.createDirectories(path.resolve("images"));
 
                 Files.write(path.resolve("images/").resolve(fileName), ostream.toByteArray(), CREATE, WRITE, TRUNCATE_EXISTING);
 
                 lastRenderedChangeListener.changed(null, lastRendered.getValue(), lastRendered.getValue());
-
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -376,7 +392,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
     private void convertMobi(ActionEvent event) throws Exception {
 
 
-        Path currentPath = Paths.get(workingDirectory.orElseGet(workindDirectorySupplier));
+        Path currentPath = workingDirectory.orElseGet(workingDirectorySupplier);
 
         if (Objects.nonNull(config.getKindlegenDir())) {
             if (!Files.exists(Paths.get(config.getKindlegenDir()))) {
@@ -385,8 +401,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
         }
 
         if (Objects.isNull(config.getKindlegenDir())) {
-            FileChooser fileChooser = new FileChooser();
-            fileChooser.setTitle("Select 'kindlegen' File");
+            FileChooser fileChooser = newFileChooser("Select 'kindlegen' executable");
             File kindlegenFile = fileChooser.showOpenDialog(null);
             if (Objects.isNull(kindlegenFile))
                 return;
@@ -405,7 +420,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
     @FXML
     private void generateHtml(ActionEvent event) {
 
-        Path currentPath = Paths.get(workingDirectory.orElseGet(workindDirectorySupplier));
+        Path currentPath = workingDirectory.orElseGet(workingDirectorySupplier);
 
         htmlBookService.produceXhtml5(previewEngine, currentPath, configPath);
     }
@@ -472,9 +487,9 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
 
         WebEngine mathjaxEngine = mathjaxView.getEngine();
         mathjaxEngine.getLoadWorker().stateProperty().addListener((observableValue1, state, state2) -> {
-                JSObject window = (JSObject) mathjaxEngine.executeScript("window");
-                if (Objects.isNull(window.getMember("app"))) ;
-                window.setMember("app", this);
+            JSObject window = (JSObject) mathjaxEngine.executeScript("window");
+            if (Objects.isNull(window.getMember("app"))) ;
+            window.setMember("app", this);
         });
         //
 
@@ -485,9 +500,9 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
         previewEngine.load(String.format("http://localhost:%d/index.html", tomcatPort));
 
         previewEngine.getLoadWorker().stateProperty().addListener((observableValue1, state, state2) -> {
-                JSObject window = (JSObject) previewEngine.executeScript("window");
-                if (Objects.isNull(window.getMember("app"))) ;
-                window.setMember("app", this);
+            JSObject window = (JSObject) previewEngine.executeScript("window");
+            if (Objects.isNull(window.getMember("app"))) ;
+            window.setMember("app", this);
         });
 
         previewEngine.getLoadWorker().exceptionProperty().addListener((ov, t, t1) -> {
@@ -497,9 +512,10 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
 
         /// Treeview
 
-        workingDirectory = Optional.ofNullable(config.getWorkingDirectory());
+        if(Objects.nonNull(config.getWorkingDirectory()))
+        workingDirectory = Optional.ofNullable(Paths.get(config.getWorkingDirectory()));
 
-        String workDir = workingDirectory.orElse(System.getProperty("user.home"));
+        Path workDir = workingDirectory.orElse(Paths.get(System.getProperty("user.home")));
 //
         fileBrowser.browse(treeView, this, workDir);
 
@@ -632,20 +648,14 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
 
     @FXML
     public void changeWorkingDir(Event actionEvent) {
-        DirectoryChooser directoryChooser = new DirectoryChooser();
-        initialDirectory.ifPresent(path -> {
-            if (Files.isDirectory(path))
-                directoryChooser.setInitialDirectory(path.toFile());
-            else
-                directoryChooser.setInitialDirectory(path.getParent().toFile());
-        });
-        directoryChooser.setTitle("Select Working Directory");
+        DirectoryChooser directoryChooser = newDirectoryChooser("Select Working Directory");
         File selectedDir = directoryChooser.showDialog(null);
         if (Objects.nonNull(selectedDir)) {
             config.setWorkingDirectory(selectedDir.toString());
-            workingDirectory = Optional.of(selectedDir.toString());
-            initialDirectory = Optional.of(selectedDir.toPath());
-            fileBrowser.browse(treeView, this, selectedDir.toString());
+            workingDirectory = Optional.of(selectedDir.toPath());
+            fileBrowser.browse(treeView, this, selectedDir.toPath());
+            initialDirectory = Optional.ofNullable(selectedDir);
+
         }
     }
 
@@ -679,41 +689,20 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
 
     @FXML
     private void openDoc(Event event) {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Asciidoc", "*.asc", "*.asciidoc", "*.adoc", "*.ad", "*.txt"));
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("All", "*.*"));
-        initialDirectory.ifPresent(e -> {
-            if (Files.isDirectory(e))
-                fileChooser.setInitialDirectory(e.toFile());
-            else
-                fileChooser.setInitialDirectory(e.getParent().toFile());
-        });
+        FileChooser fileChooser = newFileChooser("Open Asciidoc File");
+        fileChooser.getExtensionFilters().add(new ExtensionFilter("Asciidoc", "*.asc", "*.asciidoc", "*.adoc", "*.ad", "*.txt"));
+        fileChooser.getExtensionFilters().add(new ExtensionFilter("All", "*.*"));
         List<File> chosenFiles = fileChooser.showOpenMultipleDialog(stage);
         if (chosenFiles != null) {
-            initialDirectory = Optional.of(chosenFiles.get(0).toPath());
             chosenFiles.stream().map(e -> e.toPath()).forEach(this::addTab);
             chosenFiles.stream()
                     .map(File::toString).filter(file -> !recentFiles.contains(file))
                     .forEach(recentFiles::addAll);
+            initialDirectory = Optional.ofNullable(chosenFiles.get(0));
         }
 
     }
 
-    @FXML
-    private void recentFileList(Event event) {
-        List<MenuItem> menuItems = recentFiles.stream().map(path -> Paths.get(path)).filter(path -> !Files.isDirectory(path)).map(path -> {
-            MenuItem menuItem = new MenuItem();
-            menuItem.setText(path.toAbsolutePath().toString());
-            menuItem.setOnAction(actionEvent -> {
-                addTab(path);
-            });
-            return menuItem;
-        }).limit(config.getRecentFileListSize()).collect(Collectors.toList());
-
-        recentMenu.getItems().clear();
-        recentMenu.getItems().addAll(menuItems);
-
-    }
 
     @FXML
     public void newDoc(Event event) {
@@ -736,7 +725,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
             }
         });
         ((Label) tab.getGraphic()).setText("new *");
-        current.putTab(tab, null, webView);
+        current.putTab(tab, Optional.empty(), webView);
         tabPane.getTabs().add(tab);
 
     }
@@ -923,9 +912,9 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
         WebEngine webEngine = webView.getEngine();
 
         webEngine.getLoadWorker().stateProperty().addListener((observable, oldValue, newValue) -> {
-                JSObject window = (JSObject) webEngine.executeScript("window");
-                if (Objects.isNull(window.getMember("app"))) ;
-                window.setMember("app", this);
+            JSObject window = (JSObject) webEngine.executeScript("window");
+            if (Objects.isNull(window.getMember("app"))) ;
+            window.setMember("app", this);
         });
         webEngine.load(String.format("http://localhost:%d/editor.html", tomcatPort));
         return webView;
@@ -966,20 +955,21 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
 
         DeferredResult<String> deferredResult = new DeferredResult<String>();
 
-        String uri = request.getRequestURI();
+        current.currentPathParent().ifPresent(path -> {
+            String uri = request.getRequestURI();
 
-        if (uri.startsWith("/"))
-            uri = uri.substring(1);
+            if (uri.startsWith("/"))
+                uri = uri.substring(1);
 
-        if (Objects.nonNull(current.currentPath())) {
-            Path ascFile = current.currentParentRoot().resolve(uri);
+            Path ascFile = path.resolve(uri);
 
             Platform.runLater(() -> {
                 this.addTab(ascFile);
             });
 
             deferredResult.setResult("OK");
-        }
+        });
+
 
         return deferredResult;
     }
@@ -994,11 +984,11 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
         if (uri.startsWith("/"))
             uri = uri.substring(1);
 
-        Path imageFile = null;
-        if (Objects.nonNull(current.currentPath()))
-            imageFile = current.currentParentRoot().resolve(uri);
-        else
-            imageFile = workingDirectory.map(Paths::get).get().resolve(uri);
+        Path imageFile = current.currentPathParent()
+                .orElseGet(() -> workingDirectory.get())
+                .resolve(uri);
+        ;
+
 
         try {
             temp = Files.readAllBytes(imageFile);
@@ -1017,7 +1007,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
     public String plantUml(String uml, String type, String fileName) throws IOException {
         Objects.requireNonNull(fileName);
 
-        if (!fileName.endsWith(".png"))
+        if (!fileName.endsWith(".png") && !"ascii".equalsIgnoreCase(type))
             return "";
 
         if (!uml.contains("@startuml") && !uml.contains("@enduml"))
@@ -1035,7 +1025,10 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
             // default: png
             else {
 
-                Path path = Paths.get(workingDirectory.orElseGet(workindDirectorySupplier));
+                if (!current.currentPath().isPresent())
+                    saveDoc();
+
+                Path path = current.currentPathParent().get();
                 Path umlPath = path.resolve("images/").resolve(fileName);
 
                 Integer cacheHit = current.getCache().get(fileName);
@@ -1097,21 +1090,27 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
             return;
         }
 
-        Path currentPath = Paths.get(workingDirectory.orElseGet(workindDirectorySupplier));
+        if(!current.currentPath().isPresent())
+            saveDoc();
+
+        Path currentPath = current.currentPath().orElseGet(pathSaveSupplier);
 
         String asciidoc = current.currentEditorValue();
 
         String html = renderService.convertHtmlArticle(previewEngine, IOHelper.normalize(asciidoc));
-
+        indikatorService.startCycle();
         runTaskLater(task -> {
-            indikatorService.startCycle();
+
             String tabText = current.getCurrentTabText().replace("*", "").trim();
 
-            Path path = currentPath.resolve(tabText.concat(".html"));
+            Path path = currentPath.getParent().resolve(tabText.concat(".html"));
             IOHelper.writeToFile(path, html, CREATE, TRUNCATE_EXISTING, WRITE);
-            recentFiles.add(0, path.toString());
 
-            indikatorService.hideIndikator();
+            runActionLater(run->{
+                indikatorService.hideIndikator();
+                recentFiles.remove(path.toString());
+                recentFiles.add(0, path.toString());
+            });
 
         });
 
@@ -1130,12 +1129,15 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
             return;
         }
 
-        Path currentPath = Paths.get(workingDirectory.orElseGet(workindDirectorySupplier));
+        if(!current.currentPath().isPresent())
+            saveDoc();
+
+        Path currentPath = current.currentPath().orElseGet(pathSaveSupplier);
 
         String docbook = docBookController.generateDocbookArticle(previewEngine, currentPath);
 
         runTaskLater(task -> {
-            fopServiceRunner.generateArticle(currentPath, configPath, docbook);
+            fopServiceRunner.generateArticle(currentPath.getParent(), configPath, docbook);
         });
 
     }
@@ -1157,27 +1159,23 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
 
     @FXML
     public void saveDoc(Event actionEvent) {
-        Path currentPath = current.currentPath();
-        if (currentPath == null) {
-            FileChooser chooser = new FileChooser();
-            workingDirectory.ifPresent(path -> {
-                chooser.setInitialDirectory(Paths.get(path).toFile());
-            });
-            chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Asciidoc", "*.asc", "*.asciidoc", "*.adoc", "*.ad", "*.txt"));
-            File file = chooser.showSaveDialog(null);
-            if (file == null)
-                return;
-            IOHelper.writeToFile(file, (String) current.currentEngine().executeScript("editor.getValue();"), TRUNCATE_EXISTING, CREATE);
-            current.putTab(current.getCurrentTab(), file.toPath(), current.currentView());
-            current.setCurrentTabText(file.toPath().getFileName().toString());
-            recentFiles.remove(file.toString());
-            recentFiles.add(0, file.toString());
-        } else {
-            IOHelper.writeToFile(currentPath.toFile(), (String) current.currentEngine().executeScript("editor.getValue();"), TRUNCATE_EXISTING, CREATE);
-        }
+
+        Path currentPath = current.currentPath().orElseGet(pathSaveSupplier);
+
+        if (Objects.isNull(currentPath))
+            return;
+
+        IOHelper.writeToFile(currentPath, (String) current.currentEngine().executeScript("editor.getValue();"), TRUNCATE_EXISTING, CREATE);
+        current.putTab(current.getCurrentTab(), currentPath, current.currentView());
+        current.setCurrentTabText(currentPath.getFileName().toString());
+        recentFiles.remove(currentPath.toString());
+        recentFiles.add(0, currentPath.toString());
 
         Label label = (Label) current.getCurrentTab().getGraphic();
         label.setText(label.getText().replace(" *", ""));
+
+        initialDirectory = Optional.ofNullable(currentPath.toFile());
+
     }
 
     private void fitToParent(Node node) {
@@ -1258,10 +1256,6 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
 
     public HostServicesDelegate getHostServices() {
         return hostServices;
-    }
-
-    public Optional<Path> getInitialDirectory() {
-        return initialDirectory;
     }
 
     public Config getConfig() {

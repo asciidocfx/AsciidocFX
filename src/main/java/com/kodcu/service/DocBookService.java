@@ -131,6 +131,7 @@ public class DocBookService {
                 indikatorService.completeCycle();
 
                 Platform.runLater(()->{
+                    asciiDocController.getRecentFiles().remove(currentPath.resolve("book.xml").toString());
                     asciiDocController.getRecentFiles().add(0,currentPath.resolve("book.xml").toString());
                 });
 
