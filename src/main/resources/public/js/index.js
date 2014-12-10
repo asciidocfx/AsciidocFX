@@ -84,7 +84,7 @@ function runScroller(content) {
         scrollToElement(".admonitionblock",$(renderedSelection).find(".content").text());
     }
     else if ($(renderedSelection).is(".exampleblock")) {
-        scrollToElement(".exampleblock",$(renderedSelection).text());
+        scrollToUniqueElement(".exampleblock", $(renderedSelection).text(), /^Example \d+\./, "Example 1.");
     }
     else if ($(renderedSelection).is(".listingblock")) {
         scrollToElement(".listingblock",$(renderedSelection).text());
@@ -93,7 +93,14 @@ function runScroller(content) {
         scrollToElement(".literalblock",$(renderedSelection).text());
     }
     else if ($(renderedSelection).is(".openblock")) {
-        scrollToElement(".listingblock, .openblock",$(renderedSelection).find(".content").text());
+        var found = scrollToUniqueElement(".exampleblock", $(renderedSelection).text(), /^Example \d+\./,"");
+
+        if(!found)
+            found = scrollToElement(".openblock, .sidebarblock",$(renderedSelection).text());
+        if(!found)
+            found = scrollToElement(".quoteblock > blockquote",$(renderedSelection).find(".paragraph").text());
+        if(!found)
+            scrollToElement(".listingblock, .literalblock",$(unicodef(renderedSelection)).text());
     }
     else if ($(renderedSelection).is(".sidebarblock")) {
         scrollToElement(".sidebarblock",$(renderedSelection).text());
@@ -102,7 +109,7 @@ function runScroller(content) {
         scrollToElement(".quoteblock > blockquote",$(renderedSelection).find(".paragraph").text());
     }
     else if ($(renderedSelection).is(".paragraph")) {
-        scrollToElement(".paragraph",$(renderedSelection).text());
+        scrollToElement(".paragraph, .quoteblock > blockquote",$(renderedSelection).text());
     }
     else if ($(renderedSelection).is(".ulist")) {
         scrollToElement(".ulist:not(.checklist) > ul > li",$(renderedSelection).text());
@@ -111,22 +118,10 @@ function runScroller(content) {
         scrollToElement(".olist > ol > li",$(renderedSelection).text());
     }
     else if ($(renderedSelection).is(".colist")) {
-        $(".colist > table > tbody > tr").each(function(){
-            var callout = $(this).text().trim().replace(/^\d+ */,"").trim();
-            if(callout == $(renderedSelection).text().trim()) {
-                scrollTo60($(this).offset().top);
-                return false;
-            }
-        });
+        scrollToUniqueElement(".colist > table > tbody > tr", $(renderedSelection).text(), /^\d+ */, "");
     }
     else if ($(renderedSelection).is(".tableblock")) {
-        $("table.tableblock, table.frame-all").each(function(){
-            var tabletext = $(this).text().trim().replace(/^(T|t)able \d+\./,"Table 1.");
-            if(simplify(tabletext) == simplify($(renderedSelection).text())) {
-                scrollTo60($(this).offset().top);
-                return false;
-            }
-        });
+        scrollToUniqueElement("table.tableblock, table.frame-all", $(renderedSelection).text(), /^Table \d+\./, "Table 1.");
     }
     else {
         var header = false;
@@ -146,15 +141,35 @@ function runScroller(content) {
     }
 }
 
-function scrollToElement(className,content){
-    $(className).each(function(){
+function scrollToElement(elements,content){
+    var found = false;
+    $(elements).each(function(){
         if(simplify($(this).text()) == simplify(content)) {
             scrollTo60($(this).offset().top);
+            found = true;
             return false;
         }
     });
+    return found;
+}
+
+function scrollToUniqueElement(elements,content,pattern,expected){
+    var found = false;
+    $(elements).each(function(){
+        var element = $(this).text().trim().replace(pattern,expected);
+        if(simplify(element) == simplify(content)) {
+            scrollTo60($(this).offset().top);
+            found = true;
+            return false;
+        }
+    });
+    return found;
 }
 
 function simplify(text){
-    return text.replace(/( |\n|\r|\t)/g, "");
+    return text.replace(/( |\n|\r|\t|\")/g, "");
+}
+
+function unicodef(text){
+    return text.replace(/&#8217;/g,"&#39;").replace(/&#8230;&#8203;/,"..."); // replace ’ with ' also ...
 }
