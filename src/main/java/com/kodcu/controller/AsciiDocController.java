@@ -710,6 +710,8 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
         Label imageLabel = AwesomeDude.createIconLabel(AwesomeIcon.IMAGE, iconSize);
         Label subscriptLabel = AwesomeDude.createIconLabel(AwesomeIcon.SUBSCRIPT, iconSize);
         Label superScriptLabel = AwesomeDude.createIconLabel(AwesomeIcon.SUPERSCRIPT, iconSize);
+        Label underlineLabel = AwesomeDude.createIconLabel(AwesomeIcon.UNDERLINE, iconSize);
+        Label hyperlinkLabel = AwesomeDude.createIconLabel(AwesomeIcon.LINK, iconSize);
 
 
         // Events
@@ -752,6 +754,15 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
         olListLabel.setOnMouseClicked(event -> {
             current.currentEngine().executeScript("addOlList()");
         });
+        
+        underlineLabel.setOnMouseClicked(event -> {
+            current.currentEngine().executeScript("underlinedText()");
+        });
+
+        hyperlinkLabel.setOnMouseClicked(event -> {
+            current.currentEngine().executeScript("addHyperLink()");
+        });
+
 
 //        ColorPicker colorPicker=new ColorPicker(Color.BLACK);
 
@@ -761,7 +772,9 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
                 new Menu("", saveLabel),
                 new Menu("", boldLabel),
                 new Menu("", italicLabel),
+                new Menu("", underlineLabel),
                 new Menu("", headerLabel),
+                new Menu("", hyperlinkLabel),
                 new Menu("", codeLabel),
                 new Menu("", ulListLabel),
                 new Menu("", olListLabel),

@@ -72,46 +72,58 @@ editor.commands.addCommand({
     readOnly: true
 });
 
-function formatText(editor, matcher, character) {
+function formatText(editor, matcher, firstCharacter, lastCharacter) {
     var range = editor.getSelectionRange();
     var text = editor.session.getTextRange(range);
+    var firstCharLength = firstCharacter.length;
+    var lastCharLength = lastCharacter.length;
 
     if (matcher(text)) {
-        text = text.substring(1, text.length - 1);
+        text = text.substring(firstCharLength, text.length - lastCharLength);
         editor.session.replace(range, text);
     }
     else {
         var virtualRange = editor.getSelectionRange();
-        virtualRange.setStart(range.start.row, range.start.column - 1);
-        virtualRange.setEnd(range.end.row, range.end.column + 1);
+        virtualRange.setStart(range.start.row, range.start.column - firstCharLength);
+        virtualRange.setEnd(range.end.row, range.end.column + lastCharLength);
 
-        var virtual_text = editor.session.getTextRange(virtualRange);
-        if (matcher(virtual_text)) {
+        var virtualText = editor.session.getTextRange(virtualRange);
+        if (matcher(virtualText)) {
             editor.session.replace(virtualRange, text);
         }
         else {
-            editor.session.replace(range, character + text + character);
+            editor.session.replace(range, firstCharacter + text + lastCharacter);
             if (range.end.column == range.start.column) {
-                editor.navigateTo(range.end.row, range.end.column + 1);
+                editor.navigateTo(range.end.row, range.end.column + firstCharLength);
             }
         }
     }
 }
 
 function boldText() {
-    formatText(editor, matchBoldText, "*");
+    formatText(editor, matchBoldText, "*", "*");
 }
 
 function italicizeText() {
-    formatText(editor, matchItalicizedText, "_");
+    formatText(editor, matchItalicizedText, "_", "_");
 }
 
 function superScript() {
-    formatText(editor, matchSuperScriptText, "^");
+    formatText(editor, matchSuperScriptText, "^", "^");
 }
 
 function subScript() {
-    formatText(editor, matchSubScriptText, "~");
+    formatText(editor, matchSubScriptText, "~", "~");
+}
+
+function underlinedText() {
+    formatText(editor, matchUnderlinedText, "+++<u>", "</u>+++");
+}
+
+function addHyperLink(){
+    var cursorPosition = editor.getCursorPosition();
+    var session = editor.getSession();
+    session.insert(cursorPosition,"http://url[text]");
 }
 
 function addSourceCode() {
@@ -170,6 +182,13 @@ function addUlList(){
 }
 
 editor.commands.addCommand({
+    name: 'underline-selected',
+    bindKey: {win: 'Ctrl-U', mac: 'Command-U'},
+    exec: underlinedText,
+    readOnly: true
+});
+
+editor.commands.addCommand({
     name: 'bold-selected',
     bindKey: {win: 'Ctrl-B', mac: 'Command-B'},
     exec: boldText,
@@ -181,7 +200,7 @@ editor.commands.addCommand({
     bindKey: {win: 'Ctrl-Shift-C', mac: 'Command-Shift-C'},
     exec: function (editor) {
 
-        formatText(editor, matchCode, "`");
+        formatText(editor, matchCode, "`", "`");
     },
     readOnly: true
 });
@@ -324,4 +343,8 @@ function matchSubScriptText(text) {
 
 function matchCode(text) {
     return text.match(/\`.*\`/g);
+}
+
+function matchUnderlinedText(text) {
+    return text.match(/(\+\+\+\<\u\>).*(\<\/\u\>\+\+\+)/g);
 }
