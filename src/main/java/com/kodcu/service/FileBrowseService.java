@@ -9,7 +9,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.nio.file.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Created by usta on 12.07.2014.
@@ -25,21 +29,22 @@ public class FileBrowseService {
 
     private TreeItem<Item> rootItem;
 
-    public void browse(TreeView<Item> treeView, AsciiDocController controller, Path browserPath) {
+    public void browse(final TreeView<Item> treeView, final AsciiDocController controller, final Path browserPath) {
 
         Platform.runLater(() -> {
 
             rootItem = new TreeItem<>(new Item(browserPath, String.format("Working Directory (%s)", browserPath)));
             rootItem.setExpanded(true);
-            DirectoryStream<Path> files = null;
+            final List<Path> files = new LinkedList<>();
             try {
-                files = Files.newDirectoryStream(browserPath);
-            } catch (IOException e) {
+                Files.newDirectoryStream(browserPath).forEach(path -> files.add(path));
+            } catch (final IOException e) {
                 e.printStackTrace();
             }
 
             treeView.setRoot(rootItem);
 
+            Collections.sort(files);
             files.forEach(path -> {
                 addToTreeView(path);
             });
