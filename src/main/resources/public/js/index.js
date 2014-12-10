@@ -93,14 +93,7 @@ function runScroller(content) {
         scrollToElement(".literalblock",$(renderedSelection).text());
     }
     else if ($(renderedSelection).is(".openblock")) {
-        var found = scrollToUniqueElement(".exampleblock", $(renderedSelection).text(), /^Example \d+\./,"");
-
-        if(!found)
-            found = scrollToElement(".openblock, .sidebarblock",$(renderedSelection).text());
-        if(!found)
-            found = scrollToElement(".quoteblock > blockquote",$(renderedSelection).find(".paragraph").text());
-        if(!found)
-            scrollToElement(".listingblock, .literalblock",$(unicodef(renderedSelection)).text());
+        scrollToElement(".openblock",$(renderedSelection).text());
     }
     else if ($(renderedSelection).is(".sidebarblock")) {
         scrollToElement(".sidebarblock",$(renderedSelection).text());
@@ -142,34 +135,24 @@ function runScroller(content) {
 }
 
 function scrollToElement(elements,content){
-    var found = false;
     $(elements).each(function(){
         if(simplify($(this).text()) == simplify(content)) {
             scrollTo60($(this).offset().top);
-            found = true;
             return false;
         }
     });
-    return found;
 }
 
 function scrollToUniqueElement(elements,content,pattern,expected){
-    var found = false;
     $(elements).each(function(){
         var element = $(this).text().trim().replace(pattern,expected);
         if(simplify(element) == simplify(content)) {
             scrollTo60($(this).offset().top);
-            found = true;
             return false;
         }
     });
-    return found;
 }
 
 function simplify(text){
     return text.replace(/( |\n|\r|\t|\")/g, "");
-}
-
-function unicodef(text){
-    return text.replace(/&#8217;/g,"&#39;").replace(/&#8230;&#8203;/,"..."); // replace ’ with ' also ...
 }
