@@ -955,7 +955,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
         try {
             temp = Files.readAllBytes(imageFile);
         } catch (Exception ex) {
-            logger.debug(ex.getMessage(), ex);
+            logger.debug(imageFile + " is not found");
         }
 
 
