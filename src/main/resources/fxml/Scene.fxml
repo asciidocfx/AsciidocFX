@@ -11,52 +11,51 @@
 <?import javafx.scene.web.*?>
 <?import javafx.scene.web.WebView?>
 
-<AnchorPane id="AnchorPane" fx:id="rootAnchor" styleClass="rootAnchor" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="com.kodcu.controller.AsciiDocController">
+<AnchorPane id="AnchorPane" fx:id="rootAnchor" prefHeight="727.0" prefWidth="1354.0" styleClass="rootAnchor" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="com.kodcu.controller.AsciiDocController">
   <children>
-    <SplitPane fx:id="splitPane" dividerPositions="0.11320754716981132, 0.5807127882599581" focusTraversable="true" prefHeight="694.0" AnchorPane.bottomAnchor="1.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="-1.0">
+    <SplitPane fx:id="splitPane" dividerPositions="0.17751479289940827, 0.606508875739645" focusTraversable="true" AnchorPane.bottomAnchor="1.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="-1.0">
       <items>
-        <SplitPane fx:id="splitPaneVertical" dividerPositions="0.7246376811594203" focusTraversable="true" minWidth="0.0" orientation="VERTICAL">
+        <SplitPane fx:id="splitPaneVertical" dividerPositions="0.715076071922545" focusTraversable="true" minWidth="0.0" orientation="VERTICAL">
           <items>
             <AnchorPane minHeight="0.0" prefHeight="-1.0" prefWidth="-1.0">
               <children>
                 <VBox prefHeight="497.0" prefWidth="164.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                   <children>
-                    <AnchorPane maxHeight="33.0" minHeight="33.0" prefHeight="33.0" prefWidth="164.0">
+                    <HBox fillHeight="true" prefHeight="33.0" spacing="5.0">
                       <children>
-                        <HBox fillHeight="true" prefHeight="33.0" prefWidth="320.0" spacing="5.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                          <children>
-                            <Button mnemonicParsing="false" onAction="#hideLeftSplit" text="" HBox.hgrow="ALWAYS">
-                              <graphic>
-                                <Label id="changeWorkingDir" fx:id="splitHideButton" minWidth="-Infinity" mnemonicParsing="false" text="" />
-                              </graphic>
-                            </Button>
-                            <Button fx:id="changeWorkingDir" mnemonicParsing="false" onAction="#changeWorkingDir" text="" HBox.hgrow="ALWAYS">
-                              <graphic>
-                                <Label fx:id="WorkingDirButton" minWidth="-Infinity" mnemonicParsing="false" text="" />
-                              </graphic>
-                            </Button>
-                            <ProgressBar fx:id="indikator" prefWidth="100.0" progress="-1.0" visible="false" HBox.hgrow="ALWAYS" />
-                            <MenuButton minWidth="62.0" mnemonicParsing="false" text="Book" HBox.hgrow="ALWAYS">
+                        <Button mnemonicParsing="false" onAction="#hideLeftSplit" text="" HBox.hgrow="NEVER">
+                          <graphic>
+                            <Label id="changeWorkingDir" fx:id="splitHideButton" minWidth="-Infinity" mnemonicParsing="false" text="" />
+                          </graphic>
+                        </Button>
+                        <Button fx:id="changeWorkingDir" mnemonicParsing="false" onAction="#changeWorkingDir" text="" HBox.hgrow="NEVER">
+                          <graphic>
+                            <Label fx:id="WorkingDirButton" minWidth="-Infinity" mnemonicParsing="false" text="" />
+                          </graphic>
+                        </Button>
+                        <ProgressBar fx:id="indikator" maxWidth="1.7976931348623157E308" progress="-1.0" visible="false" HBox.hgrow="ALWAYS" />
+                        <MenuButton minWidth="62.0" mnemonicParsing="false" text="Book" HBox.hgrow="NEVER">
+                          <items>
+                            <MenuItem mnemonicParsing="false" onAction="#generateSampleBook" text="Sample Book" />
+                            <MenuItem mnemonicParsing="false" onAction="#generatePdf" text="PDF Book" />
+                            <MenuItem mnemonicParsing="false" onAction="#generateHtml" text="HTML Book" />
+                            <Menu mnemonicParsing="false" text="Ebook">
                               <items>
-                                <MenuItem mnemonicParsing="false" onAction="#generateSampleBook" text="Sample Book" />
-                                <MenuItem mnemonicParsing="false" onAction="#generatePdf" text="PDF Book" />
-                                <MenuItem mnemonicParsing="false" onAction="#generateHtml" text="HTML Book" />
-                                <Menu mnemonicParsing="false" text="Ebook">
-                                  <items>
-                                    <MenuItem mnemonicParsing="false" onAction="#convertEpub" text="Epub Book" />
-                                    <MenuItem mnemonicParsing="false" onAction="#convertMobi" text="Mobi Book" />
-                                  </items>
-                                </Menu>
-                                <MenuItem mnemonicParsing="false" onAction="#convertDocbook" text="Docbook" />
+                                <MenuItem mnemonicParsing="false" onAction="#convertEpub" text="Epub Book" />
+                                <MenuItem mnemonicParsing="false" onAction="#convertMobi" text="Mobi Book" />
                               </items>
-                            </MenuButton>
-                          </children>
-                          <padding>
-                            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                          </padding>
-                        </HBox>
+                            </Menu>
+                            <MenuItem mnemonicParsing="false" onAction="#convertDocbook" text="Docbook" />
+                          </items>
+                          <HBox.margin>
+                            <Insets />
+                          </HBox.margin>
+                        </MenuButton>
                       </children>
-                    </AnchorPane>
+                      <padding>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                      </padding>
+                    </HBox>
                     <TreeView fx:id="treeView" minWidth="0.0" prefHeight="464.0" prefWidth="164.0" showRoot="true" VBox.vgrow="ALWAYS">
                       <contextMenu>
                         <ContextMenu>
