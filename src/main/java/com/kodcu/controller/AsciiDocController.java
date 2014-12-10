@@ -26,7 +26,6 @@ import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -41,7 +40,6 @@ import javafx.scene.web.WebView;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
-import javafx.stage.Screen;
 import javafx.stage.Stage;
 import net.sourceforge.plantuml.FileFormat;
 import net.sourceforge.plantuml.FileFormatOption;
@@ -98,7 +96,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
     public SplitPane splitPaneVertical;
     public TreeView<Item> treeView;
     public Label splitHideButton;
-    public Label WorkingDirButton;
+    public Label workingDirButton;
     public AnchorPane rootAnchor;
     public MenuBar recentFilesBar;
     public ProgressBar indikator;
@@ -286,7 +284,6 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
     @FXML
     private void convertDocbook(ActionEvent event) {
         Path currentPath = workingDirectory.orElseGet(workingDirectorySupplier);
-//        Path currentPath = initialDirectory.map(path -> Files.isDirectory(path) ? path : path.getParent()).get();
         docBookController.generateDocbook(previewEngine, currentPath, true);
 
     }
@@ -294,7 +291,6 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
     @FXML
     private void convertEpub(ActionEvent event) throws Exception {
 
-//        Path currentPath = initialDirectory.map(path -> Files.isDirectory(path) ? path : path.getParent()).get();
         Path currentPath = workingDirectory.orElseGet(workingDirectorySupplier);
         docBookController.generateDocbook(previewEngine, currentPath, false);
 
@@ -418,31 +414,6 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
         htmlBookService.produceXhtml5(previewEngine, currentPath, configPath);
     }
 
-
-    @FXML
-    private void maximize(Event event) {
-
-        // Change stage properties
-        Rectangle2D bounds = Screen.getPrimary().getVisualBounds();
-
-        if (bounds.getHeight() == stage.getHeight() && bounds.getWidth() == stage.getWidth()) {
-            stage.setX(50);
-            stage.setY(50);
-            stage.setWidth(bounds.getWidth() * 0.8);
-            stage.setHeight(bounds.getHeight() * 0.8);
-        } else {
-            stage.setX(bounds.getMinX());
-            stage.setY(bounds.getMinY());
-            stage.setWidth(bounds.getWidth());
-            stage.setHeight(bounds.getHeight());
-        }
-    }
-
-    @FXML
-    private void minimize(ActionEvent event) {
-        getStage().setIconified(true);
-    }
-
     @Override
     public void initialize(URL url, ResourceBundle rb) {
 
@@ -488,7 +459,6 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
 
         mathjaxView.getEngine().load(String.format("http://localhost:%d/mathjax.html", tomcatPort));
 
-
         previewEngine = previewView.getEngine();
         previewEngine.load(String.format("http://localhost:%d/index.html", tomcatPort));
 
@@ -514,7 +484,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
 
         //
 
-        AwesomeDude.setIcon(WorkingDirButton, AwesomeIcon.FOLDER_ALT, "14.0");
+        AwesomeDude.setIcon(workingDirButton, AwesomeIcon.FOLDER_ALT, "14.0");
         AwesomeDude.setIcon(splitHideButton, AwesomeIcon.CHEVRON_LEFT, "14.0");
 
         tabPane.getTabs().addListener((ListChangeListener<Tab>) c -> {
@@ -695,7 +665,6 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
         }
 
     }
-
 
     @FXML
     public void newDoc(Event event) {

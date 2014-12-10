@@ -19,9 +19,9 @@
           <items>
             <AnchorPane minHeight="0.0" prefHeight="-1.0" prefWidth="-1.0">
               <children>
-                <VBox prefHeight="497.0" prefWidth="164.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                <VBox AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                   <children>
-                    <HBox fillHeight="true" prefHeight="33.0" spacing="5.0">
+                    <HBox fillHeight="true" maxWidth="1.7976931348623157E308" prefHeight="33.0" spacing="5.0">
                       <children>
                         <Button mnemonicParsing="false" onAction="#hideLeftSplit" text="" HBox.hgrow="NEVER">
                           <graphic>
@@ -30,7 +30,7 @@
                         </Button>
                         <Button fx:id="changeWorkingDir" mnemonicParsing="false" onAction="#changeWorkingDir" text="" HBox.hgrow="NEVER">
                           <graphic>
-                            <Label fx:id="WorkingDirButton" minWidth="-Infinity" mnemonicParsing="false" text="" />
+                            <Label fx:id="workingDirButton" minWidth="-Infinity" mnemonicParsing="false" text="" />
                           </graphic>
                         </Button>
                         <ProgressBar fx:id="indikator" maxWidth="1.7976931348623157E308" progress="-1.0" visible="false" HBox.hgrow="ALWAYS" />
@@ -56,7 +56,7 @@
                         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                       </padding>
                     </HBox>
-                    <TreeView fx:id="treeView" minWidth="0.0" prefHeight="464.0" prefWidth="164.0" showRoot="true" VBox.vgrow="ALWAYS">
+                    <TreeView fx:id="treeView" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minWidth="0.0" prefHeight="-1.0" prefWidth="-1.0" showRoot="true" VBox.vgrow="ALWAYS">
                       <contextMenu>
                         <ContextMenu>
                           <items>
@@ -73,14 +73,14 @@
             </AnchorPane>
             <AnchorPane maxHeight="264.5" minHeight="0.0" prefHeight="-1.0" prefWidth="-1.0">
               <children>
-                <VBox prefHeight="187.0" prefWidth="164.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                <VBox AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                   <children>
-                    <MenuBar fx:id="recentFilesBar" maxHeight="26.0" minHeight="26.0" prefHeight="26.0" prefWidth="164.0" styleClass="recentFilesBar">
+                    <MenuBar fx:id="recentFilesBar" maxHeight="26.0" minHeight="26.0" styleClass="recentFilesBar">
                       <menus>
                         <Menu mnemonicParsing="false" style="" text="Recent Files" />
                       </menus>
                     </MenuBar>
-                    <ListView id="recetListView" fx:id="recentListView" maxHeight="-1.0" prefHeight="161.0" prefWidth="164.0" styleClass="recentListView" VBox.vgrow="ALWAYS">
+                    <ListView id="recetListView" fx:id="recentListView" maxHeight="-1.0" styleClass="recentListView" VBox.vgrow="ALWAYS">
                       <contextMenu>
                         <ContextMenu>
                           <items>
@@ -97,14 +97,14 @@
             </AnchorPane>
           </items>
         </SplitPane>
-        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+        <AnchorPane minHeight="0.0" minWidth="0.0">
           <children>
-            <TabPane fx:id="tabPane" opacity="1.0" prefHeight="668.0" prefWidth="393.0" rotateGraphic="false" tabClosingPolicy="ALL_TABS" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+            <TabPane fx:id="tabPane" opacity="1.0"  rotateGraphic="false" tabClosingPolicy="ALL_TABS" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
           </children>
         </AnchorPane>
-        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="668.0" prefWidth="676.0" style="">
+        <AnchorPane minHeight="0.0" minWidth="0.0"  style="">
           <children>
-            <WebView fx:id="previewView" prefHeight="648.0" prefWidth="486.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="-2.0" />
+            <WebView fx:id="previewView"  AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
           </children>
         </AnchorPane>
       </items>
