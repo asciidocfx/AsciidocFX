@@ -59,6 +59,10 @@ function matchTitle(text){
     return text.match(/^\.[^\s].*$/m);
 }
 
+function matchHeader(text){
+    return text.match(/^\[.+\](\s)*$/m);
+}
+
 sketch = {
     // contains the specified structures of asciidoctor declared by user in an asciidoc file.
     constructList: undefined,       
@@ -73,7 +77,8 @@ sketch = {
             quotePointer = -1,
             slidebarPointer = -1,
             tablePointer = -1,
-            titleRow = -1;
+            titleRow = -1,
+            headerRow = -1;
 
         if(totalLength < 2)
             return;
@@ -126,6 +131,9 @@ sketch = {
             else if(matchTitle(text)){
                 titleRow = line;
             }
+            else if(matchHeader(text)){
+                headerRow = line;
+            }
         }
 
         function ADConstruct(type,startRow) {
@@ -139,12 +147,28 @@ sketch = {
         function formMultiLineConstruct(type,pointer,line,textLength) {
 
             if(pointer < 0){
-                if(titleRow > -1){
-                    pointer = titleRow;
-                    titleRow = -1;
+                if(type == "Open" && headerRow > -1){
+                    if(titleRow > -1 && titleRow > headerRow){
+                        pointer = headerRow;
+                        titleRow = -1;                            
+                    }
+                    else if(titleRow > -1 && titleRow < headerRow){
+                        pointer = titleRow;
+                        titleRow = -1;
+                    }
+                    else{
+                        pointer = headerRow;  
+                    }
+                    headerRow = -1;   
                 }
                 else{
-                    pointer = line;
+                    if(titleRow > -1){
+                        pointer = titleRow;
+                        titleRow = -1;
+                    }
+                    else{
+                        pointer = line;
+                    }
                 }
                 var name = type.concat("::",pointer);
                 sketch.constructList[name] = new ADConstruct(name,pointer);
@@ -152,6 +176,9 @@ sketch = {
             else{
                 if(titleRow > -1){
                     titleRow = -1;
+                }
+                if(headerRow > -1){
+                    headerRow = -1;
                 }
                 var name = type.concat("::",pointer);
                 var construct = sketch.constructList[name];
