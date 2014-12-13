@@ -835,7 +835,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
                         Runtime.getRuntime().exec("explorer ".concat(path.getParent().toFile().toString()));
                     else if (systemName.indexOf("mac") > -1)
                         Runtime.getRuntime().exec("open ".concat(path.getParent().toFile().toString()));
-                    else if (systemName.indexOf("ubuntu") > -1 || systemName.indexOf("nix") > -1 || systemName.indexOf("nux") > -1 || systemName.indexOf("aix") > -1)
+                    else if (systemName.indexOf("nix") > -1 || systemName.indexOf("nux") > -1 || systemName.indexOf("aix") > -1)
                         Runtime.getRuntime().exec("xdg-open ".concat(path.getParent().toFile().toString()));
                 } catch (Exception ex) {
                     System.out.println(ex.getMessage());
