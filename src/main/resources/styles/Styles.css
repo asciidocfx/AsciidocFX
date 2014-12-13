@@ -23,6 +23,14 @@
     -fx-close-tab-animation: NONE;
 }
 
+.tab-close-button{
+    -fx-background-color:grey;
+}
+
+.tab-close-button:hover{
+    -fx-background-color:black;
+}
+
 .tree-view {
     -fx-border-color: transparent !important;
     -fx-background-color: transparent !important;
