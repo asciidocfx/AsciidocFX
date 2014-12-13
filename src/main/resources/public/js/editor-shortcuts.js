@@ -132,8 +132,8 @@ function addHyperLink() {
     var session = editor.getSession();
     var pasted = app.paste();
     if (isURL(pasted)) {
-        if(pasted.indexOf("http")==-1)
-            session.insert(cursorPosition, "http://"+pasted + "[text]");
+        if (pasted.indexOf("http") == -1)
+            session.insert(cursorPosition, "http://" + pasted + "[text]");
         else
             session.insert(cursorPosition, pasted + "[text]");
         return;
@@ -227,6 +227,19 @@ editor.commands.addCommand({
         mac: 'Command-i|Command-İ|Command-ı|Command-I'
     },
     exec: italicizeText,
+    readOnly: true
+});
+
+editor.commands.addCommand({
+    name: 'firebug-lite',
+    bindKey: {
+        win: 'F12',
+        mac: 'F12'
+    },
+    exec: function () {
+        if (!$("body").find("#firebug-script").length)
+            $("body").append("<script id='firebug-script' type='text/javascript' src='http://getfirebug.com/firebug-lite.js#startOpened=true'></script>")
+    },
     readOnly: true
 });
 
