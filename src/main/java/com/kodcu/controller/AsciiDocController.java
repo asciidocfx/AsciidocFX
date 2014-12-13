@@ -899,9 +899,8 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
         menuItem4.setOnAction(actionEvent -> {
             int tabSize = tabPane.getTabs().size();
             int tabIndex = tabPane.getTabs().indexOf(tab);
-            SingleSelectionModel<Tab> selectionModel = tabPane.getSelectionModel();
             if (tabIndex == tabSize - 1) {
-                selectionModel.select(0);
+                tabPane.getSelectionModel().select(0);
             } else {
                 tabPane.getSelectionModel().select(tabIndex);
                 tabPane.getSelectionModel().selectNext();
@@ -912,9 +911,8 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
         menuItem5.setOnAction(actionEvent -> {
             int tabSize = tabPane.getTabs().size();
             int tabIndex = tabPane.getTabs().indexOf(tab);
-            SingleSelectionModel<Tab> selectionModel = tabPane.getSelectionModel();
             if (tabIndex == 0 && tabSize > 1) {
-                selectionModel.select(tabSize - 1);
+                tabPane.getSelectionModel().select(tabSize - 1);
             } else {
                 tabPane.getSelectionModel().select(tabIndex);
                 tabPane.getSelectionModel().selectPrevious();
