@@ -120,10 +120,25 @@ function underlinedText() {
     formatText(editor, matchUnderlinedText, "+++<u>", "</u>+++");
 }
 
-function addHyperLink(){
+function isURL(text) {
+    var myRegExp = /^(.*?)(?:\S+(?::\S*)?@)?(?:(?!10(?:\.\d{1,3}){3})(?!127(?:\.\d{1,3}){3})(?!169\.254(?:\.\d{1,3}){2})(?!192\.168(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\u00a1-\uffff0-9]+-?)*[a-z\u00a1-\uffff0-9]+)(?:\.(?:[a-z\u00a1-\uffff0-9]+-?)*[a-z\u00a1-\uffff0-9]+)*(?:\.(?:[a-z\u00a1-\uffff]{2,})))(?::\d{2,5})?(?:\/[^\s]*)?$/i;
+
+    return myRegExp.test(text);
+
+}
+
+function addHyperLink() {
     var cursorPosition = editor.getCursorPosition();
     var session = editor.getSession();
-    session.insert(cursorPosition,"http://url[text]");
+    var pasted = app.paste();
+    if (isURL(pasted)) {
+        if(pasted.indexOf("http")==-1)
+            session.insert(cursorPosition, "http://"+pasted + "[text]");
+        else
+            session.insert(cursorPosition, pasted + "[text]");
+        return;
+    }
+    session.insert(cursorPosition, "http://url[text]");
 }
 
 function addSourceCode() {
@@ -167,18 +182,18 @@ function addHeading() {
     session.insert(cursorPosition, (first == "=") ? "=" : "= ");
 }
 
-function addOlList(){
+function addOlList() {
     var cursorPosition = editor.getCursorPosition();
     cursorPosition.column = 0;
     var session = editor.getSession();
-    session.insert(cursorPosition,"1. ");
+    session.insert(cursorPosition, "1. ");
 }
 
-function addUlList(){
+function addUlList() {
     var cursorPosition = editor.getCursorPosition();
     cursorPosition.column = 0;
     var session = editor.getSession();
-    session.insert(cursorPosition,"* ");
+    session.insert(cursorPosition, "* ");
 }
 
 editor.commands.addCommand({
@@ -261,7 +276,6 @@ editor.commands.addCommand({
         }
 
 
-
         // src tab
         if (textRange == "src") { // source generator
             addSourceCode();
@@ -306,19 +320,19 @@ editor.commands.addCommand({
 editor.addEventListener("mousewheel", mouseWheelHandler);
 
 function mouseWheelHandler(event) {
-    if(!event)
+    if (!event)
         return;
     event = window.event;
 
-    if(event.ctrlKey && editor.getValue().length){
+    if (event.ctrlKey && editor.getValue().length) {
 
         var fontSize = parseInt(editor.getFontSize());
 
-        if(event.wheelDelta < 0 && fontSize > 8){
+        if (event.wheelDelta < 0 && fontSize > 8) {
             //mouse scroll down - min size 8
             editor.setFontSize((fontSize - 1) + "px");
         }
-        else if(event.wheelDelta >= 0 && fontSize < 24){ 
+        else if (event.wheelDelta >= 0 && fontSize < 24) {
             //mouse scroll up - max size 24
             editor.setFontSize((fontSize + 1) + "px");
         }
