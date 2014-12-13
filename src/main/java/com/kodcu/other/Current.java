@@ -110,4 +110,8 @@ public class Current {
         String value = (String) currentEngine().executeScript("editor.getValue()");
         return value;
     }
+
+    public Path tabToPath(Tab tab) {
+        return getNewTabPaths().get(tab).get();
+    }
 }
