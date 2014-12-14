@@ -1161,7 +1161,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
 
         String asciidoc = current.currentEditorValue();
 
-        String html = renderService.convertHtmlArticle(previewEngine, IOHelper.normalize(asciidoc));
+        String html = renderService.convertHtmlArticle(previewEngine, asciidoc);
         indikatorService.startCycle();
         runTaskLater(task -> {
 
