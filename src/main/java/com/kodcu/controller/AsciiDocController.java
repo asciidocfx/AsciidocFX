@@ -24,6 +24,8 @@ import javafx.concurrent.Task;
 import javafx.concurrent.Worker;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
+import javafx.event.EventHandler;
+import javafx.event.EventTarget;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
@@ -32,6 +34,7 @@ import javafx.scene.control.*;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
@@ -586,7 +589,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
 
         if (!config.getDirectoryPanel())
             Platform.runLater(() -> {
-                splitPane.setDividerPositions(0, 0.55);
+                splitPane.setDividerPositions(0, 0.51);
             });
 
     }
@@ -844,7 +847,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
 
     @FXML
     public void hideLeftSplit(Event event) {
-        splitPane.setDividerPositions(0, 0.55);
+        splitPane.setDividerPositions(0, 0.51);
     }
 
     private Tab createTab() {
@@ -932,11 +935,17 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
         contextMenu.getItems().addAll(menuItem0, menuItem1, menuItem2, menuItem3, new SeparatorMenuItem(), menuItem4, menuItem5, menuItem6, new SeparatorMenuItem(), menuItem7, menuItem8);
 
         tab.contextMenuProperty().setValue(contextMenu);
+
         Label label = new Label();
+        tab.setGraphic(label);
+
 
         label.setOnMouseClicked(mouseEvent -> {
 
-            if (mouseEvent.getClickCount() > 1) {
+            if (mouseEvent.getButton().equals(MouseButton.SECONDARY)) {
+                tabPane.getSelectionModel().select(tab);
+            }
+            else if (mouseEvent.getClickCount() > 1) {
                 if (splitPane.getDividerPositions()[0] > 0.1)
                     splitPane.setDividerPositions(0, 1);
                 else
@@ -945,7 +954,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
             }
         });
 
-        tab.setGraphic(label);
+
 
         return tab;
     }
