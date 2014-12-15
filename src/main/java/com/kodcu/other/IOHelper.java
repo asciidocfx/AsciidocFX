@@ -6,10 +6,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
-import java.nio.file.FileSystem;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
+import java.nio.file.*;
 
 /**
  * Created by usta on 09.05.2014.
@@ -73,9 +70,11 @@ public class IOHelper {
         return content;
     }
 
-    public static void createDirectories(FileSystem fileSystem, Path path) {
-        if(Files.isDirectory(path)){
-            System.out.println(path.relativize(fileSystem.getPath("/")));
+    public static void createDirectories(Path path) {
+        try {
+            Files.createDirectories(path);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
     }
@@ -88,5 +87,13 @@ public class IOHelper {
         }
 
         return null;
+    }
+
+    public static void copy(Path source, Path target,CopyOption... copyOptions) {
+        try {
+            Files.copy(source,target,copyOptions);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

@@ -7,7 +7,6 @@ import javafx.scene.web.WebView;
 import org.springframework.stereotype.Component;
 
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -21,7 +20,7 @@ public class Current {
 
     private Tab currentTab;
     private Map<Tab, Optional<Path>> newTabPaths;
-    private Map<Tab, WebView> newTabWebViews ;
+    private Map<Tab, WebView> newTabWebViews;
     private Map<String, Integer> cache;
 
     public Tab getCurrentTab() {
@@ -33,7 +32,7 @@ public class Current {
     }
 
     public Map<Tab, WebView> getNewTabWebViews() {
-        if(Objects.isNull(newTabWebViews))
+        if (Objects.isNull(newTabWebViews))
             newTabWebViews = new ConcurrentHashMap<>();
         return newTabWebViews;
     }
@@ -43,8 +42,9 @@ public class Current {
     }
 
     public Map<Tab, Optional<Path>> getNewTabPaths() {
-        if(Objects.isNull(newTabPaths))
-            newTabPaths  = new ConcurrentHashMap<>();;
+        if (Objects.isNull(newTabPaths))
+            newTabPaths = new ConcurrentHashMap<>();
+        ;
         return newTabPaths;
     }
 
@@ -76,7 +76,7 @@ public class Current {
 
     public Optional<Path> currentPath() {
         Optional<Path> path = getNewTabPaths().get(getCurrentTab());
-        return Objects.nonNull(path)?path:Optional.ofNullable(null);
+        return Objects.nonNull(path) ? path : Optional.ofNullable(null);
     }
 
     public WebView currentView() {
@@ -109,6 +109,10 @@ public class Current {
     public String currentEditorValue() {
         String value = (String) currentEngine().executeScript("editor.getValue()");
         return value;
+    }
+
+    public void insertEditorValue(String content) {
+        currentEngine().executeScript(String.format("editor.insert('%s')", IOHelper.normalize(content)));
     }
 
     public Path tabToPath(Tab tab) {
