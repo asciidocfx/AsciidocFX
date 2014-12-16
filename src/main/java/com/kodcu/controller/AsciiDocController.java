@@ -178,7 +178,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
     private Config config;
     private Optional<Path> workingDirectory = Optional.of(Paths.get(System.getProperty("user.home")));
     private Optional<File> initialDirectory = Optional.empty();
-    private Optional<Path> closedPath = Optional.empty();
+    private List<Optional<Path>> closedPaths = new ArrayList<>();
 
     private List<String> bookNames = Arrays.asList("book.asc", "book.txt", "book.asciidoc", "book.adoc", "book.ad");
 
@@ -905,7 +905,8 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
         menuItem1.setOnAction(actionEvent -> {
             ObservableList<Tab> tabs = tabPane.getTabs();
             if (tabs.size() > 0)
-                this.keepClosedPath(tabs.get(tabs.size() - 1));
+                tabs.forEach(this::keepClosedPath);
+
             tabs.clear();
         });
 
@@ -917,7 +918,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
             tabPane.getTabs().removeAll(blackList);
 
             if (blackList.size() > 0)
-                this.keepClosedPath(blackList.get(blackList.size() - 1));
+                blackList.forEach(this::keepClosedPath);
         });
 
         MenuItem menuItem3 = new MenuItem("Close Unmodified");
@@ -928,7 +929,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
             List<Tab> collect = tabs.stream().filter(filter).collect(Collectors.toList());
 
             if (collect.size() > 0)
-                this.keepClosedPath(collect.get(collect.size() - 1));
+                collect.forEach(this::keepClosedPath);
 
             tabs.removeAll(collect);
         });
@@ -951,9 +952,11 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
 
         MenuItem menuItem6 = new MenuItem("Reopen Closed Tab");
         menuItem6.setOnAction(actionEvent -> {
-            closedPath.ifPresent(path -> {
-                this.addTab(path);
-            });
+            if(closedPaths.size() > 0) {
+                int index = closedPaths.size() - 1;
+                closedPaths.get(index).ifPresent(this::addTab);
+                closedPaths.remove(index);
+            }
         });
 
         MenuItem menuItem7 = new MenuItem("Open File Location");
@@ -965,9 +968,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
         });
 
         MenuItem menuItem8 = new MenuItem("New File");
-        menuItem8.setOnAction(actionEvent -> {
-            this.newDoc(actionEvent);
-        });
+        menuItem8.setOnAction(this::newDoc);
 
         ContextMenu contextMenu = new ContextMenu();
         contextMenu.getItems().addAll(menuItem0, menuItem1, menuItem2, menuItem3, new SeparatorMenuItem(), menuItem4, menuItem5, menuItem6, new SeparatorMenuItem(), menuItem7, menuItem8);
@@ -997,7 +998,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
     private void keepClosedPath(Tab closedTab) {
         Label closedTabLabel = (Label) closedTab.getGraphic();
         if (!closedTabLabel.getText().equals("new *")) {
-            closedPath = Optional.ofNullable(current.tabToPath(closedTab));
+            closedPaths.add(Optional.ofNullable(current.tabToPath(closedTab)));
             current.getNewTabPaths().remove(closedTab);
             current.getNewTabWebViews().remove(closedTab);
         }
