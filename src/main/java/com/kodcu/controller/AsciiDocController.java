@@ -154,6 +154,9 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
     @Autowired
     private ParserService parserService;
 
+    @Autowired
+    private AwesomeService awesomeService;
+
     private ExecutorService singleWorker = Executors.newSingleThreadExecutor();
     private ExecutorService threadPollWorker = Executors.newFixedThreadPool(4);
 
@@ -558,8 +561,8 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
                                 if (pathResolver.isHidden(path))
                                     return;
 
-                                if (Files.isDirectory(path) || pathResolver.isAsciidoc(path) || pathResolver.isImage(path))
-                                    selectedItem.getChildren().add(new TreeItem<>(new Item(path)));
+                                if (pathResolver.isViewable(path))
+                                    selectedItem.getChildren().add(new TreeItem<>(new Item(path),awesomeService.getIcon(path)));
                             });
                         selectedItem.setExpanded(!selectedItem.isExpanded());
                     } catch (IOException e) {

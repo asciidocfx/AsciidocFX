@@ -2,7 +2,10 @@ package com.kodcu.service;
 
 import com.kodcu.controller.AsciiDocController;
 import com.kodcu.other.Item;
+import de.jensd.fx.fontawesome.AwesomeDude;
+import de.jensd.fx.fontawesome.AwesomeIcon;
 import javafx.application.Platform;
+import javafx.scene.control.Label;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +29,9 @@ public class FileBrowseService {
 
     @Autowired
     private PathResolverService pathResolver;
+
+    @Autowired
+    private AwesomeService awesomeService;
 
     private TreeItem<Item> rootItem;
 
@@ -57,8 +63,11 @@ public class FileBrowseService {
         if (pathResolver.isHidden(path))
             return;
 
-        if (Files.isDirectory(path) || pathResolver.isAsciidoc(path) || pathResolver.isImage(path))
-            rootItem.getChildren().add(new TreeItem<>(new Item(path)));
+        if (pathResolver.isViewable(path)) {
+
+            TreeItem<Item> treeItem = new TreeItem<>(new Item(path), awesomeService.getIcon(path));
+            rootItem.getChildren().add(treeItem);
+        }
 
     }
 

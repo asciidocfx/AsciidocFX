@@ -59,6 +59,10 @@ public class PathResolverService {
         return ascMatcher.matches(path);
     }
 
+    public boolean isViewable(Path path){
+        return Files.isDirectory(path) || isAsciidoc(path) || isImage(path);
+    }
+
     public Path resolve(Path currentPath) {
 
         rootExists.clear();
