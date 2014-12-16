@@ -33,7 +33,7 @@ public class FileBrowseService {
 
         Platform.runLater(() -> {
 
-            rootItem = new TreeItem<>(new Item(browserPath, String.format("Working Directory (%s)", browserPath)));
+            rootItem = new TreeItem<>(new Item(browserPath, String.format("Workdir (%s)", browserPath)));
             rootItem.setExpanded(true);
             final List<Path> files = new LinkedList<>();
             try {
@@ -57,7 +57,7 @@ public class FileBrowseService {
         if (pathResolver.isHidden(path))
             return;
 
-        if (Files.isDirectory(path) || pathResolver.isAsciidoc(path))
+        if (Files.isDirectory(path) || pathResolver.isAsciidoc(path) || pathResolver.isImage(path))
             rootItem.getChildren().add(new TreeItem<>(new Item(path)));
 
     }

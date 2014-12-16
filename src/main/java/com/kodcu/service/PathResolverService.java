@@ -38,8 +38,6 @@ public class PathResolverService {
         return imageMatcher.matches(path);
     }
 
-
-
     public boolean isHidden(Path path) {
         try {
             return Files.isHidden(path) || path.getFileName().toString().startsWith(".");

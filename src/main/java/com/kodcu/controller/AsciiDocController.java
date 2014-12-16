@@ -29,7 +29,9 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.TextFieldTreeCell;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Priority;
@@ -81,8 +83,6 @@ import java.util.concurrent.Executors;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static java.nio.file.StandardOpenOption.*;
@@ -151,6 +151,9 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
     @Autowired
     private EmbeddedWebApplicationContext server;
 
+    @Autowired
+    private ParserService parserService;
+
     private ExecutorService singleWorker = Executors.newSingleThreadExecutor();
     private ExecutorService threadPollWorker = Executors.newFixedThreadPool(4);
 
@@ -173,9 +176,6 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
     private Optional<Path> workingDirectory = Optional.of(Paths.get(System.getProperty("user.home")));
     private Optional<File> initialDirectory = Optional.empty();
     private Optional<Path> closedPath = Optional.empty();
-
-
-    private Pattern urlMatcher = Pattern.compile("((https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|])",Pattern.MULTILINE);
 
     private List<String> bookNames = Arrays.asList("book.asc", "book.txt", "book.asciidoc", "book.adoc", "book.ad");
 
@@ -204,6 +204,15 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
         });
         return directoryChooser;
     }
+
+    private Consumer<Path> openFileConsumer = path->{
+        if (Files.isDirectory(path))
+            return;
+        if (pathResolver.isAsciidoc(path))
+            this.addTab(path);
+        else if (pathResolver.isImage(path))
+            this.addImageTab(path);
+    };
 
     private Supplier<Path> pathSaveSupplier = () -> {
         FileChooser chooser = newFileChooser("Save Document");
@@ -447,6 +456,17 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
             }
         });
 
+        treeView.setCellFactory(param -> {
+            TreeCell<Item> cell = new TextFieldTreeCell<Item>();
+            cell.setOnDragDetected(event -> {
+                Dragboard db = cell.startDragAndDrop(TransferMode.ANY);
+                ClipboardContent content = new ClipboardContent();
+                content.putFiles(Arrays.asList(cell.getTreeItem().getValue().getPath().toFile()));
+                db.setContent(content);
+            });
+            return cell;
+        });
+
         tomcatPort = server.getEmbeddedServletContainer().getPort();
 
         lastRendered.addListener(lastRenderedChangeListener);
@@ -501,8 +521,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
 
         openFileTreeItem.setOnAction(event -> {
             Path path = getSelectedTabPath();
-            if (!Files.isDirectory(path))
-                this.addTab(path);
+            openFileConsumer.accept(path);
         });
 
         openFileListItem.setOnAction(this::openRecentListFile);
@@ -539,7 +558,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
                                 if (pathResolver.isHidden(path))
                                     return;
 
-                                if (Files.isDirectory(path) || pathResolver.isAsciidoc(path))
+                                if (Files.isDirectory(path) || pathResolver.isAsciidoc(path) || pathResolver.isImage(path))
                                     selectedItem.getChildren().add(new TreeItem<>(new Item(path)));
                             });
                         selectedItem.setExpanded(!selectedItem.isExpanded());
@@ -547,12 +566,26 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
                         e.printStackTrace();
                     }
                 } else if (event.getClickCount() > 1) {
-                    this.addTab(selectedPath);
+                    openFileConsumer.accept(selectedPath);
                 }
         });
 
         runActionLater(this::newDoc);
 
+    }
+
+    private void addImageTab(Path imagePath) {
+        Tab tab = createTab();
+        Label label = (Label) tab.getGraphic();
+        label.setText(imagePath.getFileName().toString());
+        ImageView imageView = new ImageView(new Image(IOHelper.pathToUrl(imagePath)));
+        imageView.setPreserveRatio(true);
+        imageView.fitWidthProperty().bind(tabPane.widthProperty());
+
+        tab.setContent(imageView);
+        current.putTab(tab, imagePath, current.currentView());
+        tabPane.getTabs().add(tab);
+        tabPane.getSelectionModel().select(tab);
     }
 
     private void openRecentListFile(Event event) {
@@ -696,6 +729,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
         ((Label) tab.getGraphic()).setText("new *");
         current.putTab(tab, Optional.empty(), webView);
         tabPane.getTabs().add(tab);
+        tabPane.getSelectionModel().select(tab);
 
     }
 
@@ -940,7 +974,6 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
         Label label = new Label();
         tab.setGraphic(label);
 
-
         label.setOnMouseClicked(mouseEvent -> {
 
             if (mouseEvent.getButton().equals(MouseButton.SECONDARY)) {
@@ -971,25 +1004,62 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
     private WebView createWebView() {
 
         WebView webView = new WebView();
+        webView.setContextMenuEnabled(false);
+        ContextMenu menu = new ContextMenu();
 
-        WebEngine webEngine = webView.getEngine();
+        webView.setOnMouseClicked(event -> {
 
-        webView.setOnDragOver(event -> {
-            Dragboard db = event.getDragboard();
-            if (db.hasFiles()) {
-                event.acceptTransferModes(TransferMode.COPY);
-            } else {
-                event.consume();
+            if (menu.getItems().size() == 0) {
+                MenuItem copy = new MenuItem("Copy");
+                copy.setOnAction(event1 -> {
+                    this.cutCopy(current.currentEditorSelection());
+                });
+                MenuItem paste = new MenuItem("Paste");
+                paste.setOnAction(event1 -> {
+                    current.insertEditorValue(this.paste());
+                });
+                menu.getItems().addAll(copy, paste);
+            }
+
+            if (menu.isShowing()) {
+                menu.hide();
+            }
+            if (event.getButton() == MouseButton.SECONDARY) {
+                menu.show(webView, event.getScreenX(), event.getScreenY());
             }
         });
+
+        WebEngine webEngine = webView.getEngine();
 
         webView.setOnDragDropped(event -> {
             Dragboard dragboard = event.getDragboard();
             boolean success = false;
 
             if (dragboard.hasFiles()) {
-                Optional<String> block = toImageBlock(dragboard.getFiles());
-                block.ifPresent(current::insertEditorValue);
+                Optional<String> block = parserService.toImageBlock(dragboard.getFiles());
+                if (block.isPresent()) {
+                    current.insertEditorValue(block.get());
+                    success = true;
+                } else {
+                    block = parserService.toIncludeBlock(dragboard.getFiles());
+                    if (block.isPresent()) {
+                        current.insertEditorValue(block.get());
+                        success = true;
+                    }
+                }
+
+            }
+
+            if (dragboard.hasHtml() && !success) {
+                Optional<String> block = parserService.toWebImageBlock(dragboard.getHtml());
+                if (block.isPresent()) {
+                    current.insertEditorValue(block.get());
+                    success = true;
+                }
+            }
+
+            if (dragboard.hasString() && !success) {
+                current.insertEditorValue(dragboard.getString());
                 success = true;
             }
 
@@ -1006,33 +1076,6 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
         return webView;
     }
 
-    private Optional<String> toImageBlock(List<File> dropFiles) {
-
-        if (!current.currentPath().isPresent())
-            saveDoc();
-
-        Path currentPath = current.currentPathParent().get();
-
-        IOHelper.createDirectories(currentPath.resolve("images"));
-
-        List<Path> files = dropFiles.stream().map(File::toPath).filter(pathResolver::isImage).collect(Collectors.toList());
-
-        StringBuffer buffer = new StringBuffer();
-        buffer.append("\n");
-
-        files.forEach(path -> {
-            Path targetImage = currentPath.resolve("images").resolve(path.getFileName());
-            IOHelper.copy(path, targetImage);
-
-            buffer.append("\nimage::images/" + path.getFileName() + "[]\n");
-        });
-
-        if (files.size() > 0)
-            return Optional.of(buffer.toString());
-
-        return Optional.empty();
-
-    }
 
     public void onscroll(Object pos, Object max) {
         if (Objects.isNull(pos) || Objects.isNull(max))
@@ -1266,35 +1309,18 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
     public String paste() {
 
         if (clipboard.hasFiles()) {
-            Optional<String> block = toImageBlock(clipboard.getFiles());
+            Optional<String> block = parserService.toImageBlock(clipboard.getFiles());
             if (block.isPresent())
                 return block.get();
         }
 
-        if(clipboard.hasImage() && clipboard.hasHtml()){
-            Optional<String> block = toWebImageBlock(clipboard.getHtml());
+        if (clipboard.hasImage() && clipboard.hasHtml()) {
+            Optional<String> block = parserService.toWebImageBlock(clipboard.getHtml());
             if (block.isPresent())
                 return block.get();
         }
 
         return clipboard.getString();
-    }
-
-    private Optional<String> toWebImageBlock(String html) {
-
-        Matcher matcher = urlMatcher.matcher(html);
-
-        StringBuffer buffer=new StringBuffer();
-        buffer.append("\n");
-
-        while (matcher.find()) {
-            buffer.append("\nimage::" + matcher.group() + "[]\n");
-        }
-
-        if(matcher.groupCount()>0)
-            return Optional.of(buffer.toString());
-
-        return Optional.empty();
     }
 
     public void saveDoc() {

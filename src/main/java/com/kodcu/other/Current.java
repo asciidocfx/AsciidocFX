@@ -111,6 +111,11 @@ public class Current {
         return value;
     }
 
+    public String currentEditorSelection() {
+        String value = (String) currentEngine().executeScript("editor.session.getTextRange(editor.getSelectionRange())");
+        return value;
+    }
+
     public void insertEditorValue(String content) {
         currentEngine().executeScript(String.format("editor.insert('%s')", IOHelper.normalize(content)));
     }
