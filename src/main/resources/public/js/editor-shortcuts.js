@@ -270,7 +270,7 @@ editor.commands.addCommand({
         if (textRange == "book") { // source generator
             editor.removeToLineStart();
 
-            editor.insert("= Book Name\nAuthor's Name\n:doctype: book\n:encoding: utf-8\n:lang: tr\n:toc:\n:numbered:\n\n\n");
+            editor.insert("= Book Name\nAuthor's Name\n:doctype: book\n:encoding: utf-8\n:lang: en\n:toc:\n:numbered:\n\n\n");
 
             return;
         }

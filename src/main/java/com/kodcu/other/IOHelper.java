@@ -1,15 +1,18 @@
 package com.kodcu.other;
 
-import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.zeroturnaround.zip.commons.IOUtils;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.nio.charset.Charset;
-import java.nio.file.*;
+import java.nio.file.CopyOption;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 
 /**
  * Created by usta on 09.05.2014.
@@ -17,20 +20,6 @@ import java.nio.file.*;
 public class IOHelper {
 
     private static Logger logger = LoggerFactory.getLogger(IOHelper.class);
-
-    public static String convert(InputStream is) {
-
-        String content = "";
-
-        try {
-            content = IOUtils.toString(is);
-            IOUtils.closeQuietly(is);
-        } catch (IOException e) {
-            logger.debug(e.toString());
-        }
-
-        return content;
-    }
 
     public static String normalize(String content) {
         content = content.replace("\\", "\\\\");
@@ -81,9 +70,9 @@ public class IOHelper {
 
     }
 
-    public static Path createTempFile(Path path, String prefix,String suffix) {
+    public static Path createTempFile(Path path, String prefix, String suffix) {
         try {
-            return Files.createTempFile(path,prefix,suffix);
+            return Files.createTempFile(path, prefix, suffix);
         } catch (IOException e) {
             logger.debug(e.toString());
         }
@@ -91,9 +80,9 @@ public class IOHelper {
         return null;
     }
 
-    public static void copy(Path source, Path target,CopyOption... copyOptions) {
+    public static void copy(Path source, Path target, CopyOption... copyOptions) {
         try {
-            Files.copy(source,target,copyOptions);
+            Files.copy(source, target, copyOptions);
         } catch (IOException e) {
             logger.debug(e.toString());
         }
