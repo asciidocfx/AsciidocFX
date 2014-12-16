@@ -39,7 +39,7 @@ public class FileBrowseService {
 
         Platform.runLater(() -> {
 
-            rootItem = new TreeItem<>(new Item(browserPath, String.format("Workdir (%s)", browserPath)));
+            rootItem = new TreeItem<>(new Item(browserPath, String.format("Workdir (%s)", browserPath)),awesomeService.getIcon(browserPath));
             rootItem.setExpanded(true);
             final List<Path> files = new LinkedList<>();
             try {

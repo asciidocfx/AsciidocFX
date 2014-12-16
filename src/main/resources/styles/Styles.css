@@ -174,12 +174,19 @@
  * TreeView and TreeCell                                                       *
  *                                                                             *
  ******************************************************************************/
+.tree-view .tree-cell {
+    -fx-indent: 6px;
+}
 
 .tree-view .label {
     -fx-text-fill: black;
 }
 
-.tree-cell:filled:hover .tree-disclosure-node .arrow {
+.tree-view .tree-disclosure-node .arrow {
+    -fx-text-fill: black;
+}
+
+.tree-cell:filled .tree-disclosure-node .arrow {
     -fx-background-color: -fx-mark-highlight-color, -fx-mark-color;
     -fx-text-fill: black;
 }
