@@ -208,7 +208,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
         return directoryChooser;
     }
 
-    private Consumer<Path> openFileConsumer = path->{
+    private Consumer<Path> openFileConsumer = path -> {
         if (Files.isDirectory(path))
             return;
         if (pathResolver.isAsciidoc(path))
@@ -330,7 +330,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
 
     }
 
-    public void svgToPng(String fileName, String svg, String formula) throws IOException, TranscoderException {
+    public void svgToPng(String fileName, String svg, String formula,float width,float height) throws IOException, TranscoderException {
 
         if (!fileName.endsWith(".png") || !svg.startsWith("<svg"))
             return;
@@ -343,17 +343,19 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
 
         current.getCache().put(fileName, hashCode);
 
-        StringReader reader = new StringReader(svg);
-        String uri = "http://www.w3.org/2000/svg";
-        String parser = XMLResourceDescriptor.getXMLParserClassName();
-        SAXSVGDocumentFactory f = new SAXSVGDocumentFactory(parser);
-        SVGDocument doc = f.createSVGDocument(uri, reader);
+        try (StringReader reader = new StringReader(svg);
+             ByteArrayOutputStream ostream = new ByteArrayOutputStream();) {
 
-        try (ByteArrayOutputStream ostream = new ByteArrayOutputStream();) {
+            String uri = "http://www.w3.org/2000/svg";
+            SAXSVGDocumentFactory f = new SAXSVGDocumentFactory(XMLResourceDescriptor.getXMLParserClassName());
+            SVGDocument doc = f.createSVGDocument(uri, reader);
+
             TranscoderInput transcoderInput = new TranscoderInput(doc);
             TranscoderOutput transcoderOutput = new TranscoderOutput(ostream);
 
             PNGTranscoder transcoder = new PNGTranscoder();
+            transcoder.addTranscodingHint(PNGTranscoder.KEY_WIDTH,width);
+            transcoder.addTranscodingHint(PNGTranscoder.KEY_HEIGHT,height);
             transcoder.transcode(transcoderInput, transcoderOutput);
 
             if (!current.currentPath().isPresent())
@@ -562,7 +564,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
                                     return;
 
                                 if (pathResolver.isViewable(path))
-                                    selectedItem.getChildren().add(new TreeItem<>(new Item(path),awesomeService.getIcon(path)));
+                                    selectedItem.getChildren().add(new TreeItem<>(new Item(path), awesomeService.getIcon(path)));
                             });
                         selectedItem.setExpanded(!selectedItem.isExpanded());
                     } catch (IOException e) {
@@ -952,7 +954,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
 
         MenuItem menuItem6 = new MenuItem("Reopen Closed Tab");
         menuItem6.setOnAction(actionEvent -> {
-            if(closedPaths.size() > 0) {
+            if (closedPaths.size() > 0) {
                 int index = closedPaths.size() - 1;
                 closedPaths.get(index).ifPresent(this::addTab);
                 closedPaths.remove(index);
@@ -1171,8 +1173,15 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
         if (!fileName.endsWith(".png") && !"ascii".equalsIgnoreCase(type))
             return "";
 
-        if (!uml.contains("@startuml") && !uml.contains("@enduml"))
+        String defaultScale = "\nscale 600 width\n";
+
+        if (!uml.contains("@startuml") && !uml.contains("@enduml")) {
+            uml = defaultScale + uml;
             uml = "@startuml\n" + uml + "\n@enduml";
+        } else {
+            uml = uml.replaceFirst("@startuml", "@startuml" + defaultScale);
+        }
+
 
         SourceStringReader reader = new SourceStringReader(uml);
 
@@ -1206,7 +1215,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
                             IOHelper.writeToFile(umlPath, os.toByteArray(), CREATE, WRITE, TRUNCATE_EXISTING);
 
                             lastRenderedChangeListener.changed(null, lastRendered.getValue(), lastRendered.getValue());
-                        } catch (IOException e) {
+                        } catch (Exception e) {
                             e.printStackTrace();
                         }
                     });

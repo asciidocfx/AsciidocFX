@@ -40,12 +40,15 @@
                     svg.attr("xmlns", "http://www.w3.org/2000/svg")
                     svg.get(0).insertBefore($("#MathJax_SVG_glyphs").clone().get(0), svg.firstChild);
 
-//                    var bbox = svg.get(0).getBBox();
-//                    var viewBox = [bbox.x, bbox.y, bbox.width, bbox.height].join(" ");
-//                    svg.attr("viewBox", viewBox);
+                    var bbox = svg.get(0).getBBox();
+                    var viewBox = [bbox.x, bbox.y, bbox.width, bbox.height].join(" ");
+                    svg.attr("viewBox", viewBox);
 
                     var svgStrings = new XMLSerializer().serializeToString(svg.get(0));
-                    app.svgToPng(fileName.replace("-----", "."), svgStrings, formula);
+
+                    var svgWidth = (bbox.width > 600) ? 600 : bbox.width;
+                    var svgHeight = (bbox.height / (bbox.width / svgWidth));
+                    app.svgToPng(fileName.replace("-----", "."), svgStrings, formula, svgWidth, svgHeight);
                 }
 
             });
