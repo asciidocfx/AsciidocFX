@@ -362,7 +362,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
             if (!current.currentPath().isPresent())
                 saveDoc();
 
-            Path path = current.currentPathParent().get();
+            Path path = current.currentPath().get().getParent();
             Files.createDirectories(path.resolve("images"));
 
             Files.write(path.resolve("images/").resolve(fileName), ostream.toByteArray(), CREATE, WRITE, TRUNCATE_EXISTING);
@@ -973,8 +973,8 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
         MenuItem menuItem7 = new MenuItem("Open File Location");
 
         menuItem7.setOnAction(event -> {
-            current.currentPathParent().ifPresent(path -> {
-                getHostServices().showDocument(path.toUri().toString());
+            current.currentPath().ifPresent(path -> {
+                getHostServices().showDocument(path.getParent().toUri().toString());
             });
         });
 
@@ -1137,13 +1137,13 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
 
         DeferredResult<String> deferredResult = new DeferredResult<String>();
 
-        current.currentPathParent().ifPresent(path -> {
+        current.currentPath().ifPresent(path -> {
             String uri = request.getRequestURI();
 
             if (uri.startsWith("/"))
                 uri = uri.substring(1);
 
-            Path ascFile = path.resolve(uri);
+            Path ascFile = path.getParent().resolve(uri);
 
             Platform.runLater(() -> {
                 this.addTab(ascFile);
@@ -1166,11 +1166,14 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
         if (uri.startsWith("/"))
             uri = uri.substring(1);
 
-        Path imageFile = current.currentPathParent()
-                .orElseGet(() -> workingDirectory.get())
-                .resolve(uri);
-        ;
+        Path imageFile = null;
 
+        if(current.currentPath().isPresent()){
+            imageFile = current.currentPath().map(Path::getParent).get().resolve(uri);
+        }
+        else{
+            imageFile=  workingDirectory.get().resolve(uri);
+        }
 
         try {
             temp = Files.readAllBytes(imageFile);
@@ -1217,7 +1220,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
                 if (!current.currentPath().isPresent())
                     saveDoc();
 
-                Path path = current.currentPathParent().get();
+                Path path = current.currentPath().get().getParent();
                 Path umlPath = path.resolve("images/").resolve(fileName);
 
                 Integer cacheHit = current.getCache().get(fileName);
@@ -1376,6 +1379,8 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
         label.setText(label.getText().replace(" *", ""));
 
         initialDirectory = Optional.ofNullable(currentPath.toFile());
+
+        current.currentTab().setPath(currentPath);
 
     }
 

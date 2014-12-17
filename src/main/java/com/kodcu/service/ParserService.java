@@ -34,7 +34,7 @@ public class ParserService {
         if (!current.currentPath().isPresent())
             asciiDocController.saveDoc();
 
-        Path currentPath = current.currentPathParent().get();
+        Path currentPath = current.currentPath().map(Path::getParent).get();
 
         List<Path> files = dropFiles.stream().map(File::toPath).filter(pathResolver::isAsciidoc).collect(Collectors.toList());
 
@@ -56,7 +56,7 @@ public class ParserService {
         if (!current.currentPath().isPresent())
             asciiDocController.saveDoc();
 
-        Path currentPath = current.currentPathParent().get();
+        Path currentPath = current.currentPath().map(Path::getParent).get();
         IOHelper.createDirectories(currentPath.resolve("images"));
         List<Path> paths = dropFiles.stream().map(File::toPath).filter(pathResolver::isImage).collect(Collectors.toList());
 

@@ -79,10 +79,6 @@ public class Current {
         currentEngine().executeScript(String.format("editor.insert('%s')", IOHelper.normalize(content)));
     }
 
-    public Optional<Path> currentPathParent() {
-        return currentPath().map(Path::getParent);
-    }
-
     public Label currentTabLabel() {
         Label label = (Label) currentTab().getGraphic();
         return label;
