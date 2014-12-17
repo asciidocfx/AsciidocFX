@@ -962,7 +962,8 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
         menuItem6.setOnAction(actionEvent -> {
             if (closedPaths.size() > 0) {
                 int index = closedPaths.size() - 1;
-                closedPaths.get(index).ifPresent(this::addTab);
+                closedPaths.get(index).filter(pathResolver::isAsciidoc).ifPresent(this::addTab);
+                closedPaths.get(index).filter(pathResolver::isImage).ifPresent(this::addImageTab);
                 closedPaths.remove(index);
             }
         });
