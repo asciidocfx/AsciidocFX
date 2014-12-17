@@ -40,10 +40,26 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-websocket</artifactId>
+            <exclusions>
+                <exclusion>
+                    <artifactId>snakeyaml</artifactId>
+                    <groupId>org.yaml</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
+            <exclusions>
+                <exclusion>
+                    <artifactId>tomcat-embed-el</artifactId>
+                    <groupId>org.apache.tomcat.embed</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>aopalliance</artifactId>
+                    <groupId>aopalliance</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -70,11 +86,11 @@
             <artifactId>avalon-framework-impl</artifactId>
             <version>4.3.1</version>
         </dependency>
-        <dependency>
+      <!--  <dependency>
             <groupId>xml-resolver</groupId>
             <artifactId>xml-resolver</artifactId>
             <version>1.2</version>
-        </dependency>
+        </dependency>-->
         <dependency>
             <groupId>net.sf.xslthl</groupId>
             <artifactId>xslthl</artifactId>
@@ -92,6 +108,14 @@
                 <exclusion>
                     <groupId>org.apache.avalon.framework</groupId>
                     <artifactId>avalon-framework-impl</artifactId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>batik-js</artifactId>
+                    <groupId>org.apache.xmlgraphics</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>xml-apis</artifactId>
+                    <groupId>xml-apis</groupId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -129,6 +153,12 @@
             <groupId>org.apache.xmlgraphics</groupId>
             <artifactId>batik-codec</artifactId>
             <version>1.7</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>xml-apis</artifactId>
+                    <groupId>xml-apis</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
     </dependencies>

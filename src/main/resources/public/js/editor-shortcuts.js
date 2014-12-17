@@ -72,46 +72,73 @@ editor.commands.addCommand({
     readOnly: true
 });
 
-function formatText(editor, matcher, character) {
+function formatText(editor, matcher, firstCharacter, lastCharacter) {
     var range = editor.getSelectionRange();
     var text = editor.session.getTextRange(range);
+    var firstCharLength = firstCharacter.length;
+    var lastCharLength = lastCharacter.length;
 
     if (matcher(text)) {
-        text = text.substring(1, text.length - 1);
+        text = text.substring(firstCharLength, text.length - lastCharLength);
         editor.session.replace(range, text);
     }
     else {
         var virtualRange = editor.getSelectionRange();
-        virtualRange.setStart(range.start.row, range.start.column - 1);
-        virtualRange.setEnd(range.end.row, range.end.column + 1);
+        virtualRange.setStart(range.start.row, range.start.column - firstCharLength);
+        virtualRange.setEnd(range.end.row, range.end.column + lastCharLength);
 
-        var virtual_text = editor.session.getTextRange(virtualRange);
-        if (matcher(virtual_text)) {
+        var virtualText = editor.session.getTextRange(virtualRange);
+        if (matcher(virtualText)) {
             editor.session.replace(virtualRange, text);
         }
         else {
-            editor.session.replace(range, character + text + character);
+            editor.session.replace(range, firstCharacter + text + lastCharacter);
             if (range.end.column == range.start.column) {
-                editor.navigateTo(range.end.row, range.end.column + 1);
+                editor.navigateTo(range.end.row, range.end.column + firstCharLength);
             }
         }
     }
 }
 
 function boldText() {
-    formatText(editor, matchBoldText, "*");
+    formatText(editor, matchBoldText, "*", "*");
 }
 
 function italicizeText() {
-    formatText(editor, matchItalicizedText, "_");
+    formatText(editor, matchItalicizedText, "_", "_");
 }
 
 function superScript() {
-    formatText(editor, matchSuperScriptText, "^");
+    formatText(editor, matchSuperScriptText, "^", "^");
 }
 
 function subScript() {
-    formatText(editor, matchSubScriptText, "~");
+    formatText(editor, matchSubScriptText, "~", "~");
+}
+
+function underlinedText() {
+    formatText(editor, matchUnderlinedText, "+++<u>", "</u>+++");
+}
+
+function isURL(text) {
+    var myRegExp = /^(.*?)(?:\S+(?::\S*)?@)?(?:(?!10(?:\.\d{1,3}){3})(?!127(?:\.\d{1,3}){3})(?!169\.254(?:\.\d{1,3}){2})(?!192\.168(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\u00a1-\uffff0-9]+-?)*[a-z\u00a1-\uffff0-9]+)(?:\.(?:[a-z\u00a1-\uffff0-9]+-?)*[a-z\u00a1-\uffff0-9]+)*(?:\.(?:[a-z\u00a1-\uffff]{2,})))(?::\d{2,5})?(?:\/[^\s]*)?$/i;
+
+    return myRegExp.test(text);
+
+}
+
+function addHyperLink() {
+    var cursorPosition = editor.getCursorPosition();
+    var session = editor.getSession();
+    var pasted = app.paste();
+    if (isURL(pasted)) {
+        if (pasted.indexOf("http") == -1)
+            session.insert(cursorPosition, "http://" + pasted + "[text]");
+        else
+            session.insert(cursorPosition, pasted + "[text]");
+        return;
+    }
+    session.insert(cursorPosition, "http://url[text]");
 }
 
 function addSourceCode() {
@@ -155,19 +182,26 @@ function addHeading() {
     session.insert(cursorPosition, (first == "=") ? "=" : "= ");
 }
 
-function addOlList(){
+function addOlList() {
     var cursorPosition = editor.getCursorPosition();
     cursorPosition.column = 0;
     var session = editor.getSession();
-    session.insert(cursorPosition,"1. ");
+    session.insert(cursorPosition, "1. ");
 }
 
-function addUlList(){
+function addUlList() {
     var cursorPosition = editor.getCursorPosition();
     cursorPosition.column = 0;
     var session = editor.getSession();
-    session.insert(cursorPosition,"* ");
+    session.insert(cursorPosition, "* ");
 }
+
+editor.commands.addCommand({
+    name: 'underline-selected',
+    bindKey: {win: 'Ctrl-U', mac: 'Command-U'},
+    exec: underlinedText,
+    readOnly: true
+});
 
 editor.commands.addCommand({
     name: 'bold-selected',
@@ -181,7 +215,7 @@ editor.commands.addCommand({
     bindKey: {win: 'Ctrl-Shift-C', mac: 'Command-Shift-C'},
     exec: function (editor) {
 
-        formatText(editor, matchCode, "`");
+        formatText(editor, matchCode, "`", "`");
     },
     readOnly: true
 });
@@ -193,6 +227,19 @@ editor.commands.addCommand({
         mac: 'Command-i|Command-İ|Command-ı|Command-I'
     },
     exec: italicizeText,
+    readOnly: true
+});
+
+editor.commands.addCommand({
+    name: 'firebug-lite',
+    bindKey: {
+        win: 'F12',
+        mac: 'F12'
+    },
+    exec: function () {
+        if (!$("body").find("#firebug-script").length)
+            $("body").append("<script id='firebug-script' type='text/javascript' src='http://getfirebug.com/firebug-lite.js#startOpened=true'></script>")
+    },
     readOnly: true
 });
 
@@ -223,7 +270,7 @@ editor.commands.addCommand({
         if (textRange == "book") { // source generator
             editor.removeToLineStart();
 
-            editor.insert("= Book Name\nAuthor's Name\n:doctype: book\n:encoding: utf-8\n:lang: tr\n:toc:\n:numbered:\n\n\n");
+            editor.insert("= Book Name\nAuthor's Name\n:doctype: book\n:encoding: utf-8\n:lang: en\n:toc:\n:numbered:\n\n\n");
 
             return;
         }
@@ -240,7 +287,6 @@ editor.commands.addCommand({
             addUmlBlock();
             return;
         }
-
 
 
         // src tab
@@ -287,19 +333,19 @@ editor.commands.addCommand({
 editor.addEventListener("mousewheel", mouseWheelHandler);
 
 function mouseWheelHandler(event) {
-    if(!event)
+    if (!event)
         return;
     event = window.event;
 
-    if(event.ctrlKey && editor.getValue().length){
+    if (event.ctrlKey && editor.getValue().length) {
 
         var fontSize = parseInt(editor.getFontSize());
 
-        if(event.wheelDelta < 0 && fontSize > 8){
+        if (event.wheelDelta < 0 && fontSize > 8) {
             //mouse scroll down - min size 8
             editor.setFontSize((fontSize - 1) + "px");
         }
-        else if(event.wheelDelta >= 0 && fontSize < 24){ 
+        else if (event.wheelDelta >= 0 && fontSize < 24) {
             //mouse scroll up - max size 24
             editor.setFontSize((fontSize + 1) + "px");
         }
@@ -324,4 +370,8 @@ function matchSubScriptText(text) {
 
 function matchCode(text) {
     return text.match(/\`.*\`/g);
+}
+
+function matchUnderlinedText(text) {
+    return text.match(/(\+\+\+\<\u\>).*(\<\/\u\>\+\+\+)/g);
 }

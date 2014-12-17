@@ -29,9 +29,10 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.input.Clipboard;
-import javafx.scene.input.ClipboardContent;
-import javafx.scene.input.MouseButton;
+import javafx.scene.control.cell.TextFieldTreeCell;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.input.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
@@ -80,7 +81,9 @@ import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 import static java.nio.file.StandardOpenOption.*;
 
@@ -148,6 +151,12 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
     @Autowired
     private EmbeddedWebApplicationContext server;
 
+    @Autowired
+    private ParserService parserService;
+
+    @Autowired
+    private AwesomeService awesomeService;
+
     private ExecutorService singleWorker = Executors.newSingleThreadExecutor();
     private ExecutorService threadPollWorker = Executors.newFixedThreadPool(4);
 
@@ -169,6 +178,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
     private Config config;
     private Optional<Path> workingDirectory = Optional.of(Paths.get(System.getProperty("user.home")));
     private Optional<File> initialDirectory = Optional.empty();
+    private List<Optional<Path>> closedPaths = new ArrayList<>();
 
     private List<String> bookNames = Arrays.asList("book.asc", "book.txt", "book.asciidoc", "book.adoc", "book.ad");
 
@@ -197,6 +207,15 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
         });
         return directoryChooser;
     }
+
+    private Consumer<Path> openFileConsumer = path->{
+        if (Files.isDirectory(path))
+            return;
+        if (pathResolver.isAsciidoc(path))
+            this.addTab(path);
+        else if (pathResolver.isImage(path))
+            this.addImageTab(path);
+    };
 
     private Supplier<Path> pathSaveSupplier = () -> {
         FileChooser chooser = newFileChooser("Save Document");
@@ -440,6 +459,17 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
             }
         });
 
+        treeView.setCellFactory(param -> {
+            TreeCell<Item> cell = new TextFieldTreeCell<Item>();
+            cell.setOnDragDetected(event -> {
+                Dragboard db = cell.startDragAndDrop(TransferMode.ANY);
+                ClipboardContent content = new ClipboardContent();
+                content.putFiles(Arrays.asList(cell.getTreeItem().getValue().getPath().toFile()));
+                db.setContent(content);
+            });
+            return cell;
+        });
+
         tomcatPort = server.getEmbeddedServletContainer().getPort();
 
         lastRendered.addListener(lastRenderedChangeListener);
@@ -494,8 +524,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
 
         openFileTreeItem.setOnAction(event -> {
             Path path = getSelectedTabPath();
-            if (!Files.isDirectory(path))
-                this.addTab(path);
+            openFileConsumer.accept(path);
         });
 
         openFileListItem.setOnAction(this::openRecentListFile);
@@ -527,25 +556,45 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
             if (event.getButton() == MouseButton.PRIMARY)
                 if (Files.isDirectory(selectedPath)) {
                     try {
-                        if (selectedItem.getChildren().size() == 0)
+                        if (selectedItem.getChildren().size() == 0) {
+                            final List<Path> files = new LinkedList<>();
                             Files.newDirectoryStream(selectedPath).forEach(path -> {
                                 if (pathResolver.isHidden(path))
                                     return;
 
-                                if (Files.isDirectory(path) || pathResolver.isAsciidoc(path))
-                                    selectedItem.getChildren().add(new TreeItem<>(new Item(path)));
+                                if (pathResolver.isViewable(path))
+                                    files.add(path);
                             });
+                            Collections.sort(files);
+                            files.forEach(path -> {
+                                selectedItem.getChildren().add(new TreeItem<>(new Item(path),awesomeService.getIcon(path)));
+                            });
+                        }
                         selectedItem.setExpanded(!selectedItem.isExpanded());
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
                 } else if (event.getClickCount() > 1) {
-                    this.addTab(selectedPath);
+                    openFileConsumer.accept(selectedPath);
                 }
         });
 
         runActionLater(this::newDoc);
 
+    }
+
+    private void addImageTab(Path imagePath) {
+        Tab tab = createTab();
+        Label label = (Label) tab.getGraphic();
+        label.setText(imagePath.getFileName().toString());
+        ImageView imageView = new ImageView(new Image(IOHelper.pathToUrl(imagePath)));
+        imageView.setPreserveRatio(true);
+        imageView.fitWidthProperty().bind(tabPane.widthProperty());
+
+        tab.setContent(imageView);
+        current.putTab(tab, imagePath, current.currentView());
+        tabPane.getTabs().add(tab);
+        tabPane.getSelectionModel().select(tab);
     }
 
     private void openRecentListFile(Event event) {
@@ -583,7 +632,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
 
         if (!config.getDirectoryPanel())
             Platform.runLater(() -> {
-                splitPane.setDividerPositions(0, 0.55);
+                splitPane.setDividerPositions(0, 0.51);
             });
 
     }
@@ -689,6 +738,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
         ((Label) tab.getGraphic()).setText("new *");
         current.putTab(tab, Optional.empty(), webView);
         tabPane.getTabs().add(tab);
+        tabPane.getSelectionModel().select(tab);
 
     }
 
@@ -710,6 +760,8 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
         Label imageLabel = AwesomeDude.createIconLabel(AwesomeIcon.IMAGE, iconSize);
         Label subscriptLabel = AwesomeDude.createIconLabel(AwesomeIcon.SUBSCRIPT, iconSize);
         Label superScriptLabel = AwesomeDude.createIconLabel(AwesomeIcon.SUPERSCRIPT, iconSize);
+        Label underlineLabel = AwesomeDude.createIconLabel(AwesomeIcon.UNDERLINE, iconSize);
+        Label hyperlinkLabel = AwesomeDude.createIconLabel(AwesomeIcon.LINK, iconSize);
 
 
         // Events
@@ -753,6 +805,15 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
             current.currentEngine().executeScript("addOlList()");
         });
 
+        underlineLabel.setOnMouseClicked(event -> {
+            current.currentEngine().executeScript("underlinedText()");
+        });
+
+        hyperlinkLabel.setOnMouseClicked(event -> {
+            current.currentEngine().executeScript("addHyperLink()");
+        });
+
+
 //        ColorPicker colorPicker=new ColorPicker(Color.BLACK);
 
         menuBar.getMenus().addAll(
@@ -761,7 +822,9 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
                 new Menu("", saveLabel),
                 new Menu("", boldLabel),
                 new Menu("", italicLabel),
+                new Menu("", underlineLabel),
                 new Menu("", headerLabel),
+                new Menu("", hyperlinkLabel),
                 new Menu("", codeLabel),
                 new Menu("", ulListLabel),
                 new Menu("", olListLabel),
@@ -781,6 +844,11 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
     }
 
     public void addTab(Path path) {
+
+        if (!Files.isExecutable(path)) {
+            recentFiles.remove(path.toString());
+            return;
+        }
 
         AnchorPane anchorPane = new AnchorPane();
         WebView webView = createWebView();
@@ -810,6 +878,9 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
         current.putTab(tab, path, webView);
         tabPane.getTabs().add(tab);
 
+        Tooltip tip = new Tooltip(path.toString());
+        Tooltip.install(tab.getGraphic(), tip);
+
         Tab lastTab = tabPane.getTabs().get(tabPane.getTabs().size() - 1);
         tabPane.getSelectionModel().select(lastTab);
 
@@ -820,38 +891,104 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
 
     @FXML
     public void hideLeftSplit(Event event) {
-        splitPane.setDividerPositions(0, 0.55);
+        splitPane.setDividerPositions(0, 0.51);
     }
 
     private Tab createTab() {
         Tab tab = new Tab();
 
+        tab.setOnClosed(event -> {
+            this.keepClosedPath(tab);
+        });
+
         MenuItem menuItem0 = new MenuItem("Close");
         menuItem0.setOnAction(actionEvent -> {
-            tabPane.getTabs().remove(current.getCurrentTab());
+            this.keepClosedPath(tab);
+            tabPane.getTabs().remove(tab);
         });
 
         MenuItem menuItem1 = new MenuItem("Close All");
         menuItem1.setOnAction(actionEvent -> {
-            tabPane.getTabs().clear();
+            ObservableList<Tab> tabs = tabPane.getTabs();
+            if (tabs.size() > 0)
+                tabs.forEach(this::keepClosedPath);
+
+            tabs.clear();
         });
+
         MenuItem menuItem2 = new MenuItem("Close Others");
         menuItem2.setOnAction(actionEvent -> {
             List<Tab> blackList = new ArrayList<>();
             blackList.addAll(tabPane.getTabs());
             blackList.remove(tab);
             tabPane.getTabs().removeAll(blackList);
+
+            if (blackList.size() > 0)
+                blackList.forEach(this::keepClosedPath);
         });
 
+        MenuItem menuItem3 = new MenuItem("Close Unmodified");
+        menuItem3.setOnAction(actionEvent -> {
+            ObservableList<Tab> tabs = tabPane.getTabs();
+            Predicate<Tab> filter = pTab -> !((Label) pTab.getGraphic()).getText().contains(" *");
+
+            List<Tab> collect = tabs.stream().filter(filter).collect(Collectors.toList());
+
+            if (collect.size() > 0)
+                collect.forEach(this::keepClosedPath);
+
+            tabs.removeAll(collect);
+        });
+
+        MenuItem menuItem4 = new MenuItem("Select Next Tab");
+        menuItem4.setOnAction(actionEvent -> {
+            if (tabPane.getSelectionModel().isSelected(tabPane.getTabs().size() - 1))
+                tabPane.getSelectionModel().selectFirst();
+            else
+                tabPane.getSelectionModel().selectNext();
+        });
+
+        MenuItem menuItem5 = new MenuItem("Select Previous Tab");
+        menuItem5.setOnAction(actionEvent -> {
+            if (tabPane.getSelectionModel().isSelected(0))
+                tabPane.getSelectionModel().selectLast();
+            else
+                tabPane.getSelectionModel().selectPrevious();
+        });
+
+        MenuItem menuItem6 = new MenuItem("Reopen Closed Tab");
+        menuItem6.setOnAction(actionEvent -> {
+            if(closedPaths.size() > 0) {
+                int index = closedPaths.size() - 1;
+                closedPaths.get(index).ifPresent(this::addTab);
+                closedPaths.remove(index);
+            }
+        });
+
+        MenuItem menuItem7 = new MenuItem("Open File Location");
+
+        menuItem7.setOnAction(event -> {
+            current.currentPathParent().ifPresent(path -> {
+                getHostServices().showDocument(path.toUri().toString());
+            });
+        });
+
+        MenuItem menuItem8 = new MenuItem("New File");
+        menuItem8.setOnAction(this::newDoc);
+
         ContextMenu contextMenu = new ContextMenu();
-        contextMenu.getItems().addAll(menuItem0, menuItem1, menuItem2);
+        contextMenu.getItems().addAll(menuItem0, menuItem1, menuItem2, menuItem3, new SeparatorMenuItem(), menuItem4, menuItem5, menuItem6, new SeparatorMenuItem(), menuItem7, menuItem8);
 
         tab.contextMenuProperty().setValue(contextMenu);
+
         Label label = new Label();
+        tab.setGraphic(label);
 
         label.setOnMouseClicked(mouseEvent -> {
 
-            if (mouseEvent.getClickCount() > 1) {
+            if (mouseEvent.getButton().equals(MouseButton.SECONDARY)) {
+                tabPane.getSelectionModel().select(tab);
+            } else if (mouseEvent.getClickCount() > 1) {
                 if (splitPane.getDividerPositions()[0] > 0.1)
                     splitPane.setDividerPositions(0, 1);
                 else
@@ -860,18 +997,85 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
             }
         });
 
-        tab.setGraphic(label);
-
 
         return tab;
     }
 
+    private void keepClosedPath(Tab closedTab) {
+        Label closedTabLabel = (Label) closedTab.getGraphic();
+        if (!closedTabLabel.getText().equals("new *")) {
+            closedPaths.add(Optional.ofNullable(current.tabToPath(closedTab)));
+            current.getNewTabPaths().remove(closedTab);
+            current.getNewTabWebViews().remove(closedTab);
+        }
+
+    }
 
     private WebView createWebView() {
 
         WebView webView = new WebView();
+        webView.setContextMenuEnabled(false);
+        ContextMenu menu = new ContextMenu();
+
+        webView.setOnMouseClicked(event -> {
+
+            if (menu.getItems().size() == 0) {
+                MenuItem copy = new MenuItem("Copy");
+                copy.setOnAction(event1 -> {
+                    this.cutCopy(current.currentEditorSelection());
+                });
+                MenuItem paste = new MenuItem("Paste");
+                paste.setOnAction(event1 -> {
+                    current.insertEditorValue(this.paste());
+                });
+                menu.getItems().addAll(copy, paste);
+            }
+
+            if (menu.isShowing()) {
+                menu.hide();
+            }
+            if (event.getButton() == MouseButton.SECONDARY) {
+                menu.show(webView, event.getScreenX(), event.getScreenY());
+            }
+        });
 
         WebEngine webEngine = webView.getEngine();
+
+        webView.setOnDragDropped(event -> {
+            Dragboard dragboard = event.getDragboard();
+            boolean success = false;
+
+            if (dragboard.hasFiles()) {
+                Optional<String> block = parserService.toImageBlock(dragboard.getFiles());
+                if (block.isPresent()) {
+                    current.insertEditorValue(block.get());
+                    success = true;
+                } else {
+                    block = parserService.toIncludeBlock(dragboard.getFiles());
+                    if (block.isPresent()) {
+                        current.insertEditorValue(block.get());
+                        success = true;
+                    }
+                }
+
+            }
+
+            if (dragboard.hasHtml() && !success) {
+                Optional<String> block = parserService.toWebImageBlock(dragboard.getHtml());
+                if (block.isPresent()) {
+                    current.insertEditorValue(block.get());
+                    success = true;
+                }
+            }
+
+            if (dragboard.hasString() && !success) {
+                current.insertEditorValue(dragboard.getString());
+                success = true;
+            }
+
+            event.setDropCompleted(success);
+            event.consume();
+        });
 
         webEngine.getLoadWorker().stateProperty().addListener((observable, oldValue, newValue) -> {
             JSObject window = (JSObject) webEngine.executeScript("window");
@@ -881,6 +1085,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
         webEngine.load(String.format("http://localhost:%d/editor.html", tomcatPort));
         return webView;
     }
+
 
     public void onscroll(Object pos, Object max) {
         if (Objects.isNull(pos) || Objects.isNull(max))
@@ -955,7 +1160,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
         try {
             temp = Files.readAllBytes(imageFile);
         } catch (Exception ex) {
-            logger.debug(ex.getMessage(), ex);
+            logger.debug(imageFile + " is not found");
         }
 
 
@@ -1059,7 +1264,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
 
         String asciidoc = current.currentEditorValue();
 
-        String html = renderService.convertHtmlArticle(previewEngine, IOHelper.normalize(asciidoc));
+        String html = renderService.convertHtmlArticle(previewEngine, asciidoc);
         indikatorService.startCycle();
         runTaskLater(task -> {
 
@@ -1112,6 +1317,19 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
 
 
     public String paste() {
+
+        if (clipboard.hasFiles()) {
+            Optional<String> block = parserService.toImageBlock(clipboard.getFiles());
+            if (block.isPresent())
+                return block.get();
+        }
+
+        if (clipboard.hasImage() && clipboard.hasHtml()) {
+            Optional<String> block = parserService.toWebImageBlock(clipboard.getHtml());
+            if (block.isPresent())
+                return block.get();
+        }
+
         return clipboard.getString();
     }
 

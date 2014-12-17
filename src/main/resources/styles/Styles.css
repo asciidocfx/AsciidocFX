@@ -23,6 +23,14 @@
     -fx-close-tab-animation: NONE;
 }
 
+.tab-close-button{
+    -fx-background-color:grey;
+}
+
+.tab-close-button:hover{
+    -fx-background-color:black;
+}
+
 .tree-view {
     -fx-border-color: transparent !important;
     -fx-background-color: transparent !important;
@@ -126,22 +134,13 @@
  * List View                                                                   *
  *                                                                             *
  ******************************************************************************/
-.list-cell:empty {
+/*.list-cell:odd {
     -fx-background-color: white;
-}
-
-.list-cell {
-    -fx-padding: 0.8em 0em 0.8em 0.3em;
-    -fx-text-fill: #212121;
-    -fx-font: 12px "Segoe UI";
-}
-
-.list-cell:odd {
-    -fx-background-color: white;
-}
+}*/
 
 .list-view:focused {
     -fx-background-color: -fx-box-border, -fx-box-border, white;
+    -fx-text-fill: black;
 }
 
 .list-view:focused .list-cell:filled:selected,
@@ -149,15 +148,7 @@
 .list-view:focused .list-cell:filled:focused:selected,
 .list-view:focused .list-cell:odd:filled:selected:focused:hover {
     -fx-background-color: -fx-box-border, rgb(205, 205, 205);
-}
-
-.list-view:focused .list-cell:focused {
-    -fx-background-color: -fx-box-border, white;
-}
-
-.list-view .list-cell:hover:empty,
-.list-view .list-cell:odd:hover:empty {
-    -fx-background-color: white;
+    -fx-text-fill: black;
 }
 
 .list-view .list-cell:hover,
@@ -165,14 +156,17 @@
 .list-view:focused .list-cell:odd:focused:hover,
 .list-view:focused .list-cell:focused:hover {
     -fx-background-color: -fx-box-border, rgb(231, 231, 231);
+    -fx-text-fill: black;
 }
 
 .list-view .list-cell:odd:focused:hover {
     -fx-background-color: -fx-box-border, rgb(205, 205, 205);
+    -fx-text-fill: black;
 }
 
 .list-view .list-cell:selected {
     -fx-background-color: rgb(205, 205, 205);
+    -fx-text-fill: black;
 }
 
 /*******************************************************************************
@@ -180,62 +174,47 @@
  * TreeView and TreeCell                                                       *
  *                                                                             *
  ******************************************************************************/
-.tree-cell {
-    -fx-padding: 0.5em 0em 0.5em 0.3em;
-    -fx-text-fill: #212121;
-    -fx-font: 12px "Segoe UI";
+.tree-view .tree-cell {
+    -fx-indent: 6px;
 }
 
-.tree-view:focused {
-    -fx-background-color: -fx-box-border, -fx-box-border, white;
+.tree-view .label {
+    -fx-text-fill: black;
 }
 
-.tree-view .tree-cell:empty:hover {
-    -fx-background-color: white;
+.tree-view .tree-disclosure-node .arrow {
+    -fx-text-fill: black;
+}
+
+.tree-cell:filled .tree-disclosure-node .arrow {
+    -fx-background-color: -fx-mark-highlight-color, -fx-mark-color;
+    -fx-text-fill: black;
 }
 
 .tree-view .tree-cell:hover {
     -fx-background-color: -fx-box-border, rgb(231, 231, 231);
+    -fx-text-fill: black;
 }
 
 .tree-view .tree-cell:filled:selected:hover {
     -fx-background-color: -fx-box-border, rgb(205, 205, 205);
-}
-
-.tree-view:focused .tree-cell:focused {
-    -fx-background-color: -fx-box-border, white;
+    -fx-text-fill: black;
 }
 
 .tree-view:focused .tree-cell:focused:hover {
     -fx-background-color: -fx-box-border, rgb(231, 231, 231);
+    -fx-text-fill: black;
 }
 
 .tree-view:focused .tree-cell:filled:focused:selected,
 .tree-view:focused .tree-cell:filled:focused:selected:hover {
     -fx-background-color: -fx-box-border, rgb(205, 205, 205);
+    -fx-text-fill: black;
 }
 
 .tree-cell:filled:selected:focused, .tree-cell:filled:selected {
     -fx-background-color: -fx-box-border, rgb(205, 205, 205);
-}
-
-.tree-cell .tree-disclosure-node .arrow {
-    -fx-background-color: -fx-mark-highlight-color, -fx-mark-color;
-    -fx-padding: 0.27em;
-    -fx-shape: "M4,17v-2.889l4.124-3.86l4.125,3.86V17l-4.125-3.375L4,17z";
-    -fx-rotate: 90;
-}
-
-.tree-cell:expanded .tree-disclosure-node .arrow {
-    -fx-rotate: 180;
-}
-
-.tree-cell:filled:hover .tree-disclosure-node .arrow {
-    -fx-background-color: -fx-mark-highlight-color, -fx-mark-color;
-}
-
-.tree-cell .tree-disclosure-node {
-    -fx-padding: 4;
+    -fx-text-fill: black;
 }
 
 /*******************************************************************************
@@ -306,12 +285,6 @@
 .table-view .column-header-background {
     -fx-background-color: white;
 }
-
-/* table header label color
-.table-view .column-header .label{
-     -fx-text-fill: white;
-}
-*/
 
 .table-view .column-header, .table-view .filler {
     -fx-background-color: white;

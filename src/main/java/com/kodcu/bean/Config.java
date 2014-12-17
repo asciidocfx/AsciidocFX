@@ -1,18 +1,11 @@
 package com.kodcu.bean;
 
-import com.esotericsoftware.yamlbeans.YamlWriter;
-
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * Created by usta on 30.08.2014.
  */
 public class Config {
 
-    private String fontSize;
+    private String fontSize ;
     private String fontFamily;
     private Integer recentFileListSize;
     private boolean directoryPanel;
@@ -20,6 +13,15 @@ public class Config {
     private String scrollSpeed;
     private String workingDirectory;
     private String kindlegenDir;
+    private String defaultLanguage;
+
+    public String getDefaultLanguage() {
+        return defaultLanguage;
+    }
+
+    public void setDefaultLanguage(String defaultLanguage) {
+        this.defaultLanguage = defaultLanguage;
+    }
 
     public String getFontSize() {
         return fontSize;

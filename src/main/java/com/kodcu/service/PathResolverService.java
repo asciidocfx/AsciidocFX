@@ -5,11 +5,13 @@ import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.PathMatcher;
 import java.util.*;
+import java.util.regex.Pattern;
 
 /**
  * Created by usta on 07.09.2014.
@@ -24,11 +26,16 @@ public class PathResolverService {
     PathMatcher htmlMatcher = FileSystems.getDefault().getPathMatcher("glob:**.html");
     PathMatcher docBookMatcher = FileSystems.getDefault().getPathMatcher("glob:**.xml");
     PathMatcher ascMatcher = FileSystems.getDefault().getPathMatcher("glob:**.{asc,asciidoc,ad,adoc,txt}");
+    PathMatcher imageMatcher = FileSystems.getDefault().getPathMatcher("glob:**.{png,svg,jpg,bmp,gif}");
 
     private Map<String, Boolean> rootExists = new HashMap<>();
 
     public boolean isPDF(Path path) {
         return pdfMatcher.matches(path);
+    }
+
+    public boolean isImage(Path path){
+        return imageMatcher.matches(path);
     }
 
     public boolean isHidden(Path path) {
@@ -50,6 +57,10 @@ public class PathResolverService {
 
     public boolean isAsciidoc(Path path) {
         return ascMatcher.matches(path);
+    }
+
+    public boolean isViewable(Path path){
+        return Files.isDirectory(path) || isAsciidoc(path) || isImage(path);
     }
 
     public Path resolve(Path currentPath) {

@@ -2,7 +2,10 @@ package com.kodcu.service;
 
 import com.kodcu.controller.AsciiDocController;
 import com.kodcu.other.Item;
+import de.jensd.fx.fontawesome.AwesomeDude;
+import de.jensd.fx.fontawesome.AwesomeIcon;
 import javafx.application.Platform;
+import javafx.scene.control.Label;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,13 +30,16 @@ public class FileBrowseService {
     @Autowired
     private PathResolverService pathResolver;
 
+    @Autowired
+    private AwesomeService awesomeService;
+
     private TreeItem<Item> rootItem;
 
     public void browse(final TreeView<Item> treeView, final AsciiDocController controller, final Path browserPath) {
 
         Platform.runLater(() -> {
 
-            rootItem = new TreeItem<>(new Item(browserPath, String.format("Working Directory (%s)", browserPath)));
+            rootItem = new TreeItem<>(new Item(browserPath, String.format("Workdir (%s)", browserPath)),awesomeService.getIcon(browserPath));
             rootItem.setExpanded(true);
             final List<Path> files = new LinkedList<>();
             try {
@@ -44,7 +50,7 @@ public class FileBrowseService {
 
             treeView.setRoot(rootItem);
 
-            Collections.sort(files, (p1, p2) -> p1.compareTo(p2));
+            Collections.sort(files);
             files.forEach(path -> {
                 addToTreeView(path);
             });
@@ -57,8 +63,11 @@ public class FileBrowseService {
         if (pathResolver.isHidden(path))
             return;
 
-        if (Files.isDirectory(path) || pathResolver.isAsciidoc(path))
-            rootItem.getChildren().add(new TreeItem<>(new Item(path)));
+        if (pathResolver.isViewable(path)) {
+
+            TreeItem<Item> treeItem = new TreeItem<>(new Item(path), awesomeService.getIcon(path));
+            rootItem.getChildren().add(treeItem);
+        }
 
     }
 
