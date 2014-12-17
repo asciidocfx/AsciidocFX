@@ -6,6 +6,7 @@ import com.esotericsoftware.yamlbeans.YamlReader;
 import com.esotericsoftware.yamlbeans.YamlWriter;
 import com.kodcu.bean.Config;
 import com.kodcu.bean.RecentFiles;
+import com.kodcu.bean.ShortCuts;
 import com.kodcu.component.MyTab;
 import com.kodcu.other.Current;
 import com.kodcu.other.IOHelper;
@@ -180,6 +181,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
     private Optional<Path> workingDirectory = Optional.of(Paths.get(System.getProperty("user.home")));
     private Optional<File> initialDirectory = Optional.empty();
     private List<Optional<Path>> closedPaths = new ArrayList<>();
+    private String[] shortCuts;
 
     private List<String> bookNames = Arrays.asList("book.asc", "book.txt", "book.asciidoc", "book.adoc", "book.ad");
 
@@ -449,6 +451,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
 
         loadConfigurations();
         loadRecentFileList();
+        loadShortCuts();
 
         recentListView.setItems(recentFiles);
         recentFiles.addListener((ListChangeListener<String>) c -> {
@@ -584,6 +587,18 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
 
         runActionLater(this::newDoc);
 
+    }
+
+    private void loadShortCuts() {
+        try {
+            YamlReader yamlReader =
+                    new YamlReader(new FileReader(configPath.resolve("shortcuts.yml").toFile()));
+            yamlReader.getConfig().setClassTag("ShortCuts", ShortCuts.class);
+            shortCuts = yamlReader.read(ShortCuts.class).getKeys();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void addImageTab(Path imagePath) {
@@ -1482,5 +1497,9 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
 
     public TabPane getTabPane() {
         return tabPane;
+    }
+
+    public String[] getShortCuts() {
+        return shortCuts;
     }
 }

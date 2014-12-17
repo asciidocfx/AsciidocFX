@@ -63,14 +63,34 @@ editor.commands.addCommand({
     readOnly: true
 });
 
-editor.commands.addCommand({
-    name: 'right-brace-1',
-    bindKey: {win: 'Ctrl-Alt-0', mac: 'Command-Alt-0'},
-    exec: function (editor) {
-        editor.insert("}");
-    },
-    readOnly: true
-});
+//editor.commands.addCommand({
+//    name: 'right-brace-1',
+//    bindKey: {win: 'Ctrl-Alt-0', mac: 'Command-Alt-0'},
+//    exec: function (editor) {
+//        editor.insert("}");
+//    },
+//    readOnly: true
+//});
+
+// loads from shortcuts.yml
+var shortCuts = app.getShortCuts();
+for (var i = 0; i < shortCuts.length; i++) {
+    var key = shortCuts[i].toString();
+    key = key.replace("AltGR", "Ctrl-Alt");
+    var split = key.split("+");
+
+    editor.commands.addCommand({
+        name: key,
+        bindKey: {
+            win: split[0].replace("Command", "Ctrl"),
+            mac: split[0].replace("Ctrl", "Command")
+        },
+        exec: function (editor) {
+            editor.insert(split[1]);
+        },
+        readOnly: true
+    });
+}
 
 function formatText(editor, matcher, firstCharacter, lastCharacter) {
     var range = editor.getSelectionRange();
