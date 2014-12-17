@@ -1108,7 +1108,8 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
         Number position = (Number) pos; // current scroll position for editor
         Number maximum = (Number) max; // max scroll position for editor
 
-        double ratio = (position.doubleValue() * 100) / maximum.doubleValue();
+        double currentY = (position.doubleValue() < 0) ? 0 : position.doubleValue();
+        double ratio = (currentY * 100) / maximum.doubleValue();
         Integer browserMaxScroll = (Integer) previewEngine.executeScript("document.documentElement.scrollHeight - document.documentElement.clientHeight;");
         double browserScrollOffset = (Double.valueOf(browserMaxScroll) * ratio) / 100.0;
         previewEngine.executeScript(String.format("window.scrollTo(0, %f )", browserScrollOffset));
