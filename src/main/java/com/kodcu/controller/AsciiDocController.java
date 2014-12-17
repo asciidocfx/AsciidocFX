@@ -558,14 +558,20 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
             if (event.getButton() == MouseButton.PRIMARY)
                 if (Files.isDirectory(selectedPath)) {
                     try {
-                        if (selectedItem.getChildren().size() == 0)
+                        if (selectedItem.getChildren().size() == 0) {
+                            final List<Path> files = new LinkedList<>();
                             Files.newDirectoryStream(selectedPath).forEach(path -> {
                                 if (pathResolver.isHidden(path))
                                     return;
 
                                 if (pathResolver.isViewable(path))
-                                    selectedItem.getChildren().add(new TreeItem<>(new Item(path), awesomeService.getIcon(path)));
+                                    files.add(path);
                             });
+                            Collections.sort(files);
+                            files.forEach(path -> {
+                                selectedItem.getChildren().add(new TreeItem<>(new Item(path),awesomeService.getIcon(path)));
+                            });
+                        }
                         selectedItem.setExpanded(!selectedItem.isExpanded());
                     } catch (IOException e) {
                         e.printStackTrace();
