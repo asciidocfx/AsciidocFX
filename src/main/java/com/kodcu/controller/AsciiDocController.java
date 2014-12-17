@@ -847,7 +847,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
 
     public void addTab(Path path) {
 
-        if (!Files.isExecutable(path)) {
+        if (!Files.exists(path)) {
             recentFiles.remove(path.toString());
             return;
         }
