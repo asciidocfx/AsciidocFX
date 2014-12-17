@@ -1,7 +1,7 @@
 function waitForConfig(fontSize, theme, speed) {
-        editor.setFontSize(Number(fontSize));
-        editor.setTheme(theme);
-        editor.setScrollSpeed(Number(speed));
+    editor.setFontSize(Number(fontSize));
+    editor.setTheme(theme);
+    editor.setScrollSpeed(Number(speed));
 }
 
 function waitForGetValue() {
@@ -14,7 +14,7 @@ function waitForSetValue(content) {
 
     editor.setValue(content);
     editor.clearSelection();
-    editor.session.setScrollTop(0);
+    editor.session.setScrollTop(-100);
     editor.focus();
 
 }

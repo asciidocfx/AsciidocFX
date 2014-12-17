@@ -6,6 +6,7 @@ import com.esotericsoftware.yamlbeans.YamlReader;
 import com.esotericsoftware.yamlbeans.YamlWriter;
 import com.kodcu.bean.Config;
 import com.kodcu.bean.RecentFiles;
+import com.kodcu.component.MyTab;
 import com.kodcu.other.Current;
 import com.kodcu.other.IOHelper;
 import com.kodcu.other.Item;
@@ -330,7 +331,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
 
     }
 
-    public void svgToPng(String fileName, String svg, String formula,float width,float height) throws IOException, TranscoderException {
+    public void svgToPng(String fileName, String svg, String formula, float width, float height) throws IOException, TranscoderException {
 
         if (!fileName.endsWith(".png") || !svg.startsWith("<svg"))
             return;
@@ -354,8 +355,8 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
             TranscoderOutput transcoderOutput = new TranscoderOutput(ostream);
 
             PNGTranscoder transcoder = new PNGTranscoder();
-            transcoder.addTranscodingHint(PNGTranscoder.KEY_WIDTH,width);
-            transcoder.addTranscodingHint(PNGTranscoder.KEY_HEIGHT,height);
+            transcoder.addTranscodingHint(PNGTranscoder.KEY_WIDTH, width);
+            transcoder.addTranscodingHint(PNGTranscoder.KEY_HEIGHT, height);
             transcoder.transcode(transcoderInput, transcoderOutput);
 
             if (!current.currentPath().isPresent())
@@ -569,7 +570,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
                             });
                             Collections.sort(files);
                             files.forEach(path -> {
-                                selectedItem.getChildren().add(new TreeItem<>(new Item(path),awesomeService.getIcon(path)));
+                                selectedItem.getChildren().add(new TreeItem<>(new Item(path), awesomeService.getIcon(path)));
                             });
                         }
                         selectedItem.setExpanded(!selectedItem.isExpanded());
@@ -586,7 +587,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
     }
 
     private void addImageTab(Path imagePath) {
-        Tab tab = createTab();
+        MyTab tab = createTab();
         Label label = (Label) tab.getGraphic();
         label.setText(imagePath.getFileName().toString());
         ImageView imageView = new ImageView(new Image(IOHelper.pathToUrl(imagePath)));
@@ -594,7 +595,8 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
         imageView.fitWidthProperty().bind(tabPane.widthProperty());
 
         tab.setContent(imageView);
-        current.putTab(tab, imagePath, current.currentView());
+        tab.setWebView(null);
+        tab.setPath(imagePath);
         tabPane.getTabs().add(tab);
         tabPane.getSelectionModel().select(tab);
     }
@@ -725,22 +727,15 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
         Node editorVBox = createEditorVBox(webView);
         fitToParent(editorVBox);
         anchorPane.getChildren().add(editorVBox);
-        Tab tab = createTab();
+        MyTab tab = createTab();
+        tab.setWebView(webView);
         tab.setContent(anchorPane);
-        tab.selectedProperty().addListener((observableValue, before, after) -> {
-            if (after) {
-                current.putTab(tab, current.getNewTabPaths().get(tab), webView);
-                WebEngine webEngine = webView.getEngine();
 
-                Worker.State state = webEngine.getLoadWorker().getState();
-                if (state == Worker.State.SUCCEEDED)
-                    webEngine.executeScript("waitForGetValue()");
-            }
-        });
         ((Label) tab.getGraphic()).setText("new *");
-        current.putTab(tab, Optional.empty(), webView);
         tabPane.getTabs().add(tab);
         tabPane.getSelectionModel().select(tab);
+
+        webView.requestFocus();
 
     }
 
@@ -847,7 +842,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
 
     public void addTab(Path path) {
 
-        if (!Files.isExecutable(path)) {
+        if (Files.notExists(path)) {
             recentFiles.remove(path.toString());
             return;
         }
@@ -866,18 +861,12 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
 
         anchorPane.getChildren().add(editorVBox);
 
-        Tab tab = createTab();
+        MyTab tab = createTab();
         ((Label) tab.getGraphic()).setText(path.getFileName().toString());
         tab.setContent(anchorPane);
 
-        tab.selectedProperty().addListener((observableValue, before, after) -> {
-            if (after) {
-                current.putTab(tab, path, webView);
-                webEngine.executeScript("if((typeof waitForGetValue)!='undefined') waitForGetValue()");
-            }
-        });
-
-        current.putTab(tab, path, webView);
+        tab.setPath(path);
+        tab.setWebView(webView);
         tabPane.getTabs().add(tab);
 
         Tooltip tip = new Tooltip(path.toString());
@@ -889,6 +878,8 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
         recentFiles.remove(path.toString());
         recentFiles.add(0, path.toString());
 
+        webView.requestFocus();
+
     }
 
     @FXML
@@ -896,11 +887,22 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
         splitPane.setDividerPositions(0, 0.51);
     }
 
-    private Tab createTab() {
-        Tab tab = new Tab();
+    private MyTab createTab() {
+        MyTab tab = new MyTab();
 
         tab.setOnClosed(event -> {
             this.keepClosedPath(tab);
+        });
+
+        tab.selectedProperty().addListener((observableValue, before, after) -> {
+            if (after) {
+                if (Objects.nonNull(current.currentWebView())) {
+                    WebEngine webEngine = current.currentEngine();
+                    Worker.State state = webEngine.getLoadWorker().getState();
+                    if (state == Worker.State.SUCCEEDED)
+                        webEngine.executeScript("waitForGetValue()");
+                }
+            }
         });
 
         MenuItem menuItem0 = new MenuItem("Close");
@@ -1005,13 +1007,22 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
     }
 
     private void keepClosedPath(Tab closedTab) {
+        MyTab tab = (MyTab) closedTab;
         Label closedTabLabel = (Label) closedTab.getGraphic();
         if (!closedTabLabel.getText().equals("new *")) {
-            closedPaths.add(Optional.ofNullable(current.tabToPath(closedTab)));
-            current.getNewTabPaths().remove(closedTab);
-            current.getNewTabWebViews().remove(closedTab);
+            closedPaths.add(Optional.ofNullable(tab.getPath()));
         }
 
+        runTaskLater(task -> {
+            tab.setOnClosed(null);
+            tab.setOnSelectionChanged(null);
+            tab.setPath(null);
+            tab.setWebView(null);
+            tab.setContextMenu(null);
+            tab.setContent(null);
+            tab.setUserData(null);
+            tab.setOnCloseRequest(null);
+        });
     }
 
     private WebView createWebView() {
@@ -1241,7 +1252,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
     }
 
     public void appendWildcard() {
-        Label label = (Label) current.getCurrentTab().getGraphic();
+        Label label = (Label) current.currentTabLabel();
 
         if (!label.getText().contains(" *"))
             label.setText(label.getText() + " *");
@@ -1356,12 +1367,11 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
             return;
 
         IOHelper.writeToFile(currentPath, (String) current.currentEngine().executeScript("editor.getValue();"), TRUNCATE_EXISTING, CREATE);
-        current.putTab(current.getCurrentTab(), currentPath, current.currentView());
         current.setCurrentTabText(currentPath.getFileName().toString());
         recentFiles.remove(currentPath.toString());
         recentFiles.add(0, currentPath.toString());
 
-        Label label = (Label) current.getCurrentTab().getGraphic();
+        Label label = current.currentTabLabel();
         label.setText(label.getText().replace(" *", ""));
 
         initialDirectory = Optional.ofNullable(currentPath.toFile());
@@ -1377,7 +1387,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
 
     public void saveAndCloseCurrentTab() {
         this.saveDoc();
-        tabPane.getTabs().remove(current.getCurrentTab());
+        tabPane.getTabs().remove(current.currentTab());
     }
 
     public ProgressIndicator getIndikator() {
@@ -1462,5 +1472,9 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
 
     public ObservableList<String> getRecentFiles() {
         return recentFiles;
+    }
+
+    public TabPane getTabPane() {
+        return tabPane;
     }
 }

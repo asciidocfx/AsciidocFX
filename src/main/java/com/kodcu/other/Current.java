@@ -1,9 +1,12 @@
 package com.kodcu.other;
 
+import com.kodcu.component.MyTab;
+import com.kodcu.controller.AsciiDocController;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.nio.file.Path;
@@ -18,42 +21,28 @@ import java.util.concurrent.ConcurrentHashMap;
 @Component
 public class Current {
 
-    private Tab currentTab;
-    private Map<Tab, Optional<Path>> newTabPaths;
-    private Map<Tab, WebView> newTabWebViews;
+    @Autowired
+    private AsciiDocController controller;
+
     private Map<String, Integer> cache;
 
-    public Tab getCurrentTab() {
-        return currentTab;
+    public MyTab currentTab() {
+        return (MyTab) controller.getTabPane().getSelectionModel().getSelectedItem();
     }
 
-    public void setCurrentTab(Tab currentTab) {
-        this.currentTab = currentTab;
+    public Optional<Path> currentPath() {
+        return Optional.ofNullable(currentTab().getPath());
     }
 
-    public Map<Tab, WebView> getNewTabWebViews() {
-        if (Objects.isNull(newTabWebViews))
-            newTabWebViews = new ConcurrentHashMap<>();
-        return newTabWebViews;
+    public WebView currentWebView() {
+        return currentTab().getWebView();
     }
 
-    public void setNewTabWebViews(Map<Tab, WebView> newTabWebViews) {
-        this.newTabWebViews = newTabWebViews;
-    }
-
-    public Map<Tab, Optional<Path>> getNewTabPaths() {
-        if (Objects.isNull(newTabPaths))
-            newTabPaths = new ConcurrentHashMap<>();
-        ;
-        return newTabPaths;
-    }
-
-    public void setNewTabPaths(Map<Tab, Optional<Path>> newTabPaths) {
-        this.newTabPaths = newTabPaths;
+    public WebEngine currentEngine() {
+        return currentWebView().getEngine();
     }
 
     public Map<String, Integer> getCache() {
-
         if (Objects.isNull(cache))
             cache = new ConcurrentHashMap<String, Integer>();
         return cache;
@@ -63,44 +52,14 @@ public class Current {
         this.cache = cache;
     }
 
-    public void putTab(Tab tab, Path path, WebView webview) {
-        putTab(tab, Optional.ofNullable(path), webview);
-    }
-
-    public void putTab(Tab tab, Optional<Path> path, WebView webview) {
-        setCurrentTab(tab);
-        if (Objects.nonNull(path))
-            getNewTabPaths().put(tab, path);
-        getNewTabWebViews().put(getCurrentTab(), webview);
-    }
-
-    public Optional<Path> currentPath() {
-        Optional<Path> path = getNewTabPaths().get(getCurrentTab());
-        return Objects.nonNull(path) ? path : Optional.ofNullable(null);
-    }
-
-    public WebView currentView() {
-        return getNewTabWebViews().get(getCurrentTab());
-    }
-
-    public WebEngine currentEngine() {
-        WebView webView = getNewTabWebViews().get(getCurrentTab());
-        return Objects.isNull(webView) ? null : webView.getEngine();
-    }
-
-    public Optional<Path> currentPathParent() {
-        return currentPath().map(Path::getParent);
-    }
-
-
     public void setCurrentTabText(String currentTabText) {
-        Tab tab = getCurrentTab();
+        Tab tab = currentTab();
         Label label = (Label) tab.getGraphic();
         label.setText(currentTabText);
     }
 
     public String getCurrentTabText() {
-        Tab tab = getCurrentTab();
+        Tab tab = currentTab();
         Label label = (Label) tab.getGraphic();
 
         return label.getText();
@@ -120,7 +79,12 @@ public class Current {
         currentEngine().executeScript(String.format("editor.insert('%s')", IOHelper.normalize(content)));
     }
 
-    public Path tabToPath(Tab tab) {
-        return getNewTabPaths().get(tab).get();
+    public Optional<Path> currentPathParent() {
+        return currentPath().map(Path::getParent);
+    }
+
+    public Label currentTabLabel() {
+        Label label = (Label) currentTab().getGraphic();
+        return label;
     }
 }
