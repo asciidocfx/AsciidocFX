@@ -10,13 +10,13 @@ import java.util.Map;
  */
 public class ShortCuts {
 
-    private String[] keys;
+    private Map<String,String> keys;
 
-    public String[] getKeys() {
+    public Map<String, String> getKeys() {
         return keys;
     }
 
-    public void setKeys(String[] keys) {
+    public void setKeys(Map<String, String> keys) {
         this.keys = keys;
     }
 }

@@ -63,33 +63,21 @@ editor.commands.addCommand({
     readOnly: true
 });
 
-//editor.commands.addCommand({
-//    name: 'right-brace-1',
-//    bindKey: {win: 'Ctrl-Alt-0', mac: 'Command-Alt-0'},
-//    exec: function (editor) {
-//        editor.insert("}");
-//    },
-//    readOnly: true
-//});
-
-// loads from shortcuts.yml
-var shortCuts = app.getShortCuts();
-for (var i = 0; i < shortCuts.length; i++) {
-    var key = shortCuts[i].toString();
-    key = key.replace("AltGR", "Ctrl-Alt");
-    var split = key.split("+");
-
-    editor.commands.addCommand({
-        name: key,
-        bindKey: {
-            win: split[0].replace("Command", "Ctrl"),
-            mac: split[0].replace("Ctrl", "Command")
-        },
-        exec: function (editor) {
-            editor.insert(split[1]);
-        },
-        readOnly: true
-    });
+function addNewCommand(key,value){
+        var name = key + value;
+        console.log(name);
+        editor.commands.addCommand({
+            name: name,
+            bindKey: {
+                win: key,
+                mac: key
+            },
+            exec: function (editor) {
+                console.log(value);
+                editor.insert(value);
+            },
+            readOnly: true
+        });
 }
 
 function formatText(editor, matcher, firstCharacter, lastCharacter) {
@@ -234,7 +222,7 @@ editor.commands.addCommand({
     name: 'codify-selected',
     bindKey: {win: 'Ctrl-Shift-C', mac: 'Command-Shift-C'},
     exec: function (editor) {
-
+        console.log("in old");
         formatText(editor, matchCode, "`", "`");
     },
     readOnly: true

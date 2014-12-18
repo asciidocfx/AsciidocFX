@@ -181,7 +181,6 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
     private Optional<Path> workingDirectory = Optional.of(Paths.get(System.getProperty("user.home")));
     private Optional<File> initialDirectory = Optional.empty();
     private List<Optional<Path>> closedPaths = new ArrayList<>();
-    private String[] shortCuts;
 
     private List<String> bookNames = Arrays.asList("book.asc", "book.txt", "book.asciidoc", "book.adoc", "book.ad");
 
@@ -198,6 +197,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
 
         return Objects.nonNull(file) ? file.toPath() : null;
     };
+    private Map<String, String> shortCuts;
 
     private DirectoryChooser newDirectoryChooser(String title) {
         DirectoryChooser directoryChooser = new DirectoryChooser();
@@ -488,7 +488,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
         WebEngine mathjaxEngine = mathjaxView.getEngine();
         mathjaxEngine.getLoadWorker().stateProperty().addListener((observableValue1, state, state2) -> {
             JSObject window = (JSObject) mathjaxEngine.executeScript("window");
-            if (Objects.isNull(window.getMember("app"))) ;
+            if (window.getMember("app").equals("undefined"))
             window.setMember("app", this);
         });
         //
@@ -500,7 +500,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
 
         previewEngine.getLoadWorker().stateProperty().addListener((observableValue1, state, state2) -> {
             JSObject window = (JSObject) previewEngine.executeScript("window");
-            if (Objects.isNull(window.getMember("app"))) ;
+            if (window.getMember("app").equals("undefined"))
             window.setMember("app", this);
         });
 
@@ -1108,11 +1108,23 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
 
         webEngine.getLoadWorker().stateProperty().addListener((observable, oldValue, newValue) -> {
             JSObject window = (JSObject) webEngine.executeScript("window");
-            if (Objects.isNull(window.getMember("app"))) ;
-            window.setMember("app", this);
+            if (window.getMember("app").equals("undefined"))
+                window.setMember("app", this);
+
+            if(newValue== Worker.State.SUCCEEDED)
+                applySohrtCuts();
+
         });
+
         webEngine.load(String.format("http://localhost:%d/editor.html", tomcatPort));
         return webView;
+    }
+
+    private void applySohrtCuts() {
+        Set<String> keySet = shortCuts.keySet();
+        for (String key : keySet) {
+            current.currentEngine().executeScript(String.format("addNewCommand('%s','%s')",key,shortCuts.get(key)));
+        }
     }
 
 
@@ -1499,7 +1511,4 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
         return tabPane;
     }
 
-    public String[] getShortCuts() {
-        return shortCuts;
-    }
 }
