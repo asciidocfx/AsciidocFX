@@ -1222,7 +1222,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
         if (!fileName.endsWith(".png") && !"ascii".equalsIgnoreCase(type))
             return "";
 
-        String defaultScale = "\nscale 600 width\n";
+        String defaultScale = "\nskinparam dpi 300\n";
 
         if (!uml.contains("@startuml") && !uml.contains("@enduml")) {
             uml = defaultScale + uml;
