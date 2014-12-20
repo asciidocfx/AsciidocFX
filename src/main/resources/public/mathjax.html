@@ -49,10 +49,11 @@
                     var svgWidth = (bbox.width > 600) ? 600 : bbox.width;
                     var svgHeight = (bbox.height / (bbox.width / svgWidth));
                     app.svgToPng(fileName.replace("-----", "."), svgStrings, formula, svgWidth, svgHeight);
+
                 }
 
             });
-            $("#formulas").find("*").remove();
+
         });
 
 
