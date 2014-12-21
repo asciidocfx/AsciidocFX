@@ -4,10 +4,6 @@ package com.kodcu.controller;
 import com.esotericsoftware.yamlbeans.YamlException;
 import com.esotericsoftware.yamlbeans.YamlReader;
 import com.esotericsoftware.yamlbeans.YamlWriter;
-import com.fasterxml.jackson.databind.JavaType;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.type.CollectionType;
-import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.kodcu.bean.Config;
 import com.kodcu.bean.RecentFiles;
 import com.kodcu.bean.ShortCuts;
@@ -69,6 +65,7 @@ import org.springframework.boot.context.embedded.EmbeddedWebApplicationContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -91,11 +88,11 @@ import java.security.CodeSource;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.nio.file.StandardOpenOption.*;
 
@@ -449,14 +446,13 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
         htmlBookService.produceXhtml5(previewEngine, currentPath, configPath);
     }
 
-    public String createFileTree(String tree,String type,String fileName,String width,String height) throws IOException {
+    public String createFileTree(String tree, String type, String fileName, String width, String height) throws IOException {
 
         Objects.requireNonNull(fileName);
 
         if (!fileName.endsWith(".png") && !"ascii".equalsIgnoreCase(type))
             return "";
 
-//////
         if ("ascii".equalsIgnoreCase(type)) {
             return tree;
         }
@@ -474,71 +470,98 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
             int hashCode = (fileName + type + tree + width + height).hashCode();
             if (Objects.isNull(cacheHit) || hashCode != cacheHit) {
 
-                String treeJson = (String) fileTreeView.getEngine().executeScript(String.format("createFileTree('%s')", IOHelper.normalize(tree)));
-                TreeView<Tuple> fileView = new TreeView<>();
+                TreeView<Tuple<Integer,String>> fileView = new TreeView<>();
+                fileView.setLayoutX(-9999);
+                fileView.setLayoutY(-9999);
                 rootAnchor.getChildren().add(fileView);
-                    try {
 
-                        ObjectMapper objectMapper = new ObjectMapper();
-                        JavaType mapType = TypeFactory.defaultInstance().constructType(Tuple.class);
-                        CollectionType listType = TypeFactory.defaultInstance().constructCollectionType(List.class, mapType);
-                        List<Tuple<Integer, String>> tupleList = objectMapper.readValue(treeJson, listType);
+                try {
+                    List<String> strings = Arrays.asList(tree.split("\n"));
+                    List<TreeItem<Tuple<Integer, String>>> treeItems = strings.stream()
+                    .map(s -> {
+                        int level = StringUtils.countOccurrencesOf(s, "#");
+                        String value = s.replace(" ", "").replace("#", "");
+                        return new Tuple<Integer, String>(level, value);
+                    })
+                    .map(t->{
+                        Node icon = awesomeService.getIcon(Paths.get(t.getValue()));
+                        TreeItem<Tuple<Integer, String>> treeItem = new TreeItem<>(t,icon);
+                        treeItem.setExpanded(true);
 
-                        Integer lastPos = 0;
-                        TreeItem<Tuple> lastItem = null;
+                        return treeItem;
+                    })
+                    .collect(Collectors.toList());
 
-                        for (Tuple<Integer, String> tuple : tupleList) {
 
-                            TreeItem<Tuple> newItem = new TreeItem<>(tuple);
-                            newItem.setExpanded(true);
+                    for (int index = 0; index < treeItems.size(); index++) {
 
-                            if (Objects.isNull(fileView.getRoot())) {
-                                fileView.setRoot(newItem);
-                                lastItem = newItem;
-                                continue;
-                            }
+                        TreeItem<Tuple<Integer, String>> currentItem = treeItems.get(index);
+                        Tuple<Integer, String> currentItemValue = currentItem.getValue();
 
-                            if (tuple.getKey() > lastPos) {
-                                lastItem.getChildren().add(newItem);
-                                lastItem = newItem;
-                                lastPos = tuple.getKey();
-                                continue;
-                            }
-
-                            if (tuple.getKey() == lastPos) {
-                                lastItem.getParent().getChildren().add(newItem);
-                                lastItem = newItem;
-                                lastPos = tuple.getKey();
-                                continue;
-                            }
-
-                            if (tuple.getKey() < lastPos) {
-
-                                List<TreeItem<Tuple>> collect = fileView.getRoot().getChildren().stream().filter(t -> t.getValue().getKey() == tuple.getKey()).collect(Collectors.toList());
-                                if (collect.size() == 0)
-                                    continue;
-                                TreeItem<Tuple> lastFound = collect.get(collect.size() - 1);
-                                lastFound.getParent().getChildren().add(newItem);
-                                lastItem = newItem;
-                                lastPos = tuple.getKey();
-                                continue;
-                            }
-
+                        if (Objects.isNull(fileView.getRoot())) {
+                            fileView.setRoot(currentItem);
+                            continue;
                         }
 
-                        long deepCount = fileView.getRoot().getChildren().stream().flatMap(t -> t.getChildren().stream()).count();
-                        fileView.setPrefHeight(deepCount*30);
+                        TreeItem<Tuple<Integer, String>> lastItem = treeItems.get(index - 1);
+                        int lastPos = lastItem.getValue().getKey();
 
-                        Files.createDirectories(path.resolve("images"));
+                        if (currentItemValue.getKey() > lastPos) {
 
-                        WritableImage writableImage = fileView.snapshot(new SnapshotParameters(), null);
+                            lastItem.getChildren().add(currentItem);
+                            continue;
+                        }
 
-                        ImageIO.write(SwingFXUtils.fromFXImage(writableImage, null), "png", treePath.toFile());
+                        if (currentItemValue.getKey() == lastPos) {
 
-                        lastRenderedChangeListener.changed(null, lastRendered.getValue(), lastRendered.getValue());
-                    } catch (Exception e) {
-                        e.printStackTrace();
+                            TreeItem<Tuple<Integer,String>> parent = lastItem.getParent();
+                            if(Objects.isNull(parent))
+                                parent  = fileView.getRoot();
+                            parent.getChildren().add(currentItem);
+                            continue;
+                        }
+
+                        if (currentItemValue.getKey() < lastPos) {
+
+                            List<TreeItem<Tuple<Integer,String>>> collect = treeItems.stream()
+                                    .filter(t -> t.getValue().getKey() == currentItemValue.getKey())
+                                    .collect(Collectors.toList());
+
+                            if(collect.size()>0){
+                                TreeItem<Tuple<Integer,String>> treeItem = collect.get(collect.size() - 1);
+                                TreeItem<Tuple<Integer, String>> parent = treeItem.getParent();
+
+                                if(Objects.isNull(parent))
+                                    parent  = fileView.getRoot();
+                                parent.getChildren().add(currentItem);
+                            }
+                            continue;
+                        }
+
                     }
+
+                    fileView.setPrefHeight(treeItems.size() * 30);
+
+                    try{
+                        fileView.setPrefWidth(Double.valueOf(width));
+                    }
+                    catch (Exception e){}
+
+                    try{
+                        fileView.setPrefHeight(Double.valueOf(height));
+                    }
+                    catch (Exception e){}
+
+
+                    Files.createDirectories(path.resolve("images"));
+
+                    WritableImage writableImage = fileView.snapshot(new SnapshotParameters(), null);
+                    ImageIO.write(SwingFXUtils.fromFXImage(writableImage, null), "png", treePath.toFile());
+
+                    lastRenderedChangeListener.changed(null, lastRendered.getValue(), lastRendered.getValue());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
 
 
@@ -1200,12 +1223,24 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
             boolean success = false;
 
             if (dragboard.hasFiles()) {
-                Optional<String> block = parserService.toImageBlock(dragboard.getFiles());
+
+                List<File> dragboardFiles = dragboard.getFiles();
+
+                if(dragboardFiles.size()==1){
+                    Path path = dragboardFiles.get(0).toPath();
+                    if(Files.isDirectory(path)){
+                        Stream<Path> list = IOHelper.list(path);
+                        current.insertEditorValue(list.map(Path::toString).collect(Collectors.joining("\n")));
+                        success =true;
+                    }
+                }
+
+                Optional<String> block = parserService.toImageBlock(dragboardFiles);
                 if (block.isPresent()) {
                     current.insertEditorValue(block.get());
                     success = true;
                 } else {
-                    block = parserService.toIncludeBlock(dragboard.getFiles());
+                    block = parserService.toIncludeBlock(dragboardFiles);
                     if (block.isPresent()) {
                         current.insertEditorValue(block.get());
                         success = true;
