@@ -23,10 +23,17 @@ public class PathResolverService {
             Arrays.asList("book.asc", "book.txt", "book.asciidoc", "book.adoc", "book.ad");
 
     PathMatcher pdfMatcher = FileSystems.getDefault().getPathMatcher("glob:**.pdf");
-    PathMatcher htmlMatcher = FileSystems.getDefault().getPathMatcher("glob:**.html");
+    PathMatcher htmlMatcher = FileSystems.getDefault().getPathMatcher("glob:**.{html,html}");
     PathMatcher docBookMatcher = FileSystems.getDefault().getPathMatcher("glob:**.xml");
     PathMatcher ascMatcher = FileSystems.getDefault().getPathMatcher("glob:**.{asc,asciidoc,ad,adoc,txt}");
     PathMatcher imageMatcher = FileSystems.getDefault().getPathMatcher("glob:**.{png,svg,jpg,bmp,gif}");
+    PathMatcher pptMatcher = FileSystems.getDefault().getPathMatcher("glob:**.{ppt,pptx}");
+    PathMatcher docxMatcher = FileSystems.getDefault().getPathMatcher("glob:**.{doc,docx}");
+    PathMatcher excelMatcher = FileSystems.getDefault().getPathMatcher("glob:**.{xls,xlsx}");
+    PathMatcher archieveMatcher = FileSystems.getDefault().getPathMatcher("glob:**.{zip,jar,tar,rar,tar.gz}");
+    PathMatcher videoMatcher = FileSystems.getDefault().getPathMatcher("glob:**.{cda,avi,flv,mkv,mov,mp4,mpeg,mpg,ogv,webm,divx,wmv}");
+    PathMatcher cssMatcher = FileSystems.getDefault().getPathMatcher("glob:**.{css,css3,scss,less}");
+    PathMatcher terminalMatcher = FileSystems.getDefault().getPathMatcher("glob:**.{bat,sh,cmd}");
 
     private Map<String, Boolean> rootExists = new HashMap<>();
 
@@ -99,5 +106,33 @@ public class PathResolverService {
         }
 
         return null;
+    }
+
+    public boolean isPPT(Path path) {
+        return false;
+    }
+
+    public boolean isDocx(Path path) {
+        return docxMatcher.matches(path);
+    }
+
+    public boolean isExcel(Path path) {
+        return  excelMatcher.matches(path);
+    }
+
+    public boolean isArchive(Path path) {
+        return archieveMatcher.matches(path);
+    }
+
+    public boolean isVideo(Path path) {
+        return videoMatcher.matches(path);
+    }
+
+    public boolean isCSS(Path path) {
+        return cssMatcher.matches(path);
+    }
+
+    public boolean isBash(Path path) {
+        return terminalMatcher.matches(path);
     }
 }
