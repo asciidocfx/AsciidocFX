@@ -4,6 +4,10 @@ package com.kodcu.controller;
 import com.esotericsoftware.yamlbeans.YamlException;
 import com.esotericsoftware.yamlbeans.YamlReader;
 import com.esotericsoftware.yamlbeans.YamlWriter;
+import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.type.CollectionType;
+import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.kodcu.bean.Config;
 import com.kodcu.bean.RecentFiles;
 import com.kodcu.bean.ShortCuts;
@@ -11,6 +15,7 @@ import com.kodcu.component.MyTab;
 import com.kodcu.other.Current;
 import com.kodcu.other.IOHelper;
 import com.kodcu.other.Item;
+import com.kodcu.other.Tuple;
 import com.kodcu.service.*;
 import com.sun.javafx.application.HostServicesDelegate;
 import de.jensd.fx.fontawesome.AwesomeDude;
@@ -24,16 +29,19 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.concurrent.Worker;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.SnapshotParameters;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.TextFieldTreeCell;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.image.WritableImage;
 import javafx.scene.input.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Priority;
@@ -71,6 +79,7 @@ import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 import org.w3c.dom.svg.SVGDocument;
 
+import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
 import java.io.*;
 import java.net.URISyntaxException;
@@ -82,6 +91,7 @@ import java.security.CodeSource;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -198,6 +208,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
         return Objects.nonNull(file) ? file.toPath() : null;
     };
     private Map<String, String> shortCuts;
+    private WebView fileTreeView;
 
     private DirectoryChooser newDirectoryChooser(String title) {
         DirectoryChooser directoryChooser = new DirectoryChooser();
@@ -438,6 +449,109 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
         htmlBookService.produceXhtml5(previewEngine, currentPath, configPath);
     }
 
+    public String createFileTree(String tree,String type,String fileName,String width,String height) throws IOException {
+
+        Objects.requireNonNull(fileName);
+
+        if (!fileName.endsWith(".png") && !"ascii".equalsIgnoreCase(type))
+            return "";
+
+//////
+        if ("ascii".equalsIgnoreCase(type)) {
+            return tree;
+        }
+        // default: png
+        else {
+
+            if (!current.currentPath().isPresent())
+                saveDoc();
+
+            Path path = current.currentPath().get().getParent();
+            Path treePath = path.resolve("images/").resolve(fileName);
+
+            Integer cacheHit = current.getCache().get(fileName);
+
+            int hashCode = (fileName + type + tree + width + height).hashCode();
+            if (Objects.isNull(cacheHit) || hashCode != cacheHit) {
+
+                String treeJson = (String) fileTreeView.getEngine().executeScript(String.format("createFileTree('%s')", IOHelper.normalize(tree)));
+                TreeView<Tuple> fileView = new TreeView<>();
+                rootAnchor.getChildren().add(fileView);
+                    try {
+
+                        ObjectMapper objectMapper = new ObjectMapper();
+                        JavaType mapType = TypeFactory.defaultInstance().constructType(Tuple.class);
+                        CollectionType listType = TypeFactory.defaultInstance().constructCollectionType(List.class, mapType);
+                        List<Tuple<Integer, String>> tupleList = objectMapper.readValue(treeJson, listType);
+
+                        Integer lastPos = 0;
+                        TreeItem<Tuple> lastItem = null;
+
+                        for (Tuple<Integer, String> tuple : tupleList) {
+
+                            TreeItem<Tuple> newItem = new TreeItem<>(tuple);
+                            newItem.setExpanded(true);
+
+                            if (Objects.isNull(fileView.getRoot())) {
+                                fileView.setRoot(newItem);
+                                lastItem = newItem;
+                                continue;
+                            }
+
+                            if (tuple.getKey() > lastPos) {
+                                lastItem.getChildren().add(newItem);
+                                lastItem = newItem;
+                                lastPos = tuple.getKey();
+                                continue;
+                            }
+
+                            if (tuple.getKey() == lastPos) {
+                                lastItem.getParent().getChildren().add(newItem);
+                                lastItem = newItem;
+                                lastPos = tuple.getKey();
+                                continue;
+                            }
+
+                            if (tuple.getKey() < lastPos) {
+
+                                List<TreeItem<Tuple>> collect = fileView.getRoot().getChildren().stream().filter(t -> t.getValue().getKey() == tuple.getKey()).collect(Collectors.toList());
+                                if (collect.size() == 0)
+                                    continue;
+                                TreeItem<Tuple> lastFound = collect.get(collect.size() - 1);
+                                lastFound.getParent().getChildren().add(newItem);
+                                lastItem = newItem;
+                                lastPos = tuple.getKey();
+                                continue;
+                            }
+
+                        }
+
+                        long deepCount = fileView.getRoot().getChildren().stream().flatMap(t -> t.getChildren().stream()).count();
+                        fileView.setPrefHeight(deepCount*30);
+
+                        Files.createDirectories(path.resolve("images"));
+
+                        WritableImage writableImage = fileView.snapshot(new SnapshotParameters(), null);
+
+                        ImageIO.write(SwingFXUtils.fromFXImage(writableImage, null), "png", treePath.toFile());
+
+                        lastRenderedChangeListener.changed(null, lastRendered.getValue(), lastRendered.getValue());
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+            }
+
+
+            current.getCache().put(fileName, hashCode);
+
+            String treeRelativePath = Paths.get("images") + "/" + treePath.getFileName();
+
+            return treeRelativePath;
+        }
+///////
+
+    }
+
     @Override
     public void initialize(URL url, ResourceBundle rb) {
 
@@ -485,15 +599,26 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
         mathjaxView.setVisible(false);
         rootAnchor.getChildren().add(mathjaxView);
 
+        fileTreeView = new WebView();
+        fileTreeView.setVisible(false);
+        rootAnchor.getChildren().add(fileTreeView);
+
         WebEngine mathjaxEngine = mathjaxView.getEngine();
         mathjaxEngine.getLoadWorker().stateProperty().addListener((observableValue1, state, state2) -> {
             JSObject window = (JSObject) mathjaxEngine.executeScript("window");
             if (window.getMember("app").equals("undefined"))
-            window.setMember("app", this);
+                window.setMember("app", this);
         });
         //
+        WebEngine fileTreeViewEngine = fileTreeView.getEngine();
+        fileTreeViewEngine.getLoadWorker().stateProperty().addListener((observableValue1, state, state2) -> {
+            JSObject window = (JSObject) fileTreeViewEngine.executeScript("window");
+            if (window.getMember("app").equals("undefined"))
+                window.setMember("app", this);
+        });
 
-        mathjaxView.getEngine().load(String.format("http://localhost:%d/mathjax.html", tomcatPort));
+        mathjaxEngine.load(String.format("http://localhost:%d/mathjax.html", tomcatPort));
+        fileTreeViewEngine.load(String.format("http://localhost:%d/tree.html", tomcatPort));
 
         previewEngine = previewView.getEngine();
         previewEngine.load(String.format("http://localhost:%d/index.html", tomcatPort));
@@ -501,7 +626,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
         previewEngine.getLoadWorker().stateProperty().addListener((observableValue1, state, state2) -> {
             JSObject window = (JSObject) previewEngine.executeScript("window");
             if (window.getMember("app").equals("undefined"))
-            window.setMember("app", this);
+                window.setMember("app", this);
         });
 
         previewEngine.getLoadWorker().exceptionProperty().addListener((ov, t, t1) -> {
@@ -1111,7 +1236,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
             if (window.getMember("app").equals("undefined"))
                 window.setMember("app", this);
 
-            if(newValue== Worker.State.SUCCEEDED)
+            if (newValue == Worker.State.SUCCEEDED)
                 applySohrtCuts();
 
         });
@@ -1123,7 +1248,7 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
     private void applySohrtCuts() {
         Set<String> keySet = shortCuts.keySet();
         for (String key : keySet) {
-            current.currentEngine().executeScript(String.format("addNewCommand('%s','%s')",key,shortCuts.get(key)));
+            current.currentEngine().executeScript(String.format("addNewCommand('%s','%s')", key, shortCuts.get(key)));
         }
     }
 
@@ -1195,11 +1320,10 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
 
         Path imageFile = null;
 
-        if(current.currentPath().isPresent()){
+        if (current.currentPath().isPresent()) {
             imageFile = current.currentPath().map(Path::getParent).get().resolve(uri);
-        }
-        else{
-            imageFile=  workingDirectory.get().resolve(uri);
+        } else {
+            imageFile = workingDirectory.get().resolve(uri);
         }
 
         try {
