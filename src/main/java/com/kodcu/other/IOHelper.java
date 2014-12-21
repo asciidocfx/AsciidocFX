@@ -13,6 +13,7 @@ import java.nio.file.CopyOption;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
+import java.util.stream.Stream;
 
 /**
  * Created by usta on 09.05.2014.
@@ -95,5 +96,14 @@ public class IOHelper {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public static Stream<Path> list(Path path) {
+        try {
+            return Files.list(path);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return Stream.empty();
     }
 }
