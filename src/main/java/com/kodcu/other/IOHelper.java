@@ -4,6 +4,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.zeroturnaround.zip.commons.IOUtils;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -105,5 +107,13 @@ public class IOHelper {
             e.printStackTrace();
         }
         return Stream.empty();
+    }
+
+    public static void imageWrite(BufferedImage bufferedImage, String format, File output) {
+        try {
+            ImageIO.write(bufferedImage,format,output);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

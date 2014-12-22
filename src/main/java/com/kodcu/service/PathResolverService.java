@@ -34,6 +34,8 @@ public class PathResolverService {
     PathMatcher videoMatcher = FileSystems.getDefault().getPathMatcher("glob:**.{cda,avi,flv,mkv,mov,mp4,mpeg,mpg,ogv,webm,divx,wmv}");
     PathMatcher cssMatcher = FileSystems.getDefault().getPathMatcher("glob:**.{css,css3,scss,less}");
     PathMatcher terminalMatcher = FileSystems.getDefault().getPathMatcher("glob:**.{bat,sh,cmd}");
+    PathMatcher codeMatcher = FileSystems.getDefault().getPathMatcher("glob:**.{asp,aspx,c,cpp,java,js,aj,php,rb,xml,yml,py}");
+    PathMatcher anyMatcher = FileSystems.getDefault().getPathMatcher("glob:**.{*}");
 
     private Map<String, Boolean> rootExists = new HashMap<>();
 
@@ -47,10 +49,8 @@ public class PathResolverService {
 
     public boolean isHidden(Path path) {
         try {
-            return Files.isHidden(path) || path.getFileName().toString().startsWith(".");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+            return path.getFileName().toString().startsWith(".") || Files.isHidden(path) ;
+        } catch (IOException e) {}
         return false;
     }
 
@@ -134,5 +134,13 @@ public class PathResolverService {
 
     public boolean isBash(Path path) {
         return terminalMatcher.matches(path);
+    }
+
+    public boolean isCode(Path path) {
+        return codeMatcher.matches(path);
+    }
+
+    public boolean isAny(Path path) {
+        return anyMatcher.matches(path);
     }
 }

@@ -58,6 +58,8 @@ import org.apache.batik.transcoder.TranscoderInput;
 import org.apache.batik.transcoder.TranscoderOutput;
 import org.apache.batik.transcoder.image.PNGTranscoder;
 import org.apache.batik.util.XMLResourceDescriptor;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -78,6 +80,7 @@ import org.w3c.dom.svg.SVGDocument;
 
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
+import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -471,8 +474,8 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
             if (Objects.isNull(cacheHit) || hashCode != cacheHit) {
 
                 TreeView<Tuple<Integer,String>> fileView = new TreeView<>();
-                fileView.setLayoutX(-9999);
-                fileView.setLayoutY(-9999);
+                fileView.setLayoutX(-99999);
+                fileView.setLayoutY(-99999);
                 rootAnchor.getChildren().add(fileView);
 
                 try {
@@ -540,25 +543,37 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
 
                     }
 
-                    fileView.setPrefHeight(treeItems.size() * 30);
+                    fileView.setPrefHeight(treeItems.size() * 24);
+                    fileView.setPrefWidth(250);
 
                     try{
-                        fileView.setPrefWidth(Double.valueOf(width));
+                        Double value = Double.valueOf(width);
+
+                        if(width.contains("+") || width.contains("-"))
+                            fileView.setPrefWidth(fileView.getPrefWidth()+value);
+                        else
+                            fileView.setPrefWidth(value);
                     }
                     catch (Exception e){}
 
                     try{
-                        fileView.setPrefHeight(Double.valueOf(height));
+                        Double value = Double.valueOf(height);
+
+                        if(height.contains("+") || height.contains("-"))
+                            fileView.setPrefHeight(fileView.getPrefHeight() + value);
+                        else
+                            fileView.setPrefHeight(value);
                     }
                     catch (Exception e){}
-
-
-                    Files.createDirectories(path.resolve("images"));
 
                     WritableImage writableImage = fileView.snapshot(new SnapshotParameters(), null);
-                    ImageIO.write(SwingFXUtils.fromFXImage(writableImage, null), "png", treePath.toFile());
+                    BufferedImage bufferedImage = SwingFXUtils.fromFXImage(writableImage, null);
 
+                    IOHelper.createDirectories(path.resolve("images"));
+
+                    IOHelper.imageWrite(bufferedImage, "png", treePath.toFile());
                     lastRenderedChangeListener.changed(null, lastRendered.getValue(), lastRendered.getValue());
+
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -1229,8 +1244,32 @@ public class AsciiDocController extends TextWebSocketHandler implements Initiali
                 if(dragboardFiles.size()==1){
                     Path path = dragboardFiles.get(0).toPath();
                     if(Files.isDirectory(path)){
-                        Stream<Path> list = IOHelper.list(path);
-                        current.insertEditorValue(list.map(Path::toString).collect(Collectors.joining("\n")));
+
+                        Iterator<File> files = FileUtils.iterateFilesAndDirs(path.toFile(), TrueFileFilter.INSTANCE, TrueFileFilter.INSTANCE);
+
+                        StringBuffer buffer=new StringBuffer();
+                        buffer.append("[tree,filename=\"\"]");
+                        buffer.append("\n--\n");
+                        buffer.append("#"+path.getFileName().toString());
+
+                        while (files.hasNext()){
+                            File next = files.next();
+
+                            Path relativize = path.relativize(next.toPath());
+
+                            Path path1 = relativize.getName(0);
+                            if("".equals(path1.toString())  || pathResolver.isHidden(path1))
+                            continue;
+
+                            String hash = String.join("", Collections.nCopies(relativize.getNameCount()+1, "#"));
+
+                            buffer.append("\n");
+                            buffer.append(hash);
+                            buffer.append(relativize.getFileName().toString());
+
+                        }
+                        buffer.append("\n--");
+                        current.insertEditorValue(buffer.toString());
                         success =true;
                     }
                 }
