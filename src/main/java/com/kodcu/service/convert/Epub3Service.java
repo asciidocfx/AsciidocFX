@@ -1,8 +1,9 @@
-package com.kodcu.service;
+package com.kodcu.service.convert;
 
 import com.icl.saxon.TransformerFactoryImpl;
-import com.kodcu.controller.AsciiDocController;
+import com.kodcu.controller.ApplicationController;
 import com.kodcu.other.IOHelper;
+import com.kodcu.service.ui.IndikatorService;
 import javafx.application.Platform;
 import org.apache.commons.io.FileUtils;
 import org.joox.Match;
@@ -20,7 +21,6 @@ import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-import java.util.Optional;
 
 import static java.nio.file.StandardOpenOption.TRUNCATE_EXISTING;
 import static java.nio.file.StandardOpenOption.WRITE;
@@ -35,7 +35,7 @@ public class Epub3Service {
     private static final Logger logger = LoggerFactory.getLogger(Epub3Service.class);
 
     @Autowired
-    private AsciiDocController asciiDocController;
+    private ApplicationController asciiDocController;
 
     @Autowired
     private IndikatorService indikatorService;

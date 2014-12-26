@@ -1,6 +1,6 @@
-package com.kodcu.service;
+package com.kodcu.service.convert;
 
-import com.kodcu.controller.AsciiDocController;
+import com.kodcu.controller.ApplicationController;
 import com.kodcu.other.Current;
 import com.kodcu.other.IOHelper;
 import javafx.scene.web.WebEngine;
@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 public class RenderService {
 
     @Autowired
-    AsciiDocController controller;
+    ApplicationController controller;
 
     @Autowired
     Current current;

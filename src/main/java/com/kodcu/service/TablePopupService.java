@@ -1,4 +1,4 @@
-package com.kodcu.controller;
+package com.kodcu.service;
 
 
 import com.kodcu.other.Current;
@@ -17,7 +17,7 @@ import java.util.ResourceBundle;
 
 
 @Component
-public class TablePopupController implements Initializable {
+public class TablePopupService implements Initializable {
 
     @Autowired
     private Current current;
@@ -106,7 +106,6 @@ public class TablePopupController implements Initializable {
     public CheckBox getTablePopupFooter() {
         return tablePopupFooter;
     }
-
 
     public TextField getTablePopupWidth() {
         return tablePopupWidth;

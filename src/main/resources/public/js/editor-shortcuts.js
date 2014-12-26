@@ -1,3 +1,18 @@
+function addNewCommand(key,value){
+    var name = key + value;
+    editor.commands.addCommand({
+        name: name,
+        bindKey: {
+            win: key,
+            mac: key
+        },
+        exec: function (editor) {
+            console.log(value);
+            editor.insert(value);
+        },
+        readOnly: true
+    });
+}
 // default keys https://searchcode.com/codesearch/view/58959997/
 editor.commands.addCommand({
     name: 'cut-1',
@@ -62,23 +77,6 @@ editor.commands.addCommand({
     },
     readOnly: true
 });
-
-function addNewCommand(key,value){
-        var name = key + value;
-        console.log(name);
-        editor.commands.addCommand({
-            name: name,
-            bindKey: {
-                win: key,
-                mac: key
-            },
-            exec: function (editor) {
-                console.log(value);
-                editor.insert(value);
-            },
-            readOnly: true
-        });
-}
 
 function formatText(editor, matcher, firstCharacter, lastCharacter) {
     var range = editor.getSelectionRange();

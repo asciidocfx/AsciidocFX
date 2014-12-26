@@ -6,7 +6,7 @@
 <?import javafx.scene.text.Text?>
 <AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
             opacity="1.0" prefHeight="196.0" prefWidth="314.0" xmlns:fx="http://javafx.com/fxml/1"
-            xmlns="http://javafx.com/javafx/2.2" fx:controller="com.kodcu.controller.TablePopupController">
+            xmlns="http://javafx.com/javafx/2.2" fx:controller="com.kodcu.service.TablePopupService">
     <children>
         <CheckBox fx:id="tablePopupHeader" layoutX="33.0" layoutY="102.0" mnemonicParsing="false" selected="true"
                   text="Header"/>

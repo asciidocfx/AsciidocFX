@@ -16,32 +16,15 @@
 
 package com.kodcu.boot;
 
-import com.kodcu.controller.AsciiDocController;
+import com.kodcu.controller.ApplicationController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.boot.context.embedded.ServletRegistrationBean;
 import org.springframework.boot.context.web.SpringBootServletInitializer;
-import org.springframework.boot.env.YamlPropertySourceLoader;
 import org.springframework.context.annotation.*;
-import org.springframework.core.env.PropertySource;
-import org.springframework.core.io.PathResource;
-import org.springframework.web.servlet.DispatcherServlet;
-import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;
 import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
 import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
-
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRegistration;
-import java.io.File;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.security.CodeSource;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 
 @Configuration
@@ -51,7 +34,7 @@ import java.util.concurrent.Executors;
 public class SpringAppConfig extends SpringBootServletInitializer implements WebSocketConfigurer {
 
     @Autowired
-    private AsciiDocController asciiDocController;
+    private ApplicationController asciiDocController;
 
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {

@@ -1,7 +1,9 @@
-package com.kodcu.service;
+package com.kodcu.service.convert;
 
-import com.kodcu.controller.AsciiDocController;
+import com.kodcu.controller.ApplicationController;
 import com.kodcu.other.IOHelper;
+import com.kodcu.service.ui.IndikatorService;
+import com.kodcu.service.PathResolverService;
 import javafx.application.Platform;
 import javafx.scene.web.WebEngine;
 import org.joox.Match;
@@ -16,7 +18,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -41,7 +42,7 @@ public class DocBookService {
     private PathResolverService bookPathResolver;
 
     @Autowired
-    private AsciiDocController asciiDocController;
+    private ApplicationController asciiDocController;
 
     @Autowired
     private IndikatorService indikatorService;
@@ -123,9 +124,6 @@ public class DocBookService {
             builder.append(rootDocument.content());
 
             IOHelper.writeToFile(currentPath.resolve("book.xml"), builder.toString(), CREATE, TRUNCATE_EXISTING);
-
-//            if (showIndicator)
-//                asciiDocController.getHostServices().showDocument(currentPath.resolve("book.xml").toUri().toString());
 
             if (showIndicator) {
                 indikatorService.completeCycle();

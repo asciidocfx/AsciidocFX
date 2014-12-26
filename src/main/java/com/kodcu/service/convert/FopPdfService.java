@@ -1,7 +1,8 @@
-package com.kodcu.service;
+package com.kodcu.service.convert;
 
-import com.kodcu.controller.AsciiDocController;
+import com.kodcu.controller.ApplicationController;
 import com.kodcu.other.Current;
+import com.kodcu.service.ui.IndikatorService;
 import javafx.application.Platform;
 import org.apache.fop.apps.FOUserAgent;
 import org.apache.fop.apps.FopFactory;
@@ -15,9 +16,6 @@ import java.io.FileOutputStream;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
-import java.util.Optional;
 import java.util.Vector;
 
 import static java.nio.file.StandardOpenOption.CREATE;
@@ -31,7 +29,7 @@ import static java.nio.file.StandardOpenOption.WRITE;
 public class FopPdfService {
 
     @Autowired
-    private AsciiDocController asciiDocController;
+    private ApplicationController asciiDocController;
 
     @Autowired
     private IndikatorService indikatorService;

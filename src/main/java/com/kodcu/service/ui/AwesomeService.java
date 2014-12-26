@@ -1,5 +1,6 @@
-package com.kodcu.service;
+package com.kodcu.service.ui;
 
+import com.kodcu.service.PathResolverService;
 import de.jensd.fx.fontawesome.AwesomeDude;
 import de.jensd.fx.fontawesome.AwesomeIcon;
 import javafx.scene.Node;

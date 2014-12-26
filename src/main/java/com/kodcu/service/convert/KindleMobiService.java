@@ -1,6 +1,7 @@
-package com.kodcu.service;
+package com.kodcu.service.convert;
 
-import com.kodcu.controller.AsciiDocController;
+import com.kodcu.controller.ApplicationController;
+import com.kodcu.service.ui.IndikatorService;
 import javafx.application.Platform;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,7 +21,7 @@ public class KindleMobiService {
     private static final Logger logger = LoggerFactory.getLogger(KindleMobiService.class);
 
     @Autowired
-    private AsciiDocController asciiDocController;
+    private ApplicationController asciiDocController;
 
     @Autowired
     private IndikatorService indikatorService;

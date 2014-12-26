@@ -1,7 +1,7 @@
 package com.kodcu.boot;
 
 
-import com.kodcu.controller.AsciiDocController;
+import com.kodcu.controller.ApplicationController;
 import com.sun.deploy.uitoolkit.impl.fx.HostServicesFactory;
 import com.sun.javafx.application.HostServicesDelegate;
 import javafx.application.Application;
@@ -17,7 +17,6 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.Modality;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 
@@ -26,7 +25,7 @@ import static javafx.scene.input.KeyCombination.CONTROL_DOWN;
 
 public class AppStarter extends Application {
 
-    private AsciiDocController controller;
+    private ApplicationController controller;
     private ConfigurableApplicationContext context;
 
     @Override

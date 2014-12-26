@@ -1,6 +1,6 @@
 package com.kodcu.service;
 
-import com.kodcu.controller.AsciiDocController;
+import com.kodcu.controller.ApplicationController;
 import com.kodcu.other.Current;
 import com.kodcu.other.IOHelper;
 import com.kodcu.other.Constants;
@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 public class ParserService {
 
     @Autowired
-    private AsciiDocController asciiDocController;
+    private ApplicationController asciiDocController;
 
     @Autowired
     private Current current;

@@ -452,3 +452,7 @@
     -fx-background-color: transparent;
     -fx-text-fill: #1e1e1e;
 }
+
+.file-tree{
+    -fx-border-color: #ccc !important;
+}

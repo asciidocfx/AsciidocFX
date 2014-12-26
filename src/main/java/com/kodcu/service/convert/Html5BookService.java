@@ -1,7 +1,9 @@
-package com.kodcu.service;
+package com.kodcu.service.convert;
 
-import com.kodcu.controller.AsciiDocController;
+import com.kodcu.controller.ApplicationController;
 import com.kodcu.other.IOHelper;
+import com.kodcu.service.ui.IndikatorService;
+import com.kodcu.service.PathResolverService;
 import javafx.application.Platform;
 import javafx.scene.web.WebEngine;
 import org.slf4j.Logger;
@@ -13,7 +15,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -32,7 +33,7 @@ public class Html5BookService {
     private Pattern compiledRegex = Pattern.compile("(?<=include::)(.*?)(?=\\[(.*?)\\])");
 
     @Autowired
-    private AsciiDocController asciiDocController;
+    private ApplicationController asciiDocController;
 
     @Autowired
     private PathResolverService bookPathResolver;

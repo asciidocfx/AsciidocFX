@@ -1,13 +1,11 @@
-package com.kodcu.service;
+package com.kodcu.service.ui;
 
-import com.kodcu.controller.AsciiDocController;
+import com.kodcu.controller.ApplicationController;
 import javafx.animation.FadeTransition;
 import javafx.application.Platform;
 import javafx.util.Duration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import java.nio.file.Path;
 
 /**
  * Created by usta on 01.09.2014.
@@ -16,7 +14,7 @@ import java.nio.file.Path;
 public class IndikatorService {
 
     @Autowired
-    private AsciiDocController asciiDocController;
+    private ApplicationController asciiDocController;
 
     public void startCycle() {
         Platform.runLater(() -> {

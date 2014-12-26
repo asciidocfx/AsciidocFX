@@ -1,11 +1,10 @@
-package com.kodcu.service;
+package com.kodcu.service.ui;
 
-import com.kodcu.controller.AsciiDocController;
+import com.kodcu.controller.ApplicationController;
 import com.kodcu.other.Item;
-import de.jensd.fx.fontawesome.AwesomeDude;
-import de.jensd.fx.fontawesome.AwesomeIcon;
+import com.kodcu.service.PathResolverService;
+import com.kodcu.service.ui.AwesomeService;
 import javafx.application.Platform;
-import javafx.scene.control.Label;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +24,7 @@ import java.util.List;
 public class FileBrowseService {
 
     @Autowired
-    private AsciiDocController asciiDocController;
+    private ApplicationController controller;
 
     @Autowired
     private PathResolverService pathResolver;
@@ -35,7 +34,7 @@ public class FileBrowseService {
 
     private TreeItem<Item> rootItem;
 
-    public void browse(final TreeView<Item> treeView, final AsciiDocController controller, final Path browserPath) {
+    public void browse(final TreeView<Item> treeView, final Path browserPath) {
 
         Platform.runLater(() -> {
 

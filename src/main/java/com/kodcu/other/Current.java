@@ -1,7 +1,7 @@
 package com.kodcu.other;
 
 import com.kodcu.component.MyTab;
-import com.kodcu.controller.AsciiDocController;
+import com.kodcu.controller.ApplicationController;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
 import javafx.scene.web.WebEngine;
@@ -22,7 +22,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class Current {
 
     @Autowired
-    private AsciiDocController controller;
+    private ApplicationController controller;
 
     private Map<String, Integer> cache;
 
