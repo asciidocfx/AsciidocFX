@@ -17,7 +17,7 @@ import java.nio.file.Path;
  * Created by usta on 25.12.2014.
  */
 @Controller
-public class AsciidocController {
+public class AsciiDocController {
 
     @Autowired
     private Current current;
