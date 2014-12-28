@@ -251,7 +251,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     @FXML
     private void convertDocbook(ActionEvent event) {
         Path currentPath = directoryService.workingDirectory();
-        ;
         docBookController.generateDocbook(previewEngine, currentPath, true);
     }
 
@@ -259,7 +258,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     private void convertEpub(ActionEvent event) throws Exception {
 
         Path currentPath = directoryService.workingDirectory();
-        ;
         docBookController.generateDocbook(previewEngine, currentPath, false);
 
         threadService.runTaskLater((task) -> {
@@ -279,7 +277,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     private void convertMobi(ActionEvent event) throws Exception {
 
         Path currentPath = directoryService.workingDirectory();
-        ;
 
         if (Objects.nonNull(config.getKindlegenDir())) {
             if (!Files.exists(Paths.get(config.getKindlegenDir()))) {
@@ -307,7 +304,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     @FXML
     private void generateHtml(ActionEvent event) {
         Path currentPath = directoryService.workingDirectory();
-        ;
         htmlBookService.produceXhtml5(previewEngine, currentPath, configPath);
     }
 
