@@ -47,6 +47,7 @@ public class EditorService {
         Label superScriptLabel = AwesomeDude.createIconLabel(AwesomeIcon.SUPERSCRIPT, iconSize);
         Label underlineLabel = AwesomeDude.createIconLabel(AwesomeIcon.UNDERLINE, iconSize);
         Label hyperlinkLabel = AwesomeDude.createIconLabel(AwesomeIcon.LINK, iconSize);
+        Label strikethroughLabel = AwesomeDude.createIconLabel(AwesomeIcon.STRIKETHROUGH, iconSize);
 
 
         // Events
@@ -98,6 +99,10 @@ public class EditorService {
             current.currentEngine().executeScript("addHyperLink()");
         });
 
+        strikethroughLabel.setOnMouseClicked(event -> {
+            current.currentEngine().executeScript("addStrikeThroughText()");
+        });
+
         menuBar.getMenus().addAll(
                 new Menu("", newLabel),
                 new Menu("", openLabel),
@@ -105,6 +110,7 @@ public class EditorService {
                 new Menu("", boldLabel),
                 new Menu("", italicLabel),
                 new Menu("", underlineLabel),
+                new Menu("", strikethroughLabel),
                 new Menu("", headerLabel),
                 new Menu("", hyperlinkLabel),
                 new Menu("", codeLabel),

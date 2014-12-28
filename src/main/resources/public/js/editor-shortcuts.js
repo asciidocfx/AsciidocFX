@@ -123,7 +123,11 @@ function subScript() {
 }
 
 function underlinedText() {
-    formatText(editor, matchUnderlinedText, "+++<u>", "</u>+++");
+    formatText(editor, matchHtmlTagText, "+++<u>", "</u>+++");
+}
+
+function addStrikeThroughText() {
+    formatText(editor, matchHtmlTagText, "+++<del>", "</del>+++");
 }
 
 function isURL(text) {
@@ -378,6 +382,7 @@ function matchCode(text) {
     return text.match(/\`.*\`/g);
 }
 
-function matchUnderlinedText(text) {
-    return text.match(/(\+\+\+\<\u\>).*(\<\/\u\>\+\+\+)/g);
+function matchHtmlTagText(text) {
+    return text.match(/(\+\+\+\<(u|del)\>).*(\<\/(u|del)\>\+\+\+)/g);
 }
+
