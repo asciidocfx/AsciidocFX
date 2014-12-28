@@ -559,11 +559,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     public void scrollToCurrentLine(String text) {
         scrollService.scrollToCurrentLine(text);
     }
-
-    public String normalize(String content) {
-        return IOHelper.normalize(content);
-    }
-
+    
     public String plantUml(String uml, String type, String fileName) throws IOException {
         return plantUmlService.plantUml(uml, type, fileName);
     }
