@@ -36,6 +36,7 @@ public class PathResolverService {
     PathMatcher terminalMatcher = FileSystems.getDefault().getPathMatcher("glob:**.{bat,sh,cmd}");
     PathMatcher codeMatcher = FileSystems.getDefault().getPathMatcher("glob:**.{asp,aspx,c,cpp,java,js,aj,php,rb,xml,yml,py}");
     PathMatcher anyMatcher = FileSystems.getDefault().getPathMatcher("glob:**.{*}");
+    PathMatcher uniqueMatcher = FileSystems.getDefault().getPathMatcher("glob:{license,readme,gradlew}");
 
     private Map<String, Boolean> rootExists = new HashMap<>();
 
@@ -141,6 +142,7 @@ public class PathResolverService {
     }
 
     public boolean isAny(Path path) {
-        return anyMatcher.matches(path);
+        return anyMatcher.matches(path) || uniqueMatcher.matches(path);
     }
+    
 }
