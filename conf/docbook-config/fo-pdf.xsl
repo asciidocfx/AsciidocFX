@@ -255,6 +255,20 @@
         </xsl:attribute>
     </xsl:attribute-set>
 
+    <!-- Underline and Strikethrough -->
+
+    <xsl:template match="del">
+        <fo:inline text-decoration="underline">
+          <xsl:call-template name="inline.charseq"/>
+        </fo:inline>
+    </xsl:template>
+
+    <xsl:template match="u">
+        <fo:inline text-decoration="line-through">
+          <xsl:call-template name="inline.charseq"/>
+        </fo:inline>
+    </xsl:template>
+    
     <!--
       Page layout
     -->
