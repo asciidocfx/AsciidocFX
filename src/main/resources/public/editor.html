@@ -9,103 +9,103 @@
 <body>
 
 <div id="editor"></div>
-<script type="text/javascript" src="/js/jquery.js"></script>
+<!--<script type="text/javascript" src="/js/jquery.js"></script>-->
 <!-- load ace -->
 <script src="ace/src/ace.js" type="text/javascript" charset="utf-8"></script>
 <script src="js/editor.js" type="text/javascript" charset="utf-8"></script>
 <script src="js/sketch.js" type="text/javascript" charset="utf-8"></script>
 <script>
 
-var editor = ace.edit("editor");
-editor.focus();
-editor.getSession().setMode("ace/mode/asciidoc");
-editor.getSession().setUseWrapMode(true);
-editor.setHighlightActiveLine(false);
-editor.renderer.setShowGutter(false);
-editor.setShowPrintMargin(false);
-editor.renderer.setScrollMargin(10, 10, 10, 10);
-editor.setBehavioursEnabled(true);
-editor.session.setFoldStyle("manual");
-editor.setOptions({
-    enableSnippets: true
-});
+    var editor = ace.edit("editor");
+    editor.focus();
+    editor.getSession().setMode("ace/mode/asciidoc");
+    editor.getSession().setUseWrapMode(true);
+    editor.setHighlightActiveLine(false);
+    editor.renderer.setShowGutter(false);
+    editor.setShowPrintMargin(false);
+    editor.renderer.setScrollMargin(10, 10, 10, 10);
+    editor.setBehavioursEnabled(true);
+    editor.session.setFoldStyle("manual");
+    editor.setOptions({
+        enableSnippets: true
+    });
 
-var lastEditorRow = 0;
-var newlyInitialized = true;
-var timeouter;
-var updateDelay = 100;
+    var lastEditorRow = 0;
+    var newlyInitialized = true;
+    var timeouter;
+    var updateDelay = 100;
 
-editor.getSession().on('changeScrollTop', function (scroll) {
-    var maxTop = editor.renderer.layerConfig.maxHeight - editor.renderer.$size.scrollerHeight + editor.renderer.scrollMargin.bottom;
-    app.onscroll(editor.getSession().getScrollTop(), maxTop);
-});
+    editor.getSession().on('changeScrollTop', function (scroll) {
+        var maxTop = editor.renderer.layerConfig.maxHeight - editor.renderer.$size.scrollerHeight + editor.renderer.scrollMargin.bottom;
+        app.onscroll(editor.getSession().getScrollTop(), maxTop);
+    });
 
-editor.getSession().selection.on('changeCursor', function (e) {
+    editor.getSession().selection.on('changeCursor', function (e) {
 
-    var row = editor.getCursorPosition().row;
+        var row = editor.getCursorPosition().row;
 
-    if (lastEditorRow == row)
-        return;
-    
-    var range = sketch.searchBlockPosition(row);          
-    if(range){
-
-        if(lastEditorRow == range.start.row)
-            return;
-        lastEditorRow = range.start.row;
-
-        var blockText = editor.session.getTextRange(range);
-        app.scrollToCurrentLine(blockText);
-    }
-    else{
-        lastEditorRow = row;
-        
-        var lineText = editor.session.getLine(row);
-
-        if(lineText.trim() == "")
+        if (lastEditorRow == row)
             return;
 
-        app.scrollToCurrentLine(lineText);
-    }
-});
+        var range = sketch.searchBlockPosition(row);
+        if (range) {
 
-editor.getSession().on('change', function (obj) {
-    if (!newlyInitialized)
-        app.appendWildcard();
+            if (lastEditorRow == range.start.row)
+                return;
+            lastEditorRow = range.start.row;
 
-    if (timeouter)
-        clearTimeout(timeouter);
+            var blockText = editor.session.getTextRange(range);
+            app.scrollToCurrentLine(blockText);
+        }
+        else {
+            lastEditorRow = row;
 
-    sketch.refreshConstructList();
+            var lineText = editor.session.getLine(row);
 
-    timeouter = setTimeout(function () {
-        app.textListener(editor.getValue());
+            if (lineText.trim() == "")
+                return;
 
-        var length = editor.session.getLength();
+            app.scrollToCurrentLine(lineText);
+        }
+    });
 
-        if (length > 1000)
-            updateDelay = 1000;
-        else if (length > 2000)
-            updateDelay = 2000;
-        else
-            updateDelay = length;
+    editor.getSession().on('change', function (obj) {
+        if (!newlyInitialized)
+            app.appendWildcard();
 
-    }, updateDelay);
+        if (timeouter)
+            clearTimeout(timeouter);
 
-    if (newlyInitialized)
-        setTimeout(function () {
-            newlyInitialized = false;
-        }, 1000);
-});
+        sketch.refreshConstructList();
 
-editor.setOptions({
-    fontFamily: app.getConfig().getFontFamily(),
-    fontSize: app.getConfig().getFontSize()
-});
+        timeouter = setTimeout(function () {
+            app.textListener(editor.getValue());
 
-editor.setTheme(app.getConfig().getTheme());
-editor.setScrollSpeed(app.getConfig().getScrollSpeed());
-editor.setOption("dragEnabled", false);
+            var length = editor.session.getLength();
+
+            if (length > 1000)
+                updateDelay = 1000;
+            else if (length > 2000)
+                updateDelay = 2000;
+            else
+                updateDelay = length;
+
+        }, updateDelay);
+
+        if (newlyInitialized)
+            setTimeout(function () {
+                newlyInitialized = false;
+            }, 1000);
+    });
+
+    editor.setOptions({
+        fontFamily: app.getConfig().getFontFamily(),
+        fontSize: app.getConfig().getFontSize()
+    });
+
+    editor.setTheme(app.getConfig().getTheme());
+    editor.setScrollSpeed(app.getConfig().getScrollSpeed());
+    editor.setOption("dragEnabled", false);
 
 </script>
 <script src="js/editor-shortcuts.js"></script>

@@ -178,6 +178,15 @@ function addUmlBlock() {
     editor.gotoLine(range.end.row + 3, 0, true);
 }
 
+function addTreeBlock() {
+    var range = editor.getSelectionRange();
+    editor.removeToLineStart();
+
+    editor.insert("[tree,file=\"\"]\n--\n#\n--");
+
+    editor.gotoLine(range.end.row + 3, 1, true);
+}
+
 function addImageSection() {
     editor.removeToLineStart();
     editor.insert("image::images/image.png[]");
@@ -247,8 +256,13 @@ editor.commands.addCommand({
         mac: 'F12'
     },
     exec: function () {
-        if (!$("body").find("#firebug-script").length)
-            $("body").append("<script id='firebug-script' type='text/javascript' src='http://getfirebug.com/firebug-lite.js#startOpened=true'></script>")
+        if (!document.querySelectorAll("#firebug-script").length){
+            var head = document.querySelector("head");
+            var js = document.createElement("script");
+            js.type = "text/javascript";
+            js.src = "http://getfirebug.com/firebug-lite.js#startOpened=true";
+            head.appendChild(js);
+        }
     },
     readOnly: true
 });
@@ -295,6 +309,12 @@ editor.commands.addCommand({
         // uml tab
         if (textRange == "uml") { // uml block generator
             addUmlBlock();
+            return;
+        }
+
+        // tree tab
+        if (textRange == "tree") { // uml block generator
+            addTreeBlock();
             return;
         }
 

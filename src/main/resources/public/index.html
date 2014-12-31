@@ -10,36 +10,6 @@
     <link rel="stylesheet" href="/css/custom.css"/>
 </head>
 <body>
-<div class="utility">
-    <div class="row">
-        <div class="columns justify large-10 large-centered medium-12 small-12"  style="height:30px">
-            <a class="save-html" onclick="htmlOnePage()">
-                <i class="fa fa-html5"></i>
-                HTML
-            </a>
-            <a class="save-pdf" onclick="pdfOnePage()">
-                <i class="fa fa-file-pdf-o"></i>
-                PDF
-            </a>
-            <a class="copy-source" onclick="copySource()">
-                <i class="fa fa-file-code-o"></i>
-                Source
-            </a>
-            <a class="external-browser" onclick="externalBrowse()">
-                <i class="fa fa-bolt"></i>
-                Browser
-            </a>
-        </div>
-    </div>
-    <div class="row connection-closed">
-        <div class="columns justify large-10 large-centered medium-12 small-12">
-            <strong>
-                <i class="fa fa-exclamation-triangle"></i>
-                Connection Closed
-            </strong>
-        </div>
-    </div>
-</div>
 <div class="row">
     <div class="columns justify large-10 large-centered medium-12 small-12">
         <div id="placeholder">
@@ -86,6 +56,7 @@
             });
         });
     }
+
     soket.onmessage = function (e) {
         refreshUI(e.data);
     };
@@ -94,27 +65,6 @@
         $(".row.connection-closed").show();
     };
 
-    var externalBrowse = function () {
-        app.externalBrowse();
-    }
-
-    var htmlOnePage = function(){
-        app.htmlOnePage();
-    }
-
-    var copySource = function(){
-        app.cutCopy($("#placeholder").html());
-    }
-
-    var pdfOnePage = function () {
-        app.pdfOnePage();
-    }
-
-    var printJob = function(){
-        app.printJob();
-    }
-
 </script>
-<script type="text/javascript" src="http://getfirebug.com/firebug-lite.js"></script>
 </body>
 </html>

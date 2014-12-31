@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AsciidocFX Editor</title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="/css/grid.css" type="text/css"/>
+    <link rel="stylesheet" href="/css/hljs.css" type="text/css"/>
+    <link rel="stylesheet" href="/css/font-awesome.css"/>
+    <link rel="stylesheet" href="/css/asciidoctor-default.css"/>
+    <link rel="stylesheet" href="/css/custom.css"/>
+</head>
+<body>
+<div class="utility">
+    <div class="row">
+        <div class="columns justify large-10 large-centered medium-12 small-12" style="height:30px">
+            <a class="save-html" onclick="htmlOnePage()">
+                <i class="fa fa-html5"></i>
+                HTML
+            </a>
+            <a class="save-pdf" onclick="pdfOnePage()">
+                <i class="fa fa-file-pdf-o"></i>
+                PDF
+            </a>
+            <a class="copy-source" onclick="copySource()">
+                <i class="fa fa-file-code-o"></i>
+                Source
+            </a>
+            <a class="external-browser" onclick="externalBrowse()">
+                <i class="fa fa-bolt"></i>
+                Browser
+            </a>
+        </div>
+    </div>
+    <div class="row connection-closed">
+        <div class="columns justify large-10 large-centered medium-12 small-12">
+            <strong>
+                <i class="fa fa-exclamation-triangle"></i>
+                Connection Closed
+            </strong>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="columns justify large-10 large-centered medium-12 small-12">
+        <div id="placeholder">
+            ...
+        </div>
+    </div>
+</div>
+
+<script src="/js/asciidoctor-all.js"></script>
+<script src="/js/asciidoctor-uml-block.js"></script>
+<script src="/js/asciidoctor-math-block.js"></script>
+<script src="/js/asciidoctor-tree-block.js"></script>
+<script src="/js/asciidoctor-docbook.js"></script>
+
+<!--<script src="/js/jquery.js"></script>-->
+<script src="/js/sockjs.js"></script>
+<script src="/js/highlight.pack.js"></script>
+<script src="/js/index.js"></script>
+
+<script>
+
+    var placeholder = undefined;
+
+    window.onload = function () {
+        placeholder = document.querySelector("#placeholder");
+    };
+
+    function refreshUI(data) {
+
+        if (!placeholder || !app)
+            return;
+
+        placeholder.innerHTML = data;
+
+        var codeBlocks = document.querySelectorAll("pre code");
+
+        [].forEach.call(codeBlocks, function (block) {
+            hljs.highlightBlock(block)
+        });
+
+//        $("a").on("click", function (evt) {
+//            evt.preventDefault();
+//            var $link = $(this);
+//            var href = $link.attr("href");
+//            $.ajax({
+//                url: href,
+//                method: "get",
+//                dataType: "text"
+//            });
+//        });
+    }
+
+    var externalBrowse = function () {
+        if (app)
+            app.externalBrowse();
+    }
+
+    var htmlOnePage = function () {
+        if (app)
+            app.htmlOnePage();
+    }
+
+    var copySource = function () {
+        if (app)
+            app.cutCopy(placeholder.innerHTML);
+    }
+
+    var pdfOnePage = function () {
+        if (app)
+            app.pdfOnePage();
+    }
+
+    var printJob = function () {
+        if (app)
+            app.printJob();
+    }
+
+</script>
+<script type="text/javascript" src="http://getfirebug.com/firebug-lite.js"></script>
+</body>
+</html>
