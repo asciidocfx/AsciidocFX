@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <link rel="stylesheet" href="css/epub.css"/>
+</head>
+<body>
+
+<div id="main">
+    <div id="prev" onclick="Book.prevPage();" class="arrow">‹</div>
+    <div id="area"></div>
+    <div id="next" onclick="Book.nextPage();"class="arrow">›</div>
+</div>
+
+<script src="js/epub.min.js"></script>
+<script src="js/zip.min.js"></script>
+<script>
+    var Book = ePub("/book.epub");
+    Book.renderTo("area");
+</script>
+</body>
+</html>
