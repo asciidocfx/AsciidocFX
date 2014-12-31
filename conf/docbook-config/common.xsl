@@ -7,6 +7,7 @@
     <xsl:param name="link.color">#005498</xsl:param>
     <xsl:param name="border.color">#DDDDDD</xsl:param>
     <xsl:param name="header.font-weight">normal</xsl:param>
+    <xsl:param name="header.column.widths">1 2 1</xsl:param>
     <xsl:param name="title.color">#BA3925</xsl:param>
     <xsl:param name="chapter.title.color" select="$title.color"/>
     <xsl:param name="section.title.color" select="$title.color"/>

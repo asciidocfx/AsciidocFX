@@ -157,4 +157,13 @@
     border: 1px solid #D8D8D8;
     }
 
+    img {
+        max-width:95%;
+    }
+
+    div.figure {
+        display: inline-block;
+    }
+
+
 </style>
