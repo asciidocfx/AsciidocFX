@@ -1,9 +1,9 @@
 package com.kodcu.service.ui;
 
-import com.kodcu.controller.ApplicationController;
 import com.kodcu.other.Item;
+import com.kodcu.service.FileWatchService;
 import com.kodcu.service.PathResolverService;
-import com.kodcu.service.ui.AwesomeService;
+import com.kodcu.service.ThreadService;
 import javafx.application.Platform;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
@@ -13,9 +13,7 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.stream.StreamSupport;
 
 /**
  * Created by usta on 12.07.2014.
@@ -24,7 +22,7 @@ import java.util.List;
 public class FileBrowseService {
 
     @Autowired
-    private ApplicationController controller;
+    private ThreadService threadService;
 
     @Autowired
     private PathResolverService pathResolver;
@@ -32,28 +30,33 @@ public class FileBrowseService {
     @Autowired
     private AwesomeService awesomeService;
 
+    @Autowired
+    private FileWatchService watchService;
+
     private TreeItem<Item> rootItem;
 
     public void browse(final TreeView<Item> treeView, final Path browserPath) {
 
+        threadService.runTaskLater(task -> {
+            watchService.registerWatcher(treeView, browserPath, this::browse);
+        });
+
         Platform.runLater(() -> {
 
-            rootItem = new TreeItem<>(new Item(browserPath, String.format("Workdir (%s)", browserPath)),awesomeService.getIcon(browserPath));
+            rootItem = new TreeItem<>(new Item(browserPath, String.format("Workdir (%s)", browserPath)), awesomeService.getIcon(browserPath));
             rootItem.setExpanded(true);
-            final List<Path> files = new LinkedList<>();
             try {
-                Files.newDirectoryStream(browserPath).forEach(path -> files.add(path));
+                StreamSupport
+                        .stream(Files.newDirectoryStream(browserPath).spliterator(), false)
+                        .sorted()
+                        .forEach(path -> {
+                            addToTreeView(path);
+                        });
             } catch (final IOException e) {
                 e.printStackTrace();
             }
 
             treeView.setRoot(rootItem);
-
-            Collections.sort(files);
-            files.forEach(path -> {
-                addToTreeView(path);
-            });
-
         });
     }
 
