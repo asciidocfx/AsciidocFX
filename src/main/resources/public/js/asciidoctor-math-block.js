@@ -22,18 +22,28 @@
         self.$parse_content_as("simple");
 
         return (def.$process = function (parent, reader, attrs) {
-                var self = this, content = nil, title = nil, filename = nil, alt=nil, caption = nil;
+                var self = this, content = nil, title = nil, filename = nil, alt=nil, caption = nil,width=nil,height=nil,scale=nil,align=nil;
 
                 title = "" + (attrs['$[]']("title"));
                 alt = "" + (attrs['$[]']("alt"));
                 caption = "" + (attrs['$[]']("caption"));
+                width = "" + (attrs['$[]']("width"));
+                height = "" + (attrs['$[]']("height"));
+                scale = "" + (attrs['$[]']("scale"));
+                align = "" + (attrs['$[]']("align"));
                 filename = "" + (attrs['$[]']("file"));
 
                 content = app.appendFormula(filename, reader.$read());
 
-                return self.$create_image_block(parent, $hash2(["target", "title"], {
+                return self.$create_image_block(parent, $hash2(["target", "title","alt","caption","width","height","scale","align"], {
                     "target": content,
-                    "title": title
+                    "title": title,
+                    "alt":alt,
+                    "caption":caption,
+                    "width":width,
+                    "height":height,
+                    "scale":scale,
+                    "align":align
                 }));
             }, nil) && 'process';
     })(self, ($scope.Extensions)._scope.BlockProcessor);

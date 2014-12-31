@@ -22,11 +22,15 @@
         self.$parse_content_as("literal");
 
         return (def.$process = function (parent, reader, attrs) {
-                var $a, self = this, content = nil, type = nil, title = nil, filename = nil, alt = nil, caption = nil;
+                var $a, self = this, content = nil, type = nil, title = nil, filename = nil, alt = nil, caption = nil,width=nil,height=nil,scale=nil,align=nil;
 
                 title = "" + (attrs['$[]']("title"));
                 alt = "" + (attrs['$[]']("alt"));
                 caption = "" + (attrs['$[]']("caption"));
+                width = "" + (attrs['$[]']("width"));
+                height = "" + (attrs['$[]']("height"));
+                scale = "" + (attrs['$[]']("scale"));
+                align = "" + (attrs['$[]']("align"));
                 type = "" + (attrs['$[]']("type"));
                 filename = "" + (attrs['$[]']("file"));
 
@@ -38,9 +42,15 @@
                 if ((($a = (type['$==']("ascii"))) !== nil && (!$a._isBoolean || $a == true))) {
                     return self.$create_literal_block(parent, content, attrs, $hash2(["subs"], {"subs": nil}))
                 } else {
-                    return self.$create_image_block(parent, $hash2(["target", "title"], {
+                    return self.$create_image_block(parent, $hash2(["target", "title","alt","caption","width","height","scale","align"], {
                         "target": content,
-                        "title": title
+                        "title": title,
+                        "alt":alt,
+                        "caption":caption,
+                        "width":width,
+                        "height":height,
+                        "scale":scale,
+                        "align":align
                     }))
                 }
                 ;
