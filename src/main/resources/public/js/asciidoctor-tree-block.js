@@ -39,13 +39,22 @@
                 if ((($a = (type['$==']("ascii"))) !== nil && (!$a._isBoolean || $a == true))) {
                     return self.$create_pass_block(parent, content, attrs, $hash2(["subs"], {"subs": nil}))
                 } else {
-                    return self.$create_image_block(parent, $hash2(["target", "title","alt","caption","align"], {
+                    var attributesHash = {
                         "target": content,
                         "title": title,
-                        "alt":alt,
-                        "caption":caption,
-                        "align":align
-                    }))
+                        "alt": alt,
+                        "caption": caption,
+                        "align": align
+                    };
+
+                    var keys = Object.keys(attributesHash);
+
+                    keys.forEach(function(key){
+                        if(attributesHash[key]=="")
+                            delete attributesHash[key];
+                    });
+
+                    return self.$create_image_block(parent, $hash2(Object.keys(attributesHash), attributesHash))
                 }
                 ;
             }, nil) && 'process';

@@ -34,24 +34,30 @@
                 type = "" + (attrs['$[]']("type"));
                 filename = "" + (attrs['$[]']("file"));
 
-                //console.log(parent.document);
-                //console.log(parent._id);
-
                 content = app.plantUml(reader.$read(), type, filename);
 
                 if ((($a = (type['$==']("ascii"))) !== nil && (!$a._isBoolean || $a == true))) {
                     return self.$create_literal_block(parent, content, attrs, $hash2(["subs"], {"subs": nil}))
                 } else {
-                    return self.$create_image_block(parent, $hash2(["target", "title","alt","caption","width","height","scale","align"], {
+                    var attributesHash = {
                         "target": content,
                         "title": title,
-                        "alt":alt,
-                        "caption":caption,
-                        "width":width,
-                        "height":height,
-                        "scale":scale,
-                        "align":align
-                    }))
+                        "alt": alt,
+                        "caption": caption,
+                        "width": width,
+                        "height": height,
+                        "scale": scale,
+                        "align": align
+                    };
+
+                    var keys = Object.keys(attributesHash);
+
+                    keys.forEach(function(key){
+                        if(attributesHash[key]=="")
+                            delete attributesHash[key];
+                    });
+
+                    return self.$create_image_block(parent, $hash2(Object.keys(attributesHash), attributesHash))
                 }
                 ;
             }, nil) && 'process';
