@@ -93,9 +93,8 @@ public class Html5BookService {
             indikatorService.completeCycle();
 
         }
-        catch (Exception ex){
-            ex.printStackTrace();
-            logger.error(ex.getMessage(),ex);
+        catch (Exception e){
+            logger.error(e.getMessage(),e);
         }
         finally {
             indikatorService.hideIndikator();

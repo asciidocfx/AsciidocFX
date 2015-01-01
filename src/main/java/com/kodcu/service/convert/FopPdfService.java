@@ -81,9 +81,8 @@ public class FopPdfService {
 
             }
 
-        } catch (Exception ex) {
-            logger.debug(ex.getMessage(), ex);
-            ex.printStackTrace();
+        } catch (Exception e) {
+            logger.error(e.getMessage(),e);
         } finally {
             indikatorService.hideIndikator();
         }
@@ -131,13 +130,10 @@ public class FopPdfService {
                     asciiDocController.getRecentFiles().add(0, o);
                 });
 
-
-//                asciiDocController.getHostServices().showDocument(currentPath.resolve("book.pdf").toUri().toString());
             }
 
-        } catch (Exception ex) {
-            logger.debug(ex.getMessage(), ex);
-            ex.printStackTrace();
+        } catch (Exception e) {
+            logger.error(e.getMessage(),e);
         } finally {
             indikatorService.hideIndikator();
         }

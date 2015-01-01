@@ -36,6 +36,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.TextFieldTreeCell;
 import javafx.scene.input.*;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import javafx.stage.DirectoryChooser;
@@ -206,16 +207,18 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         sessionList.stream().filter(e -> e.isOpen()).forEach(e -> {
             try {
                 e.sendMessage(new TextMessage(nev));
-            } catch (IOException ex) {
-                ex.printStackTrace();
+            } catch (Exception ex) {
+                logger.info(ex.getMessage(),ex);
             }
         });
     };
 
     @FXML
     public void createTable(Event event) {
-        threadService.runActionLater(run -> {
-            tableStage.show();
+        threadService.runTaskLater(task -> {
+            threadService.runActionLater(run->{
+                tableStage.show();
+            });
         });
     }
 
@@ -323,7 +326,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         });
     }
 
-    public String createFileTree(String tree, String type, String fileName, String width, String height) throws IOException {
+    public String createFileTree(String tree, String type, String fileName, String width, String height) {
         return treeService.createFileTree(tree, type, fileName, width, height);
     }
 
@@ -431,7 +434,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         });
 
         treeView.setOnMouseClicked(event -> {
-            boolean fxApplicationThread = Platform.isFxApplicationThread();
             TreeItem<Item> selectedItem = treeView.getSelectionModel().getSelectedItem();
             if (Objects.isNull(selectedItem))
                 return;
@@ -451,9 +453,9 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                         }
                         selectedItem.setExpanded(!selectedItem.isExpanded());
                     } catch (IOException e) {
-                        e.printStackTrace();
+                        logger.error(e.getMessage(), e);
                     }
-                } else if (event.getClickCount() > 1) {
+                } else if (event.getClickCount() == 2) {
                     directoryService.getOpenFileConsumer().accept(selectedPath);
                 }
         });
@@ -470,7 +472,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             shortCuts = yamlReader.read(ShortCuts.class).getKeys();
 
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
         }
     }
 
@@ -493,7 +495,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             config = yamlReader.read(Config.class);
 
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
         }
 
         if (!config.getDirectoryPanel())
@@ -512,10 +514,8 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             RecentFiles readed = yamlReader.read(RecentFiles.class);
 
             recentFiles.addAll(readed.getFiles());
-        } catch (YamlException e) {
-            e.printStackTrace();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            logger.error(e.getMessage(),e);
         }
     }
 

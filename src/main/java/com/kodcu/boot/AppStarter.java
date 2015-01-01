@@ -17,6 +17,8 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.Modality;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 
@@ -24,6 +26,8 @@ import static javafx.scene.input.KeyCombination.CONTROL_DOWN;
 
 
 public class AppStarter extends Application {
+
+    private Logger logger = LoggerFactory.getLogger(AppStarter.class);
 
     private ApplicationController controller;
     private ConfigurableApplicationContext context;
@@ -34,7 +38,7 @@ public class AppStarter extends Application {
         try {
             startApp(stage);
         } catch (Throwable e) {
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
         }
 
     }

@@ -42,7 +42,7 @@ public class IOHelper {
         try {
             Files.write(path, content.getBytes(Charset.forName("UTF-8")), openOption);
         } catch (IOException e) {
-            logger.debug(e.toString());
+            logger.info(e.toString());
         }
     }
 
@@ -50,7 +50,7 @@ public class IOHelper {
         try {
             Files.write(path, content, openOption);
         } catch (IOException e) {
-            logger.debug(e.toString());
+            logger.info(e.toString());
         }
     }
 
@@ -59,7 +59,7 @@ public class IOHelper {
         try(InputStream is = Files.newInputStream(path, StandardOpenOption.READ)) {
             content = IOUtils.toString(is, "UTF-8");
         } catch (IOException e) {
-            logger.debug(e.toString());
+            logger.info(e.toString());
         }
         return content;
     }
@@ -68,7 +68,7 @@ public class IOHelper {
         try {
             Files.createDirectories(path);
         } catch (IOException e) {
-            logger.debug(e.toString());
+            logger.info(e.toString());
         }
 
     }
@@ -77,7 +77,7 @@ public class IOHelper {
         try {
             return Files.createTempFile(path, prefix, suffix);
         } catch (IOException e) {
-            logger.debug(e.toString());
+            logger.info(e.toString());
         }
 
         return null;
@@ -87,7 +87,7 @@ public class IOHelper {
         try {
             Files.copy(source, target, copyOptions);
         } catch (IOException e) {
-            logger.debug(e.toString());
+            logger.info(e.getMessage(),e);
         }
     }
 
@@ -95,7 +95,7 @@ public class IOHelper {
         try {
             return path.toUri().toURL().toString();
         } catch (MalformedURLException e) {
-            e.printStackTrace();
+            logger.info(e.getMessage(), e);
         }
         return null;
     }
@@ -104,7 +104,7 @@ public class IOHelper {
         try {
             return Files.list(path);
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.info(e.getMessage(), e);
         }
         return Stream.empty();
     }
@@ -113,7 +113,7 @@ public class IOHelper {
         try {
             ImageIO.write(bufferedImage,format,output);
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.info(e.getMessage(), e);
         }
     }
 
@@ -121,7 +121,7 @@ public class IOHelper {
         try {
             return Files.readAllBytes(path);
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.info(e.getMessage(),e);
         }
         return new byte[]{};
     }

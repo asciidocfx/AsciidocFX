@@ -1,6 +1,8 @@
 package com.kodcu.service;
 
 import javafx.stage.FileChooser;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
@@ -18,6 +20,8 @@ import java.util.regex.Pattern;
  */
 @Component
 public class PathResolverService {
+
+    private static Logger logger = LoggerFactory.getLogger(PathResolverService.class);
 
     List<String> rootList =
             Arrays.asList("book.asc", "book.txt", "book.asciidoc", "book.adoc", "book.ad");
@@ -54,7 +58,9 @@ public class PathResolverService {
     public boolean isHidden(Path path) {
         try {
             return path.getFileName().toString().startsWith(".") || Files.isHidden(path) ;
-        } catch (IOException e) {}
+        } catch (IOException e) {
+            logger.info(e.getMessage(),e);
+        }
         return false;
     }
 

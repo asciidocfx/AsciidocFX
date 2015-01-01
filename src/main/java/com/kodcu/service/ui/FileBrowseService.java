@@ -8,6 +8,8 @@ import com.kodcu.service.ThreadService;
 import javafx.application.Platform;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -22,6 +24,8 @@ import java.util.stream.StreamSupport;
  */
 @Component
 public class FileBrowseService {
+
+    private Logger logger = LoggerFactory.getLogger(FileBrowseService.class);
 
     @Autowired
     private PathOrderService pathOrder;
@@ -57,8 +61,8 @@ public class FileBrowseService {
                         .forEach(path -> {
                             addToTreeView(path);
                         });
-            } catch (final IOException e) {
-                e.printStackTrace();
+            } catch (IOException e) {
+                logger.info(e.getMessage(), e);
             }
 
             treeView.setRoot(rootItem);

@@ -9,6 +9,8 @@ import org.apache.batik.transcoder.TranscoderInput;
 import org.apache.batik.transcoder.TranscoderOutput;
 import org.apache.batik.transcoder.image.PNGTranscoder;
 import org.apache.batik.util.XMLResourceDescriptor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.w3c.dom.svg.SVGDocument;
@@ -28,6 +30,8 @@ import static java.nio.file.StandardOpenOption.WRITE;
  */
 @Component
 public class MathJaxService {
+
+    private Logger logger = LoggerFactory.getLogger(MathJaxService.class);
 
     @Autowired
     private ApplicationController controller;
@@ -84,7 +88,7 @@ public class MathJaxService {
             controller.getLastRenderedChangeListener().changed(null, controller.getLastRendered().getValue(), controller.getLastRendered().getValue());
 
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
         }
     }
 }

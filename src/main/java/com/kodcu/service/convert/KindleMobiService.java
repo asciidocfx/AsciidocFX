@@ -37,7 +37,7 @@ public class KindleMobiService {
                     .command("kindlegen", currentPath.resolve("book.epub").toString())
                     .execute()
                     .outputUTF8();
-            logger.debug(message);
+            logger.info(message);
             indikatorService.completeCycle();
 
             Platform.runLater(() -> {
@@ -46,8 +46,7 @@ public class KindleMobiService {
             });
 
         } catch (Exception e) {
-            e.printStackTrace();
-            logger.error(e.getMessage(), e);
+            logger.error(e.getMessage(),e);
         } finally {
             indikatorService.hideIndikator();
         }

@@ -81,7 +81,6 @@ public class ParserService {
 
         List<String> buffer = new LinkedList<>();
 
-
         while (matcher.find()) {
             String imageUrl = matcher.group();
             buffer.add(String.format("image::%s[]", imageUrl));

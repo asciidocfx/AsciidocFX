@@ -81,7 +81,6 @@ public class DocBookService {
                 allAscContent.append("\n");
             });
 
-
             String docBookHeaderContent = docConverter.convertDocbook(webEngine, allAscContent.toString(), true);
 
             StringReader bookReader = new StringReader(docBookHeaderContent);
@@ -119,8 +118,8 @@ public class DocBookService {
                 });
 
             }
-        } catch (Exception ex) {
-            logger.error(ex.getMessage(), ex);
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
         } finally {
             indikatorService.hideIndikator();
 
@@ -160,9 +159,8 @@ public class DocBookService {
             builder.append("<?asciidoc-numbered?>\n");
             builder.append(rootDocument.content());
 
-
-        } catch (Exception ex) {
-            logger.error(ex.getMessage(), ex);
+        } catch (Exception e) {
+            logger.error(e.getMessage(),e);
         }
 
 

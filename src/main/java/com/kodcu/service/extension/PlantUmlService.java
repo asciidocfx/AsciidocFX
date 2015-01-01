@@ -7,6 +7,8 @@ import com.kodcu.service.ThreadService;
 import net.sourceforge.plantuml.FileFormat;
 import net.sourceforge.plantuml.FileFormatOption;
 import net.sourceforge.plantuml.SourceStringReader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -26,6 +28,8 @@ import static java.nio.file.StandardOpenOption.WRITE;
  */
 @Component
 public class PlantUmlService {
+
+    private Logger logger = LoggerFactory.getLogger(PlantUmlService.class);
 
     @Autowired
     private Current current;
@@ -85,7 +89,7 @@ public class PlantUmlService {
                             controller.getLastRenderedChangeListener()
                                     .changed(null, controller.getLastRendered().getValue(), controller.getLastRendered().getValue());
                         } catch (Exception e) {
-                            e.printStackTrace();
+                            logger.error(e.getMessage(), e);
                         }
                     });
                 }

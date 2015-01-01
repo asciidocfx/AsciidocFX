@@ -13,6 +13,8 @@ import javafx.scene.control.TreeView;
 import javafx.scene.image.WritableImage;
 import javafx.scene.layout.Border;
 import javafx.scene.layout.BorderStroke;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -30,6 +32,8 @@ import java.util.stream.Collectors;
  */
 @Component
 public class TreeService {
+
+    private Logger logger = LoggerFactory.getLogger(TreeService.class);
 
     @Autowired
     private Current current;
@@ -129,7 +133,9 @@ public class TreeService {
                                 try{
                                     TreeItem<Tuple<Integer,String>> treeItem = collect.get(collect.indexOf(currentItem)-1);
                                     parent = treeItem.getParent();
-                                }catch (RuntimeException e){}
+                                }catch (RuntimeException e){
+                                    logger.info(e.getMessage(),e);
+                                }
 
                                 parent.getChildren().add(currentItem);
                             }
@@ -150,7 +156,9 @@ public class TreeService {
                         else
                             fileView.setPrefWidth(value);
                     }
-                    catch (Exception e){}
+                    catch (Exception e){
+                        logger.debug(e.getMessage(),e);
+                    }
 
                     try{
                         Double value = Double.valueOf(height);
@@ -160,7 +168,9 @@ public class TreeService {
                         else
                             fileView.setPrefHeight(value);
                     }
-                    catch (Exception e){}
+                    catch (Exception e){
+                        logger.debug(e.getMessage(),e);
+                    }
 
                     WritableImage writableImage = fileView.snapshot(new SnapshotParameters(), null);
                     BufferedImage bufferedImage = SwingFXUtils.fromFXImage(writableImage, null);
@@ -172,7 +182,7 @@ public class TreeService {
                             .changed(null, controller.getLastRendered().getValue(), controller.getLastRendered().getValue());
 
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    logger.error(e.getMessage(), e);
                 }
             }
 

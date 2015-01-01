@@ -44,9 +44,8 @@ public class Epub3Service {
 
         Path bookXml = currentPath.resolve("book.xml");
 
-        if (Files.notExists(bookXml)) {
+        if (Files.notExists(bookXml))
             return;
-        }
 
         indikatorService.startCycle();
 
@@ -94,8 +93,8 @@ public class Epub3Service {
             });
 
 
-        } catch (Exception ex) {
-            logger.error(ex.getMessage(),ex);
+        } catch (Exception e) {
+            logger.error(e.getMessage(),e);
         }
         finally {
             indikatorService.hideIndikator();

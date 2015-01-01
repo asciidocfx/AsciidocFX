@@ -2,6 +2,8 @@ package com.kodcu.service;
 
 import com.kodcu.other.Item;
 import javafx.scene.control.TreeView;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -20,6 +22,8 @@ import static java.nio.file.StandardWatchEventKinds.ENTRY_MODIFY;
  */
 @Component
 public class FileWatchService {
+
+    private static Logger logger = LoggerFactory.getLogger(FileWatchService.class);
 
     private WatchService watcher = null;
     private Path lastWatchedPath;
@@ -49,7 +53,7 @@ public class FileWatchService {
                 browseCallback.accept(treeView, path);
 
         } catch (Exception e) {
-
+            logger.debug(e.getMessage(),e);
         }
     }
 }

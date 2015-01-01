@@ -9,6 +9,8 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextField;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -18,6 +20,8 @@ import java.util.ResourceBundle;
 
 @Component
 public class TablePopupService implements Initializable {
+
+    private static final Logger logger = LoggerFactory.getLogger(TablePopupService.class);
 
     @Autowired
     private Current current;
@@ -76,7 +80,8 @@ public class TablePopupService implements Initializable {
         try {
             row = Integer.valueOf(tablePopupRows.textProperty().getValue());
             column = Integer.valueOf(tablePopupColumns.textProperty().getValue());
-        } catch (RuntimeException ex) {
+        } catch (RuntimeException e) {
+            logger.debug(e.getMessage(),e);
         }
 
         stringBuffer.append("|====================\n");

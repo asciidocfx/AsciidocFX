@@ -3,6 +3,8 @@ package com.kodcu.service.ui;
 import com.kodcu.controller.ApplicationController;
 import com.kodcu.other.IOHelper;
 import javafx.scene.web.WebEngine;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -13,6 +15,8 @@ import java.util.Objects;
  */
 @Component
 public class ScrollService {
+
+    private Logger logger = LoggerFactory.getLogger(ScrollService.class);
 
     @Autowired
     private ApplicationController controller;
@@ -40,7 +44,7 @@ public class ScrollService {
             WebEngine engine = controller.getPreviewView().getEngine();
             engine.executeScript(format);
         } catch (Exception e) {
-
+            logger.debug(e.getMessage(),e);
         }
     }
 }

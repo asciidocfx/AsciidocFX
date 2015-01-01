@@ -49,8 +49,8 @@ public class EpubController {
 
         try {
             temp = Files.readAllBytes(path);
-        } catch (Exception ex) {
-            logger.debug(path + " is not found");
+        } catch (Exception e) {
+            logger.info(e.getMessage(),e);
         }
 
         return new ResponseEntity<>(temp, HttpStatus.OK);
