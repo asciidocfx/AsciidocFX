@@ -268,7 +268,18 @@
           <xsl:call-template name="inline.charseq"/>
         </fo:inline>
     </xsl:template>
-    
+
+    <!-- Highlight Text -->
+
+    <xsl:template match="emphasis">
+        <xsl:choose>
+            <xsl:when test="@role='marked'">
+                <fo:inline background-color="#ff0">
+                   <xsl:call-template name="inline.charseq"/>
+                </fo:inline>
+            </xsl:when>
+        </xsl:choose>
+    </xsl:template>
     <!--
       Page layout
     -->

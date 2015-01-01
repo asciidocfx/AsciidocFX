@@ -130,6 +130,10 @@ function addStrikeThroughText() {
     formatText(editor, matchHtmlTagText, "+++<del>", "</del>+++");
 }
 
+function highlightedText() {
+    formatText(editor, matchHighlightedText, "#", "#");
+}
+
 function isURL(text) {
     var myRegExp = /^(.*?)(?:\S+(?::\S*)?@)?(?:(?!10(?:\.\d{1,3}){3})(?!127(?:\.\d{1,3}){3})(?!169\.254(?:\.\d{1,3}){2})(?!192\.168(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\u00a1-\uffff0-9]+-?)*[a-z\u00a1-\uffff0-9]+)(?:\.(?:[a-z\u00a1-\uffff0-9]+-?)*[a-z\u00a1-\uffff0-9]+)*(?:\.(?:[a-z\u00a1-\uffff]{2,})))(?::\d{2,5})?(?:\/[^\s]*)?$/i;
 
@@ -226,6 +230,13 @@ editor.commands.addCommand({
     name: 'bold-selected',
     bindKey: {win: 'Ctrl-B', mac: 'Command-B'},
     exec: boldText,
+    readOnly: true
+});
+
+editor.commands.addCommand({
+    name: 'highlight-selected',
+    bindKey: {win: 'Ctrl-H', mac: 'Command-H'},
+    exec: highlightedText,
     readOnly: true
 });
 
@@ -400,6 +411,10 @@ function matchSubScriptText(text) {
 
 function matchCode(text) {
     return text.match(/\`.*\`/g);
+}
+
+function matchHighlightedText(text) {
+    return text.match(/\#.*\#/g);
 }
 
 function matchHtmlTagText(text) {
