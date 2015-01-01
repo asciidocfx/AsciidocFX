@@ -81,24 +81,24 @@ public class WebviewService {
 
                 List<File> dragboardFiles = dragboard.getFiles();
 
-                if(dragboardFiles.size()==1){
+                if (dragboardFiles.size() == 1) {
                     Path path = dragboardFiles.get(0).toPath();
-                    if(Files.isDirectory(path)){
+                    if (Files.isDirectory(path)) {
 
                         Iterator<File> files = FileUtils.iterateFilesAndDirs(path.toFile(), TrueFileFilter.INSTANCE, TrueFileFilter.INSTANCE);
 
-                        StringBuffer buffer=new StringBuffer();
+                        StringBuffer buffer = new StringBuffer();
                         buffer.append("[tree,filename=\"\"]");
                         buffer.append("\n--\n");
-                        buffer.append("#"+path.getFileName().toString());
+                        buffer.append("#" + path.getFileName().toString());
 
-                        while (files.hasNext()){
+                        while (files.hasNext()) {
                             File next = files.next();
 
                             Path relativize = path.relativize(next.toPath());
 
                             Path path1 = relativize.getName(0);
-                            if("".equals(path1.toString())  || pathResolver.isHidden(path1))
+                            if ("".equals(path1.toString()) || pathResolver.isHidden(path1))
                                 continue;
 
                             String hash = String.join("", Collections.nCopies(relativize.getNameCount() + 1, "#"));
@@ -110,7 +110,7 @@ public class WebviewService {
                         }
                         buffer.append("\n--");
                         current.insertEditorValue(buffer.toString());
-                        success =true;
+                        success = true;
                     }
                 }
 
@@ -151,8 +151,9 @@ public class WebviewService {
                 JSObject window = (JSObject) webEngine.executeScript("window");
                 if (window.getMember("app").equals("undefined")) {
                     window.setMember("app", controller);
+                    current.currentEngine().executeScript("updateOptions()");
+                    controller.applySohrtCuts();
                 }
-                controller.applySohrtCuts();
             }
 
         });

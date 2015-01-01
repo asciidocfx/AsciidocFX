@@ -1,7 +1,6 @@
 package com.kodcu.controller;
 
 
-import com.esotericsoftware.yamlbeans.YamlException;
 import com.esotericsoftware.yamlbeans.YamlReader;
 import com.kodcu.bean.Config;
 import com.kodcu.bean.RecentFiles;
@@ -37,7 +36,6 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.TextFieldTreeCell;
 import javafx.scene.input.*;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.VBox;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import javafx.stage.DirectoryChooser;
@@ -54,7 +52,6 @@ import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.net.URL;
@@ -210,7 +207,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             try {
                 e.sendMessage(new TextMessage(nev));
             } catch (Exception ex) {
-                logger.info(ex.getMessage(),ex);
+                logger.info(ex.getMessage(), ex);
             }
         });
     };
@@ -218,7 +215,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     @FXML
     public void createTable(Event event) {
         threadService.runTaskLater(task -> {
-            threadService.runActionLater(run->{
+            threadService.runActionLater(run -> {
                 tableStage.show();
             });
         });
@@ -381,7 +378,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         previewEngine = previewView.getEngine();
         previewEngine.load(String.format("http://localhost:%d/preview.html", port));
         previewEngine.getLoadWorker().stateProperty().addListener((observableValue1, state, state2) -> {
-            if(state2 == Worker.State.SUCCEEDED){
+            if (state2 == Worker.State.SUCCEEDED) {
                 JSObject window = (JSObject) previewEngine.executeScript("window");
                 if (window.getMember("app").equals("undefined")) {
                     window.setMember("app", this);
@@ -389,7 +386,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             }
         });
         previewEngine.getLoadWorker().exceptionProperty().addListener((ov, t, t1) -> {
-            logger.info(t1.getMessage(),t1);
+            logger.info(t1.getMessage(), t1);
         });
 
 
@@ -445,9 +442,9 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             Path selectedPath = selectedItem.getValue().getPath();
             if (event.getButton() == MouseButton.PRIMARY)
                 if (Files.isDirectory(selectedPath)) {
-                        if (selectedItem.getChildren().size() == 0) {
-                            try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(selectedPath);){
-                                StreamSupport
+                    if (selectedItem.getChildren().size() == 0) {
+                        try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(selectedPath);) {
+                            StreamSupport
                                     .stream(directoryStream.spliterator(), false)
                                     .filter(path -> !pathResolver.isHidden(path))
                                     .filter(pathResolver::isViewable)
@@ -458,8 +455,8 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                         } catch (IOException e) {
                             logger.error(e.getMessage(), e);
                         }
-                        }
-                        selectedItem.setExpanded(!selectedItem.isExpanded());
+                    }
+                    selectedItem.setExpanded(!selectedItem.isExpanded());
 
                 } else if (event.getClickCount() == 2) {
                     directoryService.getOpenFileConsumer().accept(selectedPath);
@@ -521,7 +518,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
             recentFiles.addAll(readed.getFiles());
         } catch (Exception e) {
-            logger.error(e.getMessage(),e);
+            logger.error(e.getMessage(), e);
         }
     }
 

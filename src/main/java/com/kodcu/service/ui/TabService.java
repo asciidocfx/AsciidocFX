@@ -68,7 +68,8 @@ public class TabService {
         WebEngine webEngine = webView.getEngine();
         webEngine.getLoadWorker().stateProperty().addListener((observableValue1, state, state2) -> {
             if (state2 == Worker.State.SUCCEEDED) {
-                webEngine.executeScript(String.format("waitForSetValue('%s')", IOHelper.normalize(IOHelper.readFile(path))));
+                webEngine.executeScript(String.format("setEditorValue('%s')",
+                        IOHelper.normalize(IOHelper.readFile(path))));
             }
         });
 
@@ -120,7 +121,8 @@ public class TabService {
                     WebEngine webEngine = current.currentEngine();
                     Worker.State state = webEngine.getLoadWorker().getState();
                     if (state == Worker.State.SUCCEEDED)
-                        webEngine.executeScript("waitForGetValue()");
+                        controller.textListener(current.currentEditorSelection());
+//                        webEngine.executeScript("waitForGetValue()");
                 }
             }
         });
@@ -253,7 +255,7 @@ public class TabService {
         }
 
         threadService.runTaskLater(task -> {
-            threadService.runActionLater(run->{
+            threadService.runActionLater(run -> {
                 tab.setOnClosed(null);
                 tab.setOnSelectionChanged(null);
                 tab.setPath(null);
