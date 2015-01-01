@@ -121,8 +121,7 @@ public class TabService {
                     WebEngine webEngine = current.currentEngine();
                     Worker.State state = webEngine.getLoadWorker().getState();
                     if (state == Worker.State.SUCCEEDED)
-                        controller.textListener(current.currentEditorSelection());
-//                        webEngine.executeScript("waitForGetValue()");
+                        controller.textListener(current.currentEditorValue());
                 }
             }
         });
@@ -263,6 +262,8 @@ public class TabService {
                 tab.setContent(null);
                 tab.setUserData(null);
                 tab.setOnCloseRequest(null);
+                Label label = (Label) tab.getGraphic();
+                label.setOnMouseClicked(null);
             });
         });
     }
