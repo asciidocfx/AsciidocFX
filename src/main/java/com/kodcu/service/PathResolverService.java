@@ -19,7 +19,7 @@ import java.util.regex.Pattern;
 @Component
 public class PathResolverService {
 
-    private static final List<String> rootList =
+    List<String> rootList =
             Arrays.asList("book.asc", "book.txt", "book.asciidoc", "book.adoc", "book.ad");
 
     PathMatcher pdfMatcher = FileSystems.getDefault().getPathMatcher("glob:**.pdf");
@@ -39,6 +39,7 @@ public class PathResolverService {
     PathMatcher mobiMatcher = FileSystems.getDefault().getPathMatcher("glob:**.{mobi,azw,azw3}");
     PathMatcher anyMatcher = FileSystems.getDefault().getPathMatcher("glob:**.{*}");
     PathMatcher uniqueMatcher = FileSystems.getDefault().getPathMatcher("glob:{license,readme,gradlew}");
+    PathMatcher bookMatcher = FileSystems.getDefault().getPathMatcher("glob:{**book.asc,**book.txt,**book.asciidoc,**book.adoc,**book.ad}");
 
     private Map<String, Boolean> rootExists = new HashMap<>();
 
@@ -78,6 +79,11 @@ public class PathResolverService {
                 || isMobi(path)
                 || isHTML(path)
                 || isDocbook(path);
+    }
+
+
+    public boolean isBook(Path path){
+        return bookMatcher.matches(path);
     }
 
     public boolean isMobi(Path path) {
