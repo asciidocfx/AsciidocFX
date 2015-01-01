@@ -177,7 +177,7 @@
                             <id>asciidocfx</id>
                         </program>
                     </programs>
-                    <extraJvmArguments>-XX:+UseG1GC</extraJvmArguments>
+                    <extraJvmArguments>-Duser.language=en -Duser.country=US -XX:+UseG1GC</extraJvmArguments>
                     <repositoryLayout>flat</repositoryLayout>
                     <useWildcardClassPath>true</useWildcardClassPath>
                     <binFileExtensions>

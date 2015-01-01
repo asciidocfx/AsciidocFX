@@ -35,11 +35,7 @@
     function refreshUI($data) {
 
         $data = $($data);
-        /*$.each($data.find("img"),function(index,elem){
-            console.log($(this).attr("src"));
-            $(this).attr("src",$(this).attr("src")+"?"+new Date().getTime());
-            console.log($(this).attr("src"));
-        });*/
+
         $("#placeholder").html($data);
         $('pre code').each(function (i, e) {
             hljs.highlightBlock(e)

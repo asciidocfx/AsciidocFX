@@ -1,6 +1,6 @@
 var defaultLanguage = undefined;
 function getDefaultLanguage() {
-    if (!defaultLanguage)
+    if (!defaultLanguage && app)
         defaultLanguage = app.getConfig().getDefaultLanguage();
     return defaultLanguage;
 }

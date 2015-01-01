@@ -26,6 +26,7 @@ import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Worker;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.FXML;
@@ -57,6 +58,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -239,8 +241,8 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     @FXML
     private void generatePdf(ActionEvent event) {
+        Path currentPath = directoryService.workingDirectory();
         threadService.runTaskLater((task) -> {
-            Path currentPath = directoryService.workingDirectory();
             docBookController.generateDocbook(previewEngine, currentPath, false);
             fopServiceRunner.generateBook(currentPath, configPath);
         });
@@ -379,12 +381,15 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         previewEngine = previewView.getEngine();
         previewEngine.load(String.format("http://localhost:%d/preview.html", port));
         previewEngine.getLoadWorker().stateProperty().addListener((observableValue1, state, state2) -> {
-            JSObject window = (JSObject) previewEngine.executeScript("window");
-            if (window.getMember("app").equals("undefined"))
-                window.setMember("app", this);
+            if(state2 == Worker.State.SUCCEEDED){
+                JSObject window = (JSObject) previewEngine.executeScript("window");
+                if (window.getMember("app").equals("undefined")) {
+                    window.setMember("app", this);
+                }
+            }
         });
         previewEngine.getLoadWorker().exceptionProperty().addListener((ov, t, t1) -> {
-            t1.printStackTrace();
+            logger.info(t1.getMessage(),t1);
         });
 
 
@@ -440,21 +445,22 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             Path selectedPath = selectedItem.getValue().getPath();
             if (event.getButton() == MouseButton.PRIMARY)
                 if (Files.isDirectory(selectedPath)) {
-                    try {
                         if (selectedItem.getChildren().size() == 0) {
-                            StreamSupport
-                                    .stream(Files.newDirectoryStream(selectedPath).spliterator(), false)
+                            try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(selectedPath);){
+                                StreamSupport
+                                    .stream(directoryStream.spliterator(), false)
                                     .filter(path -> !pathResolver.isHidden(path))
                                     .filter(pathResolver::isViewable)
                                     .sorted(pathOrder::comparePaths)
                                     .forEach(path -> {
                                         selectedItem.getChildren().add(new TreeItem<>(new Item(path), awesomeService.getIcon(path)));
                                     });
+                        } catch (IOException e) {
+                            logger.error(e.getMessage(), e);
+                        }
                         }
                         selectedItem.setExpanded(!selectedItem.isExpanded());
-                    } catch (IOException e) {
-                        logger.error(e.getMessage(), e);
-                    }
+
                 } else if (event.getClickCount() == 2) {
                     directoryService.getOpenFileConsumer().accept(selectedPath);
                 }

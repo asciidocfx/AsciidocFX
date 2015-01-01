@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.function.Function;
@@ -54,9 +55,9 @@ public class FileBrowseService {
 
             rootItem = new TreeItem<>(new Item(browserPath, String.format("Workdir (%s)", browserPath)), awesomeService.getIcon(browserPath));
             rootItem.setExpanded(true);
-            try {
+            try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(browserPath);){
                 StreamSupport
-                        .stream(Files.newDirectoryStream(browserPath).spliterator(), false)
+                        .stream(directoryStream.spliterator(), false)
                         .sorted(pathOrder::comparePaths)
                         .forEach(path -> {
                             addToTreeView(path);

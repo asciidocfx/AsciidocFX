@@ -146,12 +146,14 @@ public class WebviewService {
         });
 
         webEngine.getLoadWorker().stateProperty().addListener((observable, oldValue, newValue) -> {
-            JSObject window = (JSObject) webEngine.executeScript("window");
-            if (window.getMember("app").equals("undefined"))
-                window.setMember("app", controller);
 
-            if (newValue == Worker.State.SUCCEEDED)
+            if (newValue == Worker.State.SUCCEEDED) {
+                JSObject window = (JSObject) webEngine.executeScript("window");
+                if (window.getMember("app").equals("undefined")) {
+                    window.setMember("app", controller);
+                }
                 controller.applySohrtCuts();
+            }
 
         });
 

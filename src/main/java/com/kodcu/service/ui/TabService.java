@@ -253,14 +253,15 @@ public class TabService {
         }
 
         threadService.runTaskLater(task -> {
-            tab.setOnClosed(null);
-            tab.setOnSelectionChanged(null);
-            tab.setPath(null);
-            tab.setWebView(null);
-            tab.setContextMenu(null);
-            tab.setContent(null);
-            tab.setUserData(null);
-            tab.setOnCloseRequest(null);
+            threadService.runActionLater(run->{
+                tab.setOnClosed(null);
+                tab.setOnSelectionChanged(null);
+                tab.setPath(null);
+                tab.setWebView(null);
+                tab.setContent(null);
+                tab.setUserData(null);
+                tab.setOnCloseRequest(null);
+            });
         });
     }
 }

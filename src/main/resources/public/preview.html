@@ -61,35 +61,13 @@
 
 <script>
 
-    var placeholder = undefined;
-
-    window.onload = function () {
-        placeholder = document.querySelector("#placeholder");
-    };
-
     function refreshUI(data) {
 
-        if (!placeholder || !app)
-            return;
-
-        placeholder.innerHTML = data;
-
-        var codeBlocks = document.querySelectorAll("pre code");
-
-        [].forEach.call(codeBlocks, function (block) {
-            hljs.highlightBlock(block)
+        $("#placeholder").html(data);
+        $('pre code').each(function (i, e) {
+            hljs.highlightBlock(e)
         });
 
-//        $("a").on("click", function (evt) {
-//            evt.preventDefault();
-//            var $link = $(this);
-//            var href = $link.attr("href");
-//            $.ajax({
-//                url: href,
-//                method: "get",
-//                dataType: "text"
-//            });
-//        });
     }
 
     var externalBrowse = function () {
@@ -104,7 +82,7 @@
 
     var copySource = function () {
         if (app)
-            app.cutCopy(placeholder.innerHTML);
+            app.cutCopy($("#placeholder").html());
     }
 
     var pdfOnePage = function () {
@@ -117,7 +95,21 @@
             app.printJob();
     }
 
+    document.onkeydown = function(e) {
+        e = e || window.event;
+        if (e.keyCode == 123){
+           if(!$("#firebug-script").length){
+                var script = $("<script>")
+                script.attr("id","firebug-script");
+                script.attr("type","text/javascript");
+                script.attr("src","http://getfirebug.com/firebug-lite.js#startOpened=true");
+                $("body").append(script);
+            }
+        }
+
+    };
+
 </script>
-<script type="text/javascript" src="http://getfirebug.com/firebug-lite.js"></script>
+
 </body>
 </html>
