@@ -11,6 +11,7 @@ import org.zeroturnaround.exec.ProcessExecutor;
 
 import java.io.File;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 
 /**
  * Created by usta on 02.09.2014.
@@ -32,9 +33,9 @@ public class KindleMobiService {
             indikatorService.startCycle();
             ProcessExecutor processExecutor = new ProcessExecutor();
             processExecutor.readOutput(true);
-            processExecutor.directory(new File(kindlegenDir));
+            Path kindleGenPath = Paths.get(kindlegenDir);
             String message = processExecutor
-                    .command("kindlegen", currentPath.resolve("book.epub").toString())
+                    .command(kindleGenPath.resolve("kindlegen").toString(), currentPath.resolve("book.epub").toString())
                     .execute()
                     .outputUTF8();
             logger.info(message);
@@ -46,7 +47,7 @@ public class KindleMobiService {
             });
 
         } catch (Exception e) {
-            logger.error(e.getMessage(),e);
+            logger.error(e.getMessage(), e);
         } finally {
             indikatorService.hideIndikator();
         }
