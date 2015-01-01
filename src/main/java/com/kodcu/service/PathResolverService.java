@@ -38,6 +38,7 @@ public class PathResolverService {
     PathMatcher epubMatcher = FileSystems.getDefault().getPathMatcher("glob:**.{epub,epub3}");
     PathMatcher mobiMatcher = FileSystems.getDefault().getPathMatcher("glob:**.{mobi,azw,azw3}");
     PathMatcher anyMatcher = FileSystems.getDefault().getPathMatcher("glob:**.{*}");
+    PathMatcher uniqueMatcher = FileSystems.getDefault().getPathMatcher("glob:{license,readme,gradlew}");
 
     private Map<String, Boolean> rootExists = new HashMap<>();
 
@@ -154,7 +155,7 @@ public class PathResolverService {
     }
 
     public boolean isAny(Path path) {
-        return anyMatcher.matches(path);
+        return anyMatcher.matches(path) || uniqueMatcher.matches(path);
     }
 
     public boolean isEpub(Path path) {
