@@ -10,7 +10,7 @@
 <div id="main">
     <div id="prev" onclick="Book.prevPage();" class="arrow">‹</div>
     <div id="area"></div>
-    <div id="next" onclick="Book.nextPage();"class="arrow">›</div>
+    <div id="next" onclick="Book.nextPage();" class="arrow">›</div>
 </div>
 
 <script src="js/epub.min.js"></script>
@@ -18,6 +18,14 @@
 <script>
     var Book = ePub("/book.epub");
     Book.renderTo("area");
+
+    document.onkeydown = function(e) {
+        e = e || window.event;
+        if (e.keyCode == 37)
+            Book.prevPage();
+        else if (e.keyCode == 39)
+            Book.nextPage();
+    };
 </script>
 </body>
 </html>
