@@ -35,6 +35,8 @@ public class PathResolverService {
     PathMatcher cssMatcher = FileSystems.getDefault().getPathMatcher("glob:**.{css,css3,scss,less}");
     PathMatcher terminalMatcher = FileSystems.getDefault().getPathMatcher("glob:**.{bat,sh,cmd}");
     PathMatcher codeMatcher = FileSystems.getDefault().getPathMatcher("glob:**.{asp,aspx,c,cpp,java,js,aj,php,rb,xml,yml,py}");
+    PathMatcher epubMatcher = FileSystems.getDefault().getPathMatcher("glob:**.{epub,epub3}");
+    PathMatcher mobiMatcher = FileSystems.getDefault().getPathMatcher("glob:**.{mobi,azw,azw3}");
     PathMatcher anyMatcher = FileSystems.getDefault().getPathMatcher("glob:**.{*}");
 
     private Map<String, Boolean> rootExists = new HashMap<>();
@@ -67,7 +69,18 @@ public class PathResolverService {
     }
 
     public boolean isViewable(Path path){
-        return Files.isDirectory(path) || isAsciidoc(path) || isImage(path);
+        return Files.isDirectory(path)
+                || isAsciidoc(path)
+                || isImage(path)
+                || isPDF(path)
+                || isEpub(path)
+                || isMobi(path)
+                || isHTML(path)
+                || isDocbook(path);
+    }
+
+    public boolean isMobi(Path path) {
+        return mobiMatcher.matches(path);
     }
 
     public Path resolve(Path currentPath) {
@@ -109,7 +122,7 @@ public class PathResolverService {
     }
 
     public boolean isPPT(Path path) {
-        return false;
+        return pptMatcher.matches(path);
     }
 
     public boolean isDocx(Path path) {
@@ -142,5 +155,9 @@ public class PathResolverService {
 
     public boolean isAny(Path path) {
         return anyMatcher.matches(path);
+    }
+
+    public boolean isEpub(Path path) {
+     return epubMatcher.matches(path);
     }
 }

@@ -18,6 +18,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -61,8 +62,6 @@ public class DocBookService {
                 indikatorService.startCycle();
 
             List<String> bookAscLines = Files.readAllLines(bookAsc);
-//            StringBuffer allAscChapters = new StringBuffer();
-
             for (int i = 0; i < bookAscLines.size(); i++) {
                 String bookAscLine = bookAscLines.get(i);
 
@@ -71,9 +70,6 @@ public class DocBookService {
                 if (matcher.find()) {
                     String chapterPath = matcher.group();
                     String chapterContent = IOHelper.readFile(currentPath.resolve(chapterPath));
-//                    allAscChapters.append(chapterContent);
-//                    allAscChapters.append("\n\n");
-//                    bookAscLines.remove(i);
                     bookAscLines.set(i,"\n\n"+chapterContent+"\n\n");
                 }
 
@@ -85,25 +81,14 @@ public class DocBookService {
                 allAscContent.append("\n");
             });
 
+
             String docBookHeaderContent = docConverter.convertDocbook(webEngine, allAscContent.toString(), true);
-//            String docBookChapterContent = docConverter.convertDocbook(webEngine, allAscChapters.toString(), true);
 
             StringReader bookReader = new StringReader(docBookHeaderContent);
             Match rootDocument = $(new InputSource(bookReader));
             bookReader.close();
 
-//            bookReader = new StringReader(docBookChapterContent);
-//            Match chapterDocument = $(new InputSource(bookReader));
-//            bookReader.close();
-
-//            rootDocument.append(chapterDocument.find("chapter"));
-
-            // changes formalpara to figure bug fix
-            rootDocument.find("imageobject").parents("formalpara").each((context) -> {
-                $(context).rename("figure");
-            });
-
-            // makes figure centering
+//            // makes figure centering
             rootDocument.find("figure").find("imagedata").attr("align", "center");
 
             // remove callout's duplicated refs and pick last

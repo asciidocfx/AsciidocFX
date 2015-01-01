@@ -33,13 +33,13 @@ public class AppStarter extends Application {
 
         try {
             startApp(stage);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             e.printStackTrace();
         }
 
     }
 
-    private void startApp(Stage stage) throws Exception{
+    private void startApp(Stage stage) throws Throwable{
 
         FXMLLoader parentLoader = new FXMLLoader();
         FXMLLoader tablePopupLoader = new FXMLLoader();
@@ -70,6 +70,7 @@ public class AppStarter extends Application {
         tableStage.setTitle("Table Generator");
         tableStage.initModality(Modality.WINDOW_MODAL);
         tableStage.initOwner(scene.getWindow());
+        tableStage.getIcons().add(new Image(getClass().getResourceAsStream("/logo.png")));
 
         controller.setStage(stage);
         controller.setScene(scene);

@@ -116,4 +116,13 @@ public class IOHelper {
             e.printStackTrace();
         }
     }
+
+    public static byte[] readAllBytes(Path path)  {
+        try {
+            return Files.readAllBytes(path);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return new byte[]{};
+    }
 }

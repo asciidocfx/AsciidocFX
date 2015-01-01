@@ -39,7 +39,6 @@ public class ImageController {
     @ResponseBody
     public ResponseEntity<byte[]> images(HttpServletRequest request, @PathVariable("extension") String extension) {
 
-        Enumeration<String> headerNames = request.getHeaderNames();
         String uri = request.getRequestURI();
         byte[] temp = new byte[]{};
         if (uri.startsWith("/"))
@@ -58,7 +57,6 @@ public class ImageController {
         } catch (Exception ex) {
             logger.debug(imageFile + " is not found");
         }
-
 
         return new ResponseEntity<>(temp, HttpStatus.OK);
     }

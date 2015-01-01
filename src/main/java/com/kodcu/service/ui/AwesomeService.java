@@ -50,6 +50,8 @@ public class AwesomeService {
             awesomeIcon = AwesomeIcon.TERMINAL;
         if (pathResolver.isCode(path))
             awesomeIcon = AwesomeIcon.CODE;
+        if (pathResolver.isEpub(path) || pathResolver.isMobi(path))
+            awesomeIcon = AwesomeIcon.FILE_TEXT;
 
         Label iconLabel = AwesomeDude.createIconLabel(awesomeIcon, "14.0");
         return iconLabel;

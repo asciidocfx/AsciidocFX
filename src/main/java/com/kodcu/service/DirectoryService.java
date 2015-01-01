@@ -76,6 +76,12 @@ public class DirectoryService {
             tabService.addTab(path);
         else if (pathResolver.isImage(path))
             tabService.addImageTab(path);
+        else if(pathResolver.isEpub(path))
+            controller.getHostServices()
+                    .showDocument(String.format("http://localhost:%d/epub/viewer?path=%s", controller.getPort(), path.toString()));
+        else
+            controller.getHostServices()
+                    .showDocument(path.toUri().toString());
     };
 
     private Supplier<Path> pathSaveSupplier = () -> {

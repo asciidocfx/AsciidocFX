@@ -155,7 +155,7 @@ public class WebviewService {
 
         });
 
-        webEngine.load(String.format("http://localhost:%d/editor.html", controller.getTomcatPort()));
+        webEngine.load(String.format("http://localhost:%d/editor.html", controller.getPort()));
         return webView;
     }
 }

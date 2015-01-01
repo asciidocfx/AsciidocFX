@@ -61,6 +61,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.CodeSource;
 import java.util.*;
+import java.util.stream.StreamSupport;
 
 import static java.nio.file.StandardOpenOption.*;
 
@@ -167,6 +168,9 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     @Autowired
     private DocumentService documentService;
 
+    @Autowired
+    private EpubController epubController;
+
     private Stage stage;
     private WebEngine previewEngine;
     private StringProperty lastRendered = new SimpleStringProperty();
@@ -178,7 +182,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     private ObservableList<String> recentFiles = FXCollections.synchronizedObservableList(FXCollections.observableArrayList());
     private AnchorPane configAnchor;
     private Stage configStage;
-    private int tomcatPort = 8080;
+    private int port = 8080;
     private HostServicesDelegate hostServices;
     private Path configPath;
     private Config config;
@@ -188,14 +192,20 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     private Map<String, String> shortCuts;
 
     private ChangeListener<String> lastRenderedChangeListener = (observableValue, old, nev) -> {
-        threadService.runSingleTaskLater(task -> {
-            sessionList.stream().filter(e -> e.isOpen()).forEach(e -> {
-                try {
-                    e.sendMessage(new TextMessage(nev));
-                } catch (IOException ex) {
-                    ex.printStackTrace();
-                }
-            });
+
+        if (Objects.isNull(nev))
+            return;
+
+        threadService.runActionLater(run -> {
+            previewEngine.executeScript(String.format("refreshUI('%s')", IOHelper.normalize(nev)));
+        });
+
+        sessionList.stream().filter(e -> e.isOpen()).forEach(e -> {
+            try {
+                e.sendMessage(new TextMessage(nev));
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
         });
     };
 
@@ -223,11 +233,9 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     @FXML
     private void generatePdf(ActionEvent event) {
-
-        Path currentPath = directoryService.workingDirectory();
-        docBookController.generateDocbook(previewEngine, currentPath, false);
-
         threadService.runTaskLater((task) -> {
+            Path currentPath = directoryService.workingDirectory();
+            docBookController.generateDocbook(previewEngine, currentPath, false);
             fopServiceRunner.generateBook(currentPath, configPath);
         });
     }
@@ -250,17 +258,20 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     @FXML
     private void convertDocbook(ActionEvent event) {
-        Path currentPath = directoryService.workingDirectory();
-        docBookController.generateDocbook(previewEngine, currentPath, true);
+
+        threadService.runTaskLater(task -> {
+            Path currentPath = directoryService.workingDirectory();
+            docBookController.generateDocbook(previewEngine, currentPath, true);
+        });
+
     }
 
     @FXML
     private void convertEpub(ActionEvent event) throws Exception {
 
-        Path currentPath = directoryService.workingDirectory();
-        docBookController.generateDocbook(previewEngine, currentPath, false);
-
         threadService.runTaskLater((task) -> {
+            Path currentPath = directoryService.workingDirectory();
+            docBookController.generateDocbook(previewEngine, currentPath, false);
             epub3Service.produceEpub3(currentPath, configPath);
         });
     }
@@ -303,8 +314,10 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     @FXML
     private void generateHtml(ActionEvent event) {
-        Path currentPath = directoryService.workingDirectory();
-        htmlBookService.produceXhtml5(previewEngine, currentPath, configPath);
+        threadService.runTaskLater(run -> {
+            Path currentPath = directoryService.workingDirectory();
+            htmlBookService.produceXhtml5(previewEngine, currentPath, configPath);
+        });
     }
 
     public String createFileTree(String tree, String type, String fileName, String width, String height) throws IOException {
@@ -314,7 +327,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     @Override
     public void initialize(URL url, ResourceBundle rb) {
 
-        tomcatPort = server.getEmbeddedServletContainer().getPort();
+        port = server.getEmbeddedServletContainer().getPort();
 
         loadConfigurations();
         loadRecentFileList();
@@ -354,11 +367,11 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             if (window.getMember("app").equals("undefined"))
                 window.setMember("app", this);
         });
-        mathjaxEngine.load(String.format("http://localhost:%d/mathjax.html", tomcatPort));
+        mathjaxEngine.load(String.format("http://localhost:%d/mathjax.html", port));
 
 
         previewEngine = previewView.getEngine();
-        previewEngine.load(String.format("http://localhost:%d/index.html", tomcatPort));
+        previewEngine.load(String.format("http://localhost:%d/preview.html", port));
         previewEngine.getLoadWorker().stateProperty().addListener((observableValue1, state, state2) -> {
             JSObject window = (JSObject) previewEngine.executeScript("window");
             if (window.getMember("app").equals("undefined"))
@@ -415,6 +428,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         });
 
         treeView.setOnMouseClicked(event -> {
+            boolean fxApplicationThread = Platform.isFxApplicationThread();
             TreeItem<Item> selectedItem = treeView.getSelectionModel().getSelectedItem();
             if (Objects.isNull(selectedItem))
                 return;
@@ -423,18 +437,14 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                 if (Files.isDirectory(selectedPath)) {
                     try {
                         if (selectedItem.getChildren().size() == 0) {
-                            final List<Path> files = new LinkedList<>();
-                            Files.newDirectoryStream(selectedPath).forEach(path -> {
-                                if (pathResolver.isHidden(path))
-                                    return;
-
-                                if (pathResolver.isViewable(path))
-                                    files.add(path);
-                            });
-                            Collections.sort(files);
-                            files.forEach(path -> {
-                                selectedItem.getChildren().add(new TreeItem<>(new Item(path), awesomeService.getIcon(path)));
-                            });
+                            StreamSupport
+                                    .stream(Files.newDirectoryStream(selectedPath).spliterator(), false)
+                                    .filter(path -> !pathResolver.isHidden(path))
+                                    .filter(pathResolver::isViewable)
+                                    .sorted()
+                                    .forEach(path -> {
+                                        selectedItem.getChildren().add(new TreeItem<>(new Item(path), awesomeService.getIcon(path)));
+                                    });
                         }
                         selectedItem.setExpanded(!selectedItem.isExpanded());
                     } catch (IOException e) {
@@ -464,10 +474,8 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     private void openRecentListFile(Event event) {
         Path path = Paths.get(recentListView.getSelectionModel().getSelectedItem());
 
-        if (pathResolver.isAsciidoc(path))
-            tabService.addTab(path);
-        else
-            getHostServices().showDocument(path.toUri().toString());
+        directoryService.getOpenFileConsumer().accept(path);
+
     }
 
     private void loadConfigurations() {
@@ -509,7 +517,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     }
 
     public void externalBrowse() {
-        hostServices.showDocument(String.format("http://localhost:%d/index.html", tomcatPort));
+        hostServices.showDocument(String.format("http://localhost:%d/index.html", port));
     }
 
     @FXML
@@ -559,7 +567,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     public void scrollToCurrentLine(String text) {
         scrollService.scrollToCurrentLine(text);
     }
-    
+
     public String plantUml(String uml, String type, String fileName) throws IOException {
         return plantUmlService.plantUml(uml, type, fileName);
     }
@@ -573,13 +581,10 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     public void textListener(String text) {
 
-        threadService.runActionLater(run -> {
+        threadService.runTaskLater(task -> {
             String rendered = renderService.convertBasicHtml(previewEngine, text);
-
-            threadService.runSingleTaskLater(task -> {
-                if (Objects.nonNull(rendered))
-                    lastRendered.setValue(rendered);
-            });
+            if (Objects.nonNull(rendered))
+                lastRendered.setValue(rendered);
         });
 
     }
@@ -594,21 +599,17 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         if (!current.currentPath().isPresent())
             saveDoc();
 
-        Path currentPath = directoryService.currentPath();
-
-        String asciidoc = current.currentEditorValue();
-
-        String html = renderService.convertHtmlArticle(previewEngine, asciidoc);
-        indikatorService.startCycle();
         threadService.runTaskLater(task -> {
+            indikatorService.startCycle();
 
+            String html = renderService.convertHtmlArticle(previewEngine);
             String tabText = current.getCurrentTabText().replace("*", "").trim();
 
+            Path currentPath = directoryService.currentPath();
             Path path = currentPath.getParent().resolve(tabText.concat(".html"));
             IOHelper.writeToFile(path, html, CREATE, TRUNCATE_EXISTING, WRITE);
-
+            indikatorService.hideIndikator();
             threadService.runActionLater(run -> {
-                indikatorService.hideIndikator();
                 recentFiles.remove(path.toString());
                 recentFiles.add(0, path.toString());
             });
@@ -633,11 +634,9 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         if (!current.currentPath().isPresent())
             saveDoc();
 
-        Path currentPath = directoryService.currentPath();
-
-        String docbook = docBookController.generateDocbookArticle(previewEngine, currentPath);
-
         threadService.runTaskLater(task -> {
+            Path currentPath = directoryService.currentPath();
+            String docbook = docBookController.generateDocbookArticle(previewEngine, currentPath);
             fopServiceRunner.generateArticle(currentPath.getParent(), configPath, docbook);
         });
 
@@ -791,8 +790,8 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         return previewView;
     }
 
-    public int getTomcatPort() {
-        return tomcatPort;
+    public int getPort() {
+        return port;
     }
 
     public Path getConfigPath() {
