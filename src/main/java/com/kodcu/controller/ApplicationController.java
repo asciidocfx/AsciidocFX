@@ -94,6 +94,9 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     private TablePopupService tablePopupController;
 
     @Autowired
+    private PathOrderService pathOrder;
+
+    @Autowired
     private TreeService treeService;
 
     @Autowired
@@ -441,7 +444,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                                     .stream(Files.newDirectoryStream(selectedPath).spliterator(), false)
                                     .filter(path -> !pathResolver.isHidden(path))
                                     .filter(pathResolver::isViewable)
-                                    .sorted()
+                                    .sorted(pathOrder::comparePaths)
                                     .forEach(path -> {
                                         selectedItem.getChildren().add(new TreeItem<>(new Item(path), awesomeService.getIcon(path)));
                                     });
