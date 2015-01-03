@@ -219,6 +219,10 @@ function addUlList() {
     session.insert(cursorPosition, "* ");
 }
 
+function showLineNumbers() {
+    editor.renderer.getShowGutter() ? editor.renderer.setShowGutter(false) : editor.renderer.setShowGutter(true);
+}
+
 editor.commands.addCommand({
     name: 'underline-selected',
     bindKey: {win: 'Ctrl-U', mac: 'Command-U'},
@@ -237,6 +241,13 @@ editor.commands.addCommand({
     name: 'highlight-selected',
     bindKey: {win: 'Ctrl-H', mac: 'Command-H'},
     exec: highlightedText,
+    readOnly: true
+});
+
+editor.commands.addCommand({
+    name: 'line-numbers',
+    bindKey: {win: 'Ctrl-L', mac: 'Command-L'},
+    exec: showLineNumbers,
     readOnly: true
 });
 
