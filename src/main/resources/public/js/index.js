@@ -125,7 +125,7 @@ function runScroller(content) {
         scrollToElement(".sidebarblock", $(renderedSelection).text());
     }
     else if ($(renderedSelection).is(".quoteblock")) {
-        scrollToElement(".quoteblock > blockquote", $(renderedSelection).find(".paragraph").text());
+        scrollToElement(".quoteblock > blockquote, .verseblock > .content", $(renderedSelection).find(".paragraph").text());
     }
     else if ($(renderedSelection).is(".paragraph")) {
         scrollToElement(".paragraph, .quoteblock > blockquote", $(renderedSelection).text());
