@@ -11,6 +11,7 @@ import javafx.scene.control.MenuBar;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Font;
 import javafx.scene.web.WebView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -48,7 +49,7 @@ public class EditorService {
         Label underlineLabel = AwesomeDude.createIconLabel(AwesomeIcon.UNDERLINE, iconSize);
         Label hyperlinkLabel = AwesomeDude.createIconLabel(AwesomeIcon.LINK, iconSize);
         Label strikethroughLabel = AwesomeDude.createIconLabel(AwesomeIcon.STRIKETHROUGH, iconSize);
-        Label highlightLabel = new Label(" A ");
+//        Label highlightLabel = new Label(" A ");
 
         // Events
         newLabel.setOnMouseClicked(controller::newDoc);
@@ -103,11 +104,6 @@ public class EditorService {
             current.currentEngine().executeScript("addStrikeThroughText()");
         });
 
-        highlightLabel.setStyle("-fx-background-color: rgba(255, 255, 0, 0.4)");
-        highlightLabel.setOnMouseClicked(event -> {
-            current.currentEngine().executeScript("highlightedText()");
-        });
-
         menuBar.getMenus().addAll(
                 new Menu("", newLabel),
                 new Menu("", openLabel),
@@ -124,8 +120,7 @@ public class EditorService {
                 new Menu("", tableLabel),
                 new Menu("", imageLabel),
                 new Menu("", subscriptLabel),
-                new Menu("", superScriptLabel),
-                new Menu("", highlightLabel)
+                new Menu("", superScriptLabel)
         );
 
         ScrollPane scrollPane = new ScrollPane();

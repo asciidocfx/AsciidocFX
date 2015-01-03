@@ -46,6 +46,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.embedded.EmbeddedWebApplicationContext;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
@@ -61,6 +62,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.CodeSource;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.StreamSupport;
 
 import static java.nio.file.StandardOpenOption.*;
@@ -286,7 +288,9 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     }
 
     public void svgToPng(String fileName, String svg, String formula, float width, float height) {
-        mathJaxService.svgToPng(fileName, svg, formula, width, height);
+       threadService.runTaskLater(task->{
+           mathJaxService.svgToPng(fileName, svg, formula, width, height);
+       });
     }
 
     @FXML
@@ -325,8 +329,11 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         });
     }
 
-    public String createFileTree(String tree, String type, String fileName, String width, String height) {
-        return treeService.createFileTree(tree, type, fileName, width, height);
+    public void createFileTree(String tree, String type, String fileName, String width, String height) {
+
+        threadService.runTaskLater(task -> {
+            treeService.createFileTree(tree, type, fileName, width, height);
+        });
     }
 
     @Override
@@ -574,8 +581,11 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         scrollService.scrollToCurrentLine(text);
     }
 
-    public String plantUml(String uml, String type, String fileName) throws IOException {
-        return plantUmlService.plantUml(uml, type, fileName);
+    public void plantUml(String uml, String type, String fileName) throws IOException {
+
+        threadService.runTaskLater(task->{
+            plantUmlService.plantUml(uml, type, fileName);
+        });
     }
 
     public void appendWildcard() {
@@ -802,5 +812,9 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     public Path getConfigPath() {
         return configPath;
+    }
+
+    public Current getCurrent() {
+        return current;
     }
 }

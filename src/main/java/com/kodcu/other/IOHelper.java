@@ -1,8 +1,8 @@
 package com.kodcu.other;
 
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.zeroturnaround.zip.commons.IOUtils;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -42,7 +42,7 @@ public class IOHelper {
         try {
             Files.write(path, content.getBytes(Charset.forName("UTF-8")), openOption);
         } catch (IOException e) {
-            logger.info(e.toString());
+            logger.info(e.getMessage(), e);
         }
     }
 
@@ -50,7 +50,7 @@ public class IOHelper {
         try {
             Files.write(path, content, openOption);
         } catch (IOException e) {
-            logger.info(e.toString());
+            logger.info(e.getMessage(), e);
         }
     }
 
@@ -59,7 +59,7 @@ public class IOHelper {
         try(InputStream is = Files.newInputStream(path, StandardOpenOption.READ)) {
             content = IOUtils.toString(is, "UTF-8");
         } catch (IOException e) {
-            logger.info(e.toString());
+            logger.info(e.getMessage(), e);
         }
         return content;
     }
@@ -68,7 +68,7 @@ public class IOHelper {
         try {
             Files.createDirectories(path);
         } catch (IOException e) {
-            logger.info(e.toString());
+            logger.info(e.getMessage(), e);
         }
 
     }
@@ -77,7 +77,7 @@ public class IOHelper {
         try {
             return Files.createTempFile(path, prefix, suffix);
         } catch (IOException e) {
-            logger.info(e.toString());
+            logger.info(e.getMessage(), e);
         }
 
         return null;
@@ -87,7 +87,7 @@ public class IOHelper {
         try {
             Files.copy(source, target, copyOptions);
         } catch (IOException e) {
-            logger.info(e.getMessage(),e);
+            logger.info(e.getMessage(), e);
         }
     }
 
@@ -121,7 +121,7 @@ public class IOHelper {
         try {
             return Files.readAllBytes(path);
         } catch (IOException e) {
-            logger.info(e.getMessage(),e);
+            logger.info(e.getMessage(), e);
         }
         return new byte[]{};
     }

@@ -34,7 +34,9 @@
                 type = "" + (attrs['$[]']("type"));
                 filename = "" + (attrs['$[]']("file"));
 
-                content = app.plantUml(reader.$read(), type, filename);
+                app.plantUml(reader.$read(), type, filename);
+
+                content = "images/" + filename;
 
                 if ((($a = (type['$==']("ascii"))) !== nil && (!$a._isBoolean || $a == true))) {
                     return self.$create_literal_block(parent, content, attrs, $hash2(["subs"], {"subs": nil}))

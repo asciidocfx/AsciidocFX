@@ -47,26 +47,26 @@ public class FileBrowseService {
 
     public void browse(final TreeView<Item> treeView, final Path browserPath) {
 
-        threadService.runTaskLater(task -> {
-            watchService.registerWatcher(treeView, browserPath, this::browse);
-        });
-
         threadService.runActionLater(run -> {
 
             rootItem = new TreeItem<>(new Item(browserPath, String.format("Workdir (%s)", browserPath)), awesomeService.getIcon(browserPath));
             rootItem.setExpanded(true);
-            try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(browserPath);){
-                StreamSupport
-                        .stream(directoryStream.spliterator(), false)
-                        .sorted(pathOrder::comparePaths)
-                        .forEach(path -> {
-                            addToTreeView(path);
-                        });
-            } catch (IOException e) {
-                logger.info(e.getMessage(), e);
-            }
-
             treeView.setRoot(rootItem);
+
+            threadService.runTaskLater(task -> {
+                try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(browserPath);) {
+                    StreamSupport
+                            .stream(directoryStream.spliterator(), false)
+                            .sorted(pathOrder::comparePaths)
+                            .forEach(path -> {
+                               threadService.runActionLater(r-> addToTreeView(path));
+                            });
+                } catch (IOException e) {
+                    logger.info(e.getMessage(), e);
+                }
+
+                watchService.registerWatcher(treeView, browserPath, this::browse);
+            });
         });
     }
 

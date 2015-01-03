@@ -20,8 +20,13 @@ import javafx.scene.web.WebView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.channels.AsynchronousFileChannel;
+import java.nio.channels.CompletionHandler;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -68,8 +73,12 @@ public class TabService {
         WebEngine webEngine = webView.getEngine();
         webEngine.getLoadWorker().stateProperty().addListener((observableValue1, state, state2) -> {
             if (state2 == Worker.State.SUCCEEDED) {
-                webEngine.executeScript(String.format("setEditorValue('%s')",
-                        IOHelper.normalize(IOHelper.readFile(path))));
+                threadService.runTaskLater(task ->{
+                    String normalize = IOHelper.normalize(IOHelper.readFile(path));
+                    threadService.runActionLater(run->{
+                        webEngine.executeScript(String.format("setEditorValue('%s')",normalize));
+                    });
+                });
             }
         });
 

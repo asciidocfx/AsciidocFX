@@ -40,11 +40,11 @@ public class PlantUmlService {
     @Autowired
     private ThreadService threadService;
 
-    public String plantUml(String uml, String type, String fileName) throws IOException {
+    public void plantUml(String uml, String type, String fileName)  {
         Objects.requireNonNull(fileName);
 
         if (!fileName.endsWith(".png") && !"ascii".equalsIgnoreCase(type))
-            return "";
+            return;
 
         String defaultScale = "\nskinparam dpi 300\n";
 
@@ -62,7 +62,7 @@ public class PlantUmlService {
             if ("ascii".equalsIgnoreCase(type)) {
                 String desc = reader.generateImage(os, new FileFormatOption(FileFormat.ATXT));
 
-                return os.toString("UTF-8");
+                return;
             }
             // default: png
             else {
@@ -97,11 +97,10 @@ public class PlantUmlService {
 
                 current.getCache().put(fileName, hashCode);
 
-                String umlRelativePath = Paths.get("images") + "/" + umlPath.getFileName();
-
-                return umlRelativePath;
             }
 
+        } catch (IOException e) {
+            logger.info(e.getMessage(),e);
         }
     }
 }

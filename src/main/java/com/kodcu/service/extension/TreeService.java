@@ -4,6 +4,7 @@ import com.kodcu.controller.ApplicationController;
 import com.kodcu.other.Current;
 import com.kodcu.other.IOHelper;
 import com.kodcu.other.Tuple;
+import com.kodcu.service.ThreadService;
 import com.kodcu.service.ui.AwesomeService;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.Node;
@@ -11,8 +12,6 @@ import javafx.scene.SnapshotParameters;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.image.WritableImage;
-import javafx.scene.layout.Border;
-import javafx.scene.layout.BorderStroke;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,37 +41,41 @@ public class TreeService {
     private ApplicationController controller;
 
     @Autowired
+    private ThreadService threadService;
+
+    @Autowired
     private AwesomeService awesomeService;
 
-    public String createFileTree(String tree, String type, String fileName, String width, String height) {
+
+    public void createFileTree(String tree, String type, String fileName, String width, String height) {
 
         Objects.requireNonNull(fileName);
 
         if (!fileName.endsWith(".png") && !"ascii".equalsIgnoreCase(type))
-            return "";
+            return;
 
         if ("ascii".equalsIgnoreCase(type)) {
-            return tree;
+            return;
         }
         // default: png
         else {
 
-            if (!current.currentPath().isPresent())
-                controller.saveDoc();
-
             Path path = current.currentPath().get().getParent();
             Path treePath = path.resolve("images/").resolve(fileName);
+
+            if (!current.currentPath().isPresent())
+                controller.saveDoc();
 
             Integer cacheHit = current.getCache().get(fileName);
 
             int hashCode = (fileName + type + tree + width + height).hashCode();
             if (Objects.isNull(cacheHit) || hashCode != cacheHit) {
 
-                TreeView<Tuple<Integer,String>> fileView = new TreeView<>();
+                TreeView<Tuple<Integer, String>> fileView = new TreeView<>();
+
                 fileView.getStyleClass().add("file-tree");
                 fileView.setLayoutX(-99999);
                 fileView.setLayoutY(-99999);
-                controller.getRootAnchor().getChildren().add(fileView);
 
                 try {
                     List<String> strings = Arrays.asList(tree.split("\n"));
@@ -82,9 +85,9 @@ public class TreeService {
                                 String value = s.replace(" ", "").replace("#", "");
                                 return new Tuple<Integer, String>(level, value);
                             })
-                            .map(t->{
+                            .map(t -> {
                                 Node icon = awesomeService.getIcon(Paths.get(t.getValue()));
-                                TreeItem<Tuple<Integer, String>> treeItem = new TreeItem<>(t,icon);
+                                TreeItem<Tuple<Integer, String>> treeItem = new TreeItem<>(t, icon);
                                 treeItem.setExpanded(true);
 
                                 return treeItem;
@@ -98,7 +101,9 @@ public class TreeService {
                         Tuple<Integer, String> currentItemValue = currentItem.getValue();
 
                         if (Objects.isNull(fileView.getRoot())) {
+
                             fileView.setRoot(currentItem);
+
                             continue;
                         }
 
@@ -113,28 +118,28 @@ public class TreeService {
 
                         if (currentItemValue.getKey() == lastPos) {
 
-                            TreeItem<Tuple<Integer,String>> parent = lastItem.getParent();
-                            if(Objects.isNull(parent))
-                                parent  = fileView.getRoot();
+                            TreeItem<Tuple<Integer, String>> parent = lastItem.getParent();
+                            if (Objects.isNull(parent))
+                                parent = fileView.getRoot();
                             parent.getChildren().add(currentItem);
                             continue;
                         }
 
                         if (currentItemValue.getKey() < lastPos) {
 
-                            List<TreeItem<Tuple<Integer,String>>> collect = treeItems.stream()
+                            List<TreeItem<Tuple<Integer, String>>> collect = treeItems.stream()
                                     .filter(t -> t.getValue().getKey() == currentItemValue.getKey())
                                     .collect(Collectors.toList());
 
-                            if(collect.size()>0){
+                            if (collect.size() > 0) {
 
                                 TreeItem<Tuple<Integer, String>> parent = fileView.getRoot();
 
-                                try{
-                                    TreeItem<Tuple<Integer,String>> treeItem = collect.get(collect.indexOf(currentItem)-1);
+                                try {
+                                    TreeItem<Tuple<Integer, String>> treeItem = collect.get(collect.indexOf(currentItem) - 1);
                                     parent = treeItem.getParent();
-                                }catch (RuntimeException e){
-                                    logger.info(e.getMessage(),e);
+                                } catch (RuntimeException e) {
+                                    logger.info(e.getMessage(), e);
                                 }
 
                                 parent.getChildren().add(currentItem);
@@ -143,55 +148,54 @@ public class TreeService {
                         }
 
                     }
-
                     fileView.setMaxHeight(2500);
                     fileView.setPrefWidth(250);
                     fileView.setPrefHeight(treeItems.size() * 24);
 
-                    try{
+
+                    try {
                         Double value = Double.valueOf(width);
 
-                        if(width.contains("+") || width.contains("-"))
-                            fileView.setPrefWidth(fileView.getPrefWidth()+value);
+                        if (width.contains("+") || width.contains("-"))
+                            fileView.setPrefWidth(fileView.getPrefWidth() + value);
                         else
                             fileView.setPrefWidth(value);
-                    }
-                    catch (Exception e){
-                        logger.debug(e.getMessage(),e);
+                    } catch (Exception e) {
+                        logger.debug(e.getMessage(), e);
                     }
 
-                    try{
+                    try {
                         Double value = Double.valueOf(height);
 
-                        if(height.contains("+") || height.contains("-"))
+                        if (height.contains("+") || height.contains("-"))
                             fileView.setPrefHeight(fileView.getPrefHeight() + value);
                         else
                             fileView.setPrefHeight(value);
+                    } catch (Exception e) {
+                        logger.debug(e.getMessage(), e);
                     }
-                    catch (Exception e){
-                        logger.debug(e.getMessage(),e);
-                    }
 
-                    WritableImage writableImage = fileView.snapshot(new SnapshotParameters(), null);
-                    BufferedImage bufferedImage = SwingFXUtils.fromFXImage(writableImage, null);
+                    threadService.runActionLater(run->{
+                        controller.getRootAnchor().getChildren().add(fileView);
+                        WritableImage writableImage = fileView.snapshot(new SnapshotParameters(), null);
 
-                    IOHelper.createDirectories(path.resolve("images"));
+                        BufferedImage bufferedImage = SwingFXUtils.fromFXImage(writableImage, null);
 
-                    IOHelper.imageWrite(bufferedImage, "png", treePath.toFile());
-                    controller.getLastRenderedChangeListener()
-                            .changed(null, controller.getLastRendered().getValue(), controller.getLastRendered().getValue());
+                        IOHelper.createDirectories(path.resolve("images"));
+                        IOHelper.imageWrite(bufferedImage, "png", treePath.toFile());
+
+                        controller.getLastRenderedChangeListener()
+                                .changed(null, controller.getLastRendered().getValue(), controller.getLastRendered().getValue());
+
+                        controller.getRootAnchor().getChildren().remove(fileView);
+                    });
 
                 } catch (Exception e) {
                     logger.error(e.getMessage(), e);
                 }
             }
 
-
             current.getCache().put(fileName, hashCode);
-
-            String treeRelativePath = Paths.get("images") + "/" + treePath.getFileName();
-
-            return treeRelativePath;
         }
     }
 }

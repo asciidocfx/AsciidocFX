@@ -34,7 +34,9 @@
                 scale = "" + (attrs['$[]']("scale"));
                 align = "" + (attrs['$[]']("align"));
 
-                content = app.createFileTree(reader.$read(), type, filename, width, height);
+                app.createFileTree(reader.$read(), type, filename, width, height);
+
+                content = "images/" + filename;
 
                 if ((($a = (type['$==']("ascii"))) !== nil && (!$a._isBoolean || $a == true))) {
                     return self.$create_pass_block(parent, content, attrs, $hash2(["subs"], {"subs": nil}))
