@@ -23,6 +23,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 
 import static javafx.scene.input.KeyCombination.CONTROL_DOWN;
+import static javafx.scene.input.KeyCombination.SHORTCUT_DOWN;
 
 
 public class AppStarter extends Application {
@@ -84,8 +85,8 @@ public class AppStarter extends Application {
         stage.setScene(scene);
         stage.show();
 
-        scene.getAccelerators().put(new KeyCodeCombination(KeyCode.S, CONTROL_DOWN), controller::saveDoc);
-        scene.getAccelerators().put(new KeyCodeCombination(KeyCode.N,CONTROL_DOWN), () -> {
+        scene.getAccelerators().put(new KeyCodeCombination(KeyCode.S, SHORTCUT_DOWN), controller::saveDoc);
+        scene.getAccelerators().put(new KeyCodeCombination(KeyCode.N,SHORTCUT_DOWN), () -> {
             controller.newDoc(null);
         });
     }
