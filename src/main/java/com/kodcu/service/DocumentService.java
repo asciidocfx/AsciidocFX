@@ -52,9 +52,10 @@ public class DocumentService {
 
     public void saveDoc() {
 
+        Label label = current.currentTabLabel();
         Path currentPath = directoryService.currentPath();
 
-        if (Objects.isNull(currentPath))
+        if(!label.getText().contains(" *") || Objects.isNull(currentPath))
             return;
 
         IOHelper.writeToFile(currentPath, (String) current.currentEngine().executeScript("editor.getValue();"), TRUNCATE_EXISTING, CREATE);
@@ -63,7 +64,6 @@ public class DocumentService {
         recentFiles.remove(currentPath.toString());
         recentFiles.add(0, currentPath.toString());
 
-        Label label = current.currentTabLabel();
         label.setText(label.getText().replace(" *", ""));
 
         directoryService.setInitialDirectory(Optional.ofNullable(currentPath.toFile()));
