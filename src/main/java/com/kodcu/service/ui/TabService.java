@@ -14,6 +14,7 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
+import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
@@ -245,12 +246,31 @@ public class TabService {
         label.setText(imagePath.getFileName().toString());
         ImageView imageView = new ImageView(new Image(IOHelper.pathToUrl(imagePath)));
         imageView.setPreserveRatio(true);
-        TabPane tabPane = controller.getTabPane();
-        imageView.fitWidthProperty().bind(tabPane.widthProperty());
+        imageView.setFitWidth(imageView.getImage().getWidth());
 
-        tab.setContent(imageView);
+        Tooltip tip = new Tooltip(imagePath.toString());
+        Tooltip.install(tab.getGraphic(), tip);
+
+        ScrollPane scrollPane = new ScrollPane();
+        scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+        scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+        scrollPane.setContent(imageView);
+        scrollPane.addEventFilter(ScrollEvent.SCROLL, e -> {
+            if (e.isControlDown() && e.getDeltaY() > 0) {
+                // zoom in
+                imageView.setFitWidth(imageView.getFitWidth() + 4.0);
+            }
+            else if (e.isControlDown() && e.getDeltaY() < 0){
+                // zoom out
+                imageView.setFitWidth(imageView.getFitWidth() - 4.0);
+            }
+        });
+
+        tab.setContent(scrollPane);
         tab.setWebView(null);
         tab.setPath(imagePath);
+
+        TabPane tabPane = controller.getTabPane();
         tabPane.getTabs().add(tab);
         tabPane.getSelectionModel().select(tab);
     }
