@@ -10,10 +10,10 @@ before_script:
 - sudo apt-get install -y wget
 - wget http://download-aws.ej-technologies.com/install4j/install4j_unix_6_0.tar.gz
 - tar zxvf install4j_unix_6_0.tar.gz
-- wget -O /home/travis/build/asciidocfx/install4j6/macosx-amd64-1.8.0_25.tar.gz http://asciidocfx.com/jres/macosx-amd64-1.8.0_25.tar.gz
-- wget -O /home/travis/build/asciidocfx/install4j6/windows-amd64-1.8.0_25.tar.gz http://asciidocfx.com/jres/windows-amd64-1.8.0_25.tar.gz
-- wget -O /home/travis/build/asciidocfx/install4j6/windows-x86-1.8.0_25.tar.gz http://asciidocfx.com/jres/windows-x86-1.8.0_25.tar.gz
-- wget -O /home/travis/build/asciidocfx/install4j6/macosx-amd64-1.8.0_25_unpacked.tar.gz http://asciidocfx.com/jres/macosx-amd64-1.8.0_25_unpacked.tar.gz
+- wget -O /home/travis/build/asciidocfx/AsciidocFX/install4j6/jres/macosx-amd64-1.8.0_25.tar.gz http://asciidocfx.com/jres/macosx-amd64-1.8.0_25.tar.gz
+- wget -O /home/travis/build/asciidocfx/AsciidocFX/install4j6/jres/windows-amd64-1.8.0_25.tar.gz http://asciidocfx.com/jres/windows-amd64-1.8.0_25.tar.gz
+- wget -O /home/travis/build/asciidocfx/AsciidocFX/install4j6/jres/windows-x86-1.8.0_25.tar.gz http://asciidocfx.com/jres/windows-x86-1.8.0_25.tar.gz
+- wget -O /home/travis/build/asciidocfx/AsciidocFX/install4j6/jres/macosx-amd64-1.8.0_25_unpacked.tar.gz http://asciidocfx.com/jres/macosx-amd64-1.8.0_25_unpacked.tar.gz
 - mvn clean
 - mvn install4j:install-license -DlicenseKey=[LicenseKey]
 deploy:
