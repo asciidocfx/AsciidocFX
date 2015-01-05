@@ -1,16 +1,18 @@
 package com.kodcu.service;
 
 import com.kodcu.other.Item;
+import com.kodcu.service.ui.FileBrowseService;
 import javafx.scene.control.TreeView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.web.servlet.tags.form.SelectTag;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.nio.file.*;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.BiConsumer;
 
 import static java.nio.file.StandardWatchEventKinds.ENTRY_CREATE;
@@ -28,6 +30,9 @@ public class FileWatchService {
     private WatchService watcher = null;
     private Path lastWatchedPath;
 
+    @Autowired
+    private FileBrowseService fileBrowse;
+
     @PostConstruct
     private void init() throws IOException {
         watcher = FileSystems.getDefault().newWatchService();
@@ -42,7 +47,7 @@ public class FileWatchService {
                     watcher = FileSystems.getDefault().newWatchService();
                 }
                 lastWatchedPath = path;
-                path.register(watcher, ENTRY_CREATE, ENTRY_DELETE,ENTRY_MODIFY);
+                path.register(watcher, ENTRY_CREATE, ENTRY_DELETE);
             }
 
                 WatchKey watckKey = watcher.take();

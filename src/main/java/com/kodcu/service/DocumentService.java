@@ -55,7 +55,7 @@ public class DocumentService {
         Label label = current.currentTabLabel();
         Path currentPath = directoryService.currentPath();
 
-        if(!label.getText().contains(" *") || Objects.isNull(currentPath))
+        if(Objects.isNull(currentPath))
             return;
 
         IOHelper.writeToFile(currentPath, (String) current.currentEngine().executeScript("editor.getValue();"), TRUNCATE_EXISTING, CREATE);

@@ -450,18 +450,9 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             if (event.getButton() == MouseButton.PRIMARY)
                 if (Files.isDirectory(selectedPath)) {
                     if (selectedItem.getChildren().size() == 0) {
-                        try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(selectedPath);) {
-                            StreamSupport
-                                    .stream(directoryStream.spliterator(), false)
-                                    .filter(path -> !pathResolver.isHidden(path))
-                                    .filter(pathResolver::isViewable)
-                                    .sorted(pathOrder::comparePaths)
-                                    .forEach(path -> {
-                                        selectedItem.getChildren().add(new TreeItem<>(new Item(path), awesomeService.getIcon(path)));
-                                    });
-                        } catch (IOException e) {
-                            logger.error(e.getMessage(), e);
-                        }
+                        fileBrowser.addPathToTree(selectedPath,path -> {
+                            selectedItem.getChildren().add(new TreeItem<>(new Item(path), awesomeService.getIcon(path)));
+                        });
                     }
                     selectedItem.setExpanded(!selectedItem.isExpanded());
 

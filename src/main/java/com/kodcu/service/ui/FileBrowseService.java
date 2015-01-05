@@ -5,7 +5,6 @@ import com.kodcu.service.FileWatchService;
 import com.kodcu.service.PathOrderService;
 import com.kodcu.service.PathResolverService;
 import com.kodcu.service.ThreadService;
-import javafx.application.Platform;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import org.slf4j.Logger;
@@ -17,7 +16,8 @@ import java.io.IOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.function.Function;
+import java.util.Objects;
+import java.util.function.Consumer;
 import java.util.stream.StreamSupport;
 
 /**
@@ -44,8 +44,13 @@ public class FileBrowseService {
     private FileWatchService watchService;
 
     private TreeItem<Item> rootItem;
+    private Integer lastSelectedItem;
 
     public void browse(final TreeView<Item> treeView, final Path browserPath) {
+
+        int selectedIndex = treeView.getSelectionModel().getSelectedIndex();
+        if (selectedIndex != -1)
+            lastSelectedItem = selectedIndex;
 
         threadService.runActionLater(run -> {
 
@@ -54,23 +59,39 @@ public class FileBrowseService {
             treeView.setRoot(rootItem);
 
             threadService.runTaskLater(task -> {
-                try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(browserPath);) {
-                    StreamSupport
-                            .stream(directoryStream.spliterator(), false)
-                            .sorted(pathOrder::comparePaths)
-                            .forEach(path -> {
-                               threadService.runActionLater(r-> addToTreeView(path));
-                            });
-                } catch (IOException e) {
-                    logger.info(e.getMessage(), e);
-                }
+                this.addPathToTree(browserPath, path -> {
+                    threadService.runActionLater(r -> addToTreeView(path, treeView.getRoot()));
+                });
+
+                threadService.runActionLater(r -> {
+                    if (Objects.nonNull(lastSelectedItem))
+                        treeView.getSelectionModel().select(lastSelectedItem);
+                });
 
                 watchService.registerWatcher(treeView, browserPath, this::browse);
             });
         });
     }
 
-    private void addToTreeView(Path path) {
+
+    public void addPathToTree(Path path, Consumer<Path> consumer) {
+
+        try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(path);) {
+
+            StreamSupport
+                    .stream(directoryStream.spliterator(), false)
+                    .filter(p -> !pathResolver.isHidden(p))
+                    .filter(pathResolver::isViewable)
+                    .sorted(pathOrder::comparePaths)
+                    .forEach(consumer);
+
+        } catch (IOException e) {
+            logger.error(e.getMessage(), e);
+        }
+
+    }
+
+    private void addToTreeView(Path path, TreeItem<Item> whichItem) {
 
         if (pathResolver.isHidden(path))
             return;
@@ -78,7 +99,7 @@ public class FileBrowseService {
         if (pathResolver.isViewable(path)) {
 
             TreeItem<Item> treeItem = new TreeItem<>(new Item(path), awesomeService.getIcon(path));
-            rootItem.getChildren().add(treeItem);
+            whichItem.getChildren().add(treeItem);
         }
 
     }
