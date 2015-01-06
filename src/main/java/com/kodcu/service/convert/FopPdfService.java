@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.FileOutputStream;
+import java.net.URLEncoder;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -67,7 +68,7 @@ public class FopPdfService {
 
             FopFactory fopFactory = FopFactory.newInstance();
 
-            fopFactory.setUserConfig(configPath.resolve("docbook-config/fop.xconf").toFile());
+            fopFactory.setUserConfig(URLEncoder.encode(configPath.resolve("docbook-config/fop.xconf").toString(), "UTF-8"));
             try (FileOutputStream outputStream = new FileOutputStream(currentPath.resolve("book.pdf").toFile());) {
                 FOUserAgent userAgent = new FOUserAgent(fopFactory);
                 handler.renderTo(userAgent, "application/pdf", outputStream);
