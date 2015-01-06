@@ -17,6 +17,8 @@
         <maven.compiler.target>1.8</maven.compiler.target>
         <mainClass>com.kodcu.boot.AppStarter</mainClass>
         <saxon.version>6.5.3</saxon.version>
+        <install4j.home>/home/travis/build/asciidocfx/AsciidocFX/install4j6</install4j.home>
+        <install4j.licenseKey>${env.CI_LICENSE_KEY}</install4j.licenseKey>
     </properties>
 
     <organization>
@@ -207,7 +209,7 @@
                         </goals>
                         <configuration>
                             <projectFile>${project.basedir}/asciidocfx.install4j</projectFile>
-                            <installDir>/home/travis/build/asciidocfx/AsciidocFX/install4j6</installDir>
+                            <installDir>${install4j.home}</installDir>
                         </configuration>
                     </execution>
                 </executions>
