@@ -207,7 +207,7 @@
                         </goals>
                         <configuration>
                             <projectFile>${project.basedir}/asciidocfx.install4j</projectFile>
-                            <installDir>/home/travis/build/asciidocfx/install4j6</installDir>
+                            <installDir>/home/travis/build/asciidocfx/AsciidocFX/install4j6</installDir>
                         </configuration>
                     </execution>
                 </executions>

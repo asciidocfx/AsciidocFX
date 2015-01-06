@@ -15,7 +15,7 @@ before_script:
 - wget -O /home/travis/build/asciidocfx/AsciidocFX/install4j6/jres/windows-x86-1.8.0_25.tar.gz http://asciidocfx.com/jres/windows-x86-1.8.0_25.tar.gz
 - wget -O /home/travis/build/asciidocfx/AsciidocFX/install4j6/jres/macosx-amd64-1.8.0_25_unpacked.tar.gz http://asciidocfx.com/jres/macosx-amd64-1.8.0_25_unpacked.tar.gz
 - mvn clean
-- mvn install4j:install-license -DlicenseKey=[LicenseKey]
+- mvn install4j:install-license -DinstallDir=/home/travis/build/asciidocfx/AsciidocFX/install4j6 -DlicenseKey=[LicenseKey]
 deploy:
   provider: releases
   skip_cleanup: true
