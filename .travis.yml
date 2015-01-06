@@ -32,7 +32,6 @@ deploy:
   - /home/travis/build/asciidocfx/AsciidocFX/target/media/AsciidocFX_macos_single_archive.dmg
   - /home/travis/build/asciidocfx/AsciidocFX/target/media/AsciidocFX_macos_folder_installer.dmg
   - /home/travis/build/asciidocfx/AsciidocFX/target/media/AsciidocFX_macos_folder_archive.dmg
-  - /home/travis/build/asciidocfx/AsciidocFX/target/media/AsciidocFX_linux_installer.sh
   - /home/travis/build/asciidocfx/AsciidocFX/target/media/AsciidocFX_linux_deb.deb
   - /home/travis/build/asciidocfx/AsciidocFX/target/media/AsciidocFX_linux_archive.tar.gz
   on:
