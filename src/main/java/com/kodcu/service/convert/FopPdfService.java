@@ -58,17 +58,17 @@ public class FopPdfService {
             params.add("title.font.family");
             params.add("Arial");
             params.add("highlight.xslthl.config");
-            params.add(configPath.resolve("docbook-config/xslthl-config.xml").toUri().toString());
+            params.add(configPath.resolve("docbook-config/xslthl-config.xml").toUri().toASCIIString());
             params.add("admon.graphics.path");
-            params.add(configPath.resolve("docbook/images/").toUri().toString());
+            params.add(configPath.resolve("docbook/images/").toUri().toASCIIString());
             params.add("callout.graphics.path");
-            params.add(configPath.resolve("docbook/images/callouts/").toUri().toString());
+            params.add(configPath.resolve("docbook/images/callouts/").toUri().toASCIIString());
 
             InputHandler handler = new InputHandler(bookXml.toFile(), configPath.resolve("docbook-config/fo-pdf.xsl").toFile(), params);
 
             FopFactory fopFactory = FopFactory.newInstance();
 
-            fopFactory.setUserConfig(URLEncoder.encode(configPath.resolve("docbook-config/fop.xconf").toString(), "UTF-8"));
+            fopFactory.setUserConfig(configPath.resolve("docbook-config/fop.xconf").toUri().toASCIIString());
             try (FileOutputStream outputStream = new FileOutputStream(currentPath.resolve("book.pdf").toFile());) {
                 FOUserAgent userAgent = new FOUserAgent(fopFactory);
                 handler.renderTo(userAgent, "application/pdf", outputStream);
@@ -102,11 +102,11 @@ public class FopPdfService {
             params.add("title.font.family");
             params.add("Arial");
             params.add("highlight.xslthl.config");
-            params.add(configPath.resolve("docbook-config/xslthl-config.xml").toUri().toString());
+            params.add(configPath.resolve("docbook-config/xslthl-config.xml").toUri().toASCIIString());
             params.add("admon.graphics.path");
-            params.add(configPath.resolve("docbook/images/").toUri().toString());
+            params.add(configPath.resolve("docbook/images/").toUri().toASCIIString());
             params.add("callout.graphics.path");
-            params.add(configPath.resolve("docbook/images/callouts/").toUri().toString());
+            params.add(configPath.resolve("docbook/images/callouts/").toUri().toASCIIString());
 
             String tabText = current.getCurrentTabText().replace("*", "").trim();
             String tabTextDocbook = tabText.concat(".xml");
@@ -116,7 +116,7 @@ public class FopPdfService {
 
             FopFactory fopFactory = FopFactory.newInstance();
 
-            fopFactory.setUserConfig(configPath.resolve("docbook-config/fop.xconf").toFile());
+            fopFactory.setUserConfig(configPath.resolve("docbook-config/fop.xconf").toUri().toASCIIString());
             try (FileOutputStream outputStream = new FileOutputStream(currentPath.resolve(tabText.concat(".pdf")).toFile());) {
                 FOUserAgent userAgent = new FOUserAgent(fopFactory);
                 handler.renderTo(userAgent, "application/pdf", outputStream);
