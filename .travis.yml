@@ -26,14 +26,11 @@ deploy:
   api_key:
     secure: L4y+3fi/yVR7guv7cynzrTOjRbE4+JTK79Fv5J8IQFwtzTP4V2GeW5ZjTdZXAlsFRvak5zhxY4OEYbYI2/riMib5Ea/K28Fd0F/nK8bUDddzxyXPc8zj6VrQINJX8Na2KfPvXT2UR+LtUWkK5HjeR+O/YQPTO4M+7SDGx5P+gog=
   file:
-  - /home/travis/build/asciidocfx/AsciidocFX/target/media/AsciidocFX_windows_installer.exe
-  - /home/travis/build/asciidocfx/AsciidocFX/target/media/AsciidocFX_windows_archive.zip
-  - /home/travis/build/asciidocfx/AsciidocFX/target/media/AsciidocFX_macos_single_installer.dmg
-  - /home/travis/build/asciidocfx/AsciidocFX/target/media/AsciidocFX_macos_single_archive.dmg
-  - /home/travis/build/asciidocfx/AsciidocFX/target/media/AsciidocFX_macos_folder_installer.dmg
-  - /home/travis/build/asciidocfx/AsciidocFX/target/media/AsciidocFX_macos_folder_archive.dmg
-  - /home/travis/build/asciidocfx/AsciidocFX/target/media/AsciidocFX_linux_deb.deb
-  - /home/travis/build/asciidocfx/AsciidocFX/target/media/AsciidocFX_linux_archive.tar.gz
+  - /home/travis/build/asciidocfx/AsciidocFX/target/media/AsciidocFX_Mac.dmg
+  - /home/travis/build/asciidocfx/AsciidocFX/target/media/AsciidocFX_Linux.tar.gz
+  - /home/travis/build/asciidocfx/AsciidocFX/target/media/AsciidocFX_Windows.exe
+  - /home/travis/build/asciidocfx/AsciidocFX/target/media/AsciidocFX_Windows.zip
+  - /home/travis/build/asciidocfx/AsciidocFX/target/media/updates.xml
   on:
     tags: true
     all_branches: true

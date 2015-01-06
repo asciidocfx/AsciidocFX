@@ -156,8 +156,6 @@
         </dependency>
     </dependencies>
 
-
-
     <build>
         <finalName>AsciidocFX</finalName>
 
@@ -193,6 +191,7 @@
                     <copyConfigurationDirectory>true</copyConfigurationDirectory>
                     <logsDirectory>log</logsDirectory>
                     <showConsoleWindow>true</showConsoleWindow>
+                    <binFolder>/</binFolder>
                     <!--<unixScriptTemplate>${project.basedir}/src/main/resources/assembly/unixBinTemplate.sh</unixScriptTemplate>-->
                 </configuration>
             </plugin>
