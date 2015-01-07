@@ -45,8 +45,6 @@ public class AsciidocController {
 
             deferredResult.setResult("OK");
         });
-
-
         return deferredResult;
     }
 }

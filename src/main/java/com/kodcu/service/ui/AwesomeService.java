@@ -7,8 +7,6 @@ import javafx.scene.Node;
 import javafx.scene.control.Label;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import java.nio.file.Files;
 import java.nio.file.Path;
 
 /**

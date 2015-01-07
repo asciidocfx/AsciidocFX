@@ -1,14 +1,5 @@
 package com.kodcu.bean;
 
-import com.esotericsoftware.yamlbeans.YamlException;
-import com.esotericsoftware.yamlbeans.YamlReader;
-import com.esotericsoftware.yamlbeans.YamlWriter;
-
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,8 +14,7 @@ public class RecentFiles {
         this.files = files;
     }
 
-    public RecentFiles() {
-    }
+    public RecentFiles() {  }
 
     public List<String> getFiles() {
         return files;
