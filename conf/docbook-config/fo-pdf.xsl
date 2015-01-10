@@ -255,6 +255,8 @@
         </xsl:attribute>
     </xsl:attribute-set>
 
+    <!-- Text Decorations -->
+
     <!-- Underline and Strikethrough -->
 
     <xsl:template match="del">
@@ -269,17 +271,39 @@
         </fo:inline>
     </xsl:template>
 
-    <!-- Highlight Text -->
-
     <xsl:template match="emphasis">
+        <xsl:variable name="depth">
+            <xsl:call-template name="dot.count">
+                <xsl:with-param name="string">
+                    <xsl:number level="multiple"/>
+                </xsl:with-param>
+            </xsl:call-template>
+        </xsl:variable>
+
         <xsl:choose>
+            <xsl:when test="@role='bold' or @role='strong'">
+                <xsl:call-template name="inline.boldseq"/>
+            </xsl:when>
             <xsl:when test="@role='marked'">
-                <fo:inline background-color="#ff0">
-                   <xsl:call-template name="inline.charseq"/>
+                <fo:inline background-color="#ff0" font-style="normal">
+                    <xsl:apply-templates/>
                 </fo:inline>
             </xsl:when>
+            <xsl:otherwise>
+                <xsl:choose>
+                    <xsl:when test="$depth mod 2 = 1">
+                        <fo:inline font-style="normal">
+                            <xsl:apply-templates/>
+                        </fo:inline>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <xsl:call-template name="inline.italicseq"/>
+                    </xsl:otherwise>
+                </xsl:choose>
+            </xsl:otherwise>
         </xsl:choose>
     </xsl:template>
+
     <!--
       Page layout
     -->
