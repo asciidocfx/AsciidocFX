@@ -76,6 +76,7 @@ public class FopPdfService {
                 indikatorService.completeCycle();
 
                 Platform.runLater(()->{
+                    asciiDocController.getRecentFiles().remove(currentPath.resolve("book.pdf").toString());
                     asciiDocController.getRecentFiles().add(0, currentPath.resolve("book.pdf").toString());
                 });
 
