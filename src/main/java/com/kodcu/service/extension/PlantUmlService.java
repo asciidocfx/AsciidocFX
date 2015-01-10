@@ -16,7 +16,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Objects;
 
 import static java.nio.file.StandardOpenOption.CREATE;
@@ -94,9 +93,7 @@ public class PlantUmlService {
                     });
                 }
 
-
                 current.getCache().put(fileName, hashCode);
-
             }
 
         } catch (IOException e) {

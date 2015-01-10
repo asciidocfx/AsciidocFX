@@ -17,7 +17,6 @@ import javax.servlet.http.HttpServletRequest;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Objects;
 
 /**
  * Created by usta on 31.12.2014.
@@ -54,8 +53,6 @@ public class EpubController {
         }
 
         return new ResponseEntity<>(temp, HttpStatus.OK);
-
-
     }
 
 }

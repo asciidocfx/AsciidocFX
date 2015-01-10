@@ -46,7 +46,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.embedded.EmbeddedWebApplicationContext;
-import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
@@ -56,14 +55,11 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.net.URL;
-import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.CodeSource;
 import java.util.*;
-import java.util.concurrent.CompletableFuture;
-import java.util.stream.StreamSupport;
 
 import static java.nio.file.StandardOpenOption.*;
 
@@ -311,7 +307,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                 return;
 
             config.setKindlegenDir(kindlegenFile.toPath().getParent().toString());
-
         }
 
         threadService.runTaskLater((task) -> {
@@ -538,9 +533,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     }
 
     @FXML
-    public void closeApp(ActionEvent event) throws IOException {
-        yamlService.persist();
-    }
+    public void closeApp(ActionEvent event) throws IOException { yamlService.persist(); }
 
     @FXML
     public void openDoc(Event event) {

@@ -20,7 +20,6 @@ import java.util.regex.Pattern;
 
 import static java.nio.file.StandardOpenOption.CREATE;
 import static java.nio.file.StandardOpenOption.TRUNCATE_EXISTING;
-import static org.joox.JOOX.$;
 
 /**
  * Created by usta on 30.08.2014.

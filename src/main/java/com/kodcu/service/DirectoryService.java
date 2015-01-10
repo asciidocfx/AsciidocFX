@@ -16,7 +16,6 @@ import java.nio.file.Paths;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
@@ -50,9 +49,7 @@ public class DirectoryService {
 
         workingDirectory=Optional.ofNullable(file.toPath());
 
-        workingDirectory.ifPresent(path -> {
-            fileBrowser.browse(controller.getTreeView(), path);
-        });
+        workingDirectory.ifPresent(path -> fileBrowser.browse(controller.getTreeView(), path));
 
         return Objects.nonNull(file) ? file.toPath() : null;
     };
