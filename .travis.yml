@@ -37,11 +37,10 @@ deploy:
     repo: asciidocfx/AsciidocFX
 - provider: s3
   skip_cleanup: true
-  region: eu-west-1
   access_key_id: AKIAIHHVKYJLE6JUVEMA
   secret_access_key:
     secure: u3AfnEBb4o1boHzYsbPBlYqsxkKKWd4e02sabTLB7RRojgW1PpvGpvMCEZQ7EdziAfqJV2qZAI4ayYen36t2S0P9LMtt8NbnSO9RSF41Na+cGlsetbHgbejjK3QC5wM18j263gaxlM6uKD9wbO9VYaujYE6r66UUGdrQkNZh9xc=
-  bucket: asciidocfx
+  bucket: asciidoc-fx
   acl: public_read
   file:
     - /home/travis/build/asciidocfx/AsciidocFX/target/media/AsciidocFX_Mac.dmg
