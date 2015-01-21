@@ -128,7 +128,7 @@ function runScroller(content) {
         scrollToElement(".quoteblock > blockquote, .verseblock > .content", $(renderedSelection).find(".paragraph").text());
     }
     else if ($(renderedSelection).is(".paragraph")) {
-        scrollToElement(".paragraph, .quoteblock > blockquote", $(renderedSelection).text());
+        scrollToElement(".paragraph, .quoteblock > blockquote", $($(renderedSelection).get(0)).text());
     }
     else if ($(renderedSelection).is(".ulist")) {
         scrollToElement(".ulist:not(.checklist) > ul > li", $(renderedSelection).text());
