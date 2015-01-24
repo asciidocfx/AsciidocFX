@@ -63,6 +63,10 @@ function matchHeader(text){
     return text.match(/^\[.+\](\s)*$/m);
 }
 
+function matchImage(text){
+    return text.match(/^(image::)/);
+}
+
 sketch = {
     // contains the specified structures of asciidoctor declared by user in an asciidoc file.
     constructList: undefined,       
@@ -133,6 +137,9 @@ sketch = {
             }
             else if(matchHeader(text)){
                 headerRow = line;
+            }
+            else if(matchImage(text)){
+                titleRow = -1;
             }
         }
 

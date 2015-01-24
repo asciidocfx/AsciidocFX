@@ -935,4 +935,9 @@
             </xsl:choose>
         </xsl:attribute>
     </xsl:attribute-set>
+
+    <!-- Center all the images even if they do not have a title-->
+    <xsl:attribute-set name="informalfigure.properties">
+        <xsl:attribute name="text-align">center</xsl:attribute>
+    </xsl:attribute-set>
 </xsl:stylesheet>
