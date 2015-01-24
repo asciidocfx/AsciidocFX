@@ -2,9 +2,12 @@ package com.kodcu.service.convert;
 
 import com.icl.saxon.TransformerFactoryImpl;
 import com.kodcu.controller.ApplicationController;
+import com.kodcu.other.Current;
 import com.kodcu.other.IOHelper;
+import com.kodcu.service.DirectoryService;
+import com.kodcu.service.ThreadService;
 import com.kodcu.service.ui.IndikatorService;
-import javafx.application.Platform;
+import javafx.stage.FileChooser;
 import org.apache.commons.io.FileUtils;
 import org.joox.Match;
 import org.slf4j.Logger;
@@ -18,9 +21,11 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 import java.io.File;
+import java.io.StringReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.concurrent.CompletableFuture;
 
 import static java.nio.file.StandardOpenOption.TRUNCATE_EXISTING;
 import static java.nio.file.StandardOpenOption.WRITE;
@@ -38,66 +43,125 @@ public class Epub3Service {
     private ApplicationController asciiDocController;
 
     @Autowired
+    Current current;
+
+    @Autowired
+    private ThreadService threadService;
+
+    @Autowired
+    private DirectoryService directoryService;
+
+    @Autowired
     private IndikatorService indikatorService;
 
-    public void produceEpub3(Path currentPath, Path configPath) {
+    @Autowired
+    private DocBookService docBookService;
 
-        Path bookXml = currentPath.resolve("book.xml");
+    private Path epubPath;
 
-        if (Files.notExists(bookXml))
-            return;
+    public CompletableFuture<Path> produceEpub3() {
+        return produceEpub3(false);
+    }
 
-        indikatorService.startCycle();
+    public CompletableFuture<Path> produceEpub3Temp() {
+        return produceEpub3(false, true);
+    }
+
+    public CompletableFuture<Path> produceEpub3(boolean askPath) {
+        return produceEpub3(askPath, false);
+    }
+
+    private CompletableFuture<Path> produceEpub3(boolean askPath, boolean isTemp) {
+
+        CompletableFuture<Path> completableFuture = new CompletableFuture();
 
         try {
-            Path epubTemp = Files.createTempDirectory("epub");
 
-            TransformerFactory factory = new TransformerFactoryImpl();
-            File xslFile = configPath.resolve("docbook/epub3/chunk.xsl").toFile();
-            StreamSource xslSource = new StreamSource(xslFile);
-            Transformer transformer = factory.newTransformer(xslSource);
-            transformer.setParameter("base.dir", epubTemp.resolve("OEBPS").toString());
-            StreamSource xmlSource = new StreamSource(currentPath.resolve("book.xml").toFile());
-            transformer.transform(xmlSource, new StreamResult());
+            Path currentTabPath = current.currentPath().get();
+            Path currentTabPathDir = currentTabPath.getParent();
+            Path configPath = asciiDocController.getConfigPath();
+            String tabText = current.getCurrentTabText().replace("*", "").trim();
 
-            Path containerXml = epubTemp.resolve("META-INF/container.xml");
+            if (askPath) {
+                FileChooser fileChooser = directoryService.newFileChooser("Save Epub file");
+                fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("EPUB", "*.epub"));
+                epubPath = fileChooser.showSaveDialog(null).toPath();
+            } else if (isTemp) {
+                epubPath = IOHelper.createTempFile(".epub");
+            } else
+                epubPath = currentTabPathDir.resolve(tabText + ".epub");
 
-            Match root = $(containerXml.toFile());
-            root
-                .find("rootfile")
-                .attr("full-path", "OEBPS/package.opf");
 
-            StringBuilder builder = new StringBuilder();
-            builder.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+            threadService.runTaskLater(() -> {
 
-            Match wrapper = $("wrapper");
-            wrapper.append(root);
-            builder.append(wrapper.content());
+                try {
+                    if (!isTemp)
+                        indikatorService.startCycle();
 
-            root.write(containerXml.toFile());
+                    Path epubTemp = Files.createTempDirectory("epub");
 
-            IOHelper.writeToFile(containerXml, builder.toString(), TRUNCATE_EXISTING, WRITE);
+                    TransformerFactory factory = new TransformerFactoryImpl();
 
-            Path epubOut = epubTemp.resolve("book.epub");
-            FileUtils.copyDirectoryToDirectory(currentPath.resolve("images").toFile(), epubTemp.resolve("OEBPS").toFile());
-            FileUtils.copyDirectoryToDirectory(configPath.resolve("docbook/images/callouts").toFile(), epubTemp.resolve("OEBPS/images").toFile());
-            ZipUtil.pack(epubTemp.toFile(), epubOut.toFile());
-            ZipUtil.removeEntry(epubOut.toFile(),"book.epub");
-            Files.move(epubOut, currentPath.resolve("book.epub"), StandardCopyOption.REPLACE_EXISTING);
+                    File xslFile = configPath.resolve("docbook/epub3/chunk.xsl").toFile();
+                    StreamSource xslSource = new StreamSource(xslFile);
+                    Transformer transformer = factory.newTransformer(xslSource);
+                    transformer.setParameter("base.dir", epubTemp.resolve("OEBPS").toString());
 
-            indikatorService.completeCycle();
+                    String docbook = docBookService.generateDocbook();
 
-            Platform.runLater(() -> {
-                asciiDocController.getRecentFiles().remove(currentPath.resolve("book.epub").toString());
-                asciiDocController.getRecentFiles().add(0,currentPath.resolve("book.epub").toString());
+                    try (StringReader reader = new StringReader(docbook);) {
+                        StreamSource xmlSource = new StreamSource(reader);
+                        transformer.transform(xmlSource, new StreamResult());
+                    }
+
+                    Path containerXml = epubTemp.resolve("META-INF/container.xml");
+
+                    Match root = $(containerXml.toFile());
+                    root
+                            .find("rootfile")
+                            .attr("full-path", "OEBPS/package.opf");
+
+                    StringBuilder builder = new StringBuilder();
+                    builder.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+
+                    Match wrapper = $("wrapper");
+                    wrapper.append(root);
+                    builder.append(wrapper.content());
+
+                    root.write(containerXml.toFile());
+
+                    IOHelper.writeToFile(containerXml, builder.toString(), TRUNCATE_EXISTING, WRITE);
+
+                    Path epubOut = epubTemp.resolve("book.epub");
+                    FileUtils.copyDirectoryToDirectory(currentTabPathDir.resolve("images").toFile(), epubTemp.resolve("OEBPS").toFile());
+                    FileUtils.copyDirectoryToDirectory(configPath.resolve("docbook/images/callouts").toFile(), epubTemp.resolve("OEBPS/images").toFile());
+                    ZipUtil.pack(epubTemp.toFile(), epubOut.toFile());
+                    ZipUtil.removeEntry(epubOut.toFile(), "book.epub");
+
+                    IOHelper.move(epubOut, epubPath, StandardCopyOption.REPLACE_EXISTING);
+
+                    if (!isTemp) {
+                        indikatorService.completeCycle();
+                        indikatorService.hideIndikator();
+                        threadService.runActionLater(() -> {
+                            asciiDocController.getRecentFiles().remove(epubPath.toString());
+                            asciiDocController.getRecentFiles().add(0, epubPath.toString());
+                        });
+                    }
+                } catch (Exception e) {
+                    logger.error(e.getMessage(), e);
+                } finally {
+                    completableFuture.complete(epubPath);
+                }
+
             });
 
 
         } catch (Exception e) {
-            logger.error(e.getMessage(),e);
-        }
-        finally {
+            logger.error(e.getMessage(), e);
             indikatorService.hideIndikator();
         }
+
+        return completableFuture;
     }
 }

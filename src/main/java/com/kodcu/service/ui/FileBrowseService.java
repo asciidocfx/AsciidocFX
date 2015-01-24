@@ -52,13 +52,13 @@ public class FileBrowseService {
         if (selectedIndex != -1)
             lastSelectedItem = selectedIndex;
 
-        threadService.runActionLater(run -> {
+        threadService.runActionLater(() -> {
 
             rootItem = new TreeItem<>(new Item(browserPath, String.format("Workdir (%s)", browserPath)), awesomeService.getIcon(browserPath));
             rootItem.setExpanded(true);
             treeView.setRoot(rootItem);
 
-            threadService.runTaskLater(task -> {
+            threadService.runTaskLater(() -> {
                 this.addPathToTree(browserPath, path -> {
                     threadService.runActionLater(r -> addToTreeView(path, treeView.getRoot()));
                 });

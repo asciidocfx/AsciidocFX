@@ -1,11 +1,11 @@
 package com.kodcu.service.convert;
 
 import com.kodcu.controller.ApplicationController;
+import com.kodcu.other.Current;
 import com.kodcu.other.IOHelper;
-import com.kodcu.service.ui.IndikatorService;
 import com.kodcu.service.PathResolverService;
+import com.kodcu.service.ui.IndikatorService;
 import javafx.application.Platform;
-import javafx.scene.web.WebEngine;
 import org.joox.Match;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,16 +14,16 @@ import org.springframework.stereotype.Component;
 import org.xml.sax.InputSource;
 
 import java.io.StringReader;
-import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static java.nio.file.StandardOpenOption.CREATE;
 import static java.nio.file.StandardOpenOption.TRUNCATE_EXISTING;
 import static org.joox.JOOX.$;
+import static org.joox.JOOX.builder;
 
 /**
  * Created by usta on 19.07.2014.
@@ -45,22 +45,23 @@ public class DocBookService {
     private ApplicationController asciiDocController;
 
     @Autowired
-    private IndikatorService indikatorService;
+    private Current current;
+//
+//    @Autowired
+//    private IndikatorService indikatorService;
 
-    public void generateDocbook(WebEngine webEngine, Path currentPath, boolean showIndicator) {
+    public String generateDocbook() {
+
+        StringBuilder builder = new StringBuilder();
+
         try {
 
-            Path bookAsc = bookPathResolver.resolve(currentPath);
 
-            if (Objects.isNull(bookAsc)) {
-                IOHelper.writeToFile(currentPath.resolve("book.xml"), "There is no book.asc file..", CREATE, TRUNCATE_EXISTING);
-                return;
-            }
+            Path currentTabPath = current.currentPath().get();
+            Path currentTabPathDir = currentTabPath.getParent();
+            String tabText = current.getCurrentTabText().replace("*", "").trim();
 
-            if (showIndicator)
-                indikatorService.startCycle();
-
-            List<String> bookAscLines = Files.readAllLines(bookAsc);
+            List<String> bookAscLines = Arrays.asList(current.currentEditorValue().split("\\r?\\n"));
             for (int i = 0; i < bookAscLines.size(); i++) {
                 String bookAscLine = bookAscLines.get(i);
 
@@ -68,8 +69,8 @@ public class DocBookService {
 
                 if (matcher.find()) {
                     String chapterPath = matcher.group();
-                    String chapterContent = IOHelper.readFile(currentPath.resolve(chapterPath));
-                    bookAscLines.set(i,"\n\n"+chapterContent+"\n\n");
+                    String chapterContent = IOHelper.readFile(currentTabPathDir.resolve(chapterPath));
+                    bookAscLines.set(i, "\n\n" + chapterContent + "\n\n");
                 }
 
             }
@@ -80,7 +81,7 @@ public class DocBookService {
                 allAscContent.append("\n");
             });
 
-            String docBookHeaderContent = docConverter.convertDocbook(webEngine, allAscContent.toString(), true);
+            String docBookHeaderContent = docConverter.convertDocbook(allAscContent.toString(), true);
 
             StringReader bookReader = new StringReader(docBookHeaderContent);
             Match rootDocument = $(new InputSource(bookReader));
@@ -97,7 +98,7 @@ public class DocBookService {
                     $(elem).attr("arearefs", cos[cos.length - 1]);
             });
 
-            StringBuilder builder = new StringBuilder();
+
             builder.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
             builder.append("\n");
             builder.append("<?asciidoc-toc?>");
@@ -106,30 +107,21 @@ public class DocBookService {
             builder.append("\n");
             builder.append(rootDocument.content());
 
-            IOHelper.writeToFile(currentPath.resolve("book.xml"), builder.toString(), CREATE, TRUNCATE_EXISTING);
-
-            if (showIndicator) {
-                indikatorService.completeCycle();
-
-                Platform.runLater(()->{
-                    asciiDocController.getRecentFiles().remove(currentPath.resolve("book.xml").toString());
-                    asciiDocController.getRecentFiles().add(0,currentPath.resolve("book.xml").toString());
-                });
-
-            }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
         } finally {
-            indikatorService.hideIndikator();
-
+//            indikatorService.hideIndikator();
         }
+
+        return builder.toString();
     }
 
-    public String generateDocbookArticle(WebEngine webEngine, Path currentPath) {
+    public String generateDocbookArticle() {
+
         StringBuilder builder = new StringBuilder();
         try {
 
-            String docbook = docConverter.convertDocbookArticle(webEngine);
+            String docbook = docConverter.convertDocbookArticle();
 
             StringReader bookReader = new StringReader(docbook);
             Match rootDocument = $(new InputSource(bookReader));
@@ -159,7 +151,7 @@ public class DocBookService {
             builder.append(rootDocument.content());
 
         } catch (Exception e) {
-            logger.error(e.getMessage(),e);
+            logger.error(e.getMessage(), e);
         }
 
 

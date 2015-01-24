@@ -1,6 +1,3 @@
-body{
-    margin-top: 10px;
-}
 .external-browser {
     float: right;
     color: #BDB76B;
@@ -83,19 +80,9 @@ pre.highlight > code {
     max-width: 80%;
 }
 
-.utility {
-    background-color: white;
-    position: fixed;
-    height: 30px;
-    width: 100%;
-    z-index: 1;
-    top: 0;
-}
-
 .columns > a {
     padding-top: 10px;
 }
 
-#placeholder{
-    margin-top: 30px;
-}
+#placeholder h1:first-child,
+#placeholder h1:first-child

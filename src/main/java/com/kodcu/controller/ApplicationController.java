@@ -5,6 +5,8 @@ import com.esotericsoftware.yamlbeans.YamlReader;
 import com.kodcu.bean.Config;
 import com.kodcu.bean.RecentFiles;
 import com.kodcu.bean.ShortCuts;
+import com.kodcu.component.MenuBuilt;
+import com.kodcu.component.MenuItemBuilt;
 import com.kodcu.other.Current;
 import com.kodcu.other.IOHelper;
 import com.kodcu.other.Item;
@@ -61,13 +63,13 @@ import java.nio.file.Paths;
 import java.security.CodeSource;
 import java.util.*;
 
-import static java.nio.file.StandardOpenOption.*;
-
 
 @Controller
 public class ApplicationController extends TextWebSocketHandler implements Initializable {
 
     private Logger logger = LoggerFactory.getLogger(ApplicationController.class);
+
+    private Path userHome = Paths.get(System.getProperty("user.home"));
 
     public TabPane tabPane;
     public WebView previewView;
@@ -76,17 +78,27 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     public TreeView<Item> treeView;
     public Label splitHideButton;
     public Label workingDirButton;
+    public Label goUpLabel;
+    public Label goHomeLabel;
+    public Label refreshLabel;
     public AnchorPane rootAnchor;
     public MenuBar recentFilesBar;
     public ProgressBar indikator;
     public ListView<String> recentListView;
     public MenuItem openFileTreeItem;
+    public MenuItem openFolderTreeItem;
     public MenuItem openFileListItem;
+    public MenuItem openFolderListItem;
     public MenuItem copyPathTreeItem;
     public MenuItem copyPathListItem;
     public MenuItem copyTreeItem;
     public MenuItem copyListItem;
+    public MenuButton leftButton;
     private WebView mathjaxView;
+    public Label htmlPro;
+    public Label pdfPro;
+    public Label ebookPro;
+    public Label browserPro;
 
     @Autowired
     private TablePopupService tablePopupController;
@@ -122,10 +134,13 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     private RenderService renderService;
 
     @Autowired
-    private DocBookService docBookController;
+    private DocBookService docBookService;
 
     @Autowired
     private Html5BookService htmlBookService;
+
+    @Autowired
+    private Html5ArticleService htmlArticleService;
 
     @Autowired
     private FopPdfService fopServiceRunner;
@@ -197,7 +212,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         if (Objects.isNull(nev))
             return;
 
-        threadService.runActionLater(run -> {
+        threadService.runActionLater(() -> {
             previewEngine.executeScript(String.format("refreshUI('%s')", IOHelper.normalize(nev)));
         });
 
@@ -212,8 +227,8 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     @FXML
     public void createTable(Event event) {
-        threadService.runTaskLater(task -> {
-            threadService.runActionLater(run -> {
+        threadService.runTaskLater(() -> {
+            threadService.runActionLater(() -> {
                 tableStage.show();
             });
         });
@@ -234,12 +249,21 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         splitPane.setDividerPositions(0.1610294117647059, 0.5823529411764706);
     }
 
-    @FXML
-    private void generatePdf(ActionEvent event) {
-        Path currentPath = directoryService.workingDirectory();
-        threadService.runTaskLater((task) -> {
-            docBookController.generateDocbook(previewEngine, currentPath, false);
-            fopServiceRunner.generateBook(currentPath, configPath);
+    private void generatePdf() {
+        this.generatePdf(false);
+    }
+
+    private void generatePdf(boolean askPath) {
+
+        if (!current.currentPath().isPresent())
+            saveDoc();
+
+        threadService.runTaskLater(() -> {
+            if (current.currentIsBook()) {
+                fopServiceRunner.generateBook(askPath);
+            } else {
+                fopServiceRunner.generateArticle(askPath);
+            }
         });
     }
 
@@ -248,7 +272,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
         DirectoryChooser directoryChooser = directoryService.newDirectoryChooser("Select a New Directory for sample book");
         File file = directoryChooser.showDialog(null);
-        threadService.runTaskLater((task) -> {
+        threadService.runTaskLater(() -> {
             sampleBookService.produceSampleBook(configPath, file.toPath());
             directoryService.setWorkingDirectory(Optional.of(file.toPath()));
             fileBrowser.browse(treeView, file.toPath());
@@ -262,21 +286,19 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     @FXML
     private void convertDocbook(ActionEvent event) {
 
-        threadService.runTaskLater(task -> {
+        threadService.runTaskLater(() -> {
             Path currentPath = directoryService.workingDirectory();
-            docBookController.generateDocbook(previewEngine, currentPath, true);
+            String s = docBookService.generateDocbook();
         });
 
     }
 
-    @FXML
-    private void convertEpub(ActionEvent event) throws Exception {
+    private void convertEpub() {
+        convertEpub(false);
+    }
 
-        threadService.runTaskLater((task) -> {
-            Path currentPath = directoryService.workingDirectory();
-            docBookController.generateDocbook(previewEngine, currentPath, false);
-            epub3Service.produceEpub3(currentPath, configPath);
-        });
+    private void convertEpub(boolean askPath) {
+        epub3Service.produceEpub3(askPath);
     }
 
     public String appendFormula(String fileName, String formula) {
@@ -284,15 +306,16 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     }
 
     public void svgToPng(String fileName, String svg, String formula, float width, float height) {
-       threadService.runTaskLater(task->{
-           mathJaxService.svgToPng(fileName, svg, formula, width, height);
-       });
+        threadService.runTaskLater(() -> {
+            mathJaxService.svgToPng(fileName, svg, formula, width, height);
+        });
     }
 
-    @FXML
-    private void convertMobi(ActionEvent event) throws Exception {
+    private void convertMobi()  {
+        convertMobi(false);
+    }
 
-        Path currentPath = directoryService.workingDirectory();
+    private void convertMobi(boolean askPath)  {
 
         if (Objects.nonNull(config.getKindlegenDir())) {
             if (!Files.exists(Paths.get(config.getKindlegenDir()))) {
@@ -309,30 +332,122 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             config.setKindlegenDir(kindlegenFile.toPath().getParent().toString());
         }
 
-        threadService.runTaskLater((task) -> {
-            epub3Service.produceEpub3(currentPath, configPath);
-            kindleMobiService.produceMobi(currentPath, config.getKindlegenDir());
+        threadService.runTaskLater(() -> {
+            kindleMobiService.produceMobi(askPath);
         });
 
     }
 
-    @FXML
-    private void generateHtml(ActionEvent event) {
-        threadService.runTaskLater(run -> {
-            Path currentPath = directoryService.workingDirectory();
-            htmlBookService.produceXhtml5(previewEngine, currentPath, configPath);
+    private void generateHtml() {
+        this.generateHtml(false);
+    }
+
+    private void generateHtml(boolean askPath) {
+
+        if (!current.currentPath().isPresent())
+            this.saveDoc();
+
+        threadService.runTaskLater(() -> {
+            if (current.currentIsBook())
+                htmlBookService.convertHtmlBook(askPath);
+            else
+                htmlArticleService.convertHtmlArticle(askPath);
         });
     }
 
     public void createFileTree(String tree, String type, String fileName, String width, String height) {
 
-        threadService.runTaskLater(task -> {
+        threadService.runTaskLater(() -> {
             treeService.createFileTree(tree, type, fileName, width, height);
         });
     }
 
+    @FXML
+    public void goUp() {
+        directoryService.goUp();
+    }
+
+    @FXML
+    public void refreshWorkingDir() {
+        directoryService.refreshWorkingDir();
+    }
+
+    @FXML
+    public void goHome() {
+        directoryService.changeWorkigDir(userHome);
+    }
+
+
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+
+        AwesomeDude.setIcon(htmlPro, AwesomeIcon.HTML5);
+        AwesomeDude.setIcon(pdfPro, AwesomeIcon.FILE_PDF_ALT);
+        AwesomeDude.setIcon(ebookPro, AwesomeIcon.BOOK);
+        AwesomeDude.setIcon(browserPro, AwesomeIcon.FLASH);
+
+        leftButton.setGraphic(AwesomeDude.createIconLabel(AwesomeIcon.COG,"14.0"));
+
+        ContextMenu htmlProMenu = new ContextMenu();
+        htmlPro.setContextMenu(htmlProMenu);
+        htmlPro.setOnMouseClicked(event -> {
+            htmlProMenu.show(htmlPro, event.getScreenX(), 50);
+        });
+        htmlProMenu.getItems().add(MenuItemBuilt.item("Save").onclick(event -> {
+            this.generateHtml();
+        }));
+        htmlProMenu.getItems().add(MenuItemBuilt.item("Save as").onclick(event -> {
+            this.generateHtml(true);
+        }));
+        htmlProMenu.getItems().add(MenuItemBuilt.item("Copy source").onclick(event -> {
+            this.cutCopy(lastRendered.getValue());
+        }));
+
+
+        ContextMenu pdfProMenu = new ContextMenu();
+        pdfProMenu.getItems().add(MenuItemBuilt.item("Save").onclick(event -> {
+            this.generatePdf();
+        }));
+        pdfProMenu.getItems().add(MenuItemBuilt.item("Save as").onclick(event -> {
+            this.generatePdf(true);
+        }));
+        pdfPro.setContextMenu(pdfProMenu);
+
+        pdfPro.setOnMouseClicked(event -> {
+            pdfProMenu.show(pdfPro, event.getScreenX(), 50);
+        });
+
+        ContextMenu ebookProMenu = new ContextMenu();
+        ebookProMenu.getItems().add(MenuBuilt.name("Mobi")
+                .add(MenuItemBuilt.item("Save").onclick(event -> {
+                    this.convertMobi();
+                }))
+                .add(MenuItemBuilt.item("Save as").onclick(event -> {
+                    this.convertMobi(true);
+                })).build());
+
+        ebookProMenu.getItems().add(MenuBuilt.name("Epub")
+                .add(MenuItemBuilt.item("Save").onclick(event -> {
+                    this.convertEpub();
+                }))
+                .add(MenuItemBuilt.item("Save as").onclick(event -> {
+                    this.convertEpub(true);
+                })).build());
+
+        ebookPro.setOnMouseClicked(event -> {
+            ebookProMenu.show(ebookPro, event.getScreenX(), 50);
+        });
+
+        ebookPro.setContextMenu(ebookProMenu);
+
+//        sourcePro.setOnAction(event -> {
+////            this.cutCopy(lastRendered.getValue());
+//        });
+
+        browserPro.setOnMouseClicked(event -> {
+            if (event.getButton() == MouseButton.PRIMARY)
+                this.externalBrowse();
+        });
 
         port = server.getEmbeddedServletContainer().getPort();
 
@@ -398,13 +513,16 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             directoryService.setWorkingDirectory(optional);
         }
 
-        Path home = Paths.get(System.getProperty("user.home"));
-        Path workDir = directoryService.getWorkingDirectory().orElse(home);
+
+        Path workDir = directoryService.getWorkingDirectory().orElse(userHome);
         fileBrowser.browse(treeView, workDir);
 
         //
         AwesomeDude.setIcon(workingDirButton, AwesomeIcon.FOLDER_ALT, "14.0");
         AwesomeDude.setIcon(splitHideButton, AwesomeIcon.CHEVRON_LEFT, "14.0");
+        AwesomeDude.setIcon(refreshLabel, AwesomeIcon.REFRESH, "14.0");
+        AwesomeDude.setIcon(goUpLabel, AwesomeIcon.LEVEL_UP, "14.0");
+        AwesomeDude.setIcon(goHomeLabel, AwesomeIcon.HOME, "14.0");
 
         tabPane.getTabs().addListener((ListChangeListener<Tab>) c -> {
             if (tabPane.getTabs().isEmpty())
@@ -414,6 +532,20 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         openFileTreeItem.setOnAction(event -> {
             Path path = tabService.getSelectedTabPath();
             directoryService.getOpenFileConsumer().accept(path);
+        });
+
+        openFolderTreeItem.setOnAction(event -> {
+            Path path = tabService.getSelectedTabPath();
+            path = Files.isDirectory(path) ? path : path.getParent();
+            if (Objects.nonNull(path))
+                getHostServices().showDocument(path.toUri().toASCIIString());
+        });
+
+        openFolderListItem.setOnAction(event -> {
+            Path path = Paths.get(recentListView.getSelectionModel().getSelectedItem());
+            path = Files.isDirectory(path) ? path : path.getParent();
+            if (Objects.nonNull(path))
+                getHostServices().showDocument(path.toUri().toASCIIString());
         });
 
         openFileListItem.setOnAction(this::openRecentListFile);
@@ -445,7 +577,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             if (event.getButton() == MouseButton.PRIMARY)
                 if (Files.isDirectory(selectedPath)) {
                     if (selectedItem.getChildren().size() == 0) {
-                        fileBrowser.addPathToTree(selectedPath,path -> {
+                        fileBrowser.addPathToTree(selectedPath, path -> {
                             selectedItem.getChildren().add(new TreeItem<>(new Item(path), awesomeService.getIcon(path)));
                         });
                     }
@@ -533,7 +665,9 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     }
 
     @FXML
-    public void closeApp(ActionEvent event) throws IOException { yamlService.persist(); }
+    public void closeApp(ActionEvent event) throws IOException {
+        yamlService.persist();
+    }
 
     @FXML
     public void openDoc(Event event) {
@@ -567,7 +701,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     public void plantUml(String uml, String type, String fileName) throws IOException {
 
-        threadService.runTaskLater(task->{
+        threadService.runTaskLater(() -> {
             plantUmlService.plantUml(uml, type, fileName);
         });
     }
@@ -581,39 +715,10 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     public void textListener(String text) {
 
-        threadService.runTaskLater(task -> {
-            String rendered = renderService.convertBasicHtml(previewEngine, text);
+        threadService.runTaskLater(() -> {
+            String rendered = renderService.convertBasicHtml(text);
             if (Objects.nonNull(rendered))
                 lastRendered.setValue(rendered);
-        });
-
-    }
-
-    public void htmlOnePage() {
-
-        if (bookNames.contains(current.getCurrentTabText())) {
-            generateHtml(null);
-            return;
-        }
-
-        if (!current.currentPath().isPresent())
-            saveDoc();
-
-        threadService.runTaskLater(task -> {
-            indikatorService.startCycle();
-
-            String html = renderService.convertHtmlArticle(previewEngine);
-            String tabText = current.getCurrentTabText().replace("*", "").trim();
-
-            Path currentPath = directoryService.currentPath();
-            Path path = currentPath.getParent().resolve(tabText.concat(".html"));
-            IOHelper.writeToFile(path, html, CREATE, TRUNCATE_EXISTING, WRITE);
-            indikatorService.hideIndikator();
-            threadService.runActionLater(run -> {
-                recentFiles.remove(path.toString());
-                recentFiles.add(0, path.toString());
-            });
-
         });
 
     }
@@ -622,24 +727,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         ClipboardContent clipboardContent = new ClipboardContent();
         clipboardContent.putString(data);
         clipboard.setContent(clipboardContent);
-    }
-
-    public void pdfOnePage() {
-
-        if (bookNames.contains(current.getCurrentTabText())) {
-            generatePdf(null);
-            return;
-        }
-
-        if (!current.currentPath().isPresent())
-            saveDoc();
-
-        threadService.runTaskLater(task -> {
-            Path currentPath = directoryService.currentPath();
-            String docbook = docBookController.generateDocbookArticle(previewEngine, currentPath);
-            fopServiceRunner.generateArticle(currentPath.getParent(), configPath, docbook);
-        });
-
     }
 
     public void copyFile(Path path) {

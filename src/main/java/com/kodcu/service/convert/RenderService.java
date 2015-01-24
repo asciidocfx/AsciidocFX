@@ -4,9 +4,10 @@ import com.kodcu.controller.ApplicationController;
 import com.kodcu.other.Current;
 import com.kodcu.other.IOHelper;
 import com.kodcu.service.ThreadService;
-import javafx.scene.web.WebEngine;
+import javafx.application.Platform;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -24,13 +25,16 @@ public class RenderService {
     @Autowired
     Current current;
 
-    public String convertBasicHtml(WebEngine webEngine, String text) {
+    public String convertBasicHtml(String text) {
+
+        if (Platform.isFxApplicationThread())
+            return (String) controller.getPreviewView().getEngine().executeScript(String.format("convertBasicHtml('%s')", IOHelper.normalize(text)));
 
         CompletableFuture<String> completableFuture = new CompletableFuture();
 
         completableFuture.runAsync(() -> {
-            threadService.runActionLater(run -> {
-                String rendered = (String) webEngine.executeScript(String.format("convertBasicHtml('%s')", IOHelper.normalize(text)));
+            threadService.runActionLater(() -> {
+                String rendered = (String) controller.getPreviewView().getEngine().executeScript(String.format("convertBasicHtml('%s')", IOHelper.normalize(text)));
                 completableFuture.complete(rendered);
             });
         });
@@ -39,14 +43,19 @@ public class RenderService {
 
     }
 
-    public String convertHtmlArticle(WebEngine webEngine) {
+    public String convertHtmlArticle() {
+
+        if (Platform.isFxApplicationThread()) {
+            String text = current.currentEditorValue();
+            return (String) controller.getPreviewView().getEngine().executeScript(String.format("convertHtmlArticle('%s')", IOHelper.normalize(text)));
+        }
 
         CompletableFuture<String> completableFuture = new CompletableFuture();
 
         completableFuture.runAsync(() -> {
-            threadService.runActionLater(run -> {
+            threadService.runActionLater(() -> {
                 String text = current.currentEditorValue();
-                String rendered = (String) webEngine.executeScript(String.format("convertHtmlArticle('%s')", IOHelper.normalize(text)));
+                String rendered = (String) controller.getPreviewView().getEngine().executeScript(String.format("convertHtmlArticle('%s')", IOHelper.normalize(text)));
                 completableFuture.complete(rendered);
             });
         });
@@ -54,13 +63,16 @@ public class RenderService {
         return completableFuture.join();
     }
 
-    public String convertHtmlBook(WebEngine webEngine, String text) {
+    public String convertHtmlBook(String text) {
+
+        if (Platform.isFxApplicationThread())
+            return (String) controller.getPreviewView().getEngine().executeScript(String.format("convertHtmlBook('%s')", IOHelper.normalize(text)));
 
         CompletableFuture<String> completableFuture = new CompletableFuture();
 
         completableFuture.runAsync(() -> {
-            threadService.runActionLater(run -> {
-                String rendered = (String) webEngine.executeScript(String.format("convertHtmlBook('%s')", IOHelper.normalize(text)));
+            threadService.runActionLater(() -> {
+                String rendered = (String) controller.getPreviewView().getEngine().executeScript(String.format("convertHtmlBook('%s')", IOHelper.normalize(text)));
                 completableFuture.complete(rendered);
             });
         });
@@ -68,13 +80,16 @@ public class RenderService {
         return completableFuture.join();
     }
 
-    public String convertDocbook(WebEngine webEngine, String text, boolean includeHeader) {
+    public String convertDocbook(String text, boolean includeHeader) {
+
+        if (Platform.isFxApplicationThread())
+            return (String) controller.getPreviewView().getEngine().executeScript(String.format("convertDocbook('%s',%b)", IOHelper.normalize(text), includeHeader));
 
         CompletableFuture<String> completableFuture = new CompletableFuture();
 
         completableFuture.runAsync(() -> {
-            threadService.runActionLater(run -> {
-                String rendered = (String) webEngine.executeScript(String.format("convertDocbook('%s',%b)", IOHelper.normalize(text), includeHeader));
+            threadService.runActionLater(() -> {
+                String rendered = (String) controller.getPreviewView().getEngine().executeScript(String.format("convertDocbook('%s',%b)", IOHelper.normalize(text), includeHeader));
                 completableFuture.complete(rendered);
             });
         });
@@ -83,14 +98,19 @@ public class RenderService {
 
     }
 
-    public String convertDocbookArticle(WebEngine webEngine) {
+    public String convertDocbookArticle() {
+
+        if (Platform.isFxApplicationThread()) {
+            String text = current.currentEditorValue();
+            return (String) controller.getPreviewView().getEngine().executeScript(String.format("convertDocbookArticle('%s')", IOHelper.normalize(text)));
+        }
 
         CompletableFuture<String> completableFuture = new CompletableFuture();
 
         completableFuture.runAsync(() -> {
-            threadService.runActionLater(run -> {
+            threadService.runActionLater(() -> {
                 String text = current.currentEditorValue();
-                String rendered = (String) webEngine.executeScript(String.format("convertDocbookArticle('%s')", IOHelper.normalize(text)));
+                String rendered = (String) controller.getPreviewView().getEngine().executeScript(String.format("convertDocbookArticle('%s')", IOHelper.normalize(text)));
                 completableFuture.complete(rendered);
             });
         });

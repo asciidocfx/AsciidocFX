@@ -175,7 +175,7 @@ public class TreeService {
                         logger.debug(e.getMessage(), e);
                     }
 
-                    threadService.runActionLater(run->{
+                    threadService.runActionLater(()->{
                         controller.getRootAnchor().getChildren().add(fileView);
                         WritableImage writableImage = fileView.snapshot(new SnapshotParameters(), null);
 

@@ -33,19 +33,24 @@
                             <Label fx:id="workingDirButton" minWidth="-Infinity" mnemonicParsing="false" text="" />
                           </graphic>
                         </Button>
-                        <ProgressBar fx:id="indikator" maxWidth="1.7976931348623157E308" progress="-1.0" visible="false" HBox.hgrow="ALWAYS" />
-                        <MenuButton minWidth="62.0" mnemonicParsing="false" text="Book" HBox.hgrow="NEVER">
+                        <Button id="goUp" mnemonicParsing="false" onAction="#goUp" text="">
+                          <graphic>
+                            <Label fx:id="goUpLabel" text="" />
+                          </graphic>
+                        </Button>
+                        <Button mnemonicParsing="false" onAction="#refreshWorkingDir" text="">
+                          <graphic>
+                            <Label fx:id="refreshLabel" text="" />
+                          </graphic>
+                        </Button>
+                        <Button mnemonicParsing="false" onAction="#goHome" text="">
+                          <graphic>
+                            <Label fx:id="goHomeLabel" text="" />
+                          </graphic>
+                        </Button>
+                        <MenuButton fx:id="leftButton" minWidth="-1.0" mnemonicParsing="false" text="" HBox.hgrow="NEVER">
                           <items>
                             <MenuItem mnemonicParsing="false" onAction="#generateSampleBook" text="Sample Book" />
-                            <MenuItem mnemonicParsing="false" onAction="#generatePdf" text="PDF Book" />
-                            <MenuItem mnemonicParsing="false" onAction="#generateHtml" text="HTML Book" />
-                            <Menu mnemonicParsing="false" text="Ebook">
-                              <items>
-                                <MenuItem mnemonicParsing="false" onAction="#convertEpub" text="Epub Book" />
-                                <MenuItem mnemonicParsing="false" onAction="#convertMobi" text="Mobi Book" />
-                              </items>
-                            </Menu>
-                            <MenuItem mnemonicParsing="false" onAction="#convertDocbook" text="Docbook" />
                           </items>
                           <HBox.margin>
                             <Insets />
@@ -61,6 +66,7 @@
                         <ContextMenu>
                           <items>
                             <MenuItem mnemonicParsing="false" text="Open" fx:id="openFileTreeItem" />
+                            <MenuItem id="openFolderTreeItem" mnemonicParsing="false" text="Browse" fx:id="openFolderTreeItem" />
                             <MenuItem mnemonicParsing="false" text="Copy Path" fx:id="copyPathTreeItem" />
                             <MenuItem mnemonicParsing="false" text="Copy" fx:id="copyTreeItem" />
                           </items>
@@ -85,7 +91,8 @@
                         <ContextMenu>
                           <items>
                             <MenuItem mnemonicParsing="false" text="Open" fx:id="openFileListItem" />
-                            <MenuItem mnemonicParsing="false" text="CopyPath" fx:id="copyPathListItem" />
+                            <MenuItem mnemonicParsing="false" text="Browse" fx:id="openFolderListItem" />
+                            <MenuItem mnemonicParsing="false" text="Copy Path" fx:id="copyPathListItem" />
                             <MenuItem mnemonicParsing="false" text="Copy" fx:id="copyListItem" />
                           </items>
                         </ContextMenu>
@@ -99,12 +106,28 @@
         </SplitPane>
         <AnchorPane minHeight="0.0" minWidth="0.0">
           <children>
-            <TabPane fx:id="tabPane" opacity="1.0"  rotateGraphic="false" tabClosingPolicy="ALL_TABS" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+            <TabPane fx:id="tabPane" opacity="1.0" rotateGraphic="false" tabClosingPolicy="ALL_TABS" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
           </children>
         </AnchorPane>
-        <AnchorPane minHeight="0.0" minWidth="0.0"  style="">
+        <AnchorPane minHeight="0.0" minWidth="0.0" style="">
           <children>
-            <WebView fx:id="previewView"  AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+            <VBox prefHeight="725.0" prefWidth="529.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+              <children>
+                <HBox prefHeight="33.0" prefWidth="-1.0" spacing="15.0" styleClass="menu-hbox">
+                  <children>
+                    <Label fx:id="htmlPro" styleClass="html" text="HTML" />
+                    <Label fx:id="pdfPro" styleClass="pdf" text="PDF" />
+                    <Label fx:id="ebookPro" styleClass="ebook" text="Ebook" />
+                    <ProgressBar fx:id="indikator" maxWidth="1.7976931348623157E308" progress="-1.0" visible="false" HBox.hgrow="ALWAYS" />
+                    <Label fx:id="browserPro" styleClass="browser" text="Browser" textAlignment="LEFT" />
+                  </children>
+                  <padding>
+                    <Insets bottom="5.0" left="15.0" right="15.0" top="5.0" />
+                  </padding>
+                </HBox>
+                <WebView fx:id="previewView" prefHeight="725.0" prefWidth="529.0" />
+              </children>
+            </VBox>
           </children>
         </AnchorPane>
       </items>

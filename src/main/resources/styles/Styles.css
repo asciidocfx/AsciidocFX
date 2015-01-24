@@ -456,3 +456,47 @@
 .file-tree{
     -fx-border-color: #ccc !important;
 }
+
+.menu-hbox{
+    -fx-background-color: white;
+}
+
+.label.browser *, .label.browser{
+    -fx-cursor: hand;
+    -fx-font: 14px "Segoe UI";
+    -fx-font-weight: bold;
+    -fx-text-fill: rgba(205, 199, 120, 0.83);
+}
+.label.browser *:hover, .label.browser:hover{
+    -fx-text-fill: #BDB76B ;
+}
+
+.label.pdf *, .label.pdf{
+    -fx-cursor: hand;
+    -fx-font: 14px "Segoe UI";
+    -fx-font-weight: bold;
+    -fx-text-fill: rgba(255, 0, 0, 0.43);
+}
+.label.pdf *:hover, .label.pdf:hover{
+    -fx-text-fill: rgba(255, 0, 0, 0.68);
+}
+
+.label.html *, .label.html{
+    -fx-cursor: hand;
+    -fx-font: 14px "Segoe UI";
+    -fx-font-weight: bold;
+    -fx-text-fill: #d1d1d1;
+}
+.label.html *:hover, .label.html:hover{
+    -fx-text-fill: #b0b0b0;
+}
+
+.label.ebook *, .label.ebook{
+    -fx-cursor: hand;
+    -fx-font: 14px "Segoe UI";
+    -fx-font-weight: bold;
+    -fx-text-fill: rgba(160, 205, 219, 0.82);
+}
+.label.ebook *:hover, .label.ebook:hover{
+    -fx-text-fill: #87acba;
+}

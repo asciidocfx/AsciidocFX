@@ -11,10 +11,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.nio.charset.Charset;
-import java.nio.file.CopyOption;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
+import java.nio.file.*;
 import java.util.stream.Stream;
 
 /**
@@ -73,9 +70,19 @@ public class IOHelper {
 
     }
 
-    public static Path createTempFile(Path path, String prefix, String suffix) {
+    public static Path createTempFile(String suffix) {
         try {
-            return Files.createTempFile(path, prefix, suffix);
+            return Files.createTempFile("asciidoc-temp", suffix);
+        } catch (IOException e) {
+            logger.info(e.getMessage(), e);
+        }
+
+        return null;
+    }
+
+    public static Path createTempFile(Path path,String suffix) {
+        try {
+            return Files.createTempFile(path,"asciidoc-temp", suffix);
         } catch (IOException e) {
             logger.info(e.getMessage(), e);
         }
@@ -124,5 +131,13 @@ public class IOHelper {
             logger.info(e.getMessage(), e);
         }
         return new byte[]{};
+    }
+
+    public static void move(Path source, Path target, StandardCopyOption... option) {
+        try {
+            Files.move(source, target,option);
+        } catch (IOException e) {
+            logger.info(e.getMessage(), e);
+        }
     }
 }

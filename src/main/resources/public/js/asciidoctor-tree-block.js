@@ -26,7 +26,7 @@
 
                 type = "" + (attrs['$[]']("type"));
                 title = "" + (attrs['$[]']("title"));
-                filename = "" + (attrs['$[]']("filename"));
+                filename = "" + (attrs['$[]']("file"));
                 alt = "" + (attrs['$[]']("alt"));
                 caption = "" + (attrs['$[]']("caption"));
                 width = "" + (attrs['$[]']("width"));

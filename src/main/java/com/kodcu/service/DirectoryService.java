@@ -161,4 +161,20 @@ public class DirectoryService {
 
         }
     }
+
+    public void changeWorkigDir(Path path) {
+            controller.getConfig().setWorkingDirectory(path.toString());
+            this.setWorkingDirectory(Optional.of(path));
+            fileBrowser.browse(controller.getTreeView(), path);
+            this.setInitialDirectory(Optional.ofNullable(path.toFile()));
+
+    }
+
+    public void goUp() {
+        workingDirectory.map(Path::getParent).ifPresent(this::changeWorkigDir);
+    }
+
+    public void refreshWorkingDir(){
+        workingDirectory.ifPresent(this::changeWorkigDir);
+    }
 }

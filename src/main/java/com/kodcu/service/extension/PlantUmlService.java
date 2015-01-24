@@ -34,7 +34,7 @@ public class PlantUmlService {
     private Current current;
 
     @Autowired
-    private ApplicationController controller;
+    private ApplicationController controller ;
 
     @Autowired
     private ThreadService threadService;
@@ -77,7 +77,7 @@ public class PlantUmlService {
                 int hashCode = (fileName + type + uml).hashCode();
                 if (Objects.isNull(cacheHit) || hashCode != cacheHit) {
 
-                    threadService.runTaskLater(task -> {
+                    threadService.runTaskLater(() -> {
                         try {
                             String desc = reader.generateImage(os, new FileFormatOption(FileFormat.PNG));
 

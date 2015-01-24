@@ -94,43 +94,43 @@ public class PathResolverService {
         return mobiMatcher.matches(path);
     }
 
-    public Path resolve(Path currentPath) {
-
-        rootExists.clear();
-        rootList.forEach(p -> {
-            rootExists.put(p, false);
-        });
-
-        long bookFileCount = rootExists.keySet()
-                .stream()
-                .map(p -> currentPath.resolve(p))
-                .filter(p -> {
-                    String fileName = p.getFileName().toString();
-                    boolean exists = Files.exists(p);
-                    rootExists.put(fileName, exists);
-                    return exists;
-                })
-                .count();
-
-        if (bookFileCount != 1) {
-
-            FileChooser fileChooser = new FileChooser();
-            fileChooser.setTitle("Select book.* root file");
-            fileChooser.setInitialDirectory(currentPath.toFile());
-            File file = fileChooser.showOpenDialog(null);
-            if (Objects.isNull(file))
-                return null;
-            return file.toPath();
-        }
-
-        for (String path : rootList) {
-            Boolean exists = rootExists.get(path);
-            if (exists)
-                return currentPath.resolve(path);
-        }
-
-        return null;
-    }
+//    public Path resolve(Path currentPath) {
+//
+//        rootExists.clear();
+//        rootList.forEach(p -> {
+//            rootExists.put(p, false);
+//        });
+//
+//        long bookFileCount = rootExists.keySet()
+//                .stream()
+//                .map(p -> currentPath.resolve(p))
+//                .filter(p -> {
+//                    String fileName = p.getFileName().toString();
+//                    boolean exists = Files.exists(p);
+//                    rootExists.put(fileName, exists);
+//                    return exists;
+//                })
+//                .count();
+//
+//        if (bookFileCount != 1) {
+//
+//            FileChooser fileChooser = new FileChooser();
+//            fileChooser.setTitle("Select book.* root file");
+//            fileChooser.setInitialDirectory(currentPath.toFile());
+//            File file = fileChooser.showOpenDialog(null);
+//            if (Objects.isNull(file))
+//                return null;
+//            return file.toPath();
+//        }
+//
+//        for (String path : rootList) {
+//            Boolean exists = rootExists.get(path);
+//            if (exists)
+//                return currentPath.resolve(path);
+//        }
+//
+//        return null;
+//    }
 
     public boolean isPPT(Path path) {
         return pptMatcher.matches(path);

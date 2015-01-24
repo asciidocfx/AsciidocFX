@@ -69,9 +69,9 @@ public class TabService {
         WebEngine webEngine = webView.getEngine();
         webEngine.getLoadWorker().stateProperty().addListener((observableValue1, state, state2) -> {
             if (state2 == Worker.State.SUCCEEDED) {
-                threadService.runTaskLater(task ->{
+                threadService.runTaskLater(() -> {
                     String normalize = IOHelper.normalize(IOHelper.readFile(path));
-                    threadService.runActionLater(run->{
+                    threadService.runActionLater(()->{
                         webEngine.executeScript(String.format("setEditorValue('%s')",normalize));
                     });
                 });
@@ -202,7 +202,7 @@ public class TabService {
 
         menuItem7.setOnAction(event -> {
             current.currentPath().ifPresent(path -> {
-                controller.getHostServices().showDocument(path.getParent().toUri().toString());
+                controller.getHostServices().showDocument(path.getParent().toUri().toASCIIString());
             });
         });
 
@@ -277,8 +277,8 @@ public class TabService {
             closedPaths.add(Optional.ofNullable(tab.getPath()));
         }
 
-        threadService.runTaskLater(task -> {
-            threadService.runActionLater(run -> {
+        threadService.runTaskLater(() -> {
+            threadService.runActionLater(() -> {
                 tab.setOnClosed(null);
                 tab.setOnSelectionChanged(null);
                 tab.setPath(null);
