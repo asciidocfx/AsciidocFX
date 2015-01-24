@@ -40,7 +40,7 @@ public class PathOrderService {
 
 
         if (OSHelper.isMac() || OSHelper.isWindows())
-            return first.toString().compareToIgnoreCase(second.toString());
+            return first.getFileName().toString().compareToIgnoreCase(second.getFileName().toString());
 
         return first.compareTo(second);
     }
