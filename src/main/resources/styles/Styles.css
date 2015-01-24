@@ -510,3 +510,7 @@
 .label.docbook *:hover, .label.docbook:hover{
     -fx-text-fill: rgba(90, 180, 106, 0.82);
 }
+
+.preview-box{
+    -fx-background-color: transparent;
+}

@@ -127,7 +127,7 @@
         </AnchorPane>
         <AnchorPane minHeight="0.0" minWidth="0.0" style="">
           <children>
-            <VBox prefHeight="725.0" prefWidth="529.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <VBox styleClass="preview-box" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
               <children>
                 <HBox prefHeight="33.0" prefWidth="-1.0" spacing="15.0" styleClass="menu-hbox, convert-box">
                   <children>
@@ -142,7 +142,7 @@
                     <Insets bottom="5.0" left="15.0" right="15.0" top="5.0" />
                   </padding>
                 </HBox>
-                <WebView fx:id="previewView" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0"  />
+                <WebView fx:id="previewView" style="" styleClass="previewView" VBox.vgrow="ALWAYS" />
               </children>
             </VBox>
           </children>
