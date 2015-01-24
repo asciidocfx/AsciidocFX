@@ -142,7 +142,7 @@
                     <Insets bottom="5.0" left="15.0" right="15.0" top="5.0" />
                   </padding>
                 </HBox>
-                <WebView fx:id="previewView"  />
+                <WebView fx:id="previewView" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0"  />
               </children>
             </VBox>
           </children>
