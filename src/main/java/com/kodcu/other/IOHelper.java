@@ -53,7 +53,7 @@ public class IOHelper {
 
     public static String readFile(Path path) {
         String content = "";
-        try(InputStream is = Files.newInputStream(path, StandardOpenOption.READ)) {
+        try (InputStream is = Files.newInputStream(path, StandardOpenOption.READ)) {
             content = IOUtils.toString(is, "UTF-8");
         } catch (IOException e) {
             logger.info(e.getMessage(), e);
@@ -80,9 +80,9 @@ public class IOHelper {
         return null;
     }
 
-    public static Path createTempFile(Path path,String suffix) {
+    public static Path createTempFile(Path path, String suffix) {
         try {
-            return Files.createTempFile(path,"asciidoc-temp", suffix);
+            return Files.createTempFile(path, "asciidoc-temp", suffix);
         } catch (IOException e) {
             logger.info(e.getMessage(), e);
         }
@@ -118,13 +118,13 @@ public class IOHelper {
 
     public static void imageWrite(BufferedImage bufferedImage, String format, File output) {
         try {
-            ImageIO.write(bufferedImage,format,output);
+            ImageIO.write(bufferedImage, format, output);
         } catch (IOException e) {
             logger.info(e.getMessage(), e);
         }
     }
 
-    public static byte[] readAllBytes(Path path)  {
+    public static byte[] readAllBytes(Path path) {
         try {
             return Files.readAllBytes(path);
         } catch (IOException e) {
@@ -135,7 +135,7 @@ public class IOHelper {
 
     public static void move(Path source, Path target, StandardCopyOption... option) {
         try {
-            Files.move(source, target,option);
+            Files.move(source, target, option);
         } catch (IOException e) {
             logger.info(e.getMessage(), e);
         }

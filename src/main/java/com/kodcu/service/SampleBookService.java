@@ -17,13 +17,13 @@ public class SampleBookService {
 
     private static final Logger logger = LoggerFactory.getLogger(SampleBookService.class);
 
-    public void produceSampleBook(Path configPath, Path outputPath)   {
+    public void produceSampleBook(Path configPath, Path outputPath) {
         File booksample = configPath.resolve("booksample").toFile();
         File destDir = outputPath.toFile();
         try {
             FileUtils.copyDirectory(booksample, destDir);
         } catch (IOException e) {
-            logger.error(e.getMessage(),e);
+            logger.error(e.getMessage(), e);
         }
 
     }

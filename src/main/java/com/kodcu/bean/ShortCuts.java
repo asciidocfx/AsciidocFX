@@ -7,7 +7,7 @@ import java.util.Map;
  */
 public class ShortCuts {
 
-    private Map<String,String> keys;
+    private Map<String, String> keys;
 
     public Map<String, String> getKeys() {
         return keys;

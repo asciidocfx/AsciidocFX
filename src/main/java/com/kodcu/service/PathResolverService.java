@@ -1,17 +1,18 @@
 package com.kodcu.service;
 
-import javafx.stage.FileChooser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.PathMatcher;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by usta on 07.09.2014.
@@ -49,15 +50,15 @@ public class PathResolverService {
         return pdfMatcher.matches(path);
     }
 
-    public boolean isImage(Path path){
+    public boolean isImage(Path path) {
         return imageMatcher.matches(path);
     }
 
     public boolean isHidden(Path path) {
         try {
-            return path.getFileName().toString().startsWith(".") || Files.isHidden(path) ;
+            return path.getFileName().toString().startsWith(".") || Files.isHidden(path);
         } catch (IOException e) {
-            logger.info(e.getMessage(),e);
+            logger.info(e.getMessage(), e);
         }
         return false;
     }
@@ -74,7 +75,7 @@ public class PathResolverService {
         return ascMatcher.matches(path);
     }
 
-    public boolean isViewable(Path path){
+    public boolean isViewable(Path path) {
         return Files.isDirectory(path)
                 || isAsciidoc(path)
                 || isImage(path)
@@ -86,7 +87,7 @@ public class PathResolverService {
     }
 
 
-    public boolean isBook(Path path){
+    public boolean isBook(Path path) {
         return bookMatcher.matches(path);
     }
 
@@ -141,7 +142,7 @@ public class PathResolverService {
     }
 
     public boolean isExcel(Path path) {
-        return  excelMatcher.matches(path);
+        return excelMatcher.matches(path);
     }
 
     public boolean isArchive(Path path) {
@@ -169,6 +170,6 @@ public class PathResolverService {
     }
 
     public boolean isEpub(Path path) {
-     return epubMatcher.matches(path);
+        return epubMatcher.matches(path);
     }
 }

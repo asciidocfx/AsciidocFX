@@ -1,7 +1,6 @@
 package com.kodcu.service;
 
 import com.kodcu.other.OSHelper;
-import com.sun.deploy.util.SystemUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -40,7 +39,7 @@ public class PathOrderService {
         if (comparePathsFunction(second, first, Files::isDirectory)) return -1;
 
 
-        if(OSHelper.isMac() || OSHelper.isWindows())
+        if (OSHelper.isMac() || OSHelper.isWindows())
             return first.toString().compareToIgnoreCase(second.toString());
 
         return first.compareTo(second);

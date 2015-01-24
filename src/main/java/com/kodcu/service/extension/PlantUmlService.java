@@ -18,9 +18,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Objects;
 
-import static java.nio.file.StandardOpenOption.CREATE;
-import static java.nio.file.StandardOpenOption.TRUNCATE_EXISTING;
-import static java.nio.file.StandardOpenOption.WRITE;
+import static java.nio.file.StandardOpenOption.*;
 
 /**
  * Created by usta on 25.12.2014.
@@ -34,12 +32,12 @@ public class PlantUmlService {
     private Current current;
 
     @Autowired
-    private ApplicationController controller ;
+    private ApplicationController controller;
 
     @Autowired
     private ThreadService threadService;
 
-    public void plantUml(String uml, String type, String fileName)  {
+    public void plantUml(String uml, String type, String fileName) {
         Objects.requireNonNull(fileName);
 
         if (!fileName.endsWith(".png") && !"ascii".equalsIgnoreCase(type))
@@ -97,7 +95,7 @@ public class PlantUmlService {
             }
 
         } catch (IOException e) {
-            logger.info(e.getMessage(),e);
+            logger.info(e.getMessage(), e);
         }
     }
 }

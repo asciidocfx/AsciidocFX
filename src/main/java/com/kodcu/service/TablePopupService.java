@@ -34,7 +34,7 @@ public class TablePopupService implements Initializable {
     public TextField tablePopupTitle;
     public Button tablePopupApply;
 
-    public void createBasicTable(String row, String column){
+    public void createBasicTable(String row, String column) {
         tablePopupRows.textProperty().setValue(row);
         tablePopupColumns.textProperty().setValue(column);
         tablePopupApply(null);
@@ -81,7 +81,7 @@ public class TablePopupService implements Initializable {
             row = Integer.valueOf(tablePopupRows.textProperty().getValue());
             column = Integer.valueOf(tablePopupColumns.textProperty().getValue());
         } catch (RuntimeException e) {
-            logger.debug(e.getMessage(),e);
+            logger.debug(e.getMessage(), e);
         }
 
         stringBuffer.append("|====================\n");
@@ -100,7 +100,8 @@ public class TablePopupService implements Initializable {
     }
 
     @Override
-    public void initialize(URL location, ResourceBundle resources) {  }
+    public void initialize(URL location, ResourceBundle resources) {
+    }
 
     public CheckBox getTablePopupHeader() {
         return tablePopupHeader;

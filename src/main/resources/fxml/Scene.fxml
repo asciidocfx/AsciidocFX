@@ -27,26 +27,41 @@
                           <graphic>
                             <Label id="changeWorkingDir" fx:id="splitHideButton" minWidth="-Infinity" mnemonicParsing="false" text="" />
                           </graphic>
+                          <tooltip>
+                            <Tooltip text="Collapse" />
+                          </tooltip>
                         </Button>
                         <Button fx:id="changeWorkingDir" mnemonicParsing="false" onAction="#changeWorkingDir" text="" HBox.hgrow="NEVER">
                           <graphic>
                             <Label fx:id="workingDirButton" minWidth="-Infinity" mnemonicParsing="false" text="" />
                           </graphic>
+                          <tooltip>
+                            <Tooltip text="Change Workdir" />
+                          </tooltip>
                         </Button>
                         <Button id="goUp" mnemonicParsing="false" onAction="#goUp" text="">
                           <graphic>
                             <Label fx:id="goUpLabel" text="" />
                           </graphic>
+                          <tooltip>
+                            <Tooltip text="Go Up" />
+                          </tooltip>
                         </Button>
                         <Button mnemonicParsing="false" onAction="#refreshWorkingDir" text="">
                           <graphic>
                             <Label fx:id="refreshLabel" text="" />
                           </graphic>
+                          <tooltip>
+                            <Tooltip text="Refresh" />
+                          </tooltip>
                         </Button>
                         <Button mnemonicParsing="false" onAction="#goHome" text="">
                           <graphic>
                             <Label fx:id="goHomeLabel" text="" />
                           </graphic>
+                          <tooltip>
+                            <Tooltip text="Go Home" />
+                          </tooltip>
                         </Button>
                         <MenuButton fx:id="leftButton" minWidth="-1.0" mnemonicParsing="false" text="" HBox.hgrow="NEVER">
                           <items>
@@ -69,6 +84,7 @@
                             <MenuItem id="openFolderTreeItem" mnemonicParsing="false" text="Browse" fx:id="openFolderTreeItem" />
                             <MenuItem mnemonicParsing="false" text="Copy Path" fx:id="copyPathTreeItem" />
                             <MenuItem mnemonicParsing="false" text="Copy" fx:id="copyTreeItem" />
+                            <MenuItem mnemonicParsing="false" text="Select as Workdir" fx:id="selectAsWorkdir" />
                           </items>
                         </ContextMenu>
                       </contextMenu>
@@ -113,11 +129,12 @@
           <children>
             <VBox prefHeight="725.0" prefWidth="529.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
               <children>
-                <HBox prefHeight="33.0" prefWidth="-1.0" spacing="15.0" styleClass="menu-hbox">
+                <HBox prefHeight="33.0" prefWidth="-1.0" spacing="15.0" styleClass="menu-hbox, convert-box">
                   <children>
                     <Label fx:id="htmlPro" styleClass="html" text="HTML" />
                     <Label fx:id="pdfPro" styleClass="pdf" text="PDF" />
                     <Label fx:id="ebookPro" styleClass="ebook" text="Ebook" />
+                    <Label fx:id="docbookPro" styleClass="docbook" text="Docbook" />
                     <ProgressBar fx:id="indikator" maxWidth="1.7976931348623157E308" progress="-1.0" visible="false" HBox.hgrow="ALWAYS" />
                     <Label fx:id="browserPro" styleClass="browser" text="Browser" textAlignment="LEFT" />
                   </children>
@@ -125,7 +142,7 @@
                     <Insets bottom="5.0" left="15.0" right="15.0" top="5.0" />
                   </padding>
                 </HBox>
-                <WebView fx:id="previewView" prefHeight="725.0" prefWidth="529.0" />
+                <WebView fx:id="previewView"  />
               </children>
             </VBox>
           </children>

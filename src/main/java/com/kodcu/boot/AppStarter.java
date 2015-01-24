@@ -21,6 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.ConfigurableApplicationContext;
+
 import static javafx.scene.input.KeyCombination.SHORTCUT_DOWN;
 
 
@@ -32,7 +33,7 @@ public class AppStarter extends Application {
     private ConfigurableApplicationContext context;
 
     @Override
-    public void start(Stage stage)   {
+    public void start(Stage stage) {
 
         try {
             startApp(stage);
@@ -42,7 +43,7 @@ public class AppStarter extends Application {
 
     }
 
-    private void startApp(Stage stage) throws Throwable{
+    private void startApp(Stage stage) throws Throwable {
 
         FXMLLoader parentLoader = new FXMLLoader();
         FXMLLoader tablePopupLoader = new FXMLLoader();
@@ -84,7 +85,7 @@ public class AppStarter extends Application {
         stage.show();
 
         scene.getAccelerators().put(new KeyCodeCombination(KeyCode.S, SHORTCUT_DOWN), controller::saveDoc);
-        scene.getAccelerators().put(new KeyCodeCombination(KeyCode.N,SHORTCUT_DOWN), () -> {
+        scene.getAccelerators().put(new KeyCodeCombination(KeyCode.N, SHORTCUT_DOWN), () -> {
             controller.newDoc(null);
         });
     }

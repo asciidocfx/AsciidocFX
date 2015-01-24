@@ -16,12 +16,12 @@ import java.util.function.Consumer;
 @Component
 public class ThreadService {
 
-    private ExecutorService threadPollWorker ;
+    private ExecutorService threadPollWorker;
 
     @PostConstruct
-    public void init(){
+    public void init() {
         int nThreads = Runtime.getRuntime().availableProcessors() * 2;
-        threadPollWorker = Executors.newFixedThreadPool((nThreads>=4)?nThreads:4);
+        threadPollWorker = Executors.newFixedThreadPool((nThreads >= 4) ? nThreads : 4);
     }
 
     // Runs Task in background thread pool

@@ -4,8 +4,6 @@ import com.kodcu.controller.ApplicationController;
 import com.kodcu.other.Current;
 import com.kodcu.other.IOHelper;
 import com.kodcu.service.PathResolverService;
-import com.kodcu.service.ui.IndikatorService;
-import javafx.application.Platform;
 import org.joox.Match;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,10 +18,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static java.nio.file.StandardOpenOption.CREATE;
-import static java.nio.file.StandardOpenOption.TRUNCATE_EXISTING;
 import static org.joox.JOOX.$;
-import static org.joox.JOOX.builder;
 
 /**
  * Created by usta on 19.07.2014.
@@ -39,23 +34,13 @@ public class DocBookService {
     private RenderService docConverter;
 
     @Autowired
-    private PathResolverService bookPathResolver;
-
-    @Autowired
-    private ApplicationController asciiDocController;
-
-    @Autowired
     private Current current;
-//
-//    @Autowired
-//    private IndikatorService indikatorService;
 
     public String generateDocbook() {
 
         StringBuilder builder = new StringBuilder();
 
         try {
-
 
             Path currentTabPath = current.currentPath().get();
             Path currentTabPathDir = currentTabPath.getParent();

@@ -55,7 +55,7 @@ public class DocumentService {
         Label label = current.currentTabLabel();
         Path currentPath = directoryService.currentPath();
 
-        if(Objects.isNull(currentPath))
+        if (Objects.isNull(currentPath))
             return;
 
         IOHelper.writeToFile(currentPath, (String) current.currentEngine().executeScript("editor.getValue();"), TRUNCATE_EXISTING, CREATE);
@@ -74,7 +74,7 @@ public class DocumentService {
     public void newDoc() {
         WebView webView = webviewService.createWebView();
         AnchorPane anchorPane = new AnchorPane();
-        Node editorVBox =  editorService.createEditorVBox(webView);
+        Node editorVBox = editorService.createEditorVBox(webView);
         controller.fitToParent(editorVBox);
         anchorPane.getChildren().add(editorVBox);
         MyTab tab = tabService.createTab();

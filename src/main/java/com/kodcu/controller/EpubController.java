@@ -49,7 +49,7 @@ public class EpubController {
         try {
             temp = Files.readAllBytes(path);
         } catch (Exception e) {
-            logger.info(e.getMessage(),e);
+            logger.info(e.getMessage(), e);
         }
 
         return new ResponseEntity<>(temp, HttpStatus.OK);

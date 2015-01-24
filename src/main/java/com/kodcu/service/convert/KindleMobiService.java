@@ -61,7 +61,7 @@ public class KindleMobiService {
             Path currentTabPathDir = currentTabPath.getParent();
             String tabText = current.getCurrentTabText().replace("*", "").trim();
 
-            threadService.runActionLater(()->{
+            threadService.runActionLater(() -> {
                 if (askPath) {
                     FileChooser fileChooser = directoryService.newFileChooser("Save Mobi file");
                     fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("MOBI", "*.mobi"));
@@ -77,7 +77,7 @@ public class KindleMobiService {
 
                     try {
                         String message = processExecutor
-                                .command(kindleGenPath.resolve("kindlegen").toString(),"-o",mobiPath.getFileName().toString(), epubPath.toString())
+                                .command(kindleGenPath.resolve("kindlegen").toString(), "-o", mobiPath.getFileName().toString(), epubPath.toString())
                                 .execute()
                                 .outputUTF8();
                         logger.info(message);

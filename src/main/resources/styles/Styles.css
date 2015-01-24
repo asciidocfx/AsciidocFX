@@ -500,3 +500,13 @@
 .label.ebook *:hover, .label.ebook:hover{
     -fx-text-fill: #87acba;
 }
+
+.label.docbook *, .label.docbook{
+    -fx-cursor: hand;
+    -fx-font: 14px "Segoe UI";
+    -fx-font-weight: bold;
+    -fx-text-fill: rgba(108, 209, 130, 0.65);
+}
+.label.docbook *:hover, .label.docbook:hover{
+    -fx-text-fill: rgba(90, 180, 106, 0.82);
+}

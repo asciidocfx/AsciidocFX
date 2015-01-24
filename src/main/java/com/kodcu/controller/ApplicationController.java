@@ -60,8 +60,13 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.security.CodeSource;
 import java.util.*;
+
+import static java.nio.file.StandardOpenOption.CREATE;
+import static java.nio.file.StandardOpenOption.TRUNCATE_EXISTING;
+import static java.nio.file.StandardOpenOption.WRITE;
 
 
 @Controller
@@ -93,11 +98,13 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     public MenuItem copyPathListItem;
     public MenuItem copyTreeItem;
     public MenuItem copyListItem;
+    public MenuItem selectAsWorkdir;
     public MenuButton leftButton;
     private WebView mathjaxView;
     public Label htmlPro;
     public Label pdfPro;
     public Label ebookPro;
+    public Label docbookPro;
     public Label browserPro;
 
     @Autowired
@@ -283,12 +290,47 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         });
     }
 
-    @FXML
-    private void convertDocbook(ActionEvent event) {
+    public void convertDocbook() {
+        convertDocbook(false);
+    }
+
+    public void convertDocbook(boolean askPath) {
 
         threadService.runTaskLater(() -> {
-            Path currentPath = directoryService.workingDirectory();
-            String s = docBookService.generateDocbook();
+            if (!current.currentPath().isPresent())
+                saveDoc();
+
+            threadService.runActionLater(() -> {
+
+                Path currentTabPath = current.currentPath().get();
+                Path currentTabPathDir = currentTabPath.getParent();
+                String tabText = current.getCurrentTabText().replace("*", "").trim();
+
+                Path docbookPath;
+
+                if (askPath) {
+                    FileChooser fileChooser = directoryService.newFileChooser("Save Docbook file");
+                    fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Docbook", "*.xml"));
+                    docbookPath = fileChooser.showSaveDialog(null).toPath();
+                } else
+                    docbookPath = currentTabPathDir.resolve(tabText + ".xml");
+
+                String docbook = "";
+
+                if (current.currentIsBook()) {
+                    docbook = docBookService.generateDocbook();
+                } else {
+                    docbook = docBookService.generateDocbookArticle();
+                }
+
+                final String finalDocbook = docbook;
+                threadService.runTaskLater(()->{
+                    IOHelper.writeToFile(docbookPath, finalDocbook, CREATE, TRUNCATE_EXISTING, WRITE);
+                });
+                getRecentFiles().remove(docbookPath.toString());
+                getRecentFiles().add(0, docbookPath.toString());
+            });
+
         });
 
     }
@@ -311,11 +353,11 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         });
     }
 
-    private void convertMobi()  {
+    private void convertMobi() {
         convertMobi(false);
     }
 
-    private void convertMobi(boolean askPath)  {
+    private void convertMobi(boolean askPath) {
 
         if (Objects.nonNull(config.getKindlegenDir())) {
             if (!Files.exists(Paths.get(config.getKindlegenDir()))) {
@@ -381,12 +423,22 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     @Override
     public void initialize(URL url, ResourceBundle rb) {
 
+        // Convert menu label icons
         AwesomeDude.setIcon(htmlPro, AwesomeIcon.HTML5);
         AwesomeDude.setIcon(pdfPro, AwesomeIcon.FILE_PDF_ALT);
         AwesomeDude.setIcon(ebookPro, AwesomeIcon.BOOK);
+        AwesomeDude.setIcon(docbookPro, AwesomeIcon.CODE);
         AwesomeDude.setIcon(browserPro, AwesomeIcon.FLASH);
 
-        leftButton.setGraphic(AwesomeDude.createIconLabel(AwesomeIcon.COG,"14.0"));
+
+        // Left menu label icons
+        AwesomeDude.setIcon(workingDirButton, AwesomeIcon.FOLDER_ALT, "14.0");
+        AwesomeDude.setIcon(splitHideButton, AwesomeIcon.CHEVRON_LEFT, "14.0");
+        AwesomeDude.setIcon(refreshLabel, AwesomeIcon.REFRESH, "14.0");
+        AwesomeDude.setIcon(goUpLabel, AwesomeIcon.LEVEL_UP, "14.0");
+        AwesomeDude.setIcon(goHomeLabel, AwesomeIcon.HOME, "14.0");
+
+        leftButton.setGraphic(AwesomeDude.createIconLabel(AwesomeIcon.COG, "14.0"));
 
         ContextMenu htmlProMenu = new ContextMenu();
         htmlPro.setContextMenu(htmlProMenu);
@@ -415,6 +467,20 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
         pdfPro.setOnMouseClicked(event -> {
             pdfProMenu.show(pdfPro, event.getScreenX(), 50);
+        });
+
+        ContextMenu docbookProMenu = new ContextMenu();
+        docbookProMenu.getItems().add(MenuItemBuilt.item("Save").onclick(event -> {
+            this.convertDocbook();
+        }));
+        docbookProMenu.getItems().add(MenuItemBuilt.item("Save as").onclick(event -> {
+            this.convertDocbook(true);
+        }));
+
+        docbookPro.setContextMenu(docbookProMenu);
+
+        docbookPro.setOnMouseClicked(event -> {
+            docbookProMenu.show(docbookPro, event.getScreenX(), 50);
         });
 
         ContextMenu ebookProMenu = new ContextMenu();
@@ -517,13 +583,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         Path workDir = directoryService.getWorkingDirectory().orElse(userHome);
         fileBrowser.browse(treeView, workDir);
 
-        //
-        AwesomeDude.setIcon(workingDirButton, AwesomeIcon.FOLDER_ALT, "14.0");
-        AwesomeDude.setIcon(splitHideButton, AwesomeIcon.CHEVRON_LEFT, "14.0");
-        AwesomeDude.setIcon(refreshLabel, AwesomeIcon.REFRESH, "14.0");
-        AwesomeDude.setIcon(goUpLabel, AwesomeIcon.LEVEL_UP, "14.0");
-        AwesomeDude.setIcon(goHomeLabel, AwesomeIcon.HOME, "14.0");
-
         tabPane.getTabs().addListener((ListChangeListener<Tab>) c -> {
             if (tabPane.getTabs().isEmpty())
                 threadService.runActionLater(this::newDoc);
@@ -539,6 +598,13 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             path = Files.isDirectory(path) ? path : path.getParent();
             if (Objects.nonNull(path))
                 getHostServices().showDocument(path.toUri().toASCIIString());
+        });
+
+        selectAsWorkdir.setOnAction(event -> {
+            Path path = tabService.getSelectedTabPath();
+            path = Files.isDirectory(path) ? path : path.getParent();
+            if (Objects.nonNull(path))
+                directoryService.changeWorkigDir(path);
         });
 
         openFolderListItem.setOnAction(event -> {

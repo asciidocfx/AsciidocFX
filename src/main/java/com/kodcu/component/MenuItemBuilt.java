@@ -3,7 +3,7 @@ package com.kodcu.component;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.scene.control.*;
+import javafx.scene.control.MenuItem;
 
 /**
  * Created by usta on 24.01.2015.

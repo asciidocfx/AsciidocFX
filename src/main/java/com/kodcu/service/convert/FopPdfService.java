@@ -6,9 +6,7 @@ import com.kodcu.other.IOHelper;
 import com.kodcu.service.DirectoryService;
 import com.kodcu.service.ThreadService;
 import com.kodcu.service.ui.IndikatorService;
-import javafx.application.Platform;
 import javafx.stage.FileChooser;
-import org.apache.fop.apps.FOPException;
 import org.apache.fop.apps.FOUserAgent;
 import org.apache.fop.apps.FopFactory;
 import org.apache.fop.cli.InputHandler;
@@ -18,15 +16,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.FileOutputStream;
-import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
 import java.util.Vector;
 
-import static java.nio.file.StandardOpenOption.CREATE;
-import static java.nio.file.StandardOpenOption.TRUNCATE_EXISTING;
-import static java.nio.file.StandardOpenOption.WRITE;
+import static java.nio.file.StandardOpenOption.*;
 
 /**
  * Created by usta on 26.07.2014.
@@ -56,11 +50,11 @@ public class FopPdfService {
 
     private static final Logger logger = LoggerFactory.getLogger(FopPdfService.class);
 
-    private void produce(boolean askPath, InputHandler handler, FopFactory fopFactory,Path docbookTempfile){
+    private void produce(boolean askPath, InputHandler handler, FopFactory fopFactory, Path docbookTempfile) {
         Path currentTabPath = current.currentPath().get();
         Path currentTabPathDir = currentTabPath.getParent();
         String tabText = current.getCurrentTabText().replace("*", "").trim();
-        threadService.runActionLater(()->{
+        threadService.runActionLater(() -> {
             if (askPath) {
                 FileChooser fileChooser = directoryService.newFileChooser("Save PDF file");
                 fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("PDF", "*.pdf"));
@@ -68,20 +62,20 @@ public class FopPdfService {
             } else
                 pdfPath = currentTabPathDir.resolve(tabText + ".pdf");
 
-            threadService.runTaskLater(()->{
+            threadService.runTaskLater(() -> {
                 indikatorService.startCycle();
                 try (FileOutputStream outputStream = new FileOutputStream(pdfPath.toFile());) {
                     FOUserAgent userAgent = new FOUserAgent(fopFactory);
                     handler.renderTo(userAgent, "application/pdf", outputStream);
                     Files.deleteIfExists(docbookTempfile);
                 } catch (Exception e) {
-                    logger.error(e.getMessage(),e);
+                    logger.error(e.getMessage(), e);
                 } finally {
 
                     indikatorService.completeCycle();
                     indikatorService.hideIndikator();
 
-                    threadService.runActionLater(()->{
+                    threadService.runActionLater(() -> {
                         asciiDocController.getRecentFiles().remove(pdfPath.toString());
                         asciiDocController.getRecentFiles().add(0, pdfPath.toString());
                     });
@@ -113,8 +107,8 @@ public class FopPdfService {
             params.add(configPath.resolve("docbook/images/callouts/").toUri().toASCIIString());
 
             String docbook = docBookService.generateDocbook();
-            Path docbookTempfile = IOHelper.createTempFile(currentTabPathDir,".xml");
-            IOHelper.writeToFile(docbookTempfile,docbook, CREATE,WRITE,TRUNCATE_EXISTING);
+            Path docbookTempfile = IOHelper.createTempFile(currentTabPathDir, ".xml");
+            IOHelper.writeToFile(docbookTempfile, docbook, CREATE, WRITE, TRUNCATE_EXISTING);
 
             InputHandler handler = new InputHandler(docbookTempfile.toFile(), configPath.resolve("docbook-config/fo-pdf.xsl").toFile(), params);
 
@@ -122,10 +116,10 @@ public class FopPdfService {
 
             fopFactory.setUserConfig(configPath.resolve("docbook-config/fop.xconf").toUri().toASCIIString());
 
-            this.produce(askPath,handler,fopFactory,docbookTempfile);
+            this.produce(askPath, handler, fopFactory, docbookTempfile);
 
         } catch (Exception e) {
-            logger.error(e.getMessage(),e);
+            logger.error(e.getMessage(), e);
         }
     }
 
@@ -140,8 +134,8 @@ public class FopPdfService {
             String tabText = current.getCurrentTabText().replace("*", "").trim();
 
             String docbook = docBookService.generateDocbookArticle();
-            Path docbookTempfile = IOHelper.createTempFile(currentTabPathDir,".xml");
-            IOHelper.writeToFile(docbookTempfile,docbook, CREATE,WRITE,TRUNCATE_EXISTING);
+            Path docbookTempfile = IOHelper.createTempFile(currentTabPathDir, ".xml");
+            IOHelper.writeToFile(docbookTempfile, docbook, CREATE, WRITE, TRUNCATE_EXISTING);
 
             Vector params = new Vector();
             params.add("body.font.family");
@@ -162,12 +156,11 @@ public class FopPdfService {
 
             fopFactory.setUserConfig(configPath.resolve("docbook-config/fop.xconf").toUri().toASCIIString());
 
-            this.produce(askPath,handler,fopFactory,docbookTempfile);
-
+            this.produce(askPath, handler, fopFactory, docbookTempfile);
 
 
         } catch (Exception e) {
-            logger.error(e.getMessage(),e);
+            logger.error(e.getMessage(), e);
         }
     }
 }

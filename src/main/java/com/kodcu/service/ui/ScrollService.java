@@ -44,7 +44,7 @@ public class ScrollService {
             WebEngine engine = controller.getPreviewView().getEngine();
             engine.executeScript(format);
         } catch (Exception e) {
-            logger.debug(e.getMessage(),e);
+            logger.debug(e.getMessage(), e);
         }
     }
 }

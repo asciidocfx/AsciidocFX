@@ -54,7 +54,7 @@ public class ImageController {
         try {
             temp = Files.readAllBytes(imageFile);
         } catch (Exception e) {
-            logger.info(e.getMessage(),e);
+            logger.info(e.getMessage(), e);
         }
 
         return new ResponseEntity<>(temp, HttpStatus.OK);

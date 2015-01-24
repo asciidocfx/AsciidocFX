@@ -23,7 +23,7 @@ public class MenuBuilt {
         return this;
     }
 
-    public Menu build(){
+    public Menu build() {
         return this.menu;
     }
 

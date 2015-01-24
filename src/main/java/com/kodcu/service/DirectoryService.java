@@ -47,7 +47,7 @@ public class DirectoryService {
         DirectoryChooser directoryChooser = newDirectoryChooser("Select working directory");
         File file = directoryChooser.showDialog(null);
 
-        workingDirectory=Optional.ofNullable(file.toPath());
+        workingDirectory = Optional.ofNullable(file.toPath());
 
         workingDirectory.ifPresent(path -> fileBrowser.browse(controller.getTreeView(), path));
 
@@ -74,7 +74,7 @@ public class DirectoryService {
             tabService.addTab(path);
         else if (pathResolver.isImage(path))
             tabService.addImageTab(path);
-        else if(pathResolver.isEpub(path))
+        else if (pathResolver.isEpub(path))
             controller.getHostServices()
                     .showDocument(String.format("http://localhost:%d/epub/viewer?path=%s", controller.getPort(), path.toString()));
         else
@@ -102,11 +102,11 @@ public class DirectoryService {
         return fileChooser;
     }
 
-    public Path workingDirectory(){
+    public Path workingDirectory() {
         return workingDirectory.orElseGet(workingDirectorySupplier);
     }
 
-    public Path currentPath(){
+    public Path currentPath() {
         return current.currentPath().orElseGet(pathSaveSupplier);
     }
 
@@ -163,10 +163,10 @@ public class DirectoryService {
     }
 
     public void changeWorkigDir(Path path) {
-            controller.getConfig().setWorkingDirectory(path.toString());
-            this.setWorkingDirectory(Optional.of(path));
-            fileBrowser.browse(controller.getTreeView(), path);
-            this.setInitialDirectory(Optional.ofNullable(path.toFile()));
+        controller.getConfig().setWorkingDirectory(path.toString());
+        this.setWorkingDirectory(Optional.of(path));
+        fileBrowser.browse(controller.getTreeView(), path);
+        this.setInitialDirectory(Optional.ofNullable(path.toFile()));
 
     }
 
@@ -174,7 +174,7 @@ public class DirectoryService {
         workingDirectory.map(Path::getParent).ifPresent(this::changeWorkigDir);
     }
 
-    public void refreshWorkingDir(){
+    public void refreshWorkingDir() {
         workingDirectory.ifPresent(this::changeWorkigDir);
     }
 }

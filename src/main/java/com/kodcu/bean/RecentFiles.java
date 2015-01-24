@@ -8,13 +8,14 @@ import java.util.List;
  */
 public class RecentFiles {
 
-    private List<String> files=new ArrayList<>();
+    private List<String> files = new ArrayList<>();
 
     public RecentFiles(List<String> files) {
         this.files = files;
     }
 
-    public RecentFiles() {  }
+    public RecentFiles() {
+    }
 
     public List<String> getFiles() {
         return files;

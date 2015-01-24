@@ -71,8 +71,8 @@ public class TabService {
             if (state2 == Worker.State.SUCCEEDED) {
                 threadService.runTaskLater(() -> {
                     String normalize = IOHelper.normalize(IOHelper.readFile(path));
-                    threadService.runActionLater(()->{
-                        webEngine.executeScript(String.format("setEditorValue('%s')",normalize));
+                    threadService.runActionLater(() -> {
+                        webEngine.executeScript(String.format("setEditorValue('%s')", normalize));
                     });
                 });
             }
@@ -254,8 +254,7 @@ public class TabService {
             if (e.isControlDown() && e.getDeltaY() > 0) {
                 // zoom in
                 imageView.setFitWidth(imageView.getFitWidth() + 4.0);
-            }
-            else if (e.isControlDown() && e.getDeltaY() < 0){
+            } else if (e.isControlDown() && e.getDeltaY() < 0) {
                 // zoom out
                 imageView.setFitWidth(imageView.getFitWidth() - 4.0);
             }

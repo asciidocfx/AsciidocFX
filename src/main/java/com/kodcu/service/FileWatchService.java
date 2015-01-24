@@ -11,7 +11,8 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.nio.file.*;
-import java.util.*;
+import java.util.List;
+import java.util.Objects;
 import java.util.function.BiConsumer;
 
 import static java.nio.file.StandardWatchEventKinds.ENTRY_CREATE;
@@ -48,15 +49,16 @@ public class FileWatchService {
                 path.register(watcher, ENTRY_CREATE, ENTRY_DELETE);
             }
 
-                WatchKey watckKey = watcher.take();
-                List<WatchEvent<?>> events = watckKey.pollEvents();
+            WatchKey watckKey = watcher.take();
+            List<WatchEvent<?>> events = watckKey.pollEvents();
 
-                for (WatchEvent<?> event : events) { }
-                watckKey.reset();
-                browseCallback.accept(treeView, path);
+            for (WatchEvent<?> event : events) {
+            }
+            watckKey.reset();
+            browseCallback.accept(treeView, path);
 
         } catch (Exception e) {
-            logger.debug(e.getMessage(),e);
+            logger.debug(e.getMessage(), e);
         }
     }
 }

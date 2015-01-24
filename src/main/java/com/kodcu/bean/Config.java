@@ -5,7 +5,7 @@ package com.kodcu.bean;
  */
 public class Config {
 
-    private String fontSize ;
+    private String fontSize;
     private String fontFamily;
     private Integer recentFileListSize;
     private boolean directoryPanel;

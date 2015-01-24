@@ -1,9 +1,9 @@
 package com.kodcu.service;
 
 import com.kodcu.controller.ApplicationController;
+import com.kodcu.other.Constants;
 import com.kodcu.other.Current;
 import com.kodcu.other.IOHelper;
-import com.kodcu.other.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -46,7 +46,7 @@ public class ParserService {
         }
 
         if (buffer.size() > 0)
-            return Optional.of(String.join("\n",buffer));
+            return Optional.of(String.join("\n", buffer));
 
         return Optional.empty();
     }
