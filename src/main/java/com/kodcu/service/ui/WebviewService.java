@@ -88,7 +88,7 @@ public class WebviewService {
                         Iterator<File> files = FileUtils.iterateFilesAndDirs(path.toFile(), TrueFileFilter.INSTANCE, TrueFileFilter.INSTANCE);
 
                         StringBuffer buffer = new StringBuffer();
-                        buffer.append("[tree,filename=\"\"]");
+                        buffer.append("[tree,file=\"\"]");
                         buffer.append("\n--\n");
                         buffer.append("#" + path.getFileName().toString());
 
