@@ -20,6 +20,8 @@ import com.kodcu.service.ui.*;
 import com.sun.javafx.application.HostServicesDelegate;
 import de.jensd.fx.fontawesome.AwesomeDude;
 import de.jensd.fx.fontawesome.AwesomeIcon;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -43,6 +45,7 @@ import javafx.scene.web.WebView;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 import netscape.javascript.JSObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,6 +59,7 @@ import org.springframework.web.socket.handler.TextWebSocketHandler;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -114,6 +118,9 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     @Autowired
     private TreeService treeService;
+
+    @Autowired
+    private TooltipTimeFixService tooltipTimeFixService;
 
     @Autowired
     private TabService tabService;
@@ -421,6 +428,8 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+
+        tooltipTimeFixService.fix();
 
         // Convert menu label icons
         AwesomeDude.setIcon(htmlPro, AwesomeIcon.HTML5);
