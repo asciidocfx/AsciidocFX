@@ -1,6 +1,7 @@
 package com.kodcu.service.ui;
 
 import com.kodcu.component.MyTab;
+import com.kodcu.component.MyTooltip;
 import com.kodcu.controller.ApplicationController;
 import com.kodcu.other.Current;
 import com.kodcu.other.IOHelper;
@@ -92,8 +93,8 @@ public class TabService {
         TabPane tabPane = controller.getTabPane();
         tabPane.getTabs().add(tab);
 
-        Tooltip tip = new Tooltip(path.toString());
-        Tooltip.install(tab.getGraphic(), tip);
+        MyTooltip tip = new MyTooltip(path.toString());
+        MyTooltip.install(tab.getGraphic(), tip);
 
         Tab lastTab = tabPane.getTabs().get(tabPane.getTabs().size() - 1);
         tabPane.getSelectionModel().select(lastTab);
