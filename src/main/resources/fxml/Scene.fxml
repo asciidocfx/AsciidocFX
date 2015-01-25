@@ -23,7 +23,7 @@
                   <children>
                     <HBox fillHeight="true" maxWidth="1.7976931348623157E308" prefHeight="33.0" spacing="5.0">
                       <children>
-                        <Button mnemonicParsing="false" onAction="#hideLeftSplit" text="" HBox.hgrow="NEVER">
+                        <Button minWidth="-Infinity" mnemonicParsing="false" onAction="#hideLeftSplit" text="" HBox.hgrow="NEVER">
                           <graphic>
                             <Label id="changeWorkingDir" fx:id="splitHideButton" minWidth="-Infinity" mnemonicParsing="false" text="" />
                           </graphic>
@@ -31,7 +31,7 @@
                             <Tooltip text="Collapse" />
                           </tooltip>
                         </Button>
-                        <Button fx:id="changeWorkingDir" mnemonicParsing="false" onAction="#changeWorkingDir" text="" HBox.hgrow="NEVER">
+                        <Button fx:id="changeWorkingDir" minWidth="-Infinity" mnemonicParsing="false" onAction="#changeWorkingDir" text="" HBox.hgrow="NEVER">
                           <graphic>
                             <Label fx:id="workingDirButton" minWidth="-Infinity" mnemonicParsing="false" text="" />
                           </graphic>
@@ -39,7 +39,7 @@
                             <Tooltip text="Change Workdir" />
                           </tooltip>
                         </Button>
-                        <Button id="goUp" mnemonicParsing="false" onAction="#goUp" text="">
+                        <Button id="goUp" minWidth="-Infinity" mnemonicParsing="false" onAction="#goUp" text="">
                           <graphic>
                             <Label fx:id="goUpLabel" text="" />
                           </graphic>
@@ -47,7 +47,7 @@
                             <Tooltip text="Go Up" />
                           </tooltip>
                         </Button>
-                        <Button mnemonicParsing="false" onAction="#refreshWorkingDir" text="">
+                        <Button minWidth="-Infinity" mnemonicParsing="false" onAction="#refreshWorkingDir" text="">
                           <graphic>
                             <Label fx:id="refreshLabel" text="" />
                           </graphic>
@@ -55,7 +55,7 @@
                             <Tooltip text="Refresh" />
                           </tooltip>
                         </Button>
-                        <Button mnemonicParsing="false" onAction="#goHome" text="">
+                        <Button minWidth="-Infinity" mnemonicParsing="false" onAction="#goHome" text="">
                           <graphic>
                             <Label fx:id="goHomeLabel" text="" />
                           </graphic>
@@ -63,7 +63,7 @@
                             <Tooltip text="Go Home" />
                           </tooltip>
                         </Button>
-                        <MenuButton fx:id="leftButton" minWidth="-1.0" mnemonicParsing="false" text="" HBox.hgrow="NEVER">
+                        <MenuButton fx:id="leftButton" minWidth="-Infinity" mnemonicParsing="false" text="" HBox.hgrow="NEVER">
                           <items>
                             <MenuItem mnemonicParsing="false" onAction="#generateSampleBook" text="Sample Book" />
                           </items>
@@ -133,12 +133,12 @@
               <children>
                 <HBox prefHeight="33.0" prefWidth="-1.0" spacing="15.0" styleClass="menu-hbox, convert-box">
                   <children>
-                    <Label fx:id="htmlPro" styleClass="html" text="HTML" />
-                    <Label fx:id="pdfPro" styleClass="pdf" text="PDF" />
-                    <Label fx:id="ebookPro" styleClass="ebook" text="Ebook" />
-                    <Label fx:id="docbookPro" styleClass="docbook" text="Docbook" />
+                    <Label fx:id="htmlPro" minWidth="-Infinity" styleClass="html" text="HTML" />
+                    <Label fx:id="pdfPro" minWidth="-Infinity" styleClass="pdf" text="PDF" />
+                    <Label fx:id="ebookPro" minWidth="-Infinity" styleClass="ebook" text="Ebook" />
+                    <Label fx:id="docbookPro" minWidth="-Infinity" styleClass="docbook" text="Docbook" />
                     <ProgressBar fx:id="indikator" maxWidth="1.7976931348623157E308" progress="-1.0" visible="false" HBox.hgrow="ALWAYS" />
-                    <Label fx:id="browserPro" styleClass="browser" text="Browser" textAlignment="LEFT" />
+                    <Label fx:id="browserPro" minWidth="-Infinity" styleClass="browser" text="Browser" textAlignment="LEFT" />
                   </children>
                   <padding>
                     <Insets bottom="5.0" left="15.0" right="15.0" top="5.0" />
