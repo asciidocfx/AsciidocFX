@@ -25,9 +25,12 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * In order to decrease the delay of tooltips we need to manipulate the class Tooltip along its private members
- * <p/>
- * Created by hakan on 25.01.2014.
+ * In order to decrease the delay of tooltips
+ * we need to manipulate the class Tooltip
+ * along its private members
+ *
+ * <br/>
+ * Created by hakan on 25.01.2015.
  */
 public class MyTooltip extends Tooltip {
 
