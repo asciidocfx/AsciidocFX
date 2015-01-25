@@ -1,7 +1,6 @@
 package com.kodcu.service.ui;
 
 import com.kodcu.component.MyTab;
-import com.kodcu.component.TooltipBuilt;
 import com.kodcu.controller.ApplicationController;
 import com.kodcu.other.Current;
 import com.kodcu.other.IOHelper;
