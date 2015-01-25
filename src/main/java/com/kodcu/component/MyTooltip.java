@@ -1,10 +1,13 @@
 package com.kodcu.component;
 
+import com.sun.javafx.css.StyleManager;
 import com.sun.javafx.css.converters.BooleanConverter;
 import com.sun.javafx.css.converters.EnumConverter;
 import com.sun.javafx.css.converters.SizeConverter;
+import com.sun.javafx.css.converters.StringConverter;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyBooleanWrapper;
 import javafx.beans.value.WritableValue;
 import javafx.css.*;
@@ -13,7 +16,12 @@ import javafx.geometry.NodeOrientation;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.ContentDisplay;
+import javafx.scene.control.OverrunStyle;
+import javafx.scene.control.PopupControl;
+import javafx.scene.control.Tooltip;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
@@ -61,6 +69,104 @@ public class MyTooltip extends Tooltip {
 
     final void setActivated(boolean value) {
         activated.set(value);
+    }
+
+    private final ObjectProperty<Node> graphic = new StyleableObjectProperty<Node>() {
+        @Override
+        public CssMetaData getCssMetaData() {
+            return GRAPHIC;
+        }
+
+        @Override
+        public Object getBean() {
+            return MyTooltip.this;
+        }
+
+        @Override
+        public String getName() {
+            return "graphic";
+        }
+    };
+
+    private StyleableStringProperty imageUrl = null;
+
+    private StyleableStringProperty imageUrlProperty() {
+        if (imageUrl == null) {
+            imageUrl = new StyleableStringProperty() {
+                StyleOrigin origin = StyleOrigin.USER;
+
+                @Override
+                public void applyStyle(StyleOrigin origin, String v) {
+
+                    this.origin = origin;
+
+                    // Don't want applyStyle to throw an exception which would leave this.origin set to the wrong value
+                    if (graphic == null || !graphic.isBound()) super.applyStyle(origin, v);
+
+                    // Origin is only valid for this invocation of applyStyle, so reset it to USER in case someone calls set.
+                    this.origin = StyleOrigin.USER;
+                }
+
+                @Override
+                protected void invalidated() {
+
+                    // need to call super.get() here since get() is overridden to return the graphicProperty's value
+                    final String url = super.get();
+
+                    if (url == null) {
+                        ((StyleableProperty<Node>) (WritableValue<Node>) graphicProperty()).applyStyle(origin, null);
+                    } else {
+                        // RT-34466 - if graphic's url is the same as this property's value, then don't overwrite.
+                        final Node graphicNode = MyTooltip.this.getGraphic();
+                        if (graphicNode instanceof ImageView) {
+                            final ImageView imageView = (ImageView) graphicNode;
+                            final Image image = imageView.getImage();
+                            if (image != null) {
+                                final String imageViewUrl = image.impl_getUrl();
+                                if (url.equals(imageViewUrl)) return;
+                            }
+                        }
+                        final Image img = StyleManager.getInstance().getCachedImage(url);
+                        if (img != null) {
+                            ((StyleableProperty<Node>) (WritableValue<Node>) graphicProperty()).applyStyle(origin, new ImageView(img));
+                        }
+                    }
+                }
+
+                @Override
+                public String get() {
+                    final Node graphic = getGraphic();
+                    if (graphic instanceof ImageView) {
+                        final Image image = ((ImageView) graphic).getImage();
+                        if (image != null) {
+                            return image.impl_getUrl();
+                        }
+                    }
+                    return null;
+                }
+
+                @Override
+                public StyleOrigin getStyleOrigin() {
+                    return graphic != null ? ((StyleableProperty<Node>) (WritableValue<Node>) graphic).getStyleOrigin() : null;
+                }
+
+                @Override
+                public Object getBean() {
+                    return MyTooltip.this;
+                }
+
+                @Override
+                public String getName() {
+                    return "imageUrl";
+                }
+
+                @Override
+                public CssMetaData<MyTooltip.CSSBridge, String> getCssMetaData() {
+                    return GRAPHIC;
+                }
+            };
+        }
+        return imageUrl;
     }
 
     private static final CssMetaData<MyTooltip.CSSBridge, Font> FONT =
@@ -155,6 +261,21 @@ public class MyTooltip extends Tooltip {
                 }
             };
 
+    private static final CssMetaData<MyTooltip.CSSBridge, String> GRAPHIC =
+            new CssMetaData<MyTooltip.CSSBridge, String>("-fx-graphic",
+                    StringConverter.getInstance()) {
+
+                @Override
+                public boolean isSettable(MyTooltip.CSSBridge cssBridge) {
+                    return !cssBridge.tooltip.graphicProperty().isBound();
+                }
+
+                @Override
+                public StyleableProperty<String> getStyleableProperty(MyTooltip.CSSBridge cssBridge) {
+                    return (StyleableProperty<String>) cssBridge.tooltip.imageUrlProperty();
+                }
+            };
+
     private static final List<CssMetaData<? extends Styleable, ?>> STYLEABLES;
 
     static {
@@ -164,7 +285,7 @@ public class MyTooltip extends Tooltip {
         styleables.add(TEXT_ALIGNMENT);
         styleables.add(TEXT_OVERRUN);
         styleables.add(WRAP_TEXT);
-        //styleables.add(GRAPHIC);
+        styleables.add(GRAPHIC);
         styleables.add(CONTENT_DISPLAY);
         styleables.add(GRAPHIC_TEXT_GAP);
         STYLEABLES = Collections.unmodifiableList(styleables);
