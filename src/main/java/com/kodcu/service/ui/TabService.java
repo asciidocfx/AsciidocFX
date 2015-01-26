@@ -71,8 +71,15 @@ public class TabService {
             if (state2 == Worker.State.SUCCEEDED) {
                 threadService.runTaskLater(() -> {
                     String normalize = IOHelper.normalize(IOHelper.readFile(path));
-                    threadService.runActionLater(() -> {
-                        webEngine.executeScript(String.format("setEditorValue('%s')", normalize));
+                    threadService.runActionLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                webEngine.executeScript(String.format("setEditorValue('%s')", normalize));
+                            } catch (Exception e) {
+                                threadService.runActionLater(this);
+                            }
+                        }
                     });
                 });
             }
