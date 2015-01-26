@@ -4,6 +4,7 @@ import com.kodcu.controller.ApplicationController;
 import com.kodcu.other.Current;
 import com.kodcu.service.ParserService;
 import com.kodcu.service.PathResolverService;
+import com.kodcu.service.ThreadService;
 import javafx.concurrent.Worker;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
@@ -36,6 +37,9 @@ public class WebviewService {
 
     @Autowired
     private PathResolverService pathResolver;
+
+    @Autowired
+    private ThreadService threadService;
 
     @Autowired
     private ParserService parserService;
@@ -150,9 +154,18 @@ public class WebviewService {
             if (newValue == Worker.State.SUCCEEDED) {
                 JSObject window = (JSObject) webEngine.executeScript("window");
                 if (window.getMember("app").equals("undefined")) {
-                    window.setMember("app", controller);
-                    current.currentEngine().executeScript("updateOptions()");
-                    controller.applySohrtCuts();
+                    threadService.runActionLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            window.setMember("app", controller);
+                            try{
+                                current.currentEngine().executeScript("updateOptions()");
+                                controller.applySohrtCuts();
+                            }catch (Exception e){
+                                threadService.runActionLater(this);
+                            }
+                        }
+                    });
                 }
             }
 
