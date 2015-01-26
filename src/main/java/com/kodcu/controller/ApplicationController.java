@@ -662,7 +662,11 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                 }
         });
 
-        threadService.runActionLater(this::newDoc);
+        threadService.runActionLater(e -> {
+            if (tabPane.getTabs().isEmpty()) {
+                newDoc(e);
+            }
+        });
 
     }
 
