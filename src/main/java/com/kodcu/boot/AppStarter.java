@@ -1,16 +1,26 @@
 package com.kodcu.boot;
 
+import static java.nio.file.StandardOpenOption.*;
+import static java.nio.file.StandardOpenOption.APPEND;
 import static javafx.scene.input.KeyCombination.SHORTCUT_DOWN;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
+import java.util.Objects;
+import java.util.concurrent.ThreadLocalRandom;
 
+import com.install4j.api.launcher.StartupNotification;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
@@ -35,10 +45,10 @@ import de.tototec.cmdoption.CmdlineParserException;
 
 public class AppStarter extends Application {
 
-    private Logger logger = LoggerFactory.getLogger(AppStarter.class);
+    private static Logger logger = LoggerFactory.getLogger(AppStarter.class);
 
-    private ApplicationController controller;
-    private ConfigurableApplicationContext context;
+    private static ApplicationController controller;
+    private static ConfigurableApplicationContext context;
 
     @Override
     public void start(final Stage stage) {
@@ -110,9 +120,23 @@ public class AppStarter extends Application {
             controller.newDoc(null);
         });
 
+        final ThreadService threadService = context.getBean(ThreadService.class);
+        final TabService tabService = context.getBean(TabService.class);
+
+        StartupNotification.registerStartupListener(parameters -> {
+
+            threadService.runActionLater(() -> {
+
+                String[] files = parameters.split(" ");
+
+                for (String file : files) {
+                    file = file.replace("\"", "");
+                    tabService.addTab(Paths.get(file).toAbsolutePath());
+                }
+            });
+        });
+
         if (!config.files.isEmpty()) {
-            final ThreadService threadService = context.getBean(ThreadService.class);
-            final TabService tabService = context.getBean(TabService.class);
             threadService.runActionLater(() -> {
                 config.files.stream().forEach(f -> {
                     File file = new File(f).getAbsoluteFile();

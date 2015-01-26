@@ -159,6 +159,11 @@
             <artifactId>de.tototec.cmdoption</artifactId>
             <version>0.4.1</version>
         </dependency>
+        <dependency>
+            <artifactId>install4j</artifactId>
+            <groupId>i4jruntime</groupId>
+            <version>1.1</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -219,5 +224,17 @@
             </plugin>
         </plugins>
     </build>
+
+    <repositories>
+        <repository>
+            <id>rahmanusta-releases</id>
+            <releases>
+                <enabled>true</enabled>
+                <checksumPolicy>warn</checksumPolicy>
+                <updatePolicy>always</updatePolicy>
+            </releases>
+            <url>http://asciidocfx.com/build</url>
+        </repository>
+    </repositories>
 
 </project>
