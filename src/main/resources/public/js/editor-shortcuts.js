@@ -325,7 +325,7 @@ editor.commands.addCommand({
         if (textRange == "article") { // source generator
             editor.removeToLineStart();
 
-            editor.insert("= Book Name\nAuthor's Name\n:doctype: article\n:encoding: utf-8\n:lang: en\n:toc: left\n:numbered:\n\n\n");
+            editor.insert("= Article Name\nAuthor's Name\n:doctype: article\n:encoding: utf-8\n:lang: en\n:toc: left\n:numbered:\n\n\n");
 
             return;
         }
