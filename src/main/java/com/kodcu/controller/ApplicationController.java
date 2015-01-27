@@ -650,12 +650,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             Path selectedPath = selectedItem.getValue().getPath();
             if (event.getButton() == MouseButton.PRIMARY)
                 if (Files.isDirectory(selectedPath)) {
-                    if (selectedItem.getChildren().size() == 0) {
-                        fileBrowser.addPathToTree(selectedPath, path -> {
-                            selectedItem.getChildren().add(new TreeItem<>(new Item(path), awesomeService.getIcon(path)));
-                        });
-                    }
-                    selectedItem.setExpanded(!selectedItem.isExpanded());
+                    directoryService.changeWorkigDir(selectedPath);
 
                 } else if (event.getClickCount() == 2) {
                     directoryService.getOpenFileConsumer().accept(selectedPath);
