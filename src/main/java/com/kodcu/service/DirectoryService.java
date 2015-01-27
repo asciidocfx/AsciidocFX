@@ -69,8 +69,8 @@ public class DirectoryService {
 
     private Consumer<Path> openFileConsumer = path -> {
         if (Files.isDirectory(path))
-            return;
-        if (pathResolver.isAsciidoc(path))
+            changeWorkigDir(path);
+        else if (pathResolver.isAsciidoc(path))
             tabService.addTab(path);
         else if (pathResolver.isImage(path))
             tabService.addImageTab(path);

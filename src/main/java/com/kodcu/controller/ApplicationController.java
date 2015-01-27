@@ -649,12 +649,8 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                 return;
             Path selectedPath = selectedItem.getValue().getPath();
             if (event.getButton() == MouseButton.PRIMARY)
-                if (Files.isDirectory(selectedPath)) {
-                    directoryService.changeWorkigDir(selectedPath);
-
-                } else if (event.getClickCount() == 2) {
+                if (event.getClickCount() == 2)
                     directoryService.getOpenFileConsumer().accept(selectedPath);
-                }
         });
 
         threadService.runActionLater(e -> {
