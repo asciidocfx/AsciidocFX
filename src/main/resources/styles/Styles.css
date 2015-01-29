@@ -514,3 +514,19 @@
 .preview-box{
     -fx-background-color: transparent;
 }
+
+/******************************************************************************
+*                                                                             *
+* Tooltip                                                                     *
+*                                                                             *
+******************************************************************************/
+
+.tooltip {
+    -fx-background-color: rgb(244, 244, 244);
+    -fx-border-radius: 5px;
+    -fx-border-style: solid;
+    -fx-border-width: 1px;
+    -fx-border-color: rgb(175, 175, 175);
+    -fx-font: 11px "Segoe UI";
+    -fx-text-fill: black;
+}
