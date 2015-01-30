@@ -66,6 +66,11 @@
                         <MenuButton fx:id="leftButton" minWidth="-Infinity" mnemonicParsing="false" text="" HBox.hgrow="NEVER">
                           <items>
                             <MenuItem mnemonicParsing="false" onAction="#generateSampleBook" text="Sample Book" />
+                            <MenuItem mnemonicParsing="false" onAction="#bugReport" text="Bug Report" />
+                            <MenuItem mnemonicParsing="false" onAction="#openCommunityForum" text="Community Forum" />
+                            <MenuItem mnemonicParsing="false" onAction="#openGitterChat" text="Gitter Chat" />
+                            <MenuItem mnemonicParsing="false" onAction="#openGithubPage" text="Github Page" />
+                            <MenuItem mnemonicParsing="false" onAction="#openAbout" text="About" />
                           </items>
                           <HBox.margin>
                             <Insets />
@@ -144,7 +149,7 @@
                     <Insets bottom="5.0" left="15.0" right="15.0" top="5.0" />
                   </padding>
                 </HBox>
-                <WebView fx:id="previewView" style="" styleClass="previewView" VBox.vgrow="ALWAYS" />
+                <WebView fx:id="previewView" style="" styleClass="null" VBox.vgrow="ALWAYS" />
               </children>
             </VBox>
           </children>
