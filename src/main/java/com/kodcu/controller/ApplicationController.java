@@ -32,6 +32,7 @@ import javafx.collections.ObservableList;
 import javafx.concurrent.Worker;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
@@ -44,9 +45,11 @@ import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
+import javafx.stage.Popup;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import netscape.javascript.JSObject;
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,6 +62,7 @@ import org.springframework.web.socket.handler.TextWebSocketHandler;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.net.URL;
 import java.nio.file.Files;
@@ -446,7 +450,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         AwesomeDude.setIcon(goUpLabel, AwesomeIcon.LEVEL_UP, "14.0");
         AwesomeDude.setIcon(goHomeLabel, AwesomeIcon.HOME, "14.0");
 
-        leftButton.setGraphic(AwesomeDude.createIconLabel(AwesomeIcon.COG, "14.0"));
+        leftButton.setGraphic(AwesomeDude.createIconLabel(AwesomeIcon.ELLIPSIS_H, "14.0"));
 
         ContextMenu htmlProMenu = new ContextMenu();
         htmlPro.setContextMenu(htmlProMenu);
@@ -956,5 +960,43 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     public Current getCurrent() {
         return current;
+    }
+
+    @FXML
+    private void bugReport(ActionEvent actionEvent) {
+        getHostServices().showDocument("https://github.com/asciidocfx/AsciidocFX/issues");
+    }
+
+    @FXML
+    private void openCommunityForum(ActionEvent actionEvent) {
+        getHostServices().showDocument("https://groups.google.com/d/forum/asciidocfx-discuss");
+    }
+
+    @FXML
+    private void openGitterChat(ActionEvent actionEvent) {
+        getHostServices().showDocument("https://gitter.im/asciidocfx/AsciidocFX");
+    }
+
+    @FXML
+    private void openGithubPage(ActionEvent actionEvent) {
+        getHostServices().showDocument("https://github.com/asciidocfx/AsciidocFX");
+    }
+
+    @FXML
+    private void openAbout(ActionEvent actionEvent) throws IOException {
+        Popup popup=new Popup();
+        AnchorPane anchorPane=new AnchorPane();
+        anchorPane.getStyleClass().add("about-popup");
+        popup.setAutoHide(true);
+
+        try(InputStream stream = ApplicationController.class.getResourceAsStream("/banner.txt");){
+            String banner = IOUtils.toString(stream);
+            Label bannerLabel = new Label(banner);
+            bannerLabel.getStyleClass().add("banner-label");
+            anchorPane.getChildren().add(bannerLabel);
+        }
+
+        popup.getContent().add(anchorPane);
+        popup.show(getStage());
     }
 }

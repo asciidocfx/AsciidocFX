@@ -530,3 +530,18 @@
     -fx-font: 11px "Segoe UI";
     -fx-text-fill: black;
 }
+
+.about-popup{
+    -fx-background-color: rgb(255, 241, 162);
+    -fx-border-radius: 5px;
+    -fx-background-radius: 5px;
+    -fx-border-style: solid;
+    -fx-border-width: 1px;
+    -fx-border-color: rgb(175, 175, 175);
+
+    -fx-font: 14px "Monospace";
+}
+
+.about-popup .banner-label {
+    -fx-padding: 15px;
+}
