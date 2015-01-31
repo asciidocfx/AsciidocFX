@@ -1,9 +1,8 @@
 package com.kodcu.controller;
 
 import com.kodcu.other.Current;
+import com.kodcu.other.IOHelper;
 import com.kodcu.service.DirectoryService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
-import java.nio.file.Files;
 import java.nio.file.Path;
 
 /**
@@ -22,8 +20,6 @@ import java.nio.file.Path;
  */
 @Controller
 public class ImageController {
-
-    private Logger logger = LoggerFactory.getLogger(ImageController.class);
 
     @Autowired
     private Current current;
@@ -38,12 +34,11 @@ public class ImageController {
     @ResponseBody
     public ResponseEntity<byte[]> images(HttpServletRequest request, @PathVariable("extension") String extension) {
 
+        Path imageFile;
         String uri = request.getRequestURI();
-        byte[] temp = new byte[]{};
+
         if (uri.startsWith("/"))
             uri = uri.substring(1);
-
-        Path imageFile = null;
 
         if (current.currentPath().isPresent()) {
             imageFile = current.currentPath().map(Path::getParent).get().resolve(uri);
@@ -51,11 +46,7 @@ public class ImageController {
             imageFile = directoryService.getWorkingDirectory().get().resolve(uri);
         }
 
-        try {
-            temp = Files.readAllBytes(imageFile);
-        } catch (Exception e) {
-            logger.info(e.getMessage(), e);
-        }
+        byte[] temp = IOHelper.readAllBytes(imageFile);
 
         return new ResponseEntity<>(temp, HttpStatus.OK);
     }
