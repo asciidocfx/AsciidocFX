@@ -99,7 +99,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     public MenuItem copyPathListItem;
     public MenuItem copyTreeItem;
     public MenuItem copyListItem;
-    public MenuItem selectAsWorkdir;
     public MenuButton leftButton;
     private WebView mathjaxView;
     public Label htmlPro;
@@ -626,13 +625,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             path = Files.isDirectory(path) ? path : path.getParent();
             if (Objects.nonNull(path))
                 getHostServices().showDocument(path.toUri().toASCIIString());
-        });
-
-        selectAsWorkdir.setOnAction(event -> {
-            Path path = tabService.getSelectedTabPath();
-            path = Files.isDirectory(path) ? path : path.getParent();
-            if (Objects.nonNull(path))
-                directoryService.changeWorkigDir(path);
         });
 
         openFolderListItem.setOnAction(event -> {

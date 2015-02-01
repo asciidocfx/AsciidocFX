@@ -90,8 +90,6 @@
                             <SeparatorMenuItem />
                             <MenuItem mnemonicParsing="false" text="Copy Path" fx:id="copyPathTreeItem" />
                             <MenuItem mnemonicParsing="false" text="Copy" fx:id="copyTreeItem" />
-                            <SeparatorMenuItem />
-                            <MenuItem mnemonicParsing="false" text="Select as Workdir" fx:id="selectAsWorkdir" />
                           </items>
                         </ContextMenu>
                       </contextMenu>
