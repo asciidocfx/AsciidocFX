@@ -246,7 +246,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     public void createTable(Event event) {
         threadService.runTaskLater(() -> {
             threadService.runActionLater(() -> {
-                tableStage.show();
+                tableStage.showAndWait();
             });
         });
     }
