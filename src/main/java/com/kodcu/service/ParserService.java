@@ -41,7 +41,9 @@ public class ParserService {
         List<String> buffer = new LinkedList<>();
 
         for (Path path : files) {
-            IOHelper.copy(path, currentPath.resolve(path.getFileName()));
+            Path targetPath = currentPath.resolve(path.getFileName());
+            if (!path.equals(targetPath))
+                IOHelper.copy(path, targetPath);
             buffer.add(String.format("include::%s[]", path.getFileName()));
         }
 
@@ -64,7 +66,8 @@ public class ParserService {
 
         for (Path path : paths) {
             Path targetImage = currentPath.resolve("images").resolve(path.getFileName());
-            IOHelper.copy(path, targetImage);
+            if (!path.equals(targetImage))
+                IOHelper.copy(path, targetImage);
             buffer.add(String.format("image::images/%s[]", path.getFileName()));
         }
 
