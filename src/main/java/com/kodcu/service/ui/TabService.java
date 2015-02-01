@@ -260,10 +260,10 @@ public class TabService {
         scrollPane.addEventFilter(ScrollEvent.SCROLL, e -> {
             if (e.isControlDown() && e.getDeltaY() > 0) {
                 // zoom in
-                imageView.setFitWidth(imageView.getFitWidth() + 4.0);
+                imageView.setFitWidth(imageView.getFitWidth() + 16.0);
             } else if (e.isControlDown() && e.getDeltaY() < 0) {
                 // zoom out
-                imageView.setFitWidth(imageView.getFitWidth() - 4.0);
+                imageView.setFitWidth(imageView.getFitWidth() - 16.0);
             }
         });
 
