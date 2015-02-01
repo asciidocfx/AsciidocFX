@@ -21,11 +21,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.web.SpringBootServletInitializer;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;
 import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
 import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
+
+import java.util.Base64;
 
 
 @Configuration
@@ -46,6 +50,16 @@ public class SpringAppConfig extends SpringBootServletInitializer implements Web
     protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
 
         return application.sources(SpringAppConfig.class);
+    }
+
+    @Bean
+    public RestTemplate restTemplate(){
+        return  new RestTemplate();
+    }
+
+    @Bean
+    public Base64.Encoder base64Encoder(){
+        return Base64.getEncoder();
     }
 
 
