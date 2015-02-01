@@ -1,5 +1,6 @@
 package com.kodcu.service.ui;
 
+import com.kodcu.component.LabelBuilt;
 import com.kodcu.controller.ApplicationController;
 import com.kodcu.other.Current;
 import de.jensd.fx.fontawesome.AwesomeDude;
@@ -29,78 +30,65 @@ public class EditorService {
         MenuBar menuBar = new MenuBar();
         menuBar.getStyleClass().add("editorToolsBar");
         String iconSize = "14.0";
+        double minSize = 14.01;
 
-        Label saveLabel = AwesomeDude.createIconLabel(AwesomeIcon.SAVE, iconSize);
-        Label newLabel = AwesomeDude.createIconLabel(AwesomeIcon.FILE_TEXT_ALT, iconSize);
-        Label openLabel = AwesomeDude.createIconLabel(AwesomeIcon.FOLDER_ALTPEN_ALT, iconSize);
-        Label boldLabel = AwesomeDude.createIconLabel(AwesomeIcon.BOLD, iconSize);
-        Label italicLabel = AwesomeDude.createIconLabel(AwesomeIcon.ITALIC, iconSize);
-        Label headerLabel = AwesomeDude.createIconLabel(AwesomeIcon.HEADER, iconSize);
-        Label codeLabel = AwesomeDude.createIconLabel(AwesomeIcon.CODE, iconSize);
-        Label ulListLabel = AwesomeDude.createIconLabel(AwesomeIcon.LIST_UL, iconSize);
-        Label olListLabel = AwesomeDude.createIconLabel(AwesomeIcon.LIST_ALTL, iconSize);
-        Label tableLabel = AwesomeDude.createIconLabel(AwesomeIcon.TABLE, iconSize);
-        Label imageLabel = AwesomeDude.createIconLabel(AwesomeIcon.IMAGE, iconSize);
-        Label subscriptLabel = AwesomeDude.createIconLabel(AwesomeIcon.SUBSCRIPT, iconSize);
-        Label superScriptLabel = AwesomeDude.createIconLabel(AwesomeIcon.SUPERSCRIPT, iconSize);
-        Label underlineLabel = AwesomeDude.createIconLabel(AwesomeIcon.UNDERLINE, iconSize);
-        Label hyperlinkLabel = AwesomeDude.createIconLabel(AwesomeIcon.LINK, iconSize);
-        Label strikethroughLabel = AwesomeDude.createIconLabel(AwesomeIcon.STRIKETHROUGH, iconSize);
-        Label openMenuLabel = AwesomeDude.createIconLabel(AwesomeIcon.CHEVRON_CIRCLE_DOWN, iconSize);
-//        Label highlightLabel = new Label(" A ");
+        Label saveLabel = LabelBuilt.icon(AwesomeIcon.SAVE, iconSize, minSize).tip("Save").click(controller::saveDoc).build();
 
-        // Events
-        newLabel.setOnMouseClicked(controller::newDoc);
-        openLabel.setOnMouseClicked(controller::openDoc);
-        saveLabel.setOnMouseClicked(controller::saveDoc);
-        boldLabel.setOnMouseClicked(event -> {
+        Label newLabel = LabelBuilt.icon(AwesomeIcon.FILE_TEXT_ALT, iconSize, minSize).tip("New File").click(controller::newDoc).build();
+
+        Label openLabel = LabelBuilt.icon(AwesomeIcon.FOLDER_ALTPEN_ALT, iconSize, minSize).tip("Open File").click(controller::openDoc).build();
+
+        Label boldLabel = LabelBuilt.icon(AwesomeIcon.BOLD, iconSize, minSize).tip("Bold").click(event -> {
             current.currentEngine().executeScript("boldText()");
-        });
-        italicLabel.setOnMouseClicked(event -> {
+        }).build();
+
+        Label italicLabel = LabelBuilt.icon(AwesomeIcon.ITALIC, iconSize, minSize).tip("Italic").click(event -> {
             current.currentEngine().executeScript("italicizeText()");
-        });
+        }).build();
 
-        codeLabel.setOnMouseClicked(event -> {
-            current.currentEngine().executeScript("addSourceCode()");
-        });
-
-        tableLabel.setOnMouseClicked(controller::createTable);
-
-        subscriptLabel.setOnMouseClicked(event -> {
-            current.currentEngine().executeScript("subScript()");
-        });
-
-        superScriptLabel.setOnMouseClicked(event -> {
-            current.currentEngine().executeScript("superScript()");
-        });
-
-        imageLabel.setOnMouseClicked(event -> {
-            current.currentEngine().executeScript("addImageSection()");
-        });
-
-        headerLabel.setOnMouseClicked(event -> {
+        Label headerLabel = LabelBuilt.icon(AwesomeIcon.ITALIC, iconSize, minSize).tip("Headings").click(event -> {
             current.currentEngine().executeScript("addHeading()");
-        });
+        }).build();
 
-        ulListLabel.setOnMouseClicked(event -> {
+        Label codeLabel = LabelBuilt.icon(AwesomeIcon.CODE, iconSize, minSize).tip("Code Snippet").click(event -> {
+            current.currentEngine().executeScript("addSourceCode()");
+        }).build();
+
+        Label ulListLabel = LabelBuilt.icon(AwesomeIcon.LIST_UL, iconSize, minSize).tip("Bulleted List").click(event -> {
             current.currentEngine().executeScript("addUlList()");
-        });
+        }).build();
 
-        olListLabel.setOnMouseClicked(event -> {
+        Label olListLabel = LabelBuilt.icon(AwesomeIcon.LIST_ALTL, iconSize, minSize).tip("Numbered List").click(event -> {
             current.currentEngine().executeScript("addOlList()");
-        });
+        }).build();
 
-        underlineLabel.setOnMouseClicked(event -> {
+        Label tableLabel = LabelBuilt.icon(AwesomeIcon.TABLE, iconSize, minSize).tip("Table").click(controller::createTable).build();
+
+        Label imageLabel = LabelBuilt.icon(AwesomeIcon.IMAGE, iconSize, minSize).tip("Image").click(event -> {
+            current.currentEngine().executeScript("addImageSection()");
+        }).build();
+
+        Label subscriptLabel = LabelBuilt.icon(AwesomeIcon.SUBSCRIPT, iconSize, minSize).tip("Subscript").click(event -> {
+            current.currentEngine().executeScript("subScript()");
+        }).build();
+
+        Label superScriptLabel = LabelBuilt.icon(AwesomeIcon.SUPERSCRIPT, iconSize, minSize).tip("Superscript").click(event -> {
+            current.currentEngine().executeScript("superScript()");
+        }).build();
+
+        Label underlineLabel = LabelBuilt.icon(AwesomeIcon.UNDERLINE, iconSize, minSize).tip("Underline").click(event -> {
             current.currentEngine().executeScript("underlinedText()");
-        });
+        }).build();
 
-        hyperlinkLabel.setOnMouseClicked(event -> {
+        Label hyperlinkLabel = LabelBuilt.icon(AwesomeIcon.LINK, iconSize, minSize).tip("Hyperlink").click(event -> {
             current.currentEngine().executeScript("addHyperLink()");
-        });
+        }).build();
 
-        strikethroughLabel.setOnMouseClicked(event -> {
+        Label strikethroughLabel = LabelBuilt.icon(AwesomeIcon.STRIKETHROUGH, iconSize, minSize).tip("Strikethrough").click(event -> {
             current.currentEngine().executeScript("addStrikeThroughText()");
-        });
+        }).build();
+
+        Label openMenuLabel = LabelBuilt.icon(AwesomeIcon.CHEVRON_CIRCLE_DOWN, iconSize, minSize).tip("More...").build();
 
         openMenuLabel.setOnMouseClicked(event -> {
             int childSize = vbox.getChildren().size();
@@ -114,24 +102,6 @@ public class EditorService {
                 vbox.getChildren().add(createSecondEditorVBox(iconSize));
             }
         });
-
-        Tooltip.install(newLabel, new Tooltip("New File"));
-        Tooltip.install(openLabel, new Tooltip("Open File"));
-        Tooltip.install(saveLabel, new Tooltip("Save"));
-        Tooltip.install(boldLabel, new Tooltip("Bold"));
-        Tooltip.install(italicLabel, new Tooltip("Italic"));
-        Tooltip.install(underlineLabel, new Tooltip("Underline"));
-        Tooltip.install(strikethroughLabel, new Tooltip("Strikethrough"));
-        Tooltip.install(headerLabel, new Tooltip("Headings"));
-        Tooltip.install(hyperlinkLabel, new Tooltip("Hyperlink"));
-        Tooltip.install(codeLabel, new Tooltip("Code Snippet"));
-        Tooltip.install(ulListLabel, new Tooltip("Bulleted List"));
-        Tooltip.install(olListLabel, new Tooltip("Numbered List"));
-        Tooltip.install(tableLabel, new Tooltip("Table"));
-        Tooltip.install(imageLabel, new Tooltip("Image"));
-        Tooltip.install(subscriptLabel, new Tooltip("Subscript"));
-        Tooltip.install(superScriptLabel, new Tooltip("Superscript"));
-        Tooltip.install(openMenuLabel, new Tooltip("More..."));
 
         menuBar.getMenus().addAll(
                 new Menu("", newLabel),
