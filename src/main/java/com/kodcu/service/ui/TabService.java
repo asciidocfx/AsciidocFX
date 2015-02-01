@@ -5,6 +5,7 @@ import com.kodcu.controller.ApplicationController;
 import com.kodcu.other.Current;
 import com.kodcu.other.IOHelper;
 import com.kodcu.other.Item;
+import com.kodcu.service.DirectoryService;
 import com.kodcu.service.PathResolverService;
 import com.kodcu.service.ThreadService;
 import javafx.collections.ObservableList;
@@ -53,6 +54,9 @@ public class TabService {
 
     @Autowired
     private Current current;
+
+    @Autowired
+    private DirectoryService directoryService;
 
     private List<Optional<Path>> closedPaths = new ArrayList<>();
 
@@ -216,8 +220,16 @@ public class TabService {
         MenuItem menuItem8 = new MenuItem("New File");
         menuItem8.setOnAction(controller::newDoc);
 
+        MenuItem gotoWorkdir = new MenuItem("Go to Workdir");
+        gotoWorkdir.setOnAction(event -> {
+            current.currentPath().map(Path::getParent).ifPresent(directoryService::changeWorkigDir);
+        });
+
         ContextMenu contextMenu = new ContextMenu();
-        contextMenu.getItems().addAll(menuItem0, menuItem1, menuItem2, menuItem3, new SeparatorMenuItem(), menuItem4, menuItem5, menuItem6, new SeparatorMenuItem(), menuItem7, menuItem8);
+        contextMenu.getItems().addAll(menuItem0, menuItem1, menuItem2, menuItem3, new SeparatorMenuItem(),
+                                      menuItem4, menuItem5, menuItem6, new SeparatorMenuItem(),
+                                      gotoWorkdir ,new SeparatorMenuItem(),
+                                      menuItem7, menuItem8);
 
         tab.contextMenuProperty().setValue(contextMenu);
 
