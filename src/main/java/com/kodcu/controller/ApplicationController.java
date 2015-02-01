@@ -466,6 +466,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         leftButton.setGraphic(AwesomeDude.createIconLabel(AwesomeIcon.ELLIPSIS_H, "14.0"));
 
         ContextMenu htmlProMenu = new ContextMenu();
+        htmlProMenu.getStyleClass().add("build-menu");
         htmlPro.setContextMenu(htmlProMenu);
         htmlPro.setOnMouseClicked(event -> {
             htmlProMenu.show(htmlPro, event.getScreenX(), 50);
@@ -484,6 +485,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         }));
 
         ContextMenu pdfProMenu = new ContextMenu();
+        pdfProMenu.getStyleClass().add("build-menu");
         pdfProMenu.getItems().add(MenuItemBuilt.item("Save").onclick(event -> {
             this.generatePdf();
         }));
@@ -497,6 +499,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         });
 
         ContextMenu docbookProMenu = new ContextMenu();
+        docbookProMenu.getStyleClass().add("build-menu");
         docbookProMenu.getItems().add(MenuItemBuilt.item("Save").onclick(event -> {
             this.convertDocbook();
         }));
@@ -511,6 +514,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         });
 
         ContextMenu ebookProMenu = new ContextMenu();
+        ebookProMenu.getStyleClass().add("build-menu");
         ebookProMenu.getItems().add(MenuBuilt.name("Mobi")
                 .add(MenuItemBuilt.item("Save").onclick(event -> {
                     this.convertMobi();

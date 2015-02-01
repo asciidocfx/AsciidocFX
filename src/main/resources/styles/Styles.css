@@ -545,3 +545,7 @@
 .about-popup .banner-label {
     -fx-padding: 15px;
 }
+
+.build-menu .menu-item,.build-menu .menu-item * {
+    -fx-cursor: hand;
+}
