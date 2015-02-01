@@ -106,6 +106,7 @@ public class AppStarter extends Application {
         tableStage.initModality(Modality.WINDOW_MODAL);
         tableStage.initOwner(scene.getWindow());
         tableStage.getIcons().add(new Image(getClass().getResourceAsStream("/logo.png")));
+        tableStage.hide();
 
         controller.setStage(stage);
         controller.setScene(scene);

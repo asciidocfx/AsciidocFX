@@ -20,8 +20,6 @@ import com.kodcu.service.ui.*;
 import com.sun.javafx.application.HostServicesDelegate;
 import de.jensd.fx.fontawesome.AwesomeDude;
 import de.jensd.fx.fontawesome.AwesomeIcon;
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -32,7 +30,6 @@ import javafx.collections.ObservableList;
 import javafx.concurrent.Worker;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
@@ -47,7 +44,6 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Popup;
 import javafx.stage.Stage;
-import javafx.util.Duration;
 import netscape.javascript.JSObject;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
@@ -55,6 +51,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.embedded.EmbeddedWebApplicationContext;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
@@ -63,7 +60,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Field;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -71,9 +67,7 @@ import java.nio.file.Paths;
 import java.security.CodeSource;
 import java.util.*;
 
-import static java.nio.file.StandardOpenOption.CREATE;
-import static java.nio.file.StandardOpenOption.TRUNCATE_EXISTING;
-import static java.nio.file.StandardOpenOption.WRITE;
+import static java.nio.file.StandardOpenOption.*;
 
 
 @Controller
@@ -203,6 +197,12 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     @Autowired
     private EpubController epubController;
+
+    @Autowired
+    private RestTemplate restTemplate;
+
+    @Autowired
+    private Base64.Encoder base64Encoder;
 
     private Stage stage;
     private WebEngine previewEngine;
@@ -334,7 +334,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                 }
 
                 final String finalDocbook = docbook;
-                threadService.runTaskLater(()->{
+                threadService.runTaskLater(() -> {
                     IOHelper.writeToFile(docbookPath, finalDocbook, CREATE, TRUNCATE_EXISTING, WRITE);
                 });
                 getRecentFiles().remove(docbookPath.toString());
@@ -429,6 +429,20 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         directoryService.changeWorkigDir(userHome);
     }
 
+    public void imageToBase64Url(final String url, final int index) {
+
+        threadService.runTaskLater(() -> {
+            try {
+                byte[] imageBuffer = restTemplate.getForObject(url, byte[].class);
+                String imageBase64 = base64Encoder.encodeToString(imageBuffer);
+                threadService.runActionLater(() -> {
+                    previewEngine.executeScript(String.format("updateBase64Url(%d,'%s')", index, imageBase64));
+                });
+            } catch (Exception e) {
+                logger.info(e.getMessage(), e);
+            }
+        });
+    }
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -463,10 +477,12 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         htmlProMenu.getItems().add(MenuItemBuilt.item("Save as").onclick(event -> {
             this.generateHtml(true);
         }));
-        htmlProMenu.getItems().add(MenuItemBuilt.item("Copy source").onclick(event -> {
+        htmlProMenu.getItems().add(MenuItemBuilt.item("Copy source").tip("Copy HTML source").onclick(event -> {
             this.cutCopy(lastRendered.getValue());
         }));
-
+        htmlProMenu.getItems().add(MenuItemBuilt.item("Clone source").tip("Copy HTML source (Embedded images)").onclick(event -> {
+            previewEngine.executeScript("imageToBase64Url()");
+        }));
 
         ContextMenu pdfProMenu = new ContextMenu();
         pdfProMenu.getItems().add(MenuItemBuilt.item("Save").onclick(event -> {
@@ -984,12 +1000,12 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     @FXML
     private void openAbout(ActionEvent actionEvent) throws IOException {
-        Popup popup=new Popup();
-        AnchorPane anchorPane=new AnchorPane();
+        Popup popup = new Popup();
+        AnchorPane anchorPane = new AnchorPane();
         anchorPane.getStyleClass().add("about-popup");
         popup.setAutoHide(true);
 
-        try(InputStream stream = ApplicationController.class.getResourceAsStream("/banner.txt");){
+        try (InputStream stream = ApplicationController.class.getResourceAsStream("/banner.txt");) {
             String banner = IOUtils.toString(stream);
             Label bannerLabel = new Label(banner);
             bannerLabel.getStyleClass().add("banner-label");
