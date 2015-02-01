@@ -3,7 +3,10 @@ package com.kodcu.component;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.scene.Node;
+import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.Tooltip;
 
 /**
  * Created by usta on 24.01.2015.
@@ -17,11 +20,19 @@ public class MenuItemBuilt {
     }
 
     public static MenuItemBuilt item(String name) {
-        return new MenuItemBuilt(new MenuItem(name));
+        MenuItem item = new MenuItem();
+        item.setGraphic(new Label(name));
+        return new MenuItemBuilt(item);
     }
 
     public MenuItem onclick(EventHandler<ActionEvent> event) {
         menuItem.setOnAction(event);
         return menuItem;
+    }
+
+    public MenuItemBuilt tip(String tipText) {
+        Tooltip tooltip=new Tooltip(tipText);
+        Tooltip.install(menuItem.getGraphic(),tooltip);
+        return this;
     }
 }
