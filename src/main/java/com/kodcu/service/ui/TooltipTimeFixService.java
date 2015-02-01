@@ -32,7 +32,7 @@ public class TooltipTimeFixService {
             Timeline objTimer = (Timeline) fieldTimer.get(objBehavior);
 
             objTimer.getKeyFrames().clear();
-            objTimer.getKeyFrames().add(new KeyFrame(new Duration(250)));
+            objTimer.getKeyFrames().add(new KeyFrame(new Duration(400)));
         } catch (Exception e) {
             logger.info(e.getMessage(),e);
         }
