@@ -164,6 +164,15 @@ function addSourceCode() {
     editor.gotoLine(range.end.row + 3, 0, true);
 }
 
+function addQuote(){
+    var range = editor.getSelectionRange();
+    editor.removeToLineStart();
+
+    editor.insert("[quote,Rūmī]\n____\nPatience is the key to joy.\n____");
+
+    editor.gotoLine(range.end.row + 3, 0, true);
+}
+
 function addMathBlock() {
     var range = editor.getSelectionRange();
     editor.removeToLineStart();
@@ -349,6 +358,11 @@ editor.commands.addCommand({
             return;
         }
 
+        // quote tab
+        if (textRange == "quote") { // quote block generator
+            addQuote();
+            return;
+        }
 
         // src tab
         if (textRange == "src") { // source generator
