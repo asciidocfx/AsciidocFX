@@ -20,6 +20,7 @@ public class IndikatorService {
 
     public void startCycle() {
         Platform.runLater(() -> {
+            asciiDocController.getIndikator().setVisible(true);
             asciiDocController.getIndikator().setManaged(true);
         });
     }
@@ -27,6 +28,7 @@ public class IndikatorService {
     public void completeCycle() {
         Platform.runLater(() -> {
             asciiDocController.getIndikator().setManaged(false);
+            asciiDocController.getIndikator().setVisible(false);
         });
     }
 
