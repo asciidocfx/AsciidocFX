@@ -89,7 +89,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     public Label refreshLabel;
     public AnchorPane rootAnchor;
     public MenuBar recentFilesBar;
-    public ProgressBar indikator;
+    public ProgressIndicator indikator;
     public ListView<String> recentListView;
     public MenuItem openFileTreeItem;
     public MenuItem openFolderTreeItem;
@@ -420,7 +420,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     @FXML
     public void refreshWorkingDir() {
-        directoryService.refreshWorkingDir();
+        current.currentPath().map(Path::getParent).ifPresent(directoryService::changeWorkigDir);
     }
 
     @FXML
