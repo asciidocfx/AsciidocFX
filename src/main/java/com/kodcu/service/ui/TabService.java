@@ -237,16 +237,10 @@ public class TabService {
         tab.setGraphic(label);
 
         label.setOnMouseClicked(mouseEvent -> {
-
             if (mouseEvent.getButton().equals(MouseButton.SECONDARY)) {
                 controller.getTabPane().getSelectionModel().select(tab);
             } else if (mouseEvent.getClickCount() > 1) {
-                SplitPane splitPane = controller.getSplitPane();
-                if (splitPane.getDividerPositions()[0] > 0.1)
-                    splitPane.setDividerPositions(0, 1);
-                else
-                    splitPane.setDividerPositions(0.18, 0.60);
-
+                controller.adjustSplitPane();
             }
         });
 

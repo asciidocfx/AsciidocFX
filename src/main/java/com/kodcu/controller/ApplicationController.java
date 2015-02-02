@@ -837,6 +837,13 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         return clipboard.getString();
     }
 
+    public void adjustSplitPane(){
+        if (splitPane.getDividerPositions()[0] > 0.1)
+            splitPane.setDividerPositions(0, 1);
+        else
+            splitPane.setDividerPositions(0.18, 0.60);
+    }
+
     public void saveDoc() {
         documentService.saveDoc();
     }
