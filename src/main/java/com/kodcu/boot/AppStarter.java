@@ -116,6 +116,7 @@ public class AppStarter extends Application {
         stage.show();
 
         scene.getAccelerators().put(new KeyCodeCombination(KeyCode.S, SHORTCUT_DOWN), controller::saveDoc);
+        scene.getAccelerators().put(new KeyCodeCombination(KeyCode.M, SHORTCUT_DOWN), controller::adjustSplitPane);
         scene.getAccelerators().put(new KeyCodeCombination(KeyCode.N, SHORTCUT_DOWN), () -> {
             controller.newDoc(null);
         });
