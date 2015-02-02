@@ -46,7 +46,7 @@ public class EditorService {
             current.currentEngine().executeScript("italicizeText()");
         }).build();
 
-        Label headerLabel = LabelBuilt.icon(AwesomeIcon.ITALIC, iconSize, minSize).tip("Headings").click(event -> {
+        Label headerLabel = LabelBuilt.icon(AwesomeIcon.HEADER, iconSize, minSize).tip("Headings").click(event -> {
             current.currentEngine().executeScript("addHeading()");
         }).build();
 
