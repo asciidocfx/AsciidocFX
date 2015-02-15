@@ -26,10 +26,10 @@ public class PathResolverService {
             Arrays.asList("book.asc", "book.txt", "book.asciidoc", "book.adoc", "book.ad");
 
     PathMatcher pdfMatcher = FileSystems.getDefault().getPathMatcher("glob:**.pdf");
-    PathMatcher htmlMatcher = FileSystems.getDefault().getPathMatcher("glob:**.{html,html}");
+    PathMatcher htmlMatcher = FileSystems.getDefault().getPathMatcher("glob:**.{htm,html}");
     PathMatcher docBookMatcher = FileSystems.getDefault().getPathMatcher("glob:**.xml");
     PathMatcher ascMatcher = FileSystems.getDefault().getPathMatcher("glob:**.{asc,asciidoc,ad,adoc,txt}");
-    PathMatcher imageMatcher = FileSystems.getDefault().getPathMatcher("glob:**.{png,svg,jpg,bmp,gif}");
+    PathMatcher imageMatcher = FileSystems.getDefault().getPathMatcher("glob:**.{png,svg,jpg,jpeg,bmp,gif}");
     PathMatcher pptMatcher = FileSystems.getDefault().getPathMatcher("glob:**.{ppt,pptx}");
     PathMatcher docxMatcher = FileSystems.getDefault().getPathMatcher("glob:**.{doc,docx}");
     PathMatcher excelMatcher = FileSystems.getDefault().getPathMatcher("glob:**.{xls,xlsx}");
@@ -37,7 +37,7 @@ public class PathResolverService {
     PathMatcher videoMatcher = FileSystems.getDefault().getPathMatcher("glob:**.{cda,avi,flv,mkv,mov,mp4,mpeg,mpg,ogv,webm,divx,wmv}");
     PathMatcher cssMatcher = FileSystems.getDefault().getPathMatcher("glob:**.{css,css3,scss,less}");
     PathMatcher terminalMatcher = FileSystems.getDefault().getPathMatcher("glob:**.{bat,sh,cmd}");
-    PathMatcher codeMatcher = FileSystems.getDefault().getPathMatcher("glob:**.{asp,aspx,c,cpp,java,js,aj,php,rb,xml,yml,py}");
+    PathMatcher codeMatcher = FileSystems.getDefault().getPathMatcher("glob:**.{asp,aspx,c,cpp,java,js,aj,php,rb,yml,py}");
     PathMatcher epubMatcher = FileSystems.getDefault().getPathMatcher("glob:**.{epub,epub3}");
     PathMatcher mobiMatcher = FileSystems.getDefault().getPathMatcher("glob:**.{mobi,azw,azw3}");
     PathMatcher anyMatcher = FileSystems.getDefault().getPathMatcher("glob:**.{*}");
@@ -63,7 +63,7 @@ public class PathResolverService {
         return false;
     }
 
-    public boolean isDocbook(Path path) {
+    public boolean isXML(Path path) {
         return docBookMatcher.matches(path);
     }
 
@@ -83,7 +83,7 @@ public class PathResolverService {
                 || isEpub(path)
                 || isMobi(path)
                 || isHTML(path)
-                || isDocbook(path);
+                || isXML(path);
     }
 
 
