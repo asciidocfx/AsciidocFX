@@ -606,7 +606,8 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
         /// Treeview
         if (Objects.nonNull(config.getWorkingDirectory())) {
-            Optional<Path> optional = Optional.ofNullable(Paths.get(config.getWorkingDirectory()));
+            Path path = Paths.get(config.getWorkingDirectory());
+            Optional<Path> optional = Files.notExists(path) ? Optional.empty() : Optional.of(path) ;
             directoryService.setWorkingDirectory(optional);
         }
 
@@ -628,14 +629,14 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             Path path = tabService.getSelectedTabPath();
             path = Files.isDirectory(path) ? path : path.getParent();
             if (Objects.nonNull(path))
-                getHostServices().showDocument(path.toUri().toASCIIString());
+                getHostServices().showDocument(path.toString());
         });
 
         openFolderListItem.setOnAction(event -> {
             Path path = Paths.get(recentListView.getSelectionModel().getSelectedItem());
             path = Files.isDirectory(path) ? path : path.getParent();
             if (Objects.nonNull(path))
-                getHostServices().showDocument(path.toUri().toASCIIString());
+                getHostServices().showDocument(path.toString());
         });
 
         openFileListItem.setOnAction(this::openRecentListFile);
