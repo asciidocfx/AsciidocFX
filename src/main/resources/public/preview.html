@@ -31,10 +31,10 @@
 
 <script>
 
-    var imageCacheNumber = 0;
+    var imageCacheNumber = Math.floor(Math.random() * (999999999999 - 2)) + 1;
 
     function clearImageCache(){
-        imageCacheNumber = Math.random() + 9999999;
+        imageCacheNumber = Math.floor(Math.random() * (999999999999 - 2)) + 1;
         refreshUI($("#placeholder").html());
     }
 
