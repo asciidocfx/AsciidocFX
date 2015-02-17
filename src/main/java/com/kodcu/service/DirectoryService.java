@@ -68,9 +68,9 @@ public class DirectoryService {
     }
 
     private Consumer<Path> openFileConsumer = path -> {
-        if (Files.isDirectory(path))
-            changeWorkigDir(path);
-        else if (pathResolver.isAsciidoc(path))
+        if (Files.isDirectory(path)) {
+            changeWorkigDir(path.equals(workingDirectory()) ? path.getParent() : path);
+        } else if (pathResolver.isAsciidoc(path))
             tabService.addTab(path);
         else if (pathResolver.isImage(path))
             tabService.addImageTab(path);
@@ -163,6 +163,8 @@ public class DirectoryService {
     }
 
     public void changeWorkigDir(Path path) {
+        if (Objects.isNull(path))
+            return;
         controller.getConfig().setWorkingDirectory(path.toString());
         this.setWorkingDirectory(Optional.of(path));
         fileBrowser.browse(controller.getTreeView(), path);
