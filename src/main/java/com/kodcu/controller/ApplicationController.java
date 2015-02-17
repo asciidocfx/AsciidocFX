@@ -675,6 +675,18 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             }
         });
 
+        previewView.setContextMenuEnabled(false);
+        ContextMenu previewContextMenu = new ContextMenu(MenuItemBuilt.item("Refresh").onclick(event -> {
+            previewEngine.executeScript("clearImageCache()");
+        }));
+        previewContextMenu.setAutoHide(true);
+        previewView.setOnMouseClicked(mouse -> {
+            if (mouse.getButton() == MouseButton.SECONDARY) {
+                previewContextMenu.show(getRootAnchor(), mouse.getScreenX(), mouse.getScreenY());
+            } else {
+                previewContextMenu.hide();
+            }
+        });
     }
 
     private void loadShortCuts() {
@@ -822,22 +834,27 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
 
     public String paste() {
+
         if (clipboard.hasFiles()) {
             Optional<String> block = parserService.toImageBlock(clipboard.getFiles());
             if (block.isPresent())
                 return block.get();
         }
 
-        if (clipboard.hasImage() && clipboard.hasHtml()) {
-            Optional<String> block = parserService.toWebImageBlock(clipboard.getHtml());
-            if (block.isPresent())
-                return block.get();
+        if (clipboard.hasHtml()) {
+            try {
+                String asciidoc = (String) previewEngine.executeScript(String.format("toAsciidoc('%s')", IOHelper.normalize(clipboard.getHtml())));
+                return asciidoc;
+            } catch (Exception e) {
+                logger.error(e.getMessage(), e);
+            }
+
         }
 
         return clipboard.getString();
     }
 
-    public void adjustSplitPane(){
+    public void adjustSplitPane() {
         if (splitPane.getDividerPositions()[0] > 0.1)
             splitPane.setDividerPositions(0, 1);
         else
