@@ -40,7 +40,7 @@ public class PlantUmlService {
     public void plantUml(String uml, String type, String fileName) {
         Objects.requireNonNull(fileName);
 
-        if (!fileName.endsWith(".png") && !"ascii".equalsIgnoreCase(type))
+        if (!fileName.endsWith(".png") && !fileName.endsWith(".svg"))
             return;
 
         String defaultScale = "\nskinparam dpi 300\n";
@@ -52,47 +52,43 @@ public class PlantUmlService {
             uml = uml.replaceFirst("@startuml", "@startuml" + defaultScale);
         }
 
+        Integer cacheHit = current.getCache().get(fileName);
+
+        int hashCode = (fileName + type + uml).hashCode();
+
+        if (Objects.nonNull(cacheHit))
+            if (hashCode == cacheHit)
+                return;
+
         SourceStringReader reader = new SourceStringReader(uml);
 
         try (ByteArrayOutputStream os = new ByteArrayOutputStream()) {
 
-            if ("ascii".equalsIgnoreCase(type)) {
-                String desc = reader.generateImage(os, new FileFormatOption(FileFormat.ATXT));
+            if (!current.currentPath().isPresent())
+                controller.saveDoc();
 
-                return;
-            }
-            // default: png
-            else {
+            Path path = current.currentPath().get().getParent();
+            Path umlPath = path.resolve("images/").resolve(fileName);
 
-                if (!current.currentPath().isPresent())
-                    controller.saveDoc();
+            FileFormat fileType = fileName.endsWith(".svg") ? FileFormat.SVG : FileFormat.PNG;
 
-                Path path = current.currentPath().get().getParent();
-                Path umlPath = path.resolve("images/").resolve(fileName);
+            threadService.runTaskLater(() -> {
+                try {
+                    String desc = reader.generateImage(os, new FileFormatOption(fileType));
 
-                Integer cacheHit = current.getCache().get(fileName);
+                    Files.createDirectories(path.resolve("images"));
 
-                int hashCode = (fileName + type + uml).hashCode();
-                if (Objects.isNull(cacheHit) || hashCode != cacheHit) {
+                    IOHelper.writeToFile(umlPath, os.toByteArray(), CREATE, WRITE, TRUNCATE_EXISTING);
 
-                    threadService.runTaskLater(() -> {
-                        try {
-                            String desc = reader.generateImage(os, new FileFormatOption(FileFormat.PNG));
-
-                            Files.createDirectories(path.resolve("images"));
-
-                            IOHelper.writeToFile(umlPath, os.toByteArray(), CREATE, WRITE, TRUNCATE_EXISTING);
-
-                            controller.getLastRenderedChangeListener()
-                                    .changed(null, controller.getLastRendered().getValue(), controller.getLastRendered().getValue());
-                        } catch (Exception e) {
-                            logger.error(e.getMessage(), e);
-                        }
-                    });
+                    controller.getLastRenderedChangeListener()
+                            .changed(null, controller.getLastRendered().getValue(), controller.getLastRendered().getValue());
+                } catch (Exception e) {
+                    logger.error(e.getMessage(), e);
                 }
+            });
 
-                current.getCache().put(fileName, hashCode);
-            }
+
+            current.getCache().put(fileName, hashCode);
 
         } catch (IOException e) {
             logger.info(e.getMessage(), e);
