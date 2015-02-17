@@ -13,7 +13,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.nio.file.Path;
+import java.time.Duration;
 
 /**
  * Created by usta on 25.12.2014.
@@ -32,7 +34,9 @@ public class ImageController {
 
     @RequestMapping(value = {"/**/{extension:(?:\\w|\\W)+\\.(?:jpg|bmp|gif|jpeg|png|webp|svg|jpeg)$}"}, method = RequestMethod.GET)
     @ResponseBody
-    public ResponseEntity<byte[]> images(HttpServletRequest request, @PathVariable("extension") String extension) {
+    public ResponseEntity<byte[]> images(HttpServletRequest request,HttpServletResponse response, @PathVariable("extension") String extension) {
+
+        response.setDateHeader("Expires",   System.currentTimeMillis() + Duration.ofMinutes(5).toMillis());
 
         Path imageFile;
         String uri = request.getRequestURI();
