@@ -30,7 +30,7 @@ public class ImageController {
     @Autowired
     private ApplicationController controller;
 
-    @RequestMapping(value = {"/**/{extension:(?:\\w|\\W)+\\.(?:jpg|bmp|gif|jpeg|png|webp)$}"}, method = RequestMethod.GET)
+    @RequestMapping(value = {"/**/{extension:(?:\\w|\\W)+\\.(?:jpg|bmp|gif|jpeg|png|webp|svg|jpeg)$}"}, method = RequestMethod.GET)
     @ResponseBody
     public ResponseEntity<byte[]> images(HttpServletRequest request, @PathVariable("extension") String extension) {
 
