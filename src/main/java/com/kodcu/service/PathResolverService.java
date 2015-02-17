@@ -29,7 +29,7 @@ public class PathResolverService {
     PathMatcher htmlMatcher = FileSystems.getDefault().getPathMatcher("glob:**.{html,html}");
     PathMatcher docBookMatcher = FileSystems.getDefault().getPathMatcher("glob:**.xml");
     PathMatcher ascMatcher = FileSystems.getDefault().getPathMatcher("glob:**.{asc,asciidoc,ad,adoc,txt}");
-    PathMatcher imageMatcher = FileSystems.getDefault().getPathMatcher("glob:**.{png,svg,jpg,bmp,gif}");
+    PathMatcher imageMatcher = FileSystems.getDefault().getPathMatcher("glob:**.{png,svg,jpg,bmp,gif,jpeg}");
     PathMatcher pptMatcher = FileSystems.getDefault().getPathMatcher("glob:**.{ppt,pptx}");
     PathMatcher docxMatcher = FileSystems.getDefault().getPathMatcher("glob:**.{doc,docx}");
     PathMatcher excelMatcher = FileSystems.getDefault().getPathMatcher("glob:**.{xls,xlsx}");
