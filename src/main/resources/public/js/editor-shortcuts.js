@@ -324,7 +324,7 @@ editor.commands.addCommand({
         if (textRange == "book") { // source generator
             editor.removeToLineStart();
 
-            editor.insert("= Book Name\nAuthor's Name\n:doctype: book\n:encoding: utf-8\n:lang: en\n:toc: left\n:numbered:\n\n\n");
+            editor.insert("= Book Name\nAuthor's Name\n:doctype: book\n:encoding: utf-8\n:lang: en\n:toc: left\n:numbered:\n:stylesheet: https://cdn.rawgit.com/asciidocfx/AsciidocFX/master/src/main/resources/public/css/asciidoctor-default.css\n\n\n");
 
             return;
         }
@@ -333,11 +333,10 @@ editor.commands.addCommand({
         if (textRange == "article") { // source generator
             editor.removeToLineStart();
 
-            editor.insert("= Article Name\nAuthor's Name\n:doctype: article\n:encoding: utf-8\n:lang: en\n:toc: left\n:numbered:\n\n\n");
+            editor.insert("= Article Name\nAuthor's Name\n:doctype: article\n:encoding: utf-8\n:lang: en\n:toc: left\n:numbered:\n:stylesheet: https://cdn.rawgit.com/asciidocfx/AsciidocFX/master/src/main/resources/public/css/asciidoctor-default.css\n\n\n");
 
             return;
         }
-
 
         // math tab
         if (textRange == "math") { // math block generator
