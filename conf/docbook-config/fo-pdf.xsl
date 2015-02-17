@@ -271,6 +271,21 @@
         </fo:inline>
     </xsl:template>
 
+    <xsl:template match="phrase">
+        <xsl:choose>
+        <xsl:when test="@role='underline'">
+            <fo:inline text-decoration="underline">
+                <xsl:call-template name="inline.charseq"/>
+            </fo:inline>
+        </xsl:when>
+        <xsl:when test="@role='line-through'">
+            <fo:inline text-decoration="line-through">
+                <xsl:call-template name="inline.charseq"/>
+            </fo:inline>
+        </xsl:when>
+        </xsl:choose>
+    </xsl:template>
+
     <xsl:template match="emphasis">
         <xsl:variable name="depth">
             <xsl:call-template name="dot.count">
