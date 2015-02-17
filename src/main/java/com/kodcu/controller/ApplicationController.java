@@ -681,9 +681,9 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             previewEngine.executeScript("clearImageCache()");
         }));
         previewContextMenu.setAutoHide(true);
-        previewView.setOnMouseClicked(mouse -> {
-            if (mouse.getButton() == MouseButton.SECONDARY) {
-                previewContextMenu.show(getRootAnchor(), mouse.getScreenX(), mouse.getScreenY());
+        previewView.setOnMouseClicked(event -> {
+            if (event.getButton() == MouseButton.SECONDARY) {
+                previewContextMenu.show(previewView, event.getScreenX(), event.getScreenY());
             } else {
                 previewContextMenu.hide();
             }
