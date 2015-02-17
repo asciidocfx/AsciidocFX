@@ -32,11 +32,11 @@ public class ImageController {
     @Autowired
     private ApplicationController controller;
 
-    @RequestMapping(value = {"/**/{extension:(?:\\w|\\W)+\\.(?:jpg|bmp|gif|jpeg|png|webp|svg|jpeg)$}"}, method = RequestMethod.GET)
+    @RequestMapping(value = {"/**/{extension:(?:\\w|\\W)+\\.(?:jpg|bmp|gif|jpeg|png|webp|svg)$}"}, method = RequestMethod.GET)
     @ResponseBody
-    public ResponseEntity<byte[]> images(HttpServletRequest request,HttpServletResponse response, @PathVariable("extension") String extension) {
+    public ResponseEntity<byte[]> images(HttpServletRequest request, HttpServletResponse response, @PathVariable("extension") String extension) {
 
-        response.setDateHeader("Expires",   System.currentTimeMillis() + Duration.ofMinutes(5).toMillis());
+        response.setDateHeader("Expires", System.currentTimeMillis() + Duration.ofMinutes(3).toMillis());
 
         Path imageFile;
         String uri = request.getRequestURI();
