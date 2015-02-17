@@ -629,14 +629,14 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             Path path = tabService.getSelectedTabPath();
             path = Files.isDirectory(path) ? path : path.getParent();
             if (Objects.nonNull(path))
-                getHostServices().showDocument(path.toString());
+                getHostServices().showDocument(path.toUri().toASCIIString());
         });
 
         openFolderListItem.setOnAction(event -> {
             Path path = Paths.get(recentListView.getSelectionModel().getSelectedItem());
             path = Files.isDirectory(path) ? path : path.getParent();
             if (Objects.nonNull(path))
-                getHostServices().showDocument(path.toString());
+                getHostServices().showDocument(path.toUri().toASCIIString());
         });
 
         openFileListItem.setOnAction(this::openRecentListFile);
