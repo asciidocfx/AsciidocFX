@@ -35,9 +35,15 @@
 
                 var svg = $(this).find(".MathJax_SVG svg");
 
+                try{
+                    svg.attr("width",svg[0].getBoundingClientRect().width);
+                    svg.attr("height",svg[0].getBoundingClientRect().height);
+                }
+                catch (e){}
+
                 if (svg.length) {
                     var fileName = $(this).attr("id");
-                    svg.attr("xmlns", "http://www.w3.org/2000/svg")
+                    svg.attr("xmlns", "http://www.w3.org/2000/svg");
                     svg.get(0).insertBefore($("#MathJax_SVG_glyphs").clone().get(0), svg.firstChild);
 
                     var bbox = svg.get(0).getBBox();
