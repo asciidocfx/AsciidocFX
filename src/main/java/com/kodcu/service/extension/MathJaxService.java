@@ -16,7 +16,9 @@ import org.springframework.stereotype.Component;
 import org.w3c.dom.svg.SVGDocument;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.StringReader;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Objects;
@@ -38,7 +40,7 @@ public class MathJaxService {
     private Current current;
 
     public String appendFormula(String fileName, String formula) {
-        if (fileName.endsWith(".png")) {
+        if (fileName.endsWith(".png") || fileName.endsWith(".svg")) {
             WebEngine engine = controller.getMathjaxView().getEngine();
             engine.executeScript(String.format("appendFormula('%s','%s')", fileName, IOHelper.normalize(formula)));
             return "images/" + fileName;
@@ -49,7 +51,10 @@ public class MathJaxService {
 
     public void svgToPng(String fileName, String svg, String formula, float width, float height) {
 
-        if (!fileName.endsWith(".png") || !svg.startsWith("<svg"))
+        if(!svg.startsWith("<svg"))
+            return;
+
+        if (!fileName.endsWith(".png") && !fileName.endsWith(".svg"))
             return;
 
         Integer cacheHit = current.getCache().get(fileName);
@@ -60,6 +65,30 @@ public class MathJaxService {
 
         current.getCache().put(fileName, hashCode);
 
+        if(fileName.endsWith(".png"))
+            saveAsPng(fileName, svg, formula, width, height);
+       else if(fileName.endsWith(".svg"))
+            saveAsSvg(fileName, svg, formula, width, height);
+
+    }
+
+    private void saveAsSvg(String fileName, String svg, String formula, float width, float height) {
+        try{
+            if (!current.currentPath().isPresent())
+                controller.saveDoc();
+
+            Path path = current.currentPath().get().getParent();
+            Files.createDirectories(path.resolve("images"));
+
+            Files.write(path.resolve("images/").resolve(fileName), svg.getBytes(Charset.forName("UTF-8")), CREATE, WRITE, TRUNCATE_EXISTING);
+
+            controller.getLastRenderedChangeListener().changed(null, controller.getLastRendered().getValue(), controller.getLastRendered().getValue());
+        } catch (IOException e) {
+            logger.error(e.getMessage(), e);
+        }
+    }
+
+    private void saveAsPng(String fileName, String svg, String formula, float width, float height) {
         try (StringReader reader = new StringReader(svg);
              ByteArrayOutputStream ostream = new ByteArrayOutputStream();) {
 
