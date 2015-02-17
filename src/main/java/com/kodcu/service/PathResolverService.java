@@ -63,7 +63,7 @@ public class PathResolverService {
         return false;
     }
 
-    public boolean isDocbook(Path path) {
+    public boolean isXML(Path path) {
         return docBookMatcher.matches(path);
     }
 
@@ -83,7 +83,7 @@ public class PathResolverService {
                 || isEpub(path)
                 || isMobi(path)
                 || isHTML(path)
-                || isDocbook(path);
+                || isXML(path);
     }
 
 
