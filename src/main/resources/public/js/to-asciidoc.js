@@ -168,15 +168,7 @@ var toAsciidoc = function (string) {
                 return src ? '\nimage::' + src[1] + '[' + (alt && alt[1] ? alt[1] : '') + ']\n' : '';
                 //return src ? '![' + (alt && alt[1] ? alt[1] : '') + ']' + '(' + src[1] + (title && title[1] ? ' "' + title[1] + '"' : '') + ')' : '';
             }
-        },
-        {
-            patterns: ["section","div","span","p"],
-            replacement: function (str, attrs, innerHTML) {
-                //var newVar = innerHTML ? strip(innerHTML) : '';
-                console.log(innerHTML)
-                return innerHTML;
-            }
-        },
+        }
     ];
 
     for (var i = 0, len = ELEMENTS.length; i < len; i++) {

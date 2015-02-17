@@ -7,7 +7,6 @@ function addNewCommand(key,value){
             mac: key
         },
         exec: function (editor) {
-            console.log(value);
             editor.insert(value);
         },
         readOnly: true
