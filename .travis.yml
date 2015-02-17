@@ -8,8 +8,8 @@ before_script:
 - sudo apt-get update -qq
 - sudo apt-get install -y rpm
 - sudo apt-get install -y wget
-- wget http://download-aws.ej-technologies.com/install4j/install4j_unix_6_1.tar.gz
-- tar zxvf install4j_unix_6_0.tar.gz
+- wget http://download-aws.ej-technologies.com/install4j/install4j_unix_6_0_1.tar.gz
+- tar zxvf install4j_unix_6_0_1.tar.gz
 - wget -O /home/travis/build/asciidocfx/AsciidocFX/install4j6/jres/macosx-amd64-1.8.0_25.tar.gz
   http://asciidocfx.com/jres/macosx-amd64-1.8.0_25.tar.gz
 - wget -O /home/travis/build/asciidocfx/AsciidocFX/install4j6/jres/windows-amd64-1.8.0_25.tar.gz
