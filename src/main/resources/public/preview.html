@@ -26,9 +26,17 @@
 
 <script src="/js/jquery.js"></script>
 <script src="/js/highlight.pack.js"></script>
+<script src="/js/to-asciidoc.js"></script>
 <script src="/js/index.js"></script>
 
 <script>
+
+    var imageCacheNumber = 0;
+
+    function clearImageCache(){
+        imageCacheNumber = Math.random() + 9999999;
+        refreshUI($("#placeholder").html());
+    }
 
     function imageToBase64Url() {
 
@@ -47,21 +55,25 @@
 
     function refreshUI(data) {
 
-        $("#placeholder").html(data);
+        var $data = $("<div></div>").append(data);
+        $data.find("img").each(function(){
+            $(this).attr("src",$(this).attr("src")+"?"+imageCacheNumber);
+        });
+        $("#placeholder").html($data.html());
         $('pre code').each(function (i, e) {
             hljs.highlightBlock(e)
         });
 
     }
 
-    document.onkeydown = function(e) {
+    document.onkeydown = function (e) {
         e = e || window.event;
-        if (e.keyCode == 123){
-           if(!$("#firebug-script").length){
+        if (e.keyCode == 123) {
+            if (!$("#firebug-script").length) {
                 var script = $("<script>")
-                script.attr("id","firebug-script");
-                script.attr("type","text/javascript");
-                script.attr("src","http://getfirebug.com/firebug-lite.js#startOpened=true");
+                script.attr("id", "firebug-script");
+                script.attr("type", "text/javascript");
+                script.attr("src", "http://getfirebug.com/firebug-lite.js#startOpened=true");
                 $("body").append(script);
             }
         }
