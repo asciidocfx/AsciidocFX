@@ -36,7 +36,7 @@ public class ImageController {
     @ResponseBody
     public ResponseEntity<byte[]> images(HttpServletRequest request, HttpServletResponse response, @PathVariable("extension") String extension) {
 
-        response.setDateHeader("Expires", System.currentTimeMillis() + Duration.ofMinutes(3).toMillis());
+        response.setDateHeader("Expires", System.currentTimeMillis() + Duration.ofSeconds(10).toMillis());
 
         Path imageFile;
         String uri = request.getRequestURI();
