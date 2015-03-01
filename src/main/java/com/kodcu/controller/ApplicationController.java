@@ -844,12 +844,36 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
         if (clipboard.hasHtml()) {
             try {
-                String asciidoc = (String) previewEngine.executeScript(String.format("toAsciidoc('%s')", IOHelper.normalize(clipboard.getHtml())));
+                String html = clipboard.getHtml();
+                String asciidoc = (String) previewEngine.executeScript(String.format("toAsciidoc('%s')", IOHelper.normalize(html)));
                 return asciidoc;
             } catch (Exception e) {
                 logger.error(e.getMessage(), e);
             }
 
+        }
+
+        try {
+            Boolean isHtml= (Boolean) previewEngine.executeScript(String.format("isHtml('%s')",IOHelper.normalize(clipboard.getString())));
+            if(isHtml){
+                String clipboardString = clipboard.getString();
+                String asciidoc = (String) previewEngine.executeScript(String.format("toAsciidoc('%s')", IOHelper.normalize(clipboardString)));
+                return asciidoc;
+            }
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+        }
+
+
+        return clipboard.getString();
+    }
+
+    public String pasteRaw() {
+
+        if (clipboard.hasFiles()) {
+            Optional<String> block = parserService.toImageBlock(clipboard.getFiles());
+            if (block.isPresent())
+                return block.get();
         }
 
         return clipboard.getString();
@@ -1035,5 +1059,11 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
         popup.getContent().add(anchorPane);
         popup.show(getStage());
+    }
+
+    @FXML
+    public void generateCheatSheet(ActionEvent actionEvent) {
+        Path cheatsheetPath = configPath.resolve("cheatsheet/cheatsheet.asc");
+        tabService.addTab(cheatsheetPath);
     }
 }
