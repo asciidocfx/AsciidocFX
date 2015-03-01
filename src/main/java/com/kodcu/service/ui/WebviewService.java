@@ -1,5 +1,7 @@
 package com.kodcu.service.ui;
 
+import com.kodcu.component.MenuBuilt;
+import com.kodcu.component.MenuItemBuilt;
 import com.kodcu.controller.ApplicationController;
 import com.kodcu.other.Current;
 import com.kodcu.service.ParserService;
@@ -56,15 +58,16 @@ public class WebviewService {
         webView.setOnMouseClicked(event -> {
 
             if (menu.getItems().size() == 0) {
-                MenuItem copy = new MenuItem("Copy");
-                copy.setOnAction(event1 -> {
+                MenuItem copy = MenuItemBuilt.item("Copy").onclick(event1 -> {
                     controller.cutCopy(current.currentEditorSelection());
                 });
-                MenuItem paste = new MenuItem("Paste");
-                paste.setOnAction(event1 -> {
+                MenuItem paste = MenuItemBuilt.item("Paste").onclick(event1 -> {
                     current.insertEditorValue(controller.paste());
                 });
-                menu.getItems().addAll(copy, paste);
+                MenuItem pasteRaw = MenuItemBuilt.item("Paste raw").onclick(event1 -> {
+                    current.insertEditorValue(controller.pasteRaw());
+                });
+                menu.getItems().addAll(copy, paste, pasteRaw);
             }
 
             if (menu.isShowing()) {
@@ -158,10 +161,10 @@ public class WebviewService {
                         @Override
                         public void run() {
                             window.setMember("app", controller);
-                            try{
+                            try {
                                 current.currentEngine().executeScript("updateOptions()");
                                 controller.applySohrtCuts();
-                            }catch (Exception e){
+                            } catch (Exception e) {
                                 threadService.runActionLater(this);
                             }
                         }
