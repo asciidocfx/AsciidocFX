@@ -3,12 +3,18 @@ package com.kodcu.service.convert;
 import com.kodcu.controller.ApplicationController;
 import com.kodcu.other.Current;
 import com.kodcu.other.IOHelper;
+import com.kodcu.service.MarkdownService;
 import com.kodcu.service.ThreadService;
 import javafx.application.Platform;
+import javafx.scene.web.WebEngine;
+import javafx.scene.web.WebView;
+import netscape.javascript.JSObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.script.ScriptException;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Consumer;
 
 /**
  * Created by usta on 19.07.2014.
@@ -23,99 +29,80 @@ public class RenderService {
     ThreadService threadService;
 
     @Autowired
+    MarkdownService markdownService;
+
+    @Autowired
     Current current;
 
-    public String convertBasicHtml(String text) {
+    public void convertBasicHtml(String input, Consumer<String> step) {
 
-        if (Platform.isFxApplicationThread())
-            return (String) controller.getPreviewView().getEngine().executeScript(String.format("convertBasicHtml('%s')", IOHelper.normalize(text)));
-
-        CompletableFuture<String> completableFuture = new CompletableFuture();
-
-        completableFuture.runAsync(() -> {
+        markdownService.convert(input, asciidoc -> {
             threadService.runActionLater(() -> {
-                String rendered = (String) controller.getPreviewView().getEngine().executeScript(String.format("convertBasicHtml('%s')", IOHelper.normalize(text)));
-                completableFuture.complete(rendered);
+                getWindow().setMember("editorValue", asciidoc);
+                String rendered = execute(controller.getPreviewView(), "convertBasicHtml(editorValue)");
+                step.accept(rendered);
             });
         });
-
-        return completableFuture.join();
 
     }
 
-    public String convertHtmlArticle() {
-
-        if (Platform.isFxApplicationThread()) {
-            String text = current.currentEditorValue();
-            return (String) controller.getPreviewView().getEngine().executeScript(String.format("convertHtmlArticle('%s')", IOHelper.normalize(text)));
-        }
-
-        CompletableFuture<String> completableFuture = new CompletableFuture();
-
-        completableFuture.runAsync(() -> {
-            threadService.runActionLater(() -> {
-                String text = current.currentEditorValue();
-                String rendered = (String) controller.getPreviewView().getEngine().executeScript(String.format("convertHtmlArticle('%s')", IOHelper.normalize(text)));
-                completableFuture.complete(rendered);
-            });
-        });
-
-        return completableFuture.join();
+    public JSObject getWindow() {
+        return (JSObject) controller.getPreviewView().getEngine().executeScript("window");
     }
 
-    public String convertHtmlBook(String text) {
-
-        if (Platform.isFxApplicationThread())
-            return (String) controller.getPreviewView().getEngine().executeScript(String.format("convertHtmlBook('%s')", IOHelper.normalize(text)));
-
-        CompletableFuture<String> completableFuture = new CompletableFuture();
-
-        completableFuture.runAsync(() -> {
-            threadService.runActionLater(() -> {
-                String rendered = (String) controller.getPreviewView().getEngine().executeScript(String.format("convertHtmlBook('%s')", IOHelper.normalize(text)));
-                completableFuture.complete(rendered);
-            });
-        });
-
-        return completableFuture.join();
+    public String execute(WebEngine engine, String script) {
+        return (String) engine.executeScript(script);
     }
 
-    public String convertDocbook(String text, boolean includeHeader) {
-
-        if (Platform.isFxApplicationThread())
-            return (String) controller.getPreviewView().getEngine().executeScript(String.format("convertDocbook('%s',%b)", IOHelper.normalize(text), includeHeader));
-
-        CompletableFuture<String> completableFuture = new CompletableFuture();
-
-        completableFuture.runAsync(() -> {
-            threadService.runActionLater(() -> {
-                String rendered = (String) controller.getPreviewView().getEngine().executeScript(String.format("convertDocbook('%s',%b)", IOHelper.normalize(text), includeHeader));
-                completableFuture.complete(rendered);
-            });
-        });
-
-        return completableFuture.join();
-
+    public String execute(WebView engine, String script) {
+        String s = (String) engine.getEngine().executeScript(script);
+        return s;
     }
 
-    public String convertDocbookArticle() {
+    public void convertHtmlArticle(Consumer<String> step) {
 
-        if (Platform.isFxApplicationThread()) {
-            String text = current.currentEditorValue();
-            return (String) controller.getPreviewView().getEngine().executeScript(String.format("convertDocbookArticle('%s')", IOHelper.normalize(text)));
-        }
-
-        CompletableFuture<String> completableFuture = new CompletableFuture();
-
-        completableFuture.runAsync(() -> {
+        String input = current.currentEditorValue();
+        markdownService.convert(input, asciidoc -> {
             threadService.runActionLater(() -> {
-                String text = current.currentEditorValue();
-                String rendered = (String) controller.getPreviewView().getEngine().executeScript(String.format("convertDocbookArticle('%s')", IOHelper.normalize(text)));
-                completableFuture.complete(rendered);
+                getWindow().setMember("editorValue", asciidoc);
+                String rendered = execute(controller.getPreviewView(), "convertHtmlArticle(editorValue)");
+                step.accept(rendered);
             });
         });
+    }
 
-        return completableFuture.join();
+    public void convertHtmlBook(String input, Consumer<String> step) {
+
+        markdownService.convert(input, asciidoc -> {
+            threadService.runActionLater(() -> {
+                getWindow().setMember("editorValue", asciidoc);
+                String rendered = execute(controller.getPreviewView(),"convertHtmlBook(editorValue)");
+                step.accept(rendered);
+            });
+        });
+    }
+
+    public void convertDocbook(String input, boolean includeHeader, Consumer<String> step) {
+
+        markdownService.convert(input, asciidoc -> {
+            threadService.runActionLater(() -> {
+                getWindow().setMember("editorValue", asciidoc);
+                String rendered = execute(controller.getPreviewView(), String.format("convertDocbook(editorValue,%b)", asciidoc, includeHeader));
+                step.accept(rendered);
+            });
+        });
+    }
+
+    public void convertDocbookArticle(Consumer<String> step) {
+
+        String input = current.currentEditorValue();
+        markdownService.convert(input, asciidoc -> {
+            threadService.runActionLater(() -> {
+                getWindow().setMember("editorValue", asciidoc);
+                String rendered = execute(controller.getPreviewView(), "convertDocbookArticle(editorValue)");
+                step.accept(rendered);
+            });
+        });
 
     }
 }

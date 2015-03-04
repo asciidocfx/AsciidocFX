@@ -106,17 +106,18 @@ public class FopPdfService {
             params.add("callout.graphics.path");
             params.add(configPath.resolve("docbook/images/callouts/").toUri().toASCIIString());
 
-            String docbook = docBookService.generateDocbook();
-            Path docbookTempfile = IOHelper.createTempFile(currentTabPathDir, ".xml");
-            IOHelper.writeToFile(docbookTempfile, docbook, CREATE, WRITE, TRUNCATE_EXISTING);
+            docBookService.generateDocbook(docbook->{
+                Path docbookTempfile = IOHelper.createTempFile(currentTabPathDir, ".xml");
+                IOHelper.writeToFile(docbookTempfile, docbook, CREATE, WRITE, TRUNCATE_EXISTING);
 
-            InputHandler handler = new InputHandler(docbookTempfile.toFile(), configPath.resolve("docbook-config/fo-pdf.xsl").toFile(), params);
+                InputHandler handler = new InputHandler(docbookTempfile.toFile(), configPath.resolve("docbook-config/fo-pdf.xsl").toFile(), params);
 
-            FopFactory fopFactory = FopFactory.newInstance();
+                FopFactory fopFactory = FopFactory.newInstance();
 
-            fopFactory.setUserConfig(configPath.resolve("docbook-config/fop.xconf").toUri().toASCIIString());
+                IOHelper.setUserConfig(fopFactory,configPath.resolve("docbook-config/fop.xconf").toUri().toASCIIString());
 
-            this.produce(askPath, handler, fopFactory, docbookTempfile);
+                this.produce(askPath, handler, fopFactory, docbookTempfile);
+            });
 
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
@@ -133,30 +134,32 @@ public class FopPdfService {
             Path configPath = asciiDocController.getConfigPath();
             String tabText = current.getCurrentTabText().replace("*", "").trim();
 
-            String docbook = docBookService.generateDocbookArticle();
-            Path docbookTempfile = IOHelper.createTempFile(currentTabPathDir, ".xml");
-            IOHelper.writeToFile(docbookTempfile, docbook, CREATE, WRITE, TRUNCATE_EXISTING);
+            docBookService.generateDocbookArticle(docbook->{
+                Path docbookTempfile = IOHelper.createTempFile(currentTabPathDir, ".xml");
+                IOHelper.writeToFile(docbookTempfile, docbook, CREATE, WRITE, TRUNCATE_EXISTING);
 
-            Vector params = new Vector();
-            params.add("body.font.family");
-            params.add("Arial");
-            params.add("title.font.family");
-            params.add("Arial");
-            params.add("highlight.xslthl.config");
+                Vector params = new Vector();
+                params.add("body.font.family");
+                params.add("Arial");
+                params.add("title.font.family");
+                params.add("Arial");
+                params.add("highlight.xslthl.config");
 
-            params.add(configPath.resolve("docbook-config/xslthl-config.xml").toUri().toASCIIString());
-            params.add("admon.graphics.path");
-            params.add(configPath.resolve("docbook/images/").toUri().toASCIIString());
-            params.add("callout.graphics.path");
-            params.add(configPath.resolve("docbook/images/callouts/").toUri().toASCIIString());
+                params.add(configPath.resolve("docbook-config/xslthl-config.xml").toUri().toASCIIString());
+                params.add("admon.graphics.path");
+                params.add(configPath.resolve("docbook/images/").toUri().toASCIIString());
+                params.add("callout.graphics.path");
+                params.add(configPath.resolve("docbook/images/callouts/").toUri().toASCIIString());
 
-            InputHandler handler = new InputHandler(docbookTempfile.toFile(), configPath.resolve("docbook-config/fo-pdf.xsl").toFile(), params);
+                InputHandler handler = new InputHandler(docbookTempfile.toFile(), configPath.resolve("docbook-config/fo-pdf.xsl").toFile(), params);
 
-            FopFactory fopFactory = FopFactory.newInstance();
+                FopFactory fopFactory = FopFactory.newInstance();
 
-            fopFactory.setUserConfig(configPath.resolve("docbook-config/fop.xconf").toUri().toASCIIString());
+                IOHelper.setUserConfig(fopFactory,configPath.resolve("docbook-config/fop.xconf").toUri().toASCIIString());
 
-            this.produce(askPath, handler, fopFactory, docbookTempfile);
+                this.produce(askPath, handler, fopFactory, docbookTempfile);
+            });
+
 
 
         } catch (Exception e) {

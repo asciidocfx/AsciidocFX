@@ -3,11 +3,13 @@ package com.kodcu.other;
 import com.kodcu.component.MyTab;
 import com.kodcu.controller.ApplicationController;
 import com.kodcu.service.ThreadService;
+import com.kodcu.service.convert.RenderService;
 import javafx.application.Platform;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
+import netscape.javascript.JSObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -28,6 +30,9 @@ public class Current {
 
     @Autowired
     private ApplicationController controller;
+
+    @Autowired
+    private RenderService renderService;
 
     @Autowired
     private ThreadService threadService;
@@ -79,7 +84,6 @@ public class Current {
         if (Platform.isFxApplicationThread())
             return (String) currentEngine().executeScript("editor.getValue()");
 
-
         CompletableFuture<String> completableFuture = new CompletableFuture();
 
         completableFuture.runAsync(() -> {
@@ -110,7 +114,12 @@ public class Current {
     }
 
     public void insertEditorValue(String content) {
-        currentEngine().executeScript(String.format("editor.insert('%s')", IOHelper.normalize(content)));
+        ((JSObject)currentEngine().executeScript("window")).setMember("insertValue", content);
+        currentEngine().executeScript("editor.insert(insertValue)");
+    }
+
+    public void clearEditorValue() {
+        currentEngine().executeScript(String.format("editor.setValue('')"));
     }
 
     public Label currentTabLabel() {

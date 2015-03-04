@@ -92,16 +92,16 @@ public class Html5BookService {
 
             String bookXmlAsciidoc = allAscChapters.toString();
 
-            String htmlContent = renderService.convertHtmlBook(bookXmlAsciidoc);
+            renderService.convertHtmlBook(bookXmlAsciidoc,htmlContent->{
+                IOHelper.writeToFile(htmlBookPath, htmlContent, CREATE, TRUNCATE_EXISTING);
 
-            IOHelper.writeToFile(htmlBookPath, htmlContent, CREATE, TRUNCATE_EXISTING);
+                Platform.runLater(() -> {
+                    asciiDocController.getRecentFiles().remove(htmlBookPath.toString());
+                    asciiDocController.getRecentFiles().add(0, htmlBookPath.toString());
+                });
 
-            Platform.runLater(() -> {
-                asciiDocController.getRecentFiles().remove(htmlBookPath.toString());
-                asciiDocController.getRecentFiles().add(0, htmlBookPath.toString());
+                indikatorService.completeCycle();
             });
-
-            indikatorService.completeCycle();
 
         } catch (Exception e) {
             logger.error(e.getMessage(), e);

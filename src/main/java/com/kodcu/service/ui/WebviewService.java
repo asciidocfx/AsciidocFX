@@ -1,12 +1,13 @@
 package com.kodcu.service.ui;
 
-import com.kodcu.component.MenuBuilt;
 import com.kodcu.component.MenuItemBuilt;
 import com.kodcu.controller.ApplicationController;
 import com.kodcu.other.Current;
+import com.kodcu.service.MarkdownService;
 import com.kodcu.service.ParserService;
 import com.kodcu.service.PathResolverService;
 import com.kodcu.service.ThreadService;
+import com.kodcu.service.convert.RenderService;
 import javafx.concurrent.Worker;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
@@ -47,7 +48,13 @@ public class WebviewService {
     private ParserService parserService;
 
     @Autowired
+    private MarkdownService markdownService;
+
+    @Autowired
     private Current current;
+
+    @Autowired
+    private RenderService renderService;
 
     public WebView createWebView() {
 
@@ -67,7 +74,15 @@ public class WebviewService {
                 MenuItem pasteRaw = MenuItemBuilt.item("Paste raw").onclick(event1 -> {
                     current.insertEditorValue(controller.pasteRaw());
                 });
-                menu.getItems().addAll(copy, paste, pasteRaw);
+                MenuItem convert = MenuItemBuilt.item("Markdown to Asciidoc").onclick(event1 -> {
+                    markdownService.convertToAsciidoc(current.currentEditorValue(), content -> {
+                        threadService.runActionLater(() -> {
+                            current.clearEditorValue();
+                            current.insertEditorValue(content);
+                        });
+                    });
+                });
+                menu.getItems().addAll(copy, paste, pasteRaw,convert);
             }
 
             if (menu.isShowing()) {

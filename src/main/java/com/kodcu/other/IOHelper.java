@@ -1,10 +1,20 @@
 package com.kodcu.other;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.fop.apps.FopFactory;
+import org.joox.JOOX;
+import org.joox.Match;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 import javax.imageio.ImageIO;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -21,15 +31,15 @@ public class IOHelper {
 
     private static Logger logger = LoggerFactory.getLogger(IOHelper.class);
 
-    public static String normalize(String content) {
-        content = content.replace("\\", "\\\\");
-        content = content.replace("'", "\\'");
-        content = content.replace("\\\\'", "\\'");
-        content = content.replace("\r\n", "\\r\\n");
-        content = content.replace("\n", "\\n");
-        content = content.replace("\r", "\\r");
-        return content;
-    }
+//    public static String normalize(String content) {
+//        content = content.replace("\\", "\\\\");
+//        content = content.replace("'", "\\'");
+//        content = content.replace("\\\\'", "\\'");
+//        content = content.replace("\r\n", "\\r\\n");
+//        content = content.replace("\n", "\\n");
+//        content = content.replace("\r", "\\r");
+//        return content;
+//    }
 
     public static void writeToFile(File file, String content, StandardOpenOption... openOption) {
         writeToFile(file.toPath(), content, openOption);
@@ -138,6 +148,62 @@ public class IOHelper {
             Files.move(source, target, option);
         } catch (IOException e) {
             logger.info(e.getMessage(), e);
+        }
+    }
+
+    public static Match $(InputSource inputSource) {
+        try {
+            return JOOX.$(inputSource);
+        } catch (SAXException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static Match $(File file) {
+        try {
+            return JOOX.$(file);
+        } catch (SAXException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static void transform(Transformer transformer, StreamSource xmlSource, StreamResult streamResult) {
+        try {
+            transformer.transform(xmlSource,streamResult);
+        } catch (TransformerException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void matchWrite(Match root, File file) {
+        try {
+            root.write(file);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void copyDirectoryToDirectory(File images, File oebps) {
+        try {
+            FileUtils.copyDirectoryToDirectory(images, oebps);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void setUserConfig(FopFactory fopFactory, String s) {
+        try {
+            fopFactory.setUserConfig(s);
+        } catch (SAXException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }

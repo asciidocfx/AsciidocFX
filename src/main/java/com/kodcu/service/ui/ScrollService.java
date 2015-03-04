@@ -37,7 +37,6 @@ public class ScrollService {
     }
 
     public void scrollToCurrentLine(String text) {
-        text = IOHelper.normalize(text);
 
         String format = String.format("runScroller('%s')", text);
         try {

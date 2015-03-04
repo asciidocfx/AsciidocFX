@@ -52,29 +52,30 @@ public class Html5ArticleService {
         Path currentTabPath = current.currentPath().get();
         Path currentTabPathDir = currentTabPath.getParent();
 
-        String html = renderService.convertHtmlArticle();
-        String tabText = current.getCurrentTabText().replace("*", "").trim();
+        renderService.convertHtmlArticle(html->{
+            String tabText = current.getCurrentTabText().replace("*", "").trim();
 
-        threadService.runActionLater(() -> {
-            if (askPath) {
-                FileChooser fileChooser = directoryService.newFileChooser("Save HTML file");
-                fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("HTML", "*.html"));
-                htmlArticlePath = fileChooser.showSaveDialog(null).toPath();
-            } else
-                htmlArticlePath = currentTabPathDir.resolve(tabText.concat(".html"));
+            threadService.runActionLater(() -> {
+                if (askPath) {
+                    FileChooser fileChooser = directoryService.newFileChooser("Save HTML file");
+                    fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("HTML", "*.html"));
+                    htmlArticlePath = fileChooser.showSaveDialog(null).toPath();
+                } else
+                    htmlArticlePath = currentTabPathDir.resolve(tabText.concat(".html"));
 
-            indikatorService.startCycle();
+                indikatorService.startCycle();
 
-            threadService.runTaskLater(() -> {
-                IOHelper.writeToFile(htmlArticlePath, html, CREATE, TRUNCATE_EXISTING, WRITE);
+                threadService.runTaskLater(() -> {
+                    IOHelper.writeToFile(htmlArticlePath, html, CREATE, TRUNCATE_EXISTING, WRITE);
 
-                threadService.runActionLater(() -> {
-                    indikatorService.hideIndikator();
-                    asciiDocController.getRecentFiles().remove(htmlArticlePath.toString());
-                    asciiDocController.getRecentFiles().add(0, htmlArticlePath.toString());
+                    threadService.runActionLater(() -> {
+                        indikatorService.hideIndikator();
+                        asciiDocController.getRecentFiles().remove(htmlArticlePath.toString());
+                        asciiDocController.getRecentFiles().add(0, htmlArticlePath.toString());
+                    });
                 });
-            });
 
+            });
         });
 
     }

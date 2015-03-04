@@ -66,6 +66,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.CodeSource;
 import java.util.*;
+import java.util.function.Consumer;
 
 import static java.nio.file.StandardOpenOption.*;
 
@@ -229,7 +230,8 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             return;
 
         threadService.runActionLater(() -> {
-            previewEngine.executeScript(String.format("refreshUI('%s')", IOHelper.normalize(nev)));
+            renderService.getWindow().setMember("lastRenderedValue",nev);
+            previewEngine.executeScript("refreshUI(lastRenderedValue)");
         });
 
         sessionList.stream().filter(e -> e.isOpen()).forEach(e -> {
@@ -324,20 +326,21 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                 } else
                     docbookPath = currentTabPathDir.resolve(tabText + ".xml");
 
-                String docbook = "";
+                Consumer<String> step = docbook -> {
+                    final String finalDocbook = docbook;
+                    threadService.runTaskLater(() -> {
+                        IOHelper.writeToFile(docbookPath, finalDocbook, CREATE, TRUNCATE_EXISTING, WRITE);
+                    });
+                    getRecentFiles().remove(docbookPath.toString());
+                    getRecentFiles().add(0, docbookPath.toString());
+                };
 
                 if (current.currentIsBook()) {
-                    docbook = docBookService.generateDocbook();
+                    docBookService.generateDocbook(step);
                 } else {
-                    docbook = docBookService.generateDocbookArticle();
+                    docBookService.generateDocbookArticle(step);
                 }
 
-                final String finalDocbook = docbook;
-                threadService.runTaskLater(() -> {
-                    IOHelper.writeToFile(docbookPath, finalDocbook, CREATE, TRUNCATE_EXISTING, WRITE);
-                });
-                getRecentFiles().remove(docbookPath.toString());
-                getRecentFiles().add(0, docbookPath.toString());
             });
 
         });
@@ -607,7 +610,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         /// Treeview
         if (Objects.nonNull(config.getWorkingDirectory())) {
             Path path = Paths.get(config.getWorkingDirectory());
-            Optional<Path> optional = Files.notExists(path) ? Optional.empty() : Optional.of(path) ;
+            Optional<Path> optional = Files.notExists(path) ? Optional.empty() : Optional.of(path);
             directoryService.setWorkingDirectory(optional);
         }
 
@@ -814,11 +817,12 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     public void textListener(String text) {
 
         threadService.runTaskLater(() -> {
-            String rendered = renderService.convertBasicHtml(text);
-            if (Objects.nonNull(rendered))
-                lastRendered.setValue(rendered);
-        });
+            renderService.convertBasicHtml(text, rendered -> {
+                if (Objects.nonNull(rendered))
+                    lastRendered.setValue(rendered);
+            });
 
+        });
     }
 
     public void cutCopy(String data) {
@@ -845,7 +849,8 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         if (clipboard.hasHtml()) {
             try {
                 String html = clipboard.getHtml();
-                String asciidoc = (String) previewEngine.executeScript(String.format("toAsciidoc('%s')", IOHelper.normalize(html)));
+                renderService.getWindow().setMember("clipboardValue",html);
+                String asciidoc = (String) previewEngine.executeScript("toAsciidoc(clipboardValue)");
                 return asciidoc;
             } catch (Exception e) {
                 logger.error(e.getMessage(), e);
@@ -854,10 +859,12 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         }
 
         try {
-            Boolean isHtml= (Boolean) previewEngine.executeScript(String.format("isHtml('%s')",IOHelper.normalize(clipboard.getString())));
-            if(isHtml){
+            renderService.getWindow().setMember("clipboardValue",clipboard.getString());
+            Boolean isHtml = (Boolean) previewEngine.executeScript("isHtml(clipboardValue)");
+            if (isHtml) {
                 String clipboardString = clipboard.getString();
-                String asciidoc = (String) previewEngine.executeScript(String.format("toAsciidoc('%s')", IOHelper.normalize(clipboardString)));
+                renderService.getWindow().setMember("clipboardValue",clipboardString);
+                String asciidoc = (String) previewEngine.executeScript("toAsciidoc(clipboardValue)");
                 return asciidoc;
             }
         } catch (Exception e) {

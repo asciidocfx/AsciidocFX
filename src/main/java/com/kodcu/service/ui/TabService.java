@@ -8,8 +8,12 @@ import com.kodcu.other.Item;
 import com.kodcu.service.DirectoryService;
 import com.kodcu.service.PathResolverService;
 import com.kodcu.service.ThreadService;
+import com.kodcu.service.convert.RenderService;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Worker;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
@@ -17,8 +21,14 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
+import javafx.stage.Popup;
+import netscape.javascript.JSObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -58,7 +68,13 @@ public class TabService {
     @Autowired
     private DirectoryService directoryService;
 
+    @Autowired
+    private RenderService renderService;
+
     private List<Optional<Path>> closedPaths = new ArrayList<>();
+
+    private Logger logger = LoggerFactory.getLogger(TabService.class);
+
 
     public void addTab(Path path) {
 
@@ -74,13 +90,15 @@ public class TabService {
         webEngine.getLoadWorker().stateProperty().addListener((observableValue1, state, state2) -> {
             if (state2 == Worker.State.SUCCEEDED) {
                 threadService.runTaskLater(() -> {
-                    String normalize = IOHelper.normalize(IOHelper.readFile(path));
+                    String content = IOHelper.readFile(path);
                     threadService.runActionLater(new Runnable() {
                         @Override
                         public void run() {
                             try {
-                                webEngine.executeScript(String.format("setEditorValue('%s')", normalize));
+                                ((JSObject)webEngine.executeScript("window")).setMember("editorValue", content);
+                                webEngine.executeScript("setEditorValue(editorValue)");
                             } catch (Exception e) {
+                                logger.error(e.getMessage(), e);
                                 threadService.runActionLater(this);
                             }
                         }
@@ -227,9 +245,9 @@ public class TabService {
 
         ContextMenu contextMenu = new ContextMenu();
         contextMenu.getItems().addAll(menuItem0, menuItem1, menuItem2, menuItem3, new SeparatorMenuItem(),
-                                      menuItem4, menuItem5, menuItem6, new SeparatorMenuItem(),
-                                      gotoWorkdir ,new SeparatorMenuItem(),
-                                      menuItem7, menuItem8);
+                menuItem4, menuItem5, menuItem6, new SeparatorMenuItem(),
+                gotoWorkdir, new SeparatorMenuItem(),
+                menuItem7, menuItem8);
 
         tab.contextMenuProperty().setValue(contextMenu);
 

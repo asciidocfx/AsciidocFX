@@ -25,7 +25,7 @@ public class AsciidocController {
     @Autowired
     private TabService tabService;
 
-    @RequestMapping(value = {"**.asciidoc", "**.asc", "**.txt", "**.ad", "**.adoc"}, method = RequestMethod.GET)
+    @RequestMapping(value = {"/**/{extension:(?:\\w|\\W)+\\.(?:asc|asciidoc|ad|adoc|md|markdown)$}"}, method = RequestMethod.GET)
     @ResponseBody
     public DeferredResult<String> asciidoc(HttpServletRequest request) {
 

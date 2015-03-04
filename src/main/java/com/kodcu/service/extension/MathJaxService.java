@@ -42,7 +42,7 @@ public class MathJaxService {
     public String appendFormula(String fileName, String formula) {
         if (fileName.endsWith(".png") || fileName.endsWith(".svg")) {
             WebEngine engine = controller.getMathjaxView().getEngine();
-            engine.executeScript(String.format("appendFormula('%s','%s')", fileName, IOHelper.normalize(formula)));
+            engine.executeScript(String.format("appendFormula('%s','%s')", fileName, formula));
             return "images/" + fileName;
         }
 

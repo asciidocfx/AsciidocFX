@@ -1,9 +1,8 @@
 package com.kodcu.service.convert;
 
-import com.kodcu.controller.ApplicationController;
 import com.kodcu.other.Current;
 import com.kodcu.other.IOHelper;
-import com.kodcu.service.PathResolverService;
+import com.kodcu.service.MarkdownService;
 import org.joox.Match;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,6 +14,7 @@ import java.io.StringReader;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -28,19 +28,20 @@ public class DocBookService {
 
     private static final Logger logger = LoggerFactory.getLogger(DocBookService.class);
 
-    private Pattern compiledRegex = Pattern.compile("(?<=include::)(.*?)(?=\\[(.*?)\\])");
+    private Pattern ascIncludeRegex = Pattern.compile("(?<=include::)(?<path>.*?)(?=\\[(.*?)\\])");
+    private Pattern mdIncludeRegex = Pattern.compile("\\[.*?\\]\\((?<path>.*?)\\)");
 
     @Autowired
     private RenderService docConverter;
 
     @Autowired
     private Current current;
+    @Autowired
+    private MarkdownService markdownService;
 
-    public String generateDocbook() {
+    public void generateDocbook(Consumer<String> step) {
 
         StringBuilder builder = new StringBuilder();
-
-        try {
 
             Path currentTabPath = current.currentPath().get();
             Path currentTabPathDir = currentTabPath.getParent();
@@ -50,12 +51,22 @@ public class DocBookService {
             for (int i = 0; i < bookAscLines.size(); i++) {
                 String bookAscLine = bookAscLines.get(i);
 
-                Matcher matcher = compiledRegex.matcher(bookAscLine);
+                Matcher matcher = ascIncludeRegex.matcher(bookAscLine);
 
                 if (matcher.find()) {
-                    String chapterPath = matcher.group();
+                    String chapterPath = matcher.group("path");
                     String chapterContent = IOHelper.readFile(currentTabPathDir.resolve(chapterPath));
                     bookAscLines.set(i, "\n\n" + chapterContent + "\n\n");
+                }
+
+                if(tabText.contains("SUMMARY")){
+                    matcher = mdIncludeRegex.matcher(bookAscLine);
+
+                    if (matcher.find()) {
+                        String chapterPath = matcher.group("path");
+                        String chapterContent = IOHelper.readFile(currentTabPathDir.resolve(chapterPath));
+                        bookAscLines.set(i, "\n\n" + chapterContent + "\n\n");
+                    }
                 }
 
             }
@@ -66,80 +77,69 @@ public class DocBookService {
                 allAscContent.append("\n");
             });
 
-            String docBookHeaderContent = docConverter.convertDocbook(allAscContent.toString(), true);
+            String text = allAscContent.toString();
 
-            StringReader bookReader = new StringReader(docBookHeaderContent);
-            Match rootDocument = $(new InputSource(bookReader));
-            bookReader.close();
+            docConverter.convertDocbook(text, true,docBookHeaderContent->{
+                docBookHeaderContent = docBookHeaderContent.replace("<?xml version=\"1.0\" encoding=\"UTF-8\"?>","<?xml version=\"1.1\" encoding=\"UTF-8\"?>");
+
+                StringReader bookReader = new StringReader(docBookHeaderContent);
+                Match rootDocument = IOHelper.$(new InputSource(bookReader));
+                bookReader.close();
 
 //            // makes figure centering
-            rootDocument.find("figure").find("imagedata").attr("align", "center");
+                rootDocument.find("figure").find("imagedata").attr("align", "center");
 
-            // remove callout's duplicated refs and pick last
-            rootDocument.find("callout").forEach(elem -> {
-                String arearefs = $(elem).attr("arearefs");
-                String[] cos = arearefs.split(" ");
-                if (cos.length > 1)
-                    $(elem).attr("arearefs", cos[cos.length - 1]);
+                // remove callout's duplicated refs and pick last
+                rootDocument.find("callout").forEach(elem -> {
+                    String arearefs = $(elem).attr("arearefs");
+                    String[] cos = arearefs.split(" ");
+                    if (cos.length > 1)
+                        $(elem).attr("arearefs", cos[cos.length - 1]);
+                });
+
+                builder.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+                builder.append("\n");
+                builder.append("<?asciidoc-toc?>");
+                builder.append("\n");
+                builder.append("<?asciidoc-numbered?>");
+                builder.append("\n");
+                builder.append(rootDocument.content());
+                step.accept(builder.toString());
             });
-
-
-            builder.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-            builder.append("\n");
-            builder.append("<?asciidoc-toc?>");
-            builder.append("\n");
-            builder.append("<?asciidoc-numbered?>");
-            builder.append("\n");
-            builder.append(rootDocument.content());
-
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-        } finally {
-//            indikatorService.hideIndikator();
-        }
-
-        return builder.toString();
     }
 
-    public String generateDocbookArticle() {
+    public void generateDocbookArticle(Consumer<String> step) {
 
-        StringBuilder builder = new StringBuilder();
-        try {
+            docConverter.convertDocbookArticle(docbook -> {
+                StringBuilder builder = new StringBuilder();
+                docbook = docbook.replace("<?xml version=\"1.0\" encoding=\"UTF-8\"?>", "<?xml version=\"1.1\" encoding=\"UTF-8\"?>");
+                StringReader bookReader = new StringReader(docbook);
+                Match rootDocument = IOHelper.$(new InputSource(bookReader));
+                bookReader.close();
 
-            String docbook = docConverter.convertDocbookArticle();
+                // changes formalpara to figure bug fix
+                rootDocument.find("imageobject").parents("formalpara").each((context) -> {
+                    $(context).rename("figure");
+                });
 
-            StringReader bookReader = new StringReader(docbook);
-            Match rootDocument = $(new InputSource(bookReader));
-            bookReader.close();
+                // makes figure centering
+                rootDocument.find("figure").find("imagedata").attr("align", "center");
 
-            // changes formalpara to figure bug fix
-            rootDocument.find("imageobject").parents("formalpara").each((context) -> {
-                $(context).rename("figure");
+                // remove callout's duplicated refs and pick last
+                rootDocument.find("callout").forEach(elem -> {
+                    String arearefs = $(elem).attr("arearefs");
+                    String[] cos = arearefs.split(" ");
+                    if (cos.length > 1)
+                        $(elem).attr("arearefs", cos[cos.length - 1]);
+                });
+
+
+                builder.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+                builder.append("\n");
+                builder.append("<?asciidoc-toc?>\n");
+                builder.append("<?asciidoc-numbered?>\n");
+                builder.append(rootDocument.content());
+                step.accept(builder.toString());
             });
-
-            // makes figure centering
-            rootDocument.find("figure").find("imagedata").attr("align", "center");
-
-            // remove callout's duplicated refs and pick last
-            rootDocument.find("callout").forEach(elem -> {
-                String arearefs = $(elem).attr("arearefs");
-                String[] cos = arearefs.split(" ");
-                if (cos.length > 1)
-                    $(elem).attr("arearefs", cos[cos.length - 1]);
-            });
-
-
-            builder.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-            builder.append("\n");
-            builder.append("<?asciidoc-toc?>\n");
-            builder.append("<?asciidoc-numbered?>\n");
-            builder.append(rootDocument.content());
-
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-        }
-
-
-        return builder.toString();
     }
 }

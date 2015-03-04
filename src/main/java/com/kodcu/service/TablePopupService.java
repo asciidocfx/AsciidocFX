@@ -95,7 +95,7 @@ public class TablePopupService implements Initializable {
 
         stringBuffer.append("|====================");
 
-        current.currentEngine().executeScript(String.format("editor.insert('%s')", IOHelper.normalize(stringBuffer.toString())));
+        current.insertEditorValue(stringBuffer.toString());
 
     }
 
