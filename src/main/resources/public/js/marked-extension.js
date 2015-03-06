@@ -23,7 +23,7 @@ md2AscRenderer.paragraph = function (text) {
 };
 
 md2AscRenderer.table = function (header, body) {
-    var headerContent = "[width=\"100%\",options=\"header\"]";
+    var headerContent = "\n[width=\"100%\",options=\"header\"]";
     var start = "\n|====";
     var end = "\n|====\n";
     return headerContent + start + body + end;
@@ -49,11 +49,11 @@ md2AscRenderer.code = function (code, lang, escaped) {
 };
 
 md2AscRenderer.codespan = function (text) {
-    text = text.replace(/\*/g, "\\*");
-    text = text.replace(/\#/g, "\\#");
-    text = text.replace(/\_/g, "\\_");
-    text = text.replace(/\~/g, "\\~");
-    text = text.replace(/\^/g, "\\^");
+    //text = text.replace(/\*/g, "\\*");
+    text = text.replace(/\*\*/g, "{asterisk}{asterisk}");
+    if ((text.match(/#/g) || "").length % 2 == 1)
+        text = text.replace(/#/g, "\\#");
+
     return "`" + text + "`";
 };
 
@@ -83,11 +83,11 @@ md2AscRenderer.image = function (href, title, text) {
 };
 
 function markdownToAsciidoc(input) {
-    var result ="";
-    try{
+    var result = "";
+    try {
         var result = marked(input, {renderer: md2AscRenderer});
     }
-    catch (e){
+    catch (e) {
         throw  e;
     }
     return result;
