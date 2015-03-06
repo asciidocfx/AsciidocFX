@@ -5,6 +5,7 @@ import com.kodcu.other.Current;
 import com.kodcu.other.IOHelper;
 import com.kodcu.service.DirectoryService;
 import com.kodcu.service.PathResolverService;
+import com.kodcu.service.ThreadService;
 import com.kodcu.service.ui.IndikatorService;
 import javafx.application.Platform;
 import javafx.stage.FileChooser;
@@ -34,6 +35,9 @@ public class Html5BookService {
 
     @Autowired
     private ApplicationController asciiDocController;
+
+    @Autowired
+    private ThreadService threadService;
 
     @Autowired
     private PathResolverService bookPathResolver;
@@ -95,7 +99,7 @@ public class Html5BookService {
             renderService.convertHtmlBook(bookXmlAsciidoc,htmlContent->{
                 IOHelper.writeToFile(htmlBookPath, htmlContent, CREATE, TRUNCATE_EXISTING);
 
-                Platform.runLater(() -> {
+                threadService.runActionLater(() -> {
                     asciiDocController.getRecentFiles().remove(htmlBookPath.toString());
                     asciiDocController.getRecentFiles().add(0, htmlBookPath.toString());
                 });

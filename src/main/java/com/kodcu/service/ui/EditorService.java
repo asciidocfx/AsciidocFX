@@ -1,26 +1,22 @@
 package com.kodcu.service.ui;
 
 import com.kodcu.component.LabelBuilt;
+import com.kodcu.component.MyTab;
 import com.kodcu.controller.ApplicationController;
 import com.kodcu.other.Current;
 import de.jensd.fx.fontawesome.AwesomeDude;
 import de.jensd.fx.fontawesome.AwesomeIcon;
+import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.control.*;
-import javafx.scene.control.Label;
-import javafx.scene.control.Menu;
-import javafx.scene.control.MenuBar;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.ScrollPane;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.web.WebView;
-import javafx.util.StringConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import java.awt.*;
 
 /**
  * Created by usta on 25.12.2014.
@@ -36,8 +32,6 @@ public class EditorService {
 
     public Node createEditorVBox(WebView webView) {
         VBox vbox = new VBox();
-        MenuBar menuBar = new MenuBar();
-        menuBar.getStyleClass().add("editorToolsBar");
         String iconSize = "14.0";
         double minSize = 14.01;
 
@@ -112,40 +106,49 @@ public class EditorService {
             }
         });
 
-        menuBar.getMenus().addAll(
-                new Menu("", newLabel),
-                new Menu("", openLabel),
-                new Menu("", saveLabel),
-                new Menu("", boldLabel),
-                new Menu("", italicLabel),
-                new Menu("", underlineLabel),
-                new Menu("", strikethroughLabel),
-                new Menu("", headerLabel),
-                new Menu("", hyperlinkLabel),
-                new Menu("", codeLabel),
-                new Menu("", ulListLabel),
-                new Menu("", olListLabel),
-                new Menu("", tableLabel),
-                new Menu("", imageLabel),
-                new Menu("", subscriptLabel),
-                new Menu("", superScriptLabel),
-                new Menu("", openMenuLabel)
-        );
+        ToggleGroup toggleGroup= new ToggleGroup();
+        RadioButton r1 = new RadioButton("ASC");
+        r1.setToggleGroup(toggleGroup);
+        RadioButton r2 = new RadioButton("MD");
+        r2.setToggleGroup(toggleGroup);
+        r1.setSelected(true);
+
+        HBox topMenu = new HBox(newLabel,
+                openLabel,
+                saveLabel,
+                boldLabel,
+                italicLabel,
+                underlineLabel,
+                strikethroughLabel,
+                headerLabel,
+                hyperlinkLabel,
+                codeLabel,
+                ulListLabel,
+                olListLabel,
+                tableLabel,
+                imageLabel,
+                subscriptLabel,
+                superScriptLabel,
+                r1,r2,
+                openMenuLabel);
+
+        topMenu.setOnMouseClicked(event -> {
+            webView.requestFocus();
+        });
+
+        topMenu.setSpacing(10);
+        topMenu.getStyleClass().add("top-menu");
 
         ScrollPane scrollPane = new ScrollPane();
         scrollPane.setContent(webView);
         scrollPane.setFitToHeight(true);
         scrollPane.setFitToWidth(true);
         VBox.setVgrow(scrollPane, Priority.ALWAYS);
-
-        vbox.getChildren().add(menuBar);
+        vbox.getChildren().add(topMenu);
         return new VBox(vbox, scrollPane);
     }
 
     private Node createSecondEditorVBox(String iconSize) {
-        MenuBar menuBar = new MenuBar();
-        menuBar.getStyleClass().add("editorToolsBar");
-
         Label quoteLabel = AwesomeDude.createIconLabel(AwesomeIcon.QUOTE_LEFT, iconSize);
 
         quoteLabel.setOnMouseClicked(e -> {
@@ -154,9 +157,12 @@ public class EditorService {
 
         Tooltip.install(quoteLabel, new Tooltip("Blockquote"));
 
-        menuBar.getMenus().addAll(
-                new Menu("", quoteLabel));
+        HBox topMenu = new HBox(quoteLabel);
 
-        return menuBar;
+        topMenu.setSpacing(10);
+        topMenu.getStyleClass().add("top-menu");
+        topMenu.setStyle("-fx-padding:0 10px 5px 10px;");
+
+        return topMenu;
     }
 }

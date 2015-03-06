@@ -26,6 +26,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import javafx.stage.Popup;
+import javafx.util.Callback;
 import netscape.javascript.JSObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,10 +35,7 @@ import org.springframework.stereotype.Component;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -87,24 +85,27 @@ public class TabService {
         AnchorPane anchorPane = new AnchorPane();
         WebView webView = webviewService.createWebView();
         WebEngine webEngine = webView.getEngine();
-        webEngine.getLoadWorker().stateProperty().addListener((observableValue1, state, state2) -> {
-            if (state2 == Worker.State.SUCCEEDED) {
+        webEngine.setConfirmHandler(param -> {
+            if ("command:ready".equals(param)) {
+                JSObject window = (JSObject) webEngine.executeScript("window");
+                window.setMember("app", controller);
+                window.call("updateOptions", new Object[]{});
+                Map<String, String> shortCuts = controller.getShortCuts();
+                Set<String> keySet = shortCuts.keySet();
+                for (String key : keySet) {
+                    window.call("addNewCommand", new Object[]{key, shortCuts.get(key)});
+                }
+                if (Objects.isNull(path))
+                    return true;
                 threadService.runTaskLater(() -> {
                     String content = IOHelper.readFile(path);
-                    threadService.runActionLater(new Runnable() {
-                        @Override
-                        public void run() {
-                            try {
-                                ((JSObject)webEngine.executeScript("window")).setMember("editorValue", content);
-                                webEngine.executeScript("setEditorValue(editorValue)");
-                            } catch (Exception e) {
-                                logger.error(e.getMessage(), e);
-                                threadService.runActionLater(this);
-                            }
-                        }
+                    threadService.runActionLater(()->{
+                        window.call("setEditorValue", new Object[]{content});
                     });
                 });
+
             }
+            return false;
         });
 
         Node editorVBox = editorService.createEditorVBox(webView);
@@ -113,7 +114,7 @@ public class TabService {
         anchorPane.getChildren().add(editorVBox);
 
         MyTab tab = createTab();
-        ((Label) tab.getGraphic()).setText(path.getFileName().toString());
+        tab.setTabText(path.getFileName().toString());
         tab.setContent(anchorPane);
 
         tab.setPath(path);
@@ -154,8 +155,9 @@ public class TabService {
                 if (Objects.nonNull(current.currentWebView())) {
                     WebEngine webEngine = current.currentEngine();
                     Worker.State state = webEngine.getLoadWorker().getState();
-                    if (state == Worker.State.SUCCEEDED)
+                    if (state == Worker.State.SUCCEEDED) {
                         controller.textListener(current.currentEditorValue());
+                    }
                 }
             }
         });
@@ -189,7 +191,7 @@ public class TabService {
         MenuItem menuItem3 = new MenuItem("Close Unmodified");
         menuItem3.setOnAction(actionEvent -> {
             ObservableList<Tab> tabs = controller.getTabPane().getTabs();
-            Predicate<Tab> filter = pTab -> !((Label) pTab.getGraphic()).getText().contains(" *");
+            Predicate<Tab> filter = pTab -> !((MyTab) pTab).getText().contains(" *");
 
             List<Tab> collect = tabs.stream().filter(filter).collect(Collectors.toList());
 
@@ -252,7 +254,7 @@ public class TabService {
         tab.contextMenuProperty().setValue(contextMenu);
 
         Label label = new Label();
-        tab.setGraphic(label);
+        tab.setLabel(label);
 
         label.setOnMouseClicked(mouseEvent -> {
             if (mouseEvent.getButton().equals(MouseButton.SECONDARY)) {
@@ -268,8 +270,7 @@ public class TabService {
 
     public void addImageTab(Path imagePath) {
         MyTab tab = createTab();
-        Label label = (Label) tab.getGraphic();
-        label.setText(imagePath.getFileName().toString());
+        tab.setTabText(imagePath.getFileName().toString());
         ImageView imageView = new ImageView(new Image(IOHelper.pathToUrl(imagePath)));
         imageView.setPreserveRatio(true);
         imageView.setFitWidth(imageView.getImage().getWidth());
@@ -301,23 +302,22 @@ public class TabService {
     }
 
     public void keepClosedTab(Tab closedTab) {
-        MyTab tab = (MyTab) closedTab;
-        Label closedTabLabel = (Label) closedTab.getGraphic();
-        if (!closedTabLabel.getText().equals("new *")) {
-            closedPaths.add(Optional.ofNullable(tab.getPath()));
-        }
-
         threadService.runTaskLater(() -> {
             threadService.runActionLater(() -> {
+                MyTab tab = (MyTab) closedTab;
+                if (!tab.getLabel().getText().equals("new *")) {
+                    closedPaths.add(Optional.ofNullable(tab.getPath()));
+                }
+
+                tab.setPath(null);
                 tab.setOnClosed(null);
                 tab.setOnSelectionChanged(null);
-                tab.setPath(null);
+                tab.setUserData(null);
+                tab.getLabel().setOnMouseClicked(null);
+                tab.setOnCloseRequest(null);
                 tab.setWebView(null);
                 tab.setContent(null);
-                tab.setUserData(null);
-                tab.setOnCloseRequest(null);
-                Label label = (Label) tab.getGraphic();
-                label.setOnMouseClicked(null);
+
             });
         });
     }

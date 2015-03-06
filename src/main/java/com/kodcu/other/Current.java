@@ -32,9 +32,6 @@ public class Current {
     private ApplicationController controller;
 
     @Autowired
-    private RenderService renderService;
-
-    @Autowired
     private ThreadService threadService;
 
     private Pattern bookPattern = Pattern.compile(":doctype:(.*?)book");
@@ -68,16 +65,11 @@ public class Current {
     }
 
     public void setCurrentTabText(String currentTabText) {
-        Tab tab = currentTab();
-        Label label = (Label) tab.getGraphic();
-        label.setText(currentTabText);
+        currentTab().setTabText(currentTabText);
     }
 
     public String getCurrentTabText() {
-        Tab tab = currentTab();
-        Label label = (Label) tab.getGraphic();
-
-        return label.getText();
+        return currentTab().getTabText();
     }
 
     public String currentEditorValue() {
@@ -123,7 +115,6 @@ public class Current {
     }
 
     public Label currentTabLabel() {
-        Label label = (Label) currentTab().getGraphic();
-        return label;
+        return currentTab().getLabel();
     }
 }

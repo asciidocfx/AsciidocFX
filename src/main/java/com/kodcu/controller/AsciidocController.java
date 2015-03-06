@@ -1,13 +1,17 @@
 package com.kodcu.controller;
 
 import com.kodcu.other.Current;
+import com.kodcu.service.ThreadService;
 import com.kodcu.service.ui.TabService;
 import javafx.application.Platform;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.context.request.async.DeferredResult;
 
 import javax.servlet.http.HttpServletRequest;
@@ -25,26 +29,28 @@ public class AsciidocController {
     @Autowired
     private TabService tabService;
 
+    @Autowired
+    private ThreadService threadService;
+
     @RequestMapping(value = {"/**/{extension:(?:\\w|\\W)+\\.(?:asc|asciidoc|ad|adoc|md|markdown)$}"}, method = RequestMethod.GET)
     @ResponseBody
-    public DeferredResult<String> asciidoc(HttpServletRequest request) {
+    public ResponseEntity asciidoc(HttpServletRequest request) {
 
-        DeferredResult<String> deferredResult = new DeferredResult<String>();
+        threadService.runTaskLater(()->{
+            current.currentPath().ifPresent(path -> {
+                String uri = request.getRequestURI();
 
-        current.currentPath().ifPresent(path -> {
-            String uri = request.getRequestURI();
+                if (uri.startsWith("/"))
+                    uri = uri.substring(1);
 
-            if (uri.startsWith("/"))
-                uri = uri.substring(1);
+                Path ascFile = path.getParent().resolve(uri);
 
-            Path ascFile = path.getParent().resolve(uri);
-
-            Platform.runLater(() -> {
-                tabService.addTab(ascFile);
+                threadService.runActionLater(() -> {
+                    tabService.addTab(ascFile);
+                });
             });
-
-            deferredResult.setResult("OK");
         });
-        return deferredResult;
+
+        return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 }

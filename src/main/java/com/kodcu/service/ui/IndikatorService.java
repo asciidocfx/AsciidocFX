@@ -1,6 +1,7 @@
 package com.kodcu.service.ui;
 
 import com.kodcu.controller.ApplicationController;
+import com.kodcu.service.ThreadService;
 import javafx.animation.FadeTransition;
 import javafx.application.Platform;
 import javafx.scene.control.ProgressIndicator;
@@ -18,15 +19,18 @@ public class IndikatorService {
     @Autowired
     private ApplicationController asciiDocController;
 
+    @Autowired
+    private ThreadService threadService;
+
     public void startCycle() {
-        Platform.runLater(() -> {
+        threadService.runActionLater(() -> {
             asciiDocController.getIndikator().setVisible(true);
             asciiDocController.getIndikator().setManaged(true);
         });
     }
 
     public void completeCycle() {
-        Platform.runLater(() -> {
+        threadService.runActionLater(() -> {
             asciiDocController.getIndikator().setManaged(false);
             asciiDocController.getIndikator().setVisible(false);
         });

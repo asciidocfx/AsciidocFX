@@ -3,18 +3,19 @@ package com.kodcu.service.ui;
 import com.kodcu.component.MenuItemBuilt;
 import com.kodcu.controller.ApplicationController;
 import com.kodcu.other.Current;
-import com.kodcu.service.MarkdownService;
-import com.kodcu.service.ParserService;
-import com.kodcu.service.PathResolverService;
-import com.kodcu.service.ThreadService;
+import com.kodcu.other.IOHelper;
+import com.kodcu.service.*;
 import com.kodcu.service.convert.RenderService;
 import javafx.concurrent.Worker;
+import javafx.event.EventHandler;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.MouseButton;
 import javafx.scene.web.WebEngine;
+import javafx.scene.web.WebEvent;
 import javafx.scene.web.WebView;
+import javafx.util.Callback;
 import netscape.javascript.JSObject;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.TrueFileFilter;
@@ -24,10 +25,7 @@ import org.springframework.stereotype.Component;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * Created by usta on 25.12.2014.
@@ -54,11 +52,13 @@ public class WebviewService {
     private Current current;
 
     @Autowired
-    private RenderService renderService;
+    private DocumentService documentService;
 
     public WebView createWebView() {
 
         WebView webView = new WebView();
+        WebEngine webEngine = webView.getEngine();
+        webEngine.load(String.format("http://localhost:%d/editor.html", controller.getPort()));
         webView.setContextMenuEnabled(false);
         ContextMenu menu = new ContextMenu();
 
@@ -68,21 +68,20 @@ public class WebviewService {
                 MenuItem copy = MenuItemBuilt.item("Copy").onclick(event1 -> {
                     controller.cutCopy(current.currentEditorSelection());
                 });
-                MenuItem paste = MenuItemBuilt.item("Paste").onclick(event1 -> {
+                MenuItem paste = MenuItemBuilt.item("Paste").onclick(e -> {
                     current.insertEditorValue(controller.paste());
                 });
-                MenuItem pasteRaw = MenuItemBuilt.item("Paste raw").onclick(event1 -> {
+                MenuItem pasteRaw = MenuItemBuilt.item("Paste raw").onclick(e -> {
                     current.insertEditorValue(controller.pasteRaw());
                 });
-                MenuItem convert = MenuItemBuilt.item("Markdown to Asciidoc").onclick(event1 -> {
+                MenuItem convert = MenuItemBuilt.item("Markdown to Asciidoc").onclick(e -> {
                     markdownService.convertToAsciidoc(current.currentEditorValue(), content -> {
                         threadService.runActionLater(() -> {
-                            current.clearEditorValue();
-                            current.insertEditorValue(content);
+                            documentService.newDoc(content);
                         });
                     });
                 });
-                menu.getItems().addAll(copy, paste, pasteRaw,convert);
+                menu.getItems().addAll(copy, paste, pasteRaw, convert);
             }
 
             if (menu.isShowing()) {
@@ -93,7 +92,6 @@ public class WebviewService {
             }
         });
 
-        WebEngine webEngine = webView.getEngine();
 
         webView.setOnDragDropped(event -> {
             Dragboard dragboard = event.getDragboard();
@@ -167,29 +165,8 @@ public class WebviewService {
             event.consume();
         });
 
-        webEngine.getLoadWorker().stateProperty().addListener((observable, oldValue, newValue) -> {
 
-            if (newValue == Worker.State.SUCCEEDED) {
-                JSObject window = (JSObject) webEngine.executeScript("window");
-                if (window.getMember("app").equals("undefined")) {
-                    threadService.runActionLater(new Runnable() {
-                        @Override
-                        public void run() {
-                            window.setMember("app", controller);
-                            try {
-                                current.currentEngine().executeScript("updateOptions()");
-                                controller.applySohrtCuts();
-                            } catch (Exception e) {
-                                threadService.runActionLater(this);
-                            }
-                        }
-                    });
-                }
-            }
 
-        });
-
-        webEngine.load(String.format("http://localhost:%d/editor.html", controller.getPort()));
         return webView;
     }
 }

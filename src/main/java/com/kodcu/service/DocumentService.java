@@ -12,16 +12,16 @@ import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import javafx.stage.FileChooser;
+import netscape.javascript.JSObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.nio.file.Path;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 import static java.nio.file.StandardOpenOption.CREATE;
 import static java.nio.file.StandardOpenOption.TRUNCATE_EXISTING;
@@ -40,6 +40,9 @@ public class DocumentService {
 
     @Autowired
     private WebviewService webviewService;
+
+    @Autowired
+    private ThreadService threadService;
 
     @Autowired
     private EditorService editorService;
@@ -72,7 +75,28 @@ public class DocumentService {
     }
 
     public void newDoc() {
+        newDoc(null);
+    }
+
+    public void newDoc(String content) {
         WebView webView = webviewService.createWebView();
+        WebEngine webEngine = webView.getEngine();
+        webEngine.setConfirmHandler(param -> {
+            if ("command:ready".equals(param)) {
+                JSObject window = (JSObject) webEngine.executeScript("window");
+                window.setMember("app", controller);
+                window.call("updateOptions", new Object[]{});
+                Map<String, String> shortCuts = controller.getShortCuts();
+                Set<String> keySet = shortCuts.keySet();
+                for (String key : keySet) {
+                    window.call("addNewCommand", new Object[]{key, shortCuts.get(key)});
+                }
+                if (Objects.isNull(content))
+                    return true;
+                window.call("setEditorValue", new Object[]{content});
+            }
+            return false;
+        });
         AnchorPane anchorPane = new AnchorPane();
         Node editorVBox = editorService.createEditorVBox(webView);
         controller.fitToParent(editorVBox);
@@ -81,8 +105,10 @@ public class DocumentService {
         tab.setWebView(webView);
         tab.setContent(anchorPane);
 
-        ((Label) tab.getGraphic()).setText("new *");
+        tab.setTabText("new *");
         TabPane tabPane = controller.getTabPane();
+        if (tabPane.getTabs().isEmpty())
+            tabPane.getTabs().clear();
         tabPane.getTabs().add(tab);
         tabPane.getSelectionModel().select(tab);
 

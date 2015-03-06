@@ -86,7 +86,7 @@ public class KindleMobiService {
 
                         indikatorService.completeCycle();
 
-                        Platform.runLater(() -> {
+                        threadService.runActionLater(() -> {
                             asciiDocController.getRecentFiles().remove(mobiPath.toString());
                             asciiDocController.getRecentFiles().add(0, mobiPath.toString());
                         });

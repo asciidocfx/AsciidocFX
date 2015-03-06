@@ -230,7 +230,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             return;
 
         threadService.runActionLater(() -> {
-            renderService.getWindow().setMember("lastRenderedValue",nev);
+            renderService.getWindow().setMember("lastRenderedValue", nev);
             previewEngine.executeScript("refreshUI(lastRenderedValue)");
         });
 
@@ -294,7 +294,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             sampleBookService.produceSampleBook(configPath, file.toPath());
             directoryService.setWorkingDirectory(Optional.of(file.toPath()));
             fileBrowser.browse(treeView, file.toPath());
-            Platform.runLater(() -> {
+            threadService.runActionLater(() -> {
                 directoryView(null);
                 tabService.addTab(file.toPath().resolve("book.asc"));
             });
@@ -540,10 +540,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
         ebookPro.setContextMenu(ebookProMenu);
 
-//        sourcePro.setOnAction(event -> {
-////            this.cutCopy(lastRendered.getValue());
-//        });
-
         browserPro.setOnMouseClicked(event -> {
             if (event.getButton() == MouseButton.PRIMARY)
                 this.externalBrowse();
@@ -591,7 +587,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         });
         mathjaxEngine.load(String.format("http://localhost:%d/mathjax.html", port));
 
-
         previewEngine = previewView.getEngine();
         previewEngine.load(String.format("http://localhost:%d/preview.html", port));
         previewEngine.getLoadWorker().stateProperty().addListener((observableValue1, state, state2) -> {
@@ -619,8 +614,11 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         fileBrowser.browse(treeView, workDir);
 
         tabPane.getTabs().addListener((ListChangeListener<Tab>) c -> {
-            if (tabPane.getTabs().isEmpty())
-                threadService.runActionLater(this::newDoc);
+            threadService.runActionLater(() -> {
+                if (tabPane.getTabs().isEmpty()) {
+                    this.newDoc(null);
+                }
+            });
         });
 
         openFileTreeItem.setOnAction(event -> {
@@ -673,11 +671,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                     directoryService.getOpenFileConsumer().accept(selectedPath);
         });
 
-        threadService.runActionLater(e -> {
-            if (tabPane.getTabs().isEmpty()) {
-                newDoc(e);
-            }
-        });
 
         previewView.setContextMenuEnabled(false);
         ContextMenu previewContextMenu = new ContextMenu(MenuItemBuilt.item("Refresh").onclick(event -> {
@@ -691,6 +684,8 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                 previewContextMenu.hide();
             }
         });
+
+        newDoc(null);
     }
 
     private void loadShortCuts() {
@@ -728,7 +723,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         }
 
         if (!config.getDirectoryPanel())
-            Platform.runLater(() -> {
+            threadService.runActionLater(() -> {
                 splitPane.setDividerPositions(0, 0.51);
             });
 
@@ -777,19 +772,14 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     @FXML
     public void newDoc(Event event) {
-        documentService.newDoc();
+        threadService.runActionLater(()->{
+            documentService.newDoc();
+        });
     }
 
     @FXML
     public void hideLeftSplit(Event event) {
         splitPane.setDividerPositions(0, 0.51);
-    }
-
-    public void applySohrtCuts() {
-        Set<String> keySet = shortCuts.keySet();
-        for (String key : keySet) {
-            current.currentEngine().executeScript(String.format("addNewCommand('%s','%s')", key, shortCuts.get(key)));
-        }
     }
 
     public void onscroll(Object pos, Object max) {
@@ -821,7 +811,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                 if (Objects.nonNull(rendered))
                     lastRendered.setValue(rendered);
             });
-
         });
     }
 
@@ -849,7 +838,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         if (clipboard.hasHtml()) {
             try {
                 String html = clipboard.getHtml();
-                renderService.getWindow().setMember("clipboardValue",html);
+                renderService.getWindow().setMember("clipboardValue", html);
                 String asciidoc = (String) previewEngine.executeScript("toAsciidoc(clipboardValue)");
                 return asciidoc;
             } catch (Exception e) {
@@ -859,11 +848,11 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         }
 
         try {
-            renderService.getWindow().setMember("clipboardValue",clipboard.getString());
+            renderService.getWindow().setMember("clipboardValue", clipboard.getString());
             Boolean isHtml = (Boolean) previewEngine.executeScript("isHtml(clipboardValue)");
             if (isHtml) {
                 String clipboardString = clipboard.getString();
-                renderService.getWindow().setMember("clipboardValue",clipboardString);
+                renderService.getWindow().setMember("clipboardValue", clipboardString);
                 String asciidoc = (String) previewEngine.executeScript("toAsciidoc(clipboardValue)");
                 return asciidoc;
             }
@@ -1028,6 +1017,10 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     public Current getCurrent() {
         return current;
+    }
+
+    public Map<String, String> getShortCuts() {
+        return shortCuts;
     }
 
     @FXML
