@@ -188,7 +188,7 @@ sketch = {
                     headerRow = -1;
                 }
                 var name = type.concat("::",pointer);
-                var construct = sketch.constructList[name];
+                var construct = sketch.constructList[name] || {};
                 construct.endRow = line;
                 construct.endColumn = textLength;
                 sketch.constructList[name] = construct; 
