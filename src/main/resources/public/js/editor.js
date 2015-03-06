@@ -1,22 +1,3 @@
-function updateOptions() {
-    editor.setOptions({
-        fontFamily: app.getConfig().getFontFamily(),
-        fontSize: app.getConfig().getFontSize()
-    });
-    editor.setTheme(app.getConfig().getTheme());
-    editor.setScrollSpeed(app.getConfig().getScrollSpeed());
-    editor.focus();
-}
-
-function setEditorValue(content) {
-
-    editor.setValue(content);
-    editor.clearSelection();
-    editor.session.setScrollTop(-100);
-    editor.focus();
-
-}
-
 var editor = ace.edit("editor");
 editor.renderer.setShowGutter(false);
 editor.setHighlightActiveLine(false);
@@ -100,3 +81,23 @@ editor.getSession().on('change', function (obj) {
             newlyInitialized = false;
         }, 1000);
 });
+
+
+function updateOptions() {
+    editor.setOptions({
+        fontFamily: app.getConfig().getFontFamily(),
+        fontSize: app.getConfig().getFontSize()
+    });
+    editor.setTheme(app.getConfig().getTheme());
+    editor.setScrollSpeed(app.getConfig().getScrollSpeed());
+    editor.focus();
+}
+
+function setEditorValue(content) {
+
+    editor.setValue(content);
+    editor.clearSelection();
+    editor.session.setScrollTop(-100);
+    editor.focus();
+
+}
