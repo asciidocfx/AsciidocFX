@@ -1,4 +1,4 @@
-function addNewCommand(key,value){
+function addNewCommand(key, value) {
     var name = key + value;
     editor.commands.addCommand({
         name: name,
@@ -163,7 +163,7 @@ function addSourceCode() {
     editor.gotoLine(range.end.row + 3, 0, true);
 }
 
-function addQuote(){
+function addQuote() {
     var range = editor.getSelectionRange();
     editor.removeToLineStart();
 
@@ -286,7 +286,7 @@ editor.commands.addCommand({
         mac: 'F12'
     },
     exec: function () {
-        if (!document.querySelectorAll("#firebug-script").length){
+        if (!document.querySelectorAll("#firebug-script").length) {
             var head = document.querySelector("head");
             var js = document.createElement("script");
             js.type = "text/javascript";
@@ -324,7 +324,7 @@ editor.commands.addCommand({
         if (textRange == "book") { // source generator
             editor.removeToLineStart();
 
-            editor.insert("= Book Name\nAuthor's Name\n:doctype: book\n:encoding: utf-8\n:lang: en\n:toc: left\n:numbered:\n:stylesheet: https://cdn.rawgit.com/asciidocfx/AsciidocFX/master/src/main/resources/public/css/asciidoctor-default.css\n\n\n");
+            editor.insert("= Book Name\nAuthor Name\n:doctype: book\n:encoding: utf-8\n:lang: en\n:toc: left\n:numbered:\n:stylesheet: https://cdn.rawgit.com/asciidocfx/AsciidocFX/master/src/main/resources/public/css/asciidoctor-default.css\n\n\n");
 
             return;
         }
@@ -333,7 +333,7 @@ editor.commands.addCommand({
         if (textRange == "article") { // source generator
             editor.removeToLineStart();
 
-            editor.insert("= Article Name\nAuthor's Name\n:doctype: article\n:encoding: utf-8\n:lang: en\n:toc: left\n:numbered:\n:stylesheet: https://cdn.rawgit.com/asciidocfx/AsciidocFX/master/src/main/resources/public/css/asciidoctor-default.css\n\n\n");
+            editor.insert("= Article Name\nAuthor Name\n:doctype: article\n:encoding: utf-8\n:lang: en\n:toc: left\n:numbered:\n:stylesheet: https://cdn.rawgit.com/asciidocfx/AsciidocFX/master/src/main/resources/public/css/asciidoctor-default.css\n\n\n");
 
             return;
         }
@@ -453,3 +453,4 @@ function matchHtmlTagText(text) {
     return text.match(/(\+\+\+\<(u|del)\>).*(\<\/(u|del)\>\+\+\+)/g);
 }
 
+confirm("command:ready")
