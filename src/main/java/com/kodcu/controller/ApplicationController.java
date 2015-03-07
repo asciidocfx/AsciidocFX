@@ -924,6 +924,9 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     public void saveAndCloseCurrentTab() {
         this.saveDoc();
         tabPane.getTabs().remove(current.currentTab());
+        if (this.getTabPane().getTabs().isEmpty()) {
+            this.newDoc(null);
+        }
     }
 
     public ProgressIndicator getIndikator() {

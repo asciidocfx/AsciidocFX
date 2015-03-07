@@ -1,22 +1,16 @@
 package com.kodcu.component;
 
+import com.kodcu.controller.ApplicationController;
 import com.kodcu.service.ThreadService;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.scene.Node;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
 import javafx.scene.web.WebView;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 
-import java.awt.*;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Created by usta on 17.12.2014.
@@ -26,6 +20,15 @@ public class MyTab extends Tab {
     private WebView webView;
     private Path path;
     private static List<Optional<Path>> closedPaths = new ArrayList<>();
+    private ApplicationController controller;
+
+    public ApplicationController getController() {
+        return controller;
+    }
+
+    public void setController(ApplicationController controller) {
+        this.controller = controller;
+    }
 
     public void setLabel(Label label) {
         this.setGraphic(label);
@@ -64,7 +67,6 @@ public class MyTab extends Tab {
     }
 
     public void close() {
-
         this.select();
 
         if (isSaved()) {
@@ -85,7 +87,6 @@ public class MyTab extends Tab {
     }
 
     private void closeIt() {
-        this.getTabPane().getTabs().remove(this);
         ThreadService.runTaskLater(() -> {
             ThreadService.runActionLater(() -> {
 
@@ -93,6 +94,7 @@ public class MyTab extends Tab {
                     closedPaths.add(Optional.ofNullable(this.getPath()));
                 }
 
+                this.getTabPane().getTabs().remove(this);
                 this.setPath(null);
                 this.setOnClosed(null);
                 this.setOnSelectionChanged(null);
@@ -103,6 +105,9 @@ public class MyTab extends Tab {
                 this.setContent(null);
                 this.setLabel(null);
 
+                if (controller.getTabPane().getTabs().isEmpty()) {
+                    controller.newDoc(null);
+                }
             });
         });
 

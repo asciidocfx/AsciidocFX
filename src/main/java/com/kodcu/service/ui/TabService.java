@@ -146,15 +146,8 @@ public class TabService {
     }
 
     public MyTab createTab() {
-        MyTab tab = new MyTab() {
-            @Override
-            public void close() {
-                super.close();
-                if (controller.getTabPane().getTabs().isEmpty()) {
-                    controller.newDoc(null);
-                }
-            }
-        };
+        MyTab tab = new MyTab();
+        tab.setController(controller);
 
         tab.setOnCloseRequest(event -> {
             event.consume();
