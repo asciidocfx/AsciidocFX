@@ -146,8 +146,16 @@ public class TabService {
     }
 
     public MyTab createTab() {
-        MyTab tab = new MyTab();
-        tab.setController(controller);
+
+        MyTab tab = new MyTab() {
+            @Override
+            public void close() {
+                super.close();
+                if (controller.getTabPane().getTabs().isEmpty()) {
+                    controller.newDoc(null);
+                }
+            }
+        };
 
         tab.setOnCloseRequest(event -> {
             event.consume();
@@ -166,8 +174,8 @@ public class TabService {
 
                 threadService.runActionLater(() -> {
                     WebView webView = tab.getWebView();
-                    if(Objects.nonNull(webView))
-                    webView.requestFocus();
+                    if (Objects.nonNull(webView))
+                        webView.requestFocus();
                 });
             }
 
@@ -200,7 +208,7 @@ public class TabService {
 
             blackList.forEach(t -> {
                 MyTab closeTab = (MyTab) t;
-                    closeTab.close();
+                closeTab.close();
             });
         });
 //

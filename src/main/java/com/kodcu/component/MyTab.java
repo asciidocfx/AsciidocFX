@@ -20,15 +20,6 @@ public class MyTab extends Tab {
     private WebView webView;
     private Path path;
     private static List<Optional<Path>> closedPaths = new ArrayList<>();
-    private ApplicationController controller;
-
-    public ApplicationController getController() {
-        return controller;
-    }
-
-    public void setController(ApplicationController controller) {
-        this.controller = controller;
-    }
 
     public void setLabel(Label label) {
         this.setGraphic(label);
@@ -87,6 +78,9 @@ public class MyTab extends Tab {
     }
 
     private void closeIt() {
+
+        this.getTabPane().getTabs().remove(this);
+
         ThreadService.runTaskLater(() -> {
             ThreadService.runActionLater(() -> {
 
@@ -94,7 +88,6 @@ public class MyTab extends Tab {
                     closedPaths.add(Optional.ofNullable(this.getPath()));
                 }
 
-                this.getTabPane().getTabs().remove(this);
                 this.setPath(null);
                 this.setOnClosed(null);
                 this.setOnSelectionChanged(null);
@@ -105,9 +98,6 @@ public class MyTab extends Tab {
                 this.setContent(null);
                 this.setLabel(null);
 
-                if (controller.getTabPane().getTabs().isEmpty()) {
-                    controller.newDoc(null);
-                }
             });
         });
 
