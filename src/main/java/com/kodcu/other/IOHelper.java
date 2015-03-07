@@ -206,4 +206,12 @@ public class IOHelper {
             e.printStackTrace();
         }
     }
+
+    public static void deleteIfExists(Path path) {
+        try {
+            Files.deleteIfExists(path);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }

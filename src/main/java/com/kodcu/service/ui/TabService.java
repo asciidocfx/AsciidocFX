@@ -9,9 +9,11 @@ import com.kodcu.service.DirectoryService;
 import com.kodcu.service.PathResolverService;
 import com.kodcu.service.ThreadService;
 import com.kodcu.service.convert.RenderService;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Worker;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -23,9 +25,11 @@ import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import javafx.stage.Popup;
+import javafx.stage.PopupWindow;
 import javafx.util.Callback;
 import netscape.javascript.JSObject;
 import org.slf4j.Logger;
@@ -69,8 +73,6 @@ public class TabService {
     @Autowired
     private RenderService renderService;
 
-    private List<Optional<Path>> closedPaths = new ArrayList<>();
-
     private Logger logger = LoggerFactory.getLogger(TabService.class);
 
 
@@ -99,7 +101,7 @@ public class TabService {
                     return true;
                 threadService.runTaskLater(() -> {
                     String content = IOHelper.readFile(path);
-                    threadService.runActionLater(()->{
+                    threadService.runActionLater(() -> {
                         window.call("setEditorValue", new Object[]{content});
                     });
                 });
@@ -144,10 +146,19 @@ public class TabService {
     }
 
     public MyTab createTab() {
-        MyTab tab = new MyTab();
+        MyTab tab = new MyTab() {
+            @Override
+            public void close() {
+                super.close();
+                if (controller.getTabPane().getTabs().isEmpty()) {
+                    controller.newDoc(null);
+                }
+            }
+        };
 
-        tab.setOnClosed(event -> {
-            this.keepClosedTab(tab);
+        tab.setOnCloseRequest(event -> {
+            event.consume();
+            tab.close();
         });
 
         tab.selectedProperty().addListener((observableValue, before, after) -> {
@@ -159,47 +170,62 @@ public class TabService {
                         controller.textListener(current.currentEditorValue());
                     }
                 }
+
+                threadService.runActionLater(() -> {
+                    WebView webView = tab.getWebView();
+                    if(Objects.nonNull(webView))
+                    webView.requestFocus();
+                });
             }
+
         });
 
         MenuItem menuItem0 = new MenuItem("Close");
         menuItem0.setOnAction(actionEvent -> {
-            this.keepClosedTab(tab);
-            controller.getTabPane().getTabs().remove(tab);
+            tab.close();
         });
 
         MenuItem menuItem1 = new MenuItem("Close All");
         menuItem1.setOnAction(actionEvent -> {
             ObservableList<Tab> tabs = controller.getTabPane().getTabs();
-            if (tabs.size() > 0)
-                tabs.forEach(this::keepClosedTab);
-
-            tabs.clear();
+            ObservableList<Tab> clonedTabs = FXCollections.observableArrayList(tabs);
+            if (clonedTabs.size() > 0) {
+                clonedTabs.forEach((closedTab) -> {
+                    MyTab myTab = (MyTab) closedTab;
+                    myTab.close();
+                });
+            }
         });
 
         MenuItem menuItem2 = new MenuItem("Close Others");
         menuItem2.setOnAction(actionEvent -> {
-            List<Tab> blackList = new ArrayList<>();
+
+            ObservableList<Tab> blackList = FXCollections.observableArrayList();
             blackList.addAll(controller.getTabPane().getTabs());
+
             blackList.remove(tab);
-            controller.getTabPane().getTabs().removeAll(blackList);
 
-            if (blackList.size() > 0)
-                blackList.forEach(this::keepClosedTab);
+            blackList.forEach(t -> {
+                MyTab closeTab = (MyTab) t;
+                    closeTab.close();
+            });
         });
-
-        MenuItem menuItem3 = new MenuItem("Close Unmodified");
-        menuItem3.setOnAction(actionEvent -> {
-            ObservableList<Tab> tabs = controller.getTabPane().getTabs();
-            Predicate<Tab> filter = pTab -> !((MyTab) pTab).getText().contains(" *");
-
-            List<Tab> collect = tabs.stream().filter(filter).collect(Collectors.toList());
-
-            if (collect.size() > 0)
-                collect.forEach(this::keepClosedTab);
-
-            tabs.removeAll(collect);
-        });
+//
+//        MenuItem menuItem3 = new MenuItem("Close Unmodified");
+//        menuItem3.setOnAction(actionEvent -> {
+//
+//            ObservableList<Tab> clonedTabs = FXCollections.observableArrayList();
+//            clonedTabs.addAll(controller.getTabPane().getTabs());
+//
+//
+//            for (Tab clonedTab : clonedTabs) {
+//                MyTab myTab = (MyTab) clonedTab;
+//                if (!myTab.getTabText().contains(" *"))
+//                    threadService.runActionLater(()->{
+//                        myTab.close();
+//                    });
+//            }
+//        });
 
         MenuItem menuItem4 = new MenuItem("Select Next Tab");
         menuItem4.setOnAction(actionEvent -> {
@@ -221,9 +247,11 @@ public class TabService {
 
         MenuItem menuItem6 = new MenuItem("Reopen Closed Tab");
         menuItem6.setOnAction(actionEvent -> {
+            List<Optional<Path>> closedPaths = MyTab.getClosedPaths();
             if (closedPaths.size() > 0) {
                 int index = closedPaths.size() - 1;
                 closedPaths.get(index).filter(pathResolver::isAsciidoc).ifPresent(this::addTab);
+                closedPaths.get(index).filter(pathResolver::isMarkdown).ifPresent(this::addTab);
                 closedPaths.get(index).filter(pathResolver::isImage).ifPresent(this::addImageTab);
                 closedPaths.remove(index);
             }
@@ -246,7 +274,7 @@ public class TabService {
         });
 
         ContextMenu contextMenu = new ContextMenu();
-        contextMenu.getItems().addAll(menuItem0, menuItem1, menuItem2, menuItem3, new SeparatorMenuItem(),
+        contextMenu.getItems().addAll(menuItem0, menuItem1, menuItem2, new SeparatorMenuItem(),
                 menuItem4, menuItem5, menuItem6, new SeparatorMenuItem(),
                 gotoWorkdir, new SeparatorMenuItem(),
                 menuItem7, menuItem8);
@@ -301,24 +329,4 @@ public class TabService {
         tabPane.getSelectionModel().select(tab);
     }
 
-    public void keepClosedTab(Tab closedTab) {
-        threadService.runTaskLater(() -> {
-            threadService.runActionLater(() -> {
-                MyTab tab = (MyTab) closedTab;
-                if (!tab.getLabel().getText().equals("new *")) {
-                    closedPaths.add(Optional.ofNullable(tab.getPath()));
-                }
-
-                tab.setPath(null);
-                tab.setOnClosed(null);
-                tab.setOnSelectionChanged(null);
-                tab.setUserData(null);
-                tab.getLabel().setOnMouseClicked(null);
-                tab.setOnCloseRequest(null);
-                tab.setWebView(null);
-                tab.setContent(null);
-
-            });
-        });
-    }
 }

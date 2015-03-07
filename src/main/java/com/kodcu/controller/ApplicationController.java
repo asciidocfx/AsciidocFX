@@ -5,6 +5,7 @@ import com.esotericsoftware.yamlbeans.YamlReader;
 import com.kodcu.bean.Config;
 import com.kodcu.bean.RecentFiles;
 import com.kodcu.bean.ShortCuts;
+import com.kodcu.component.DeleteAlert;
 import com.kodcu.component.MenuBuilt;
 import com.kodcu.component.MenuItemBuilt;
 import com.kodcu.other.Current;
@@ -67,12 +68,15 @@ import java.nio.file.Paths;
 import java.security.CodeSource;
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.nio.file.StandardOpenOption.*;
 
 
 @Controller
 public class ApplicationController extends TextWebSocketHandler implements Initializable {
+
 
     private Logger logger = LoggerFactory.getLogger(ApplicationController.class);
 
@@ -93,6 +97,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     public ProgressIndicator indikator;
     public ListView<String> recentListView;
     public MenuItem openFileTreeItem;
+    public MenuItem removePathItem;
     public MenuItem openFolderTreeItem;
     public MenuItem openFileListItem;
     public MenuItem openFolderListItem;
@@ -613,17 +618,33 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         Path workDir = directoryService.getWorkingDirectory().orElse(userHome);
         fileBrowser.browse(treeView, workDir);
 
-        tabPane.getTabs().addListener((ListChangeListener<Tab>) c -> {
-            threadService.runActionLater(() -> {
-                if (tabPane.getTabs().isEmpty()) {
-                    this.newDoc(null);
-                }
-            });
+        openFileTreeItem.setOnAction(event -> {
+
+            ObservableList<TreeItem<Item>> selectedItems = treeView.getSelectionModel().getSelectedItems();
+
+            selectedItems.stream()
+                    .map(e -> e.getValue())
+                    .map(e -> e.getPath())
+                    .filter(path -> {
+                        if (selectedItems.size() == 1)
+                            return true;
+                        return !Files.isDirectory(path);
+                    })
+                    .forEach(directoryService.getOpenFileConsumer()::accept);
         });
 
-        openFileTreeItem.setOnAction(event -> {
-            Path path = tabService.getSelectedTabPath();
-            directoryService.getOpenFileConsumer().accept(path);
+        removePathItem.setOnAction(event -> {
+
+            ObservableList<TreeItem<Item>> selectedItems = treeView.getSelectionModel().getSelectedItems();
+
+            DeleteAlert.alert().ifPresent(button -> {
+                if (button == ButtonType.YES)
+                    selectedItems.stream()
+                            .map(e -> e.getValue())
+                            .map(e -> e.getPath())
+                            .forEach(IOHelper::deleteIfExists);
+            });
+
         });
 
         openFolderTreeItem.setOnAction(event -> {
@@ -660,6 +681,8 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             Path path = Paths.get(recentListView.getSelectionModel().getSelectedItem());
             this.copyFile(path);
         });
+
+        treeView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 
         treeView.setOnMouseClicked(event -> {
             TreeItem<Item> selectedItem = treeView.getSelectionModel().getSelectedItem();
@@ -772,7 +795,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     @FXML
     public void newDoc(Event event) {
-        threadService.runActionLater(()->{
+        threadService.runActionLater(() -> {
             documentService.newDoc();
         });
     }

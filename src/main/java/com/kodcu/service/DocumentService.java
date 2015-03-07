@@ -97,6 +97,7 @@ public class DocumentService {
             }
             return false;
         });
+
         AnchorPane anchorPane = new AnchorPane();
         Node editorVBox = editorService.createEditorVBox(webView);
         controller.fitToParent(editorVBox);
@@ -107,8 +108,6 @@ public class DocumentService {
 
         tab.setTabText("new *");
         TabPane tabPane = controller.getTabPane();
-        if (tabPane.getTabs().isEmpty())
-            tabPane.getTabs().clear();
         tabPane.getTabs().add(tab);
         tabPane.getSelectionModel().select(tab);
 

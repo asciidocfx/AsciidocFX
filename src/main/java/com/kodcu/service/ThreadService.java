@@ -16,7 +16,7 @@ import java.util.function.Consumer;
 @Component
 public class ThreadService {
 
-    private ExecutorService threadPollWorker;
+    private static ExecutorService threadPollWorker;
 
     @PostConstruct
     public void init() {
@@ -25,7 +25,7 @@ public class ThreadService {
     }
 
     // Runs Task in background thread pool
-    public <T> void runTaskLater(Runnable runnable) {
+    public static  <T> void runTaskLater(Runnable runnable) {
 
         Task<T> task = new Task<T>() {
             @Override
@@ -39,12 +39,12 @@ public class ThreadService {
     }
 
     // Runs task in JavaFX Thread
-    public void runActionLater(Consumer<ActionEvent> consumer) {
+    public static void runActionLater(Consumer<ActionEvent> consumer) {
         Platform.runLater(() -> consumer.accept(null));
     }
 
     // Runs task in JavaFX Thread
-    public void runActionLater(Runnable runnable) {
+    public static void runActionLater(Runnable runnable) {
         Platform.runLater(runnable);
     }
 }
