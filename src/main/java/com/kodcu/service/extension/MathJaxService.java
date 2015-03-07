@@ -4,6 +4,7 @@ import com.kodcu.controller.ApplicationController;
 import com.kodcu.other.Current;
 import com.kodcu.other.IOHelper;
 import javafx.scene.web.WebEngine;
+import netscape.javascript.JSObject;
 import org.apache.batik.dom.svg.SAXSVGDocumentFactory;
 import org.apache.batik.transcoder.TranscoderInput;
 import org.apache.batik.transcoder.TranscoderOutput;
@@ -41,17 +42,21 @@ public class MathJaxService {
 
     public String appendFormula(String fileName, String formula) {
         if (fileName.endsWith(".png") || fileName.endsWith(".svg")) {
-            WebEngine engine = controller.getMathjaxView().getEngine();
-            engine.executeScript(String.format("appendFormula('%s','%s')", fileName, formula));
+            getWindow().call("appendFormula",new Object[]{fileName,formula});
             return "images/" + fileName;
         }
 
         return "";
     }
 
+    public JSObject getWindow() {
+        JSObject window = (JSObject) controller.getMathjaxView().getEngine().executeScript("window");
+        return window;
+    }
+
     public void svgToPng(String fileName, String svg, String formula, float width, float height) {
 
-        if(!svg.startsWith("<svg"))
+        if (!svg.startsWith("<svg"))
             return;
 
         if (!fileName.endsWith(".png") && !fileName.endsWith(".svg"))
@@ -65,15 +70,15 @@ public class MathJaxService {
 
         current.getCache().put(fileName, hashCode);
 
-        if(fileName.endsWith(".png"))
+        if (fileName.endsWith(".png"))
             saveAsPng(fileName, svg, formula, width, height);
-       else if(fileName.endsWith(".svg"))
+        else if (fileName.endsWith(".svg"))
             saveAsSvg(fileName, svg, formula, width, height);
 
     }
 
     private void saveAsSvg(String fileName, String svg, String formula, float width, float height) {
-        try{
+        try {
             if (!current.currentPath().isPresent())
                 controller.saveDoc();
 
