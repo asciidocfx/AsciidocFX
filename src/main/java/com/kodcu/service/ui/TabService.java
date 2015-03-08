@@ -283,9 +283,7 @@ public class TabService {
                 menuItem7, menuItem8);
 
         tab.contextMenuProperty().setValue(contextMenu);
-
-        Label label = new Label();
-        tab.setLabel(label);
+        Label label = tab.getLabel();
 
         label.setOnMouseClicked(mouseEvent -> {
             if (mouseEvent.getButton().equals(MouseButton.SECONDARY)) {

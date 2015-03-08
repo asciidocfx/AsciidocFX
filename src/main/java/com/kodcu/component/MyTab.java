@@ -26,12 +26,6 @@ public class MyTab extends Tab {
     private static List<Optional<Path>> closedPaths = new ArrayList<>();
     private ChoiceBox<String> markup;
 
-    public void setLabel(Label label) {
-        this.setGraphic(label);
-        if (Objects.nonNull(label))
-            updateMarkup();
-    }
-
     private void updateMarkup() {
         String tabText = getTabText();
         if (Objects.isNull(tabText) || Objects.isNull(markup))
@@ -43,7 +37,9 @@ public class MyTab extends Tab {
             markup.getSelectionModel().selectFirst();
     }
 
-    private Label getLabel() {
+    public Label getLabel() {
+        if (Objects.isNull(this.getGraphic()))
+            this.setGraphic(new Label());
         return (Label) this.getGraphic();
     }
 
@@ -123,7 +119,7 @@ public class MyTab extends Tab {
                 this.setOnCloseRequest(null);
                 this.setWebView(null);
                 this.setContent(null);
-                this.setLabel(null);
+                this.setGraphic(null);
 
             });
         });
