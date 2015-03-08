@@ -4,10 +4,12 @@ jdk:
 os:
 - linux
 script: mvn install -Pinstall-runtime
-before_script:
+install:
 - sudo add-apt-repository ppa:webupd8team/java
 - sudo apt-get update -qq
 - sudo apt-get install -y oracle-java8-installer
+before_script:
+- sudo apt-get update -qq
 - sudo apt-get install -y rpm
 - sudo apt-get install -y wget
 - wget http://download-aws.ej-technologies.com/install4j/install4j_unix_6_0_1.tar.gz
