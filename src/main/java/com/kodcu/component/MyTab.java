@@ -44,7 +44,8 @@ public class MyTab extends Tab {
     }
 
     public String getTabText() {
-        return getLabel().getText();
+        Label label = getLabel();
+        return label.getText();
     }
 
     public boolean isAsciidoc() {
@@ -56,7 +57,8 @@ public class MyTab extends Tab {
     }
 
     public void setTabText(String tabText) {
-        getLabel().setText(tabText);
+        Label label = getLabel();
+        label.setText(tabText);
         updateMarkup();
     }
 
@@ -102,14 +104,14 @@ public class MyTab extends Tab {
 
     private void closeIt() {
 
-        this.getTabPane().getTabs().remove(this);
-
         ThreadService.runTaskLater(() -> {
             ThreadService.runActionLater(() -> {
 
                 if (!this.getTabText().equals("new *")) {
                     closedPaths.add(Optional.ofNullable(this.getPath()));
                 }
+
+                this.getTabPane().getTabs().remove(this);
 
                 this.setPath(null);
                 this.setOnClosed(null);
@@ -119,7 +121,7 @@ public class MyTab extends Tab {
                 this.setOnCloseRequest(null);
                 this.setWebView(null);
                 this.setContent(null);
-                this.setGraphic(null);
+//                this.setGraphic(null);
 
             });
         });
@@ -145,5 +147,10 @@ public class MyTab extends Tab {
 
     public ChoiceBox getMarkup() {
         return markup;
+    }
+
+    @Override
+    public String toString() {
+        return "path=" + path;
     }
 }
