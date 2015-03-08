@@ -540,12 +540,12 @@
     -fx-padding:5px 10px 5px 10px;
 }
 
-.top-menu .label {
+.top-menu .top-label {
     -fx-text-fill: #7c7c7c;
     -fx-cursor: hand;
 }
 
-.top-menu .label:hover {
+.top-menu .top-label:hover {
     -fx-text-fill: #1e1e1e;
     -fx-background-color: rgba(255, 255, 255, 0.10);
 }

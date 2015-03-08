@@ -37,4 +37,9 @@ public class LabelBuilt {
     public Label build() {
         return label;
     }
+
+    public LabelBuilt clazz(String clazz) {
+        label.getStyleClass().add(clazz);
+        return this;
+    }
 }

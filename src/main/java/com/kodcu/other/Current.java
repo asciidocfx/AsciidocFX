@@ -114,7 +114,4 @@ public class Current {
         currentEngine().executeScript(String.format("editor.setValue('')"));
     }
 
-    public Label currentTabLabel() {
-        return currentTab().getLabel();
-    }
 }

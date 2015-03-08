@@ -55,10 +55,9 @@ public class DocumentService {
 
     public void saveDoc() {
 
-        Label label = current.currentTabLabel();
         Path currentPath = directoryService.currentPath();
 
-        if (Objects.isNull(currentPath) || !label.getText().contains(" *"))
+        if (Objects.isNull(currentPath) || !current.getCurrentTabText().contains(" *"))
             return;
 
         IOHelper.writeToFile(currentPath, (String) current.currentEngine().executeScript("editor.getValue();"), TRUNCATE_EXISTING, CREATE);
@@ -67,7 +66,7 @@ public class DocumentService {
         recentFiles.remove(currentPath.toString());
         recentFiles.add(0, currentPath.toString());
 
-        label.setText(label.getText().replace(" *", ""));
+        current.setCurrentTabText(current.getCurrentTabText().replace(" *", ""));
 
         directoryService.setInitialDirectory(Optional.ofNullable(currentPath.toFile()));
 
@@ -99,10 +98,11 @@ public class DocumentService {
         });
 
         AnchorPane anchorPane = new AnchorPane();
-        Node editorVBox = editorService.createEditorVBox(webView);
+        MyTab tab = tabService.createTab();
+        Node editorVBox = editorService.createEditorVBox(webView,tab);
         controller.fitToParent(editorVBox);
         anchorPane.getChildren().add(editorVBox);
-        MyTab tab = tabService.createTab();
+
         tab.setWebView(webView);
         tab.setContent(anchorPane);
 
@@ -116,8 +116,8 @@ public class DocumentService {
 
     public void openDoc() {
         FileChooser fileChooser = directoryService.newFileChooser("Open Asciidoc File");
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Asciidoc", "*.asc", "*.asciidoc", "*.adoc", "*.ad", "*.txt"));
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("All", "*.*"));
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Asciidoc", "*.asc", "*.asciidoc", "*.adoc", "*.ad", "*.txt","*.*"));
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Markdown", "*.md","*.markdown","*.txt","*.*"));
         List<File> chosenFiles = fileChooser.showOpenMultipleDialog(controller.getStage());
         if (chosenFiles != null) {
             chosenFiles.stream().map(e -> e.toPath()).forEach(tabService::addTab);

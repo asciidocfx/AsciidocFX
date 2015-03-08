@@ -101,3 +101,14 @@ function setEditorValue(content) {
     editor.focus();
 
 }
+
+function switchMode(index){
+    if(index == 0)
+        editor.getSession().setMode("ace/mode/asciidoc");
+    if(index == 1)
+        editor.getSession().setMode("ace/mode/markdown");
+}
+
+function rerender(){
+    app.textListener(editor.getValue());
+}

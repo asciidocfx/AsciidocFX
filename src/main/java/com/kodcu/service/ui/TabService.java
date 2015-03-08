@@ -110,12 +110,14 @@ public class TabService {
             return false;
         });
 
-        Node editorVBox = editorService.createEditorVBox(webView);
+        MyTab tab = createTab();
+
+        Node editorVBox = editorService.createEditorVBox(webView, tab);
         controller.fitToParent(editorVBox);
 
         anchorPane.getChildren().add(editorVBox);
 
-        MyTab tab = createTab();
+
         tab.setTabText(path.getFileName().toString());
         tab.setContent(anchorPane);
 

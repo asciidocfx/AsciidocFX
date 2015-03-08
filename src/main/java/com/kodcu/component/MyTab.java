@@ -2,14 +2,18 @@ package com.kodcu.component;
 
 import com.kodcu.controller.ApplicationController;
 import com.kodcu.service.ThreadService;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.Label;
-import javafx.scene.control.Tab;
+import javafx.beans.property.ReadOnlyIntegerProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.scene.Node;
+import javafx.scene.control.*;
 import javafx.scene.web.WebView;
+import netscape.javascript.JSObject;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -20,12 +24,26 @@ public class MyTab extends Tab {
     private WebView webView;
     private Path path;
     private static List<Optional<Path>> closedPaths = new ArrayList<>();
+    private ChoiceBox<String> markup;
 
     public void setLabel(Label label) {
         this.setGraphic(label);
+        if (Objects.nonNull(label))
+            updateMarkup();
     }
 
-    public Label getLabel() {
+    private void updateMarkup() {
+        String tabText = getTabText();
+        if (Objects.isNull(tabText) || Objects.isNull(markup))
+            return;
+
+        if (tabText.contains(".md") || tabText.contains(".markdown"))
+            markup.getSelectionModel().selectLast();
+        else
+            markup.getSelectionModel().selectFirst();
+    }
+
+    private Label getLabel() {
         return (Label) this.getGraphic();
     }
 
@@ -33,8 +51,17 @@ public class MyTab extends Tab {
         return getLabel().getText();
     }
 
+    public boolean isAsciidoc() {
+        return markup.getSelectionModel().isSelected(0);
+    }
+
+    public boolean isMarkdown() {
+        return markup.getSelectionModel().isSelected(1);
+    }
+
     public void setTabText(String tabText) {
         getLabel().setText(tabText);
+        updateMarkup();
     }
 
     public WebView getWebView() {
@@ -106,5 +133,21 @@ public class MyTab extends Tab {
 
     public static List<Optional<Path>> getClosedPaths() {
         return closedPaths;
+    }
+
+    public void setMarkup(ChoiceBox markup) {
+        this.markup = markup;
+        ReadOnlyIntegerProperty indexProperty = this.markup.getSelectionModel().selectedIndexProperty();
+        indexProperty.addListener((observable, oldValue, newValue) -> {
+            if (oldValue != newValue) {
+                JSObject session = (JSObject) webView.getEngine().executeScript("window");
+                session.call("switchMode", new Object[]{newValue});
+                session.call("rerender", new Object[]{});
+            }
+        });
+    }
+
+    public ChoiceBox getMarkup() {
+        return markup;
     }
 }

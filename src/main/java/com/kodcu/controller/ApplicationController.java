@@ -77,7 +77,6 @@ import static java.nio.file.StandardOpenOption.*;
 @Controller
 public class ApplicationController extends TextWebSocketHandler implements Initializable {
 
-
     private Logger logger = LoggerFactory.getLogger(ApplicationController.class);
 
     private Path userHome = Paths.get(System.getProperty("user.home"));
@@ -821,10 +820,9 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     }
 
     public void appendWildcard() {
-        Label label = current.currentTabLabel();
-
-        if (!label.getText().contains(" *"))
-            label.setText(label.getText() + " *");
+        String currentTabText = current.getCurrentTabText();
+        if (!currentTabText.contains(" *"))
+            current.setCurrentTabText(currentTabText + " *");
     }
 
     public void textListener(String text) {

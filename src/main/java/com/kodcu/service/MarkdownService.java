@@ -67,7 +67,7 @@ public class MarkdownService {
 
     public void convert(String markdownOrAsciidoc, Consumer<String> next) {
 
-        if (!current.getCurrentTabText().contains(".md") || current.getCurrentTabText().contains("new *")) {
+        if (current.currentTab().isAsciidoc()) {
             next.accept(markdownOrAsciidoc);
             return;
         }
