@@ -104,14 +104,14 @@ public class MyTab extends Tab {
 
     private void closeIt() {
 
+        this.getTabPane().getTabs().remove(this); // keep it here
+
         ThreadService.runTaskLater(() -> {
             ThreadService.runActionLater(() -> {
 
                 if (!this.getTabText().equals("new *")) {
                     closedPaths.add(Optional.ofNullable(this.getPath()));
                 }
-
-                this.getTabPane().getTabs().remove(this);
 
                 this.setPath(null);
                 this.setOnClosed(null);
@@ -137,11 +137,11 @@ public class MyTab extends Tab {
         this.markup = markup;
         ReadOnlyIntegerProperty indexProperty = this.markup.getSelectionModel().selectedIndexProperty();
         indexProperty.addListener((observable, oldValue, newValue) -> {
-            if (oldValue != newValue) {
-                JSObject session = (JSObject) webView.getEngine().executeScript("window");
-                session.call("switchMode", new Object[]{newValue});
-                session.call("rerender", new Object[]{});
-            }
+            if ((oldValue != newValue) && Objects.nonNull(webView)) {
+                    JSObject session = (JSObject) webView.getEngine().executeScript("window");
+                    session.call("switchMode", new Object[]{newValue});
+                    session.call("rerender", new Object[]{});
+                }
         });
     }
 
