@@ -121,7 +121,7 @@ public class EditorService {
             } else {
                 openMenuLabel.setText(AwesomeIcon.CHEVRON_CIRCLE_UP.toString());
                 openMenuLabel.getProperties().clear();
-                vbox.getChildren().add(createSecondEditorVBox(iconSize));
+                vbox.getChildren().add(createSecondEditorVBox(iconSize,minSize));
             }
         });
 
@@ -168,14 +168,12 @@ public class EditorService {
         return new VBox(vbox, scrollPane);
     }
 
-    private Node createSecondEditorVBox(String iconSize) {
-        Label quoteLabel = AwesomeDude.createIconLabel(AwesomeIcon.QUOTE_LEFT, iconSize);
+    private Node createSecondEditorVBox(String iconSize, double minSize) {
 
-        quoteLabel.setOnMouseClicked(e -> {
-            current.currentEngine().executeScript("addQuote()");
-        });
-
-        Tooltip.install(quoteLabel, new Tooltip("Blockquote"));
+        Label quoteLabel = LabelBuilt.icon(AwesomeIcon.QUOTE_LEFT, iconSize, minSize)
+                .clazz("top-label").tip("Blockquote").click(event -> {
+                    current.currentEngine().executeScript("addQuote()");
+                }).build();
 
         HBox topMenu = new HBox(quoteLabel);
 
