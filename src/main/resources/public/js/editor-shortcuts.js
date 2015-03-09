@@ -289,7 +289,6 @@ editor.commands.addCommand({
         if (!document.querySelectorAll("#firebug-script").length) {
             var head = document.querySelector("head");
             var js = document.createElement("script");
-            js.type = "text/javascript";
             js.src = "http://getfirebug.com/firebug-lite.js#startOpened=true";
             head.appendChild(js);
         }
