@@ -23,7 +23,7 @@ public class AwesomeService {
 
         AwesomeIcon awesomeIcon = AwesomeIcon.FOLDER_ALT;
 
-        if (pathResolver.isAsciidoc(path))
+        if (pathResolver.isAsciidoc(path) || pathResolver.isMarkdown(path))
             awesomeIcon = AwesomeIcon.FILE_TEXT_ALT;
         if (pathResolver.isXML(path))
             awesomeIcon = AwesomeIcon.FILE_CODE_ALT;
