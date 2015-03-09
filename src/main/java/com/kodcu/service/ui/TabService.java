@@ -9,6 +9,7 @@ import com.kodcu.service.DirectoryService;
 import com.kodcu.service.PathResolverService;
 import com.kodcu.service.ThreadService;
 import com.kodcu.service.convert.RenderService;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Worker;
@@ -73,8 +74,9 @@ public class TabService {
     @Autowired
     private RenderService renderService;
 
-    private Logger logger = LoggerFactory.getLogger(TabService.class);
+    private ObservableList<Optional<Path>> closedPaths = FXCollections.observableArrayList();
 
+    private Logger logger = LoggerFactory.getLogger(TabService.class);
 
     public void addTab(Path path) {
 
@@ -152,10 +154,17 @@ public class TabService {
         MyTab tab = new MyTab() {
             @Override
             public void close() {
+                if (Objects.nonNull(this.getPath()))
+                    closedPaths.add(Optional.ofNullable(current.currentTab().getPath()));
+
                 super.close();
-                if (controller.getTabPane().getTabs().isEmpty()) {
-                    controller.newDoc(null);
-                }
+                cleanRemovedTabs(this);
+                Platform.runLater(()->{
+                    ObservableList<Tab> tabs = controller.getTabPane().getTabs();
+                    if (tabs.isEmpty()) {
+                        controller.newDoc(null);
+                    }
+                });
             }
         };
 
@@ -166,15 +175,16 @@ public class TabService {
 
         tab.selectedProperty().addListener((observableValue, before, after) -> {
             if (after) {
-                if (Objects.nonNull(current.currentWebView())) {
-                    WebEngine webEngine = current.currentEngine();
-                    Worker.State state = webEngine.getLoadWorker().getState();
-                    if (state == Worker.State.SUCCEEDED) {
-                        controller.textListener(current.currentEditorValue());
-                    }
-                }
-
                 threadService.runActionLater(() -> {
+
+                    if (Objects.nonNull(current.currentWebView())) {
+                        WebEngine webEngine = current.currentEngine();
+                        Worker.State state = webEngine.getLoadWorker().getState();
+                        if (state == Worker.State.SUCCEEDED) {
+                            controller.textListener(current.currentEditorValue());
+                        }
+                    }
+
                     WebView webView = tab.getWebView();
                     if (Objects.nonNull(webView))
                         webView.requestFocus();
@@ -250,7 +260,6 @@ public class TabService {
 
         MenuItem menuItem6 = new MenuItem("Reopen Closed Tab");
         menuItem6.setOnAction(actionEvent -> {
-            List<Optional<Path>> closedPaths = MyTab.getClosedPaths();
             if (closedPaths.size() > 0) {
                 int index = closedPaths.size() - 1;
                 closedPaths.get(index).filter(pathResolver::isAsciidoc).ifPresent(this::addTab);
@@ -295,6 +304,22 @@ public class TabService {
 
 
         return tab;
+    }
+
+    private void cleanRemovedTabs(MyTab myTab) {
+       threadService.runTaskLater(()->{
+           threadService.runActionLater(()->{
+               myTab.setPath(null);
+               myTab.setOnClosed(null);
+               myTab.setOnSelectionChanged(null);
+               myTab.setUserData(null);
+               myTab.getLabel().setOnMouseClicked(null);
+               myTab.setOnCloseRequest(null);
+               myTab.setWebView(null);
+               myTab.setGraphic(null);
+               myTab.setContent(null);
+           });
+       });
     }
 
     public void addImageTab(Path imagePath) {

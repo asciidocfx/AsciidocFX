@@ -2,15 +2,19 @@ package com.kodcu.component;
 
 import com.kodcu.controller.ApplicationController;
 import com.kodcu.service.ThreadService;
+import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyIntegerProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.web.WebView;
 import netscape.javascript.JSObject;
 
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -23,7 +27,6 @@ public class MyTab extends Tab {
 
     private WebView webView;
     private Path path;
-    private static List<Optional<Path>> closedPaths = new ArrayList<>();
     private ChoiceBox<String> markup;
 
     private void updateMarkup() {
@@ -103,34 +106,9 @@ public class MyTab extends Tab {
     }
 
     private void closeIt() {
-
-        this.getTabPane().getTabs().remove(this); // keep it here
-
-        ThreadService.runTaskLater(() -> {
-            ThreadService.runActionLater(() -> {
-
-                if (!this.getTabText().equals("new *")) {
-                    closedPaths.add(Optional.ofNullable(this.getPath()));
-                }
-
-                this.setPath(null);
-                this.setOnClosed(null);
-                this.setOnSelectionChanged(null);
-                this.setUserData(null);
-                this.getLabel().setOnMouseClicked(null);
-                this.setOnCloseRequest(null);
-                this.setWebView(null);
-                this.setContent(null);
-//                this.setGraphic(null);
-
-            });
+        Platform.runLater(()->{
+            this.getTabPane().getTabs().remove(this); // keep it here
         });
-
-
-    }
-
-    public static List<Optional<Path>> getClosedPaths() {
-        return closedPaths;
     }
 
     public void setMarkup(ChoiceBox markup) {
@@ -138,10 +116,10 @@ public class MyTab extends Tab {
         ReadOnlyIntegerProperty indexProperty = this.markup.getSelectionModel().selectedIndexProperty();
         indexProperty.addListener((observable, oldValue, newValue) -> {
             if ((oldValue != newValue) && Objects.nonNull(webView)) {
-                    JSObject session = (JSObject) webView.getEngine().executeScript("window");
-                    session.call("switchMode", new Object[]{newValue});
-                    session.call("rerender", new Object[]{});
-                }
+                JSObject session = (JSObject) webView.getEngine().executeScript("window");
+                session.call("switchMode", new Object[]{newValue});
+                session.call("rerender", new Object[]{});
+            }
         });
     }
 
@@ -151,6 +129,6 @@ public class MyTab extends Tab {
 
     @Override
     public String toString() {
-        return "path=" + path;
+        return getTabText();
     }
 }
