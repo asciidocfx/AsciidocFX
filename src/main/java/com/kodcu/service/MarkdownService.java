@@ -23,7 +23,7 @@ import java.util.function.Consumer;
 @Component
 public class MarkdownService {
 
-    private final Logger logger = LoggerFactory.getLogger(FileWatchService.class);
+    private final Logger logger = LoggerFactory.getLogger(MarkdownService.class);
 
     private final Current current;
     private final ThreadService threadService;
