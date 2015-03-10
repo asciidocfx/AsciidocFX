@@ -21,14 +21,16 @@ import java.util.stream.Collectors;
 @Component
 public class ParserService {
 
+    private final ApplicationController asciiDocController;
+    private final Current current;
+    private final PathResolverService pathResolver;
+    
     @Autowired
-    private ApplicationController asciiDocController;
-
-    @Autowired
-    private Current current;
-
-    @Autowired
-    private PathResolverService pathResolver;
+    public ParserService(final ApplicationController asciiDocController, final Current current, final PathResolverService pathResolver) {
+        this.asciiDocController = asciiDocController;
+        this.current = current;
+        this.pathResolver = pathResolver;
+    }
 
     public Optional<String> toIncludeBlock(List<File> dropFiles) {
         if (!current.currentPath().isPresent())

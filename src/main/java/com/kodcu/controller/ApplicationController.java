@@ -21,7 +21,6 @@ import com.kodcu.service.ui.*;
 import com.sun.javafx.application.HostServicesDelegate;
 import de.jensd.fx.fontawesome.AwesomeDude;
 import de.jensd.fx.fontawesome.AwesomeIcon;
-import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
@@ -68,8 +67,6 @@ import java.nio.file.Paths;
 import java.security.CodeSource;
 import java.util.*;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static java.nio.file.StandardOpenOption.*;
 
@@ -693,6 +690,19 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                     directoryService.getOpenFileConsumer().accept(selectedPath);
         });
 
+        treeView.getSelectionModel().getSelectedIndices().addListener((ListChangeListener<? super Integer>) p -> {
+            boolean selectedAnyFolder = ((ObservableList<Integer>) p.getList()).stream().anyMatch(index -> {
+                TreeItem<Item> item = treeView.getTreeItem(index);
+                Path itemPath = item.getValue().getPath();
+                boolean isFile = itemPath.toFile().isFile();
+                return !isFile;
+            });
+
+            if (selectedAnyFolder)
+                removePathItem.setDisable(true);
+            else
+                removePathItem.setDisable(false);
+        });
 
         previewView.setContextMenuEnabled(false);
         ContextMenu previewContextMenu = new ContextMenu(MenuItemBuilt.item("Refresh").onclick(event -> {

@@ -132,7 +132,7 @@
               <children>
                 <HBox prefHeight="33.0" prefWidth="-1.0" spacing="15.0" styleClass="menu-hbox, convert-box">
                   <children>
-                    <ProgressIndicator fx:id="indikator" managed="false" maxHeight="20.0" maxWidth="20.0" minHeight="20.0" minWidth="20.0" prefHeight="20.0" prefWidth="20.0" progress="-1.0" visible="true" />
+                    <ProgressIndicator fx:id="indikator" managed="false" maxHeight="20.0" maxWidth="20.0" minHeight="20.0" minWidth="20.0" prefHeight="20.0" prefWidth="20.0" progress="-1.0" visible="false" />
                     <Label fx:id="htmlPro" minWidth="-Infinity" styleClass="html" text="HTML" />
                     <Label fx:id="pdfPro" minWidth="-Infinity" styleClass="pdf" text="PDF" />
                     <Label fx:id="ebookPro" minWidth="-Infinity" styleClass="ebook" text="Ebook" />
