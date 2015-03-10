@@ -2,7 +2,6 @@ package com.kodcu.service.convert;
 
 import com.kodcu.controller.ApplicationController;
 import com.kodcu.other.Current;
-import com.kodcu.other.IOHelper;
 import com.kodcu.service.MarkdownService;
 import com.kodcu.service.ThreadService;
 import javafx.application.Platform;
@@ -12,8 +11,6 @@ import netscape.javascript.JSObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import javax.script.ScriptException;
-import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
 /**
@@ -22,17 +19,20 @@ import java.util.function.Consumer;
 @Component
 public class RenderService {
 
-    @Autowired
-    ApplicationController controller;
+    private final ApplicationController controller;
+    private final ThreadService threadService;
+    private final MarkdownService markdownService;
+    private final Current current;
+    
+    
 
     @Autowired
-    ThreadService threadService;
-
-    @Autowired
-    MarkdownService markdownService;
-
-    @Autowired
-    Current current;
+    public RenderService(final ApplicationController controller, final ThreadService threadService, final MarkdownService markdownService, final Current current) {
+        this.controller = controller;
+        this.threadService = threadService;
+        this.markdownService = markdownService;
+        this.current = current;
+    }
 
     public void convertBasicHtml(String input, Consumer<String> step) {
 

@@ -2,10 +2,7 @@ package com.kodcu.service.convert;
 
 import com.kodcu.other.Current;
 import com.kodcu.other.IOHelper;
-import com.kodcu.service.MarkdownService;
 import org.joox.Match;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.xml.sax.InputSource;
@@ -26,18 +23,17 @@ import static org.joox.JOOX.$;
 @Component
 public class DocBookService {
 
-    private static final Logger logger = LoggerFactory.getLogger(DocBookService.class);
+    private final Pattern ascIncludeRegex = Pattern.compile("(?<=include::)(?<path>.*?)(?=\\[(.*?)\\])");
+    private final Pattern mdIncludeRegex = Pattern.compile("\\[.*?\\]\\((?<path>.*?)\\)");
 
-    private Pattern ascIncludeRegex = Pattern.compile("(?<=include::)(?<path>.*?)(?=\\[(.*?)\\])");
-    private Pattern mdIncludeRegex = Pattern.compile("\\[.*?\\]\\((?<path>.*?)\\)");
-
-    @Autowired
-    private RenderService docConverter;
+    private final RenderService docConverter;
+    private final Current current;
 
     @Autowired
-    private Current current;
-    @Autowired
-    private MarkdownService markdownService;
+    public DocBookService(final RenderService docConverter, final Current current) {
+        this.docConverter = docConverter;
+        this.current = current;
+    }
 
     public void generateDocbook(Consumer<String> step) {
 
