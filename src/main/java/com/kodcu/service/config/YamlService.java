@@ -18,8 +18,12 @@ import java.nio.file.Path;
 @Component
 public class YamlService {
 
+    private final ApplicationController controller;
+    
     @Autowired
-    private ApplicationController controller;
+    public YamlService(final ApplicationController controller) {
+        this.controller = controller;
+    }
 
     public void persist() throws IOException {
         Path configPath = controller.getConfigPath();
