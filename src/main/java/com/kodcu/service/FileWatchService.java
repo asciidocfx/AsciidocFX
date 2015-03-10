@@ -28,7 +28,7 @@ public class FileWatchService {
 
     public void registerWatcher(TreeView<Item> treeView, Path path, BiConsumer<TreeView<Item>, Path> browseCallback) {
         try {
-            if (watcher == null) {
+            if (Objects.isNull(watcher)) {
                 watcher = FileSystems.getDefault().newWatchService();
             }
 
@@ -50,7 +50,7 @@ public class FileWatchService {
             browseCallback.accept(treeView, path);
 
         } catch (Exception e) {
-            logger.error("Could not register watcher for path: {}", path, e);
+            logger.info("Could not register watcher for path: {}", path, e);
         }
     }
 }
