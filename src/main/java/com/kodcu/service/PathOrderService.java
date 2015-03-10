@@ -1,12 +1,9 @@
 package com.kodcu.service;
 
 import com.kodcu.other.OSHelper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.function.Function;
 
 /**
  * Created by usta on 01.01.2015.

@@ -15,8 +15,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.servlet.http.HttpServletRequest;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Timer;
-import java.util.TimerTask;
 
 /**
  * Created by usta on 31.12.2014.

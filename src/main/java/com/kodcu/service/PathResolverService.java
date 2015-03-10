@@ -10,9 +10,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.PathMatcher;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by usta on 07.09.2014.
@@ -44,8 +42,6 @@ public class PathResolverService {
     PathMatcher anyMatcher = FileSystems.getDefault().getPathMatcher("glob:**.{*}");
     PathMatcher uniqueMatcher = FileSystems.getDefault().getPathMatcher("glob:{license,readme,gradlew}");
     PathMatcher bookMatcher = FileSystems.getDefault().getPathMatcher("glob:{**book.asc,**book.txt,**book.asciidoc,**book.adoc,**book.ad}");
-
-    private Map<String, Boolean> rootExists = new HashMap<>();
 
     public boolean isPDF(Path path) {
         return pdfMatcher.matches(path);
