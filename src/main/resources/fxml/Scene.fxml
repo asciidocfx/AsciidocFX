@@ -137,7 +137,6 @@
                     <Label fx:id="pdfPro" minWidth="-Infinity" styleClass="pdf" text="PDF" />
                     <Label fx:id="ebookPro" minWidth="-Infinity" styleClass="ebook" text="Ebook" />
                     <Label fx:id="docbookPro" minWidth="-Infinity" styleClass="docbook" text="Docbook" />
-                    <ProgressBar maxWidth="1.7976931348623157E308" progress="-1.0" visible="false" HBox.hgrow="ALWAYS" />
                     <Label fx:id="browserPro" minWidth="-Infinity" styleClass="browser" text="Browser" textAlignment="LEFT" />
                   </children>
                   <padding>
