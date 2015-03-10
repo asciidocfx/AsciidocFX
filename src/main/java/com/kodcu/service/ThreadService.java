@@ -41,12 +41,12 @@ public class ThreadService {
     }
 
     // Runs task in JavaFX Thread
-    public static void runActionLater(Consumer<ActionEvent> consumer) {
+    public void runActionLater(Consumer<ActionEvent> consumer) {
         Platform.runLater(() -> consumer.accept(null));
     }
 
     // Runs task in JavaFX Thread
-    public static void runActionLater(Runnable runnable) {
+    public void runActionLater(Runnable runnable) {
         Platform.runLater(runnable);
     }
 }
