@@ -32,26 +32,25 @@ import static java.nio.file.StandardOpenOption.TRUNCATE_EXISTING;
 @Component
 public class DocumentService {
 
-    @Autowired
-    private DirectoryService directoryService;
+    private final DirectoryService directoryService;
+    private final ApplicationController controller;
+    private final WebviewService webviewService;
+    private final EditorService editorService;
+    private final TabService tabService;
+    private final Current current;
 
+    
+    
     @Autowired
-    private ApplicationController controller;
-
-    @Autowired
-    private WebviewService webviewService;
-
-    @Autowired
-    private ThreadService threadService;
-
-    @Autowired
-    private EditorService editorService;
-
-    @Autowired
-    private TabService tabService;
-
-    @Autowired
-    private Current current;
+    public DocumentService(DirectoryService directoryService, ApplicationController controller, WebviewService webviewService,
+            EditorService editorService, TabService tabService, Current current) {
+        this.directoryService = directoryService;
+        this.controller = controller;
+        this.webviewService = webviewService;
+        this.editorService = editorService;
+        this.tabService = tabService;
+        this.current = current;
+    }
 
     public void saveDoc() {
 
