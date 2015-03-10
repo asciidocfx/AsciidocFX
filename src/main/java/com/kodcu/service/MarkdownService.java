@@ -1,14 +1,17 @@
 package com.kodcu.service;
 
 import com.kodcu.other.Current;
+
 import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
+
 import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.Objects;
@@ -20,17 +23,20 @@ import java.util.function.Consumer;
 @Component
 public class MarkdownService {
 
-    private ScriptEngineManager engineManager = new ScriptEngineManager();
-    private ScriptEngine js = engineManager.getEngineByName("js");
+    private final Logger logger = LoggerFactory.getLogger(FileWatchService.class);
+
+    private final Current current;
+    private final ThreadService threadService;
+    private final ScriptEngineManager engineManager;
+    private final ScriptEngine js;
 
     @Autowired
-    private Current current;
+    public MarkdownService(Current current, ThreadService threadService) {
+        this.current = current;
+        this.threadService = threadService;
+        engineManager = new ScriptEngineManager();
+        js = engineManager.getEngineByName("js");
 
-    @Autowired
-    private ThreadService threadService;
-
-    @PostConstruct
-    public void init() {
         try {
             InputStream markedStream = MarkdownService.class.getResourceAsStream("/public/js/marked.js");
             InputStream markedExtensionStream = MarkdownService.class.getResourceAsStream("/public/js/marked-extension.js");
@@ -43,7 +49,7 @@ public class MarkdownService {
             js.eval(markedExtension);
 
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Could not evaluate initial javascript", e);
         }
     }
 

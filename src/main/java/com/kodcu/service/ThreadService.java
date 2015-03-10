@@ -5,7 +5,6 @@ import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Consumer;
@@ -16,16 +15,19 @@ import java.util.function.Consumer;
 @Component
 public class ThreadService {
 
-    private static ExecutorService threadPollWorker;
+    private final ExecutorService threadPollWorker;
 
-    @PostConstruct
-    public void init() {
+    public ThreadService() {
         int nThreads = Runtime.getRuntime().availableProcessors() * 2;
         threadPollWorker = Executors.newFixedThreadPool((nThreads >= 4) ? nThreads : 4);
     }
 
+    public ThreadService(int poolSize) {
+        threadPollWorker = Executors.newFixedThreadPool(poolSize);
+    }
+
     // Runs Task in background thread pool
-    public static  <T> void runTaskLater(Runnable runnable) {
+    public <T> void runTaskLater(Runnable runnable) {
 
         Task<T> task = new Task<T>() {
             @Override
