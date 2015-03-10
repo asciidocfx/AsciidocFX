@@ -106,7 +106,7 @@ var toAsciidoc = function (string) {
                 }
             },
             {
-                patterns: ["div", "span", "body", "i", "section", "html","article","header","label"],
+                patterns: ["div", "span", "body", "i", "section", "html","article","header","label","textarea"],
                 replacement: function (str, attrs, innerHTML) {
                     return innerHTML ? innerHTML : '';
                 }
