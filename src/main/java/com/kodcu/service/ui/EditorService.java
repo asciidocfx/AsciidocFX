@@ -126,6 +126,8 @@ public class EditorService {
         });
 
         ChoiceBox choiceBox = new ChoiceBox();
+        choiceBox.setManaged(true);
+        choiceBox.setVisible(true);
         choiceBox.getItems().addAll("Asciidoc","Markdown");
         choiceBox.getSelectionModel().selectFirst();
 

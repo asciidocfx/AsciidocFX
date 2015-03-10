@@ -78,6 +78,8 @@ public class MyTab extends Tab {
     }
 
     public void setPath(Path path) {
+        markup.setManaged(Objects.isNull(path));
+        markup.setVisible(Objects.isNull(path));
         this.path = path;
     }
 
