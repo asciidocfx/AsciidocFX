@@ -58,27 +58,26 @@ public class WebviewService {
         webView.setContextMenuEnabled(false);
         ContextMenu menu = new ContextMenu();
 
+        MenuItem copy = MenuItemBuilt.item("Copy").onclick(event1 -> {
+            controller.cutCopy(current.currentEditorSelection());
+        });
+        MenuItem paste = MenuItemBuilt.item("Paste").onclick(e -> {
+            controller.paste(false);
+        });
+        MenuItem pasteRaw = MenuItemBuilt.item("Paste raw").onclick(e -> {
+            current.insertEditorValue(controller.pasteRaw());
+        });
+        MenuItem convert = MenuItemBuilt.item("Markdown to Asciidoc").onclick(e -> {
+            markdownService.convertToAsciidoc(current.currentEditorValue(), content -> {
+                threadService.runActionLater(() -> {
+                    documentService.newDoc(content);
+                });
+            });
+        });
+
         webView.setOnMouseClicked(event -> {
 
-            MenuItem copy = MenuItemBuilt.item("Copy").onclick(event1 -> {
-                controller.cutCopy(current.currentEditorSelection());
-            });
-            MenuItem paste = MenuItemBuilt.item("Paste").onclick(e -> {
-                controller.paste(false);
-            });
-            MenuItem pasteRaw = MenuItemBuilt.item("Paste raw").onclick(e -> {
-                current.insertEditorValue(controller.pasteRaw());
-            });
-            MenuItem convert = MenuItemBuilt.item("Markdown to Asciidoc").onclick(e -> {
-                markdownService.convertToAsciidoc(current.currentEditorValue(), content -> {
-                    threadService.runActionLater(() -> {
-                        documentService.newDoc(content);
-                    });
-            });
-            });
-
             if (menu.getItems().size() == 0) {
-
                 menu.getItems().addAll(copy, paste, pasteRaw, convert);
             }
 
@@ -86,7 +85,8 @@ public class WebviewService {
                 menu.hide();
             }
             if (event.getButton() == MouseButton.SECONDARY) {
-                convert.setVisible(current.currentTab().isAsciidoc());
+                boolean asciidoc = current.currentTab().isAsciidoc();
+                convert.setVisible(asciidoc);
                 menu.show(webView, event.getScreenX(), event.getScreenY());
             }
         });
