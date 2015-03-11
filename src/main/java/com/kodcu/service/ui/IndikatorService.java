@@ -24,15 +24,17 @@ public class IndikatorService {
 
     public void startCycle() {
         threadService.runActionLater(() -> {
-            asciiDocController.getIndikator().setVisible(true);
-            asciiDocController.getIndikator().setManaged(true);
+            asciiDocController.getPreviewView().getEngine().executeScript("startProgressBar()");
+//            asciiDocController.getIndikator().setVisible(true);
+//            asciiDocController.getIndikator().setManaged(true);
         });
     }
 
     public void completeCycle() {
         threadService.runActionLater(() -> {
-            asciiDocController.getIndikator().setManaged(false);
-            asciiDocController.getIndikator().setVisible(false);
+            asciiDocController.getPreviewView().getEngine().executeScript("stopProgressBar()");
+//            asciiDocController.getIndikator().setManaged(false);
+//            asciiDocController.getIndikator().setVisible(false);
         });
     }
 

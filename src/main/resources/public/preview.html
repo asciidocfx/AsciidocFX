@@ -11,6 +11,7 @@
 </head>
 <body>
 <div class="row">
+    <div class="container" id="container"></div>
     <div class="columns justify large-10 large-centered medium-12 small-12">
         <div id="placeholder">
             ...
@@ -28,6 +29,7 @@
 <script src="/js/highlight.pack.js"></script>
 <script src="/js/to-asciidoc.js"></script>
 <script src="/js/index.js"></script>
+<script src="/js/progressbar.min.js"></script>
 
 <script>
 
@@ -84,6 +86,24 @@
         }
 
     };
+
+    var progressBar;
+
+    function startProgressBar() {
+        progressBar = new ProgressBar.Line('#container', {
+            color: '#FCB03C',
+            duration: 15000
+        });
+        progressBar.animate(1);
+    }
+
+    function stopProgressBar() {
+        progressBar.animate(1, {
+            duration: 800
+        }, function() {
+             setTimeout(function() { progressBar.destroy(); }, 500);
+        });
+    }
 
 </script>
 

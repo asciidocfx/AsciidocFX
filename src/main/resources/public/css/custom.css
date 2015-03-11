@@ -84,5 +84,11 @@ pre.highlight > code {
     padding-top: 10px;
 }
 
+.container > svg {
+    display: block;
+    width: 100%;
+    height: 4px;
+}
+
 #placeholder h1:first-child,
 #placeholder h1:first-child
