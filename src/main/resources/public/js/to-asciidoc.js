@@ -8,6 +8,12 @@
 
 var nbspRegex = new RegExp(String.fromCharCode(160), "g");
 
+function removeNRBreaks(text) {
+    return text
+        .replace(/^(\n|\r)+/, "") // Remove line-breaks from start
+        .replace(/(\n|\r)+$/, ""); // Remove line-breaks from end
+}
+
 var toAsciidoc = function (string) {
 
     string = string.replace(nbspRegex, " ");
@@ -28,6 +34,14 @@ var toAsciidoc = function (string) {
         var elem = $(this);
         elem.find(".crayon-line").append("\n");
         elem.find(".crayon-num").remove();
+        var code = $("<code></code>");
+        code.append(elem.text());
+        elem.replaceWith(code);
+    });
+
+    // w3schools higlighter fix
+    $(all).find("div[class*='example_code']").each(function () {
+        var elem = $(this);
         var code = $("<code></code>");
         code.append(elem.text());
         elem.replaceWith(code);
@@ -65,7 +79,7 @@ var toAsciidoc = function (string) {
             if (columns.length == 0)
                 columns = tr.querySelectorAll("th");
             var row = [].slice.call(columns).map(function (e) {
-                return "|" + (e.innerHTML ? traverse(e.innerHTML) : "");
+                return "| " + (e.innerHTML ? removeNRBreaks(traverse(e.innerHTML)) : "");
             }).join(" ");
             tableText += row + "\n";
         }
@@ -106,7 +120,7 @@ var toAsciidoc = function (string) {
                 }
             },
             {
-                patterns: ["div", "span", "body", "i", "section", "html","article","header","label","textarea"],
+                patterns: ["div", "span", "body", "i", "section", "html","article","header","label","textarea","kbd"],
                 replacement: function (str, attrs, innerHTML) {
                     return innerHTML ? innerHTML : '';
                 }
@@ -336,7 +350,7 @@ var toAsciidoc = function (string) {
             inner = inner.replace(/^(>([ \t]{2,}>)+)/gm, '> >');
             return inner;
         });
-        return html;
+        return "\n"+html+"\n";
     }
 
     function cleanUp(string) {
