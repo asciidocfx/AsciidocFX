@@ -78,6 +78,10 @@ public class MyTab extends Tab {
         this.path = path;
     }
 
+    public String htmlToMarkupFunction() {
+        return isAsciidoc() ? "toAsciidoc" : "toMarkdown";
+    }
+
     public boolean isSaved() {
         return !this.getTabText().contains(" *");
     }

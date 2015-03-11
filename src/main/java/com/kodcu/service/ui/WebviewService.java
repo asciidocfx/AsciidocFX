@@ -85,8 +85,8 @@ public class WebviewService {
                 menu.hide();
             }
             if (event.getButton() == MouseButton.SECONDARY) {
-                boolean asciidoc = current.currentTab().isAsciidoc();
-                convert.setVisible(asciidoc);
+                boolean markdown = current.currentTab().isMarkdown();
+                convert.setVisible(markdown);
                 menu.show(webView, event.getScreenX(), event.getScreenY());
             }
         });

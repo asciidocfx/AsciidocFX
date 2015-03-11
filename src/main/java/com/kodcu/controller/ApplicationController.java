@@ -881,8 +881,8 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                     ContextMenu contextMenu = new ContextMenu();
                     contextMenu.getItems().addAll(MenuItemBuilt.item("Paste").onclick(event -> {
                         String html = Optional.ofNullable(clipboard.getHtml()).orElse(clipboard.getString());
-                        String asciidoc = (String) window.call("toAsciidoc", html);
-                        editor.call("insert", asciidoc);
+                        String content = (String) window.call(current.currentTab().htmlToMarkupFunction(), html);
+                        editor.call("insert", content);
                     }));
                     contextMenu.getItems().addAll(MenuItemBuilt.item("Paste raw").onclick(event -> {
                         editor.call("insert", clipboard.getString());
@@ -890,13 +890,16 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                     contextMenu.show(stage);
                 } else {
                     String html = Optional.ofNullable(clipboard.getHtml()).orElse(clipboard.getString());
-                    String asciidoc = (String) window.call("toAsciidoc", html);
-                    editor.call("insert", asciidoc);
+                    String content = (String) window.call(current.currentTab().htmlToMarkupFunction(), html);
+                    editor.call("insert", content);
                 }
+                return;
             }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
         }
+
+        editor.call("insert",clipboard.getString());
 
     }
 
