@@ -54,7 +54,7 @@ editor.commands.addCommand({
     name: 'paste-1',
     bindKey: {win: 'Ctrl-V', mac: 'Command-V'},
     exec: function (editor) {
-        editor.insert(app.paste());
+        app.paste(true);
     },
     readOnly: true
 });
@@ -143,7 +143,7 @@ function isURL(text) {
 function addHyperLink() {
     var cursorPosition = editor.getCursorPosition();
     var session = editor.getSession();
-    var pasted = app.paste();
+    var pasted = app.clipboardValue();
     if (isURL(pasted)) {
         if (pasted.indexOf("http") == -1)
             session.insert(cursorPosition, "http://" + pasted + "[text]");

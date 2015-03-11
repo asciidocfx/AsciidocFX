@@ -55,8 +55,7 @@ public class RenderService {
     }
 
     public String execute(WebView engine, String script) {
-        String s = (String) engine.getEngine().executeScript(script);
-        return s;
+        return  (String) engine.getEngine().executeScript(script);
     }
 
     public void convertHtmlArticle(Consumer<String> step) {

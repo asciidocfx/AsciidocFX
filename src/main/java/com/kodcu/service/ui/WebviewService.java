@@ -3,20 +3,13 @@ package com.kodcu.service.ui;
 import com.kodcu.component.MenuItemBuilt;
 import com.kodcu.controller.ApplicationController;
 import com.kodcu.other.Current;
-import com.kodcu.other.IOHelper;
 import com.kodcu.service.*;
-import com.kodcu.service.convert.RenderService;
-import javafx.concurrent.Worker;
-import javafx.event.EventHandler;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.MouseButton;
 import javafx.scene.web.WebEngine;
-import javafx.scene.web.WebEvent;
 import javafx.scene.web.WebView;
-import javafx.util.Callback;
-import netscape.javascript.JSObject;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +18,10 @@ import org.springframework.stereotype.Component;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * Created by usta on 25.12.2014.
@@ -64,23 +60,25 @@ public class WebviewService {
 
         webView.setOnMouseClicked(event -> {
 
-            if (menu.getItems().size() == 0) {
-                MenuItem copy = MenuItemBuilt.item("Copy").onclick(event1 -> {
-                    controller.cutCopy(current.currentEditorSelection());
-                });
-                MenuItem paste = MenuItemBuilt.item("Paste").onclick(e -> {
-                    current.insertEditorValue(controller.paste());
-                });
-                MenuItem pasteRaw = MenuItemBuilt.item("Paste raw").onclick(e -> {
-                    current.insertEditorValue(controller.pasteRaw());
-                });
-                MenuItem convert = MenuItemBuilt.item("Markdown to Asciidoc").onclick(e -> {
-                    markdownService.convertToAsciidoc(current.currentEditorValue(), content -> {
-                        threadService.runActionLater(() -> {
-                            documentService.newDoc(content);
-                        });
+            MenuItem copy = MenuItemBuilt.item("Copy").onclick(event1 -> {
+                controller.cutCopy(current.currentEditorSelection());
+            });
+            MenuItem paste = MenuItemBuilt.item("Paste").onclick(e -> {
+                controller.paste(false);
+            });
+            MenuItem pasteRaw = MenuItemBuilt.item("Paste raw").onclick(e -> {
+                current.insertEditorValue(controller.pasteRaw());
+            });
+            MenuItem convert = MenuItemBuilt.item("Markdown to Asciidoc").onclick(e -> {
+                markdownService.convertToAsciidoc(current.currentEditorValue(), content -> {
+                    threadService.runActionLater(() -> {
+                        documentService.newDoc(content);
                     });
-                });
+            });
+            });
+
+            if (menu.getItems().size() == 0) {
+
                 menu.getItems().addAll(copy, paste, pasteRaw, convert);
             }
 
@@ -88,6 +86,7 @@ public class WebviewService {
                 menu.hide();
             }
             if (event.getButton() == MouseButton.SECONDARY) {
+                convert.setVisible(current.currentTab().isAsciidoc());
                 menu.show(webView, event.getScreenX(), event.getScreenY());
             }
         });
@@ -164,7 +163,6 @@ public class WebviewService {
             event.setDropCompleted(success);
             event.consume();
         });
-
 
 
         return webView;

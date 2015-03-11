@@ -857,42 +857,47 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         clipboard.setContent(clipboardContent);
     }
 
+    public String clipboardValue() {
+        return clipboard.getString();
+    }
 
-    public String paste() {
+    public void paste(boolean showContextMenu) {
+
+        JSObject window = renderService.getWindow();
+        JSObject editor = (JSObject) current.currentEngine().executeScript("editor");
 
         if (clipboard.hasFiles()) {
             Optional<String> block = parserService.toImageBlock(clipboard.getFiles());
-            if (block.isPresent())
-                return block.get();
-        }
-
-        if (clipboard.hasHtml()) {
-            try {
-                String html = clipboard.getHtml();
-                renderService.getWindow().setMember("clipboardValue", html);
-                String asciidoc = (String) previewEngine.executeScript("toAsciidoc(clipboardValue)");
-                return asciidoc;
-            } catch (Exception e) {
-                logger.error(e.getMessage(), e);
+            if (block.isPresent()) {
+                editor.call("insert", block.get());
+                return;
             }
-
         }
 
         try {
-            renderService.getWindow().setMember("clipboardValue", clipboard.getString());
-            Boolean isHtml = (Boolean) previewEngine.executeScript("isHtml(clipboardValue)");
-            if (isHtml) {
-                String clipboardString = clipboard.getString();
-                renderService.getWindow().setMember("clipboardValue", clipboardString);
-                String asciidoc = (String) previewEngine.executeScript("toAsciidoc(clipboardValue)");
-                return asciidoc;
+            if (clipboard.hasHtml() || (Boolean) window.call("isHtml", clipboard.getString())) {
+
+                if (showContextMenu) {
+                    ContextMenu contextMenu = new ContextMenu();
+                    contextMenu.getItems().addAll(MenuItemBuilt.item("Paste").onclick(event -> {
+                        String html = Optional.ofNullable(clipboard.getHtml()).orElse(clipboard.getString());
+                        String asciidoc = (String) window.call("toAsciidoc", html);
+                        editor.call("insert", asciidoc);
+                    }));
+                    contextMenu.getItems().addAll(MenuItemBuilt.item("Paste raw").onclick(event -> {
+                        editor.call("insert", clipboard.getString());
+                    }));
+                    contextMenu.show(stage);
+                } else {
+                    String html = Optional.ofNullable(clipboard.getHtml()).orElse(clipboard.getString());
+                    String asciidoc = (String) window.call("toAsciidoc", html);
+                    editor.call("insert", asciidoc);
+                }
             }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
         }
 
-
-        return clipboard.getString();
     }
 
     public String pasteRaw() {
