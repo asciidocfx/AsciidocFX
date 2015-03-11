@@ -79,7 +79,9 @@ md2AscRenderer.link = function (href, title, text) {
 };
 
 md2AscRenderer.image = function (href, title, text) {
-    return "\nimage::" + href + "[alt=" + text + ",title=" + title + "]\n";
+    var alt = text ? "alt=" + text + (title ? "," : "") : "";
+    var imageTitle = title ? "title=" + title : "";
+    return "\nimage::" + href + "[" + alt + imageTitle + "]\n";
 };
 
 function markdownToAsciidoc(input) {
