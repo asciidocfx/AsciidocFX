@@ -1,22 +1,15 @@
 package com.kodcu.component;
 
-import com.kodcu.controller.ApplicationController;
-import com.kodcu.service.ThreadService;
 import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyIntegerProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.scene.Node;
-import javafx.scene.control.*;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.Tab;
 import javafx.scene.web.WebView;
 import netscape.javascript.JSObject;
 
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -103,13 +96,27 @@ public class MyTab extends Tab {
         }
     }
 
-    private void select() {
+    private void cleanRemovedTabs() {
+
+        this.setPath(null);
+        this.setOnClosed(null);
+        this.setOnSelectionChanged(null);
+        this.setUserData(null);
+        this.getLabel().setOnMouseClicked(null);
+        this.setOnCloseRequest(null);
+        this.setWebView(null);
+        this.setGraphic(null);
+        this.setContent(null);
+    }
+
+    public void select() {
         this.getTabPane().getSelectionModel().select(this);
     }
 
     private void closeIt() {
-        Platform.runLater(()->{
+        Platform.runLater(() -> {
             this.getTabPane().getTabs().remove(this); // keep it here
+            cleanRemovedTabs();
         });
     }
 

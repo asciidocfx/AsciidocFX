@@ -108,7 +108,7 @@ public class DocumentService {
         tab.setTabText("new *");
         TabPane tabPane = controller.getTabPane();
         tabPane.getTabs().add(tab);
-        tabPane.getSelectionModel().select(tab);
+        tab.select();
 
         webView.requestFocus();
     }

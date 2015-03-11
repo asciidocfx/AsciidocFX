@@ -158,7 +158,7 @@ public class TabService {
                     closedPaths.add(Optional.ofNullable(current.currentTab().getPath()));
 
                 super.close();
-                cleanRemovedTabs(this);
+
                 Platform.runLater(()->{
                     ObservableList<Tab> tabs = controller.getTabPane().getTabs();
                     if (tabs.isEmpty()) {
@@ -296,7 +296,7 @@ public class TabService {
 
         label.setOnMouseClicked(mouseEvent -> {
             if (mouseEvent.getButton().equals(MouseButton.SECONDARY)) {
-                controller.getTabPane().getSelectionModel().select(tab);
+                tab.select();
             } else if (mouseEvent.getClickCount() > 1) {
                 controller.adjustSplitPane();
             }
@@ -304,22 +304,6 @@ public class TabService {
 
 
         return tab;
-    }
-
-    private void cleanRemovedTabs(MyTab myTab) {
-       threadService.runTaskLater(()->{
-           threadService.runActionLater(()->{
-               myTab.setPath(null);
-               myTab.setOnClosed(null);
-               myTab.setOnSelectionChanged(null);
-               myTab.setUserData(null);
-               myTab.getLabel().setOnMouseClicked(null);
-               myTab.setOnCloseRequest(null);
-               myTab.setWebView(null);
-               myTab.setGraphic(null);
-               myTab.setContent(null);
-           });
-       });
     }
 
     public void addImageTab(Path imagePath) {
