@@ -13,10 +13,6 @@ import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Worker;
-import javafx.event.ActionEvent;
-import javafx.event.Event;
-import javafx.event.EventHandler;
-import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
@@ -24,14 +20,8 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
-import javafx.scene.shape.Rectangle;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
-import javafx.stage.Popup;
-import javafx.stage.PopupWindow;
-import javafx.util.Callback;
 import netscape.javascript.JSObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,9 +30,10 @@ import org.springframework.stereotype.Component;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.*;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
 
 /**
  * Created by usta on 25.12.2014.
@@ -84,6 +75,17 @@ public class TabService {
         if (Files.notExists(path)) {
             recentFiles.remove(path.toString());
             return;
+        }
+
+        ObservableList<Tab> tabs = controller.getTabPane().getTabs();
+        for (Tab tab : tabs) {
+            MyTab myTab = (MyTab) tab;
+            Path currentPath = myTab.getPath();
+            if (Objects.nonNull(currentPath))
+                if (currentPath.equals(path)) {
+                    myTab.select(); // Select already added tab
+                    return;
+                }
         }
 
         AnchorPane anchorPane = new AnchorPane();
@@ -159,7 +161,7 @@ public class TabService {
 
                 super.close();
 
-                Platform.runLater(()->{
+                Platform.runLater(() -> {
                     ObservableList<Tab> tabs = controller.getTabPane().getTabs();
                     if (tabs.isEmpty()) {
                         controller.newDoc(null);
