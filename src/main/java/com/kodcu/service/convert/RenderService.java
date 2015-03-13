@@ -24,8 +24,6 @@ public class RenderService {
     private final MarkdownService markdownService;
     private final Current current;
     
-    
-
     @Autowired
     public RenderService(final ApplicationController controller, final ThreadService threadService, final MarkdownService markdownService, final Current current) {
         this.controller = controller;

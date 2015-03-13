@@ -32,17 +32,20 @@ import static java.nio.file.StandardOpenOption.*;
 @Component
 public class MathJaxService {
 
-    private Logger logger = LoggerFactory.getLogger(MathJaxService.class);
+    private final Logger logger = LoggerFactory.getLogger(MathJaxService.class);
+
+    private final ApplicationController controller;
+    private final Current current;
 
     @Autowired
-    private ApplicationController controller;
-
-    @Autowired
-    private Current current;
+    public MathJaxService(final ApplicationController controller, final Current current) {
+        this.controller = controller;
+        this.current = current;
+    }
 
     public String appendFormula(String fileName, String formula) {
         if (fileName.endsWith(".png") || fileName.endsWith(".svg")) {
-            getWindow().call("appendFormula",new Object[]{fileName,formula});
+            getWindow().call("appendFormula", new Object[] { fileName, formula });
             return "images/" + fileName;
         }
 
@@ -87,7 +90,8 @@ public class MathJaxService {
 
             Files.write(path.resolve("images/").resolve(fileName), svg.getBytes(Charset.forName("UTF-8")), CREATE, WRITE, TRUNCATE_EXISTING);
 
-            controller.getLastRenderedChangeListener().changed(null, controller.getLastRendered().getValue(), controller.getLastRendered().getValue());
+            controller.getLastRenderedChangeListener()
+                    .changed(null, controller.getLastRendered().getValue(), controller.getLastRendered().getValue());
         } catch (IOException e) {
             logger.error(e.getMessage(), e);
         }
@@ -95,7 +99,7 @@ public class MathJaxService {
 
     private void saveAsPng(String fileName, String svg, String formula, float width, float height) {
         try (StringReader reader = new StringReader(svg);
-             ByteArrayOutputStream ostream = new ByteArrayOutputStream();) {
+                ByteArrayOutputStream ostream = new ByteArrayOutputStream();) {
 
             String uri = "http://www.w3.org/2000/svg";
             SAXSVGDocumentFactory f = new SAXSVGDocumentFactory(XMLResourceDescriptor.getXMLParserClassName());
@@ -117,7 +121,8 @@ public class MathJaxService {
 
             Files.write(path.resolve("images/").resolve(fileName), ostream.toByteArray(), CREATE, WRITE, TRUNCATE_EXISTING);
 
-            controller.getLastRenderedChangeListener().changed(null, controller.getLastRendered().getValue(), controller.getLastRendered().getValue());
+            controller.getLastRenderedChangeListener()
+                    .changed(null, controller.getLastRendered().getValue(), controller.getLastRendered().getValue());
 
         } catch (Exception e) {
             logger.error(e.getMessage(), e);

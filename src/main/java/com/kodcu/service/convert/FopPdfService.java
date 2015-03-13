@@ -28,35 +28,36 @@ import static java.nio.file.StandardOpenOption.*;
 @Component
 public class FopPdfService {
 
-    @Autowired
-    private ApplicationController asciiDocController;
+    private final Logger logger = LoggerFactory.getLogger(FopPdfService.class);
 
-    @Autowired
-    private DocBookService docBookService;
-
-    @Autowired
-    private IndikatorService indikatorService;
-
-    @Autowired
-    private ThreadService threadService;
-
-    @Autowired
-    private DirectoryService directoryService;
-
-    @Autowired
-    private Current current;
+    private final ApplicationController asciiDocController;
+    private final DocBookService docBookService;
+    private final IndikatorService indikatorService;
+    private final ThreadService threadService;
+    private final DirectoryService directoryService;
+    private final Current current;
 
     private Path pdfPath;
 
-    private static final Logger logger = LoggerFactory.getLogger(FopPdfService.class);
+    @Autowired
+    public FopPdfService(final ApplicationController asciiDocController, final DocBookService docBookService,
+            final IndikatorService indikatorService,
+            final ThreadService threadService, final DirectoryService directoryService, final Current current) {
+        this.asciiDocController = asciiDocController;
+        this.docBookService = docBookService;
+        this.indikatorService = indikatorService;
+        this.threadService = threadService;
+        this.directoryService = directoryService;
+        this.current = current;
+    }
 
     private void produce(boolean askPath, InputHandler handler, FopFactory fopFactory, Path docbookTempfile) {
-        Path currentTabPath = current.currentPath().get();
-        Path currentTabPathDir = currentTabPath.getParent();
-        String tabText = current.getCurrentTabText().replace("*", "").trim();
+        final Path currentTabPath = current.currentPath().get();
+        final Path currentTabPathDir = currentTabPath.getParent();
+        final String tabText = current.getCurrentTabText().replace("*", "").trim();
         threadService.runActionLater(() -> {
             if (askPath) {
-                FileChooser fileChooser = directoryService.newFileChooser("Save PDF file");
+                final FileChooser fileChooser = directoryService.newFileChooser("Save PDF file");
                 fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("PDF", "*.pdf"));
                 pdfPath = fileChooser.showSaveDialog(null).toPath();
             } else
@@ -86,15 +87,15 @@ public class FopPdfService {
 
     public void generateBook(boolean askPath) {
 
-
         try {
 
-            Path currentTabPath = current.currentPath().get();
-            Path currentTabPathDir = currentTabPath.getParent();
-            Path configPath = asciiDocController.getConfigPath();
-            String tabText = current.getCurrentTabText().replace("*", "").trim();
+            final Path currentTabPath = current.currentPath().get();
+            final Path currentTabPathDir = currentTabPath.getParent();
+            final Path configPath = asciiDocController.getConfigPath();
+            // FIXME: this var is unused, is it intensional?
+            final String tabText = current.getCurrentTabText().replace("*", "").trim();
 
-            Vector params = new Vector();
+            final Vector<String> params = new Vector<>();
             params.add("body.font.family");
             params.add("Arial");
             params.add("title.font.family");
@@ -106,15 +107,15 @@ public class FopPdfService {
             params.add("callout.graphics.path");
             params.add(configPath.resolve("docbook/images/callouts/").toUri().toASCIIString());
 
-            docBookService.generateDocbook(docbook->{
-                Path docbookTempfile = IOHelper.createTempFile(currentTabPathDir, ".xml");
+            docBookService.generateDocbook(docbook -> {
+                final Path docbookTempfile = IOHelper.createTempFile(currentTabPathDir, ".xml");
                 IOHelper.writeToFile(docbookTempfile, docbook, CREATE, WRITE, TRUNCATE_EXISTING);
 
                 InputHandler handler = new InputHandler(docbookTempfile.toFile(), configPath.resolve("docbook-config/fo-pdf.xsl").toFile(), params);
 
                 FopFactory fopFactory = FopFactory.newInstance();
 
-                IOHelper.setUserConfig(fopFactory,configPath.resolve("docbook-config/fop.xconf").toUri().toASCIIString());
+                IOHelper.setUserConfig(fopFactory, configPath.resolve("docbook-config/fop.xconf").toUri().toASCIIString());
 
                 this.produce(askPath, handler, fopFactory, docbookTempfile);
             });
@@ -124,21 +125,21 @@ public class FopPdfService {
         }
     }
 
-
     public void generateArticle(boolean askPath) {
 
         try {
 
-            Path currentTabPath = current.currentPath().get();
-            Path currentTabPathDir = currentTabPath.getParent();
-            Path configPath = asciiDocController.getConfigPath();
-            String tabText = current.getCurrentTabText().replace("*", "").trim();
+            final Path currentTabPath = current.currentPath().get();
+            final Path currentTabPathDir = currentTabPath.getParent();
+            final Path configPath = asciiDocController.getConfigPath();
+            // FIXME: this var is unused, is it intensional?
+            final String tabText = current.getCurrentTabText().replace("*", "").trim();
 
-            docBookService.generateDocbookArticle(docbook->{
+            docBookService.generateDocbookArticle(docbook -> {
                 Path docbookTempfile = IOHelper.createTempFile(currentTabPathDir, ".xml");
                 IOHelper.writeToFile(docbookTempfile, docbook, CREATE, WRITE, TRUNCATE_EXISTING);
 
-                Vector params = new Vector();
+                final Vector<String> params = new Vector<>();
                 params.add("body.font.family");
                 params.add("Arial");
                 params.add("title.font.family");
@@ -155,12 +156,10 @@ public class FopPdfService {
 
                 FopFactory fopFactory = FopFactory.newInstance();
 
-                IOHelper.setUserConfig(fopFactory,configPath.resolve("docbook-config/fop.xconf").toUri().toASCIIString());
+                IOHelper.setUserConfig(fopFactory, configPath.resolve("docbook-config/fop.xconf").toUri().toASCIIString());
 
                 this.produce(askPath, handler, fopFactory, docbookTempfile);
             });
-
-
 
         } catch (Exception e) {
             logger.error(e.getMessage(), e);

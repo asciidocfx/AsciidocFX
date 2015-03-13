@@ -16,11 +16,14 @@ import org.springframework.stereotype.Component;
 @Component
 public class IndikatorService {
 
+    private final ApplicationController asciiDocController;
+    private final ThreadService threadService;
+    
     @Autowired
-    private ApplicationController asciiDocController;
-
-    @Autowired
-    private ThreadService threadService;
+    public IndikatorService(final ApplicationController asciiDocController, final ThreadService threadService) {
+        this.asciiDocController = asciiDocController;
+        this.threadService = threadService;
+    }
 
     public void startCycle() {
         threadService.runActionLater(() -> {

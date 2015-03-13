@@ -16,10 +16,14 @@ import java.nio.file.Path;
 @Component
 public class AwesomeService {
 
-    @Autowired
-    private PathResolverService pathResolver;
+    private final PathResolverService pathResolver;
 
-    public Node getIcon(Path path) {
+    @Autowired
+    public AwesomeService(final PathResolverService pathResolver) {
+        this.pathResolver = pathResolver;
+    }
+
+    public Node getIcon(final Path path) {
 
         AwesomeIcon awesomeIcon = AwesomeIcon.FOLDER_ALT;
 
@@ -36,7 +40,7 @@ public class AwesomeService {
         if (pathResolver.isEpub(path) || pathResolver.isMobi(path))
             awesomeIcon = AwesomeIcon.FILE_TEXT;
 
-        Label iconLabel = AwesomeDude.createIconLabel(awesomeIcon, "14.0");
+        final Label iconLabel = AwesomeDude.createIconLabel(awesomeIcon, "14.0");
         return iconLabel;
     }
 }

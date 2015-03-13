@@ -28,23 +28,25 @@ public class FileBrowseService {
 
     private Logger logger = LoggerFactory.getLogger(FileBrowseService.class);
 
-    @Autowired
-    private PathOrderService pathOrder;
-
-    @Autowired
-    private ThreadService threadService;
-
-    @Autowired
-    private PathResolverService pathResolver;
-
-    @Autowired
-    private AwesomeService awesomeService;
-
-    @Autowired
-    private FileWatchService watchService;
-
+    private final PathOrderService pathOrder;
+    private final ThreadService threadService;
+    private final PathResolverService pathResolver;
+    private final AwesomeService awesomeService;
+    private final FileWatchService watchService;
+    
     private TreeItem<Item> rootItem;
+    
     private Integer lastSelectedItem;
+    
+    @Autowired
+    public FileBrowseService(final PathOrderService pathOrder, final ThreadService threadService, final PathResolverService pathResolver,
+            final AwesomeService awesomeService, final FileWatchService watchService) {
+        this.pathOrder = pathOrder;
+        this.threadService = threadService;
+        this.pathResolver = pathResolver;
+        this.awesomeService = awesomeService;
+        this.watchService = watchService;
+    }
 
     public void browse(final TreeView<Item> treeView, final Path browserPath) {
 
