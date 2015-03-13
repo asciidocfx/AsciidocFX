@@ -41,33 +41,34 @@ import java.util.Set;
 @Component
 public class TabService {
 
-    @Autowired
-    private ApplicationController controller;
+    private final Logger logger = LoggerFactory.getLogger(TabService.class);
 
-    @Autowired
-    private WebviewService webviewService;
-
-    @Autowired
-    private EditorService editorService;
-
-    @Autowired
-    private PathResolverService pathResolver;
-
-    @Autowired
-    private ThreadService threadService;
-
-    @Autowired
-    private Current current;
-
-    @Autowired
-    private DirectoryService directoryService;
-
-    @Autowired
-    private RenderService renderService;
+    private final ApplicationController controller;
+    private final WebviewService webviewService;
+    private final EditorService editorService;
+    private final PathResolverService pathResolver;
+    private final ThreadService threadService;
+    private final Current current;
+    private final DirectoryService directoryService;
+    private final RenderService renderService;
 
     private ObservableList<Optional<Path>> closedPaths = FXCollections.observableArrayList();
 
-    private Logger logger = LoggerFactory.getLogger(TabService.class);
+    
+    @Autowired
+    public TabService(final ApplicationController controller, final WebviewService webviewService, final EditorService editorService, 
+            final PathResolverService pathResolver, final ThreadService threadService, final Current current,
+            final DirectoryService directoryService, final RenderService renderService) {
+        this.controller = controller;
+        this.webviewService = webviewService;
+        this.editorService = editorService;
+        this.pathResolver = pathResolver;
+        this.threadService = threadService;
+        this.current = current;
+        this.directoryService = directoryService;
+        this.renderService = renderService;
+    }
+
 
     public void addTab(Path path) {
 
