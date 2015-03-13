@@ -2,7 +2,6 @@ package com.kodcu.service;
 
 
 import com.kodcu.other.Current;
-import com.kodcu.other.IOHelper;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -21,11 +20,16 @@ import java.util.ResourceBundle;
 @Component
 public class TablePopupService implements Initializable {
 
-    private static final Logger logger = LoggerFactory.getLogger(TablePopupService.class);
+    private final Logger logger = LoggerFactory.getLogger(TablePopupService.class);
+
+    private final Current current;
 
     @Autowired
-    private Current current;
+    public TablePopupService(final Current current) {
+        this.current = current;
+    }
 
+    // FIXME: why are those fields public
     public CheckBox tablePopupHeader;
     public CheckBox tablePopupFooter;
     public TextField tablePopupWidth;
