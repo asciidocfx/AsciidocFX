@@ -37,20 +37,17 @@ public class WebviewService {
     private final ParserService parserService;
     private final MarkdownService markdownService;
     private final Current current;
-    private final DocumentService documentService;
-    
+
     @Autowired
     public WebviewService(final ApplicationController controller, final PathResolverService pathResolver, final ThreadService threadService,
-            final ParserService parserService, final MarkdownService markdownService, final Current current, final DocumentService documentService) {
+            final ParserService parserService, final MarkdownService markdownService, final Current current) {
         this.controller = controller;
         this.pathResolver = pathResolver;
         this.threadService = threadService;
         this.parserService = parserService;
         this.markdownService = markdownService;
         this.current = current;
-        this.documentService = documentService;
     }
-
 
     public WebView createWebView() {
 
@@ -69,18 +66,24 @@ public class WebviewService {
         MenuItem pasteRaw = MenuItemBuilt.item("Paste raw").onclick(e -> {
             current.insertEditorValue(controller.pasteRaw());
         });
-        MenuItem convert = MenuItemBuilt.item("Markdown to Asciidoc").onclick(e -> {
-            markdownService.convertToAsciidoc(current.currentEditorValue(), content -> {
-                threadService.runActionLater(() -> {
-                    documentService.newDoc(content);
-                });
-            });
-        });
+        // FIXME: Reenable this whithout introducing a circular dependency to
+        // DocumentService
+        // MenuItem convert =
+        // MenuItemBuilt.item("Markdown to Asciidoc").onclick(e -> {
+        // markdownService.convertToAsciidoc(current.currentEditorValue(),
+        // content -> {
+        // threadService.runActionLater(() -> {
+        // documentService.newDoc(content);
+        // });
+        // });
+        // });
 
         webView.setOnMouseClicked(event -> {
 
             if (menu.getItems().size() == 0) {
-                menu.getItems().addAll(copy, paste, pasteRaw, convert);
+                // FIXME: Reenable convert
+                // menu.getItems().addAll(copy, paste, pasteRaw, convert);
+                menu.getItems().addAll(copy, paste, pasteRaw);
             }
 
             if (menu.isShowing()) {
@@ -88,11 +91,11 @@ public class WebviewService {
             }
             if (event.getButton() == MouseButton.SECONDARY) {
                 boolean markdown = current.currentTab().isMarkdown();
-                convert.setVisible(markdown);
+                // FIXME: Reenable
+                // convert.setVisible(markdown);
                 menu.show(webView, event.getScreenX(), event.getScreenY());
             }
         });
-
 
         webView.setOnDragDropped(event -> {
             Dragboard dragboard = event.getDragboard();
@@ -165,7 +168,6 @@ public class WebviewService {
             event.setDropCompleted(success);
             event.consume();
         });
-
 
         return webView;
     }

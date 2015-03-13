@@ -9,6 +9,7 @@ import com.kodcu.service.DirectoryService;
 import com.kodcu.service.PathResolverService;
 import com.kodcu.service.ThreadService;
 import com.kodcu.service.convert.RenderService;
+
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -22,18 +23,23 @@ import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
+import javafx.stage.FileChooser;
 import netscape.javascript.JSObject;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 /**
  * Created by usta on 25.12.2014.
@@ -67,6 +73,23 @@ public class TabService {
         this.current = current;
         this.directoryService = directoryService;
         this.renderService = renderService;
+        
+        final Consumer<Path> openFileConsumer = path -> {
+            if (Files.isDirectory(path)) {
+                directoryService.changeWorkigDir(path.equals(directoryService.workingDirectory()) ? path.getParent() : path);
+            } else if (pathResolver.isAsciidoc(path) || pathResolver.isMarkdown(path))
+                addTab(path);
+                else if (pathResolver.isImage(path))
+                    addImageTab(path);
+                else if (pathResolver.isEpub(path))
+                    controller.getHostServices()
+                            .showDocument(String.format("http://localhost:%d/epub/viewer?path=%s", controller.getPort(), path.toString()));
+                else
+                    controller.getHostServices()
+                            .showDocument(path.toUri().toString());
+            };
+        directoryService.setOpenFileConsumer(openFileConsumer);
+
     }
 
 
