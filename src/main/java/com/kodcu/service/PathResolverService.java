@@ -18,7 +18,7 @@ import java.util.List;
 @Component
 public class PathResolverService {
 
-    private static Logger logger = LoggerFactory.getLogger(PathResolverService.class);
+    private Logger logger = LoggerFactory.getLogger(PathResolverService.class);
 
     List<String> rootList =
             Arrays.asList("book.asc", "book.txt", "book.asciidoc", "book.adoc", "book.ad");
