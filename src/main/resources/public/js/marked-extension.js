@@ -26,7 +26,7 @@ md2AscRenderer.table = function (header, body) {
     var headerContent = "\n[width=\"100%\",options=\"header\"]";
     var start = "\n|====";
     var end = "\n|====\n";
-    return headerContent + start + body + end;
+    return headerContent + start + header + body + end;
 };
 
 md2AscRenderer.tablerow = function (content) {
