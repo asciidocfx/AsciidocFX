@@ -212,8 +212,8 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     private Scene scene;
     private AnchorPane tableAnchor;
     private Stage tableStage;
-    private Clipboard clipboard = Clipboard.getSystemClipboard();
-    private ObservableList<String> recentFiles = FXCollections.synchronizedObservableList(FXCollections.observableArrayList());
+    private final Clipboard clipboard = Clipboard.getSystemClipboard();
+    private final ObservableList<String> recentFiles = FXCollections.synchronizedObservableList(FXCollections.observableArrayList());
     private AnchorPane configAnchor;
     private Stage configStage;
     private int port = 8080;
@@ -221,7 +221,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     private Path configPath;
     private Config config;
 
-    private List<String> bookNames = Arrays.asList("book.asc", "book.txt", "book.asciidoc", "book.adoc", "book.ad");
+    private final List<String> bookNames = Arrays.asList("book.asc", "book.txt", "book.asciidoc", "book.adoc", "book.ad");
 
     private Map<String, String> shortCuts;
 
