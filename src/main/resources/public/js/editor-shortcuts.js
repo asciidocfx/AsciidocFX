@@ -294,7 +294,7 @@ editor.commands.addCommand({
     name: 'underline-selected',
     bindKey: {win: 'Ctrl-U', mac: 'Command-U'},
     exec: function () {
-        app.getShortcutProvider().addUnderline();
+        app.getShortcutProvider().getProvider().addUnderline();
     },
     readOnly: true
 });
