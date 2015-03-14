@@ -1,8 +1,7 @@
-package com.kodcu.service;
+package com.kodcu.service.table;
 
 
 import com.kodcu.other.Current;
-import com.kodcu.other.IOHelper;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -19,9 +18,10 @@ import java.util.ResourceBundle;
 
 
 @Component
-public class TablePopupService implements Initializable {
+public class AsciidocTableController implements Initializable {
 
-    private static final Logger logger = LoggerFactory.getLogger(TablePopupService.class);
+    private static final Logger logger = LoggerFactory.getLogger(AsciidocTableController.class);
+    public TextField initialValue;
 
     @Autowired
     private Current current;
@@ -37,6 +37,7 @@ public class TablePopupService implements Initializable {
     public void createBasicTable(String row, String column) {
         tablePopupRows.textProperty().setValue(row);
         tablePopupColumns.textProperty().setValue(column);
+        initialValue.setText("cell");
         tablePopupApply(null);
     }
 
@@ -88,7 +89,7 @@ public class TablePopupService implements Initializable {
 
         for (int i = 0; i < row; i++) {
             for (int j = 0; j < column; j++) {
-                stringBuffer.append("|abc ");
+                stringBuffer.append("| " + initialValue.getText() + " ");
             }
             stringBuffer.append("\n");
         }

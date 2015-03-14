@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+<AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" opacity="1.0" prefHeight="159.0" prefWidth="314.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="com.kodcu.service.table.MarkdownTableController">
+  <children>
+    <Text layoutX="33.0" layoutY="38.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Table Generator">
+      <font>
+        <Font size="20.0" />
+      </font>
+    </Text>
+    <Separator layoutX="16.0" layoutY="46.0" prefWidth="286.0" />
+    <Separator layoutX="17.0" layoutY="93.0" prefWidth="286.0" />
+    <TextField  fx:id="columns" layoutX="30.0" layoutY="104.0" prefHeight="25.0" prefWidth="57.0" promptText="Columns" text="" />
+    <TextField  fx:id="rows" layoutX="104.0" layoutY="105.0" prefHeight="25.0" prefWidth="57.0" promptText="Rows" text="" />
+    <Text layoutX="92.0" layoutY="119.0" strokeType="OUTSIDE" strokeWidth="0.0" text="X">
+      <font>
+        <Font name="System Bold" size="11.0" />
+      </font>
+    </Text>
+    <Button fx:id="tablePopupApply" layoutX="166.0" layoutY="105.0" mnemonicParsing="false" onAction="#tablePopupApply" prefHeight="23.0" prefWidth="118.0" text="Apply" />
+    <Separator layoutX="16.0" layoutY="140.0" prefWidth="286.0" />
+    <TextField id="tablePopupTitle" fx:id="initialValue" focusTraversable="false" layoutX="30.0" layoutY="55.0" prefHeight="30.0" prefWidth="254.0" promptText="Initial value" />
+  </children>
+</AnchorPane>
