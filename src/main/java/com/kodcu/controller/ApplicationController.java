@@ -225,7 +225,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     private Map<String, String> shortCuts;
 
-    private ChangeListener<String> lastRenderedChangeListener = (observableValue, old, nev) -> {
+    private final ChangeListener<String> lastRenderedChangeListener = (observableValue, old, nev) -> {
 
         if (Objects.isNull(nev))
             return;
