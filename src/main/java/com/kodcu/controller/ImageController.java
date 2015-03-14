@@ -52,6 +52,12 @@ public class ImageController {
 
         byte[] temp = IOHelper.readAllBytes(imageFile);
 
+        // if not found, try again in working dir
+        if (temp.length == 0) {
+            imageFile = directoryService.getWorkingDirectory().get().resolve(uri);
+            temp = IOHelper.readAllBytes(imageFile);
+        }
+
         return new ResponseEntity<>(temp, HttpStatus.OK);
     }
 }
