@@ -3,7 +3,6 @@ package com.kodcu.controller;
 import com.kodcu.other.Current;
 import com.kodcu.service.ThreadService;
 import com.kodcu.service.ui.TabService;
-import javafx.application.Platform;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
