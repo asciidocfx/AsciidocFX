@@ -3,7 +3,7 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.web.*?>
+<?import javafx.scene.web.WebView?>
 <AnchorPane id="AnchorPane" fx:id="rootAnchor" styleClass="rootAnchor" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="com.kodcu.controller.ApplicationController">
   <children>
     <SplitPane fx:id="splitPane" dividerPositions="0.17751479289940827, 0.606508875739645" focusTraversable="true" AnchorPane.bottomAnchor="1.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="-1.0">
@@ -137,6 +137,11 @@
                     <Label fx:id="pdfPro" minWidth="-Infinity" styleClass="pdf" text="PDF" />
                     <Label fx:id="ebookPro" minWidth="-Infinity" styleClass="ebook" text="Ebook" />
                     <Label fx:id="docbookPro" minWidth="-Infinity" styleClass="docbook" text="Docbook" />
+                    <Pane maxWidth="1.7976931348623157E308" prefHeight="1.0" prefWidth="1.0" HBox.hgrow="ALWAYS">
+                      <HBox.margin>
+                        <Insets />
+                      </HBox.margin>
+                    </Pane>
                     <Label fx:id="browserPro" minWidth="-Infinity" styleClass="browser" text="Browser" textAlignment="LEFT" />
                   </children>
                   <padding>

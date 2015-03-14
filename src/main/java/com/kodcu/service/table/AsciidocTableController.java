@@ -1,4 +1,4 @@
-package com.kodcu.service;
+package com.kodcu.service.table;
 
 
 import com.kodcu.other.Current;
@@ -18,14 +18,16 @@ import java.util.ResourceBundle;
 
 
 @Component
-public class TablePopupService implements Initializable {
+public class AsciidocTableController implements Initializable {
 
-    private final Logger logger = LoggerFactory.getLogger(TablePopupService.class);
-
+    private final Logger logger = LoggerFactory.getLogger(AsciidocTableController.class);
+    
     private final Current current;
 
+    public TextField initialValue;
+
     @Autowired
-    public TablePopupService(final Current current) {
+    public AsciidocTableController(final Current current) {
         this.current = current;
     }
 
@@ -41,6 +43,7 @@ public class TablePopupService implements Initializable {
     public void createBasicTable(String row, String column) {
         tablePopupRows.textProperty().setValue(row);
         tablePopupColumns.textProperty().setValue(column);
+        initialValue.setText("cell");
         tablePopupApply(null);
     }
 
@@ -92,7 +95,7 @@ public class TablePopupService implements Initializable {
 
         for (int i = 0; i < row; i++) {
             for (int j = 0; j < column; j++) {
-                stringBuffer.append("|abc ");
+                stringBuffer.append("| " + initialValue.getText() + " ");
             }
             stringBuffer.append("\n");
         }

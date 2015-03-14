@@ -1,17 +1,10 @@
 package com.kodcu.boot;
 
-import static java.nio.file.StandardOpenOption.*;
-import static java.nio.file.StandardOpenOption.APPEND;
 import static javafx.scene.input.KeyCombination.SHORTCUT_DOWN;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.io.InputStream;
 import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
-import java.util.Objects;
-import java.util.concurrent.ThreadLocalRandom;
 
 import com.install4j.api.launcher.StartupNotification;
 import javafx.application.Application;
@@ -20,7 +13,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
@@ -29,6 +21,7 @@ import javafx.stage.Modality;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
@@ -77,14 +70,22 @@ public class AppStarter extends Application {
 
     private void startApp(final Stage stage, final CmdlineConfig config) throws Throwable {
         final FXMLLoader parentLoader = new FXMLLoader();
-        final FXMLLoader tablePopupLoader = new FXMLLoader();
+        final FXMLLoader asciidocTableLoader = new FXMLLoader();
+        final FXMLLoader markdownTableLoader = new FXMLLoader();
 
         context = SpringApplication.run(SpringAppConfig.class);
-        tablePopupLoader.setControllerFactory(context::getBean);
+        asciidocTableLoader.setControllerFactory(context::getBean);
+        markdownTableLoader.setControllerFactory(context::getBean);
         parentLoader.setControllerFactory(context::getBean);
 
-        AnchorPane tableAnchor = tablePopupLoader.load(getClass().getResourceAsStream("/fxml/TablePopup.fxml"));
-        Parent root = parentLoader.load(getClass().getResourceAsStream("/fxml/Scene.fxml"));
+        InputStream asciidocTableStream = getClass().getResourceAsStream("/fxml/AsciidocTablePopup.fxml");
+        AnchorPane asciidocTableAnchor = asciidocTableLoader.load(asciidocTableStream);
+
+        InputStream markdownTableStream = getClass().getResourceAsStream("/fxml/MarkdownTablePopup.fxml");
+        AnchorPane markdownTableAnchor = markdownTableLoader.load(markdownTableStream);
+
+        InputStream sceneStream = getClass().getResourceAsStream("/fxml/Scene.fxml");
+        Parent root = parentLoader.load(sceneStream);
         controller = parentLoader.getController();
         HostServicesDelegate hostServices = HostServicesFactory.getInstance(this);
         controller.setHostServices(hostServices);
@@ -98,19 +99,34 @@ public class AppStarter extends Application {
         stage.setX(0);
         stage.setY(0);
         stage.setTitle("AsciidocFX");
-        stage.getIcons().add(new Image(getClass().getResourceAsStream("/logo.png")));
+        InputStream logoStream = getClass().getResourceAsStream("/logo.png");
+        stage.getIcons().add(new Image(logoStream));
 
-        Stage tableStage = new Stage();
-        tableStage.setScene(new Scene(tableAnchor));
-        tableStage.setTitle("Table Generator");
-        tableStage.initModality(Modality.WINDOW_MODAL);
-        tableStage.initOwner(scene.getWindow());
-        tableStage.getIcons().add(new Image(getClass().getResourceAsStream("/logo.png")));
+        Stage asciidocTableStage = new Stage();
+        asciidocTableStage.setScene(new Scene(asciidocTableAnchor));
+        asciidocTableStage.setTitle("Table Generator");
+        asciidocTableStage.initModality(Modality.WINDOW_MODAL);
+        asciidocTableStage.initOwner(scene.getWindow());
+        asciidocTableStage.getIcons().add(new Image(logoStream));
+
+        Stage markdownTableStage = new Stage();
+        markdownTableStage.setScene(new Scene(markdownTableAnchor));
+        markdownTableStage.setTitle("Table Generator");
+        markdownTableStage.initModality(Modality.WINDOW_MODAL);
+        markdownTableStage.initOwner(scene.getWindow());
+        markdownTableStage.getIcons().add(new Image(logoStream));
+
+        IOUtils.closeQuietly(logoStream);
+        IOUtils.closeQuietly(asciidocTableStream);
+        IOUtils.closeQuietly(markdownTableStream);
+        IOUtils.closeQuietly(sceneStream);
 
         controller.setStage(stage);
         controller.setScene(scene);
-        controller.setTableAnchor(tableAnchor);
-        controller.setTableStage(tableStage);
+        controller.setAsciidocTableAnchor(asciidocTableAnchor);
+        controller.setMarkdownTableAnchor(markdownTableAnchor);
+        controller.setAsciidocTableStage(asciidocTableStage);
+        controller.setMarkdownTableStage(markdownTableStage);
 
         stage.setScene(scene);
         stage.show();

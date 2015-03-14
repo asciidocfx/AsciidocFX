@@ -1,5 +1,7 @@
 package com.kodcu.component;
 
+import com.kodcu.service.shortcut.AsciidocShortcutService;
+import com.kodcu.service.shortcut.MarkdownShortcutService;
 import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyIntegerProperty;
 import javafx.scene.control.ButtonType;
@@ -45,10 +47,14 @@ public class MyTab extends Tab {
     }
 
     public boolean isAsciidoc() {
+        if(Objects.isNull(markup))
+            return true;
         return markup.getSelectionModel().isSelected(0);
     }
 
     public boolean isMarkdown() {
+        if(Objects.isNull(markup))
+            return false;
         return markup.getSelectionModel().isSelected(1);
     }
 
@@ -145,5 +151,11 @@ public class MyTab extends Tab {
     @Override
     public String toString() {
         return getTabText();
+    }
+
+    public Class getShortcutType() {
+        if (isMarkdown())
+            return MarkdownShortcutService.class;
+        return AsciidocShortcutService.class;
     }
 }

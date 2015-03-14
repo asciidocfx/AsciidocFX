@@ -4,16 +4,22 @@ import com.kodcu.component.LabelBuilt;
 import com.kodcu.component.MyTab;
 import com.kodcu.controller.ApplicationController;
 import com.kodcu.other.Current;
+import com.kodcu.service.shortcut.ShortcutProvider;
 import de.jensd.fx.fontawesome.AwesomeIcon;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
-import javafx.scene.control.*;
+import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.Tooltip;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.web.WebView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.util.Arrays;
 
 /**
  * Created by usta on 25.12.2014.
@@ -30,10 +36,14 @@ public class EditorService {
         this.controller = controller;
     }
 
+    @Autowired
+    private ShortcutProvider shortcutProvider;
+
     public Node createEditorVBox(WebView webView, MyTab myTab) {
-        final VBox vbox = new VBox();
+        VBox vbox = new VBox();
         String iconSize = "14.0";
         double minSize = 14.01;
+
 
         final Label saveLabel = LabelBuilt.icon(AwesomeIcon.SAVE, iconSize, minSize)
                 .clazz("top-label")
@@ -47,65 +57,67 @@ public class EditorService {
 
         final Label boldLabel = LabelBuilt.icon(AwesomeIcon.BOLD, iconSize, minSize)
                 .clazz("top-label").tip("Bold").click(event -> {
-                    current.currentEngine().executeScript("boldText()");
+                    shortcutProvider.getProvider().addBold();
                 }).build();
 
         final Label italicLabel = LabelBuilt.icon(AwesomeIcon.ITALIC, iconSize, minSize)
                 .clazz("top-label").tip("Italic").click(event -> {
-                    current.currentEngine().executeScript("italicizeText()");
+                    shortcutProvider.getProvider().addItalic();
                 }).build();
 
         final Label headerLabel = LabelBuilt.icon(AwesomeIcon.HEADER, iconSize, minSize)
                 .clazz("top-label").tip("Headings").click(event -> {
-                    current.currentEngine().executeScript("addHeading()");
+                    shortcutProvider.getProvider().addHeading();
                 }).build();
 
         final Label codeLabel = LabelBuilt.icon(AwesomeIcon.CODE, iconSize, minSize)
                 .clazz("top-label").tip("Code Snippet").click(event -> {
-                    current.currentEngine().executeScript("addSourceCode()");
+                    shortcutProvider.getProvider().addCode("");
                 }).build();
 
         final Label ulListLabel = LabelBuilt.icon(AwesomeIcon.LIST_UL, iconSize, minSize)
                 .clazz("top-label").tip("Bulleted List").click(event -> {
-                    current.currentEngine().executeScript("addUlList()");
+                    shortcutProvider.getProvider().addUnorderedList();
                 }).build();
 
         final Label olListLabel = LabelBuilt.icon(AwesomeIcon.LIST_ALTL, iconSize, minSize)
                 .clazz("top-label").tip("Numbered List").click(event -> {
-                    current.currentEngine().executeScript("addOlList()");
+                    shortcutProvider.getProvider().addOrderedList();
                 }).build();
 
         final Label tableLabel = LabelBuilt.icon(AwesomeIcon.TABLE, iconSize, minSize)
-                .clazz("top-label").tip("Table").click(controller::createTable).build();
+                .clazz("top-label").tip("Table").click(event->{
+                    shortcutProvider.getProvider().addTable();;
+                }).build();
 
         final Label imageLabel = LabelBuilt.icon(AwesomeIcon.IMAGE, iconSize, minSize)
                 .clazz("top-label").tip("Image").click(event -> {
-                    current.currentEngine().executeScript("addImageSection()");
+                    shortcutProvider.getProvider().addImage();
                 }).build();
 
         final Label subscriptLabel = LabelBuilt.icon(AwesomeIcon.SUBSCRIPT, iconSize, minSize)
                 .clazz("top-label").tip("Subscript").click(event -> {
-                    current.currentEngine().executeScript("subScript()");
+                    shortcutProvider.getProvider().addSubscript();
                 }).build();
 
         final Label superScriptLabel = LabelBuilt.icon(AwesomeIcon.SUPERSCRIPT, iconSize, minSize)
                 .clazz("top-label").tip("Superscript").click(event -> {
-                    current.currentEngine().executeScript("superScript()");
+                    shortcutProvider.getProvider().addSuperscript();
                 }).build();
 
         final Label underlineLabel = LabelBuilt.icon(AwesomeIcon.UNDERLINE, iconSize, minSize)
                 .clazz("top-label").tip("Underline").click(event -> {
-                    current.currentEngine().executeScript("underlinedText()");
+                    shortcutProvider.getProvider().addUnderline();
                 }).build();
 
         final Label hyperlinkLabel = LabelBuilt.icon(AwesomeIcon.LINK, iconSize, minSize)
                 .clazz("top-label").tip("Hyperlink").click(event -> {
-                    current.currentEngine().executeScript("addHyperLink()");
+                    shortcutProvider.getProvider().addHyperlink();
                 }).build();
 
         final Label strikethroughLabel = LabelBuilt.icon(AwesomeIcon.STRIKETHROUGH, iconSize, minSize)
                 .clazz("top-label").tip("Strikethrough").click(event -> {
-                    current.currentEngine().executeScript("addStrikeThroughText()");
+                    shortcutProvider.getProvider().addStrike();
                 }).build();
 
         final Label openMenuLabel = LabelBuilt.icon(AwesomeIcon.CHEVRON_CIRCLE_DOWN, iconSize, minSize)
@@ -131,6 +143,17 @@ public class EditorService {
         choiceBox.getSelectionModel().selectFirst();
 
         myTab.setMarkup(choiceBox);
+
+        choiceBox.getSelectionModel().selectedIndexProperty().addListener((observable, oldValue, newValue) -> {
+            if (oldValue != newValue) {
+                Arrays.asList(underlineLabel, strikethroughLabel, subscriptLabel, superScriptLabel)
+                        .forEach(item -> {
+                            item.setManaged(newValue.intValue() == 0);
+                            item.setVisible(newValue.intValue() == 0);
+                        });
+
+            }
+        });
 
         final HBox topMenu = new HBox(newLabel,
                 openLabel,
@@ -173,7 +196,7 @@ public class EditorService {
 
         final Label quoteLabel = LabelBuilt.icon(AwesomeIcon.QUOTE_LEFT, iconSize, minSize)
                 .clazz("top-label").tip("Blockquote").click(event -> {
-                    current.currentEngine().executeScript("addQuote()");
+                    shortcutProvider.getProvider().addQuote();
                 }).build();
 
         final HBox topMenu = new HBox(quoteLabel);

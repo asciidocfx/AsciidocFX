@@ -63,7 +63,7 @@ editor.commands.addCommand({
     name: 'ctrl-enter-1',
     bindKey: {win: 'Ctrl-Enter', mac: 'Command-Enter'},
     exec: function (editor) {
-        editor.insert("\r\n");
+        editor.insert("\n");
     },
     readOnly: true
 });
@@ -105,71 +105,158 @@ function formatText(editor, matcher, firstCharacter, lastCharacter) {
     }
 }
 
-function boldText() {
-    formatText(editor, matchBoldText, "*", "*");
-}
+var editorMenu = {
+    asciidoc: {
+        boldText: function () {
+            formatText(editor, matchBoldText, "*", "*");
+        },
+        italicizeText: function () {
+            formatText(editor, matchItalicizedText, "_", "_");
+        },
+        superScript: function () {
+            formatText(editor, matchSuperScriptText, "^", "^");
+        },
+        subScript: function () {
+            formatText(editor, matchSubScriptText, "~", "~");
+        },
+        underlinedText: function () {
+            formatText(editor, matchHtmlTagText, "+++<u>", "</u>+++");
+        },
+        addStrikeThroughText: function () {
+            formatText(editor, matchHtmlTagText, "+++<del>", "</del>+++");
+        },
+        highlightedText: function () {
+            formatText(editor, matchHighlightedText, "#", "#");
+        },
+        addHyperLink: function () {
+            var cursorPosition = editor.getCursorPosition();
+            var session = editor.getSession();
+            var pasted = app.clipboardValue();
+            if (isURL(pasted)) {
+                if (pasted.indexOf("http") == -1)
+                    session.insert(cursorPosition, "http://" + pasted + "[text]");
+                else
+                    session.insert(cursorPosition, pasted + "[text]");
+                return;
+            }
+            session.insert(cursorPosition, "http://url[text]");
+        },
+        addSourceCode: function (lang) {
+            var range = editor.getSelectionRange();
+            editor.removeToLineStart();
 
-function italicizeText() {
-    formatText(editor, matchItalicizedText, "_", "_");
-}
+            editor.insert("[source," + lang + "]\n----\n\n----");
 
-function superScript() {
-    formatText(editor, matchSuperScriptText, "^", "^");
-}
+            editor.gotoLine(range.end.row + 3, 0, true);
+        },
+        addQuote: function () {
+            var range = editor.getSelectionRange();
+            editor.removeToLineStart();
 
-function subScript() {
-    formatText(editor, matchSubScriptText, "~", "~");
-}
+            editor.insert("[quote,Rūmī]\n____\nPatience is the key to joy.\n____");
 
-function underlinedText() {
-    formatText(editor, matchHtmlTagText, "+++<u>", "</u>+++");
-}
+            editor.gotoLine(range.end.row + 3, 0, true);
+        },
+        addImageSection: function () {
+            editor.removeToLineStart();
+            editor.insert("image::images/image.png[]");
+        },
+        addHeading: function () {
+            var cursorPosition = editor.getCursorPosition();
+            cursorPosition.column = 0;
+            var session = editor.getSession();
+            var line = session.getLine(cursorPosition.row);
+            var first = line[0] || "";
+            session.insert(cursorPosition, (first == "=") ? "=" : "= ");
+        },
+        addOlList: function () {
+            var cursorPosition = editor.getCursorPosition();
+            cursorPosition.column = 0;
+            var session = editor.getSession();
+            session.insert(cursorPosition, "1. ");
+        },
+        addUlList: function () {
+            var cursorPosition = editor.getCursorPosition();
+            cursorPosition.column = 0;
+            var session = editor.getSession();
+            session.insert(cursorPosition, "* ");
+        }
+    },
+    markdown: {
+        boldText: function () {
+            formatText(editor, matchBoldText, "**", "**");
+        },
+        italicizeText: function () {
+            formatText(editor, matchItalicizedText, "_", "_");
+        },
+        superScript: function () {
+            formatText(editor, matchSuperScriptText, "<sup>", "</sup>");
+        },
+        subScript: function () {
+            formatText(editor, matchSubScriptText, "<sub>", "</sub>");
+        },
+        underlinedText: function () {
+            formatText(editor, matchHtmlTagText, "<u>", "</u>");
+        },
+        addStrikeThroughText: function () {
+            formatText(editor, matchHtmlTagText, "<del>", "</del>");
+        },
+        highlightedText: function () {
+            formatText(editor, matchHighlightedText, "#", "#");
+        },
+        addHyperLink: function () {
+            var cursorPosition = editor.getCursorPosition();
+            var session = editor.getSession();
+            var pasted = app.clipboardValue();
+            if (isURL(pasted)) {
+                session.insert(cursorPosition, "[text](" + pasted + ")");
+                return;
+            }
+            session.insert(cursorPosition, "[text](url)");
+        },
+        addSourceCode: function (lang) {
+            var range = editor.getSelectionRange();
+            editor.removeToLineStart();
+            editor.insert("```" + lang + "\n\n```");
+            editor.gotoLine(range.end.row + 2, 0, true);
+        },
+        addQuote: function () {
+            var range = editor.getSelectionRange();
+            editor.removeToLineStart();
 
-function addStrikeThroughText() {
-    formatText(editor, matchHtmlTagText, "+++<del>", "</del>+++");
-}
-
-function highlightedText() {
-    formatText(editor, matchHighlightedText, "#", "#");
+            editor.insert("\n> Patience is the key to joy.\n");
+        },
+        addImageSection: function () {
+            editor.removeToLineStart();
+            editor.insert("![Alt text](images/image.png)");
+        },
+        addHeading: function () {
+            var cursorPosition = editor.getCursorPosition();
+            cursorPosition.column = 0;
+            var session = editor.getSession();
+            var line = session.getLine(cursorPosition.row);
+            var first = line[0] || "";
+            session.insert(cursorPosition, (first == "#") ? "#" : "# ");
+        },
+        addOlList: function () {
+            var cursorPosition = editor.getCursorPosition();
+            cursorPosition.column = 0;
+            var session = editor.getSession();
+            session.insert(cursorPosition, "1. ");
+        },
+        addUlList: function () {
+            var cursorPosition = editor.getCursorPosition();
+            cursorPosition.column = 0;
+            var session = editor.getSession();
+            session.insert(cursorPosition, "* ");
+        }
+    }
 }
 
 function isURL(text) {
     var myRegExp = /^(.*?)(?:\S+(?::\S*)?@)?(?:(?!10(?:\.\d{1,3}){3})(?!127(?:\.\d{1,3}){3})(?!169\.254(?:\.\d{1,3}){2})(?!192\.168(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\u00a1-\uffff0-9]+-?)*[a-z\u00a1-\uffff0-9]+)(?:\.(?:[a-z\u00a1-\uffff0-9]+-?)*[a-z\u00a1-\uffff0-9]+)*(?:\.(?:[a-z\u00a1-\uffff]{2,})))(?::\d{2,5})?(?:\/[^\s]*)?$/i;
 
     return myRegExp.test(text);
-
-}
-
-function addHyperLink() {
-    var cursorPosition = editor.getCursorPosition();
-    var session = editor.getSession();
-    var pasted = app.clipboardValue();
-    if (isURL(pasted)) {
-        if (pasted.indexOf("http") == -1)
-            session.insert(cursorPosition, "http://" + pasted + "[text]");
-        else
-            session.insert(cursorPosition, pasted + "[text]");
-        return;
-    }
-    session.insert(cursorPosition, "http://url[text]");
-}
-
-function addSourceCode() {
-    var range = editor.getSelectionRange();
-    editor.removeToLineStart();
-
-    editor.insert("[source,java]\n----\n\n----");
-
-    editor.gotoLine(range.end.row + 3, 0, true);
-}
-
-function addQuote() {
-    var range = editor.getSelectionRange();
-    editor.removeToLineStart();
-
-    editor.insert("[quote,Rūmī]\n____\nPatience is the key to joy.\n____");
-
-    editor.gotoLine(range.end.row + 3, 0, true);
 }
 
 function addMathBlock() {
@@ -199,34 +286,6 @@ function addTreeBlock() {
     editor.gotoLine(range.end.row + 3, 1, true);
 }
 
-function addImageSection() {
-    editor.removeToLineStart();
-    editor.insert("image::images/image.png[]");
-}
-
-function addHeading() {
-    var cursorPosition = editor.getCursorPosition();
-    cursorPosition.column = 0;
-    var session = editor.getSession();
-    var line = session.getLine(cursorPosition.row);
-    var first = line[0] || "";
-    session.insert(cursorPosition, (first == "=") ? "=" : "= ");
-}
-
-function addOlList() {
-    var cursorPosition = editor.getCursorPosition();
-    cursorPosition.column = 0;
-    var session = editor.getSession();
-    session.insert(cursorPosition, "1. ");
-}
-
-function addUlList() {
-    var cursorPosition = editor.getCursorPosition();
-    cursorPosition.column = 0;
-    var session = editor.getSession();
-    session.insert(cursorPosition, "* ");
-}
-
 function showLineNumbers() {
     editor.renderer.getShowGutter() ? editor.renderer.setShowGutter(false) : editor.renderer.setShowGutter(true);
 }
@@ -234,23 +293,27 @@ function showLineNumbers() {
 editor.commands.addCommand({
     name: 'underline-selected',
     bindKey: {win: 'Ctrl-U', mac: 'Command-U'},
-    exec: underlinedText,
+    exec: function () {
+        app.getShortcutProvider().addUnderline();
+    },
     readOnly: true
 });
 
 editor.commands.addCommand({
     name: 'bold-selected',
     bindKey: {win: 'Ctrl-B', mac: 'Command-B'},
-    exec: boldText,
+    exec: function () {
+        app.getShortcutProvider().getProvider().addBold();
+    },
     readOnly: true
 });
 
-editor.commands.addCommand({
-    name: 'highlight-selected',
-    bindKey: {win: 'Ctrl-H', mac: 'Command-H'},
-    exec: highlightedText,
-    readOnly: true
-});
+//editor.commands.addCommand({
+//    name: 'highlight-selected',
+//    bindKey: {win: 'Ctrl-H', mac: 'Command-H'},
+//    exec: editorMenu.asciidoc.highlightedText,
+//    readOnly: true
+//});
 
 editor.commands.addCommand({
     name: 'line-numbers',
@@ -263,7 +326,6 @@ editor.commands.addCommand({
     name: 'codify-selected',
     bindKey: {win: 'Ctrl-Shift-C', mac: 'Command-Shift-C'},
     exec: function (editor) {
-        console.log("in old");
         formatText(editor, matchCode, "`", "`");
     },
     readOnly: true
@@ -275,7 +337,9 @@ editor.commands.addCommand({
         win: 'Ctrl-i|Ctrl-İ|Ctrl-ı|Ctrl-I',
         mac: 'Command-i|Command-İ|Command-ı|Command-I'
     },
-    exec: italicizeText,
+    exec: function () {
+        app.getShortcutProvider().getProvider().addItalic();
+    },
     readOnly: true
 });
 
@@ -315,7 +379,7 @@ editor.commands.addCommand({
 
         // img tab
         if (textRange == "img") {
-            addImageSection();
+            app.getShortcutProvider().getProvider().addImage();
             return;
         }
 
@@ -357,26 +421,21 @@ editor.commands.addCommand({
 
         // quote tab
         if (textRange == "quote") { // quote block generator
-            addQuote();
+            app.getShortcutProvider().getProvider().addQuote();
             return;
         }
 
         // src tab
         if (textRange == "src") { // source generator
-            addSourceCode();
+            app.getShortcutProvider().getProvider().addCode("");
             return;
         }
         // src,ruby or src.ruby tab
         var srcMatch = textRange.match(/src(\.|,)(\w+)/);
         if (Array.isArray(srcMatch)) {
             if (srcMatch.length == 3) {
-                editor.removeToLineStart();
-
-                var langName = srcMatch[2];
-
-                editor.insert("[source," + langName + "]\n----\n\n----");
-
-                editor.gotoLine(range.end.row + 3, 0, true);
+                var lang = srcMatch[2];
+                app.getShortcutProvider().getProvider().addCode(lang);
                 return;
             }
         }
@@ -391,9 +450,12 @@ editor.commands.addCommand({
 
                 var row = tableMatch[1];
                 var column = tableMatch[3];
+                console.log("row: ", row, ".");
+                console.log("column: ", column, ".");
+                console.log("column: ", app.getShortcutProvider().getProvider());
+                console.log("column: ", app.getShortcutProvider().getProvider().addTable);
 
-                var tablePopupCtrl = app.getTablePopupController();
-                tablePopupCtrl.createBasicTable(row, column);
+                app.getShortcutProvider().getProvider().addBasicTable(row, column);
                 return;
             }
 
