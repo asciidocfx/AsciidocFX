@@ -3,7 +3,6 @@ package com.kodcu.service;
 import com.kodcu.controller.ApplicationController;
 import com.kodcu.other.Current;
 import com.kodcu.service.ui.FileBrowseService;
-import com.kodcu.service.ui.TabService;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,8 +36,7 @@ public class DirectoryService {
 
     
     @Autowired
-    public DirectoryService(final ApplicationController controller, final FileBrowseService fileBrowser, final PathResolverService pathResolver, 
-            final Current current) { //, final TabService tabService) {
+    public DirectoryService(final ApplicationController controller, final FileBrowseService fileBrowser, final Current current) {
         this.controller = controller;
         this.fileBrowser = fileBrowser;
         this.current = current;

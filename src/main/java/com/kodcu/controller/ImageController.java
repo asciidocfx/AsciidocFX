@@ -40,7 +40,6 @@ public class ImageController {
 
         Path imageFile;
         String uri = request.getRequestURI();
-        StringBuffer requestURL = request.getRequestURL();
 
         if (uri.startsWith("/"))
             uri = uri.substring(1);

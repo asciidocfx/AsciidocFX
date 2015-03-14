@@ -4,8 +4,6 @@ import com.kodcu.component.MyTab;
 import com.kodcu.controller.ApplicationController;
 import com.kodcu.service.ThreadService;
 import javafx.application.Platform;
-import javafx.scene.control.Label;
-import javafx.scene.control.Tab;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import netscape.javascript.JSObject;
@@ -79,9 +77,9 @@ public class Current {
         if (Platform.isFxApplicationThread())
             return (String) currentEngine().executeScript("editor.getValue()");
 
-        CompletableFuture<String> completableFuture = new CompletableFuture();
+        final CompletableFuture<String> completableFuture = new CompletableFuture<>();
 
-        completableFuture.runAsync(() -> {
+        CompletableFuture.runAsync(() -> {
             threadService.runActionLater(() -> {
                 completableFuture.complete((String) currentEngine().executeScript("editor.getValue()"));
             });

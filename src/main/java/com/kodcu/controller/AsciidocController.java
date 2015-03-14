@@ -34,7 +34,7 @@ public class AsciidocController {
 
     @RequestMapping(value = {"/**/{extension:(?:\\w|\\W)+\\.(?:asc|asciidoc|ad|adoc|md|markdown)$}"}, method = RequestMethod.GET)
     @ResponseBody
-    public ResponseEntity asciidoc(HttpServletRequest request) {
+    public ResponseEntity<byte[]> asciidoc(HttpServletRequest request) {
 
         threadService.runTaskLater(()->{
             current.currentPath().ifPresent(path -> {
@@ -51,6 +51,6 @@ public class AsciidocController {
             });
         });
 
-        return new ResponseEntity(HttpStatus.NO_CONTENT);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

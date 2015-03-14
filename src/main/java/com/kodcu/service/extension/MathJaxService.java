@@ -2,8 +2,6 @@ package com.kodcu.service.extension;
 
 import com.kodcu.controller.ApplicationController;
 import com.kodcu.other.Current;
-import com.kodcu.other.IOHelper;
-import javafx.scene.web.WebEngine;
 import netscape.javascript.JSObject;
 import org.apache.batik.dom.svg.SAXSVGDocumentFactory;
 import org.apache.batik.transcoder.TranscoderInput;
