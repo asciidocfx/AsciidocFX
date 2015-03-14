@@ -3,7 +3,6 @@ package com.kodcu.service;
 import com.kodcu.controller.ApplicationController;
 import com.kodcu.other.Current;
 import com.kodcu.service.ui.FileBrowseService;
-import com.kodcu.service.ui.TabService;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,36 +23,59 @@ import java.util.function.Supplier;
 @Component
 public class DirectoryService {
 
+    private final ApplicationController controller;
+    private final FileBrowseService fileBrowser;
+    private final Current current;
+    
     private Optional<Path> workingDirectory = Optional.of(Paths.get(System.getProperty("user.home")));
     private Optional<File> initialDirectory = Optional.empty();
 
+    private Supplier<Path> workingDirectorySupplier;
+    private Consumer<Path> openFileConsumer;
+    private Supplier<Path> pathSaveSupplier;
+
+    
     @Autowired
-    private ApplicationController controller;
+    public DirectoryService(final ApplicationController controller, final FileBrowseService fileBrowser, final Current current) {
+        this.controller = controller;
+        this.fileBrowser = fileBrowser;
+        this.current = current;
+        
+         workingDirectorySupplier = () -> {
+            final DirectoryChooser directoryChooser = newDirectoryChooser("Select working directory");
+            final File file = directoryChooser.showDialog(null);
 
-    @Autowired
-    private FileBrowseService fileBrowser;
+            workingDirectory = Optional.ofNullable(file.toPath());
 
-    @Autowired
-    private PathResolverService pathResolver;
+            workingDirectory.ifPresent(path -> fileBrowser.browse(controller.getTreeView(), path));
 
-    @Autowired
-    private Current current;
+            return Objects.nonNull(file) ? file.toPath() : null;
+        };
+        
+//        openFileConsumer = path -> {
+//            if (Files.isDirectory(path)) {
+//                changeWorkigDir(path.equals(workingDirectory()) ? path.getParent() : path);
+//            } else if (pathResolver.isAsciidoc(path) || pathResolver.isMarkdown(path))
+//                tabService.addTab(path);
+//            else if (pathResolver.isImage(path))
+//                tabService.addImageTab(path);
+//            else if (pathResolver.isEpub(path))
+//                controller.getHostServices()
+//                .showDocument(String.format("http://localhost:%d/epub/viewer?path=%s", controller.getPort(), path.toString()));
+//            else
+//                controller.getHostServices()
+//                .showDocument(path.toUri().toString());
+//        };
 
-    @Autowired
-    private TabService tabService;
+        pathSaveSupplier = () -> {
+            final FileChooser chooser = newFileChooser("Save Document");
+            chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Asciidoc", "*.asc", "*.asciidoc", "*.adoc", "*.ad", "*.txt","*.*"));
+            chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Markdown", "*.md", "*.markdown", "*.txt","*.*"));
+            File file = chooser.showSaveDialog(null);
+            return Objects.nonNull(file) ? file.toPath() : null;
+        };
 
-    private Supplier<Path> workingDirectorySupplier = () -> {
-
-        DirectoryChooser directoryChooser = newDirectoryChooser("Select working directory");
-        File file = directoryChooser.showDialog(null);
-
-        workingDirectory = Optional.ofNullable(file.toPath());
-
-        workingDirectory.ifPresent(path -> fileBrowser.browse(controller.getTreeView(), path));
-
-        return Objects.nonNull(file) ? file.toPath() : null;
-    };
-
+    }
 
     public DirectoryChooser newDirectoryChooser(String title) {
         DirectoryChooser directoryChooser = new DirectoryChooser();
@@ -67,31 +89,8 @@ public class DirectoryService {
         return directoryChooser;
     }
 
-    private Consumer<Path> openFileConsumer = path -> {
-        if (Files.isDirectory(path)) {
-            changeWorkigDir(path.equals(workingDirectory()) ? path.getParent() : path);
-        } else if (pathResolver.isAsciidoc(path) || pathResolver.isMarkdown(path))
-            tabService.addTab(path);
-        else if (pathResolver.isImage(path))
-            tabService.addImageTab(path);
-        else if (pathResolver.isEpub(path))
-            controller.getHostServices()
-                    .showDocument(String.format("http://localhost:%d/epub/viewer?path=%s", controller.getPort(), path.toString()));
-        else
-            controller.getHostServices()
-                    .showDocument(path.toUri().toString());
-    };
-
-    private Supplier<Path> pathSaveSupplier = () -> {
-        FileChooser chooser = newFileChooser("Save Document");
-        chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Asciidoc", "*.asc", "*.asciidoc", "*.adoc", "*.ad", "*.txt","*.*"));
-        chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Markdown", "*.md", "*.markdown", "*.txt","*.*"));
-        File file = chooser.showSaveDialog(null);
-        return Objects.nonNull(file) ? file.toPath() : null;
-    };
-
     public FileChooser newFileChooser(String title) {
-        FileChooser fileChooser = new FileChooser();
+        final FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle(title);
         initialDirectory.ifPresent(file -> {
             if (Files.isDirectory(file.toPath()))

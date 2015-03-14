@@ -4,7 +4,6 @@ import com.kodcu.controller.ApplicationController;
 import com.kodcu.other.Current;
 import com.kodcu.service.MarkdownService;
 import com.kodcu.service.ThreadService;
-import javafx.application.Platform;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import netscape.javascript.JSObject;
@@ -24,8 +23,6 @@ public class RenderService {
     private final MarkdownService markdownService;
     private final Current current;
     
-    
-
     @Autowired
     public RenderService(final ApplicationController controller, final ThreadService threadService, final MarkdownService markdownService, final Current current) {
         this.controller = controller;

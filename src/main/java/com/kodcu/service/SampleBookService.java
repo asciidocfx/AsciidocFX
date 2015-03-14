@@ -15,7 +15,7 @@ import java.nio.file.Path;
 @Component
 public class SampleBookService {
 
-    private static final Logger logger = LoggerFactory.getLogger(SampleBookService.class);
+    private final Logger logger = LoggerFactory.getLogger(SampleBookService.class);
 
     public void produceSampleBook(Path configPath, Path outputPath) {
         File booksample = configPath.resolve("booksample").toFile();

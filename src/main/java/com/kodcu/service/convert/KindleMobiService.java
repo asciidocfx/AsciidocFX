@@ -6,7 +6,6 @@ import com.kodcu.other.IOHelper;
 import com.kodcu.service.DirectoryService;
 import com.kodcu.service.ThreadService;
 import com.kodcu.service.ui.IndikatorService;
-import javafx.application.Platform;
 import javafx.stage.FileChooser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,26 +23,27 @@ import java.nio.file.StandardCopyOption;
 @Component
 public class KindleMobiService {
 
-    private static final Logger logger = LoggerFactory.getLogger(KindleMobiService.class);
+    private final Logger logger = LoggerFactory.getLogger(KindleMobiService.class);
 
-    @Autowired
-    private ApplicationController asciiDocController;
+    private final ApplicationController asciiDocController;
+    private final ThreadService threadService;
+    private final Epub3Service epub3Service;
+    private final Current current;
+    private final DirectoryService directoryService;
+    private final IndikatorService indikatorService;
 
-    @Autowired
-    private ThreadService threadService;
-
-    @Autowired
-    private Epub3Service epub3Service;
-
-    @Autowired
-    private Current current;
-
-    @Autowired
-    private DirectoryService directoryService;
-
-    @Autowired
-    private IndikatorService indikatorService;
     private Path mobiPath;
+
+    @Autowired
+    public KindleMobiService(final ApplicationController asciiDocController, final ThreadService threadService, final Epub3Service epub3Service, 
+            final Current current, final DirectoryService directoryService, final IndikatorService indikatorService) {
+        this.asciiDocController = asciiDocController;
+        this.threadService = threadService;
+        this.epub3Service = epub3Service;
+        this.current = current;
+        this.directoryService = directoryService;
+        this.indikatorService = indikatorService;
+    }
 
     public void produceMobi() {
         produceMobi(false);
@@ -55,15 +55,15 @@ public class KindleMobiService {
 
             indikatorService.startCycle();
 
-            Path epubPath = epub3Service.produceEpub3Temp().join();
+            final Path epubPath = epub3Service.produceEpub3Temp().join();
 
-            Path currentTabPath = current.currentPath().get();
-            Path currentTabPathDir = currentTabPath.getParent();
-            String tabText = current.getCurrentTabText().replace("*", "").trim();
+            final Path currentTabPath = current.currentPath().get();
+            final Path currentTabPathDir = currentTabPath.getParent();
+            final String tabText = current.getCurrentTabText().replace("*", "").trim();
 
             threadService.runActionLater(() -> {
                 if (askPath) {
-                    FileChooser fileChooser = directoryService.newFileChooser("Save Mobi file");
+                    final FileChooser fileChooser = directoryService.newFileChooser("Save Mobi file");
                     fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("MOBI", "*.mobi"));
                     mobiPath = fileChooser.showSaveDialog(null).toPath();
                 } else
@@ -71,12 +71,12 @@ public class KindleMobiService {
 
                 threadService.runTaskLater(() -> {
 
-                    ProcessExecutor processExecutor = new ProcessExecutor();
+                    final ProcessExecutor processExecutor = new ProcessExecutor();
                     processExecutor.readOutput(true);
                     Path kindleGenPath = Paths.get(asciiDocController.getConfig().getKindlegenDir());
 
                     try {
-                        String message = processExecutor
+                        final String message = processExecutor
                                 .command(kindleGenPath.resolve("kindlegen").toString(), "-o", mobiPath.getFileName().toString(), epubPath.toString())
                                 .execute()
                                 .outputUTF8();

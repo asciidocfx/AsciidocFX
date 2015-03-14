@@ -4,12 +4,14 @@ import com.kodcu.component.MenuItemBuilt;
 import com.kodcu.controller.ApplicationController;
 import com.kodcu.other.Current;
 import com.kodcu.service.*;
+
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.MouseButton;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,26 +31,29 @@ import java.util.Optional;
 @Component
 public class WebviewService {
 
-    @Autowired
-    private ApplicationController controller;
+    private final ApplicationController controller;
+    private final PathResolverService pathResolver;
+    private final ThreadService threadService;
+    private final ParserService parserService;
+    private final MarkdownService markdownService;
+    private final Current current;
+
+    private Optional<DocumentService> documentService = Optional.empty();
 
     @Autowired
-    private PathResolverService pathResolver;
+    public WebviewService(final ApplicationController controller, final PathResolverService pathResolver, final ThreadService threadService,
+            final ParserService parserService, final MarkdownService markdownService, final Current current) {
+        this.controller = controller;
+        this.pathResolver = pathResolver;
+        this.threadService = threadService;
+        this.parserService = parserService;
+        this.markdownService = markdownService;
+        this.current = current;
+    }
 
-    @Autowired
-    private ThreadService threadService;
-
-    @Autowired
-    private ParserService parserService;
-
-    @Autowired
-    private MarkdownService markdownService;
-
-    @Autowired
-    private Current current;
-
-    @Autowired
-    private DocumentService documentService;
+    public void setDocumentService(DocumentService documentService) {
+        this.documentService = Optional.ofNullable(documentService);
+    }
 
     public WebView createWebView() {
 
@@ -68,11 +73,12 @@ public class WebviewService {
             current.insertEditorValue(controller.pasteRaw());
         });
         MenuItem convert = MenuItemBuilt.item("Markdown to Asciidoc").onclick(e -> {
-            markdownService.convertToAsciidoc(current.currentEditorValue(), content -> {
-                threadService.runActionLater(() -> {
-                    documentService.newDoc(content);
-                });
-            });
+            markdownService.convertToAsciidoc(current.currentEditorValue(),
+                    content -> {
+                        threadService.runActionLater(() -> {
+                            documentService.ifPresent(d -> d.newDoc(content));
+                            });
+                    });
         });
 
         webView.setOnMouseClicked(event -> {
@@ -90,7 +96,6 @@ public class WebviewService {
                 menu.show(webView, event.getScreenX(), event.getScreenY());
             }
         });
-
 
         webView.setOnDragDropped(event -> {
             Dragboard dragboard = event.getDragboard();
@@ -163,7 +168,6 @@ public class WebviewService {
             event.setDropCompleted(success);
             event.consume();
         });
-
 
         return webView;
     }

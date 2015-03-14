@@ -6,9 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
 import java.nio.file.*;
-import java.util.List;
 import java.util.Objects;
 import java.util.function.BiConsumer;
 
@@ -42,10 +40,7 @@ public class FileWatchService {
             }
 
             WatchKey watckKey = watcher.take();
-            List<WatchEvent<?>> events = watckKey.pollEvents();
-
-            for (WatchEvent<?> event : events) {
-            }
+            watckKey.pollEvents();
             watckKey.reset();
             browseCallback.accept(treeView, path);
 

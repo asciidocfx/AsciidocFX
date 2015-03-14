@@ -8,7 +8,6 @@ import com.kodcu.service.DirectoryService;
 import com.kodcu.service.ThreadService;
 import com.kodcu.service.ui.IndikatorService;
 import javafx.stage.FileChooser;
-import org.apache.commons.io.FileUtils;
 import org.joox.Match;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,27 +36,27 @@ import static org.joox.JOOX.$;
 @Component
 public class Epub3Service {
 
-    private static final Logger logger = LoggerFactory.getLogger(Epub3Service.class);
+    private final Logger logger = LoggerFactory.getLogger(Epub3Service.class);
 
-    @Autowired
-    private ApplicationController asciiDocController;
-
-    @Autowired
-    Current current;
-
-    @Autowired
-    private ThreadService threadService;
-
-    @Autowired
-    private DirectoryService directoryService;
-
-    @Autowired
-    private IndikatorService indikatorService;
-
-    @Autowired
-    private DocBookService docBookService;
+    private final ApplicationController asciiDocController;
+    private final Current current;
+    private final ThreadService threadService;
+    private final DirectoryService directoryService;
+    private final IndikatorService indikatorService;
+    private final DocBookService docBookService;
 
     private Path epubPath;
+
+    @Autowired
+    public Epub3Service(final ApplicationController asciiDocController, final Current current, final ThreadService threadService,
+            final DirectoryService directoryService, final IndikatorService indikatorService, final DocBookService docBookService) {
+        this.asciiDocController = asciiDocController;
+        this.current = current;
+        this.threadService = threadService;
+        this.directoryService = directoryService;
+        this.indikatorService = indikatorService;
+        this.docBookService = docBookService;
+    }
 
     public CompletableFuture<Path> produceEpub3() {
         return produceEpub3(false);
@@ -73,7 +72,7 @@ public class Epub3Service {
 
     private CompletableFuture<Path> produceEpub3(boolean askPath, boolean isTemp) {
 
-        CompletableFuture<Path> completableFuture = new CompletableFuture();
+        CompletableFuture<Path> completableFuture = new CompletableFuture<>();
 
         try {
 
@@ -91,7 +90,6 @@ public class Epub3Service {
             } else
                 epubPath = currentTabPathDir.resolve(tabText + ".epub");
 
-
             threadService.runTaskLater(() -> {
 
                 try {
@@ -107,7 +105,7 @@ public class Epub3Service {
 
                     Transformer transformer = factory.newTransformer(xslSource);
 
-                    docBookService.generateDocbook(docbook->{
+                    docBookService.generateDocbook(docbook -> {
 
                         transformer.setParameter("base.dir", epubTemp.resolve("OEBPS").toString());
                         try (StringReader reader = new StringReader(docbook);) {
@@ -135,7 +133,8 @@ public class Epub3Service {
 
                         Path epubOut = epubTemp.resolve("book.epub");
                         IOHelper.copyDirectoryToDirectory(currentTabPathDir.resolve("images").toFile(), epubTemp.resolve("OEBPS").toFile());
-                        IOHelper.copyDirectoryToDirectory(configPath.resolve("docbook/images/callouts").toFile(), epubTemp.resolve("OEBPS/images").toFile());
+                        IOHelper.copyDirectoryToDirectory(configPath.resolve("docbook/images/callouts").toFile(), epubTemp.resolve("OEBPS/images")
+                                .toFile());
                         ZipUtil.pack(epubTemp.toFile(), epubOut.toFile());
                         ZipUtil.removeEntry(epubOut.toFile(), "book.epub");
 
@@ -158,7 +157,6 @@ public class Epub3Service {
                 }
 
             });
-
 
         } catch (Exception e) {
             logger.error(e.getMessage(), e);

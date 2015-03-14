@@ -4,10 +4,8 @@ import com.kodcu.controller.ApplicationController;
 import com.kodcu.other.Current;
 import com.kodcu.other.IOHelper;
 import com.kodcu.service.DirectoryService;
-import com.kodcu.service.PathResolverService;
 import com.kodcu.service.ThreadService;
 import com.kodcu.service.ui.IndikatorService;
-import javafx.application.Platform;
 import javafx.stage.FileChooser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,44 +27,44 @@ import static java.nio.file.StandardOpenOption.TRUNCATE_EXISTING;
 @Component
 public class Html5BookService {
 
-    private static final Logger logger = LoggerFactory.getLogger(Html5BookService.class);
+    private final Logger logger = LoggerFactory.getLogger(Html5BookService.class);
 
-    private Pattern compiledRegex = Pattern.compile("(?<=include::)(.*?)(?=\\[(.*?)\\])");
+    private final Pattern compiledRegex = Pattern.compile("(?<=include::)(.*?)(?=\\[(.*?)\\])");
 
-    @Autowired
-    private ApplicationController asciiDocController;
-
-    @Autowired
-    private ThreadService threadService;
-
-    @Autowired
-    private PathResolverService bookPathResolver;
-
-    @Autowired
-    private DirectoryService directoryService;
-
-    @Autowired
-    private RenderService renderService;
-
-    @Autowired
-    private Current current;
-
-    @Autowired
-    private IndikatorService indikatorService;
+    private final ApplicationController asciiDocController;
+    private final ThreadService threadService;
+    private final DirectoryService directoryService;
+    private final RenderService renderService;
+    private final Current current;
+    private final IndikatorService indikatorService;
 
     private Path htmlBookPath;
+
+    @Autowired
+    public Html5BookService(final ApplicationController asciiDocController, final ThreadService threadService,
+            final DirectoryService directoryService, final RenderService renderService, final Current current,
+            IndikatorService indikatorService) {
+        this.asciiDocController = asciiDocController;
+        this.threadService = threadService;
+        this.directoryService = directoryService;
+        this.renderService = renderService;
+        this.current = current;
+        this.indikatorService = indikatorService;
+    }
+
+
 
     public void convertHtmlBook(boolean askPath) {
 
         try {
 
-            Path currentTabPath = current.currentPath().get();
-            Path currentTabPathDir = currentTabPath.getParent();
-            String tabText = current.getCurrentTabText().replace("*", "").trim();
+            final Path currentTabPath = current.currentPath().get();
+            final Path currentTabPathDir = currentTabPath.getParent();
+            final String tabText = current.getCurrentTabText().replace("*", "").trim();
 
 
             if (askPath) {
-                FileChooser fileChooser = directoryService.newFileChooser("Save HTML file");
+                final FileChooser fileChooser = directoryService.newFileChooser("Save HTML file");
                 fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("HTML", "*.html"));
                 htmlBookPath = fileChooser.showSaveDialog(null).toPath();
             } else
@@ -78,7 +76,7 @@ public class Html5BookService {
             StringBuffer allAscChapters = new StringBuffer();
 
             for (int i = 0; i < bookAscLines.size(); i++) {
-                String bookAscLine = bookAscLines.get(i);
+                final String bookAscLine = bookAscLines.get(i);
 
                 Matcher matcher = compiledRegex.matcher(bookAscLine);
 
@@ -94,7 +92,7 @@ public class Html5BookService {
 
             }
 
-            String bookXmlAsciidoc = allAscChapters.toString();
+            final String bookXmlAsciidoc = allAscChapters.toString();
 
             renderService.convertHtmlBook(bookXmlAsciidoc,htmlContent->{
                 IOHelper.writeToFile(htmlBookPath, htmlContent, CREATE, TRUNCATE_EXISTING);

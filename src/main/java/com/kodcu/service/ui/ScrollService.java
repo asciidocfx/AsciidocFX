@@ -1,7 +1,6 @@
 package com.kodcu.service.ui;
 
 import com.kodcu.controller.ApplicationController;
-import com.kodcu.other.IOHelper;
 import javafx.scene.web.WebEngine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,10 +15,14 @@ import java.util.Objects;
 @Component
 public class ScrollService {
 
-    private Logger logger = LoggerFactory.getLogger(ScrollService.class);
+    private final Logger logger = LoggerFactory.getLogger(ScrollService.class);
 
+    private final ApplicationController controller;
+    
     @Autowired
-    private ApplicationController controller;
+    public ScrollService(final ApplicationController controller) {
+        this.controller = controller;
+    }
 
     public void onscroll(Object pos, Object max) {
         if (Objects.isNull(pos) || Objects.isNull(max))

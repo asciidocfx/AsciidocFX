@@ -50,6 +50,8 @@ public class DocumentService {
         this.editorService = editorService;
         this.tabService = tabService;
         this.current = current;
+        
+        webviewService.setDocumentService(this);
     }
 
     public void saveDoc() {

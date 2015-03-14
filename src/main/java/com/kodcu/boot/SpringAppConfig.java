@@ -39,11 +39,11 @@ import java.util.Base64;
 public class SpringAppConfig extends SpringBootServletInitializer implements WebSocketConfigurer {
 
     @Autowired
-    private ApplicationController asciiDocController;
+    private ApplicationController applicationController;
 
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-        registry.addHandler(asciiDocController, "/ws", "/ws**", "/ws/**").withSockJS();
+        registry.addHandler(applicationController, "/ws", "/ws**", "/ws/**").withSockJS();
     }
 
     @Override

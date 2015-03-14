@@ -28,14 +28,16 @@ public class PlantUmlService {
 
     private Logger logger = LoggerFactory.getLogger(PlantUmlService.class);
 
-    @Autowired
-    private Current current;
+    private final Current current;
+    private final ApplicationController controller;
+    private final ThreadService threadService;
 
     @Autowired
-    private ApplicationController controller;
-
-    @Autowired
-    private ThreadService threadService;
+    public PlantUmlService(final Current current, final ApplicationController controller, final ThreadService threadService) {
+        this.current = current;
+        this.controller = controller;
+        this.threadService = threadService;
+    }
 
     public void plantUml(String uml, String type, String fileName) {
         Objects.requireNonNull(fileName);
@@ -74,6 +76,7 @@ public class PlantUmlService {
 
             threadService.runTaskLater(() -> {
                 try {
+                    // FIXME: unused var, why?
                     String desc = reader.generateImage(os, new FileFormatOption(fileType));
 
                     Files.createDirectories(path.resolve("images"));

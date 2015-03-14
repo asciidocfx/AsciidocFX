@@ -23,14 +23,14 @@ import java.time.Duration;
 @Controller
 public class ImageController {
 
-    @Autowired
-    private Current current;
+    private final Current current;
+    private final DirectoryService directoryService;
 
     @Autowired
-    private DirectoryService directoryService;
-
-    @Autowired
-    private ApplicationController controller;
+    public ImageController(final Current current, final DirectoryService directoryService) {
+        this.current = current;
+        this.directoryService = directoryService;
+    }
 
     @RequestMapping(value = {"/**/{extension:(?:\\w|\\W)+\\.(?:jpg|bmp|gif|jpeg|png|webp|svg)$}"}, method = RequestMethod.GET)
     @ResponseBody
@@ -40,7 +40,6 @@ public class ImageController {
 
         Path imageFile;
         String uri = request.getRequestURI();
-        StringBuffer requestURL = request.getRequestURL();
 
         if (uri.startsWith("/"))
             uri = uri.substring(1);

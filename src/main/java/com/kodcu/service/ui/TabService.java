@@ -9,6 +9,7 @@ import com.kodcu.service.DirectoryService;
 import com.kodcu.service.PathResolverService;
 import com.kodcu.service.ThreadService;
 import com.kodcu.service.convert.RenderService;
+
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -23,6 +24,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import netscape.javascript.JSObject;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +36,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Consumer;
 
 /**
  * Created by usta on 25.12.2014.
@@ -41,33 +44,51 @@ import java.util.Set;
 @Component
 public class TabService {
 
-    @Autowired
-    private ApplicationController controller;
+    private final Logger logger = LoggerFactory.getLogger(TabService.class);
 
-    @Autowired
-    private WebviewService webviewService;
-
-    @Autowired
-    private EditorService editorService;
-
-    @Autowired
-    private PathResolverService pathResolver;
-
-    @Autowired
-    private ThreadService threadService;
-
-    @Autowired
-    private Current current;
-
-    @Autowired
-    private DirectoryService directoryService;
-
-    @Autowired
-    private RenderService renderService;
+    private final ApplicationController controller;
+    private final WebviewService webviewService;
+    private final EditorService editorService;
+    private final PathResolverService pathResolver;
+    private final ThreadService threadService;
+    private final Current current;
+    private final DirectoryService directoryService;
+    private final RenderService renderService;
 
     private ObservableList<Optional<Path>> closedPaths = FXCollections.observableArrayList();
 
-    private Logger logger = LoggerFactory.getLogger(TabService.class);
+    
+    @Autowired
+    public TabService(final ApplicationController controller, final WebviewService webviewService, final EditorService editorService, 
+            final PathResolverService pathResolver, final ThreadService threadService, final Current current,
+            final DirectoryService directoryService, final RenderService renderService) {
+        this.controller = controller;
+        this.webviewService = webviewService;
+        this.editorService = editorService;
+        this.pathResolver = pathResolver;
+        this.threadService = threadService;
+        this.current = current;
+        this.directoryService = directoryService;
+        this.renderService = renderService;
+        
+        final Consumer<Path> openFileConsumer = path -> {
+            if (Files.isDirectory(path)) {
+                directoryService.changeWorkigDir(path.equals(directoryService.workingDirectory()) ? path.getParent() : path);
+            } else if (pathResolver.isAsciidoc(path) || pathResolver.isMarkdown(path))
+                addTab(path);
+                else if (pathResolver.isImage(path))
+                    addImageTab(path);
+                else if (pathResolver.isEpub(path))
+                    controller.getHostServices()
+                            .showDocument(String.format("http://localhost:%d/epub/viewer?path=%s", controller.getPort(), path.toString()));
+                else
+                    controller.getHostServices()
+                            .showDocument(path.toUri().toString());
+            };
+        directoryService.setOpenFileConsumer(openFileConsumer);
+
+    }
+
 
     public void addTab(Path path) {
 

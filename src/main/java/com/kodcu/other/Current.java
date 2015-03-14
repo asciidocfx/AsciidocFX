@@ -3,10 +3,7 @@ package com.kodcu.other;
 import com.kodcu.component.MyTab;
 import com.kodcu.controller.ApplicationController;
 import com.kodcu.service.ThreadService;
-import com.kodcu.service.convert.RenderService;
 import javafx.application.Platform;
-import javafx.scene.control.Label;
-import javafx.scene.control.Tab;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import netscape.javascript.JSObject;
@@ -28,15 +25,19 @@ import java.util.regex.Pattern;
 @Component
 public class Current {
 
-    @Autowired
-    private ApplicationController controller;
+    private final Pattern bookPattern = Pattern.compile(":doctype:(.*?)book");
 
-    @Autowired
-    private ThreadService threadService;
+    private final ApplicationController controller;
+    private final ThreadService threadService;
 
-    private Pattern bookPattern = Pattern.compile(":doctype:(.*?)book");
 
     private Map<String, Integer> cache;
+
+    @Autowired
+    public Current(final ApplicationController controller, final ThreadService threadService) {
+        this.controller = controller;
+        this.threadService = threadService;
+    }
 
     public MyTab currentTab() {
         return (MyTab) controller.getTabPane().getSelectionModel().getSelectedItem();
@@ -76,9 +77,9 @@ public class Current {
         if (Platform.isFxApplicationThread())
             return (String) currentEngine().executeScript("editor.getValue()");
 
-        CompletableFuture<String> completableFuture = new CompletableFuture();
+        final CompletableFuture<String> completableFuture = new CompletableFuture<>();
 
-        completableFuture.runAsync(() -> {
+        CompletableFuture.runAsync(() -> {
             threadService.runActionLater(() -> {
                 completableFuture.complete((String) currentEngine().executeScript("editor.getValue()"));
             });

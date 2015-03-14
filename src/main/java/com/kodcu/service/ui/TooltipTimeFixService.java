@@ -16,7 +16,7 @@ import java.lang.reflect.Field;
 @Component
 public class TooltipTimeFixService {
 
-    private Logger logger = LoggerFactory.getLogger(TooltipTimeFixService.class);
+    private final Logger logger = LoggerFactory.getLogger(TooltipTimeFixService.class);
 
     public void fix(){
 

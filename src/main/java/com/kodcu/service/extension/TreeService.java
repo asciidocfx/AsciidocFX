@@ -32,20 +32,21 @@ import java.util.stream.Collectors;
 @Component
 public class TreeService {
 
-    private Logger logger = LoggerFactory.getLogger(TreeService.class);
+    private final Logger logger = LoggerFactory.getLogger(TreeService.class);
 
-    @Autowired
     private Current current;
-
-    @Autowired
     private ApplicationController controller;
-
-    @Autowired
     private ThreadService threadService;
-
-    @Autowired
     private AwesomeService awesomeService;
 
+    @Autowired
+    public TreeService(final Current current, final ApplicationController controller, final ThreadService threadService,
+            final AwesomeService awesomeService) {
+        this.current = current;
+        this.controller = controller;
+        this.threadService = threadService;
+        this.awesomeService = awesomeService;
+    }
 
     public void createFileTree(String tree, String type, String fileName, String width, String height) {
 
@@ -93,7 +94,6 @@ public class TreeService {
                                 return treeItem;
                             })
                             .collect(Collectors.toList());
-
 
                     for (int index = 0; index < treeItems.size(); index++) {
 
@@ -151,7 +151,6 @@ public class TreeService {
                     fileView.setMaxHeight(2500);
                     fileView.setPrefWidth(250);
                     fileView.setPrefHeight(treeItems.size() * 24);
-
 
                     try {
                         Double value = Double.valueOf(width);
