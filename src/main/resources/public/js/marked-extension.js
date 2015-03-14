@@ -16,7 +16,19 @@ md2AscRenderer.listitem = function (text) {
     return '\n$list-start$ ' + text.replace("\n", "").trim();
 };
 
+function replaceTags(text, tag, first, second) {
+    var match = text.match(new RegExp("<" + tag + ">(.*?)<\/" + tag + ">","ig")) || [];
+    match.forEach(function (item) {
+        text = text.replace(item, item.replace("<" + tag + ">", first).replace("</" + tag + ">", second));
+    });
+    return text;
+}
+
 md2AscRenderer.paragraph = function (text) {
+    text = replaceTags(text,"u","+++<u>","</u>+++");
+    text = replaceTags(text,"sub","~","~");
+    text = replaceTags(text,"sup","^","^");
+
     // if <b>ise</b> hatalı
     //return "\n[%hardbreaks]";
     return "\n" + text + "\n";

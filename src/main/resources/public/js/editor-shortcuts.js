@@ -199,7 +199,7 @@ var editorMenu = {
             formatText(editor, matchHtmlTagText, "<u>", "</u>");
         },
         addStrikeThroughText: function () {
-            formatText(editor, matchHtmlTagText, "<del>", "</del>");
+            formatText(editor, matchHtmlTagText, "~~", "~~");
         },
         highlightedText: function () {
             formatText(editor, matchHighlightedText, "#", "#");

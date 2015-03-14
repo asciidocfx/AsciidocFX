@@ -144,17 +144,6 @@ public class EditorService {
 
         myTab.setMarkup(choiceBox);
 
-        choiceBox.getSelectionModel().selectedIndexProperty().addListener((observable, oldValue, newValue) -> {
-            if (oldValue != newValue) {
-                Arrays.asList(underlineLabel, strikethroughLabel, subscriptLabel, superScriptLabel)
-                        .forEach(item -> {
-                            item.setManaged(newValue.intValue() == 0);
-                            item.setVisible(newValue.intValue() == 0);
-                        });
-
-            }
-        });
-
         final HBox topMenu = new HBox(newLabel,
                 openLabel,
                 saveLabel,
