@@ -97,4 +97,9 @@ public class AsciidocShortcutService implements ShortcutService {
     public void addQuote() {
         current.currentEngine().executeScript("editorMenu.asciidoc.addQuote()");
     }
+
+    @Override
+    public void addHighlight() {
+        current.currentEngine().executeScript("editorMenu.asciidoc.highlightedText()");
+    }
 }
