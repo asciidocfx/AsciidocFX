@@ -2,11 +2,6 @@ package com.kodcu.service.ui;
 
 import com.kodcu.controller.ApplicationController;
 import com.kodcu.service.ThreadService;
-import javafx.animation.FadeTransition;
-import javafx.application.Platform;
-import javafx.scene.control.ProgressIndicator;
-import javafx.scene.layout.AnchorPane;
-import javafx.util.Duration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

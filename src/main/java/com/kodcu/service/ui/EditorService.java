@@ -5,12 +5,9 @@ import com.kodcu.component.MyTab;
 import com.kodcu.controller.ApplicationController;
 import com.kodcu.other.Current;
 import de.jensd.fx.fontawesome.AwesomeIcon;
-import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.*;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
@@ -127,7 +124,7 @@ public class EditorService {
             }
         });
 
-        final ChoiceBox choiceBox = new ChoiceBox();
+        final ChoiceBox<String> choiceBox = new ChoiceBox<>();
         choiceBox.setManaged(true);
         choiceBox.setVisible(true);
         choiceBox.getItems().addAll("Asciidoc", "Markdown");
