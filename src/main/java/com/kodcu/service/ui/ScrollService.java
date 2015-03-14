@@ -2,6 +2,7 @@ package com.kodcu.service.ui;
 
 import com.kodcu.controller.ApplicationController;
 import javafx.scene.web.WebEngine;
+import netscape.javascript.JSObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +19,7 @@ public class ScrollService {
     private final Logger logger = LoggerFactory.getLogger(ScrollService.class);
 
     private final ApplicationController controller;
-    
+
     @Autowired
     public ScrollService(final ApplicationController controller) {
         this.controller = controller;
@@ -40,11 +41,9 @@ public class ScrollService {
     }
 
     public void scrollToCurrentLine(String text) {
-
-        String format = String.format("runScroller('%s')", text);
         try {
             WebEngine engine = controller.getPreviewView().getEngine();
-            engine.executeScript(format);
+            ((JSObject) engine.executeScript("window")).call("runScroller", text);
         } catch (Exception e) {
             logger.debug(e.getMessage(), e);
         }

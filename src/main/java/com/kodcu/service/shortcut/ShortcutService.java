@@ -20,4 +20,5 @@ public interface ShortcutService {
     void addHyperlink();
     void addStrike();
     void addQuote();
+    void addHighlight();
 }

@@ -308,12 +308,14 @@ editor.commands.addCommand({
     readOnly: true
 });
 
-//editor.commands.addCommand({
-//    name: 'highlight-selected',
-//    bindKey: {win: 'Ctrl-H', mac: 'Command-H'},
-//    exec: editorMenu.asciidoc.highlightedText,
-//    readOnly: true
-//});
+editor.commands.addCommand({
+    name: 'highlight-selected',
+    bindKey: {win: 'Ctrl-H', mac: 'Command-H'},
+    exec: function(){
+        app.getShortcutProvider().getProvider().addHighlight();
+    },
+    readOnly: true
+});
 
 editor.commands.addCommand({
     name: 'line-numbers',

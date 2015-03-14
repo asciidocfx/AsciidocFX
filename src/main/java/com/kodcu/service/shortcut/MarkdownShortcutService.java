@@ -99,4 +99,9 @@ public class MarkdownShortcutService implements ShortcutService {
     public void addQuote() {
         current.currentEngine().executeScript("editorMenu.markdown.addQuote()");
     }
+
+    @Override
+    public void addHighlight() {
+        // no-op
+    }
 }
