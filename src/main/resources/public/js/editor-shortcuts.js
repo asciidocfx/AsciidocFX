@@ -450,10 +450,6 @@ editor.commands.addCommand({
 
                 var row = tableMatch[1];
                 var column = tableMatch[3];
-                console.log("row: ", row, ".");
-                console.log("column: ", column, ".");
-                console.log("column: ", app.getShortcutProvider().getProvider());
-                console.log("column: ", app.getShortcutProvider().getProvider().addTable);
 
                 app.getShortcutProvider().getProvider().addBasicTable(row, column);
                 return;
