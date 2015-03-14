@@ -17,6 +17,8 @@ import com.kodcu.service.convert.*;
 import com.kodcu.service.extension.MathJaxService;
 import com.kodcu.service.extension.PlantUmlService;
 import com.kodcu.service.extension.TreeService;
+import com.kodcu.service.shortcut.ShortcutProvider;
+import com.kodcu.service.table.AsciidocTableController;
 import com.kodcu.service.ui.*;
 import com.sun.javafx.application.HostServicesDelegate;
 import de.jensd.fx.fontawesome.AwesomeDude;
@@ -108,9 +110,11 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     public Label ebookPro;
     public Label docbookPro;
     public Label browserPro;
+    private AnchorPane markdownTableAnchor;
+    private Stage markdownTableStage;
 
     @Autowired
-    private TablePopupService tablePopupController;
+    private AsciidocTableController asciidocTableController;
 
     @Autowired
     private PathOrderService pathOrder;
@@ -200,6 +204,9 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     private EpubController epubController;
 
     @Autowired
+    private ShortcutProvider shortcutProvider;
+
+    @Autowired
     private RestTemplate restTemplate;
 
     @Autowired
@@ -210,8 +217,8 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     private StringProperty lastRendered = new SimpleStringProperty();
     private List<WebSocketSession> sessionList = new ArrayList<>();
     private Scene scene;
-    private AnchorPane tableAnchor;
-    private Stage tableStage;
+    private AnchorPane asciidocTableAnchor;
+    private Stage asciidocTableStage;
     private Clipboard clipboard = Clipboard.getSystemClipboard();
     private ObservableList<String> recentFiles = FXCollections.synchronizedObservableList(FXCollections.observableArrayList());
     private AnchorPane configAnchor;
@@ -244,13 +251,13 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         });
     };
 
-    @FXML
-    public void createTable(Event event) {
-        threadService.runTaskLater(() -> {
-            threadService.runActionLater(() -> {
-                tableStage.showAndWait();
-            });
-        });
+
+    public void createAsciidocTable() {
+        asciidocTableStage.showAndWait();
+    }
+
+    public void createMarkdownTable() {
+        markdownTableStage.showAndWait();
     }
 
     @FXML
@@ -899,7 +906,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             logger.error(e.getMessage(), e);
         }
 
-        editor.call("insert",clipboard.getString());
+        editor.call("insert", clipboard.getString());
 
     }
 
@@ -962,20 +969,20 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         return scene;
     }
 
-    public void setTableAnchor(AnchorPane tableAnchor) {
-        this.tableAnchor = tableAnchor;
+    public void setAsciidocTableAnchor(AnchorPane asciidocTableAnchor) {
+        this.asciidocTableAnchor = asciidocTableAnchor;
     }
 
-    public AnchorPane getTableAnchor() {
-        return tableAnchor;
+    public AnchorPane getAsciidocTableAnchor() {
+        return asciidocTableAnchor;
     }
 
-    public void setTableStage(Stage tableStage) {
-        this.tableStage = tableStage;
+    public void setAsciidocTableStage(Stage asciidocTableStage) {
+        this.asciidocTableStage = asciidocTableStage;
     }
 
-    public Stage getTableStage() {
-        return tableStage;
+    public Stage getAsciidocTableStage() {
+        return asciidocTableStage;
     }
 
     public void setConfigAnchor(AnchorPane configAnchor) {
@@ -1014,8 +1021,8 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         return config;
     }
 
-    public TablePopupService getTablePopupController() {
-        return tablePopupController;
+    public AsciidocTableController getAsciidocTableController() {
+        return asciidocTableController;
     }
 
     public StringProperty getLastRendered() {
@@ -1104,5 +1111,25 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     public void generateCheatSheet(ActionEvent actionEvent) {
         Path cheatsheetPath = configPath.resolve("cheatsheet/cheatsheet.asc");
         tabService.addTab(cheatsheetPath);
+    }
+
+    public void setMarkdownTableAnchor(AnchorPane markdownTableAnchor) {
+        this.markdownTableAnchor = markdownTableAnchor;
+    }
+
+    public AnchorPane getMarkdownTableAnchor() {
+        return markdownTableAnchor;
+    }
+
+    public void setMarkdownTableStage(Stage markdownTableStage) {
+        this.markdownTableStage = markdownTableStage;
+    }
+
+    public Stage getMarkdownTableStage() {
+        return markdownTableStage;
+    }
+
+    public ShortcutProvider getShortcutProvider() {
+        return shortcutProvider;
     }
 }
