@@ -187,19 +187,19 @@ var toMarkdown = function (string) {
             {
                 patterns: ['i', 'em'],
                 replacement: function (str, attrs, innerHTML) {
-                    return innerHTML ? '_' + innerHTML + '_' : '';
+                    return innerHTML ? '__' + innerHTML + '__' : '';
                 }
             },
             {
                 patterns: 'u',
                 replacement: function (str, attrs, innerHTML) {
-                    return innerHTML ? '[underline]#' + innerHTML + '#' : '';
+                    return innerHTML ? '[underline]##' + innerHTML + '##' : '';
                 }
             },
             {
                 patterns: 'del',
                 replacement: function (str, attrs, innerHTML) {
-                    return innerHTML ? '[line-through]#' + innerHTML + '#' : '';
+                    return innerHTML ? '[line-through]##' + innerHTML + '##' : '';
                 }
             },
             {
