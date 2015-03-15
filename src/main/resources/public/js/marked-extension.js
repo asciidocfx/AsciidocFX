@@ -8,16 +8,23 @@ md2AscRenderer.hr = function () {
 };
 
 md2AscRenderer.list = function (body, ordered) {
-    var symbol = ordered ? "." : "*";
-    return body.replace(/\$list-start\$/g, symbol) + "\n";
+    body = body.replace(/(\r\n|\r|\n|\t)/, "");
+
+    var include = body.match(/include::.*?\[.*?\]/ig);
+    if (include) {
+        return body.replace(/\$list-start\$/g, "\n\n");
+    }
+
+    var symbol = ordered ? ". " : "* ";
+    return body.replace(/\$list-start\$/g, "\n" + symbol);
 };
 
 md2AscRenderer.listitem = function (text) {
-    return '\n$list-start$ ' + text.replace("\n", "").trim();
+    return  '$list-start$' + text.replace(/(\r\n|\r|\n)/, "").trim();
 };
 
 function replaceTags(text, tag, first, second) {
-    var match = text.match(new RegExp("<" + tag + ">(.*?)<\/" + tag + ">","ig")) || [];
+    var match = text.match(new RegExp("<" + tag + ">(.*?)<\/" + tag + ">", "ig")) || [];
     match.forEach(function (item) {
         text = text.replace(item, item.replace("<" + tag + ">", first).replace("</" + tag + ">", second));
     });
@@ -25,9 +32,9 @@ function replaceTags(text, tag, first, second) {
 }
 
 md2AscRenderer.paragraph = function (text) {
-    text = replaceTags(text,"u","+++<u>","</u>+++");
-    text = replaceTags(text,"sub","~","~");
-    text = replaceTags(text,"sup","^","^");
+    text = replaceTags(text, "u", "+++<u>", "</u>+++");
+    text = replaceTags(text, "sub", "~", "~");
+    text = replaceTags(text, "sup", "^", "^");
 
     // if <b>ise</b> hatalı
     //return "\n[%hardbreaks]";
@@ -87,7 +94,9 @@ md2AscRenderer.del = function (text) {
 
 md2AscRenderer.link = function (href, title, text) {
     var relative = !href.match(/(https?|ftp|irc|mailto|email).*/);
-    return "\n" + ( relative ? "link:" : "") + href + "[" + text + "]\n";
+    var markupFile = href.match(/.*\.(asc|asciidoc|adoc|md|markdown|ad)$/ig);
+
+    return "\n" + ( relative ? (markupFile ? "include::" : "link:") : "") + href + "[" + text + "]\n";
 };
 
 md2AscRenderer.image = function (href, title, text) {
