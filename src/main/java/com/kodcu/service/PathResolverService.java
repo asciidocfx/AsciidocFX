@@ -20,9 +20,6 @@ public class PathResolverService {
 
     private Logger logger = LoggerFactory.getLogger(PathResolverService.class);
 
-    List<String> rootList =
-            Arrays.asList("book.asc", "book.txt", "book.asciidoc", "book.adoc", "book.ad");
-
     PathMatcher pdfMatcher = FileSystems.getDefault().getPathMatcher("glob:**.pdf");
     PathMatcher markdownMatcher = FileSystems.getDefault().getPathMatcher("glob:{**.md,**.markdown}");
     PathMatcher htmlMatcher = FileSystems.getDefault().getPathMatcher("glob:**.{htm,html}");
