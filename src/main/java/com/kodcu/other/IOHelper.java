@@ -189,9 +189,9 @@ public class IOHelper {
         }
     }
 
-    public static void copyDirectoryToDirectory(File images, File oebps) {
+    public static void copyDirectoryToDirectory(File source, File target) {
         try {
-            FileUtils.copyDirectoryToDirectory(images, oebps);
+            FileUtils.copyDirectoryToDirectory(source, target);
         } catch (IOException e) {
             e.printStackTrace();
         }
