@@ -1,7 +1,6 @@
 package com.kodcu.service;
 
 import com.kodcu.other.Current;
-
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,7 +10,6 @@ import org.springframework.stereotype.Component;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
-
 import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.Objects;
@@ -54,21 +52,20 @@ public class MarkdownService {
     }
 
     public void convertToAsciidoc(String content, Consumer<String> next) {
-        threadService.runTaskLater(() -> {
 
-            if (Objects.isNull(content))
-                return;
+        if (Objects.isNull(content))
+            return;
 
-            Object eval = "";
-            js.put("markdownValue", content);
-            try {
-                eval = js.eval(String.format("markdownToAsciidoc(markdownValue)"));
-            } catch (ScriptException e) {
-                e.printStackTrace();
-            } finally {
-                next.accept((String) eval);
-            }
-        });
+        Object eval = "";
+        js.put("markdownValue", content);
+        try {
+            eval = js.eval(String.format("markdownToAsciidoc(markdownValue)"));
+        } catch (ScriptException e) {
+            e.printStackTrace();
+        } finally {
+            next.accept((String) eval);
+        }
+
     }
 
     public void convert(String markdownOrAsciidoc, Consumer<String> next) {
@@ -78,7 +75,8 @@ public class MarkdownService {
             return;
         }
 
-        convertToAsciidoc(markdownOrAsciidoc, next);
-
+        threadService.runTaskLater(() -> {
+            convertToAsciidoc(markdownOrAsciidoc, next);
+        });
     }
 }
