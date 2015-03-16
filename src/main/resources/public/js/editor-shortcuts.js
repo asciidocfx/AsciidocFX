@@ -190,16 +190,16 @@ var editorMenu = {
             formatText(editor, matchItalicizedText, "_", "_");
         },
         superScript: function () {
-            formatText(editor, matchSuperScriptText, "<sup>", "</sup>");
+            formatText(editor, matchHtmlTagText, "<sup>", "</sup>");
         },
         subScript: function () {
-            formatText(editor, matchSubScriptText, "<sub>", "</sub>");
+            formatText(editor, matchHtmlTagText, "<sub>", "</sub>");
         },
         underlinedText: function () {
             formatText(editor, matchHtmlTagText, "<u>", "</u>");
         },
         addStrikeThroughText: function () {
-            formatText(editor, matchHtmlTagText, "~~", "~~");
+            formatText(editor, matchMarkdownStrikeThroughText, "~~", "~~");
         },
         highlightedText: function () {
             formatText(editor, matchHighlightedText, "#", "#");
@@ -508,8 +508,12 @@ function matchHighlightedText(text) {
     return text.match(/\#.*\#/g);
 }
 
+function matchMarkdownStrikeThroughText(text) {
+    return text.match(/\~\~.*\~\~/g);
+}
+
 function matchHtmlTagText(text) {
-    return text.match(/(\+\+\+\<(u|del)\>).*(\<\/(u|del)\>\+\+\+)/g);
+    return text.match(/((\+\+\+)?\<(u|del|sup|sub)\>).*(\<\/(u|del|sub|sup)\>(\+\+\+)?)/g);
 }
 
 confirm("command:ready")
