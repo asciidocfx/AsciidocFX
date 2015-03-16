@@ -90,5 +90,14 @@ pre.highlight > code {
     height: 4px;
 }
 
+.container {
+    background-color: white;
+    position: fixed;
+    height: 4px;
+    width: 100%;
+    z-index: 1;
+    top: 0;
+}
+
 #placeholder h1:first-child,
 #placeholder h1:first-child
