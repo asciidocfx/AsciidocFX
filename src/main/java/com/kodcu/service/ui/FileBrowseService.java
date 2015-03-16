@@ -62,7 +62,7 @@ public class FileBrowseService {
 
             threadService.runTaskLater(() -> {
                 this.addPathToTree(browserPath, path -> {
-                    threadService.runActionLater(r -> addToTreeView(path, treeView.getRoot()));
+                    threadService.runActionLater(r -> addToTreeView(path, rootItem));
                 });
 
                 threadService.runActionLater(r -> {

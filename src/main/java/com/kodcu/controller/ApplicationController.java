@@ -5,9 +5,7 @@ import com.esotericsoftware.yamlbeans.YamlReader;
 import com.kodcu.bean.Config;
 import com.kodcu.bean.RecentFiles;
 import com.kodcu.bean.ShortCuts;
-import com.kodcu.component.DeleteAlert;
-import com.kodcu.component.MenuBuilt;
-import com.kodcu.component.MenuItemBuilt;
+import com.kodcu.component.*;
 import com.kodcu.other.Current;
 import com.kodcu.other.IOHelper;
 import com.kodcu.other.Item;
@@ -80,6 +78,8 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     private Path userHome = Paths.get(System.getProperty("user.home"));
 
+    public MenuItem renameFile;
+    public MenuItem createFile;
     public TabPane tabPane;
     public WebView previewView;
     public SplitPane splitPane;
@@ -705,10 +705,15 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                 return !isFile;
             });
 
-            if (selectedAnyFolder)
+            if (selectedAnyFolder) {
                 removePathItem.setDisable(true);
-            else
+                renameFile.setDisable(true);
+                createFile.setDisable(false);
+            } else {
                 removePathItem.setDisable(false);
+                renameFile.setDisable(false);
+                createFile.setDisable(true);
+            }
         });
 
         previewView.setContextMenuEnabled(false);
@@ -1131,5 +1136,58 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     public ShortcutProvider getShortcutProvider() {
         return shortcutProvider;
+    }
+
+    @FXML
+    public void createFile(ActionEvent actionEvent) {
+
+        SaveDialog dialog = SaveDialog.create();
+
+        Consumer<String> consumer = result -> {
+            if (dialog.isShowing())
+                dialog.hide();
+
+            if (result.matches(".*?\\.(asc|md|adoc|asciidoc|ad|markdown|txt)")) {
+
+                Path path = treeView.getSelectionModel().getSelectedItem()
+                        .getValue().getPath();
+
+                IOHelper.writeToFile(path.resolve(result), "");
+                tabService.addTab(path.resolve(result));
+
+                threadService.runActionLater(() -> {
+                    directoryService.changeWorkigDir(path);
+                });
+            }
+        };
+
+        dialog.getEditor().setOnAction(event -> {
+            consumer.accept(dialog.getEditor().getText());
+        });
+
+        dialog.showAndWait().ifPresent(consumer);
+    }
+
+    public void renameFile(ActionEvent actionEvent) {
+
+        RenameDialog dialog = RenameDialog.create();
+
+        Path path = treeView.getSelectionModel().getSelectedItem()
+                .getValue().getPath();
+
+        dialog.getEditor().setText(path.getFileName().toString());
+
+        Consumer<String> consumer = result -> {
+            if (dialog.isShowing())
+                dialog.hide();
+
+            IOHelper.move(path, path.getParent().resolve(result));
+        };
+
+        dialog.getEditor().setOnAction(event -> {
+            consumer.accept(dialog.getEditor().getText());
+        });
+
+        dialog.showAndWait().ifPresent(consumer);
     }
 }

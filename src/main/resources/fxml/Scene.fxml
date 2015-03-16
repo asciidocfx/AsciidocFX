@@ -82,6 +82,9 @@
                             <MenuItem mnemonicParsing="false" text="Open" fx:id="openFileTreeItem" />
                             <MenuItem id="openFolderTreeItem" mnemonicParsing="false" text="Browse" fx:id="openFolderTreeItem" />
                             <SeparatorMenuItem />
+                            <MenuItem mnemonicParsing="false" fx:id="createFile" text="Create" onAction="#createFile"/>
+                            <MenuItem mnemonicParsing="false" fx:id="renameFile" text="Rename" onAction="#renameFile"/>
+                            <SeparatorMenuItem />
                             <MenuItem mnemonicParsing="false" text="Copy Path" fx:id="copyPathTreeItem" />
                             <MenuItem mnemonicParsing="false" text="Copy" fx:id="copyTreeItem" />
                             <SeparatorMenuItem />
