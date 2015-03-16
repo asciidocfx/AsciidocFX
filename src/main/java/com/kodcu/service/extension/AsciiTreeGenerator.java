@@ -27,9 +27,8 @@ public class AsciiTreeGenerator {
                                     StringBuilder sb) {
 
         sb.append(getIndentString(indent));
-        sb.append("+--");
+        sb.append("|--");
         sb.append(folder.getName());
-        sb.append("/");
         sb.append("\n");
         for (File file : folder.listFiles()) {
             if (file.isDirectory()) {
@@ -43,7 +42,7 @@ public class AsciiTreeGenerator {
 
     private void printFile(File file, int indent, StringBuilder sb) {
         sb.append(getIndentString(indent));
-        sb.append("+--");
+        sb.append("|─");
         sb.append(file.getName());
         sb.append("\n");
     }
