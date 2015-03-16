@@ -5,6 +5,7 @@ import com.kodcu.controller.ApplicationController;
 import com.kodcu.other.Current;
 import com.kodcu.service.*;
 
+import com.kodcu.service.extension.AsciiTreeGenerator;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.input.Dragboard;
@@ -12,16 +13,12 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
@@ -39,16 +36,18 @@ public class WebviewService {
     private final Current current;
 
     private Optional<DocumentService> documentService = Optional.empty();
+    private final AsciiTreeGenerator asciiTreeGenerator;
 
     @Autowired
     public WebviewService(final ApplicationController controller, final PathResolverService pathResolver, final ThreadService threadService,
-            final ParserService parserService, final MarkdownService markdownService, final Current current) {
+                          final ParserService parserService, final MarkdownService markdownService, final Current current, AsciiTreeGenerator asciiTreeGenerator) {
         this.controller = controller;
         this.pathResolver = pathResolver;
         this.threadService = threadService;
         this.parserService = parserService;
         this.markdownService = markdownService;
         this.current = current;
+        this.asciiTreeGenerator = asciiTreeGenerator;
     }
 
     public void setDocumentService(DocumentService documentService) {
@@ -109,29 +108,10 @@ public class WebviewService {
                     Path path = dragboardFiles.get(0).toPath();
                     if (Files.isDirectory(path)) {
 
-                        Iterator<File> files = FileUtils.iterateFilesAndDirs(path.toFile(), TrueFileFilter.INSTANCE, TrueFileFilter.INSTANCE);
-
                         StringBuffer buffer = new StringBuffer();
-                        buffer.append("[tree,file=\"\"]");
+                        buffer.append("[treee,file=\"\"]");
                         buffer.append("\n--\n");
-                        buffer.append("#" + path.getFileName().toString());
-
-                        while (files.hasNext()) {
-                            File next = files.next();
-
-                            Path relativize = path.relativize(next.toPath());
-
-                            Path path1 = relativize.getName(0);
-                            if ("".equals(path1.toString()) || pathResolver.isHidden(path1))
-                                continue;
-
-                            String hash = String.join("", Collections.nCopies(relativize.getNameCount() + 1, "#"));
-
-                            buffer.append("\n");
-                            buffer.append(hash);
-                            buffer.append(relativize.getFileName().toString());
-
-                        }
+                        buffer.append(asciiTreeGenerator.generate(path));
                         buffer.append("\n--");
                         current.insertEditorValue(buffer.toString());
                         success = true;

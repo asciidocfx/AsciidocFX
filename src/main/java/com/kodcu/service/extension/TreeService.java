@@ -3,6 +3,7 @@ package com.kodcu.service.extension;
 import com.kodcu.controller.ApplicationController;
 import com.kodcu.other.Current;
 import com.kodcu.other.IOHelper;
+import com.kodcu.other.TrimWhite;
 import com.kodcu.other.Tuple;
 import com.kodcu.service.ThreadService;
 import com.kodcu.service.ui.AwesomeService;
@@ -12,6 +13,8 @@ import javafx.scene.SnapshotParameters;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.image.WritableImage;
+import javafx.scene.web.WebView;
+import netscape.javascript.JSObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,7 +44,7 @@ public class TreeService {
 
     @Autowired
     public TreeService(final Current current, final ApplicationController controller, final ThreadService threadService,
-            final AwesomeService awesomeService) {
+                       final AwesomeService awesomeService) {
         this.current = current;
         this.controller = controller;
         this.threadService = threadService;
@@ -196,5 +199,60 @@ public class TreeService {
 
             current.getCache().put(fileName, hashCode);
         }
+    }
+
+    public void createFileTreee(String tree, String type, String fileName, String width, String height) {
+        Objects.requireNonNull(fileName);
+
+        if (!fileName.endsWith(".png"))
+            return;
+
+        Path path = current.currentPath().get().getParent();
+        Path treePath = path.resolve("images/").resolve(fileName);
+
+        if (!current.currentPath().isPresent())
+            controller.saveDoc();
+
+        Integer cacheHit = current.getCache().get(fileName);
+
+        int hashCode = (fileName + type + tree + width + height).hashCode();
+        if (Objects.isNull(cacheHit) || hashCode != cacheHit) {
+
+            threadService.runActionLater(() -> {
+
+                WebView treeview = new WebView();
+                treeview.setMaxHeight(2500);
+                treeview.setMaxWidth(2500);
+                treeview.setPrefWidth(2500);
+                treeview.setPrefHeight(2500);
+                treeview.setLayoutX(-89999);
+                treeview.setLayoutY(-89999);
+                treeview.getEngine().load(String.format("http://localhost:%d/treeview.html", controller.getPort()));
+                controller.getRootAnchor().getChildren().add(treeview);
+
+                treeview.getEngine().setOnAlert(event -> {
+                    String data = event.getData();
+                    if ("READY".equals(data)) {
+                        ((JSObject) treeview.getEngine().executeScript("window")).call("executeTree", tree);
+                    }
+                    if ("RENDERED".equals(data)) {
+
+                        WritableImage writableImage = treeview.snapshot(new SnapshotParameters(), null);
+                        BufferedImage bufferedImage = SwingFXUtils.fromFXImage(writableImage, null);
+                        TrimWhite trimWhite = new TrimWhite();
+                        BufferedImage trimmed = trimWhite.trim(bufferedImage);
+                        IOHelper.createDirectories(path.resolve("images"));
+                        IOHelper.imageWrite(trimmed, "png", treePath.toFile());
+                        controller.getLastRenderedChangeListener()
+                                .changed(null, controller.getLastRendered().getValue(), controller.getLastRendered().getValue());
+                        controller.getRootAnchor().getChildren().remove(treeview);
+
+                    }
+                });
+            });
+
+        }
+
+        current.getCache().put(fileName, hashCode);
     }
 }

@@ -424,6 +424,13 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         });
     }
 
+    public void createFileTreee(String tree, String type, String fileName, String width, String height) {
+
+        threadService.runTaskLater(() -> {
+            treeService.createFileTreee(tree, type, fileName, width, height);
+        });
+    }
+
     @FXML
     public void goUp() {
         directoryService.goUp();

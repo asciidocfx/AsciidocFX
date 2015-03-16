@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="css/hljs.css" type="text/css"/>
+    <link rel="stylesheet" href="css/treeview.css" type="text/css"/>
+    <script src="js/jquery.js"></script>
+    <script src="js/highlight.pack.js"></script>
+    <script src="js/highlight-treeview.pack.js"></script>
+    <title></title>
+</head>
+<body>
+<pre><code class="treeview"></code></pre>
+<script>
+
+    function executeTree(tree) {
+        var view = document.querySelector(".treeview");
+        view.innerHTML = tree;
+        var trees = document.querySelectorAll("pre code");
+        [].slice.call(trees).forEach(function (item) {
+            hljs.highlightBlock(item);
+        });
+        setTimeout(function () {
+            alert("RENDERED");
+        }, 500);
+    }
+
+    (function () {
+        alert("READY");
+    })();
+
+
+</script>
+</body>
+</html>
