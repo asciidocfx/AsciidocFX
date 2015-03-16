@@ -109,7 +109,7 @@ public class WebviewService {
                     if (Files.isDirectory(path)) {
 
                         StringBuffer buffer = new StringBuffer();
-                        buffer.append("[treee,file=\"\"]");
+                        buffer.append("[tree,file=\"\"]");
                         buffer.append("\n--\n");
                         buffer.append(asciiTreeGenerator.generate(path));
                         buffer.append("\n--");

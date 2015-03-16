@@ -41,13 +41,8 @@ public class MathJaxService {
         this.current = current;
     }
 
-    public String appendFormula(String fileName, String formula) {
-        if (fileName.endsWith(".png") || fileName.endsWith(".svg")) {
-            getWindow().call("appendFormula", new Object[] { fileName, formula });
-            return "images/" + fileName;
-        }
-
-        return "";
+    public void appendFormula(String fileName, String formula) {
+        getWindow().call("appendFormula", new Object[]{fileName, formula});
     }
 
     public JSObject getWindow() {
@@ -97,7 +92,7 @@ public class MathJaxService {
 
     private void saveAsPng(String fileName, String svg, String formula, float width, float height) {
         try (StringReader reader = new StringReader(svg);
-                ByteArrayOutputStream ostream = new ByteArrayOutputStream();) {
+             ByteArrayOutputStream ostream = new ByteArrayOutputStream();) {
 
             String uri = "http://www.w3.org/2000/svg";
             SAXSVGDocumentFactory f = new SAXSVGDocumentFactory(XMLResourceDescriptor.getXMLParserClassName());

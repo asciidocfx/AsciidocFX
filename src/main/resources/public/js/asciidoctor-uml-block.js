@@ -22,7 +22,7 @@
         self.$parse_content_as("literal");
 
         return (def.$process = function (parent, reader, attrs) {
-                var $a, self = this, content = nil, type = nil, title = nil, filename = nil, alt = nil, caption = nil,width=nil,height=nil,scale=nil,align=nil;
+                var $a, self = this, content = nil, type = nil, title = nil, filename = nil, alt = nil, caption = nil,width=nil,height=nil,scale=nil,align=nil,cache=nil;
 
                 title = "" + (attrs['$[]']("title"));
                 alt = "" + (attrs['$[]']("alt"));
@@ -33,8 +33,12 @@
                 align = "" + (attrs['$[]']("align"));
                 type = "" + (attrs['$[]']("type"));
                 filename = "" + (attrs['$[]']("file"));
+                cache = "" + (attrs['$[]']("cache"));
 
-                app.plantUml(reader.$read(), type, filename);
+                if (cache != "enabled"){
+                    app.plantUml(reader.$read(), type, filename);
+                }
+
 
                 content = "images/" + filename;
 

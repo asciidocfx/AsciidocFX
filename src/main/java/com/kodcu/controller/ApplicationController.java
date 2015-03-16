@@ -363,8 +363,8 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         epub3Service.produceEpub3(askPath);
     }
 
-    public String appendFormula(String fileName, String formula) {
-        return mathJaxService.appendFormula(fileName, formula);
+    public void appendFormula(String fileName, String formula) {
+        mathJaxService.appendFormula(fileName, formula);
     }
 
     public void svgToPng(String fileName, String svg, String formula, float width, float height) {
@@ -424,10 +424,10 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         });
     }
 
-    public void createFileTreee(String tree, String type, String fileName, String width, String height) {
+    public void createHighlightFileTree(String tree, String type, String fileName, String width, String height) {
 
         threadService.runTaskLater(() -> {
-            treeService.createFileTreee(tree, type, fileName, width, height);
+            treeService.createHighlightFileTree(tree, type, fileName, width, height);
         });
     }
 

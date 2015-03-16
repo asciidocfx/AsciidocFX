@@ -22,7 +22,7 @@
         self.$parse_content_as("literal");
 
         return (def.$process = function (parent, reader, attrs) {
-                var $a, self = this, content = nil, type = nil, title = nil, filename = nil, alt = nil, caption = nil, width = nil, height = nil, scale = nil, align = nil;
+                var $a, self = this, content = nil, type = nil, title = nil, filename = nil, alt = nil, caption = nil, width = nil, height = nil, scale = nil, align = nil, cache = nil;
 
                 type = "" + (attrs['$[]']("type"));
                 title = "" + (attrs['$[]']("title"));
@@ -33,8 +33,14 @@
                 height = "" + (attrs['$[]']("height"));
                 scale = "" + (attrs['$[]']("scale"));
                 align = "" + (attrs['$[]']("align"));
+                cache = "" + (attrs['$[]']("cache"));
 
-                app.createFileTree(reader.$read(), type, filename, width, height);
+                if (cache != "enabled") {
+                    if (type == "basic" || type == "old")
+                        app.createFileTree(reader.$read(), type, filename, width, height);
+                    else
+                        app.createHighlightFileTree(reader.$read(), type, filename, width, height);
+                }
 
                 content = "images/" + filename;
 
@@ -51,8 +57,8 @@
 
                     var keys = Object.keys(attributesHash);
 
-                    keys.forEach(function(key){
-                        if(attributesHash[key]=="")
+                    keys.forEach(function (key) {
+                        if (attributesHash[key] == "")
                             delete attributesHash[key];
                     });
 
@@ -69,9 +75,17 @@
     if ($scope.RUBY_ENGINE['$==']("opal")) {
     }
     ;
-    return ($a = ($b = $scope.Extensions).$register, $a._p = (TMP_1 = function () {
+    return ($a = ($b = $scope.Extensions).$register, $a
+    .
+    _p = (TMP_1 = function () {
         var self = TMP_1._s || this;
 
         return self.$block($scope.TreeBlock)
-    }, TMP_1._s = self, TMP_1), $a).call($b);
+    }, TMP_1
+    .
+    _s = self, TMP_1
+    ),
+    $a
+    ).
+    call($b);
 })(Opal);

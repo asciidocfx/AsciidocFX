@@ -201,7 +201,7 @@ public class TreeService {
         }
     }
 
-    public void createFileTreee(String tree, String type, String fileName, String width, String height) {
+    public void createHighlightFileTree(String tree, String type, String fileName, String width, String height) {
         Objects.requireNonNull(fileName);
 
         if (!fileName.endsWith(".png"))
@@ -221,12 +221,35 @@ public class TreeService {
             threadService.runActionLater(() -> {
 
                 WebView treeview = new WebView();
-                treeview.setMaxHeight(2500);
-                treeview.setMaxWidth(2500);
-                treeview.setPrefWidth(2500);
-                treeview.setPrefHeight(2500);
+                treeview.setMaxHeight(5000);
+                treeview.setMaxWidth(5000);
+                treeview.setPrefWidth(5000);
+                treeview.setPrefHeight(5000);
                 treeview.setLayoutX(-89999);
                 treeview.setLayoutY(-89999);
+
+                try {
+                    Double value = Double.valueOf(width);
+
+                    if (width.contains("+") || width.contains("-"))
+                        treeview.setPrefWidth(treeview.getPrefWidth() + value);
+                    else
+                        treeview.setPrefWidth(value);
+                } catch (Exception e) {
+                    logger.info(e.getMessage(), e);
+                }
+
+                try {
+                    Double value = Double.valueOf(height);
+
+                    if (height.contains("+") || height.contains("-"))
+                        treeview.setPrefHeight(treeview.getPrefHeight() + value);
+                    else
+                        treeview.setPrefHeight(value);
+                } catch (Exception e) {
+                    logger.info(e.getMessage(), e);
+                }
+
                 treeview.getEngine().load(String.format("http://localhost:%d/treeview.html", controller.getPort()));
                 controller.getRootAnchor().getChildren().add(treeview);
 
@@ -239,13 +262,18 @@ public class TreeService {
 
                         WritableImage writableImage = treeview.snapshot(new SnapshotParameters(), null);
                         BufferedImage bufferedImage = SwingFXUtils.fromFXImage(writableImage, null);
-                        TrimWhite trimWhite = new TrimWhite();
-                        BufferedImage trimmed = trimWhite.trim(bufferedImage);
-                        IOHelper.createDirectories(path.resolve("images"));
-                        IOHelper.imageWrite(trimmed, "png", treePath.toFile());
-                        controller.getLastRenderedChangeListener()
-                                .changed(null, controller.getLastRendered().getValue(), controller.getLastRendered().getValue());
-                        controller.getRootAnchor().getChildren().remove(treeview);
+
+                        threadService.runTaskLater(()->{
+                            TrimWhite trimWhite = new TrimWhite();
+                            BufferedImage trimmed = trimWhite.trim(bufferedImage);
+                            IOHelper.createDirectories(path.resolve("images"));
+                            IOHelper.imageWrite(trimmed, "png", treePath.toFile());
+                            threadService.runActionLater(()->{
+                                controller.getLastRenderedChangeListener()
+                                        .changed(null, controller.getLastRendered().getValue(), controller.getLastRendered().getValue());
+                                controller.getRootAnchor().getChildren().remove(treeview);
+                            });
+                        });
 
                     }
                 });

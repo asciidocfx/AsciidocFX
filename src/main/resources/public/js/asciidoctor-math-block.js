@@ -22,7 +22,7 @@
         self.$parse_content_as("simple");
 
         return (def.$process = function (parent, reader, attrs) {
-                var self = this, content = nil, title = nil, filename = nil, alt=nil, caption = nil,width=nil,height=nil,scale=nil,align=nil;
+                var self = this, content = nil, title = nil, filename = nil, alt = nil, caption = nil, width = nil, height = nil, scale = nil, align = nil, cache = nil;
 
                 title = "" + (attrs['$[]']("title"));
                 alt = "" + (attrs['$[]']("alt"));
@@ -32,8 +32,12 @@
                 scale = "" + (attrs['$[]']("scale"));
                 align = "" + (attrs['$[]']("align"));
                 filename = "" + (attrs['$[]']("file"));
+                cache = "" + (attrs['$[]']("cache"));
 
-                content = app.appendFormula(filename, reader.$read());
+                if (cache != "enabled") {
+                    app.appendFormula(filename, reader.$read());
+                }
+                content = "images/" + filename;
 
                 var attributesHash = {
                     "target": content,
@@ -48,8 +52,8 @@
 
                 var keys = Object.keys(attributesHash);
 
-                keys.forEach(function(key){
-                    if(attributesHash[key]=="")
+                keys.forEach(function (key) {
+                    if (attributesHash[key] == "")
                         delete attributesHash[key];
                 });
 
@@ -64,9 +68,17 @@
     if ($scope.RUBY_ENGINE['$==']("opal")) {
     }
     ;
-    return ($a = ($b = $scope.Extensions).$register, $a._p = (TMP_1 = function () {
+    return ($a = ($b = $scope.Extensions).$register, $a
+    .
+    _p = (TMP_1 = function () {
         var self = TMP_1._s || this;
 
         return self.$block($scope.MathBlock)
-    }, TMP_1._s = self, TMP_1), $a).call($b);
+    }, TMP_1
+    .
+    _s = self, TMP_1
+    ),
+    $a
+    ).
+    call($b);
 })(Opal);
