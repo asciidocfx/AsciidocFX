@@ -1,8 +1,6 @@
 package com.kodcu.component;
 
-import javafx.scene.control.TextField;
 import javafx.scene.control.TextInputDialog;
-import javafx.scene.control.Tooltip;
 
 /**
  * Created by usta on 16.03.2015.
