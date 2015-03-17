@@ -22,6 +22,8 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.nio.charset.Charset;
 import java.nio.file.*;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.util.function.BiPredicate;
 import java.util.stream.Stream;
 
 /**
@@ -175,7 +177,7 @@ public class IOHelper {
 
     public static void transform(Transformer transformer, StreamSource xmlSource, StreamResult streamResult) {
         try {
-            transformer.transform(xmlSource,streamResult);
+            transformer.transform(xmlSource, streamResult);
         } catch (TransformerException e) {
             e.printStackTrace();
         }
@@ -213,5 +215,22 @@ public class IOHelper {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public static void copyDirectory(Path sourceDir, Path targetDir) {
+        try {
+            FileUtils.copyDirectory(sourceDir.toFile(), targetDir.toFile());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static Stream<Path> find(Path start, int maxDepth, BiPredicate<Path, BasicFileAttributes> matcher, FileVisitOption... options) {
+        try {
+            return Files.find(start, Integer.MAX_VALUE, matcher, options);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return Stream.empty();
     }
 }
