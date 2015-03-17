@@ -1158,7 +1158,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             if (dialog.isShowing())
                 dialog.hide();
 
-            if (result.matches(".*?\\.(asc|md|adoc|asciidoc|ad|markdown|txt)")) {
+            if (result.matches("^[^\\\\/:?*\"<>|]+\\.(asc|md|adoc|asciidoc|ad|markdown|txt)")) {
 
                 Path path = treeView.getSelectionModel().getSelectedItem()
                         .getValue().getPath();

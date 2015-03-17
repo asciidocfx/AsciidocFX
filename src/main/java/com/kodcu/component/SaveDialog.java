@@ -17,7 +17,7 @@ public class SaveDialog extends TextInputDialog {
         Tooltip.install(editor, new Tooltip("**.{asc,adoc,ad,asiidoc,md,markdown,txt} allowed"));
         editor.setOnKeyReleased(event -> {
             String text = editor.getText();
-            boolean matches = text.matches(".*?\\.(asc|md|adoc|asciidoc|ad|markdown|txt)");
+            boolean matches = text.matches("^[^\\\\/:?*\"<>|]+\\.(asc|md|adoc|asciidoc|ad|markdown|txt)");
             if (text.contains(".") && matches) {
                 editor.setStyle("-fx-border-color: blue; -fx-focus-color: blue;");
             } else {
