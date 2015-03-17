@@ -7,9 +7,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.script.Invocable;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
-import javax.script.ScriptException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.Objects;
@@ -57,10 +57,10 @@ public class MarkdownService {
             return;
 
         Object eval = "";
-        js.put("markdownValue", content);
         try {
-            eval = js.eval(String.format("markdownToAsciidoc(markdownValue)"));
-        } catch (ScriptException e) {
+            Invocable invocable = (Invocable) js;
+            eval = invocable.invokeFunction("markdownToAsciidoc", content);
+        } catch (Exception e) {
             e.printStackTrace();
         } finally {
             next.accept((String) eval);
