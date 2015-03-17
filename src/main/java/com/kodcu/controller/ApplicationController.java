@@ -66,6 +66,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.CodeSource;
 import java.util.*;
+import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 
 import static java.nio.file.StandardOpenOption.*;
@@ -115,6 +116,9 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     @Autowired
     private AsciidocTableController asciidocTableController;
+
+    @Autowired
+    private GitbookToAsciibookService gitbookToAsciibook;
 
     @Autowired
     private PathOrderService pathOrder;
@@ -647,7 +651,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
             ObservableList<TreeItem<Item>> selectedItems = treeView.getSelectionModel().getSelectedItems();
 
-            DeleteAlert.alert().ifPresent(button -> {
+            AlertHelper.deleteAlert().ifPresent(button -> {
                 if (button == ButtonType.YES)
                     selectedItems.stream()
                             .map(e -> e.getValue())
@@ -1175,6 +1179,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         dialog.showAndWait().ifPresent(consumer);
     }
 
+    @FXML
     public void renameFile(ActionEvent actionEvent) {
 
         RenameDialog dialog = RenameDialog.create();
@@ -1196,5 +1201,40 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         });
 
         dialog.showAndWait().ifPresent(consumer);
+    }
+
+    @FXML
+    public void gitbookToAsciibook(ActionEvent actionEvent) {
+
+        File gitbookRoot = null;
+        File asciibookRoot = null;
+
+        BiPredicate<File, File> nullPathPredicate = (p1, p2)
+                -> Objects.isNull(p1)
+                || Objects.isNull(p2);
+
+        while (nullPathPredicate.test(gitbookRoot, asciibookRoot)) {
+
+            DirectoryChooser gitbookChooser = new DirectoryChooser();
+            gitbookChooser.setTitle("Select Gitbook Root Directory");
+            gitbookRoot = gitbookChooser.showDialog(null);
+
+            DirectoryChooser asciibookChooser = new DirectoryChooser();
+            asciibookChooser.setTitle("Select Blank Asciibook Root Directory");
+            asciibookRoot = gitbookChooser.showDialog(null);
+
+            if (nullPathPredicate.test(gitbookRoot, asciibookRoot))
+                AlertHelper.nullDirectoryAlert();
+        }
+
+        final File finalGitbookRoot = gitbookRoot;
+        final File finalAsciibookRoot = asciibookRoot;
+
+        threadService.runTaskLater(() -> {
+            indikatorService.startCycle();
+            gitbookToAsciibook.gitbookToAsciibook(finalGitbookRoot.toPath(), finalAsciibookRoot.toPath());
+            indikatorService.completeCycle();
+        });
+
     }
 }

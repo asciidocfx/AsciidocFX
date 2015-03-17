@@ -60,9 +60,13 @@
                           <items>
                             <MenuItem mnemonicParsing="false" onAction="#generateCheatSheet" text="Asciidoc Cheatsheet" />
                             <MenuItem mnemonicParsing="false" onAction="#generateSampleBook" text="Sample Book" />
+                              <SeparatorMenuItem />
+                              <MenuItem mnemonicParsing="false" onAction="#gitbookToAsciibook" text="Gitbook to Asciibook" />
+                              <SeparatorMenuItem />
                             <MenuItem mnemonicParsing="false" onAction="#bugReport" text="Bug Report" />
                             <MenuItem mnemonicParsing="false" onAction="#openCommunityForum" text="Community Forum" />
                             <MenuItem mnemonicParsing="false" onAction="#openGitterChat" text="Gitter Chat" />
+                              <SeparatorMenuItem />
                             <MenuItem mnemonicParsing="false" onAction="#openGithubPage" text="Github Page" />
                             <MenuItem mnemonicParsing="false" onAction="#openAbout" text="About" />
                           </items>
