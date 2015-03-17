@@ -4,7 +4,6 @@ import com.kodcu.component.MenuItemBuilt;
 import com.kodcu.controller.ApplicationController;
 import com.kodcu.other.Current;
 import com.kodcu.service.*;
-
 import com.kodcu.service.extension.AsciiTreeGenerator;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
@@ -12,7 +11,6 @@ import javafx.scene.input.Dragboard;
 import javafx.scene.input.MouseButton;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -76,7 +74,7 @@ public class WebviewService {
                     content -> {
                         threadService.runActionLater(() -> {
                             documentService.ifPresent(d -> d.newDoc(content));
-                            });
+                        });
                     });
         });
 
@@ -108,12 +106,17 @@ public class WebviewService {
                     Path path = dragboardFiles.get(0).toPath();
                     if (Files.isDirectory(path)) {
 
-                        StringBuffer buffer = new StringBuffer();
-                        buffer.append("[tree,file=\"\"]");
-                        buffer.append("\n--\n");
-                        buffer.append(asciiTreeGenerator.generate(path));
-                        buffer.append("\n--");
-                        current.insertEditorValue(buffer.toString());
+                        threadService.runTaskLater(() -> {
+                            StringBuffer buffer = new StringBuffer();
+                            buffer.append("[tree,file=\"\"]");
+                            buffer.append("\n--\n");
+                            buffer.append(asciiTreeGenerator.generate(path));
+                            buffer.append("\n--");
+                            threadService.runActionLater(() -> {
+                                current.insertEditorValue(buffer.toString());
+                            });
+                        });
+
                         success = true;
                     }
                 }

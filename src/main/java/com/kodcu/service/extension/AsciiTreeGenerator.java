@@ -1,8 +1,9 @@
 package com.kodcu.service.extension;
 
+import com.kodcu.other.IOHelper;
 import org.springframework.stereotype.Component;
 
-import java.io.File;
+import java.nio.file.Files;
 import java.nio.file.Path;
 
 /**
@@ -12,10 +13,10 @@ import java.nio.file.Path;
 public class AsciiTreeGenerator {
 
     public String generate(Path path) {
-        return this.printDirectoryTree(path.toFile());
+        return this.printDirectoryTree(path);
     }
 
-    private String printDirectoryTree(File folder) {
+    private String printDirectoryTree(Path folder) {
 
         int indent = 0;
         StringBuilder sb = new StringBuilder();
@@ -23,27 +24,27 @@ public class AsciiTreeGenerator {
         return sb.toString();
     }
 
-    private void printDirectoryTree(File folder, int indent,
+    private void printDirectoryTree(Path folder, int indent,
                                     StringBuilder sb) {
 
         sb.append(getIndentString(indent));
         sb.append("|--");
-        sb.append(folder.getName());
+        sb.append(folder.getFileName().toString());
         sb.append("\n");
-        for (File file : folder.listFiles()) {
-            if (file.isDirectory()) {
-                printDirectoryTree(file, indent + 1, sb);
-            } else {
-                printFile(file, indent + 1, sb);
-            }
-        }
+
+        IOHelper.list(folder).forEach(p -> {
+            if (Files.isDirectory(p))
+                printDirectoryTree(p, indent + 1, sb);
+            else
+                printFile(p, indent + 1, sb);
+        });
 
     }
 
-    private void printFile(File file, int indent, StringBuilder sb) {
+    private void printFile(Path file, int indent, StringBuilder sb) {
         sb.append(getIndentString(indent));
-        sb.append("|─");
-        sb.append(file.getName());
+        sb.append("|--");
+        sb.append(file.getFileName().toString());
         sb.append("\n");
     }
 
