@@ -45,6 +45,10 @@ public class AppStarter extends Application {
 
     @Override
     public void start(final Stage stage) {
+
+        // http://bit.ly/1Euk8hh
+        System.setProperty("jsse.enableSNIExtension", "false");
+
         final CmdlineConfig config = new CmdlineConfig();
         final CmdlineParser cp = new CmdlineParser(config);
 
