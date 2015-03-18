@@ -19,9 +19,58 @@ var newlyInitialized = true;
 var timeouter;
 var updateDelay = 100;
 
+//var maxTop = editor.renderer.layerConfig.maxHeight - editor.renderer.$size.scrollerHeight + editor.renderer.scrollMargin.bottom;
+//app.onscroll(editor.getSession().getScrollTop(), maxTop);
+
+var updateScrollPosition = function (scroll) {
+
+    var row = editor.getFirstVisibleRow();
+
+    while (editor.session.getLine(row).trim() != "") {
+        row--;
+    }
+
+    row++;
+
+    while (editor.session.getLine(row).trim().substr(0, 3) == "(((") {
+        row++;
+    }
+
+    if (lastEditorRow == row)
+        return;
+
+    var range = sketch.searchBlockPosition(row);
+    if (range) {
+
+        if (lastEditorRow == range.start.row)
+            return;
+        lastEditorRow = range.start.row;
+
+        var blockText = editor.session.getTextRange(range);
+        app.scrollToCurrentLine(blockText);
+    }
+    else {
+        lastEditorRow = row;
+
+        var lineText = editor.session.getLine(row);
+
+        if (lineText.trim() == "")
+            return;
+
+        app.scrollToCurrentLine(lineText);
+    }
+};
+
 editor.getSession().on('changeScrollTop', function (scroll) {
-    var maxTop = editor.renderer.layerConfig.maxHeight - editor.renderer.$size.scrollerHeight + editor.renderer.scrollMargin.bottom;
-    app.onscroll(editor.getSession().getScrollTop(), maxTop);
+
+    var firstly = editor.getFirstVisibleRow();
+
+    var interval = setInterval(function () {
+        if (firstly == editor.getFirstVisibleRow())
+            return;
+        clearInterval(interval);
+        updateScrollPosition(scroll)
+    }, 50);
 });
 
 editor.getSession().selection.on('changeCursor', function (e) {
@@ -102,13 +151,13 @@ function setEditorValue(content) {
 
 }
 
-function switchMode(index){
-    if(index == 0)
+function switchMode(index) {
+    if (index == 0)
         editor.getSession().setMode("ace/mode/asciidoc");
-    if(index == 1)
+    if (index == 1)
         editor.getSession().setMode("ace/mode/markdown");
 }
 
-function rerender(){
+function rerender() {
     app.textListener(editor.getValue());
 }
