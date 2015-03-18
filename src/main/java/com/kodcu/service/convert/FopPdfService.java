@@ -7,6 +7,7 @@ import com.kodcu.service.DirectoryService;
 import com.kodcu.service.ThreadService;
 import com.kodcu.service.ui.IndikatorService;
 import javafx.stage.FileChooser;
+import org.apache.fop.apps.FOURIResolver;
 import org.apache.fop.apps.FOUserAgent;
 import org.apache.fop.apps.FopFactory;
 import org.apache.fop.cli.InputHandler;
@@ -15,9 +16,16 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.xml.transform.Source;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.URIResolver;
 import java.io.FileOutputStream;
+import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.Vector;
 
 import static java.nio.file.StandardOpenOption.*;
@@ -41,8 +49,8 @@ public class FopPdfService {
 
     @Autowired
     public FopPdfService(final ApplicationController asciiDocController, final DocBookService docBookService,
-            final IndikatorService indikatorService,
-            final ThreadService threadService, final DirectoryService directoryService, final Current current) {
+                         final IndikatorService indikatorService,
+                         final ThreadService threadService, final DirectoryService directoryService, final Current current) {
         this.asciiDocController = asciiDocController;
         this.docBookService = docBookService;
         this.indikatorService = indikatorService;
@@ -67,6 +75,33 @@ public class FopPdfService {
                 indikatorService.startCycle();
                 try (FileOutputStream outputStream = new FileOutputStream(pdfPath.toFile());) {
                     FOUserAgent userAgent = new FOUserAgent(fopFactory);
+                    userAgent.setURIResolver(new FOURIResolver(true) {
+                        @Override
+                        public Source resolve(String href, String base) throws TransformerException {
+                            if (Objects.nonNull(href)) {
+                                try {
+                                    Path path = Paths.get(URI.create(href));
+                                    if (!Files.exists(path)) {
+
+                                        Path tryThis = currentTabPathDir.resolve(path.subpath(0, path.getNameCount()));
+
+                                        if (Files.exists(tryThis)) {
+                                            return super.resolve(tryThis.toUri().toString(), base);
+                                        }
+
+                                        Optional<Path> first = IOHelper.find(currentTabPathDir, 3, (p, attr) -> p.getFileName().equals(path.getFileName())).findFirst();
+                                        if (first.isPresent())
+                                            return super.resolve(first.map(Path::toUri).map(URI::toString).get(), base);
+                                    }
+                                } catch (Exception e) {
+                                    logger.info(e.getMessage(),e);
+                                }
+                            }
+
+                            return super.resolve(href, base);
+                        }
+                    });
+                    userAgent.setURIResolver(null);
                     handler.renderTo(userAgent, "application/pdf", outputStream);
                     Files.deleteIfExists(docbookTempfile);
                 } catch (Exception e) {
@@ -74,7 +109,6 @@ public class FopPdfService {
                 } finally {
 
                     indikatorService.completeCycle();
-                    indikatorService.hideIndikator();
 
                     threadService.runActionLater(() -> {
                         asciiDocController.getRecentFiles().remove(pdfPath.toString());
