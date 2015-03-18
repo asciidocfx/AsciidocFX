@@ -36,10 +36,11 @@
                 cache = "" + (attrs['$[]']("cache"));
 
                 if (cache != "enabled") {
-                    if (type == "basic" || type == "old")
-                        app.createFileTree(reader.$read(), type, filename, width, height);
+                    var readed = reader.$read();
+                    if ((readed.match(/#/g) || []).length>(readed.match(/(-|\|)/g) || []).length)
+                        app.createFileTree(readed, type, filename, width, height);
                     else
-                        app.createHighlightFileTree(reader.$read(), type, filename, width, height);
+                        app.createHighlightFileTree(readed, type, filename, width, height);
                 }
 
                 content = "images/" + filename;
