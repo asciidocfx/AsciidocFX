@@ -1221,7 +1221,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
             DirectoryChooser asciibookChooser = new DirectoryChooser();
             asciibookChooser.setTitle("Select Blank Asciibook Root Directory");
-            asciibookRoot = gitbookChooser.showDialog(null);
+            asciibookRoot = asciibookChooser.showDialog(null);
 
             if (nullPathPredicate.test(gitbookRoot, asciibookRoot))
                 AlertHelper.nullDirectoryAlert();
