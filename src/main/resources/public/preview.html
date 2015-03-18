@@ -36,7 +36,7 @@
 
     var imageCacheNumber = Math.floor(Math.random() * (999999999999 - 2)) + 1;
 
-    function clearImageCache(){
+    function clearImageCache() {
         imageCacheNumber = Math.floor(Math.random() * (999999999999 - 2)) + 1;
         refreshUI($("#placeholder").html());
     }
@@ -49,10 +49,10 @@
         });
     }
 
-    function isHtml(html){
+    function isHtml(html) {
         var div = $("<div></div>");
         div.append(html);
-        return  div.find("div,span,p,br,b,strong,h1,h2,h2,h4,h5,h6,pre,code,table,section,img,a,sub,sup,del,u").length > 5;
+        return div.find("div,span,p,br,b,strong,h1,h2,h2,h4,h5,h6,pre,code,table,section,img,a,sub,sup,del,u").length > 5;
     }
 
     function updateBase64Url(index, base64) {
@@ -65,9 +65,11 @@
     function refreshUI(data) {
 
         var $data = $("<div></div>").append(data);
-        $data.find("img").each(function(){
-            $(this).attr("src",$(this).attr("src")+"?"+imageCacheNumber);
+        $data.find("img").each(function () {
+            var attr = $(this).attr("src");
+            $(this).attr("src", attr + "?cache=" + imageCacheNumber + "&parent=" + (attr.match(/\.\./g) || []).length);
         });
+
         $("#placeholder").html($data.html());
         $('pre code').each(function (i, e) {
             hljs.highlightBlock(e)
@@ -101,8 +103,10 @@
     function stopProgressBar() {
         progressBar.animate(1, {
             duration: 800
-        }, function() {
-             setTimeout(function() { progressBar.destroy(); }, 500);
+        }, function () {
+            setTimeout(function () {
+                progressBar.destroy();
+            }, 500);
         });
     }
 

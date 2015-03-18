@@ -7,15 +7,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
+import java.util.Objects;
+import java.util.stream.IntStream;
 
 /**
  * Created by usta on 25.12.2014.
@@ -34,7 +34,8 @@ public class ImageController {
 
     @RequestMapping(value = {"/**/{extension:(?:\\w|\\W)+\\.(?:jpg|bmp|gif|jpeg|png|webp|svg)$}"}, method = RequestMethod.GET)
     @ResponseBody
-    public ResponseEntity<byte[]> images(HttpServletRequest request, HttpServletResponse response, @PathVariable("extension") String extension) {
+    public ResponseEntity<byte[]> images(HttpServletRequest request, HttpServletResponse response,
+                                         @PathVariable("extension") String extension, @RequestParam(value = "parent", required = false, defaultValue = "0") Integer parent) {
 
         response.setDateHeader("Expires", System.currentTimeMillis() + Duration.ofSeconds(10).toMillis());
 
@@ -45,18 +46,29 @@ public class ImageController {
             uri = uri.substring(1);
 
         if (current.currentPath().isPresent()) {
-            imageFile = current.currentPath().map(Path::getParent).get().resolve(uri);
+            imageFile = current.currentPath().map((Path path) -> {
+                final Path[] parentPath = {path};
+                IntStream.rangeClosed(0, parent).forEach(i -> {
+                    if (Objects.nonNull(parentPath[0].getParent()))
+                        parentPath[0] = parentPath[0].getParent();
+                });
+                return parentPath[0];
+            }).get().resolve(uri);
         } else {
-            imageFile = directoryService.getWorkingDirectory().get().resolve(uri);
+            imageFile = directoryService.getWorkingDirectory().map((Path path) -> {
+                final Path[] parentPath = {path};
+                IntStream.range(0, parent).forEach(i -> {
+                    if (Objects.nonNull(parentPath[0].getParent()))
+                        parentPath[0] = parentPath[0].getParent();
+                });
+                return parentPath[0];
+            }).get().resolve(uri);
         }
 
-        byte[] temp = IOHelper.readAllBytes(imageFile);
+        byte[] temp = new byte[0];
 
-        // if not found, try again in working dir
-        if (temp.length == 0) {
-            imageFile = directoryService.getWorkingDirectory().get().resolve(uri);
+        if (Files.exists(imageFile))
             temp = IOHelper.readAllBytes(imageFile);
-        }
 
         return new ResponseEntity<>(temp, HttpStatus.OK);
     }
