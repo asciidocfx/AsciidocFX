@@ -142,7 +142,6 @@ public class Epub3Service {
 
                         if (!isTemp) {
                             indikatorService.completeCycle();
-                            indikatorService.hideIndikator();
                             threadService.runActionLater(() -> {
                                 asciiDocController.getRecentFiles().remove(epubPath.toString());
                                 asciiDocController.getRecentFiles().add(0, epubPath.toString());
@@ -160,7 +159,7 @@ public class Epub3Service {
 
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
-            indikatorService.hideIndikator();
+            indikatorService.completeCycle();
         }
 
         return completableFuture;

@@ -62,7 +62,7 @@ public class Html5ArticleService {
                     IOHelper.writeToFile(htmlArticlePath, html, CREATE, TRUNCATE_EXISTING, WRITE);
 
                     threadService.runActionLater(() -> {
-                        indikatorService.hideIndikator();
+                        indikatorService.completeCycle();
                         asciiDocController.getRecentFiles().remove(htmlArticlePath.toString());
                         asciiDocController.getRecentFiles().add(0, htmlArticlePath.toString());
                     });

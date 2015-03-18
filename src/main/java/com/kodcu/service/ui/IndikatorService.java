@@ -11,34 +11,25 @@ import org.springframework.stereotype.Component;
 @Component
 public class IndikatorService {
 
-    private final ApplicationController asciiDocController;
+    private final ApplicationController applicationContoller;
     private final ThreadService threadService;
     
     @Autowired
-    public IndikatorService(final ApplicationController asciiDocController, final ThreadService threadService) {
-        this.asciiDocController = asciiDocController;
+    public IndikatorService(final ApplicationController applicationContoller, final ThreadService threadService) {
+        this.applicationContoller = applicationContoller;
         this.threadService = threadService;
     }
 
     public void startCycle() {
         threadService.runActionLater(() -> {
-            asciiDocController.getPreviewView().getEngine().executeScript("startProgressBar()");
-//            asciiDocController.getIndikator().setVisible(true);
-//            asciiDocController.getIndikator().setManaged(true);
+            applicationContoller.getPreviewView().getEngine().executeScript("startProgressBar()");
         });
     }
 
     public void completeCycle() {
         threadService.runActionLater(() -> {
-            asciiDocController.getPreviewView().getEngine().executeScript("stopProgressBar()");
-//            asciiDocController.getIndikator().setManaged(false);
-//            asciiDocController.getIndikator().setVisible(false);
+            applicationContoller.getPreviewView().getEngine().executeScript("stopProgressBar()");
         });
     }
-
-    public void hideIndikator() {
-        completeCycle();
-    }
-
 
 }
