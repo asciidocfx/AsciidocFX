@@ -112,10 +112,6 @@
                     <artifactId>batik-js</artifactId>
                     <groupId>org.apache.xmlgraphics</groupId>
                 </exclusion>
-                <exclusion>
-                    <artifactId>xml-apis</artifactId>
-                    <groupId>xml-apis</groupId>
-                </exclusion>
             </exclusions>
         </dependency>
         <dependency>
@@ -148,10 +144,7 @@
             <artifactId>batik-codec</artifactId>
             <version>1.7</version>
             <exclusions>
-                <exclusion>
-                    <artifactId>xml-apis</artifactId>
-                    <groupId>xml-apis</groupId>
-                </exclusion>
+
             </exclusions>
         </dependency>
         <dependency>
