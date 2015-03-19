@@ -233,4 +233,13 @@ public class IOHelper {
         }
         return Stream.empty();
     }
+
+    public static boolean isHidden(Path path) {
+        try {
+            return Files.isHidden(path) || path.getFileName().toString().startsWith(".");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 }

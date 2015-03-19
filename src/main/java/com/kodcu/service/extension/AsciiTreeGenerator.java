@@ -33,6 +33,9 @@ public class AsciiTreeGenerator {
         sb.append("\n");
 
         IOHelper.list(folder).forEach(p -> {
+            if (IOHelper.isHidden(p))
+                return;
+
             if (Files.isDirectory(p))
                 printDirectoryTree(p, indent + 1, sb);
             else
