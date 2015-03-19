@@ -154,19 +154,19 @@ sketch = {
         function formMultiLineConstruct(type,pointer,line,textLength) {
 
             if(pointer < 0){
-                if(type == "Open" && headerRow > -1){
+                if(headerRow > -1){
                     if(titleRow > -1 && titleRow > headerRow){
                         pointer = headerRow;
-                        titleRow = -1;                            
+                        titleRow = -1;
                     }
                     else if(titleRow > -1 && titleRow < headerRow){
                         pointer = titleRow;
                         titleRow = -1;
                     }
                     else{
-                        pointer = headerRow;  
+                        pointer = headerRow;
                     }
-                    headerRow = -1;   
+                    headerRow = -1;
                 }
                 else{
                     if(titleRow > -1){
@@ -213,9 +213,9 @@ sketch = {
                 range.start.column = element.startColumn;
                 range.end.row = element.endRow;
                 range.end.column = element.endColumn;
-                
+
                 return range;
-            }        
+            }
         }
         return null;
     }
