@@ -25,7 +25,7 @@ public class MenuItemBuilt {
         return new MenuItemBuilt(item);
     }
 
-    public MenuItem onclick(EventHandler<ActionEvent> event) {
+    public MenuItem click(EventHandler<ActionEvent> event) {
         menuItem.setOnAction(event);
         return menuItem;
     }

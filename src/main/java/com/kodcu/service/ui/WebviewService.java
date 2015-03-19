@@ -60,16 +60,16 @@ public class WebviewService {
         webView.setContextMenuEnabled(false);
         ContextMenu menu = new ContextMenu();
 
-        MenuItem copy = MenuItemBuilt.item("Copy").onclick(event1 -> {
+        MenuItem copy = MenuItemBuilt.item("Copy").click(event1 -> {
             controller.cutCopy(current.currentEditorSelection());
         });
-        MenuItem paste = MenuItemBuilt.item("Paste").onclick(e -> {
+        MenuItem paste = MenuItemBuilt.item("Paste").click(e -> {
             controller.paste(false);
         });
-        MenuItem pasteRaw = MenuItemBuilt.item("Paste raw").onclick(e -> {
+        MenuItem pasteRaw = MenuItemBuilt.item("Paste raw").click(e -> {
             current.insertEditorValue(controller.pasteRaw());
         });
-        MenuItem convert = MenuItemBuilt.item("Markdown to Asciidoc").onclick(e -> {
+        MenuItem convert = MenuItemBuilt.item("Markdown to Asciidoc").click(e -> {
             markdownService.convertToAsciidoc(current.currentEditorValue(),
                     content -> {
                         threadService.runActionLater(() -> {

@@ -493,25 +493,25 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         htmlPro.setOnMouseClicked(event -> {
             htmlProMenu.show(htmlPro, event.getScreenX(), 50);
         });
-        htmlProMenu.getItems().add(MenuItemBuilt.item("Save").onclick(event -> {
+        htmlProMenu.getItems().add(MenuItemBuilt.item("Save").click(event -> {
             this.generateHtml();
         }));
-        htmlProMenu.getItems().add(MenuItemBuilt.item("Save as").onclick(event -> {
+        htmlProMenu.getItems().add(MenuItemBuilt.item("Save as").click(event -> {
             this.generateHtml(true);
         }));
-        htmlProMenu.getItems().add(MenuItemBuilt.item("Copy source").tip("Copy HTML source").onclick(event -> {
+        htmlProMenu.getItems().add(MenuItemBuilt.item("Copy source").tip("Copy HTML source").click(event -> {
             this.cutCopy(lastRendered.getValue());
         }));
-        htmlProMenu.getItems().add(MenuItemBuilt.item("Clone source").tip("Copy HTML source (Embedded images)").onclick(event -> {
+        htmlProMenu.getItems().add(MenuItemBuilt.item("Clone source").tip("Copy HTML source (Embedded images)").click(event -> {
             previewEngine.executeScript("imageToBase64Url()");
         }));
 
         ContextMenu pdfProMenu = new ContextMenu();
         pdfProMenu.getStyleClass().add("build-menu");
-        pdfProMenu.getItems().add(MenuItemBuilt.item("Save").onclick(event -> {
+        pdfProMenu.getItems().add(MenuItemBuilt.item("Save").click(event -> {
             this.generatePdf();
         }));
-        pdfProMenu.getItems().add(MenuItemBuilt.item("Save as").onclick(event -> {
+        pdfProMenu.getItems().add(MenuItemBuilt.item("Save as").click(event -> {
             this.generatePdf(true);
         }));
         pdfPro.setContextMenu(pdfProMenu);
@@ -522,10 +522,10 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
         ContextMenu docbookProMenu = new ContextMenu();
         docbookProMenu.getStyleClass().add("build-menu");
-        docbookProMenu.getItems().add(MenuItemBuilt.item("Save").onclick(event -> {
+        docbookProMenu.getItems().add(MenuItemBuilt.item("Save").click(event -> {
             this.convertDocbook();
         }));
-        docbookProMenu.getItems().add(MenuItemBuilt.item("Save as").onclick(event -> {
+        docbookProMenu.getItems().add(MenuItemBuilt.item("Save as").click(event -> {
             this.convertDocbook(true);
         }));
 
@@ -538,18 +538,18 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         ContextMenu ebookProMenu = new ContextMenu();
         ebookProMenu.getStyleClass().add("build-menu");
         ebookProMenu.getItems().add(MenuBuilt.name("Mobi")
-                .add(MenuItemBuilt.item("Save").onclick(event -> {
+                .add(MenuItemBuilt.item("Save").click(event -> {
                     this.convertMobi();
                 }))
-                .add(MenuItemBuilt.item("Save as").onclick(event -> {
+                .add(MenuItemBuilt.item("Save as").click(event -> {
                     this.convertMobi(true);
                 })).build());
 
         ebookProMenu.getItems().add(MenuBuilt.name("Epub")
-                .add(MenuItemBuilt.item("Save").onclick(event -> {
+                .add(MenuItemBuilt.item("Save").click(event -> {
                     this.convertEpub();
                 }))
-                .add(MenuItemBuilt.item("Save as").onclick(event -> {
+                .add(MenuItemBuilt.item("Save as").click(event -> {
                     this.convertEpub(true);
                 })).build());
 
@@ -728,7 +728,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         });
 
         previewView.setContextMenuEnabled(false);
-        ContextMenu previewContextMenu = new ContextMenu(MenuItemBuilt.item("Refresh").onclick(event -> {
+        ContextMenu previewContextMenu = new ContextMenu(MenuItemBuilt.item("Refresh").click(event -> {
             previewEngine.executeScript("clearImageCache()");
         }));
         previewContextMenu.setAutoHide(true);
@@ -902,12 +902,12 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
                 if (showContextMenu) {
                     ContextMenu contextMenu = new ContextMenu();
-                    contextMenu.getItems().addAll(MenuItemBuilt.item("Paste").onclick(event -> {
+                    contextMenu.getItems().addAll(MenuItemBuilt.item("Paste").click(event -> {
                         String html = Optional.ofNullable(clipboard.getHtml()).orElse(clipboard.getString());
                         String content = (String) window.call(current.currentTab().htmlToMarkupFunction(), html);
                         editor.call("insert", content);
                     }));
-                    contextMenu.getItems().addAll(MenuItemBuilt.item("Paste raw").onclick(event -> {
+                    contextMenu.getItems().addAll(MenuItemBuilt.item("Paste raw").click(event -> {
                         editor.call("insert", clipboard.getString());
                     }));
                     contextMenu.show(stage);
