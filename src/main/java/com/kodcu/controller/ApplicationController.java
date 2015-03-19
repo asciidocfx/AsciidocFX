@@ -1193,7 +1193,8 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             if (dialog.isShowing())
                 dialog.hide();
 
-            IOHelper.move(path, path.getParent().resolve(result));
+            if(result.trim().matches("^[^\\\\/:?*\"<>|]+$"))
+                IOHelper.move(path, path.getParent().resolve(result.trim()));
         };
 
         dialog.getEditor().setOnAction(event -> {
