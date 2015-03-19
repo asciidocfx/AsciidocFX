@@ -180,6 +180,30 @@ var editorMenu = {
             cursorPosition.column = 0;
             var session = editor.getSession();
             session.insert(cursorPosition, "* ");
+        },
+        addAdmonition : function(type){
+            var range = editor.getSelectionRange();
+            editor.removeToLineStart();
+            editor.insert("["+type+"]\n====\n\n====");
+            editor.gotoLine(range.end.row + 3, 0, true);
+        },
+        addSidebarBlock:function(){
+            var range = editor.getSelectionRange();
+            editor.removeToLineStart();
+            editor.insert(".Title\n****\n\n****");
+            editor.gotoLine(range.end.row + 3, 0, true);
+        },
+        addExampleBlock:function(){
+            var range = editor.getSelectionRange();
+            editor.removeToLineStart();
+            editor.insert(".Title\n====\n\n====");
+            editor.gotoLine(range.end.row + 3, 0, true);
+        },
+        addPassthroughBlock: function(){
+            var range = editor.getSelectionRange();
+            editor.removeToLineStart();
+            editor.insert("++++\n\n++++");
+            editor.gotoLine(range.end.row + 2, 0, true);
         }
     },
     markdown: {

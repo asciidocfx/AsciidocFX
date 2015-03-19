@@ -1,6 +1,7 @@
 package com.kodcu.service.ui;
 
 import com.kodcu.component.LabelBuilt;
+import com.kodcu.component.MenuItemBuilt;
 import com.kodcu.component.MyTab;
 import com.kodcu.controller.ApplicationController;
 import com.kodcu.other.Current;
@@ -8,18 +9,13 @@ import com.kodcu.service.shortcut.ShortcutProvider;
 import de.jensd.fx.fontawesome.AwesomeIcon;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.Tooltip;
+import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.web.WebView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import java.util.Arrays;
 
 /**
  * Created by usta on 25.12.2014.
@@ -86,8 +82,9 @@ public class EditorService {
                 }).build();
 
         final Label tableLabel = LabelBuilt.icon(AwesomeIcon.TABLE, iconSize, minSize)
-                .clazz("top-label").tip("Table").click(event->{
-                    shortcutProvider.getProvider().addTable();;
+                .clazz("top-label").tip("Table").click(event -> {
+                    shortcutProvider.getProvider().addTable();
+                    ;
                 }).build();
 
         final Label imageLabel = LabelBuilt.icon(AwesomeIcon.IMAGE, iconSize, minSize)
@@ -137,6 +134,7 @@ public class EditorService {
         });
 
         final ChoiceBox<String> choiceBox = new ChoiceBox<>();
+        choiceBox.setFocusTraversable(false);
         choiceBox.setManaged(true);
         choiceBox.setVisible(true);
         choiceBox.getItems().addAll("Asciidoc", "Markdown");
@@ -188,7 +186,38 @@ public class EditorService {
                     shortcutProvider.getProvider().addQuote();
                 }).build();
 
-        final HBox topMenu = new HBox(quoteLabel);
+
+        MenuButton admonitionButton = new MenuButton("Adminitions");
+        admonitionButton.setFocusTraversable(false);
+        admonitionButton.getItems().add(new MenuItem("NOTE"));
+        admonitionButton.getItems().add(new MenuItem("TIP"));
+        admonitionButton.getItems().add(new MenuItem("IMPORTANT"));
+        admonitionButton.getItems().add(new MenuItem("CAUTION"));
+        admonitionButton.getItems().add(new MenuItem("WARNING"));
+
+        admonitionButton.getItems().stream().forEach(item -> {
+            item.setOnAction(e -> {
+                shortcutProvider.getProvider().addAdmonition(item.getText());
+            });
+        });
+
+        MenuButton blocks = new MenuButton("Blocks");
+        blocks.setFocusTraversable(false);
+        blocks.getItems().add(MenuItemBuilt.item("Sidebar").click(event -> {
+            shortcutProvider.getProvider().addSidebarBlock();
+        }));
+        blocks.getItems().add(MenuItemBuilt.item("Example").click(event -> {
+            shortcutProvider.getProvider().addExampleBlock();
+        }));
+        blocks.getItems().add(MenuItemBuilt.item("Passthrough").click(event -> {
+            shortcutProvider.getProvider().addPassthroughBlock();
+        }));
+        blocks.getItems().add(MenuItemBuilt.item("Blockquote").click(event -> {
+            shortcutProvider.getProvider().addQuote();
+        }));
+
+
+        final HBox topMenu = new HBox(quoteLabel, admonitionButton,blocks);
 
         topMenu.setSpacing(10);
         topMenu.getStyleClass().add("top-menu");

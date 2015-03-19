@@ -21,4 +21,8 @@ public interface ShortcutService {
     void addStrike();
     void addQuote();
     void addHighlight();
+    void addAdmonition(String type);
+    void addSidebarBlock();
+    void addExampleBlock();
+    void addPassthroughBlock();
 }

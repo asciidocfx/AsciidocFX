@@ -60,7 +60,7 @@ public class AsciidocShortcutService implements ShortcutService {
 
     @Override
     public void addBasicTable(String row, String column) {
-        tableController.createBasicTable(row,column);
+        tableController.createBasicTable(row, column);
     }
 
     @Override
@@ -101,5 +101,25 @@ public class AsciidocShortcutService implements ShortcutService {
     @Override
     public void addHighlight() {
         current.currentEngine().executeScript("editorMenu.asciidoc.highlightedText()");
+    }
+
+    @Override
+    public void addAdmonition(String type) {
+        current.currentEngine().executeScript(String.format("editorMenu.asciidoc.addAdmonition('%s')", type));
+    }
+
+    @Override
+    public void addSidebarBlock() {
+        current.currentEngine().executeScript("editorMenu.asciidoc.addSidebarBlock()");
+    }
+
+    @Override
+    public void addExampleBlock() {
+        current.currentEngine().executeScript("editorMenu.asciidoc.addExampleBlock()");
+    }
+
+    @Override
+    public void addPassthroughBlock() {
+        current.currentEngine().executeScript("editorMenu.asciidoc.addPassthroughBlock()");
     }
 }

@@ -29,10 +29,9 @@ public class MarkdownShortcutService implements ShortcutService {
     }
 
 
-
     @Override
     public void addBasicTable(String row, String column) {
-        tableController.createBasicTable(row,column);
+        tableController.createBasicTable(row, column);
     }
 
     @Override
@@ -102,6 +101,26 @@ public class MarkdownShortcutService implements ShortcutService {
 
     @Override
     public void addHighlight() {
+        // no-op
+    }
+
+    @Override
+    public void addAdmonition(String type) {
+        // no-op
+    }
+
+    @Override
+    public void addSidebarBlock() {
+        // no-op
+    }
+
+    @Override
+    public void addExampleBlock() {
+        // no-op
+    }
+
+    @Override
+    public void addPassthroughBlock() {
         // no-op
     }
 }
