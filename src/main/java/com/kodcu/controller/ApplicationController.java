@@ -9,6 +9,7 @@ import com.kodcu.component.*;
 import com.kodcu.other.Current;
 import com.kodcu.other.IOHelper;
 import com.kodcu.other.Item;
+import com.kodcu.other.XMLHelper;
 import com.kodcu.service.*;
 import com.kodcu.service.config.YamlService;
 import com.kodcu.service.convert.*;
@@ -19,6 +20,7 @@ import com.kodcu.service.shortcut.ShortcutProvider;
 import com.kodcu.service.table.AsciidocTableController;
 import com.kodcu.service.ui.*;
 import com.sun.javafx.application.HostServicesDelegate;
+import com.sun.webkit.dom.DocumentFragmentImpl;
 import de.jensd.fx.fontawesome.AwesomeDude;
 import de.jensd.fx.fontawesome.AwesomeIcon;
 import javafx.beans.property.SimpleStringProperty;
@@ -39,6 +41,7 @@ import javafx.scene.control.cell.TextFieldTreeCell;
 import javafx.scene.input.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.web.WebEngine;
+import javafx.scene.web.WebHistory;
 import javafx.scene.web.WebView;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
@@ -728,9 +731,50 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         });
 
         previewView.setContextMenuEnabled(false);
-        ContextMenu previewContextMenu = new ContextMenu(MenuItemBuilt.item("Refresh").click(event -> {
-            previewEngine.executeScript("clearImageCache()");
-        }));
+
+        previewEngine.setOnAlert(event -> {
+            if ("PREVIEW_LOADED".equals(event.getData())) {
+                if (Objects.nonNull(lastRendered.getValue()))
+                    lastRenderedChangeListener.changed(null, null, lastRendered.getValue());
+            }
+        });
+
+        ContextMenu previewContextMenu = new ContextMenu(
+                MenuItemBuilt.item("Go back").click(event -> {
+                    WebHistory history = previewEngine.getHistory();
+                    if (history.getCurrentIndex() != 0)
+                        history.go(-1);
+
+                }),
+                MenuItemBuilt.item("Go forward").click(event -> {
+                    WebHistory history = previewEngine.getHistory();
+                    if (history.getCurrentIndex() + 1 != history.getEntries().size())
+                        history.go(+1);
+                }),
+                new SeparatorMenuItem(),
+                MenuItemBuilt.item("Copy Html").click(event -> {
+                    DocumentFragmentImpl selectionDom = (DocumentFragmentImpl) previewEngine.executeScript("window.getSelection().getRangeAt(0).cloneContents()");
+                    ClipboardContent content = new ClipboardContent();
+                    content.putHtml(XMLHelper.nodeToString(selectionDom));
+                    clipboard.setContent(content);
+                }),
+                MenuItemBuilt.item("Copy Text").click(event -> {
+                    String selection = (String) previewEngine.executeScript("window.getSelection().toString()");
+                    ClipboardContent content = new ClipboardContent();
+                    content.putString(selection);
+                    clipboard.setContent(content);
+                }),
+                MenuItemBuilt.item("Copy Source").click(event -> {
+                    DocumentFragmentImpl selectionDom = (DocumentFragmentImpl) previewEngine.executeScript("window.getSelection().getRangeAt(0).cloneContents()");
+                    ClipboardContent content = new ClipboardContent();
+                    content.putString(XMLHelper.nodeToString(selectionDom));
+                    clipboard.setContent(content);
+                }),
+                new SeparatorMenuItem(),
+                MenuItemBuilt.item("Refresh").click(event -> {
+                    previewEngine.executeScript("clearImageCache()");
+                })
+        );
         previewContextMenu.setAutoHide(true);
         previewView.setOnMouseClicked(event -> {
             if (event.getButton() == MouseButton.SECONDARY) {
