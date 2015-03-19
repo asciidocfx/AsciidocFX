@@ -102,7 +102,7 @@ function runScroller(content) {
     }
     else if ($(renderedSelection).is(".imageblock")) {
         var src = $(renderedSelection).find("img").attr("src");
-        scrollTo60($("img[src='" + src + "']").offset().top);
+        scrollTo60($("img[src^='" + src + "']").offset().top);
         return;
     }
 
@@ -161,6 +161,9 @@ function runScroller(content) {
 }
 
 function scrollToElement(elements, content) {
+    if(content.trim() == "")
+        return;
+
     $(elements).each(function () {
         if (simplify($(this).text()) == simplify(content)) {
             scrollTo60($(this).offset().top);
