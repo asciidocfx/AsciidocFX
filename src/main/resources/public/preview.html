@@ -38,7 +38,17 @@
 
     function clearImageCache() {
         imageCacheNumber = Math.floor(Math.random() * (999999999999 - 2)) + 1;
-        refreshUI($("#placeholder").html());
+        function getPathFromUrl(url) {
+            return url.split("?")[0];
+        }
+
+        var content = $("#placeholder");
+        content.find("img").each(function () {
+            var srcAttr = $(this).attr("src");
+            if (srcAttr)
+                $(this).attr("src", srcAttr.split("?")[0]);
+        });
+        refreshUI(content.html());
     }
 
     function imageToBase64Url() {
