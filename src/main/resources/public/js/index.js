@@ -10,7 +10,7 @@ function convertBasicHtml(content) {
     var options = Opal.hash2(['backend', 'safe', 'attributes'], {
         backend: 'html5',
         safe: 'safeMode',
-        attributes: 'showtitle icons=font@ source-highlighter=highlight.js platform=opal platform-opal env=browser env-browser idprefix idseparator=- '
+        attributes: 'showtitle icons=font@ source-highlighter=highlight.js platform=opal platform-opal env=browser env-browser idprefix sectanchors idseparator=- '
     });
 
     var doc = Opal.Asciidoctor.$load(content,options);
@@ -25,7 +25,7 @@ function convertHtmlBook(content) {
     var options = Opal.hash2(['backend', 'safe', 'attributes', "header_footer"], {
         backend: 'html5',
         safe: 'safeMode',
-        attributes: 'showtitle icons=font@ source-highlighter=highlight.js platform=opal platform-opal env=browser env-browser idprefix idseparator=- '
+        attributes: 'showtitle icons=font@ source-highlighter=highlight.js platform=opal platform-opal env=browser env-browser idprefix sectanchors idseparator=- '
         , 'header_footer': true
     });
 
@@ -40,7 +40,7 @@ function convertHtmlArticle(content) {
 
     var options = Opal.hash2(['attributes', 'header_footer'],
         {
-            'attributes': ['backend=html5', 'doctype=article',"idprefix=","idseparator=-"],
+            'attributes': ['backend=html5', 'doctype=article',"idprefix=","idseparator=-","sectanchors="],
             'header_footer': true
         });
 
