@@ -117,6 +117,11 @@ public class EditorService {
                     shortcutProvider.getProvider().addStrike();
                 }).build();
 
+        final Label quoteLabel = LabelBuilt.icon(AwesomeIcon.QUOTE_LEFT, iconSize, minSize)
+                .clazz("top-label").tip("Blockquote").click(event -> {
+                    shortcutProvider.getProvider().addQuote();
+                }).build();
+
         final Label openMenuLabel = LabelBuilt.icon(AwesomeIcon.CHEVRON_CIRCLE_DOWN, iconSize, minSize)
                 .clazz("top-label").tip("More...").build();
 
@@ -151,6 +156,7 @@ public class EditorService {
                 strikethroughLabel,
                 headerLabel,
                 hyperlinkLabel,
+                quoteLabel,
                 codeLabel,
                 ulListLabel,
                 olListLabel,
@@ -181,12 +187,6 @@ public class EditorService {
 
     private Node createSecondEditorVBox(final String iconSize, final double minSize) {
 
-        final Label quoteLabel = LabelBuilt.icon(AwesomeIcon.QUOTE_LEFT, iconSize, minSize)
-                .clazz("top-label").tip("Blockquote").click(event -> {
-                    shortcutProvider.getProvider().addQuote();
-                }).build();
-
-
         MenuButton admonitionButton = new MenuButton("Adminitions");
         admonitionButton.setFocusTraversable(false);
         admonitionButton.getItems().add(new MenuItem("NOTE"));
@@ -216,8 +216,7 @@ public class EditorService {
             shortcutProvider.getProvider().addQuote();
         }));
 
-
-        final HBox topMenu = new HBox(quoteLabel, admonitionButton,blocks);
+        final HBox topMenu = new HBox( admonitionButton,blocks);
 
         topMenu.setSpacing(10);
         topMenu.getStyleClass().add("top-menu");
