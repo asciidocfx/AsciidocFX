@@ -32,10 +32,6 @@ function replaceTags(text, tag, first, second) {
 }
 
 md2AscRenderer.paragraph = function (text) {
-    text = replaceTags(text, "u", "+++<u>", "</u>+++");
-    text = replaceTags(text, "sub", "~", "~");
-    text = replaceTags(text, "sup", "^", "^");
-
     // if <b>ise</b> hatalı
     //return "\n[%hardbreaks]";
     return "\n" + text + "\n";
@@ -109,6 +105,9 @@ function markdownToAsciidoc(input) {
     var result = "";
     try {
         var result = marked(input, {renderer: md2AscRenderer});
+        result = replaceTags(result, "u", "+++<u>", "</u>+++");
+        result = replaceTags(result, "sub", "~", "~");
+        result = replaceTags(result, "sup", "^", "^");
     }
     catch (e) {
         throw  e;
