@@ -112,6 +112,10 @@ public class TabService {
         AnchorPane anchorPane = new AnchorPane();
         WebView webView = webviewService.createWebView();
         WebEngine webEngine = webView.getEngine();
+
+        MyTab tab = createTab();
+        tab.setWebView(webView);
+
         webEngine.setConfirmHandler(param -> {
             if ("command:ready".equals(param)) {
                 JSObject window = (JSObject) webEngine.executeScript("window");
@@ -127,6 +131,7 @@ public class TabService {
                 threadService.runTaskLater(() -> {
                     String content = IOHelper.readFile(path);
                     threadService.runActionLater(() -> {
+                        tab.setTabText(path.getFileName().toString());
                         window.call("setEditorValue", new Object[]{content});
                     });
                 });
@@ -135,19 +140,13 @@ public class TabService {
             return false;
         });
 
-        MyTab tab = createTab();
-
         Node editorVBox = editorService.createEditorVBox(webView, tab);
         controller.fitToParent(editorVBox);
 
         anchorPane.getChildren().add(editorVBox);
-
-
-        tab.setTabText(path.getFileName().toString());
         tab.setContent(anchorPane);
-
         tab.setPath(path);
-        tab.setWebView(webView);
+
         TabPane tabPane = controller.getTabPane();
         tabPane.getTabs().add(tab);
 
