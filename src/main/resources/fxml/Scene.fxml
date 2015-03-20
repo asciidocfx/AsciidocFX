@@ -18,8 +18,9 @@
                       <children>
                           <MenuButton mnemonicParsing="false" fx:id="panelShowHideMenuButton" >
                               <items>
-                                  <MenuItem mnemonicParsing="false" text="Hide File Browser" onAction="#hideFileBrowser" />
+                                  <MenuItem mnemonicParsing="false" text="Hide File Browser" onAction="#hideFileBrowser" fx:id="hideFileBrowser" />
                                   <CheckMenuItem mnemonicParsing="false" text="Hide Preview Panel" onAction="#hidePreviewPanel" fx:id="hidePreviewPanel" />
+                                  <MenuItem mnemonicParsing="false" text="Hide All" onAction="#hideFileAndPreviewPanels" />
                               </items>
                               <tooltip>
                                   <Tooltip text="Hide/Show Panels" />

@@ -80,11 +80,13 @@ import static java.nio.file.StandardOpenOption.*;
 @Controller
 public class ApplicationController extends TextWebSocketHandler implements Initializable {
 
+
     private Logger logger = LoggerFactory.getLogger(ApplicationController.class);
 
     private Path userHome = Paths.get(System.getProperty("user.home"));
 
     public CheckMenuItem hidePreviewPanel;
+    public MenuItem hideFileBrowser;
     public MenuButton panelShowHideMenuButton;
     public MenuItem renameFile;
     public MenuItem createFile;
@@ -1315,14 +1317,10 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     @FXML
     public void hidePreviewPanel(ActionEvent actionEvent) {
-        CheckMenuItem checkItem = (CheckMenuItem) actionEvent.getSource();
-        if (checkItem.isSelected())
-        {
+        if (hidePreviewPanel.isSelected()) {
             splitPane.setDividerPositions(splitPane.getDividerPositions()[0], 1);
             previewPanelVisibility.setValue(true);
-        }
-        else
-        {
+        } else {
             splitPane.setDividerPositions(splitPane.getDividerPositions()[0], 0.6);
             previewPanelVisibility.setValue(false);
         }
@@ -1333,5 +1331,12 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         splitPane.setDividerPositions(splitPane.getDividerPositions()[0], 0.6);
         previewPanelVisibility.setValue(false);
         hidePreviewPanel.setSelected(false);
+    }
+
+    @FXML
+    public void hideFileAndPreviewPanels(ActionEvent actionEvent) {
+        hidePreviewPanel.setSelected(true);
+        hidePreviewPanel(actionEvent);
+        hideFileBrowser(actionEvent);
     }
 }
