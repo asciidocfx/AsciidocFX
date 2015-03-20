@@ -94,6 +94,7 @@ public class DocumentService {
                 if (Objects.isNull(content))
                     return true;
                 window.call("setEditorValue", new Object[]{content});
+                window.call("setInitialized");
             }
             return false;
         });

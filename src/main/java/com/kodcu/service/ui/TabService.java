@@ -133,6 +133,7 @@ public class TabService {
                     threadService.runActionLater(() -> {
                         tab.setTabText(path.getFileName().toString());
                         window.call("setEditorValue", new Object[]{content});
+                        window.call("setInitialized");
                     });
                 });
 

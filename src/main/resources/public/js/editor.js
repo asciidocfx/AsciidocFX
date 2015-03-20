@@ -15,7 +15,7 @@ editor.setScrollSpeed("0.1");
 editor.setTheme("ace/theme/ace");
 
 var lastEditorRow = 0;
-var newlyInitialized = true;
+var initialized = false;
 var timeouter;
 var updateDelay = 100;
 
@@ -103,7 +103,7 @@ editor.getSession().selection.on('changeCursor', function (e) {
 });
 
 editor.getSession().on('change', function (obj) {
-    if (!newlyInitialized)
+    if (initialized)
         app.appendWildcard();
 
     if (timeouter)
@@ -125,10 +125,6 @@ editor.getSession().on('change', function (obj) {
 
     }, updateDelay);
 
-    if (newlyInitialized)
-        setTimeout(function () {
-            newlyInitialized = false;
-        }, 1000);
 });
 
 
@@ -160,4 +156,8 @@ function switchMode(index) {
 
 function rerender() {
     app.textListener(editor.getValue());
+}
+
+function setInitialized(){
+    initialized = true;
 }
