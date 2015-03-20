@@ -25,4 +25,5 @@ public interface ShortcutService {
     void addSidebarBlock();
     void addExampleBlock();
     void addPassthroughBlock();
+    void addIndexSelection();
 }

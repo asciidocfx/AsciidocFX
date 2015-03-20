@@ -1,5 +1,6 @@
 package com.kodcu.service.shortcut;
 
+import com.kodcu.component.AlertHelper;
 import com.kodcu.controller.ApplicationController;
 import com.kodcu.other.Current;
 import com.kodcu.service.table.MarkdownTableController;
@@ -27,7 +28,6 @@ public class MarkdownShortcutService implements ShortcutService {
     public void addBold() {
         current.currentEngine().executeScript("editorMenu.markdown.boldText()");
     }
-
 
     @Override
     public void addBasicTable(String row, String column) {
@@ -102,25 +102,35 @@ public class MarkdownShortcutService implements ShortcutService {
     @Override
     public void addHighlight() {
         // no-op
+        AlertHelper.notImplementedDialog();
     }
 
     @Override
     public void addAdmonition(String type) {
         // no-op
+        AlertHelper.notImplementedDialog();
     }
 
     @Override
     public void addSidebarBlock() {
         // no-op
+        AlertHelper.notImplementedDialog();
     }
 
     @Override
     public void addExampleBlock() {
         // no-op
+        AlertHelper.notImplementedDialog();
     }
 
     @Override
     public void addPassthroughBlock() {
+        // no-op
+        AlertHelper.notImplementedDialog();
+    }
+
+    @Override
+    public void addIndexSelection() {
         // no-op
     }
 }

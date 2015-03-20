@@ -122,4 +122,9 @@ public class AsciidocShortcutService implements ShortcutService {
     public void addPassthroughBlock() {
         current.currentEngine().executeScript("editorMenu.asciidoc.addPassthroughBlock()");
     }
+
+    @Override
+    public void addIndexSelection() {
+        current.currentEngine().executeScript("editorMenu.asciidoc.addIndexSelection()");
+    }
 }
