@@ -2,6 +2,7 @@ package com.kodcu.service.convert;
 
 import com.kodcu.other.Current;
 import com.kodcu.other.IOHelper;
+import com.kodcu.service.ThreadService;
 import org.joox.Match;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -21,46 +22,24 @@ import static org.joox.JOOX.$;
  * Created by usta on 19.07.2014.
  */
 @Component
-public class DocBookService {
-
-    private final Pattern ascIncludeRegex = Pattern.compile("(?<=include::)(?<path>.*?)(?=\\[(.*?)\\])");
-    private final Pattern mdIncludeRegex = Pattern.compile("\\[.*?\\]\\((?<path>.*\\.(md|markdown|asc|adoc|asciidoc|ad|txt))\\)");
+public class DocBookService extends Converter {
 
     private final RenderService docConverter;
     private final Current current;
+    private final ThreadService threadService;
 
     @Autowired
-    public DocBookService(final RenderService docConverter, final Current current) {
+    public DocBookService(final RenderService docConverter, final Current current, ThreadService threadService) {
         this.docConverter = docConverter;
         this.current = current;
+        this.threadService = threadService;
     }
 
-    private void traverseLines(List<String> lines, StringBuffer buffer, Path rootPath) {
-
-        for (String line : lines) {
-
-            Matcher ascMatcher = ascIncludeRegex.matcher(line);
-            Matcher markdownMatcher = mdIncludeRegex.matcher(line);
-
-            if (ascMatcher.find()) {
-                String chapterPath = ascMatcher.group("path");
-                Path chapterFile = rootPath.resolve(chapterPath);
-                String chapterContent = IOHelper.readFile(chapterFile);
-                traverseLines(Arrays.asList(chapterContent.split("\\r?\\n")), buffer, chapterFile.getParent());
-            } else if (markdownMatcher.find()) {
-                String chapterPath = markdownMatcher.group("path");
-                Path chapterFile = rootPath.resolve(chapterPath);
-                String chapterContent = IOHelper.readFile(chapterFile);
-                traverseLines(Arrays.asList(chapterContent.split("\\r?\\n")), buffer, chapterFile.getParent());
-            } else
-                traverseLine(line, buffer);
-        }
-    }
-
-    private void traverseLine(String line, StringBuffer buffer) {
-        if (line.matches("^=+ +.*:.*"))
+    @Override
+    protected void traverseLine(String line, StringBuffer buffer) {
+        if (line.matches("^=+ +.*:.*")) // Replace : in headers for a asciidoctor bug
             line = line.replace(":", "00HEADER00COLON00");
-        buffer.append(line + "\n");
+        super.traverseLine(line, buffer);
     }
 
     public void generateDocbook(Consumer<String> step) {
@@ -77,33 +56,33 @@ public class DocBookService {
         String text = stringBuffer.toString();
 
         docConverter.convertDocbook(text, true, docBookHeaderContent -> {
-            docBookHeaderContent = docBookHeaderContent.replace("<?xml version=\"1.0\" encoding=\"UTF-8\"?>", "<?xml version=\"1.1\" encoding=\"UTF-8\"?>");
+                docBookHeaderContent = docBookHeaderContent.replace("<?xml version=\"1.0\" encoding=\"UTF-8\"?>", "<?xml version=\"1.1\" encoding=\"UTF-8\"?>");
 
-            StringReader bookReader = new StringReader(docBookHeaderContent);
-            Match rootDocument = IOHelper.$(new InputSource(bookReader));
-            bookReader.close();
+                StringReader bookReader = new StringReader(docBookHeaderContent);
+                Match rootDocument = IOHelper.$(new InputSource(bookReader));
+                bookReader.close();
 
 //            // makes figure centering
-            rootDocument.find("figure").find("imagedata").attr("align", "center");
+                rootDocument.find("figure").find("imagedata").attr("align", "center");
 
-            // remove callout's duplicated refs and pick last
-            rootDocument.find("callout").forEach(elem -> {
-                String arearefs = $(elem).attr("arearefs");
-                String[] cos = arearefs.split(" ");
-                if (cos.length > 1)
-                    $(elem).attr("arearefs", cos[cos.length - 1]);
-            });
+                // remove callout's duplicated refs and pick last
+                rootDocument.find("callout").forEach(elem -> {
+                    String arearefs = $(elem).attr("arearefs");
+                    String[] cos = arearefs.split(" ");
+                    if (cos.length > 1)
+                        $(elem).attr("arearefs", cos[cos.length - 1]);
+                });
 
-            outputBuffer.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-            outputBuffer.append("\n");
-            outputBuffer.append("<?asciidoc-toc?>");
-            outputBuffer.append("\n");
-            outputBuffer.append("<?asciidoc-numbered?>");
-            outputBuffer.append("\n");
-            outputBuffer.append(rootDocument.content());
-            String result = outputBuffer.toString();
-            result = result.replace("00HEADER00COLON00", ":");
-            step.accept(result);
+                outputBuffer.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+                outputBuffer.append("\n");
+                outputBuffer.append("<?asciidoc-toc?>");
+                outputBuffer.append("\n");
+                outputBuffer.append("<?asciidoc-numbered?>");
+                outputBuffer.append("\n");
+                outputBuffer.append(rootDocument.content());
+                String result = outputBuffer.toString();
+                result = result.replace("00HEADER00COLON00", ":");
+                step.accept(result);
         });
     }
 

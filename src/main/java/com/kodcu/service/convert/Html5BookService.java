@@ -25,7 +25,7 @@ import static java.nio.file.StandardOpenOption.TRUNCATE_EXISTING;
  * Created by usta on 30.08.2014.
  */
 @Component
-public class Html5BookService {
+public class Html5BookService extends Converter {
 
     private final Logger logger = LoggerFactory.getLogger(Html5BookService.class);
 
@@ -52,8 +52,6 @@ public class Html5BookService {
         this.indikatorService = indikatorService;
     }
 
-
-
     public void convertHtmlBook(boolean askPath) {
 
         try {
@@ -75,22 +73,7 @@ public class Html5BookService {
             List<String> bookAscLines = Arrays.asList(current.currentEditorValue().split("\\r?\\n"));
             StringBuffer allAscChapters = new StringBuffer();
 
-            for (int i = 0; i < bookAscLines.size(); i++) {
-                final String bookAscLine = bookAscLines.get(i);
-
-                Matcher matcher = compiledRegex.matcher(bookAscLine);
-
-                if (matcher.find()) {
-                    String chapterPath = matcher.group();
-                    String chapterContent = IOHelper.readFile(currentTabPathDir.resolve(chapterPath));
-                    allAscChapters.append(chapterContent);
-                    allAscChapters.append("\n\n");
-                } else {
-                    allAscChapters.append(bookAscLine);
-                    allAscChapters.append("\n");
-                }
-
-            }
+            traverseLines(bookAscLines,allAscChapters,currentTabPathDir);
 
             final String bookXmlAsciidoc = allAscChapters.toString();
 
