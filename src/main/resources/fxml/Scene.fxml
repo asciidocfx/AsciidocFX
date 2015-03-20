@@ -12,7 +12,7 @@
           <items>
             <AnchorPane minHeight="0.0" prefHeight="-1.0" prefWidth="-1.0">
               <children>
-                <VBox AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                <VBox AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" minWidth="0.0">
                   <children>
                     <HBox fillHeight="true" maxWidth="1.7976931348623157E308" prefHeight="33.0" spacing="5.0">
                       <children>
