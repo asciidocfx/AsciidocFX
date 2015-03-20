@@ -985,10 +985,12 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     }
 
     public void adjustSplitPane() {
-        if (splitPane.getDividerPositions()[0] > 0.1)
-            splitPane.setDividerPositions(0, 1);
-        else
-            splitPane.setDividerPositions(0.18, 0.60);
+        if (splitPane.getDividerPositions()[0] > 0.1) {
+            hideFileAndPreviewPanels(null);
+        } else {
+            showFileBrowser();
+            showPreviewPanel();
+        }
     }
 
     public void saveDoc() {
