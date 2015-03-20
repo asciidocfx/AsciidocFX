@@ -16,14 +16,15 @@
                   <children>
                     <HBox fillHeight="true" maxWidth="1.7976931348623157E308" prefHeight="33.0" spacing="5.0">
                       <children>
-                        <Button minWidth="-Infinity" mnemonicParsing="false" onAction="#hideLeftSplit" text="" HBox.hgrow="NEVER">
-                          <graphic>
-                            <Label id="changeWorkingDir" fx:id="splitHideButton" minWidth="-Infinity" mnemonicParsing="false" text="" />
-                          </graphic>
-                          <tooltip>
-                            <Tooltip text="Collapse" />
-                          </tooltip>
-                        </Button>
+                          <MenuButton mnemonicParsing="false" fx:id="panelShowHideMenuButton" >
+                              <items>
+                                  <MenuItem mnemonicParsing="false" text="Hide File Browser" onAction="#hideFileBrowser" />
+                                  <CheckMenuItem mnemonicParsing="false" text="Hide Preview Panel" onAction="#hidePreviewPanel" fx:id="hidePreviewPanel" />
+                              </items>
+                              <tooltip>
+                                  <Tooltip text="Hide/Show Panels" />
+                              </tooltip>
+                          </MenuButton>
                         <Button fx:id="changeWorkingDir" minWidth="-Infinity" mnemonicParsing="false" onAction="#changeWorkingDir" text="" HBox.hgrow="NEVER">
                           <graphic>
                             <Label fx:id="workingDirButton" minWidth="-Infinity" mnemonicParsing="false" text="" />

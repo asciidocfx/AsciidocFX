@@ -11,6 +11,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.web.WebView;
@@ -125,6 +126,29 @@ public class EditorService {
         final Label openMenuLabel = LabelBuilt.icon(AwesomeIcon.CHEVRON_CIRCLE_DOWN, iconSize, minSize)
                 .clazz("top-label").tip("More...").build();
 
+        final Label showFileBrowser = LabelBuilt.icon(AwesomeIcon.CHEVRON_CIRCLE_RIGHT, iconSize, minSize)
+                .click(event -> {
+                    controller.showFileBrowser();
+                })
+                .clazz("top-label").tip("Show File Browser...").build();
+
+        final Label showPreviewPanel = LabelBuilt.icon(AwesomeIcon.CHEVRON_CIRCLE_LEFT, iconSize, minSize)
+                .click(event -> {
+                    controller.showPreviewPanel();
+                })
+                .clazz("top-label").tip("Show File Browser...").build();
+
+        showFileBrowser.visibleProperty().bindBidirectional(controller.fileBrowserVisibilityProperty());
+        showFileBrowser.managedProperty().bindBidirectional(controller.fileBrowserVisibilityProperty());
+        showPreviewPanel.visibleProperty().bindBidirectional(controller.previewPanelVisibilityProperty());
+        showPreviewPanel.managedProperty().bindBidirectional(controller.previewPanelVisibilityProperty());
+
+        Pane placeholderPane = new Pane();
+        placeholderPane.maxWidth(Integer.MAX_VALUE);
+        placeholderPane.prefHeight(1);
+        placeholderPane.prefWidth(1);
+        HBox.setHgrow(placeholderPane,Priority.ALWAYS);
+
         openMenuLabel.setOnMouseClicked(event -> {
             int childSize = vbox.getChildren().size();
             if (childSize == 2) {
@@ -147,7 +171,9 @@ public class EditorService {
 
         myTab.setMarkup(choiceBox);
 
-        final HBox topMenu = new HBox(newLabel,
+        final HBox topMenu = new HBox(
+                showFileBrowser,
+                newLabel,
                 openLabel,
                 saveLabel,
                 boldLabel,
@@ -165,7 +191,10 @@ public class EditorService {
                 subscriptLabel,
                 superScriptLabel,
                 choiceBox,
-                openMenuLabel);
+                openMenuLabel,
+                placeholderPane,
+                showPreviewPanel
+                );
 
         topMenu.setAlignment(Pos.CENTER_LEFT);
 
@@ -216,7 +245,7 @@ public class EditorService {
             shortcutProvider.getProvider().addQuote();
         }));
 
-        final HBox topMenu = new HBox( admonitionButton,blocks);
+        final HBox topMenu = new HBox(admonitionButton, blocks);
 
         topMenu.setSpacing(10);
         topMenu.getStyleClass().add("top-menu");

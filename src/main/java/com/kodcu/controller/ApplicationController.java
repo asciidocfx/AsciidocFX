@@ -23,6 +23,8 @@ import com.sun.javafx.application.HostServicesDelegate;
 import com.sun.webkit.dom.DocumentFragmentImpl;
 import de.jensd.fx.fontawesome.AwesomeDude;
 import de.jensd.fx.fontawesome.AwesomeIcon;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
@@ -82,6 +84,8 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     private Path userHome = Paths.get(System.getProperty("user.home"));
 
+    public CheckMenuItem hidePreviewPanel;
+    public MenuButton panelShowHideMenuButton;
     public MenuItem renameFile;
     public MenuItem createFile;
     public TabPane tabPane;
@@ -89,7 +93,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     public SplitPane splitPane;
     public SplitPane splitPaneVertical;
     public TreeView<Item> treeView;
-    public Label splitHideButton;
     public Label workingDirButton;
     public Label goUpLabel;
     public Label goHomeLabel;
@@ -234,6 +237,8 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     private HostServicesDelegate hostServices;
     private Path configPath;
     private Config config;
+    private BooleanProperty fileBrowserVisibility = new SimpleBooleanProperty(false);
+    private BooleanProperty previewPanelVisibility = new SimpleBooleanProperty(false);
 
     private final List<String> bookNames = Arrays.asList("book.asc", "book.txt", "book.asciidoc", "book.adoc", "book.ad");
 
@@ -482,8 +487,9 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
 
         // Left menu label icons
+
         AwesomeDude.setIcon(workingDirButton, AwesomeIcon.FOLDER_ALT, "14.0");
-        AwesomeDude.setIcon(splitHideButton, AwesomeIcon.CHEVRON_LEFT, "14.0");
+        AwesomeDude.setIcon(panelShowHideMenuButton, AwesomeIcon.COLUMNS, "14.0");
         AwesomeDude.setIcon(refreshLabel, AwesomeIcon.REFRESH, "14.0");
         AwesomeDude.setIcon(goUpLabel, AwesomeIcon.LEVEL_UP, "14.0");
         AwesomeDude.setIcon(goHomeLabel, AwesomeIcon.HOME, "14.0");
@@ -876,11 +882,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         });
     }
 
-    @FXML
-    public void hideLeftSplit(Event event) {
-        splitPane.setDividerPositions(0, 0.51);
-    }
-
     public void onscroll(Object pos, Object max) {
         scrollService.onscroll(pos, max);
     }
@@ -1237,7 +1238,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             if (dialog.isShowing())
                 dialog.hide();
 
-            if(result.trim().matches("^[^\\\\/:?*\"<>|]+$"))
+            if (result.trim().matches("^[^\\\\/:?*\"<>|]+$"))
                 IOHelper.move(path, path.getParent().resolve(result.trim()));
         };
 
@@ -1281,5 +1282,56 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             indikatorService.completeCycle();
         });
 
+    }
+
+    public boolean getFileBrowserVisibility() {
+        return fileBrowserVisibility.get();
+    }
+
+    public BooleanProperty fileBrowserVisibilityProperty() {
+        return fileBrowserVisibility;
+    }
+
+    public boolean getPreviewPanelVisibility() {
+        return previewPanelVisibility.get();
+    }
+
+    public BooleanProperty previewPanelVisibilityProperty() {
+        return previewPanelVisibility;
+    }
+
+    @FXML
+    public void hideFileBrowser(ActionEvent actionEvent) {
+        splitPane.setDividerPositions(0, splitPane.getDividerPositions()[1]);
+        fileBrowserVisibility.setValue(true);
+
+    }
+
+    public void showFileBrowser() {
+        splitPane.setDividerPositions(0.18, splitPane.getDividerPositions()[1]);
+        fileBrowserVisibility.setValue(false);
+
+    }
+
+    @FXML
+    public void hidePreviewPanel(ActionEvent actionEvent) {
+        CheckMenuItem checkItem = (CheckMenuItem) actionEvent.getSource();
+        if (checkItem.isSelected())
+        {
+            splitPane.setDividerPositions(splitPane.getDividerPositions()[0], 1);
+            previewPanelVisibility.setValue(true);
+        }
+        else
+        {
+            splitPane.setDividerPositions(splitPane.getDividerPositions()[0], 0.6);
+            previewPanelVisibility.setValue(false);
+        }
+
+    }
+
+    public void showPreviewPanel() {
+        splitPane.setDividerPositions(splitPane.getDividerPositions()[0], 0.6);
+        previewPanelVisibility.setValue(false);
+        hidePreviewPanel.setSelected(false);
     }
 }
