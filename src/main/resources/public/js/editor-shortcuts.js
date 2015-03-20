@@ -77,31 +77,119 @@ editor.commands.addCommand({
     readOnly: true
 });
 
-function formatText(editor, matcher, firstCharacter, lastCharacter) {
+var formatText = function (editor, matcher, firstCharacter, lastCharacter) {
+
     var range = editor.getSelectionRange();
-    var text = editor.session.getTextRange(range);
+    var selectedText = editor.session.getTextRange(range);
     var firstCharLength = firstCharacter.length;
     var lastCharLength = lastCharacter.length;
 
-    if (matcher(text)) {
-        text = text.substring(firstCharLength, text.length - lastCharLength);
-        editor.session.replace(range, text);
+    var decorated = matcher(selectedText);
+    if (decorated) {
+        selectedText = decorated[2];
+        editor.session.replace(range, selectedText);
     }
-    else {
-        var virtualRange = editor.getSelectionRange();
-        virtualRange.setStart(range.start.row, range.start.column - firstCharLength);
-        virtualRange.setEnd(range.end.row, range.end.column + lastCharLength);
+    else if(!matchAnyTextFormatting(selectedText, firstCharLength, lastCharLength, matcher)) {
 
+        var virtualRange = updateVirtualRange(1, 1);
         var virtualText = editor.session.getTextRange(virtualRange);
-        if (matcher(virtualText)) {
-            editor.session.replace(virtualRange, text);
-        }
-        else {
-            editor.session.replace(range, firstCharacter + text + lastCharacter);
-            if (range.end.column == range.start.column) {
-                editor.navigateTo(range.end.row, range.end.column + firstCharLength);
+
+        if(isInlineAsciiDocFormatting(firstCharacter, lastCharacter)) {
+
+            if(isCharBasedDecoration(firstCharacter, lastCharacter)) {
+
+                if(matchWhiteSpaceOnBothSides(selectedText, virtualText)) {
+                    replaceText(range, firstCharacter, selectedText, lastCharacter);
+                } else {
+                    var prefix = firstCharacter.concat(firstCharacter);
+                    var suffix = lastCharacter.concat(lastCharacter);
+                    firstCharLength = prefix.length;
+                    replaceText(range, prefix, selectedText, suffix);
+                }
+            }
+            else {
+                // else sttmt for del and u tags
+                if(matchWhiteSpaceOnBothSides(selectedText, virtualText)) {
+                    var quotedText = firstCharacter.indexOf("del") > -1 ? "line-through" : "underline";
+                    firstCharLength = quotedText.length + 3;
+                    replaceText(range, '['.concat(quotedText).concat(']#'), selectedText, '#');
+                } else {
+                    replaceText(range, firstCharacter, selectedText, lastCharacter);
+                }
             }
         }
+        else {
+           // for the rest of the decorations - markdown included
+           replaceText(range, firstCharacter, selectedText, lastCharacter);
+        }
+
+        if (range.end.column == range.start.column) {
+            editor.navigateTo(range.end.row, range.end.column + firstCharLength);
+        }
+    }
+
+    function matchAnyTextFormatting(selectedText, prefixLength, suffixLength, matcher) {
+        var copyOfPL = prefixLength,
+            copyOfSL = suffixLength,
+            attempt = false;
+
+        var virtualRange = updateVirtualRange(prefixLength, suffixLength);
+        var virtualText = editor.session.getTextRange(virtualRange);
+
+        // find nested chars such as **abc**, ****, **
+        while(matcher(virtualText)) {
+            var previousText = virtualText;
+            attempt = true;
+            copyOfPL += prefixLength; copyOfSL += suffixLength;
+
+            virtualRange = updateVirtualRange(copyOfPL, copyOfSL);
+            virtualText = editor.session.getTextRange(virtualRange);
+
+            if(previousText == virtualText)
+                break;
+        }
+
+        if (attempt) {
+            virtualRange = updateVirtualRange(copyOfPL - prefixLength, copyOfSL - suffixLength);
+            editor.session.replace(virtualRange, selectedText);
+            return true;
+        }
+
+        return false;
+    }
+
+    function replaceText(range, prefix, text, suffix) {
+        editor.session.replace(range, prefix + text + suffix);
+    }
+
+    function isCharBasedDecoration(firstChar, lastChar) {
+        return [["*","*"],["_","_"],["`","`"]].some(function (element, index, array) {
+            return (firstChar === element[0] && lastChar === element[1])
+        });
+    }
+
+    function isInlineAsciiDocFormatting(firstChar, lastChar) {
+        if(editor.getSession().getMode().$id != "ace/mode/asciidoc")
+            return false;
+
+        return [["*","*"],["_","_"],["`","`"],["+++<u>","</u>+++"],["+++<del>","</del>+++"]].some(function (element, index, array) {
+            return (firstChar === element[0] && lastChar === element[1]);
+        });
+    }
+
+    function updateVirtualRange(startColumnOffSet, endColumnOffSet) {
+        var range = virtualRange = editor.getSelectionRange();
+        virtualRange.setStart(range.start.row, (range.start.column - startColumnOffSet));
+        virtualRange.setEnd(range.end.row,  (range.end.column + endColumnOffSet));
+        return virtualRange;
+    }
+
+    function matchWhiteSpaceOnBothSides(mainText, extendedText) {
+        return extendedText.match('^(?: )(' + escapeSpecialChars(mainText) + ')(?: )$');
+    }
+
+    function escapeSpecialChars(text) {
+        return text.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
     }
 }
 
@@ -120,10 +208,10 @@ var editorMenu = {
             formatText(editor, matchSubScriptText, "~", "~");
         },
         underlinedText: function () {
-            formatText(editor, matchHtmlTagText, "+++<u>", "</u>+++");
+            formatText(editor, matchUnderlineText, "+++<u>", "</u>+++");
         },
         addStrikeThroughText: function () {
-            formatText(editor, matchHtmlTagText, "+++<del>", "</del>+++");
+            formatText(editor, matchLineThroughText, "+++<del>", "</del>+++");
         },
         highlightedText: function () {
             formatText(editor, matchHighlightedText, "#", "#");
@@ -221,13 +309,13 @@ var editorMenu = {
             formatText(editor, matchItalicizedText, "_", "_");
         },
         superScript: function () {
-            formatText(editor, matchHtmlTagText, "<sup>", "</sup>");
+            formatText(editor, matchMarkdownSuperScriptText, "<sup>", "</sup>");
         },
         subScript: function () {
-            formatText(editor, matchHtmlTagText, "<sub>", "</sub>");
+            formatText(editor, matchMarkdownSubScriptText, "<sub>", "</sub>");
         },
         underlinedText: function () {
-            formatText(editor, matchHtmlTagText, "<u>", "</u>");
+            formatText(editor, matchUnderlineText, "<u>", "</u>");
         },
         addStrikeThroughText: function () {
             formatText(editor, matchMarkdownStrikeThroughText, "~~", "~~");
@@ -516,35 +604,47 @@ function mouseWheelHandler(event) {
 }
 
 function matchBoldText(text) {
-    return text.match(/\*.*\*/g);
+    return text.match(/^(\*{1,2})(.*?)(\*{1,2})$/);
 }
 
 function matchItalicizedText(text) {
-    return text.match(/\_.*\_/g);
+    return text.match(/^(\_{1,2})(.*?)(\_{1,2})$/);
 }
 
 function matchSuperScriptText(text) {
-    return text.match(/\^.*\^/g);
+    return text.match(/^(\^)(.*?)(\^)$/);
 }
 
 function matchSubScriptText(text) {
-    return text.match(/\~.*\~/g);
+    return text.match(/^(\~)(.*?)(\~)$/);
 }
 
 function matchCode(text) {
-    return text.match(/\`.*\`/g);
+    return text.match(/^(\`{1,2})(.*?)(\`{1,2})$/);
 }
 
 function matchHighlightedText(text) {
-    return text.match(/\#.*\#/g);
+    return text.match(/^(\#)(.*?)(\#)$/);
 }
 
 function matchMarkdownStrikeThroughText(text) {
-    return text.match(/\~\~.*\~\~/g);
+    return text.match(/^(\~\~)(.*?)(\~\~)$/);
 }
 
-function matchHtmlTagText(text) {
-    return text.match(/((\+\+\+)?\<(u|del|sup|sub)\>).*(\<\/(u|del|sub|sup)\>(\+\+\+)?)/g);
+function matchLineThroughText(text){
+    return text.match(/^((?:(?:\+{3})?\<del\>)|(?:\[line-through\]\#))(.*?)((?:\<\/del\>(?:\+{3})?)|\#)$/);
+}
+
+function matchUnderlineText(text){
+    return text.match(/^((?:(?:\+{3})?\<u\>)|(?:\[underline\]\#))(.*?)((?:\<\/u\>(?:\+{3})?)|\#)$/);
+}
+
+function matchMarkdownSuperScriptText(text){
+    return text.match(/^(\<(?:sup)\>)(.*?)(\<\/(?:sup)\>)$/);
+}
+
+function matchMarkdownSubScriptText(text){
+    return text.match(/^(\<(?:sub)\>)(.*?)(\<\/(?:sub)\>)$/);
 }
 
 confirm("command:ready")
