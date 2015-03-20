@@ -136,7 +136,7 @@ public class EditorService {
                 .click(event -> {
                     controller.showPreviewPanel();
                 })
-                .clazz("top-label").tip("Show File Browser...").build();
+                .clazz("top-label").tip("Show Preview Panel...").build();
 
         showFileBrowser.visibleProperty().bindBidirectional(controller.fileBrowserVisibilityProperty());
         showFileBrowser.managedProperty().bindBidirectional(controller.fileBrowserVisibilityProperty());
