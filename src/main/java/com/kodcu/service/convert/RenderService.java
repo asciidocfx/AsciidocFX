@@ -89,9 +89,8 @@ public class RenderService {
         });
     }
 
-    public void convertDocbookArticle(Consumer<String> step) {
+    public void convertDocbookArticle(String input,Consumer<String> step) {
 
-        String input = current.currentEditorValue();
         markdownService.convert(input, asciidoc -> {
             threadService.runActionLater(() -> {
                 getWindow().setMember("editorValue", asciidoc);
@@ -99,6 +98,5 @@ public class RenderService {
                 step.accept(rendered);
             });
         });
-
     }
 }

@@ -5,8 +5,10 @@ import com.kodcu.controller.ApplicationController;
 import com.kodcu.other.Current;
 import com.kodcu.service.*;
 import com.kodcu.service.extension.AsciiTreeGenerator;
+import com.kodcu.service.shortcut.ShortcutProvider;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.MouseButton;
 import javafx.scene.web.WebEngine;
@@ -35,10 +37,11 @@ public class WebviewService {
 
     private Optional<DocumentService> documentService = Optional.empty();
     private final AsciiTreeGenerator asciiTreeGenerator;
+    private final ShortcutProvider shortcutProvider;
 
     @Autowired
     public WebviewService(final ApplicationController controller, final PathResolverService pathResolver, final ThreadService threadService,
-                          final ParserService parserService, final MarkdownService markdownService, final Current current, AsciiTreeGenerator asciiTreeGenerator) {
+                          final ParserService parserService, final MarkdownService markdownService, final Current current, AsciiTreeGenerator asciiTreeGenerator, ShortcutProvider shortcutProvider) {
         this.controller = controller;
         this.pathResolver = pathResolver;
         this.threadService = threadService;
@@ -46,6 +49,7 @@ public class WebviewService {
         this.markdownService = markdownService;
         this.current = current;
         this.asciiTreeGenerator = asciiTreeGenerator;
+        this.shortcutProvider = shortcutProvider;
     }
 
     public void setDocumentService(DocumentService documentService) {
@@ -69,7 +73,10 @@ public class WebviewService {
         MenuItem pasteRaw = MenuItemBuilt.item("Paste raw").click(e -> {
             current.insertEditorValue(controller.pasteRaw());
         });
-        MenuItem convert = MenuItemBuilt.item("Markdown to Asciidoc").click(e -> {
+        MenuItem indexSelection = MenuItemBuilt.item("Index selection").click(e -> {
+            shortcutProvider.getProvider().addIndexSelection();
+        });
+        MenuItem markdownToAsciidoc = MenuItemBuilt.item("Markdown to Asciidoc").click(e -> {
             markdownService.convertToAsciidoc(current.currentEditorValue(),
                     content -> {
                         threadService.runActionLater(() -> {
@@ -81,15 +88,18 @@ public class WebviewService {
         webView.setOnMouseClicked(event -> {
 
             if (menu.getItems().size() == 0) {
-                menu.getItems().addAll(copy, paste, pasteRaw, convert);
+                menu.getItems().addAll(copy, paste, pasteRaw,
+                        markdownToAsciidoc,
+                        indexSelection
+                        );
             }
 
             if (menu.isShowing()) {
                 menu.hide();
             }
             if (event.getButton() == MouseButton.SECONDARY) {
-                boolean markdown = current.currentTab().isMarkdown();
-                convert.setVisible(markdown);
+                markdownToAsciidoc.setVisible(current.currentTab().isMarkdown());
+                indexSelection.setVisible(current.currentTab().isAsciidoc());
                 menu.show(webView, event.getScreenX(), event.getScreenY());
             }
         });

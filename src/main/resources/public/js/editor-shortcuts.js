@@ -181,29 +181,36 @@ var editorMenu = {
             var session = editor.getSession();
             session.insert(cursorPosition, "* ");
         },
-        addAdmonition : function(type){
+        addAdmonition: function (type) {
             var range = editor.getSelectionRange();
             editor.removeToLineStart();
-            editor.insert("["+type+"]\n====\n\n====");
+            editor.insert("[" + type + "]\n====\n\n====");
             editor.gotoLine(range.end.row + 3, 0, true);
         },
-        addSidebarBlock:function(){
+        addSidebarBlock: function () {
             var range = editor.getSelectionRange();
             editor.removeToLineStart();
             editor.insert(".Title\n****\n\n****");
             editor.gotoLine(range.end.row + 3, 0, true);
         },
-        addExampleBlock:function(){
+        addExampleBlock: function () {
             var range = editor.getSelectionRange();
             editor.removeToLineStart();
             editor.insert(".Title\n====\n\n====");
             editor.gotoLine(range.end.row + 3, 0, true);
         },
-        addPassthroughBlock: function(){
+        addPassthroughBlock: function () {
             var range = editor.getSelectionRange();
             editor.removeToLineStart();
             editor.insert("++++\n\n++++");
             editor.gotoLine(range.end.row + 2, 0, true);
+        },
+        addIndexSelection: function () {
+            var range = editor.getSelectionRange();
+            var selectedText = editor.session.getTextRange(range);
+            if (selectedText)
+                if (selectedText.trim() != "")
+                    editor.insert("(((" + selectedText + ")))" + selectedText);
         }
     },
     markdown: {
@@ -335,7 +342,7 @@ editor.commands.addCommand({
 editor.commands.addCommand({
     name: 'highlight-selected',
     bindKey: {win: 'Ctrl-H', mac: 'Command-H'},
-    exec: function(){
+    exec: function () {
         app.getShortcutProvider().getProvider().addHighlight();
     },
     readOnly: true

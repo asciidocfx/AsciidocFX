@@ -24,7 +24,7 @@ import static org.joox.JOOX.$;
 public class DocBookService {
 
     private final Pattern ascIncludeRegex = Pattern.compile("(?<=include::)(?<path>.*?)(?=\\[(.*?)\\])");
-    private final Pattern mdIncludeRegex = Pattern.compile("\\[.*?\\]\\((?<path>.*?)\\)");
+    private final Pattern mdIncludeRegex = Pattern.compile("\\[.*?\\]\\((?<path>.*\\.(md|markdown|asc|adoc|asciidoc|ad|txt))\\)");
 
     private final RenderService docConverter;
     private final Current current;
@@ -35,107 +35,120 @@ public class DocBookService {
         this.current = current;
     }
 
+    private void traverseLines(List<String> lines, StringBuffer buffer, Path rootPath) {
+
+        for (String line : lines) {
+
+            Matcher ascMatcher = ascIncludeRegex.matcher(line);
+            Matcher markdownMatcher = mdIncludeRegex.matcher(line);
+
+            if (ascMatcher.find()) {
+                String chapterPath = ascMatcher.group("path");
+                Path chapterFile = rootPath.resolve(chapterPath);
+                String chapterContent = IOHelper.readFile(chapterFile);
+                traverseLines(Arrays.asList(chapterContent.split("\\r?\\n")), buffer, chapterFile.getParent());
+            } else if (markdownMatcher.find()) {
+                String chapterPath = markdownMatcher.group("path");
+                Path chapterFile = rootPath.resolve(chapterPath);
+                String chapterContent = IOHelper.readFile(chapterFile);
+                traverseLines(Arrays.asList(chapterContent.split("\\r?\\n")), buffer, chapterFile.getParent());
+            } else
+                traverseLine(line, buffer);
+        }
+    }
+
+    private void traverseLine(String line, StringBuffer buffer) {
+        if (line.matches("^=+ +.*:.*"))
+            line = line.replace(":", "00HEADER00COLON00");
+        buffer.append(line + "\n");
+    }
+
     public void generateDocbook(Consumer<String> step) {
 
-        StringBuilder builder = new StringBuilder();
+        StringBuffer outputBuffer = new StringBuffer();
 
-            Path currentTabPath = current.currentPath().get();
-            Path currentTabPathDir = currentTabPath.getParent();
-            String tabText = current.getCurrentTabText().replace("*", "").trim();
+        Path currentTabPath = current.currentPath().get();
+        Path currentTabPathDir = currentTabPath.getParent();
 
-            List<String> bookAscLines = Arrays.asList(current.currentEditorValue().split("\\r?\\n"));
-            for (int i = 0; i < bookAscLines.size(); i++) {
-                String bookAscLine = bookAscLines.get(i);
+        StringBuffer stringBuffer = new StringBuffer();
 
-                Matcher matcher = ascIncludeRegex.matcher(bookAscLine);
+        traverseLines(Arrays.asList(current.currentEditorValue().split("\\r?\\n")), stringBuffer, currentTabPathDir);
 
-                if (matcher.find()) {
-                    String chapterPath = matcher.group("path");
-                    String chapterContent = IOHelper.readFile(currentTabPathDir.resolve(chapterPath));
-                    bookAscLines.set(i, "\n\n" + chapterContent + "\n\n");
-                }
+        String text = stringBuffer.toString();
 
-                if(tabText.contains("SUMMARY")){
-                    matcher = mdIncludeRegex.matcher(bookAscLine);
+        docConverter.convertDocbook(text, true, docBookHeaderContent -> {
+            docBookHeaderContent = docBookHeaderContent.replace("<?xml version=\"1.0\" encoding=\"UTF-8\"?>", "<?xml version=\"1.1\" encoding=\"UTF-8\"?>");
 
-                    if (matcher.find()) {
-                        String chapterPath = matcher.group("path");
-                        String chapterContent = IOHelper.readFile(currentTabPathDir.resolve(chapterPath));
-                        bookAscLines.set(i, "\n\n" + chapterContent + "\n\n");
-                    }
-                }
-
-            }
-
-            StringBuffer allAscContent = new StringBuffer();
-            bookAscLines.forEach(content -> {
-                allAscContent.append(content);
-                allAscContent.append("\n");
-            });
-
-            String text = allAscContent.toString();
-
-            docConverter.convertDocbook(text, true,docBookHeaderContent->{
-                docBookHeaderContent = docBookHeaderContent.replace("<?xml version=\"1.0\" encoding=\"UTF-8\"?>","<?xml version=\"1.1\" encoding=\"UTF-8\"?>");
-
-                StringReader bookReader = new StringReader(docBookHeaderContent);
-                Match rootDocument = IOHelper.$(new InputSource(bookReader));
-                bookReader.close();
+            StringReader bookReader = new StringReader(docBookHeaderContent);
+            Match rootDocument = IOHelper.$(new InputSource(bookReader));
+            bookReader.close();
 
 //            // makes figure centering
-                rootDocument.find("figure").find("imagedata").attr("align", "center");
+            rootDocument.find("figure").find("imagedata").attr("align", "center");
 
-                // remove callout's duplicated refs and pick last
-                rootDocument.find("callout").forEach(elem -> {
-                    String arearefs = $(elem).attr("arearefs");
-                    String[] cos = arearefs.split(" ");
-                    if (cos.length > 1)
-                        $(elem).attr("arearefs", cos[cos.length - 1]);
-                });
-
-                builder.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-                builder.append("\n");
-                builder.append("<?asciidoc-toc?>");
-                builder.append("\n");
-                builder.append("<?asciidoc-numbered?>");
-                builder.append("\n");
-                builder.append(rootDocument.content());
-                step.accept(builder.toString());
+            // remove callout's duplicated refs and pick last
+            rootDocument.find("callout").forEach(elem -> {
+                String arearefs = $(elem).attr("arearefs");
+                String[] cos = arearefs.split(" ");
+                if (cos.length > 1)
+                    $(elem).attr("arearefs", cos[cos.length - 1]);
             });
+
+            outputBuffer.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+            outputBuffer.append("\n");
+            outputBuffer.append("<?asciidoc-toc?>");
+            outputBuffer.append("\n");
+            outputBuffer.append("<?asciidoc-numbered?>");
+            outputBuffer.append("\n");
+            outputBuffer.append(rootDocument.content());
+            String result = outputBuffer.toString();
+            result = result.replace("00HEADER00COLON00", ":");
+            step.accept(result);
+        });
     }
 
     public void generateDocbookArticle(Consumer<String> step) {
 
-            docConverter.convertDocbookArticle(docbook -> {
-                StringBuilder builder = new StringBuilder();
-                docbook = docbook.replace("<?xml version=\"1.0\" encoding=\"UTF-8\"?>", "<?xml version=\"1.1\" encoding=\"UTF-8\"?>");
-                StringReader bookReader = new StringReader(docbook);
-                Match rootDocument = IOHelper.$(new InputSource(bookReader));
-                bookReader.close();
+        StringBuilder outputBuffer = new StringBuilder();
+        Path currentTabPath = current.currentPath().get();
+        Path currentTabPathDir = currentTabPath.getParent();
 
-                // changes formalpara to figure bug fix
-                rootDocument.find("imageobject").parents("formalpara").each((context) -> {
-                    $(context).rename("figure");
-                });
+        StringBuffer stringBuffer = new StringBuffer();
 
-                // makes figure centering
-                rootDocument.find("figure").find("imagedata").attr("align", "center");
+//        traverseLines(Arrays.asList(current.currentEditorValue().split("\\r?\\n")), stringBuffer, currentTabPathDir);
+//        String input = stringBuffer.toString();
 
-                // remove callout's duplicated refs and pick last
-                rootDocument.find("callout").forEach(elem -> {
-                    String arearefs = $(elem).attr("arearefs");
-                    String[] cos = arearefs.split(" ");
-                    if (cos.length > 1)
-                        $(elem).attr("arearefs", cos[cos.length - 1]);
-                });
+        docConverter.convertDocbookArticle(current.currentEditorValue(), docbook -> {
 
+            docbook = docbook.replace("<?xml version=\"1.0\" encoding=\"UTF-8\"?>", "<?xml version=\"1.1\" encoding=\"UTF-8\"?>");
+            StringReader bookReader = new StringReader(docbook);
+            Match rootDocument = IOHelper.$(new InputSource(bookReader));
+            bookReader.close();
 
-                builder.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-                builder.append("\n");
-                builder.append("<?asciidoc-toc?>\n");
-                builder.append("<?asciidoc-numbered?>\n");
-                builder.append(rootDocument.content());
-                step.accept(builder.toString());
+            // changes formalpara to figure bug fix
+            rootDocument.find("imageobject").parents("formalpara").each((context) -> {
+                $(context).rename("figure");
             });
+
+            // makes figure centering
+            rootDocument.find("figure").find("imagedata").attr("align", "center");
+
+            // remove callout's duplicated refs and pick last
+            rootDocument.find("callout").forEach(elem -> {
+                String arearefs = $(elem).attr("arearefs");
+                String[] cos = arearefs.split(" ");
+                if (cos.length > 1)
+                    $(elem).attr("arearefs", cos[cos.length - 1]);
+            });
+
+            outputBuffer.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+            outputBuffer.append("\n");
+            outputBuffer.append("<?asciidoc-toc?>\n");
+            outputBuffer.append("<?asciidoc-numbered?>\n");
+            outputBuffer.append(rootDocument.content());
+            String result = outputBuffer.toString();
+            result = result.replace("00HEADER00COLON00", ":");
+            step.accept(result);
+        });
     }
 }
