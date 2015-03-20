@@ -25,6 +25,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Consumer;
 
 import static java.nio.file.StandardOpenOption.TRUNCATE_EXISTING;
 import static java.nio.file.StandardOpenOption.WRITE;
@@ -49,7 +50,7 @@ public class Epub3Service {
 
     @Autowired
     public Epub3Service(final ApplicationController asciiDocController, final Current current, final ThreadService threadService,
-            final DirectoryService directoryService, final IndikatorService indikatorService, final DocBookService docBookService) {
+                        final DirectoryService directoryService, final IndikatorService indikatorService, final DocBookService docBookService) {
         this.asciiDocController = asciiDocController;
         this.current = current;
         this.threadService = threadService;
@@ -107,46 +108,48 @@ public class Epub3Service {
 
                     docBookService.generateDocbook(docbook -> {
 
-                        transformer.setParameter("base.dir", epubTemp.resolve("OEBPS").toString());
-                        try (StringReader reader = new StringReader(docbook);) {
-                            StreamSource xmlSource = new StreamSource(reader);
-                            IOHelper.transform(transformer, xmlSource, new StreamResult());
-                        }
+                        threadService.runTaskLater(() -> {
+                            transformer.setParameter("base.dir", epubTemp.resolve("OEBPS").toString());
+                            try (StringReader reader = new StringReader(docbook);) {
+                                StreamSource xmlSource = new StreamSource(reader);
+                                IOHelper.transform(transformer, xmlSource, new StreamResult());
+                            }
 
-                        Path containerXml = epubTemp.resolve("META-INF/container.xml");
+                            Path containerXml = epubTemp.resolve("META-INF/container.xml");
 
-                        Match root = IOHelper.$(containerXml.toFile());
-                        root
-                                .find("rootfile")
-                                .attr("full-path", "OEBPS/package.opf");
+                            Match root = IOHelper.$(containerXml.toFile());
+                            root
+                                    .find("rootfile")
+                                    .attr("full-path", "OEBPS/package.opf");
 
-                        StringBuilder builder = new StringBuilder();
-                        builder.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+                            StringBuilder builder = new StringBuilder();
+                            builder.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
 
-                        Match wrapper = $("wrapper");
-                        wrapper.append(root);
-                        builder.append(wrapper.content());
+                            Match wrapper = $("wrapper");
+                            wrapper.append(root);
+                            builder.append(wrapper.content());
 
-                        IOHelper.matchWrite(root, containerXml.toFile());
+                            IOHelper.matchWrite(root, containerXml.toFile());
 
-                        IOHelper.writeToFile(containerXml, builder.toString(), TRUNCATE_EXISTING, WRITE);
+                            IOHelper.writeToFile(containerXml, builder.toString(), TRUNCATE_EXISTING, WRITE);
 
-                        Path epubOut = epubTemp.resolve("book.epub");
-                        IOHelper.copyDirectoryToDirectory(currentTabPathDir.resolve("images").toFile(), epubTemp.resolve("OEBPS").toFile());
-                        IOHelper.copyDirectoryToDirectory(configPath.resolve("docbook/images/callouts").toFile(), epubTemp.resolve("OEBPS/images")
-                                .toFile());
-                        ZipUtil.pack(epubTemp.toFile(), epubOut.toFile());
-                        ZipUtil.removeEntry(epubOut.toFile(), "book.epub");
+                            Path epubOut = epubTemp.resolve("book.epub");
+                            IOHelper.copyDirectoryToDirectory(currentTabPathDir.resolve("images").toFile(), epubTemp.resolve("OEBPS").toFile());
+                            IOHelper.copyDirectoryToDirectory(configPath.resolve("docbook/images/callouts").toFile(), epubTemp.resolve("OEBPS/images")
+                                    .toFile());
+                            ZipUtil.pack(epubTemp.toFile(), epubOut.toFile());
+                            ZipUtil.removeEntry(epubOut.toFile(), "book.epub");
 
-                        IOHelper.move(epubOut, epubPath, StandardCopyOption.REPLACE_EXISTING);
+                            IOHelper.move(epubOut, epubPath, StandardCopyOption.REPLACE_EXISTING);
 
-                        if (!isTemp) {
-                            indikatorService.completeCycle();
-                            threadService.runActionLater(() -> {
-                                asciiDocController.getRecentFiles().remove(epubPath.toString());
-                                asciiDocController.getRecentFiles().add(0, epubPath.toString());
-                            });
-                        }
+                            if (!isTemp) {
+                                indikatorService.completeCycle();
+                                threadService.runActionLater(() -> {
+                                    asciiDocController.getRecentFiles().remove(epubPath.toString());
+                                    asciiDocController.getRecentFiles().add(0, epubPath.toString());
+                                });
+                            }
+                        });
                     });
 
                 } catch (Exception e) {

@@ -35,8 +35,8 @@ public class KindleMobiService {
     private Path mobiPath;
 
     @Autowired
-    public KindleMobiService(final ApplicationController asciiDocController, final ThreadService threadService, final Epub3Service epub3Service, 
-            final Current current, final DirectoryService directoryService, final IndikatorService indikatorService) {
+    public KindleMobiService(final ApplicationController asciiDocController, final ThreadService threadService, final Epub3Service epub3Service,
+                             final Current current, final DirectoryService directoryService, final IndikatorService indikatorService) {
         this.asciiDocController = asciiDocController;
         this.threadService = threadService;
         this.epub3Service = epub3Service;
@@ -71,31 +71,31 @@ public class KindleMobiService {
 
                 threadService.runTaskLater(() -> {
 
-                    final ProcessExecutor processExecutor = new ProcessExecutor();
-                    processExecutor.readOutput(true);
-                    Path kindleGenPath = Paths.get(asciiDocController.getConfig().getKindlegenDir());
+                        final ProcessExecutor processExecutor = new ProcessExecutor();
+                        processExecutor.readOutput(true);
+                        Path kindleGenPath = Paths.get(asciiDocController.getConfig().getKindlegenDir());
 
-                    try {
-                        final String message = processExecutor
-                                .command(kindleGenPath.resolve("kindlegen").toString(), "-o", mobiPath.getFileName().toString(), epubPath.toString())
-                                .execute()
-                                .outputUTF8();
-                        logger.info(message);
+                        try {
+                            final String message = processExecutor
+                                    .command(kindleGenPath.resolve("kindlegen").toString(), "-o", mobiPath.getFileName().toString(), epubPath.toString())
+                                    .execute()
+                                    .outputUTF8();
+                            logger.info(message);
 
-                        IOHelper.move(epubPath.getParent().resolve(mobiPath.getFileName()), mobiPath, StandardCopyOption.REPLACE_EXISTING);
+                            IOHelper.move(epubPath.getParent().resolve(mobiPath.getFileName()), mobiPath, StandardCopyOption.REPLACE_EXISTING);
 
-                        indikatorService.completeCycle();
+                            indikatorService.completeCycle();
 
-                        threadService.runActionLater(() -> {
-                            asciiDocController.getRecentFiles().remove(mobiPath.toString());
-                            asciiDocController.getRecentFiles().add(0, mobiPath.toString());
-                        });
+                            threadService.runActionLater(() -> {
+                                asciiDocController.getRecentFiles().remove(mobiPath.toString());
+                                asciiDocController.getRecentFiles().add(0, mobiPath.toString());
+                            });
 
-                    } catch (Exception e) {
-                        logger.error(e.getMessage(), e);
-                    } finally {
-                        indikatorService.completeCycle();
-                    }
+                        } catch (Exception e) {
+                            logger.error(e.getMessage(), e);
+                        } finally {
+                            indikatorService.completeCycle();
+                        }
 
                 });
             });
