@@ -98,7 +98,7 @@ var formatText = function (editor, matcher, firstCharacter, lastCharacter) {
 
             if (isCharBasedDecoration(firstCharacter, lastCharacter)) {
 
-                if (matchWhiteSpaceOnBothSides(selectedText, virtualText)) {
+                if (controlSpaceBoundary(selectedText, virtualText)) {
                     replaceText(range, firstCharacter, selectedText, lastCharacter);
                 } else {
                     var prefix = firstCharacter.concat(firstCharacter);
@@ -108,12 +108,13 @@ var formatText = function (editor, matcher, firstCharacter, lastCharacter) {
                 }
             }
             else {
-                // else sttmt for del and u tags
-                if (matchWhiteSpaceOnBothSides(selectedText, virtualText)) {
-                    var quotedText = firstCharacter.indexOf("del") > -1 ? "line-through" : "underline";
-                    firstCharLength = quotedText.length + 3;
-                    replaceText(range, '['.concat(quotedText).concat(']#'), selectedText, '#');
+                // else stmt for underline and line-through text
+                if (controlSpaceBoundary(selectedText, virtualText)) {
+                    replaceText(range, firstCharacter, selectedText, lastCharacter);
                 } else {
+                    firstCharacter = firstCharacter.concat(lastCharacter);
+                    lastCharacter = lastCharacter.concat(lastCharacter);
+                    firstCharLength = firstCharacter.length;
                     replaceText(range, firstCharacter, selectedText, lastCharacter);
                 }
             }
@@ -173,7 +174,7 @@ var formatText = function (editor, matcher, firstCharacter, lastCharacter) {
         if (editor.getSession().getMode().$id != "ace/mode/asciidoc")
             return false;
 
-        return [["*", "*"], ["_", "_"], ["`", "`"], ["+++<u>", "</u>+++"], ["+++<del>", "</del>+++"]].some(function (element, index, array) {
+        return [["*", "*"], ["_", "_"], ["`", "`"], ["[underline]#", "#"], ["[line-through]#", "#"]].some(function (element, index, array) {
             return (firstChar === element[0] && lastChar === element[1]);
         });
     }
@@ -185,8 +186,11 @@ var formatText = function (editor, matcher, firstCharacter, lastCharacter) {
         return virtualRange;
     }
 
-    function matchWhiteSpaceOnBothSides(mainText, extendedText) {
-        return extendedText.match('^(?: )(' + escapeSpecialChars(mainText) + ')(?: )$');
+    function controlSpaceBoundary(mainText, extendedText) {
+        return (virtualText == selectedText) ||
+               (extendedText.match('^( )(' + escapeSpecialChars(mainText) + ')( )$')) ||
+               (extendedText.match('^( )(' + escapeSpecialChars(mainText) + ')$')) ||
+               (extendedText.match('^(' + escapeSpecialChars(mainText) + ')( )$'));
     }
 
     function escapeSpecialChars(text) {
@@ -209,10 +213,10 @@ var editorMenu = {
             formatText(editor, matchSubScriptText, "~", "~");
         },
         underlinedText: function () {
-            formatText(editor, matchUnderlineText, "+++<u>", "</u>+++");
+            formatText(editor, matchUnderlineText, "[underline]#", "#");
         },
         addStrikeThroughText: function () {
-            formatText(editor, matchLineThroughText, "+++<del>", "</del>+++");
+            formatText(editor, matchLineThroughText, "[line-through]#", "#");
         },
         highlightedText: function () {
             formatText(editor, matchHighlightedText, "#", "#");
@@ -390,7 +394,7 @@ var editorMenu = {
             formatText(editor, matchMarkdownSubScriptText, "<sub>", "</sub>");
         },
         underlinedText: function () {
-            formatText(editor, matchUnderlineText, "<u>", "</u>");
+            formatText(editor, matchMarkdownUnderlineText, "<u>", "</u>");
         },
         addStrikeThroughText: function () {
             formatText(editor, matchMarkdownStrikeThroughText, "~~", "~~");
@@ -674,11 +678,15 @@ function matchMarkdownStrikeThroughText(text) {
 }
 
 function matchLineThroughText(text) {
-    return text.match(/^((?:(?:\+{3})?\<del\>)|(?:\[line-through\]\#))(.*?)((?:\<\/del\>(?:\+{3})?)|\#)$/);
+    return text.match(/^(?:\[line-through\])(\#{1,2})([^\#]*?)(\1)$/);
 }
 
 function matchUnderlineText(text) {
-    return text.match(/^((?:(?:\+{3})?\<u\>)|(?:\[underline\]\#))(.*?)((?:\<\/u\>(?:\+{3})?)|\#)$/);
+    return text.match(/^(?:\[underline\])(\#{1,2})([^\#]*?)(\1)$/);
+}
+
+function matchMarkdownUnderlineText(text) {
+    return text.match(/^(\<(?:u)\>)(.*?)(\<\/(?:u)\>)$/);
 }
 
 function matchMarkdownSuperScriptText(text) {
