@@ -367,6 +367,54 @@
                     </serializedBean>
                     <condition />
                   </action>
+                  <action name="" id="417" customizedId="" beanClass="com.install4j.runtime.beans.actions.desktop.CreateFileAssociationAction" enabled="true" commentSet="false" comment="" actionElevationType="elevated" rollbackBarrier="false" multiExec="false" failureStrategy="1" errorMessage="">
+                    <serializedBean>
+                      <java class="java.beans.XMLDecoder">
+                        <object class="com.install4j.runtime.beans.actions.desktop.CreateFileAssociationAction">
+                          <void property="description">
+                            <string>Markdown File</string>
+                          </void>
+                          <void property="extension">
+                            <string>md</string>
+                          </void>
+                          <void property="launcherId">
+                            <string>24</string>
+                          </void>
+                          <void property="macRole">
+                            <object class="java.lang.Enum" method="valueOf">
+                              <class>com.install4j.runtime.beans.actions.desktop.MacAssociationRole</class>
+                              <string>EDITOR</string>
+                            </object>
+                          </void>
+                        </object>
+                      </java>
+                    </serializedBean>
+                    <condition />
+                  </action>
+                  <action name="" id="418" customizedId="" beanClass="com.install4j.runtime.beans.actions.desktop.CreateFileAssociationAction" enabled="true" commentSet="false" comment="" actionElevationType="elevated" rollbackBarrier="false" multiExec="false" failureStrategy="1" errorMessage="">
+                    <serializedBean>
+                      <java class="java.beans.XMLDecoder">
+                        <object class="com.install4j.runtime.beans.actions.desktop.CreateFileAssociationAction">
+                          <void property="description">
+                            <string>Markdown File</string>
+                          </void>
+                          <void property="extension">
+                            <string>markdown</string>
+                          </void>
+                          <void property="launcherId">
+                            <string>24</string>
+                          </void>
+                          <void property="macRole">
+                            <object class="java.lang.Enum" method="valueOf">
+                              <class>com.install4j.runtime.beans.actions.desktop.MacAssociationRole</class>
+                              <string>EDITOR</string>
+                            </object>
+                          </void>
+                        </object>
+                      </java>
+                    </serializedBean>
+                    <condition />
+                  </action>
                 </beans>
               </group>
             </actions>
