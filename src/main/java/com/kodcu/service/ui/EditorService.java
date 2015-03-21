@@ -147,7 +147,7 @@ public class EditorService {
         placeholderPane.maxWidth(Integer.MAX_VALUE);
         placeholderPane.prefHeight(1);
         placeholderPane.prefWidth(1);
-        HBox.setHgrow(placeholderPane,Priority.ALWAYS);
+        HBox.setHgrow(placeholderPane, Priority.ALWAYS);
 
         openMenuLabel.setOnMouseClicked(event -> {
             int childSize = vbox.getChildren().size();
@@ -194,7 +194,7 @@ public class EditorService {
                 openMenuLabel,
                 placeholderPane,
                 showPreviewPanel
-                );
+        );
 
         topMenu.setAlignment(Pos.CENTER_LEFT);
 
@@ -216,7 +216,7 @@ public class EditorService {
 
     private Node createSecondEditorVBox(final String iconSize, final double minSize) {
 
-        MenuButton admonitionButton = new MenuButton("Adminitions");
+        MenuButton admonitionButton = new MenuButton("Admonitions");
         admonitionButton.setFocusTraversable(false);
         admonitionButton.getItems().add(new MenuItem("NOTE"));
         admonitionButton.getItems().add(new MenuItem("TIP"));
@@ -245,7 +245,62 @@ public class EditorService {
             shortcutProvider.getProvider().addQuote();
         }));
 
-        final HBox topMenu = new HBox(admonitionButton, blocks);
+        final MenuButton documentHelpers = new MenuButton("Document helpers");
+        documentHelpers.setFocusTraversable(false);
+        documentHelpers.getItems().add(MenuItemBuilt.item("Book header").click(event -> {
+            shortcutProvider.getProvider().addBookHeader();
+        }));
+
+        documentHelpers.getItems().add(MenuItemBuilt.item("Article header").click(event -> {
+            shortcutProvider.getProvider().addArticleHeader();
+        }));
+
+        documentHelpers.getItems().add(MenuItemBuilt.item("Colophon").click(event -> {
+            shortcutProvider.getProvider().addColophon();
+        }));
+
+        documentHelpers.getItems().add(MenuItemBuilt.item("Preface").click(event -> {
+            shortcutProvider.getProvider().addPreface();
+        }));
+
+        documentHelpers.getItems().add(MenuItemBuilt.item("Dedication").click(event -> {
+            shortcutProvider.getProvider().addDedication();
+        }));
+
+        documentHelpers.getItems().add(MenuItemBuilt.item("Appendix").click(event -> {
+            shortcutProvider.getProvider().addAppendix();
+        }));
+
+        documentHelpers.getItems().add(MenuItemBuilt.item("Glossary").click(event -> {
+            shortcutProvider.getProvider().addGlossary();
+        }));
+
+        documentHelpers.getItems().add(MenuItemBuilt.item("Bibliography").click(event -> {
+            shortcutProvider.getProvider().addBibliography();
+        }));
+
+        documentHelpers.getItems().add(MenuItemBuilt.item("Colophon").click(event -> {
+            shortcutProvider.getProvider().addColophon();
+        }));
+
+        documentHelpers.getItems().add(MenuItemBuilt.item("Index").click(event -> {
+            shortcutProvider.getProvider().addIndex();
+        }));
+
+        final MenuButton extensions = new MenuButton("Extensions");
+        extensions.setFocusTraversable(false);
+        extensions.getItems().add(MenuItemBuilt.item("Mathjax").click(event -> {
+            shortcutProvider.getProvider().addMathBlock();
+        }));
+        extensions.getItems().add(MenuItemBuilt.item("PlantUML").click(event -> {
+            shortcutProvider.getProvider().addUmlBlock();
+        }));
+
+        extensions.getItems().add(MenuItemBuilt.item("Filesystem Tree").click(event -> {
+            shortcutProvider.getProvider().addTreeBlock();
+        }));
+
+        final HBox topMenu = new HBox(admonitionButton, blocks, documentHelpers,extensions);
 
         topMenu.setSpacing(10);
         topMenu.getStyleClass().add("top-menu");

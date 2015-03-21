@@ -26,4 +26,16 @@ public interface ShortcutService {
     void addExampleBlock();
     void addPassthroughBlock();
     void addIndexSelection();
+    void addColophon();
+    void addPreface();
+    void addDedication();
+    void addAppendix();
+    void addGlossary();
+    void addBibliography();
+    void addIndex();
+    void addBookHeader();
+    void addArticleHeader();
+    void addMathBlock();
+    void addUmlBlock();
+    void addTreeBlock();
 }

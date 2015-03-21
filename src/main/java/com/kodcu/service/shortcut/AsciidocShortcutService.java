@@ -127,4 +127,64 @@ public class AsciidocShortcutService implements ShortcutService {
     public void addIndexSelection() {
         current.currentEngine().executeScript("editorMenu.asciidoc.addIndexSelection()");
     }
+
+    @Override
+    public void addColophon() {
+        current.currentEngine().executeScript("editorMenu.asciidoc.addColophon()");
+    }
+
+    @Override
+    public void addPreface() {
+        current.currentEngine().executeScript("editorMenu.asciidoc.addPreface()");
+    }
+
+    @Override
+    public void addDedication() {
+        current.currentEngine().executeScript("editorMenu.asciidoc.addDedication()");
+    }
+
+    @Override
+    public void addAppendix() {
+        current.currentEngine().executeScript("editorMenu.asciidoc.addAppendix()");
+    }
+
+    @Override
+    public void addGlossary() {
+        current.currentEngine().executeScript("editorMenu.asciidoc.addGlossary()");
+    }
+
+    @Override
+    public void addBibliography() {
+        current.currentEngine().executeScript("editorMenu.asciidoc.addBibliography()");
+    }
+
+    @Override
+    public void addIndex() {
+        current.currentEngine().executeScript("editorMenu.asciidoc.addIndex()");
+    }
+
+    @Override
+    public void addBookHeader() {
+        current.currentEngine().executeScript("editorMenu.asciidoc.addBookHeader()");
+    }
+
+    @Override
+    public void addArticleHeader() {
+        current.currentEngine().executeScript("editorMenu.asciidoc.addArticleHeader()");
+    }
+
+    @Override
+    public void addMathBlock() {
+        current.currentEngine().executeScript("editorMenu.asciidoc.addMathBlock()");
+    }
+
+    @Override
+    public void addUmlBlock() {
+        current.currentEngine().executeScript("editorMenu.asciidoc.addUmlBlock()");
+    }
+
+    @Override
+    public void addTreeBlock() {
+        current.currentEngine().executeScript("editorMenu.asciidoc.addTreeBlock()");
+    }
 }

@@ -132,5 +132,66 @@ public class MarkdownShortcutService implements ShortcutService {
     @Override
     public void addIndexSelection() {
         // no-op
+        AlertHelper.notImplementedDialog();
+    }
+
+    @Override
+    public void addColophon() {
+        AlertHelper.notImplementedDialog();
+    }
+
+    @Override
+    public void addPreface() {
+        AlertHelper.notImplementedDialog();
+    }
+
+    @Override
+    public void addDedication() {
+        AlertHelper.notImplementedDialog();
+    }
+
+    @Override
+    public void addAppendix() {
+        AlertHelper.notImplementedDialog();
+    }
+
+    @Override
+    public void addGlossary() {
+        AlertHelper.notImplementedDialog();
+    }
+
+    @Override
+    public void addBibliography() {
+        AlertHelper.notImplementedDialog();
+    }
+
+    @Override
+    public void addIndex() {
+        AlertHelper.notImplementedDialog();
+    }
+
+    @Override
+    public void addBookHeader() {
+        current.currentEngine().executeScript("editorMenu.asciidoc.addBookHeader()");
+    }
+
+    @Override
+    public void addArticleHeader() {
+        current.currentEngine().executeScript("editorMenu.asciidoc.addArticleHeader()");
+    }
+
+    @Override
+    public void addMathBlock() {
+        AlertHelper.notImplementedDialog();
+    }
+
+    @Override
+    public void addUmlBlock() {
+        AlertHelper.notImplementedDialog();
+    }
+
+    @Override
+    public void addTreeBlock() {
+        AlertHelper.notImplementedDialog();
     }
 }
