@@ -4,6 +4,7 @@ import com.kodcu.controller.ApplicationController;
 import com.kodcu.other.Current;
 import com.kodcu.other.IOHelper;
 import com.kodcu.service.DirectoryService;
+import com.kodcu.service.PathResolverService;
 import com.kodcu.service.ThreadService;
 import com.kodcu.service.ui.IndikatorService;
 import javafx.stage.FileChooser;
@@ -44,19 +45,21 @@ public class FopPdfService {
     private final ThreadService threadService;
     private final DirectoryService directoryService;
     private final Current current;
+    private final PathResolverService pathResolverService;
 
     private Path pdfPath;
 
     @Autowired
     public FopPdfService(final ApplicationController asciiDocController, final DocBookService docBookService,
                          final IndikatorService indikatorService,
-                         final ThreadService threadService, final DirectoryService directoryService, final Current current) {
+                         final ThreadService threadService, final DirectoryService directoryService, final Current current, PathResolverService pathResolverService) {
         this.asciiDocController = asciiDocController;
         this.docBookService = docBookService;
         this.indikatorService = indikatorService;
         this.threadService = threadService;
         this.directoryService = directoryService;
         this.current = current;
+        this.pathResolverService = pathResolverService;
     }
 
     private void produce(boolean askPath, InputHandler handler, FopFactory fopFactory, Path docbookTempfile) {
@@ -89,9 +92,12 @@ public class FopPdfService {
                                             return super.resolve(tryThis.toUri().toString(), base);
                                         }
 
-                                        Optional<Path> first = IOHelper.find(currentTabPathDir, 3, (p, attr) -> p.getFileName().equals(path.getFileName())).findFirst();
-                                        if (first.isPresent())
-                                            return super.resolve(first.map(Path::toUri).map(URI::toString).get(), base);
+                                        if(pathResolverService.isImage(path)){
+                                            Optional<Path> first = IOHelper.find(currentTabPathDir, Integer.MAX_VALUE, (p, attr) -> p.getFileName().equals(path.getFileName())).findFirst();
+                                            if (first.isPresent())
+                                                return super.resolve(first.map(Path::toUri).map(URI::toString).get(), base);
+                                        }
+
                                     }
                                 } catch (Exception e) {
                                     logger.info(e.getMessage(),e);
@@ -101,7 +107,6 @@ public class FopPdfService {
                             return super.resolve(href, base);
                         }
                     });
-                    userAgent.setURIResolver(null);
                     handler.renderTo(userAgent, "application/pdf", outputStream);
                     Files.deleteIfExists(docbookTempfile);
                 } catch (Exception e) {
