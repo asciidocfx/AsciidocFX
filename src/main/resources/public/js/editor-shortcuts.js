@@ -89,16 +89,16 @@ var formatText = function (editor, matcher, firstCharacter, lastCharacter) {
         selectedText = decorated[2];
         editor.session.replace(range, selectedText);
     }
-    else if(!matchAnyTextFormatting(selectedText, firstCharLength, lastCharLength, matcher)) {
+    else if (!matchAnyTextFormatting(selectedText, firstCharLength, lastCharLength, matcher)) {
 
         var virtualRange = updateVirtualRange(1, 1);
         var virtualText = editor.session.getTextRange(virtualRange);
 
-        if(isInlineAsciiDocFormatting(firstCharacter, lastCharacter)) {
+        if (isInlineAsciiDocFormatting(firstCharacter, lastCharacter)) {
 
-            if(isCharBasedDecoration(firstCharacter, lastCharacter)) {
+            if (isCharBasedDecoration(firstCharacter, lastCharacter)) {
 
-                if(matchWhiteSpaceOnBothSides(selectedText, virtualText)) {
+                if (matchWhiteSpaceOnBothSides(selectedText, virtualText)) {
                     replaceText(range, firstCharacter, selectedText, lastCharacter);
                 } else {
                     var prefix = firstCharacter.concat(firstCharacter);
@@ -109,7 +109,7 @@ var formatText = function (editor, matcher, firstCharacter, lastCharacter) {
             }
             else {
                 // else sttmt for del and u tags
-                if(matchWhiteSpaceOnBothSides(selectedText, virtualText)) {
+                if (matchWhiteSpaceOnBothSides(selectedText, virtualText)) {
                     var quotedText = firstCharacter.indexOf("del") > -1 ? "line-through" : "underline";
                     firstCharLength = quotedText.length + 3;
                     replaceText(range, '['.concat(quotedText).concat(']#'), selectedText, '#');
@@ -119,8 +119,8 @@ var formatText = function (editor, matcher, firstCharacter, lastCharacter) {
             }
         }
         else {
-           // for the rest of the decorations - markdown included
-           replaceText(range, firstCharacter, selectedText, lastCharacter);
+            // for the rest of the decorations - markdown included
+            replaceText(range, firstCharacter, selectedText, lastCharacter);
         }
 
         if (range.end.column == range.start.column) {
@@ -137,15 +137,16 @@ var formatText = function (editor, matcher, firstCharacter, lastCharacter) {
         var virtualText = editor.session.getTextRange(virtualRange);
 
         // find nested chars such as **abc**, ****, **
-        while(matcher(virtualText)) {
+        while (matcher(virtualText)) {
             var previousText = virtualText;
             attempt = true;
-            copyOfPL += prefixLength; copyOfSL += suffixLength;
+            copyOfPL += prefixLength;
+            copyOfSL += suffixLength;
 
             virtualRange = updateVirtualRange(copyOfPL, copyOfSL);
             virtualText = editor.session.getTextRange(virtualRange);
 
-            if(previousText == virtualText)
+            if (previousText == virtualText)
                 break;
         }
 
@@ -163,16 +164,16 @@ var formatText = function (editor, matcher, firstCharacter, lastCharacter) {
     }
 
     function isCharBasedDecoration(firstChar, lastChar) {
-        return [["*","*"],["_","_"],["`","`"]].some(function (element, index, array) {
+        return [["*", "*"], ["_", "_"], ["`", "`"]].some(function (element, index, array) {
             return (firstChar === element[0] && lastChar === element[1])
         });
     }
 
     function isInlineAsciiDocFormatting(firstChar, lastChar) {
-        if(editor.getSession().getMode().$id != "ace/mode/asciidoc")
+        if (editor.getSession().getMode().$id != "ace/mode/asciidoc")
             return false;
 
-        return [["*","*"],["_","_"],["`","`"],["+++<u>","</u>+++"],["+++<del>","</del>+++"]].some(function (element, index, array) {
+        return [["*", "*"], ["_", "_"], ["`", "`"], ["+++<u>", "</u>+++"], ["+++<del>", "</del>+++"]].some(function (element, index, array) {
             return (firstChar === element[0] && lastChar === element[1]);
         });
     }
@@ -180,7 +181,7 @@ var formatText = function (editor, matcher, firstCharacter, lastCharacter) {
     function updateVirtualRange(startColumnOffSet, endColumnOffSet) {
         var range = virtualRange = editor.getSelectionRange();
         virtualRange.setStart(range.start.row, (range.start.column - startColumnOffSet));
-        virtualRange.setEnd(range.end.row,  (range.end.column + endColumnOffSet));
+        virtualRange.setEnd(range.end.row, (range.end.column + endColumnOffSet));
         return virtualRange;
     }
 
@@ -299,6 +300,80 @@ var editorMenu = {
             if (selectedText)
                 if (selectedText.trim() != "")
                     editor.insert("(((" + selectedText + ")))" + selectedText);
+        },
+        addBookHeader: function () {
+            editor.removeToLineStart();
+            editor.insert("= Book Name\nAuthor Name\n:doctype: book\n:encoding: utf-8\n:lang: en\n:toc: left\n:numbered:\n\n\n");
+        },
+        addArticleHeader: function () {
+            editor.removeToLineStart();
+            editor.insert("= Article Name\nAuthor Name\n:doctype: article\n:encoding: utf-8\n:lang: en\n:toc: left\n:numbered:\n\n\n");
+        },
+        addColophon: function () {
+            editor.removeToLineStart();
+            editor.insert("[colophon]\n== Example Colophon\n\nText at the end of a book describing facts about its production.");
+        },
+        addPreface: function () {
+            editor.removeToLineStart();
+            editor.insert("[preface]\n== Example Preface\n\nOptional preface.");
+        },
+        addDedication: function () {
+            editor.removeToLineStart();
+            editor.insert("[dedication]\n== Example Dedication\n\nOptional dedication.");
+        },
+        addAppendix: function () {
+            editor.removeToLineStart();
+            editor.insert("[appendix]\n== Example Appendix\n\nOne or more optional appendixes go here at section level 1.");
+        },
+        addGlossary: function () {
+            editor.removeToLineStart();
+            editor.insert("[glossary]\n== Example Glossary\n\n" +
+            "Glossaries are optional. Glossaries entries are an example of a style of AsciiDoc labeled lists.\n\n" +
+            "[glossary]\n" +
+            "A glossary term::\n\tThe corresponding (indented) definition.\n\n" +
+            "A second glossary term::\n\tThe corresponding (indented) definition.");
+        },
+        addBibliography: function () {
+            editor.removeToLineStart();
+            editor.insert("[bibliography]\n" +
+            "== Example Bibliography\n" +
+            "\n" +
+            "The bibliography list is a style of AsciiDoc bulleted list.\n" +
+            "\n" +
+            "[bibliography]\n" +
+            ".Books\n" +
+            "- [[[taoup]]] Eric Steven Raymond. 'The Art of Unix\n" +
+            "  Programming'. Addison-Wesley. ISBN 0-13-142901-9.\n" +
+            "- [[[walsh-muellner]]] Norman Walsh & Leonard Muellner.\n" +
+            "  'DocBook - The Definitive Guide'. O'Reilly & Associates. 1999.\n" +
+            "  ISBN 1-56592-580-7.");
+        },
+        addIndex: function () {
+            editor.removeToLineStart();
+            editor.insert("[index]\n" +
+            "== Example Index\n" +
+            "////////////////////////////////////////////////////////////////\n" +
+            "The index is normally left completely empty, it's contents being\n" +
+            "generated automatically by the DocBook toolchain.\n" +
+            "////////////////////////////////////////////////////////////////  ");
+        },
+        addMathBlock: function () {
+            var range = editor.getSelectionRange();
+            editor.removeToLineStart();
+            editor.insert("[math,file=\"\"]\n--\n\n--");
+            editor.gotoLine(range.end.row + 3, 0, true);
+        },
+        addUmlBlock: function () {
+            var range = editor.getSelectionRange();
+            editor.removeToLineStart();
+            editor.insert("[uml,file=\"\"]\n--\n\n--");
+            editor.gotoLine(range.end.row + 3, 0, true);
+        },
+        addTreeBlock: function () {
+            var range = editor.getSelectionRange();
+            editor.removeToLineStart();
+            editor.insert("[tree,file=\"\"]\n--\n\n--");
+            editor.gotoLine(range.end.row + 3, 0, true);
         }
     },
     markdown: {
@@ -376,33 +451,6 @@ function isURL(text) {
     var myRegExp = /^(.*?)(?:\S+(?::\S*)?@)?(?:(?!10(?:\.\d{1,3}){3})(?!127(?:\.\d{1,3}){3})(?!169\.254(?:\.\d{1,3}){2})(?!192\.168(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\u00a1-\uffff0-9]+-?)*[a-z\u00a1-\uffff0-9]+)(?:\.(?:[a-z\u00a1-\uffff0-9]+-?)*[a-z\u00a1-\uffff0-9]+)*(?:\.(?:[a-z\u00a1-\uffff]{2,})))(?::\d{2,5})?(?:\/[^\s]*)?$/i;
 
     return myRegExp.test(text);
-}
-
-function addMathBlock() {
-    var range = editor.getSelectionRange();
-    editor.removeToLineStart();
-
-    editor.insert("[math,file=\"\"]\n--\n\n--");
-
-    editor.gotoLine(range.end.row + 3, 0, true);
-}
-
-function addUmlBlock() {
-    var range = editor.getSelectionRange();
-    editor.removeToLineStart();
-
-    editor.insert("[uml,file=\"\"]\n--\n\n--");
-
-    editor.gotoLine(range.end.row + 3, 0, true);
-}
-
-function addTreeBlock() {
-    var range = editor.getSelectionRange();
-    editor.removeToLineStart();
-
-    editor.insert("[tree,file=\"\"]\n--\n#\n--");
-
-    editor.gotoLine(range.end.row + 3, 1, true);
 }
 
 function showLineNumbers() {
@@ -506,37 +554,31 @@ editor.commands.addCommand({
 
         // book tab
         if (textRange == "book") { // source generator
-            editor.removeToLineStart();
-
-            editor.insert("= Book Name\nAuthor Name\n:doctype: book\n:encoding: utf-8\n:lang: en\n:toc: left\n:numbered:\n\n\n");
-
+            app.getShortcutProvider().getProvider().addBookHeader();
             return;
         }
 
         // article tab
         if (textRange == "article") { // source generator
-            editor.removeToLineStart();
-
-            editor.insert("= Article Name\nAuthor Name\n:doctype: article\n:encoding: utf-8\n:lang: en\n:toc: left\n:numbered:\n\n\n");
-
+            app.getShortcutProvider().getProvider().addArticleHeader();
             return;
         }
 
         // math tab
         if (textRange == "math") { // math block generator
-            addMathBlock();
+            app.getShortcutProvider().getProvider().addMathBlock();
             return;
         }
 
         // uml tab
         if (textRange == "uml") { // uml block generator
-            addUmlBlock();
+            app.getShortcutProvider().getProvider().addUmlBlock();
             return;
         }
 
         // tree tab
         if (textRange == "tree") { // uml block generator
-            addTreeBlock();
+            app.getShortcutProvider().getProvider().addTreeBlock();
             return;
         }
 
@@ -631,19 +673,19 @@ function matchMarkdownStrikeThroughText(text) {
     return text.match(/^(\~\~)(.*?)(\~\~)$/);
 }
 
-function matchLineThroughText(text){
+function matchLineThroughText(text) {
     return text.match(/^((?:(?:\+{3})?\<del\>)|(?:\[line-through\]\#))(.*?)((?:\<\/del\>(?:\+{3})?)|\#)$/);
 }
 
-function matchUnderlineText(text){
+function matchUnderlineText(text) {
     return text.match(/^((?:(?:\+{3})?\<u\>)|(?:\[underline\]\#))(.*?)((?:\<\/u\>(?:\+{3})?)|\#)$/);
 }
 
-function matchMarkdownSuperScriptText(text){
+function matchMarkdownSuperScriptText(text) {
     return text.match(/^(\<(?:sup)\>)(.*?)(\<\/(?:sup)\>)$/);
 }
 
-function matchMarkdownSubScriptText(text){
+function matchMarkdownSubScriptText(text) {
     return text.match(/^(\<(?:sub)\>)(.*?)(\<\/(?:sub)\>)$/);
 }
 
