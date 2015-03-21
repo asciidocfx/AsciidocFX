@@ -26,13 +26,18 @@ var updateScrollPosition = function (scroll) {
 
     var row = editor.renderer.getFirstFullyVisibleRow();
 
-    var trimmed = editor.session.getLine(row).trim();
-    while ((trimmed == "") || (trimmed.substr(0, 3) == "(((")) {
-        row++;
-    }
-
     if (lastEditorRow == row)
         return;
+
+    while (true) {
+        var trimmed = editor.session.getLine(row).trim();
+        if ((trimmed == "") || (trimmed.match(/\(\(\(.*?\)\)\)/))) {
+            row++;
+        }
+        else {
+            break;
+        }
+    }
 
     var range = sketch.searchBlockPosition(row);
     if (range) {
