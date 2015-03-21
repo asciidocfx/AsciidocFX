@@ -24,15 +24,10 @@ var updateDelay = 100;
 
 var updateScrollPosition = function (scroll) {
 
-    var row = editor.getFirstVisibleRow();
+    var row = editor.renderer.getFirstFullyVisibleRow();
 
-    while (editor.session.getLine(row).trim() != "") {
-        row--;
-    }
-
-    row++;
-
-    while (editor.session.getLine(row).trim().substr(0, 3) == "(((") {
+    var trimmed = editor.session.getLine(row).trim();
+    while ((trimmed == "") || (trimmed.substr(0, 3) == "(((")) {
         row++;
     }
 
@@ -158,6 +153,6 @@ function rerender() {
     app.textListener(editor.getValue());
 }
 
-function setInitialized(){
+function setInitialized() {
     initialized = true;
 }
