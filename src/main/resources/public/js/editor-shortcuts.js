@@ -157,11 +157,10 @@ var formatText = function (editor, matcher, firstCharacter, lastCharacter) {
     }
 
     function controlSpaceBoundary(mainText, virtualText) {
-        mainText = escapeSpecialChars(mainText);
         return (virtualText == mainText) ||
-               (virtualText.match('^( )(' + mainText + ')( )$')) ||
-               (virtualText.match('^( )(' + mainText + ')$')) ||
-               (virtualText.match('^(' + mainText + ')( )$'));
+               (virtualText.match('^( )(' + escapeSpecialChars(mainText) + ')( )$')) ||
+               (virtualText.match('^( )(' + escapeSpecialChars(mainText) + ')$')) ||
+               (virtualText.match('^(' + escapeSpecialChars(mainText) + ')( )$'));
     }
 
     function escapeSpecialChars(text) {
