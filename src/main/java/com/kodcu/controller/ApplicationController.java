@@ -763,7 +763,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                 MenuItemBuilt.item("Copy Html").click(event -> {
                     DocumentFragmentImpl selectionDom = (DocumentFragmentImpl) previewEngine.executeScript("window.getSelection().getRangeAt(0).cloneContents()");
                     ClipboardContent content = new ClipboardContent();
-                    content.putHtml(XMLHelper.nodeToString(selectionDom,true));
+                    content.putHtml(XMLHelper.nodeToString(selectionDom, true));
                     clipboard.setContent(content);
                 }),
                 MenuItemBuilt.item("Copy Text").click(event -> {
@@ -775,7 +775,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                 MenuItemBuilt.item("Copy Source").click(event -> {
                     DocumentFragmentImpl selectionDom = (DocumentFragmentImpl) previewEngine.executeScript("window.getSelection().getRangeAt(0).cloneContents()");
                     ClipboardContent content = new ClipboardContent();
-                    content.putString(XMLHelper.nodeToString(selectionDom,true));
+                    content.putString(XMLHelper.nodeToString(selectionDom, true));
                     clipboard.setContent(content);
                 }),
                 new SeparatorMenuItem(),
@@ -1263,18 +1263,17 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                 -> Objects.isNull(p1)
                 || Objects.isNull(p2);
 
-        while (nullPathPredicate.test(gitbookRoot, asciibookRoot)) {
+        DirectoryChooser gitbookChooser = new DirectoryChooser();
+        gitbookChooser.setTitle("Select Gitbook Root Directory");
+        gitbookRoot = gitbookChooser.showDialog(null);
 
-            DirectoryChooser gitbookChooser = new DirectoryChooser();
-            gitbookChooser.setTitle("Select Gitbook Root Directory");
-            gitbookRoot = gitbookChooser.showDialog(null);
+        DirectoryChooser asciibookChooser = new DirectoryChooser();
+        asciibookChooser.setTitle("Select Blank Asciibook Root Directory");
+        asciibookRoot = asciibookChooser.showDialog(null);
 
-            DirectoryChooser asciibookChooser = new DirectoryChooser();
-            asciibookChooser.setTitle("Select Blank Asciibook Root Directory");
-            asciibookRoot = asciibookChooser.showDialog(null);
-
-            if (nullPathPredicate.test(gitbookRoot, asciibookRoot))
-                AlertHelper.nullDirectoryAlert();
+        if (nullPathPredicate.test(gitbookRoot, asciibookRoot)) {
+            AlertHelper.nullDirectoryAlert();
+            return;
         }
 
         final File finalGitbookRoot = gitbookRoot;

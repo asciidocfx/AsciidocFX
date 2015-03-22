@@ -122,7 +122,10 @@ public class GitbookToAsciibookService {
                     stringLists.addFirst(":doctype: book");
                     stringLists.addFirst("Author Name");
                     stringLists.addFirst("= Book Name");
+                    List<String> collect = stringLists.stream().filter(item -> !item.trim().matches("=.*Summary")).collect(Collectors.toList());
+                    stringLists = new LinkedList<String>(collect);
                 }
+
 
                 result = String.join("\n", stringLists);
 
@@ -134,10 +137,9 @@ public class GitbookToAsciibookService {
 
         directoryService.changeWorkigDir(asciibookDir);
 
-        threadService.runActionLater(()->{
+        threadService.runActionLater(() -> {
             tabService.addTab(asciibookDir.resolve("SUMMARY.asciidoc"));
         });
-
 
 
     }
