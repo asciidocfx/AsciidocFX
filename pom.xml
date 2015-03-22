@@ -198,6 +198,32 @@
                 </configuration>
             </plugin>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.7</version>
+                <executions>
+                    <execution>
+                        <id>repack</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <!-- note that here we reference previously declared dependency -->
+                                <unzip src="${saxon:saxon:jar}"
+                                       dest="${project.build.directory}/saxon_tmp"/>
+                                <!-- now do what you need to any of unpacked files under target/tmp/ -->
+                                <zip basedir="${project.build.directory}/saxon_tmp"
+                                     excludes="META-INF/services/**"
+                                     destfile="${project.build.directory}/appassembler/lib/saxon-${saxon.version}.jar"/>
+                                <!-- now the modified jar is available  -->
+                            </target>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
                 <groupId>org.sonatype.install4j</groupId>
                 <artifactId>install4j-maven-plugin</artifactId>
                 <version>1.0.7</version>
