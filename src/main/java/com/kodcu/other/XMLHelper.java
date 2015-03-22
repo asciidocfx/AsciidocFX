@@ -22,7 +22,7 @@ public class XMLHelper {
         try (StringWriter writer = new StringWriter();) {
             Transformer transformer = TransformerFactory.newInstance().newTransformer();
             transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, omitDeclaration ? "yes" : "no");
-            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+            transformer.setOutputProperty(OutputKeys.INDENT, "no");
 
             transformer.transform(new DOMSource(node), new StreamResult(writer));
             return writer.toString();
