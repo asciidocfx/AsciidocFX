@@ -91,42 +91,22 @@ var formatText = function (editor, matcher, firstCharacter, lastCharacter) {
     }
     else if (!matchAnyTextFormatting(selectedText, firstCharLength, lastCharLength, matcher)) {
 
-        var virtualRange = updateVirtualRange(1, 1);
-        var virtualText = editor.session.getTextRange(virtualRange);
-
         if (isInlineAsciiDocFormatting(firstCharacter, lastCharacter)) {
 
-            if (isCharBasedDecoration(firstCharacter, lastCharacter)) {
+            var virtualRange = updateVirtualRange(1, 1);
+            var virtualText = editor.session.getTextRange(virtualRange);
 
-                if (controlSpaceBoundary(selectedText, virtualText)) {
-                    replaceText(range, firstCharacter, selectedText, lastCharacter);
-                } else {
-                    var prefix = firstCharacter.concat(firstCharacter);
-                    var suffix = lastCharacter.concat(lastCharacter);
-                    firstCharLength = prefix.length;
-                    replaceText(range, prefix, selectedText, suffix);
-                }
-            }
-            else {
-                // else stmt for underline and line-through text
-                if (controlSpaceBoundary(selectedText, virtualText)) {
-                    replaceText(range, firstCharacter, selectedText, lastCharacter);
-                } else {
-                    firstCharacter = firstCharacter.concat(lastCharacter);
-                    lastCharacter = lastCharacter.concat(lastCharacter);
-                    firstCharLength = firstCharacter.length;
-                    replaceText(range, firstCharacter, selectedText, lastCharacter);
-                }
+            if (!controlSpaceBoundary(selectedText, virtualText)) {
+                firstCharacter = firstCharacter.concat(lastCharacter);
+                lastCharacter = lastCharacter.concat(lastCharacter);
+                firstCharLength = firstCharacter.length;
             }
         }
-        else {
-            // for the rest of the decorations - markdown included
-            replaceText(range, firstCharacter, selectedText, lastCharacter);
-        }
 
-        if (range.end.column == range.start.column) {
+        editor.session.replace(range, firstCharacter.concat(selectedText, lastCharacter));
+
+        if (range.end.column == range.start.column)
             editor.navigateTo(range.end.row, range.end.column + firstCharLength);
-        }
     }
 
     function matchAnyTextFormatting(selectedText, prefixLength, suffixLength, matcher) {
@@ -154,20 +134,10 @@ var formatText = function (editor, matcher, firstCharacter, lastCharacter) {
         if (attempt) {
             virtualRange = updateVirtualRange(copyOfPL - prefixLength, copyOfSL - suffixLength);
             editor.session.replace(virtualRange, selectedText);
-            return true;
+            return attempt;
         }
 
-        return false;
-    }
-
-    function replaceText(range, prefix, text, suffix) {
-        editor.session.replace(range, prefix + text + suffix);
-    }
-
-    function isCharBasedDecoration(firstChar, lastChar) {
-        return [["*", "*"], ["_", "_"], ["`", "`"]].some(function (element, index, array) {
-            return (firstChar === element[0] && lastChar === element[1])
-        });
+        return attempt;
     }
 
     function isInlineAsciiDocFormatting(firstChar, lastChar) {
@@ -186,11 +156,12 @@ var formatText = function (editor, matcher, firstCharacter, lastCharacter) {
         return virtualRange;
     }
 
-    function controlSpaceBoundary(mainText, extendedText) {
-        return (virtualText == selectedText) ||
-               (extendedText.match('^( )(' + escapeSpecialChars(mainText) + ')( )$')) ||
-               (extendedText.match('^( )(' + escapeSpecialChars(mainText) + ')$')) ||
-               (extendedText.match('^(' + escapeSpecialChars(mainText) + ')( )$'));
+    function controlSpaceBoundary(mainText, virtualText) {
+        mainText = escapeSpecialChars(mainText);
+        return (virtualText == mainText) ||
+               (virtualText.match('^( )(' + mainText + ')( )$')) ||
+               (virtualText.match('^( )(' + mainText + ')$')) ||
+               (virtualText.match('^(' + mainText + ')( )$'));
     }
 
     function escapeSpecialChars(text) {
