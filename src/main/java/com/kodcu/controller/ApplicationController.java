@@ -763,7 +763,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                 MenuItemBuilt.item("Copy Html").click(event -> {
                     DocumentFragmentImpl selectionDom = (DocumentFragmentImpl) previewEngine.executeScript("window.getSelection().getRangeAt(0).cloneContents()");
                     ClipboardContent content = new ClipboardContent();
-                    content.putHtml(XMLHelper.nodeToString(selectionDom));
+                    content.putHtml(XMLHelper.nodeToString(selectionDom,true));
                     clipboard.setContent(content);
                 }),
                 MenuItemBuilt.item("Copy Text").click(event -> {
@@ -775,7 +775,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                 MenuItemBuilt.item("Copy Source").click(event -> {
                     DocumentFragmentImpl selectionDom = (DocumentFragmentImpl) previewEngine.executeScript("window.getSelection().getRangeAt(0).cloneContents()");
                     ClipboardContent content = new ClipboardContent();
-                    content.putString(XMLHelper.nodeToString(selectionDom));
+                    content.putString(XMLHelper.nodeToString(selectionDom,true));
                     clipboard.setContent(content);
                 }),
                 new SeparatorMenuItem(),
@@ -1312,7 +1312,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     }
 
     public void showFileBrowser() {
-        splitPane.setDividerPositions(0.18, splitPane.getDividerPositions()[1]);
+        splitPane.setDividerPositions(0.195, splitPane.getDividerPositions()[1]);
         fileBrowserVisibility.setValue(false);
 
     }

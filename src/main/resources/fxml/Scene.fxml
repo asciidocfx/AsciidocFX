@@ -6,7 +6,7 @@
 <?import javafx.scene.web.WebView?>
 <AnchorPane id="AnchorPane" fx:id="rootAnchor" styleClass="rootAnchor" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="com.kodcu.controller.ApplicationController">
   <children>
-    <SplitPane fx:id="splitPane" dividerPositions="0.17751479289940827, 0.606508875739645" focusTraversable="true" AnchorPane.bottomAnchor="1.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="-1.0">
+    <SplitPane fx:id="splitPane" dividerPositions="0.17, 0.60" focusTraversable="true" AnchorPane.bottomAnchor="1.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="-1.0">
       <items>
         <SplitPane fx:id="splitPaneVertical" dividerPositions="0.715076071922545" minWidth="0.0" orientation="VERTICAL">
           <items>
