@@ -1,5 +1,7 @@
 package com.kodcu.other;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Node;
 
 import javax.xml.transform.OutputKeys;
@@ -14,16 +16,18 @@ import java.io.StringWriter;
  */
 public class XMLHelper {
 
-    public static String nodeToString(Node node) {
+    private static Logger logger = LoggerFactory.getLogger(IOHelper.class);
+
+    public static String nodeToString(Node node, boolean omitDeclaration) {
         try (StringWriter writer = new StringWriter();) {
             Transformer transformer = TransformerFactory.newInstance().newTransformer();
-            transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+            transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, omitDeclaration ? "yes" : "no");
             transformer.setOutputProperty(OutputKeys.INDENT, "yes");
 
             transformer.transform(new DOMSource(node), new StreamResult(writer));
             return writer.toString();
         } catch (Exception ex) {
-            ex.printStackTrace();
+           logger.error(ex.getMessage(),ex);
         }
         return "";
     }
