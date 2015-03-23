@@ -29,6 +29,9 @@ idea/
 *.iml
 *.iws
 
+# OSX
+.DS_Store
+
 Desktop.ini
 
 .svn
