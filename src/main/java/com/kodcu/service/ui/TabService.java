@@ -176,11 +176,11 @@ public class TabService {
 
         MyTab tab = new MyTab() {
             @Override
-            public void close() {
+            public ButtonType close() {
                 if (Objects.nonNull(this.getPath()))
                     closedPaths.add(Optional.ofNullable(current.currentTab().getPath()));
 
-                super.close();
+                ButtonType closeType = super.close();
 
                 Platform.runLater(() -> {
                     ObservableList<Tab> tabs = controller.getTabPane().getTabs();
@@ -188,6 +188,8 @@ public class TabService {
                         controller.newDoc(null);
                     }
                 });
+
+                return closeType;
             }
         };
 

@@ -47,13 +47,13 @@ public class MyTab extends Tab {
     }
 
     public boolean isAsciidoc() {
-        if(Objects.isNull(markup))
+        if (Objects.isNull(markup))
             return true;
         return markup.getSelectionModel().isSelected(0);
     }
 
     public boolean isMarkdown() {
-        if(Objects.isNull(markup))
+        if (Objects.isNull(markup))
             return false;
         return markup.getSelectionModel().isSelected(1);
     }
@@ -92,12 +92,12 @@ public class MyTab extends Tab {
         return !this.getTabText().contains(" *");
     }
 
-    public void close() {
+    public ButtonType close() {
         this.select();
 
         if (isSaved()) {
             closeIt();
-            return;
+            return ButtonType.YES;
         }
 
         Optional<ButtonType> alert = SaveAlert.alert();
@@ -106,6 +106,7 @@ public class MyTab extends Tab {
         if (type == ButtonType.YES) {
             closeIt();
         }
+        return type;
     }
 
     private void cleanRemovedTabs() {
@@ -128,7 +129,6 @@ public class MyTab extends Tab {
     private void closeIt() {
         Platform.runLater(() -> {
             this.getTabPane().getTabs().remove(this); // keep it here
-            cleanRemovedTabs();
         });
     }
 

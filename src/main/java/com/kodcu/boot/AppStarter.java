@@ -1,18 +1,24 @@
 package com.kodcu.boot;
 
-import static javafx.scene.input.KeyCombination.SHORTCUT_DOWN;
-
-import java.io.File;
-import java.io.InputStream;
-import java.nio.file.Paths;
-
 import com.install4j.api.launcher.StartupNotification;
+import com.kodcu.component.MyTab;
+import com.kodcu.controller.ApplicationController;
+import com.kodcu.service.ThreadService;
+import com.kodcu.service.ui.TabService;
+import com.sun.deploy.uitoolkit.impl.fx.HostServicesFactory;
+import com.sun.javafx.application.HostServicesDelegate;
+import de.tototec.cmdoption.CmdlineParser;
+import de.tototec.cmdoption.CmdlineParserException;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.Tab;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
@@ -20,21 +26,17 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.Modality;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
-
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 
-import com.kodcu.controller.ApplicationController;
-import com.kodcu.service.ThreadService;
-import com.kodcu.service.ui.TabService;
-import com.sun.deploy.uitoolkit.impl.fx.HostServicesFactory;
-import com.sun.javafx.application.HostServicesDelegate;
+import java.io.File;
+import java.io.InputStream;
+import java.nio.file.Paths;
 
-import de.tototec.cmdoption.CmdlineParser;
-import de.tototec.cmdoption.CmdlineParserException;
+import static javafx.scene.input.KeyCombination.SHORTCUT_DOWN;
 
 public class AppStarter extends Application {
 
@@ -171,6 +173,16 @@ public class AppStarter extends Application {
                 });
             });
         }
+
+        scene.getWindow().setOnCloseRequest(event -> {
+            ObservableList<Tab> tabs = FXCollections.observableArrayList(controller.getTabPane().getTabs());
+            for (Tab tab : tabs) {
+                MyTab myTab = (MyTab) tab;
+                ButtonType close = myTab.close();
+                if (close == ButtonType.CANCEL)
+                    event.consume();
+            }
+        });
     }
 
     @Override
