@@ -30,7 +30,7 @@ var updateScrollPosition = function (scroll) {
 
     for (var i = 0; i < 10; i++) { // try ten times
         var trimmed = editor.session.getLine(row).trim();
-        if ((trimmed == "") || (trimmed.match(/\(\(\(.*?\)\)\)/))) {
+        if ((trimmed == "") || (trimmed.match(/\(\(\(.*?\)\)\)/)) || (trimmed.match(/\[\[.*?\]\]/))) {
             row++;
         }
         else {
