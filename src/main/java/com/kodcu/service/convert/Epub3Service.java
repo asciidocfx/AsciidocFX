@@ -5,6 +5,7 @@ import com.kodcu.controller.ApplicationController;
 import com.kodcu.other.Current;
 import com.kodcu.other.IOHelper;
 import com.kodcu.service.DirectoryService;
+import com.kodcu.service.PathResolverService;
 import com.kodcu.service.ThreadService;
 import com.kodcu.service.ui.IndikatorService;
 import javafx.stage.FileChooser;
@@ -25,7 +26,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.concurrent.CompletableFuture;
-import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 import static java.nio.file.StandardOpenOption.TRUNCATE_EXISTING;
 import static java.nio.file.StandardOpenOption.WRITE;
@@ -45,18 +46,20 @@ public class Epub3Service {
     private final DirectoryService directoryService;
     private final IndikatorService indikatorService;
     private final DocBookService docBookService;
+    private final PathResolverService pathResolverService;
 
     private Path epubPath;
 
     @Autowired
     public Epub3Service(final ApplicationController asciiDocController, final Current current, final ThreadService threadService,
-                        final DirectoryService directoryService, final IndikatorService indikatorService, final DocBookService docBookService) {
+                        final DirectoryService directoryService, final IndikatorService indikatorService, final DocBookService docBookService, PathResolverService pathResolverService) {
         this.asciiDocController = asciiDocController;
         this.current = current;
         this.threadService = threadService;
         this.directoryService = directoryService;
         this.indikatorService = indikatorService;
         this.docBookService = docBookService;
+        this.pathResolverService = pathResolverService;
     }
 
     public CompletableFuture<Path> produceEpub3() {
@@ -134,7 +137,13 @@ public class Epub3Service {
                             IOHelper.writeToFile(containerXml, builder.toString(), TRUNCATE_EXISTING, WRITE);
 
                             Path epubOut = epubTemp.resolve("book.epub");
-                            IOHelper.copyDirectoryToDirectory(currentTabPathDir.resolve("images").toFile(), epubTemp.resolve("OEBPS").toFile());
+
+                            Stream<Path> imageStream = IOHelper.find(currentTabPathDir, Integer.MAX_VALUE, (p, attr) -> pathResolverService.isImage(p));
+
+                            imageStream.forEach(img -> {
+                                IOHelper.copyFile(img.toFile(), epubTemp.resolve("OEBPS").resolve(currentTabPathDir.relativize(img)).toFile());
+                            });
+
                             IOHelper.copyDirectoryToDirectory(configPath.resolve("docbook/images/callouts").toFile(), epubTemp.resolve("OEBPS/images")
                                     .toFile());
                             ZipUtil.pack(epubTemp.toFile(), epubOut.toFile());
