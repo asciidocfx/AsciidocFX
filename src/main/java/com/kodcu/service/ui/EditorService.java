@@ -202,7 +202,7 @@ public class EditorService {
             webView.requestFocus();
         });
 
-        topMenu.setSpacing(10);
+        topMenu.setSpacing(9);
         topMenu.getStyleClass().add("top-menu");
 
         final ScrollPane scrollPane = new ScrollPane();
@@ -302,7 +302,7 @@ public class EditorService {
 
         final HBox topMenu = new HBox(admonitionButton, blocks, documentHelpers,extensions);
 
-        topMenu.setSpacing(10);
+        topMenu.setSpacing(9);
         topMenu.getStyleClass().add("top-menu");
         topMenu.setStyle("-fx-padding:0 10px 5px 10px;");
 
