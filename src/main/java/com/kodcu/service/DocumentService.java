@@ -9,7 +9,6 @@ import com.kodcu.service.ui.TabService;
 import com.kodcu.service.ui.WebviewService;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
-import javafx.scene.control.Label;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.web.WebEngine;
@@ -39,18 +38,17 @@ public class DocumentService {
     private final TabService tabService;
     private final Current current;
 
-    
-    
+
     @Autowired
     public DocumentService(DirectoryService directoryService, ApplicationController controller, WebviewService webviewService,
-            EditorService editorService, TabService tabService, Current current) {
+                           EditorService editorService, TabService tabService, Current current) {
         this.directoryService = directoryService;
         this.controller = controller;
         this.webviewService = webviewService;
         this.editorService = editorService;
         this.tabService = tabService;
         this.current = current;
-        
+
         webviewService.setDocumentService(this);
     }
 
@@ -91,9 +89,8 @@ public class DocumentService {
                 for (String key : keySet) {
                     window.call("addNewCommand", new Object[]{key, shortCuts.get(key)});
                 }
-                if (Objects.isNull(content))
-                    return true;
-                window.call("setEditorValue", new Object[]{content});
+                if (Objects.nonNull(content))
+                    window.call("setEditorValue", new Object[]{content});
                 window.call("setInitialized");
             }
             return false;
@@ -101,7 +98,7 @@ public class DocumentService {
 
         AnchorPane anchorPane = new AnchorPane();
         MyTab tab = tabService.createTab();
-        Node editorVBox = editorService.createEditorVBox(webView,tab);
+        Node editorVBox = editorService.createEditorVBox(webView, tab);
         controller.fitToParent(editorVBox);
         anchorPane.getChildren().add(editorVBox);
 
@@ -118,8 +115,8 @@ public class DocumentService {
 
     public void openDoc() {
         FileChooser fileChooser = directoryService.newFileChooser("Open Asciidoc File");
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Asciidoc", "*.asc", "*.asciidoc", "*.adoc", "*.ad", "*.txt","*.*"));
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Markdown", "*.md","*.markdown","*.txt","*.*"));
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Asciidoc", "*.asc", "*.asciidoc", "*.adoc", "*.ad", "*.txt", "*.*"));
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Markdown", "*.md", "*.markdown", "*.txt", "*.*"));
         List<File> chosenFiles = fileChooser.showOpenMultipleDialog(controller.getStage());
         if (chosenFiles != null) {
             chosenFiles.stream().map(e -> e.toPath()).forEach(tabService::addTab);
