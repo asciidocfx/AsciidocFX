@@ -242,4 +242,20 @@ public class IOHelper {
         }
         return false;
     }
+
+    public static void copyFileToDirectory(File file, File directory) {
+        try {
+            FileUtils.copyFileToDirectory(file,directory);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void copyFile(File file, File dest) {
+        try {
+            FileUtils.copyFile(file,dest);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }
