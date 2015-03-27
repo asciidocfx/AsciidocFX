@@ -134,6 +134,9 @@ public class TabService {
                         tab.setTabText(path.getFileName().toString());
                         window.call("setEditorValue", new Object[]{content});
                         window.call("setInitialized");
+                        TabPane tabPane = controller.getTabPane();
+                        tabPane.getTabs().add(tab);
+                        tab.select();
                     });
                 });
 
@@ -148,14 +151,8 @@ public class TabService {
         tab.setContent(anchorPane);
         tab.setPath(path);
 
-        TabPane tabPane = controller.getTabPane();
-        tabPane.getTabs().add(tab);
-
         Tooltip tip = new Tooltip(path.toString());
         Tooltip.install(tab.getGraphic(), tip);
-
-        Tab lastTab = tabPane.getTabs().get(tabPane.getTabs().size() - 1);
-        tabPane.getSelectionModel().select(lastTab);
 
         recentFiles.remove(path.toString());
         recentFiles.add(0, path.toString());

@@ -2,7 +2,6 @@ var editor = ace.edit("editor");
 editor.renderer.setShowGutter(false);
 editor.setHighlightActiveLine(false);
 editor.getSession().setMode("ace/mode/asciidoc");
-editor.renderer.setScrollMargin(10, 10, 10, 10);
 editor.getSession().setUseWrapMode(true);
 editor.setShowPrintMargin(false);
 editor.setBehavioursEnabled(true);
@@ -160,4 +159,5 @@ function rerender() {
 
 function setInitialized() {
     initialized = true;
+    editor.renderer.setScrollMargin(10, 10, 10, 10);
 }
