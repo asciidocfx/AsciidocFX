@@ -12,7 +12,10 @@ editor.setOptions({
 });
 editor.setScrollSpeed("0.1");
 editor.setTheme("ace/theme/ace");
-
+var StatusBar = ace.require("ace/ext/statusbar").StatusBar;
+// create a simple selection status indicator
+var statusBar = new StatusBar(editor, document.getElementById("statusBar"));
+editor.setOption("spellcheck", true);
 var lastEditorRow = 0;
 var initialized = false;
 var timeouter;
