@@ -2,12 +2,6 @@ package com.kodcu.component;
 
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
-import javafx.scene.image.Image;
-import javafx.stage.Stage;
-import org.springframework.cglib.core.DefaultGeneratorStrategy;
-
-import java.io.IOException;
-import java.io.InputStream;
 
 /**
  * Created by Hakan on 3/9/2015.
