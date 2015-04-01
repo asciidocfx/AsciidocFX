@@ -28,4 +28,10 @@ public final class AlertHelper {
         alert.setHeaderText("This feature is not available for Markdown.");
         return alert.showAndWait();
     }
+
+    public static Optional<ButtonType> saveAlert() {
+        AlertDialog saveAlert = new AlertDialog();
+        saveAlert.setHeaderText("This document is not saved. Do you want to close it?");
+        return saveAlert.showAndWait();
+    }
 }
