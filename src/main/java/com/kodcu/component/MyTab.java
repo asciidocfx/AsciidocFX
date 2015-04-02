@@ -100,7 +100,7 @@ public class MyTab extends Tab {
             return ButtonType.YES;
         }
 
-        Optional<ButtonType> alert = SaveAlert.alert();
+        Optional<ButtonType> alert = AlertHelper.saveAlert();
         ButtonType type = alert.orElse(ButtonType.CANCEL);
 
         if (type == ButtonType.YES) {
