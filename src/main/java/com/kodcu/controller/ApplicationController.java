@@ -16,6 +16,7 @@ import com.kodcu.service.convert.*;
 import com.kodcu.service.extension.MathJaxService;
 import com.kodcu.service.extension.PlantUmlService;
 import com.kodcu.service.extension.TreeService;
+import com.kodcu.service.extension.chart.ChartProvider;
 import com.kodcu.service.shortcut.ShortcutProvider;
 import com.kodcu.service.table.AsciidocTableController;
 import com.kodcu.service.ui.*;
@@ -223,6 +224,9 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     @Autowired
     private Base64.Encoder base64Encoder;
+
+    @Autowired
+    private ChartProvider chartProvider;
 
     private Stage stage;
     private WebEngine previewEngine;
@@ -902,6 +906,38 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         });
     }
 
+    public void chartBuild(String uml, String fileName, String options) throws IOException {
+        threadService.runActionLater(() -> {
+            try {
+                Map<String, String> optMap = parseChartOptions(options);
+
+                String type = optMap.get("type");
+                if (Objects.isNull(type))
+                    return;
+
+                chartProvider.getProvider(type).chartBuild(uml, fileName, optMap);
+
+            } catch (Exception e) {
+                logger.info(e.getMessage(), e);
+            }
+        });
+    }
+
+    private Map<String, String> parseChartOptions(String options) {
+        Map<String, String> optMap = new HashMap<>();
+        if (Objects.nonNull(options)) {
+            String[] optPart = options.split(",");
+
+            for (String opt : optPart) {
+                String[] keyVal = opt.split("=");
+                if (keyVal.length != 2)
+                    continue;
+                optMap.put(keyVal[0], keyVal[1]);
+            }
+        }
+        return optMap;
+    }
+
     public void appendWildcard() {
         String currentTabText = current.getCurrentTabText();
         if (!currentTabText.contains(" *"))
@@ -1342,5 +1378,13 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         hidePreviewPanel.setSelected(true);
         hidePreviewPanel(actionEvent);
         hideFileBrowser(actionEvent);
+    }
+
+    public void clearImageCache() {
+        previewEngine.executeScript("clearImageCache()");
+    }
+
+    public void removeChildElement(Node node) {
+        getRootAnchor().getChildren().remove(node);
     }
 }
