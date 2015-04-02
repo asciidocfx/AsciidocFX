@@ -8,6 +8,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.geometry.Side;
+import javafx.scene.Node;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.chart.PieChart;
 import javafx.scene.image.WritableImage;
@@ -15,10 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.awt.image.BufferedImage;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * Created by usta on 31.03.2015.
@@ -39,7 +37,7 @@ public class PieChartBuilderService extends ChartBuilderService {
     }
 
     @Override
-    public void chartBuild(String chartContent, String fileName, Map<String, String> optMap) throws InterruptedException {
+    public void chartBuild(String chartContent, String fileName, Map<String, String> optMap) throws Exception {
 
         try {
             super.chartBuild(chartContent, fileName, optMap);
@@ -51,6 +49,7 @@ public class PieChartBuilderService extends ChartBuilderService {
         List<String> lines = Arrays.asList(split);
 
         ObservableList<PieChart.Data> datas = FXCollections.observableArrayList();
+        ObservableList<String> colors = FXCollections.observableArrayList();
 
         for (String line : lines) {
 
@@ -70,10 +69,18 @@ public class PieChartBuilderService extends ChartBuilderService {
             } catch (Exception e) {
             }
 
+            colors.add(color);
             datas.add(new PieChart.Data(name, value));
         }
 
         PieChart pieChart = new PieChart(datas);
+
+        for (int i = 0; i < datas.size(); i++) {
+            PieChart.Data data = datas.get(i);
+            String color = colors.get(i);
+            if (Objects.nonNull(color))
+                data.getNode().setStyle("-fx-pie-color:" + color + ";");
+        }
 
         if (Objects.nonNull(optMap.get("clockwise")))
             pieChart.setClockwise(Boolean.valueOf(optMap.get("clockwise")));
@@ -83,8 +90,27 @@ public class PieChartBuilderService extends ChartBuilderService {
             pieChart.setLabelLineLength(Double.parseDouble(optMap.get("line-length")));
         if (Objects.nonNull(optMap.get("start-angle")))
             pieChart.setStartAngle(Double.parseDouble(optMap.get("start-angle")));
-        if (Objects.nonNull(optMap.get("legend")))
-            pieChart.setLegendSide(Side.valueOf(optMap.get("legend").toUpperCase()));
+
+        if (Objects.nonNull(optMap.get("legend"))) {
+            try {
+                pieChart.setLegendSide(Side.valueOf(optMap.get("legend").toUpperCase()));
+            } catch (RuntimeException e) {
+                pieChart.setLegendVisible(false);
+            }
+        }
+
+        if (Objects.nonNull(optMap.get("title")))
+            pieChart.setTitle(optMap.get("title"));
+
+        if (Objects.nonNull(optMap.get("title-side")))
+            pieChart.setTitleSide(Side.valueOf(optMap.get("title-side").toUpperCase()));
+
+        Set<Node> nodes = pieChart.lookupAll(".chart-title");
+        for (Node node : nodes) {
+            String titleColor = Objects.isNull(optMap.get("title-color")) ? "#000" : optMap.get("title-color");
+            String titleSize = Objects.isNull(optMap.get("title-size")) ? "1.6em" : optMap.get("title-size");
+            node.setStyle(String.format("-fx-text-fill: %s; -fx-font-size: %s;", titleColor, titleSize));
+        }
 
         pieChart.setLayoutX(-78000);
         pieChart.setLayoutY(-78000);

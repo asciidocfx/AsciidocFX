@@ -3,15 +3,11 @@ package com.kodcu.service.extension.chart;
 import com.kodcu.controller.ApplicationController;
 import com.kodcu.other.Current;
 import com.kodcu.service.ThreadService;
-import javafx.application.Platform;
 import javafx.scene.chart.*;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.nio.file.Path;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.Semaphore;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Created by usta on 01.04.2015.
@@ -30,7 +26,7 @@ public abstract class ChartBuilderService {
         this.controller = controller;
     }
 
-    public void chartBuild(String chartContent, String fileName, Map<String, String> optMap) throws InterruptedException {
+    public void chartBuild(String chartContent, String fileName, Map<String, String> optMap) throws Exception {
 
         currentRoot = current.currentPath().get().getParent();
         imagePath = currentRoot.resolve("images/").resolve(fileName);
@@ -39,11 +35,7 @@ public abstract class ChartBuilderService {
             throw new InterruptedException();
 
         Integer cacheHit = current.getCache().get(fileName);
-        StringBuffer builder=new StringBuffer();
-        builder.append(fileName);
-        builder.append(chartContent);
-        builder.append(optMap.toString());
-        int hashCode = builder.toString().hashCode();
+        int hashCode = (fileName + chartContent).hashCode() + optMap.hashCode();
 
         if (Objects.nonNull(cacheHit))
             if (hashCode == cacheHit) {

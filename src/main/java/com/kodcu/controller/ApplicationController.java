@@ -914,7 +914,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
                 chartProvider.getProvider(type).chartBuild(uml, fileName, optMap);
 
-            } catch (InterruptedException e) {
+            } catch (Exception e) {
                 logger.info(e.getMessage(), e);
             }
         });

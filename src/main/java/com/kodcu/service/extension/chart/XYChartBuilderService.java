@@ -6,6 +6,7 @@ import com.kodcu.other.IOHelper;
 import com.kodcu.service.ThreadService;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.geometry.Side;
+import javafx.scene.Node;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.chart.Axis;
 import javafx.scene.chart.CategoryAxis;
@@ -14,10 +15,7 @@ import javafx.scene.chart.XYChart;
 import javafx.scene.image.WritableImage;
 
 import java.awt.image.BufferedImage;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * Created by usta on 31.03.2015.
@@ -28,10 +26,6 @@ public abstract class XYChartBuilderService extends ChartBuilderService {
     private final Current current;
     private final ApplicationController controller;
 
-    int layoyt = -78000;
-
-//    static final AtomicBoolean completed = new AtomicBoolean(false);
-
     public XYChartBuilderService(ThreadService threadService, Current current, ApplicationController controller) {
         super(threadService, current, controller);
         this.threadService = threadService;
@@ -40,7 +34,7 @@ public abstract class XYChartBuilderService extends ChartBuilderService {
     }
 
     @Override
-    public void chartBuild(String chartContent, String fileName, Map<String, String> optMap) throws InterruptedException {
+    public void chartBuild(String chartContent, String fileName, Map<String, String> optMap) throws Exception {
 
         try {
             super.chartBuild(chartContent, fileName, optMap);
@@ -50,6 +44,7 @@ public abstract class XYChartBuilderService extends ChartBuilderService {
 
         String[] split = chartContent.split("\\r?\\n");
         List<String> lines = Arrays.asList(split);
+        List colors = new ArrayList<>();
 
         XYChart xyChart = createXYChart();
         XYChart.Series series = new XYChart.Series();
@@ -77,7 +72,13 @@ public abstract class XYChartBuilderService extends ChartBuilderService {
 
             Object name = null; // try first double
             Object value = null; // try first double
+            Object color = null; // try first double
 
+            if (parts.length == 3) {
+                color = parts[2];
+                colors.add(color);
+                xyChart.setStyle("-fx-bar-fill: " + color + ";");
+            }
 
             if (xAxis instanceof NumberAxis) {
                 name = Double.valueOf(parts[0]);
@@ -95,24 +96,58 @@ public abstract class XYChartBuilderService extends ChartBuilderService {
                 value = String.valueOf(parts[1]);
             }
 
-
             series.getData().add(new XYChart.Data(name, value));
 
             if (!xyChart.getData().contains(series))
                 xyChart.getData().add(series);
 
+        }
+
+        for (int i = 0; i < colors.size(); i++) {
+            Object color = colors.get(i);
+            if (Objects.isNull(color))
+                continue;
+            Set<Node> nodes1 = xyChart.lookupAll(".default-color" + i + ".chart-bar");
+            Set<Node> nodes2 = xyChart.lookupAll(".default-color" + i + ".chart-pie");
+
+            for (Node node : nodes1) {
+                node.setStyle("-fx-bar-fill: " + color + ";");
+            }
+
+            for (Node node : nodes2) {
+                node.setStyle("-fx-bar-fill: " + color + ";");
+            }
 
         }
 
 
-        if (Objects.nonNull(optMap.get("legend")))
-            xyChart.setLegendSide(Side.valueOf(optMap.get("legend").toUpperCase()));
+        if (Objects.nonNull(optMap.get("legend"))) {
+            try {
+                xyChart.setLegendSide(Side.valueOf(optMap.get("legend").toUpperCase()));
+            } catch (RuntimeException e) {
+                xyChart.setLegendVisible(false);
+            }
+        }
+
+        if (Objects.nonNull(optMap.get("title")))
+            xyChart.setTitle(optMap.get("title"));
+
+        if (Objects.nonNull(optMap.get("title-side"))) {
+            xyChart.setTitleSide(Side.valueOf(optMap.get("title-side").toUpperCase()));
+        }
+
+        Set<Node> nodes = xyChart.lookupAll(".chart-title");
+        for (Node node : nodes) {
+            String titleColor = Objects.isNull(optMap.get("title-color")) ? "#000" : optMap.get("title-color");
+            String titleSize = Objects.isNull(optMap.get("title-size")) ? "1.6em" : optMap.get("title-size");
+            node.setStyle(String.format("-fx-text-fill: %s; -fx-font-size: %s;", titleColor, titleSize));
+        }
 
         if (Objects.nonNull(optMap.get("x-label")))
             xAxis.setLabel(optMap.get("x-label"));
 
         if (Objects.nonNull(optMap.get("y-label")))
-            xAxis.setLabel(optMap.get("y-label"));
+            yAxis.setLabel(optMap.get("y-label"));
 
         if (Objects.nonNull(optMap.get("x-label-rotation")))
             xAxis.setTickLabelRotation(Double.parseDouble(optMap.get("x-label-rotation")));
@@ -126,11 +161,11 @@ public abstract class XYChartBuilderService extends ChartBuilderService {
             yAxis.setTickLabelsVisible(value);
         }
 
-        if (Objects.nonNull(optMap.get("show-x-labels"))) {
+        if (Objects.nonNull(optMap.get("show-x-label"))) {
             xAxis.setTickLabelsVisible(Boolean.valueOf(optMap.get("show-x-labels")));
         }
 
-        if (Objects.nonNull(optMap.get("show-y-labels"))) {
+        if (Objects.nonNull(optMap.get("show-y-label"))) {
             yAxis.setTickLabelsVisible(Boolean.valueOf(optMap.get("show-y-labels")));
         }
 
@@ -143,23 +178,20 @@ public abstract class XYChartBuilderService extends ChartBuilderService {
             xAxis.setTickLabelGap(Double.valueOf(optMap.get("x-label-gap")));
         }
 
+        if (Objects.nonNull(optMap.get("y-label-gap"))) {
+            yAxis.setTickLabelGap(Double.valueOf(optMap.get("y-label-gap")));
+        }
+
         if (Objects.nonNull(optMap.get("x-side"))) {
             xAxis.setSide(Side.valueOf(optMap.get("x-side").toUpperCase()));
         }
-
 
         if (Objects.nonNull(optMap.get("y-side"))) {
             yAxis.setSide(Side.valueOf(optMap.get("y-side").toUpperCase()));
         }
 
-
-        if (Objects.nonNull(optMap.get("y-label-gap"))) {
-            xAxis.setTickLabelGap(Double.valueOf(optMap.get("y-label-gap")));
-        }
-
-        layoyt -= 1000;
-        xyChart.setLayoutX(layoyt);
-        xyChart.setLayoutY(layoyt);
+        xyChart.setLayoutX(-78000);
+        xyChart.setLayoutY(-78000);
 
         controller.getRootAnchor().getChildren().add(xyChart);
         WritableImage writableImage = xyChart.snapshot(new SnapshotParameters(), null);
