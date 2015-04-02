@@ -9,11 +9,10 @@ import com.kodcu.service.DirectoryService;
 import com.kodcu.service.PathResolverService;
 import com.kodcu.service.ThreadService;
 import com.kodcu.service.convert.RenderService;
-
 import javafx.application.Platform;
+import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.concurrent.Worker;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
@@ -24,7 +23,6 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import netscape.javascript.JSObject;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,11 +55,11 @@ public class TabService {
 
     private ObservableList<Optional<Path>> closedPaths = FXCollections.observableArrayList();
 
-    
+
     @Autowired
-    public TabService(final ApplicationController controller, final WebviewService webviewService, final EditorService editorService, 
-            final PathResolverService pathResolver, final ThreadService threadService, final Current current,
-            final DirectoryService directoryService, final RenderService renderService) {
+    public TabService(final ApplicationController controller, final WebviewService webviewService, final EditorService editorService,
+                      final PathResolverService pathResolver, final ThreadService threadService, final Current current,
+                      final DirectoryService directoryService, final RenderService renderService) {
         this.controller = controller;
         this.webviewService = webviewService;
         this.editorService = editorService;
@@ -70,21 +68,21 @@ public class TabService {
         this.current = current;
         this.directoryService = directoryService;
         this.renderService = renderService;
-        
+
         final Consumer<Path> openFileConsumer = path -> {
             if (Files.isDirectory(path)) {
                 directoryService.changeWorkigDir(path.equals(directoryService.workingDirectory()) ? path.getParent() : path);
             } else if (pathResolver.isAsciidoc(path) || pathResolver.isMarkdown(path))
                 addTab(path);
-                else if (pathResolver.isImage(path))
-                    addImageTab(path);
-                else if (pathResolver.isEpub(path))
-                    controller.getHostServices()
-                            .showDocument(String.format("http://localhost:%d/epub/viewer?path=%s", controller.getPort(), path.toString()));
-                else
-                    controller.getHostServices()
-                            .showDocument(path.toUri().toString());
-            };
+            else if (pathResolver.isImage(path))
+                addImageTab(path);
+            else if (pathResolver.isEpub(path))
+                controller.getHostServices()
+                        .showDocument(String.format("http://localhost:%d/epub/viewer?path=%s", controller.getPort(), path.toString()));
+            else
+                controller.getHostServices()
+                        .showDocument(path.toUri().toString());
+        };
         directoryService.setOpenFileConsumer(openFileConsumer);
 
     }
@@ -115,6 +113,7 @@ public class TabService {
 
         MyTab tab = createTab();
         tab.setWebView(webView);
+        tab.setTabText(path.getFileName().toString());
 
         webEngine.setConfirmHandler(param -> {
             if ("command:ready".equals(param)) {
@@ -131,17 +130,19 @@ public class TabService {
                 threadService.runTaskLater(() -> {
                     String content = IOHelper.readFile(path);
                     threadService.runActionLater(() -> {
-                        tab.setTabText(path.getFileName().toString());
                         window.call("setEditorValue", new Object[]{content});
                         window.call("setInitialized");
-                        TabPane tabPane = controller.getTabPane();
-                        tabPane.getTabs().add(tab);
-                        tab.select();
                     });
                 });
 
             }
             return false;
+        });
+
+        threadService.runActionLater(() -> {
+            TabPane tabPane = controller.getTabPane();
+            tabPane.getTabs().add(tab);
+            tab.select();
         });
 
         Node editorVBox = editorService.createEditorVBox(webView, tab);
@@ -193,26 +194,6 @@ public class TabService {
         tab.setOnCloseRequest(event -> {
             event.consume();
             tab.close();
-        });
-
-        tab.selectedProperty().addListener((observableValue, before, after) -> {
-            if (after) {
-                threadService.runActionLater(() -> {
-
-                    if (Objects.nonNull(current.currentWebView())) {
-                        WebEngine webEngine = current.currentEngine();
-                        Worker.State state = webEngine.getLoadWorker().getState();
-                        if (state == Worker.State.SUCCEEDED) {
-                            controller.textListener(current.currentEditorValue());
-                        }
-                    }
-
-                    WebView webView = tab.getWebView();
-                    if (Objects.nonNull(webView))
-                        webView.requestFocus();
-                });
-            }
-
         });
 
         MenuItem menuItem0 = new MenuItem("Close");
@@ -361,4 +342,22 @@ public class TabService {
         tabPane.getSelectionModel().select(tab);
     }
 
+    public void initializeTabChangeListener(TabPane tabPane) {
+        ReadOnlyObjectProperty<Tab> itemProperty = tabPane.getSelectionModel().selectedItemProperty();
+        itemProperty.addListener((observable, oldValue, newValue) -> {
+            if (Objects.isNull(newValue))
+                return;
+            threadService.runActionLater(() -> {
+                WebView webView = ((MyTab) newValue).getWebView();
+                if (Objects.nonNull(webView)) {
+                    try {
+                        controller.textListener(current.currentEditorValue());
+                        webView.requestFocus();
+                    } catch (Exception e) {
+                        logger.info(e.getMessage(), e);
+                    }
+                }
+            });
+        });
+    }
 }

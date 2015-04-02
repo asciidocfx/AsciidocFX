@@ -792,7 +792,10 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             }
         });
 
+        tabService.initializeTabChangeListener(tabPane);
+
         newDoc(null);
+
     }
 
     private void loadShortCuts() {
