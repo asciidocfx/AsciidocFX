@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge"><![endif]-->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Asciidoctor 1.5.2">
+<title>Asciidoc Cheatsheet</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400">
+<link rel="stylesheet" href="https://cdn.rawgit.com/asciidocfx/AsciidocFX/master/src/main/resources/public/css/asciidoctor-default.css">
+</head>
+<body class="article">
+<div id="header">
+<h1>Asciidoc Cheatsheet</h1>
+</div>
+<div id="content">
+<div id="preamble">
+<div class="sectionbody">
+<div style="page-break-after: always;"></div>
+<div class="paragraph">
+<p>Asciidoc is a rich text based markup language. Document that written with Asciidoc can easly convert to <strong>HTML</strong>, <strong><em>PDF</em></strong>, <strong>Docbook</strong>, <strong><em>Mobi</em></strong>, <strong>Epub</strong> formats. This cheatsheet shows you common features of Asciidoc Markup language</p>
+</div>
+<hr>
+</div>
+</div>
+<h1 id="u-basic-formats-u" class="sect0"><a class="anchor" href="#u-basic-formats-u"></a><u>Basic formats</u></h1>
+<div class="paragraph">
+<p><strong>Bold</strong> , <em>İtalic</em> , <u>Underscore</u>, To<sup>p</sup> , Dow<sub>n</sub></p>
+</div>
+<hr>
+<h1 id="u-title-levels-u" class="sect0"><a class="anchor" href="#u-title-levels-u"></a><u>Title levels</u></h1>
+<div class="paragraph">
+<p>There is 6 Level titles as HTML. First one is for document title.</p>
+</div>
+<h1 id="title" class="sect0"><a class="anchor" href="#title"></a>Title</h1>
+<div class="sect1">
+<h2 id="level-1"><a class="anchor" href="#level-1"></a>Level 1</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Content &#8230;&#8203;</p>
+</div>
+<div class="sect2">
+<h3 id="level-2"><a class="anchor" href="#level-2"></a>Level 2</h3>
+<div class="paragraph">
+<p>Content &#8230;&#8203;</p>
+</div>
+<div class="sect3">
+<h4 id="level-3"><a class="anchor" href="#level-3"></a>Level 3</h4>
+<div class="paragraph">
+<p>Content &#8230;&#8203;</p>
+</div>
+<div class="sect4">
+<h5 id="level-4"><a class="anchor" href="#level-4"></a>Level 4</h5>
+<div class="paragraph">
+<p>Content &#8230;&#8203;</p>
+</div>
+<div class="sect5">
+<h6 id="level-5"><a class="anchor" href="#level-5"></a>Level 5</h6>
+<div class="paragraph">
+<p>Content &#8230;&#8203;</p>
+</div>
+<hr>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<h1 id="u-lists-u" class="sect0"><a class="anchor" href="#u-lists-u"></a><u>Lists</u></h1>
+<div class="paragraph">
+<p>There is ordered, unordered, checked and labeled list elements.</p>
+</div>
+<div class="ulist">
+<div class="title">Unordered list</div>
+<ul>
+<li>
+<p>deep 1</p>
+<div class="ulist">
+<ul>
+<li>
+<p>deep 2</p>
+<div class="ulist">
+<ul>
+<li>
+<p>deep 3</p>
+<div class="ulist">
+<ul>
+<li>
+<p>deep 4</p>
+<div class="ulist">
+<ul>
+<li>
+<p>deep 5</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>deep 1</p>
+</li>
+</ul>
+</div>
+<div class="olist arabic">
+<div class="title">Ordered list</div>
+<ol class="arabic">
+<li>
+<p>Order 1</p>
+</li>
+<li>
+<p>Order 2</p>
+<div class="olist loweralpha">
+<ol class="loweralpha" type="a">
+<li>
+<p>Order 2a</p>
+</li>
+<li>
+<p>Order 2b</p>
+</li>
+</ol>
+</div>
+</li>
+<li>
+<p>Order 3</p>
+</li>
+</ol>
+</div>
+<div class="ulist checklist">
+<div class="title">Checked list</div>
+<ul class="checklist">
+<li>
+<p>&#10003; checked</p>
+</li>
+<li>
+<p>&#10003; checked</p>
+</li>
+<li>
+<p>&#10063; unchecked</p>
+</li>
+<li>
+<p>normal</p>
+</li>
+</ul>
+</div>
+<div class="dlist">
+<div class="title">Labeled list</div>
+<dl>
+<dt class="hdlist1">Elma</dt>
+<dd>
+<p>Eski Türkçe&#8217;de "alma" diye bilinen adının, meyvenin rengi olan "al" (kırmızı)'dan geldiği bilinmektedir</p>
+</dd>
+<dt class="hdlist1">Armut</dt>
+<dd>
+<p>Gülgiller (Rosaceae) familyasının Maloideae alt familyasında sınıflanan Pyrus cinsine ait ağaç nitelikli bitki türleriyle, bu türlerden bazılarının yenilebilir meyvelerinin ortak adı.</p>
+</dd>
+</dl>
+</div>
+<hr>
+<h1 id="u-links-u" class="sect0"><a class="anchor" href="#u-links-u"></a><u>Links</u></h1>
+<div class="paragraph">
+<p>You can use links</p>
+</div>
+<div class="paragraph">
+<p><a href="http://asciidocfx.org" class="bare">http://asciidocfx.org</a> - AsciidocFX</p>
+</div>
+<div class="paragraph">
+<p><a href="http://asciidocfx.org">AsciidocFX</a></p>
+</div>
+<hr>
+<h1 id="u-images-u" class="sect0"><a class="anchor" href="#u-images-u"></a><u>Images</u></h1>
+<div class="paragraph">
+<p>You can declare images with <code>image::</code> prefix and <code>[]</code> suffix. Path may be <em>relative</em> or <em>absolute</em> .</p>
+</div>
+<div class="sect2">
+<h3 id="basit"><a class="anchor" href="#basit"></a>Basit</h3>
+<div class="imageblock">
+<div class="content">
+<img src="http://kodcu.com/wp/wp-content/uploads/2014/11/logo-kodcu-com5.png" alt="logo kodcu com5.png">
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="detayl"><a class="anchor" href="#detayl"></a>Detaylı</h3>
+<div class="imageblock">
+<div class="content">
+<img src="http://kodcu.com/wp/wp-content/uploads/2014/11/logo-kodcu-com5.png" alt="Kodcu.com">
+</div>
+<div class="title">Şekil 1. Kodcu.com</div>
+</div>
+<hr>
+</div>
+<h1 id="u-code-higlighting-u" class="sect0"><a class="anchor" href="#u-code-higlighting-u"></a><u>Code higlighting</u></h1>
+<div class="paragraph">
+<p>You can declare inline or block based codes with Asciidoc syntax.</p>
+</div>
+<div class="paragraph">
+<div class="title">Inline</div>
+<p>Reference code like <code>types</code> or <code>methods</code> inline.</p>
+</div>
+<div class="listingblock">
+<div class="title">Code block</div>
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">public interface Hello {
+
+    void hello();
+
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You can use numbered elements named <code>callouts</code> in Asciidoc.</p>
+</div>
+<div class="listingblock">
+<div class="title">Numbered code block</div>
+<div class="content">
+<pre class="highlight"><code class="language-ruby" data-lang="ruby">require 'sinatra' <b class="conum">(1)</b>
+
+get '/hi' do <b class="conum">(2)</b>
+  "Hello World!" <b class="conum">(3)</b>
+end</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<ol>
+<li>
+<p>Library import</p>
+</li>
+<li>
+<p>URL mapping</p>
+</li>
+<li>
+<p>Content for response</p>
+</li>
+</ol>
+</div>
+<hr>
+<h1 id="u-blocks-u" class="sect0"><a class="anchor" href="#u-blocks-u"></a><u>Blocks</u></h1>
+<div class="paragraph">
+<p>Sınırlandırılmış bloklar 4&#8217;er özel karakter ile sınırlandırılmış alanlardır.</p>
+</div>
+<div class="sect2">
+<h3 id="em-sidebar-em-block"><a class="anchor" href="#em-sidebar-em-block"></a><em>Sidebar</em> block</h3>
+<div class="sidebarblock">
+<div class="content">
+<div class="title">Başlık (opsiyonel)</div>
+<div class="paragraph">
+<p>Bu blok türünün adı <strong>Sidebar</strong> bloktur.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="example-block"><a class="anchor" href="#example-block"></a>Example block</h3>
+<div class="exampleblock">
+<div class="title">Example 1. Başlık (opsiyonel)</div>
+<div class="content">
+<div class="paragraph">
+<p>Bu blok türünün adı <strong>Example</strong> bloktur.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="passthrough-block"><a class="anchor" href="#passthrough-block"></a>Passthrough block</h3>
+Bu blok türünün adı <b>Passthrough</b> bloktur. Bu blok içerinde HTML elemanları kullanabilirsiniz.
+<br/>
+<br/>
+<u>Örneğin;</u>
+<br/><br/>
+<ul>
+    <li>Ali</li>
+    <li>Veli</li>
+    <li>Selami</li>
+</ul>
+</div>
+<div class="sect2">
+<h3 id="blockquotes-block"><a class="anchor" href="#blockquotes-block"></a>BlockquoteS block</h3>
+<div class="quoteblock">
+<div class="title">Başlık (opsiyonel)</div>
+<blockquote>
+<div class="paragraph">
+<p>AspectJ dilinin kullandığı yapılar 3 kısımda toplanmıştır.</p>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Bunlar</dt>
+<dd>
+<p>Ortak, Dinamik ve Statik crosscutting (enine kesen) bölümlerdir.</p>
+</dd>
+</dl>
+</div>
+<div class="paragraph">
+<p>Bu bölümler, içlerinde farklı bileşenleri toplayarak bizim mevcut <strong>OOP</strong> sistemimizi <strong>AOP</strong> mantığı ile harmanlamamıza imkan veriyorlar.</p>
+</div>
+</blockquote>
+<div class="attribution">
+&#8212; Hakan Özler<br>
+<cite>AspectJ Ebook</cite>
+</div>
+</div>
+<hr>
+</div>
+<h1 id="u-uyar-bloklar-u" class="sect0"><a class="anchor" href="#u-uyar-bloklar-u"></a><u>Uyarı blokları</u></h1>
+<div class="paragraph">
+<p>Asciidoc işaretleme dilinde 5 tip uyarı (admonition) bloğu bulunmaktadır. Bu blokların kendine has ikonları bulunmaktadır.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">
+<div class="title">Not bloğu</div>
+<div class="paragraph">
+<p>Burası bir not bloğu</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Important</div>
+</td>
+<td class="content">
+<div class="title">Önemli bloğu</div>
+<div class="paragraph">
+<p>Burası bir önemli bloğu</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Tip</div>
+</td>
+<td class="content">
+<div class="title">İpucu bloğu</div>
+<div class="paragraph">
+<p>Burası bir ipucu bloğu</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock caution">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Caution</div>
+</td>
+<td class="content">
+<div class="title">Dikkat bloğu</div>
+<div class="paragraph">
+<p>Burası bir dikkat bloğu</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Warning</div>
+</td>
+<td class="content">
+<div class="title">Uyarı bloğu</div>
+<div class="paragraph">
+<p>Burası bir uyarı bloğu</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<hr>
+<h1 id="u-tablolar-u" class="sect0"><a class="anchor" href="#u-tablolar-u"></a><u>Tablolar</u></h1>
+<div class="paragraph">
+<p>Asciidoc ile hemen hemen tüm kompleks tablo yapılarını kurabilirsiniz.</p>
+</div>
+<div class="sect2">
+<h3 id="basit-bir-tablo"><a class="anchor" href="#basit-bir-tablo"></a>Basit bir tablo</h3>
+<table class="tableblock frame-all grid-all spread">
+<caption class="title">Table 1. Başlık (opsiyonel)</caption>
+<colgroup>
+<col style="width: 33%;">
+<col style="width: 33%;">
+<col style="width: 33%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Col 1</th>
+<th class="tableblock halign-left valign-top">Col 2</th>
+<th class="tableblock halign-left valign-top">Col 3</th>
+</tr>
+</thead>
+<tfoot>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">6</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Three items</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">d</p></td>
+</tr>
+</tfoot>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Item 1</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">a</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">2</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Item 2</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">b</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">3</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Item 3</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">c</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
+<h3 id="kompleks-bir-tablo"><a class="anchor" href="#kompleks-bir-tablo"></a>Kompleks bir tablo</h3>
+<table class="tableblock frame-all grid-all spread">
+<caption class="title">Table 2. Başlık (opsiyonel)</caption>
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Date</th>
+<th class="tableblock halign-left valign-top">Duration</th>
+<th class="tableblock halign-left valign-top">Avg HR</th>
+<th class="tableblock halign-left valign-top">Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">22-Aug-08</p></td>
+<td class="tableblock halign-center valign-middle" rowspan="2"><p class="tableblock">10:24</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">157</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Worked out MSHR (max sustainable
+heart rate) by going hard
+for this interval.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">22-Aug-08</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">152</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Back-to-back with previous interval.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">24-Aug-08</p></td>
+<td class="tableblock halign-center valign-top" colspan="3"><p class="tableblock">none</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h1 id="u-asciidocfx-eklentileri-u" class="sect0"><a class="anchor" href="#u-asciidocfx-eklentileri-u"></a><u>AsciidocFX eklentileri</u></h1>
+<div class="paragraph">
+<p>AsciidocFX metin editörü, <strong>UML</strong> diagramları, <strong>matematiksel kompleks formüller</strong> ve <strong>JavaFX Chart</strong> için üç özel eklentiye sahiptir.</p>
+</div>
+<div class="sect2">
+<h3 id="javafx-charts-extension"><a class="anchor" href="#javafx-charts-extension"></a>JavaFX Charts Extension</h3>
+<div class="paragraph">
+<p>JavaFX has 9 kind of Chart component and AsciidocFX supports all of them.</p>
+</div>
+<div class="sect3">
+<h4 id="pie-chart"><a class="anchor" href="#pie-chart"></a>Pie Chart</h4>
+<div class="imageblock">
+<div class="content">
+<img src="images/secim-2014-pie.png" alt="secim 2014 pie.png">
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="area-chart"><a class="anchor" href="#area-chart"></a>Area Chart</h4>
+<div class="imageblock">
+<div class="content">
+<img src="images/area-chart.png" alt="area chart.png">
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="plantuml-extension"><a class="anchor" href="#plantuml-extension"></a>PlantUML Extension</h3>
+<div class="paragraph">
+<p>PlantUML metinsel olarak yazılan ifadelerle zengin UML diagramları oluşturmaya olanak tanıyan, Java bazlı bir teknolojidir. AsciidocFX gömülü olarak PlantUML desteklemektedir.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="images/uml-diagram.png" alt="uml diagram.png">
+</div>
+<div class="title">Figure 1. Başlık (opsiyonel)</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="mathjax-extension"><a class="anchor" href="#mathjax-extension"></a>MathJAX Extension</h3>
+<div class="paragraph">
+<p>MathJAX matematiksel kompleks formüllerin, metinsel olarak ifade edildiği çeşitli dilleri (MathML, Tex, AsciiMath) görsel olarak çıktılayan bir teknolojidir. AsciidocFX gömülü olarak MathJAX desteklemektedir. AsciidocFX ile MathML ve Tex biçimlerinde kompleks formülleri PNG resmi olarak eşzamanlı olarak dökümanlarınızda kullanabilirsiniz.</p>
+</div>
+<div class="sect3">
+<h4 id="tex-ile-form-l-rne-i"><a class="anchor" href="#tex-ile-form-l-rne-i"></a>Tex ile formül örneği</h4>
+<div class="imageblock">
+<div class="content">
+<img src="images/tex-formula.png" alt="tex formula.png">
+</div>
+<div class="title">Figure 2. Başlık (opsiyonel)</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="mathml-ile-form-l-rne-i"><a class="anchor" href="#mathml-ile-form-l-rne-i"></a>MathML ile formül örneği</h4>
+<div class="imageblock">
+<div class="content">
+<img src="images/mathml-formula.svg" alt="mathml formula.svg">
+</div>
+<div class="title">Figure 3. Başlık (opsiyonel)</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="filesystem-tree-viewers"><a class="anchor" href="#filesystem-tree-viewers"></a>Filesystem Tree Viewers</h3>
+<div class="paragraph">
+<p>2 farklı yolla dosya sisteminin ağaç yapısını "tree" opsiyonu ile oluşturabilirsiniz.</p>
+</div>
+<div class="sect3">
+<h4 id="birinci-yol"><a class="anchor" href="#birinci-yol"></a>Birinci Yol</h4>
+<div class="imageblock">
+<div class="content">
+<img src="images/filesystem-tree-viewer.png" alt="filesystem tree viewer.png">
+</div>
+<div class="title">Figure 4. Filesystem Tree</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="i-kinci-yol"><a class="anchor" href="#i-kinci-yol"></a>İkinci Yol</h4>
+<div class="imageblock">
+<div class="content">
+<img src="images/filesystem-tree-viewer-new.png" alt="filesystem tree viewer new.png">
+</div>
+<div class="title">Figure 5. Filesystem Tree</div>
+</div>
+<div class="paragraph">
+<p>Döküman geliştirilmeye ve önerilere açıktır.</p>
+</div>
+<div class="paragraph">
+<p>Teşekkürler.</p>
+</div>
+</div>
+</div>
+</div>
+<div id="footer">
+<div id="footer-text">
+Last updated 2015-04-02 13:34:19 GTBDT
+</div>
+</div>
+</body>
+</html>
