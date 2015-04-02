@@ -68,10 +68,10 @@ public class WebviewService {
             controller.cutCopy(current.currentEditorSelection());
         });
         MenuItem paste = MenuItemBuilt.item("Paste").click(e -> {
-            controller.paste(false);
+            controller.paste();
         });
         MenuItem pasteRaw = MenuItemBuilt.item("Paste raw").click(e -> {
-            current.insertEditorValue(controller.pasteRaw());
+            controller.pasteRaw();
         });
         MenuItem indexSelection = MenuItemBuilt.item("Index selection").click(e -> {
             shortcutProvider.getProvider().addIndexSelection();

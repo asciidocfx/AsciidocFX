@@ -54,7 +54,16 @@ editor.commands.addCommand({
     name: 'paste-1',
     bindKey: {win: 'Ctrl-V', mac: 'Command-V'},
     exec: function (editor) {
-        app.paste(true);
+        app.paste();
+    },
+    readOnly: true
+});
+
+editor.commands.addCommand({
+    name: 'paste-raw-1',
+    bindKey: {win: 'Ctrl-Shift-V', mac: 'Command-Shift-V'},
+    exec: function (editor) {
+        app.pasteRaw();
     },
     readOnly: true
 });

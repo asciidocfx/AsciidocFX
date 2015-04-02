@@ -970,7 +970,21 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         return clipboard.getString();
     }
 
-    public void paste(boolean showContextMenu) {
+    public void pasteRaw() {
+
+        JSObject editor = (JSObject) current.currentEngine().executeScript("editor");
+        if (clipboard.hasFiles()) {
+            Optional<String> block = parserService.toImageBlock(clipboard.getFiles());
+            if (block.isPresent()) {
+                editor.call("insert", block.get());
+                return;
+            }
+        }
+
+        editor.call("insert", clipboard.getString());
+    }
+
+    public void paste() {
 
         JSObject window = renderService.getWindow();
         JSObject editor = (JSObject) current.currentEngine().executeScript("editor");
@@ -985,23 +999,9 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
         try {
             if (clipboard.hasHtml() || (Boolean) window.call("isHtml", clipboard.getString())) {
-
-                if (showContextMenu) {
-                    ContextMenu contextMenu = new ContextMenu();
-                    contextMenu.getItems().addAll(MenuItemBuilt.item("Paste").click(event -> {
-                        String html = Optional.ofNullable(clipboard.getHtml()).orElse(clipboard.getString());
-                        String content = (String) window.call(current.currentTab().htmlToMarkupFunction(), html);
-                        editor.call("insert", content);
-                    }));
-                    contextMenu.getItems().addAll(MenuItemBuilt.item("Paste raw").click(event -> {
-                        editor.call("insert", clipboard.getString());
-                    }));
-                    contextMenu.show(stage);
-                } else {
-                    String html = Optional.ofNullable(clipboard.getHtml()).orElse(clipboard.getString());
-                    String content = (String) window.call(current.currentTab().htmlToMarkupFunction(), html);
-                    editor.call("insert", content);
-                }
+                String html = Optional.ofNullable(clipboard.getHtml()).orElse(clipboard.getString());
+                String content = (String) window.call(current.currentTab().htmlToMarkupFunction(), html);
+                editor.call("insert", content);
                 return;
             }
         } catch (Exception e) {
@@ -1012,16 +1012,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     }
 
-    public String pasteRaw() {
-
-        if (clipboard.hasFiles()) {
-            Optional<String> block = parserService.toImageBlock(clipboard.getFiles());
-            if (block.isPresent())
-                return block.get();
-        }
-
-        return clipboard.getString();
-    }
 
     public void adjustSplitPane() {
         if (splitPane.getDividerPositions()[0] > 0.1) {
