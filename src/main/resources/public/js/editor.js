@@ -30,7 +30,7 @@ var updateScrollPosition = function (scroll) {
 
     for (var i = 0; i < 10; i++) { // try ten times
         var trimmed = editor.session.getLine(row).trim();
-        if ((trimmed == "") || (trimmed.match(/\(\(\(.*?\)\)\)/)) || (trimmed.match(/\[\[.*?\]\]/))) {
+        if ((trimmed == "") || (trimmed.match(/\(\(\(.*?\)\)\)/)) || (trimmed.match(/'''/)) || (trimmed.match(/\[\[.*?\]\]/))) {
             row++;
         }
         else {
@@ -61,6 +61,13 @@ var updateScrollPosition = function (scroll) {
 };
 
 editor.getSession().on('changeScrollTop', function (scroll) {
+
+    var maxTop = editor.renderer.layerConfig.maxHeight - editor.renderer.$size.scrollerHeight + editor.renderer.scrollMargin.bottom;
+    var scrollTop = editor.getSession().getScrollTop();
+    if (Math.abs(maxTop - scrollTop) < 10 || scrollTop < 10) {
+        app.onscroll(scrollTop, maxTop);
+        return;
+    }
 
     var firstly = editor.getFirstVisibleRow();
 
