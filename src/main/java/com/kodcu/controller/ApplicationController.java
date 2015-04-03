@@ -3,7 +3,6 @@ package com.kodcu.controller;
 
 import com.kodcu.bean.Config;
 import com.kodcu.bean.RecentFiles;
-import com.kodcu.bean.ShortCuts;
 import com.kodcu.component.*;
 import com.kodcu.other.Current;
 import com.kodcu.other.IOHelper;
@@ -807,7 +806,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             String yamlC = IOHelper.readFile(configPath.resolve("shortcuts.yml"));
 
             Yaml yaml = new Yaml();
-            this.shortCuts = yaml.loadAs(yamlC, ShortCuts.class).getKeys();
+            this.shortCuts = yaml.loadAs(yamlC, Map.class);
 
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
@@ -1183,6 +1182,8 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     }
 
     public Map<String, String> getShortCuts() {
+        if(Objects.isNull(shortCuts))
+            shortCuts = new HashMap<>();
         return shortCuts;
     }
 
