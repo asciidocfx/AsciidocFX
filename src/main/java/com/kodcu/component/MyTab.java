@@ -95,7 +95,7 @@ public class MyTab extends Tab {
     public ButtonType close() {
         this.select();
 
-        if (isSaved()) {
+        if (isSaved() || !isDirty()) {
             closeIt();
             return ButtonType.YES;
         }
@@ -107,6 +107,21 @@ public class MyTab extends Tab {
             closeIt();
         }
         return type;
+    }
+
+    private boolean isDirty() {
+        if ("new *".equals(this.getTabText())) {
+            if (Objects.nonNull(webView)) {
+                try {
+                    String value = (String) webView.getEngine().executeScript("editor.getValue()");
+                    if ("".equals(value))
+                        return false;
+                } catch (Exception e) {
+                    // no-op
+                }
+            }
+        }
+        return true;
     }
 
     private void cleanRemovedTabs() {
