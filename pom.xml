@@ -40,12 +40,6 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-websocket</artifactId>
-            <exclusions>
-                <exclusion>
-                    <artifactId>snakeyaml</artifactId>
-                    <groupId>org.yaml</groupId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -119,11 +113,11 @@
             <artifactId>saxon</artifactId>
             <version>${saxon.version}</version>
         </dependency>
-        <dependency>
-            <groupId>com.esotericsoftware.yamlbeans</groupId>
-            <artifactId>yamlbeans</artifactId>
-            <version>1.08</version>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>com.esotericsoftware.yamlbeans</groupId>-->
+            <!--<artifactId>yamlbeans</artifactId>-->
+            <!--<version>1.08</version>-->
+        <!--</dependency>-->
         <dependency>
             <groupId>org.zeroturnaround</groupId>
             <artifactId>zt-zip</artifactId>
