@@ -167,14 +167,21 @@ var formatText = function (editor, matcher, firstCharacter, lastCharacter) {
 
     function controlSpaceBoundary(mainText, virtualText) {
         return (virtualText == mainText) ||
-               (virtualText.match('^( )(' + escapeSpecialChars(mainText) + ')( )$')) ||
-               (virtualText.match('^( )(' + escapeSpecialChars(mainText) + ')$')) ||
-               (virtualText.match('^(' + escapeSpecialChars(mainText) + ')( )$'));
+            (virtualText.match('^( )(' + escapeSpecialChars(mainText) + ')( )$')) ||
+            (virtualText.match('^( )(' + escapeSpecialChars(mainText) + ')$')) ||
+            (virtualText.match('^(' + escapeSpecialChars(mainText) + ')( )$'));
     }
 
     function escapeSpecialChars(text) {
         return text.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
     }
+}
+
+function addFxChart(chartType) {
+    var range = editor.getSelectionRange();
+    editor.removeToLineStart();
+    editor.insert("[chart," + chartType + ",file=\"\"]\n--\n\n--");
+    editor.gotoLine(range.end.row + 3, 0, true);
 }
 
 var editorMenu = {
@@ -357,6 +364,30 @@ var editorMenu = {
             editor.removeToLineStart();
             editor.insert("[tree,file=\"\"]\n--\n\n--");
             editor.gotoLine(range.end.row + 3, 0, true);
+        },
+        addPieChart: function () {
+            addFxChart("pie");
+        },
+        addBarChart: function () {
+            addFxChart("bar");
+        },
+        addAreaChart: function () {
+            addFxChart("area");
+        },
+        addLineChart: function () {
+            addFxChart("line");
+        },
+        addScatterChart: function () {
+            addFxChart("scatter");
+        },
+        addBubbleChart: function () {
+            addFxChart("bubble");
+        },
+        addStackedAreaChart: function () {
+            addFxChart("\"stacked-area\"");
+        },
+        addStackedBarChart: function () {
+            addFxChart("\"stacked-bar\"");
         }
     },
     markdown: {

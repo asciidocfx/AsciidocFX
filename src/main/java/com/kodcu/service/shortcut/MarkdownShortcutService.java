@@ -194,4 +194,44 @@ public class MarkdownShortcutService implements ShortcutService {
     public void addTreeBlock() {
         AlertHelper.notImplementedDialog();
     }
+
+    @Override
+    public void addPieChart() {
+        AlertHelper.notImplementedDialog();
+    }
+
+    @Override
+    public void addBarChart() {
+        AlertHelper.notImplementedDialog();
+    }
+
+    @Override
+    public void addLineChart() {
+        AlertHelper.notImplementedDialog();
+    }
+
+    @Override
+    public void addAreaChart() {
+        AlertHelper.notImplementedDialog();
+    }
+
+    @Override
+    public void addScatterChart() {
+        AlertHelper.notImplementedDialog();
+    }
+
+    @Override
+    public void addBubbleChart() {
+        AlertHelper.notImplementedDialog();
+    }
+
+    @Override
+    public void addStackedAreaChart() {
+        AlertHelper.notImplementedDialog();
+    }
+
+    @Override
+    public void addStackedBarChart() {
+        AlertHelper.notImplementedDialog();
+    }
 }

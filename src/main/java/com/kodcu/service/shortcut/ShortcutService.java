@@ -38,4 +38,12 @@ public interface ShortcutService {
     void addMathBlock();
     void addUmlBlock();
     void addTreeBlock();
+    void addPieChart();
+    void addBarChart();
+    void addLineChart();
+    void addAreaChart();
+    void addScatterChart();
+    void addBubbleChart();
+    void addStackedAreaChart();
+    void addStackedBarChart();
 }

@@ -187,4 +187,44 @@ public class AsciidocShortcutService implements ShortcutService {
     public void addTreeBlock() {
         current.currentEngine().executeScript("editorMenu.asciidoc.addTreeBlock()");
     }
+
+    @Override
+    public void addPieChart() {
+        current.currentEngine().executeScript("editorMenu.asciidoc.addPieChart()");
+    }
+
+    @Override
+    public void addBarChart() {
+        current.currentEngine().executeScript("editorMenu.asciidoc.addBarChart()");
+    }
+
+    @Override
+    public void addLineChart() {
+        current.currentEngine().executeScript("editorMenu.asciidoc.addLineChart()");
+    }
+
+    @Override
+    public void addAreaChart() {
+        current.currentEngine().executeScript("editorMenu.asciidoc.addAreaChart()");
+    }
+
+    @Override
+    public void addScatterChart() {
+        current.currentEngine().executeScript("editorMenu.asciidoc.addScatterChart()");
+    }
+
+    @Override
+    public void addBubbleChart() {
+        current.currentEngine().executeScript("editorMenu.asciidoc.addBubbleChart()");
+    }
+
+    @Override
+    public void addStackedAreaChart() {
+        current.currentEngine().executeScript("editorMenu.asciidoc.addStackedAreaChart()");
+    }
+
+    @Override
+    public void addStackedBarChart() {
+        current.currentEngine().executeScript("editorMenu.asciidoc.addStackedBarChart()");
+    }
 }

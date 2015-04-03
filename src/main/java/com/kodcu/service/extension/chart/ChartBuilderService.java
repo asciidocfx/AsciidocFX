@@ -28,9 +28,6 @@ public abstract class ChartBuilderService {
 
     public void chartBuild(String chartContent, String fileName, Map<String, String> optMap) throws Exception {
 
-        currentRoot = current.currentPath().get().getParent();
-        imagePath = currentRoot.resolve("images/").resolve(fileName);
-
         if (!fileName.endsWith(".png"))
             throw new InterruptedException();
 
@@ -46,6 +43,9 @@ public abstract class ChartBuilderService {
 
         if (!current.currentPath().isPresent())
             controller.saveDoc();
+
+        currentRoot = current.currentPath().get().getParent();
+        imagePath = currentRoot.resolve("images/").resolve(fileName);
 
     }
 

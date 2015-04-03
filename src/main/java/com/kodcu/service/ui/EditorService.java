@@ -300,7 +300,42 @@ public class EditorService {
             shortcutProvider.getProvider().addTreeBlock();
         }));
 
-        final HBox topMenu = new HBox(admonitionButton, blocks, documentHelpers,extensions);
+        final MenuButton chartMenu = new MenuButton("Charts");
+        chartMenu.setFocusTraversable(false);
+
+        chartMenu.getItems().add(MenuItemBuilt.item("Pie").click(event -> {
+            shortcutProvider.getProvider().addPieChart();
+        }));
+
+        chartMenu.getItems().add(MenuItemBuilt.item("Bar").click(event -> {
+            shortcutProvider.getProvider().addBarChart();
+        }));
+
+        chartMenu.getItems().add(MenuItemBuilt.item("Line").click(event -> {
+            shortcutProvider.getProvider().addLineChart();
+        }));
+
+        chartMenu.getItems().add(MenuItemBuilt.item("Area").click(event -> {
+            shortcutProvider.getProvider().addAreaChart();
+        }));
+
+        chartMenu.getItems().add(MenuItemBuilt.item("Scatter").click(event -> {
+            shortcutProvider.getProvider().addScatterChart();
+        }));
+
+        chartMenu.getItems().add(MenuItemBuilt.item("Bubble").click(event -> {
+            shortcutProvider.getProvider().addBubbleChart();
+        }));
+
+        chartMenu.getItems().add(MenuItemBuilt.item("Stacked Area").click(event -> {
+            shortcutProvider.getProvider().addStackedAreaChart();
+        }));
+
+        chartMenu.getItems().add(MenuItemBuilt.item("Stacked Bar").click(event -> {
+            shortcutProvider.getProvider().addStackedBarChart();
+        }));
+
+        final HBox topMenu = new HBox(admonitionButton, blocks, documentHelpers, extensions,chartMenu);
 
         topMenu.setSpacing(9);
         topMenu.getStyleClass().add("top-menu");
