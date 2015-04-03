@@ -11,7 +11,6 @@ public class Config {
     private boolean directoryPanel;
     private String theme;
     private String scrollSpeed;
-    private String workingDirectory;
     private String kindlegenDir;
     private String defaultLanguage;
 
@@ -73,14 +72,6 @@ public class Config {
 
     public void setRecentFileListSize(Integer recentFileListSize) {
         this.recentFileListSize = recentFileListSize;
-    }
-
-    public String getWorkingDirectory() {
-        return workingDirectory;
-    }
-
-    public void setWorkingDirectory(String workingDirectory) {
-        this.workingDirectory = workingDirectory;
     }
 
     public String getKindlegenDir() {

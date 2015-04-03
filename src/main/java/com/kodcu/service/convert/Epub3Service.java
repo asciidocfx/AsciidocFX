@@ -154,8 +154,8 @@ public class Epub3Service {
                             if (!isTemp) {
                                 indikatorService.completeCycle();
                                 threadService.runActionLater(() -> {
-                                    asciiDocController.getRecentFiles().remove(epubPath.toString());
-                                    asciiDocController.getRecentFiles().add(0, epubPath.toString());
+                                    asciiDocController.getRecentFilesList().remove(epubPath.toString());
+                                    asciiDocController.getRecentFilesList().add(0, epubPath.toString());
                                 });
                             }
                         });

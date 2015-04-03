@@ -61,7 +61,7 @@ public class DocumentService {
 
         IOHelper.writeToFile(currentPath, (String) current.currentEngine().executeScript("editor.getValue();"), TRUNCATE_EXISTING, CREATE);
         current.setCurrentTabText(currentPath.getFileName().toString());
-        ObservableList<String> recentFiles = controller.getRecentFiles();
+        ObservableList<String> recentFiles = controller.getRecentFilesList();
         recentFiles.remove(currentPath.toString());
         recentFiles.add(0, currentPath.toString());
 
@@ -121,8 +121,8 @@ public class DocumentService {
         if (chosenFiles != null) {
             chosenFiles.stream().map(e -> e.toPath()).forEach(tabService::addTab);
             chosenFiles.stream()
-                    .map(File::toString).filter(file -> !controller.getRecentFiles().contains(file))
-                    .forEach(controller.getRecentFiles()::addAll);
+                    .map(File::toString).filter(file -> !controller.getRecentFilesList().contains(file))
+                    .forEach(controller.getRecentFilesList()::addAll);
             directoryService.setInitialDirectory(Optional.ofNullable(chosenFiles.get(0)));
         }
     }

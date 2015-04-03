@@ -87,8 +87,8 @@ public class KindleMobiService {
                             indikatorService.completeCycle();
 
                             threadService.runActionLater(() -> {
-                                asciiDocController.getRecentFiles().remove(mobiPath.toString());
-                                asciiDocController.getRecentFiles().add(0, mobiPath.toString());
+                                asciiDocController.getRecentFilesList().remove(mobiPath.toString());
+                                asciiDocController.getRecentFilesList().add(0, mobiPath.toString());
                             });
 
                         } catch (Exception e) {

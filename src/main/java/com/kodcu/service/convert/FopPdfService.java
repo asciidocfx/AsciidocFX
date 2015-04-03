@@ -19,7 +19,6 @@ import org.springframework.stereotype.Component;
 
 import javax.xml.transform.Source;
 import javax.xml.transform.TransformerException;
-import javax.xml.transform.URIResolver;
 import java.io.FileOutputStream;
 import java.net.URI;
 import java.nio.file.Files;
@@ -116,8 +115,8 @@ public class FopPdfService {
                     indikatorService.completeCycle();
 
                     threadService.runActionLater(() -> {
-                        asciiDocController.getRecentFiles().remove(pdfPath.toString());
-                        asciiDocController.getRecentFiles().add(0, pdfPath.toString());
+                        asciiDocController.getRecentFilesList().remove(pdfPath.toString());
+                        asciiDocController.getRecentFilesList().add(0, pdfPath.toString());
                     });
                 }
             });

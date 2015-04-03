@@ -154,7 +154,7 @@ public class DirectoryService {
         DirectoryChooser directoryChooser = this.newDirectoryChooser("Select Working Directory");
         File selectedDir = directoryChooser.showDialog(null);
         if (Objects.nonNull(selectedDir)) {
-            controller.getConfig().setWorkingDirectory(selectedDir.toString());
+            controller.getRecentFiles().setWorkingDirectory(selectedDir.toString());
             this.setWorkingDirectory(Optional.of(selectedDir.toPath()));
             fileBrowser.browse(controller.getTreeView(), selectedDir.toPath());
             this.setInitialDirectory(Optional.ofNullable(selectedDir));
@@ -165,7 +165,7 @@ public class DirectoryService {
     public void changeWorkigDir(Path path) {
         if (Objects.isNull(path))
             return;
-        controller.getConfig().setWorkingDirectory(path.toString());
+        controller.getRecentFiles().setWorkingDirectory(path.toString());
         this.setWorkingDirectory(Optional.of(path));
         fileBrowser.browse(controller.getTreeView(), path);
         this.setInitialDirectory(Optional.ofNullable(path.toFile()));

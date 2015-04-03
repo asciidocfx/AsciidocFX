@@ -235,7 +235,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     private AnchorPane asciidocTableAnchor;
     private Stage asciidocTableStage;
     private final Clipboard clipboard = Clipboard.getSystemClipboard();
-    private final ObservableList<String> recentFiles = FXCollections.synchronizedObservableList(FXCollections.observableArrayList());
+    private final ObservableList<String> recentFilesList = FXCollections.synchronizedObservableList(FXCollections.observableArrayList());
     private AnchorPane configAnchor;
     private Stage configStage;
     private int port = 8080;
@@ -248,6 +248,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     private final List<String> bookNames = Arrays.asList("book.asc", "book.txt", "book.asciidoc", "book.adoc", "book.ad");
 
     private Map<String, String> shortCuts;
+    private RecentFiles recentFiles;
 
     private final ChangeListener<String> lastRenderedChangeListener = (observableValue, old, nev) -> {
 
@@ -356,8 +357,8 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                     threadService.runTaskLater(() -> {
                         IOHelper.writeToFile(docbookPath, finalDocbook, CREATE, TRUNCATE_EXISTING, WRITE);
                     });
-                    getRecentFiles().remove(docbookPath.toString());
-                    getRecentFiles().add(0, docbookPath.toString());
+                    getRecentFilesList().remove(docbookPath.toString());
+                    getRecentFilesList().add(0, docbookPath.toString());
                 };
 
                 if (current.currentIsBook()) {
@@ -584,8 +585,8 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         loadRecentFileList();
         loadShortCuts();
 
-        recentListView.setItems(recentFiles);
-        recentFiles.addListener((ListChangeListener<String>) c -> {
+        recentListView.setItems(recentFilesList);
+        recentFilesList.addListener((ListChangeListener<String>) c -> {
             recentListView.visibleProperty().setValue(c.getList().size() > 0);
             recentListView.getSelectionModel().selectFirst();
         });
@@ -636,8 +637,8 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
 
         /// Treeview
-        if (Objects.nonNull(config.getWorkingDirectory())) {
-            Path path = Paths.get(config.getWorkingDirectory());
+        if (Objects.nonNull(recentFiles.getWorkingDirectory())) {
+            Path path = Paths.get(recentFiles.getWorkingDirectory());
             Optional<Path> optional = Files.notExists(path) ? Optional.empty() : Optional.of(path);
             directoryService.setWorkingDirectory(optional);
         }
@@ -846,9 +847,9 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         try {
             String yamlContent = IOHelper.readFile(configPath.resolve("recentFiles.yml"));
             Yaml yaml = new Yaml();
-            RecentFiles readed = yaml.loadAs(yamlContent, RecentFiles.class);
+            recentFiles = yaml.loadAs(yamlContent, RecentFiles.class);
 
-            recentFiles.addAll(readed.getFiles());
+            recentFilesList.addAll(recentFiles.getFiles());
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
         }
@@ -1145,8 +1146,8 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         return lastRendered;
     }
 
-    public ObservableList<String> getRecentFiles() {
-        return recentFiles;
+    public ObservableList<String> getRecentFilesList() {
+        return recentFilesList;
     }
 
     public TabPane getTabPane() {
@@ -1390,6 +1391,10 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         hidePreviewPanel.setSelected(true);
         hidePreviewPanel(actionEvent);
         hideFileBrowser(actionEvent);
+    }
+
+    public RecentFiles getRecentFiles() {
+        return recentFiles;
     }
 
     public void clearImageCache() {

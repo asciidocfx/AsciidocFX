@@ -63,8 +63,8 @@ public class Html5ArticleService {
 
                     threadService.runActionLater(() -> {
                         indikatorService.completeCycle();
-                        asciiDocController.getRecentFiles().remove(htmlArticlePath.toString());
-                        asciiDocController.getRecentFiles().add(0, htmlArticlePath.toString());
+                        asciiDocController.getRecentFilesList().remove(htmlArticlePath.toString());
+                        asciiDocController.getRecentFilesList().add(0, htmlArticlePath.toString());
                     });
                 });
 

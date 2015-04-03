@@ -1,6 +1,5 @@
 package com.kodcu.service.config;
 
-import com.kodcu.bean.Config;
 import com.kodcu.bean.RecentFiles;
 import com.kodcu.controller.ApplicationController;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +30,8 @@ public class YamlService {
 
         Yaml yaml=new Yaml();
         try(FileWriter writer = new FileWriter(recentFileYml);){
-            yaml.dump(new RecentFiles(controller.getRecentFiles()), writer);
+            controller.getRecentFiles().setFiles(controller.getRecentFilesList());
+            yaml.dump(controller.getRecentFiles(), writer);
         }
     }
 }

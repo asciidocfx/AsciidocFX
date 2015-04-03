@@ -15,7 +15,6 @@ import org.springframework.stereotype.Component;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static java.nio.file.StandardOpenOption.CREATE;
@@ -81,8 +80,8 @@ public class Html5BookService extends Converter {
                 IOHelper.writeToFile(htmlBookPath, htmlContent, CREATE, TRUNCATE_EXISTING);
 
                 threadService.runActionLater(() -> {
-                    asciiDocController.getRecentFiles().remove(htmlBookPath.toString());
-                    asciiDocController.getRecentFiles().add(0, htmlBookPath.toString());
+                    asciiDocController.getRecentFilesList().remove(htmlBookPath.toString());
+                    asciiDocController.getRecentFilesList().add(0, htmlBookPath.toString());
                 });
 
                 indikatorService.completeCycle();

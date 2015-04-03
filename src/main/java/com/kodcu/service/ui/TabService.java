@@ -90,7 +90,7 @@ public class TabService {
 
     public void addTab(Path path) {
 
-        ObservableList<String> recentFiles = controller.getRecentFiles();
+        ObservableList<String> recentFiles = controller.getRecentFilesList();
         if (Files.notExists(path)) {
             recentFiles.remove(path.toString());
             return;
