@@ -83,8 +83,9 @@ public class PlantUmlService {
 
                     IOHelper.writeToFile(umlPath, os.toByteArray(), CREATE, WRITE, TRUNCATE_EXISTING);
 
-                    controller.getLastRenderedChangeListener()
-                            .changed(null, controller.getLastRendered().getValue(), controller.getLastRendered().getValue());
+                    threadService.runActionLater(() -> {
+                        controller.clearImageCache();
+                    });
                 } catch (Exception e) {
                     logger.error(e.getMessage(), e);
                 }

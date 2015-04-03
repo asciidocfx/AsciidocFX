@@ -186,8 +186,7 @@ public class TreeService {
                         IOHelper.createDirectories(path.resolve("images"));
                         IOHelper.imageWrite(bufferedImage, "png", treePath.toFile());
 
-                        controller.getLastRenderedChangeListener()
-                                .changed(null, controller.getLastRendered().getValue(), controller.getLastRendered().getValue());
+                        controller.clearImageCache();
 
                         controller.getRootAnchor().getChildren().remove(fileView);
                     });
@@ -263,14 +262,13 @@ public class TreeService {
                         WritableImage writableImage = treeview.snapshot(new SnapshotParameters(), null);
                         BufferedImage bufferedImage = SwingFXUtils.fromFXImage(writableImage, null);
 
-                        threadService.runTaskLater(()->{
+                        threadService.runTaskLater(() -> {
                             TrimWhite trimWhite = new TrimWhite();
                             BufferedImage trimmed = trimWhite.trim(bufferedImage);
                             IOHelper.createDirectories(path.resolve("images"));
                             IOHelper.imageWrite(trimmed, "png", treePath.toFile());
-                            threadService.runActionLater(()->{
-                                controller.getLastRenderedChangeListener()
-                                        .changed(null, controller.getLastRendered().getValue(), controller.getLastRendered().getValue());
+                            threadService.runActionLater(() -> {
+                                controller.clearImageCache();
                                 controller.getRootAnchor().getChildren().remove(treeview);
                             });
                         });

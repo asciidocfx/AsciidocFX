@@ -2,6 +2,7 @@ package com.kodcu.service.extension;
 
 import com.kodcu.controller.ApplicationController;
 import com.kodcu.other.Current;
+import com.kodcu.service.ThreadService;
 import netscape.javascript.JSObject;
 import org.apache.batik.dom.svg.SAXSVGDocumentFactory;
 import org.apache.batik.transcoder.TranscoderInput;
@@ -34,11 +35,13 @@ public class MathJaxService {
 
     private final ApplicationController controller;
     private final Current current;
+    private final ThreadService threadService;
 
     @Autowired
-    public MathJaxService(final ApplicationController controller, final Current current) {
+    public MathJaxService(final ApplicationController controller, final Current current, ThreadService threadService) {
         this.controller = controller;
         this.current = current;
+        this.threadService = threadService;
     }
 
     public void appendFormula(String fileName, String formula) {
@@ -83,8 +86,9 @@ public class MathJaxService {
 
             Files.write(path.resolve("images/").resolve(fileName), svg.getBytes(Charset.forName("UTF-8")), CREATE, WRITE, TRUNCATE_EXISTING);
 
-            controller.getLastRenderedChangeListener()
-                    .changed(null, controller.getLastRendered().getValue(), controller.getLastRendered().getValue());
+            threadService.runActionLater(() -> {
+                controller.clearImageCache();
+            });
         } catch (IOException e) {
             logger.error(e.getMessage(), e);
         }
@@ -114,8 +118,9 @@ public class MathJaxService {
 
             Files.write(path.resolve("images/").resolve(fileName), ostream.toByteArray(), CREATE, WRITE, TRUNCATE_EXISTING);
 
-            controller.getLastRenderedChangeListener()
-                    .changed(null, controller.getLastRendered().getValue(), controller.getLastRendered().getValue());
+            threadService.runActionLater(() -> {
+                controller.clearImageCache();
+            });
 
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
