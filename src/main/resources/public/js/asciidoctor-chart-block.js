@@ -38,7 +38,7 @@
                 type = "" + (attrs['$[]']("type"));
                 filename = "" + (attrs['$[]']("file"));
                 cache = "" + (attrs['$[]']("cache"));
-                opt = "" + (attrs['$[]']("opt")) ;
+                opt = "" + (attrs['$[]']("opt"));
 
                 if (cache != "enabled") {
                     app.chartBuildFromCsv(csvFile, filename, chartType, opt);
@@ -151,12 +151,9 @@
     _p = (TMP_1 = function () {
         var self = TMP_1._s || this, $a;
 
-        if ((($a = self.$document()['$basebackend?']("html")) !== nil && (!$a._isBoolean || $a == true))) {
-            self.$block_macro($scope.ChartBlockMacro);
-            return self.$block($scope.ChartBlockProcessor);
-        } else {
-            return nil
-        }
+        self.$block_macro($scope.ChartBlockMacro);
+        return self.$block($scope.ChartBlockProcessor);
+
     }, TMP_1
     .
     _s = self, TMP_1
