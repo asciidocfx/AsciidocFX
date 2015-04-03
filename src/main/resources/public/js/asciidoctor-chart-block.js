@@ -6,10 +6,10 @@
     }
     ;
     self.$include((($a = $opal.Object._scope.Asciidoctor) == null ? $opal.cm('Asciidoctor') : $a));
-    return (function ($base, $super) {
-        function $ChartBlock() {
+    (function ($base, $super) {
+        function $ChartBlockMacro() {
         };
-        var self = $ChartBlock = $klass($base, $super, 'ChartBlock', $ChartBlock);
+        var self = $ChartBlockMacro = $klass($base, $super, 'ChartBlockMacro', $ChartBlockMacro);
 
         var def = self._proto, $scope = self._scope;
 
@@ -17,13 +17,17 @@
 
         self.$named("chart");
 
-        self.$on_context("open");
+        return (def.$process = function (parent, target, attrs) {
 
-        self.$parse_content_as("literal");
+                console.log("$ChartBlockMacro");
+                console.log(target);
+                console.log(attrs);
 
-        return (def.$process = function (parent, reader, attrs) {
-                var $a, self = this, content = nil, type = nil, title = nil, filename = nil, alt = nil, caption = nil,width=nil,height=nil,opt=nil,scale=nil,align=nil,cache=nil;
+                var $a, self = this, content = nil, type = nil, title = nil, filename = nil, alt = nil, caption = nil, width = nil, height = nil, opt = nil, scale = nil, align = nil, cache = nil, csvFile = nil, chartType = nil;
 
+
+                csvFile = "" + (attrs['$[]']("data-uri"));
+                chartType = "" + target;
                 title = "" + (attrs['$[]']("title"));
                 alt = "" + (attrs['$[]']("alt"));
                 caption = "" + (attrs['$[]']("caption"));
@@ -34,10 +38,10 @@
                 type = "" + (attrs['$[]']("type"));
                 filename = "" + (attrs['$[]']("file"));
                 cache = "" + (attrs['$[]']("cache"));
-                opt = "" + (attrs['$[]']("opt"));
+                opt = "" + (attrs['$[]']("opt")) ;
 
-                if (cache != "enabled"){
-                    app.chartBuild(reader.$read(), filename,opt);
+                if (cache != "enabled") {
+                    app.chartBuildFromCsv(csvFile, filename, chartType, opt);
                 }
 
                 content = "images/" + filename;
@@ -54,13 +58,78 @@
                         "height": height,
                         "scale": scale,
                         "align": align,
-                        "opt":opt
+                        "opt": opt
                     };
 
                     var keys = Object.keys(attributesHash);
 
-                    keys.forEach(function(key){
-                        if(attributesHash[key]=="")
+                    keys.forEach(function (key) {
+                        if (attributesHash[key] == "")
+                            delete attributesHash[key];
+                    });
+
+                    return self.$create_image_block(parent, $hash2(Object.keys(attributesHash), attributesHash))
+                }
+                ;
+            }, nil) && 'process';
+    })(self, ($scope.Extensions)._scope.BlockMacroProcessor);
+    return (function ($base, $super) {
+        function $ChartBlockProcessor() {
+        };
+        var self = $ChartBlockProcessor = $klass($base, $super, 'ChartBlockProcessor', $ChartBlockProcessor);
+
+        var def = self._proto, $scope = self._scope;
+
+        self.$use_dsl();
+
+        self.$named("chart");
+
+        self.$on_context("open");
+
+        self.$parse_content_as("literal");
+
+        return (def.$process = function (parent, reader, attrs) {
+                console.log("ChartBlockProcessor");
+                var $a, self = this, content = nil, type = nil, title = nil, filename = nil, alt = nil, caption = nil, width = nil, height = nil, opt = nil, scale = nil, align = nil, cache = nil, chartType = nil;
+
+                chartType = "" + (attrs['$[]']("2"));
+                title = "" + (attrs['$[]']("title"));
+                alt = "" + (attrs['$[]']("alt"));
+                caption = "" + (attrs['$[]']("caption"));
+                width = "" + (attrs['$[]']("width"));
+                height = "" + (attrs['$[]']("height"));
+                scale = "" + (attrs['$[]']("scale"));
+                align = "" + (attrs['$[]']("align"));
+                type = "" + (attrs['$[]']("type"));
+                filename = "" + (attrs['$[]']("file"));
+                cache = "" + (attrs['$[]']("cache"));
+                opt = "" + (attrs['$[]']("opt"));
+
+                if (cache != "enabled") {
+                    app.chartBuild(reader.$read(), filename, chartType, opt);
+                }
+
+                content = "images/" + filename;
+
+                if ((($a = (type['$==']("ascii"))) !== nil && (!$a._isBoolean || $a == true))) {
+                    return self.$create_literal_block(parent, content, attrs, $hash2(["subs"], {"subs": nil}))
+                } else {
+                    var attributesHash = {
+                        "target": content,
+                        "title": title,
+                        "alt": alt,
+                        "caption": caption,
+                        "width": width,
+                        "height": height,
+                        "scale": scale,
+                        "align": align,
+                        "opt": opt
+                    };
+
+                    var keys = Object.keys(attributesHash);
+
+                    keys.forEach(function (key) {
+                        if (attributesHash[key] == "")
                             delete attributesHash[key];
                     });
 
@@ -77,9 +146,22 @@
     if ($scope.RUBY_ENGINE['$==']("opal")) {
     }
     ;
-    return ($a = ($b = $scope.Extensions).$register, $a._p = (TMP_1 = function () {
-        var self = TMP_1._s || this;
+    return ($a = ($b = $scope.Extensions).$register, $a
+    .
+    _p = (TMP_1 = function () {
+        var self = TMP_1._s || this, $a;
 
-        return self.$block($scope.ChartBlock)
-    }, TMP_1._s = self, TMP_1), $a).call($b);
+        if ((($a = self.$document()['$basebackend?']("html")) !== nil && (!$a._isBoolean || $a == true))) {
+            self.$block_macro($scope.ChartBlockMacro);
+            return self.$block($scope.ChartBlockProcessor);
+        } else {
+            return nil
+        }
+    }, TMP_1
+    .
+    _s = self, TMP_1
+    ),
+    $a
+    ).
+    call($b);
 })(Opal);
