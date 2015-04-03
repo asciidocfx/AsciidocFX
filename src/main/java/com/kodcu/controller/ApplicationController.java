@@ -1,7 +1,6 @@
 package com.kodcu.controller;
 
 
-import com.esotericsoftware.yamlbeans.YamlReader;
 import com.kodcu.bean.Config;
 import com.kodcu.bean.RecentFiles;
 import com.kodcu.bean.ShortCuts;
@@ -61,9 +60,9 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
+import org.yaml.snakeyaml.Yaml;
 
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -804,10 +803,10 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     private void loadShortCuts() {
         try {
-            YamlReader yamlReader =
-                    new YamlReader(new FileReader(configPath.resolve("shortcuts.yml").toFile()));
-            yamlReader.getConfig().setClassTag("ShortCuts", ShortCuts.class);
-            shortCuts = yamlReader.read(ShortCuts.class).getKeys();
+            String yamlC = IOHelper.readFile(configPath.resolve("shortcuts.yml"));
+
+            Yaml yaml = new Yaml();
+            this.shortCuts = yaml.loadAs(yamlC, ShortCuts.class).getKeys();
 
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
@@ -827,10 +826,9 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             File jarFile = new File(codeSource.getLocation().toURI().getPath());
             configPath = jarFile.toPath().getParent().getParent().resolve("conf");
 
-            YamlReader yamlReader =
-                    new YamlReader(new FileReader(configPath.resolve("config.yml").toFile()));
-            yamlReader.getConfig().setClassTag("Config", Config.class);
-            config = yamlReader.read(Config.class);
+            String yamlContent = IOHelper.readFile(configPath.resolve("config.yml"));
+            Yaml yaml = new Yaml();
+            config = yaml.loadAs(yamlContent, Config.class);
 
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
@@ -846,10 +844,9 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     private void loadRecentFileList() {
 
         try {
-            YamlReader yamlReader =
-                    new YamlReader(new FileReader(configPath.resolve("recentFiles.yml").toFile()));
-            yamlReader.getConfig().setClassTag("RecentFiles", RecentFiles.class);
-            RecentFiles readed = yamlReader.read(RecentFiles.class);
+            String yamlContent = IOHelper.readFile(configPath.resolve("recentFiles.yml"));
+            Yaml yaml = new Yaml();
+            RecentFiles readed = yaml.loadAs(yamlContent, RecentFiles.class);
 
             recentFiles.addAll(readed.getFiles());
         } catch (Exception e) {
@@ -906,16 +903,41 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         });
     }
 
-    public void chartBuild(String uml, String fileName, String options) throws IOException {
+
+    public void chartBuildFromCsv(String csvFile, String fileName, String chartType, String options) {
+
+        if (Objects.isNull(fileName) || Objects.isNull(chartType))
+            return;
+
+        getCurrent().currentPath().map(Path::getParent).ifPresent(root -> {
+            threadService.runTaskLater(() -> {
+                String csvContent = IOHelper.readFile(root.resolve(csvFile));
+
+                threadService.runActionLater(() -> {
+                    try {
+                        Map<String, String> optMap = parseChartOptions(options);
+                        optMap.put("csv-file", csvFile);
+                        chartProvider.getProvider(chartType).chartBuild(csvContent, fileName, optMap);
+
+                    } catch (Exception e) {
+                        logger.info(e.getMessage(), e);
+                    }
+                });
+
+            });
+
+        });
+    }
+
+    public void chartBuild(String chartContent, String fileName, String chartType, String options) {
+
+        if (Objects.isNull(fileName) || Objects.isNull(chartType))
+            return;
+
         threadService.runActionLater(() -> {
             try {
                 Map<String, String> optMap = parseChartOptions(options);
-
-                String type = optMap.get("type");
-                if (Objects.isNull(type))
-                    return;
-
-                chartProvider.getProvider(type).chartBuild(uml, fileName, optMap);
+                chartProvider.getProvider(chartType).chartBuild(chartContent, fileName, optMap);
 
             } catch (Exception e) {
                 logger.info(e.getMessage(), e);
