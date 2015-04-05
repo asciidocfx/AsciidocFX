@@ -59,7 +59,16 @@ public class AsciiTreeGenerator {
         private String name;
         private Tree parent;
         private Tree sibling;
+        private boolean lastChild;
         private ArrayList<Tree> children;
+
+        public boolean isLastChild() {
+            return lastChild;
+        }
+
+        public void setLastChild(boolean lastChild) {
+            this.lastChild = lastChild;
+        }
 
         private Tree getNextSibling() {
             return sibling;
@@ -74,10 +83,6 @@ public class AsciiTreeGenerator {
                 children = new ArrayList<>();
 
             return children;
-        }
-
-        private void setChildren(ArrayList<Tree> children) {
-            this.children = children;
         }
 
         private int getDepth() {
@@ -106,6 +111,7 @@ public class AsciiTreeGenerator {
 
         private void setSiblingAndParent() {
             this.setSiblingAndParent(this);
+            this.findLastChild(this);
         }
 
         private void setSiblingAndParent(Tree item) {
@@ -120,18 +126,25 @@ public class AsciiTreeGenerator {
             }
         }
 
+        private void findLastChild(Tree currentChild) {
+            if (currentChild.getChildren().size() == 0)
+                currentChild.setLastChild(true);
+            else {
+                int lastIndex = currentChild.getChildren().size() - 1;
+                findLastChild(currentChild.getChildren().get(lastIndex));
+            }
+        }
+
         private void generateTree(StringBuilder sb) {
-            generateTree(this, sb);
+            this.generateTree(this, sb);
         }
 
         private void generateTree(Tree tree, StringBuilder sb) {
             printFile(sb, tree);
 
-            if (Objects.nonNull(tree.getChildren())) {
-                for (int index = 0; index < tree.getChildren().size(); index++) {
-                    generateTree(tree.getChildren().get(index), sb);
-                }
-            }
+            tree.getChildren().forEach(child -> {
+                generateTree(child, sb);
+            });
         }
 
         private void printFile(StringBuilder sb, Tree leaf) {
@@ -145,7 +158,8 @@ public class AsciiTreeGenerator {
             }
 
             sb.append(leaf.getName());
-            sb.append("\n");
+            if (!leaf.isLastChild())
+                sb.append("\n");
         }
 
         private String getIndentString(Tree leaf) {
