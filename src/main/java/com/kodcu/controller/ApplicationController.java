@@ -53,6 +53,7 @@ import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.embedded.EmbeddedWebApplicationContext;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.client.RestTemplate;
@@ -268,6 +269,8 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         });
     };
 
+    @Value("${application.version}")
+    private String version;
 
     public void createAsciidocTable() {
         asciidocTableStage.showAndWait();
@@ -500,6 +503,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         AwesomeDude.setIcon(goHomeLabel, AwesomeIcon.HOME, "14.0");
 
         leftButton.setGraphic(AwesomeDude.createIconLabel(AwesomeIcon.ELLIPSIS_H, "14.0"));
+        leftButton.getItems().get(leftButton.getItems().size() -1).setText(String.join(" ","Version", version));
 
         ContextMenu htmlProMenu = new ContextMenu();
         htmlProMenu.getStyleClass().add("build-menu");
@@ -1205,24 +1209,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     @FXML
     private void openGithubPage(ActionEvent actionEvent) {
         getHostServices().showDocument("https://github.com/asciidocfx/AsciidocFX");
-    }
-
-    @FXML
-    private void openAbout(ActionEvent actionEvent) throws IOException {
-        Popup popup = new Popup();
-        AnchorPane anchorPane = new AnchorPane();
-        anchorPane.getStyleClass().add("about-popup");
-        popup.setAutoHide(true);
-
-        try (InputStream stream = ApplicationController.class.getResourceAsStream("/banner.txt");) {
-            String banner = IOUtils.toString(stream);
-            Label bannerLabel = new Label(banner);
-            bannerLabel.getStyleClass().add("banner-label");
-            anchorPane.getChildren().add(bannerLabel);
-        }
-
-        popup.getContent().add(anchorPane);
-        popup.show(getStage());
     }
 
     @FXML
