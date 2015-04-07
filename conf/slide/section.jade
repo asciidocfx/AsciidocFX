@@ -1,0 +1,15 @@
+- hide_title = false
+if level == 1
+  section
+    section(id=id,data-transition=attr["data-transition"],data-transition-speed=attr["data-transition-speed"],data-background=attr["data-background"],data-background-size=attr["data-background-size"],data-background-repeat=attr["data-background-repeat"],data-background-transition=attr["data-background-transition"])
+      if !hide_title
+        h2 !{title}
+        each block in disregard(blocks,sections)
+          !{block["$convert"]()}
+      each subsection in sections
+        !{subsection["$convert"]()}
+else
+  section(id=id,data-transition=(attr['data-transition']),data-transition-speed=(attr['data-transition-speed']),data-background=(attr['data-background']),data-background-size=(attr['data-background-size']),data-background-repeat=(attr['data-background-repeat']),data-background-transition=(attr['data-background-transition']))
+    if !hide_title
+      h2 !{title}
+    !{content}

@@ -1,0 +1,114 @@
+doctype 5
+html lang=(attr :lang, 'en' unless attr? :nolang)
+  head
+    meta charset="utf-8"
+    - [:description, :keywords, :author, :copyright].each do |key|
+      - if attr? key
+        meta name=key content=(attr key)
+    title=(doctitle sanitize: true, use_fallback: true)
+    meta content="yes" name="apple-mobile-web-app-capable"
+    meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"
+    meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui" name="viewport"
+    link href="reveal.js/css/reveal.min.css" rel="stylesheet"
+    / Default theme required even when using custom theme
+    - if attr? :revealjs_customtheme
+      link rel='stylesheet' href=(attr :revealjs_customtheme) id='theme'
+    - else
+      link rel='stylesheet' href='reveal.js/css/theme/default.css' id='theme'
+    - case attr 'source-highlighter'
+    - when 'coderay'
+      - if (attr 'coderay-css', 'class') == 'class'
+        - if @safe >= Asciidoctor::SafeMode::SECURE || (attr? :linkcss)
+          link rel='stylesheet' href=normalize_web_path('asciidoctor-coderay.css', (attr :stylesdir, ''))
+        - else
+          style=Asciidoctor::Stylesheets.instance.coderay_stylesheet_data
+    - when 'pygments'
+      - if (attr 'pygments-css', 'class') == 'class'
+        - if @safe >= Asciidoctor::SafeMode::SECURE || (attr? :linkcss)
+          link rel='stylesheet' href=normalize_web_path('asciidoctor-pygments.css', (attr :stylesdir, ''))
+        - else
+          style=Asciidoctor::Stylesheets.instance.pygments_stylesheet_data(attr 'pygments-style')
+    / For syntax highlighting
+    link href="reveal.js/lib/css/zenburn.css" rel="stylesheet"
+    / If the query includes 'print-pdf', use the PDF print sheet
+    javascript:
+      document.write( '<link rel="stylesheet" href="reveal.js/css/print/' + ( window.location.search.match( /print-pdf/gi ) ? 'pdf' : 'paper' ) + '.css" type="text/css" media="print">' );
+    - unless (docinfo_content = docinfo :header, '.html').empty?
+      =docinfo_content
+  body
+    .reveal
+      / Any section element inside of this container is displayed as a slide
+      .slides
+        - unless notitle || !has_header?
+          section
+            h2=@header.title
+            p: small=author
+        =content
+    script src="reveal.js/lib/js/head.min.js"
+    script src="reveal.js/js/reveal.min.js"
+    javascript:
+      // See https://github.com/hakimel/reveal.js#configuration for a full list of configuration options
+      Reveal.initialize({
+        // Display controls in the bottom right corner
+        controls: #{attr 'revealjs_controls', 'true'},
+        // Display a presentation progress bar
+        progress: #{attr 'revealjs_progress', 'true'},
+        // Display the page number of the current slide
+        slideNumber: #{attr 'revealjs_slidenumber', 'false'},
+        // Push each slide change to the browser history
+        history: #{attr 'revealjs_history', 'false'},
+        // Enable keyboard shortcuts for navigation
+        keyboard: #{attr 'revealjs_keyboard', 'true'},
+        // Enable the slide overview mode
+        overview: #{attr 'revealjs_overview', 'true'},
+        // Vertical centering of slides
+        center: #{attr 'revealjs_center', 'true'},
+        // Enables touch navigation on devices with touch input
+        touch: #{attr 'revealjs_touch', 'true'},
+        // Loop the presentation
+        loop: #{attr 'revealjs_loop', 'false'},
+        // Change the presentation direction to be RTL
+        rtl: #{attr 'revealjs_rtl', 'false'},
+        // Turns fragments on and off globally
+        fragments: #{attr 'revealjs_fragments', 'true'},
+        // Flags if the presentation is running in an embedded mode,
+        // i.e. contained within a limited portion of the screen
+        embedded: #{attr 'revealjs_embedded', 'false'},
+        // Number of milliseconds between automatically proceeding to the
+        // next slide, disabled when set to 0, this value can be overwritten
+        // by using a data-autoslide attribute on your slides
+        autoSlide: #{attr 'revealjs_autoslide', 0},
+        // Stop auto-sliding after user input
+        autoSlideStoppable: #{attr 'revealjs_autoslidestoppable', 'true'},
+        // Enable slide navigation via mouse wheel
+        mouseWheel: #{attr 'revealjs_mousewheel', 'false'},
+        // Hides the address bar on mobile devices
+        hideAddressBar: #{attr 'revealjs_hideaddressbar', 'true'},
+        // Opens links in an iframe preview overlay
+        previewLinks: #{attr 'revealjs_previewlinks', 'false'},
+        // Theme (e.g., beige, blond, default, moon, night, serif, simple, sky, solarized)
+        theme: Reveal.getQueryHash().theme || '#{attr 'revealjs_theme', 'default'}',
+        // Transition style (e.g., default, cube, page, concave, zoom, linear, fade, none)
+        transition: Reveal.getQueryHash().transition || '#{attr 'revealjs_transition', 'default'}',
+        // Transition speed (e.g., default, fast, slow)
+        transitionSpeed: '#{attr 'revealjs_transitionspeed', 'default'}',
+        // Transition style for full page slide backgrounds (e.g., default, none, slide, concave, convex, zoom)
+        backgroundTransition: '#{attr 'revealjs_backgroundtransition', 'default'}',
+        // Number of slides away from the current that are visible
+        viewDistance: #{attr 'revealjs_viewdistance', 3},
+        // Parallax background image (e.g., "'https://s3.amazonaws.com/hakim-static/reveal-js/reveal-parallax-1.jpg'")
+        parallaxBackgroundImage: '#{attr 'revealjs_parallaxbackgroundimage', ''}',
+        // Parallax background size in CSS syntax (e.g., "2100px 900px")
+        parallaxBackgroundSize: '#{attr 'revealjs_parallaxbackgroundsize', ''}',
+        // Optional libraries used to extend on reveal.js
+        dependencies: [
+            { src: 'reveal.js/lib/js/classList.js', condition: function() { return !document.body.classList; } },
+            { src: 'reveal.js/plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+            { src: 'reveal.js/plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+            #{(attr? 'source-highlighter', 'highlight.js') ? "{ src: 'reveal.js/plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } }," : nil}
+            { src: 'reveal.js/plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
+            { src: 'reveal.js/plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } }
+        ]
+      });
+    - unless (docinfo_content = (docinfo :footer, '.html')).empty?
+      =docinfo_content

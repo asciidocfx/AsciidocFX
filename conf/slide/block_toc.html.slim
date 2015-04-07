@@ -1,0 +1,12 @@
+- if @document.attr? :toc
+  - toc_id = @id
+  - toc_role = (attr 'role', (@document.attr 'toc-class', 'toc'))
+  - toc_title_id = nil
+  - toc_title = title? ? title : (@document.attr 'toc-title')
+  - toc_levels = (attr? :levels) ? (attr :levels).to_i : (@document.attr :toclevels, 2).to_i
+  - if !toc_id && (@document.embedded? || !(@document.attr? 'toc-placement'))
+    - toc_id = 'toc'
+    - toc_title_id = 'toctitle'
+  div id=toc_id class=toc_role
+    .title id=toc_title_id =toc_title
+    =Asciidoctor::HTML5::DocumentTemplate.outline(@document, toc_levels)

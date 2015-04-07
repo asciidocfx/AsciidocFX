@@ -42,6 +42,7 @@ function refreshUI(data) {
     var $data = $("<div></div>").append(data);
     $data.find("img").each(function () {
         var attr = $(this).attr("src");
+        if(attr)
         $(this).attr("src", attr + "?cache=" + imageCacheNumber + "&parent=" + (attr.match(/\.\./g) || []).length);
     });
 

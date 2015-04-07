@@ -2,6 +2,7 @@ package com.kodcu.service.convert;
 
 import com.kodcu.controller.ApplicationController;
 import com.kodcu.other.Current;
+import com.kodcu.other.IOHelper;
 import com.kodcu.service.MarkdownService;
 import com.kodcu.service.ThreadService;
 import javafx.scene.web.WebEngine;
@@ -10,7 +11,12 @@ import netscape.javascript.JSObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.net.MalformedURLException;
+import java.nio.file.Path;
 import java.util.function.Consumer;
+
+import static java.nio.file.StandardOpenOption.CREATE;
+import static java.nio.file.StandardOpenOption.TRUNCATE_EXISTING;
 
 /**
  * Created by usta on 19.07.2014.
@@ -22,13 +28,38 @@ public class RenderService {
     private final ThreadService threadService;
     private final MarkdownService markdownService;
     private final Current current;
-    
+
     @Autowired
     public RenderService(final ApplicationController controller, final ThreadService threadService, final MarkdownService markdownService, final Current current) {
         this.controller = controller;
         this.threadService = threadService;
         this.markdownService = markdownService;
         this.current = current;
+    }
+
+    public void convertSlide(String input, Consumer<String> step) {
+
+        threadService.runActionLater(() -> {
+            getWindow().setMember("editorValue", input);
+            String rendered = execute(controller.getPreviewView(), "convertSlide(editorValue)");
+
+            threadService.runTaskLater(() -> {
+                Path resolve = current.currentPath().map(Path::getParent).get().resolve(current.getCurrentTabText().replace("*","").trim() + ".html");
+                IOHelper.writeToFile(resolve, rendered, TRUNCATE_EXISTING, CREATE);
+
+                threadService.runActionLater(() -> {
+                    try {
+                        controller.slideView.getEngine().load(resolve.toUri().toURL().toString());
+                    } catch (MalformedURLException e) {
+                        e.printStackTrace();
+                    }
+                });
+            });
+
+            step.accept(rendered);
+        });
+
+
     }
 
     public void convertBasicHtml(String input, Consumer<String> step) {
@@ -52,7 +83,7 @@ public class RenderService {
     }
 
     public String execute(WebView engine, String script) {
-        return  (String) engine.getEngine().executeScript(script);
+        return (String) engine.getEngine().executeScript(script);
     }
 
     public void convertHtmlArticle(Consumer<String> step) {
@@ -72,7 +103,7 @@ public class RenderService {
         markdownService.convert(input, asciidoc -> {
             threadService.runActionLater(() -> {
                 getWindow().setMember("editorValue", asciidoc);
-                String rendered = execute(controller.getPreviewView(),"convertHtmlBook(editorValue)");
+                String rendered = execute(controller.getPreviewView(), "convertHtmlBook(editorValue)");
                 step.accept(rendered);
             });
         });
@@ -89,7 +120,7 @@ public class RenderService {
         });
     }
 
-    public void convertDocbookArticle(String input,Consumer<String> step) {
+    public void convertDocbookArticle(String input, Consumer<String> step) {
 
         markdownService.convert(input, asciidoc -> {
             threadService.runActionLater(() -> {

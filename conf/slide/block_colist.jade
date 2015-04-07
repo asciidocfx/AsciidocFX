@@ -1,0 +1,22 @@
+div.colist(id=id,class=[style, role])
+    if title
+        div.title !{title}
+    if document.attr.icons
+        - font_icons = document.attr.icons || "font"
+        table
+            each item,i in items
+                - num = i + 1
+                tr
+                    td
+                        if font_icons
+                            i.conum(data-value=num)
+                            b !{num}
+                        else
+                            img(src="callouts/#{num}",alt=num)
+                    td #{item.text}
+    else
+        ol
+            each item in items
+                li
+                    p
+                        !{item.text}

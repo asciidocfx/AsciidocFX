@@ -72,6 +72,7 @@ import java.security.CodeSource;
 import java.util.*;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 import static java.nio.file.StandardOpenOption.*;
 
@@ -80,6 +81,7 @@ import static java.nio.file.StandardOpenOption.*;
 public class ApplicationController extends TextWebSocketHandler implements Initializable {
 
 
+    public WebView slideView;
     private Logger logger = LoggerFactory.getLogger(ApplicationController.class);
 
     private Path userHome = Paths.get(System.getProperty("user.home"));
@@ -969,11 +971,24 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     public void textListener(String text) {
 
         threadService.runTaskLater(() -> {
-            renderService.convertBasicHtml(text, rendered -> {
-                if (Objects.nonNull(rendered))
-                    lastRendered.setValue(rendered);
+            renderService.convertSlide(text, rendered -> {
+//                if (Objects.nonNull(rendered))
+//                    lastRendered.setValue(rendered);
             });
         });
+    }
+
+    public String getTemplate(String templateName) throws IOException {
+
+        Stream<Path> slide = Files.find(configPath.resolve("slide"), Integer.MAX_VALUE, (path, basicFileAttributes) -> path.toString().contains(templateName));
+
+        Optional<Path> first = slide.findFirst();
+
+        if (!first.isPresent())
+            return "";
+
+        Path path = first.get();
+        return IOHelper.readFile(path);
     }
 
     public void cutCopy(String data) {
@@ -1182,7 +1197,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     }
 
     public Map<String, String> getShortCuts() {
-        if(Objects.isNull(shortCuts))
+        if (Objects.isNull(shortCuts))
             shortCuts = new HashMap<>();
         return shortCuts;
     }

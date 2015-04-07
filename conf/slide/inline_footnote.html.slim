@@ -1,0 +1,6 @@
+- if @type == :xref
+  span.footnoteref
+    | [<a class="footnote" href="#_footnote_#{attr :index}" title="View footnote.">#{attr :index}</a>]
+- else
+  span.footnote id=("_footnote_#{@id}" if @id)
+    | [<a id="_footnoteref_#{attr :index}" class="footnote" href="#_footnote_#{attr :index}" title="View footnote.">#{attr :index}</a>]

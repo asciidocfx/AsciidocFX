@@ -1,0 +1,14 @@
+div.verseblock(id=id,class=role)
+    if title
+        div.title !{title}
+    pre.content !{content}
+    - attribution = (attr.attribution) ? (attr.attribution) : null
+    - citetitle = (attr.citetitle) ? (attr.citetitle) : null
+    if attribution || citetitle
+        div.attribution
+            if citetitle
+                cite !{citetitle}
+            if attribution
+                if citetitle
+                    br
+                        | &#8212; #{attribution}
