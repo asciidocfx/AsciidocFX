@@ -872,8 +872,12 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     }
 
     @FXML
-    public void closeApp(ActionEvent event) throws IOException {
-        yamlService.persist();
+    public void closeApp(ActionEvent event) {
+        try {
+            yamlService.persist();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @FXML
@@ -1182,7 +1186,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     }
 
     public Map<String, String> getShortCuts() {
-        if(Objects.isNull(shortCuts))
+        if (Objects.isNull(shortCuts))
             shortCuts = new HashMap<>();
         return shortCuts;
     }

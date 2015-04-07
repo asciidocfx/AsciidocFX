@@ -24,7 +24,7 @@ public class YamlService {
         this.controller = controller;
     }
 
-    public void persist() throws IOException {
+    public void persist() throws Exception {
         Path configPath = controller.getConfigPath();
         File recentFileYml = configPath.resolve("recentFiles.yml").toFile();
 

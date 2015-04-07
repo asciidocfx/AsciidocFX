@@ -96,7 +96,17 @@
               <action name="" id="13" customizedId="" beanClass="com.install4j.runtime.beans.actions.misc.RequestPrivilegesAction" enabled="true" commentSet="false" comment="" actionElevationType="none" rollbackBarrier="false" multiExec="false" failureStrategy="1" errorMessage="">
                 <serializedBean>
                   <java class="java.beans.XMLDecoder">
-                    <object class="com.install4j.runtime.beans.actions.misc.RequestPrivilegesAction" />
+                    <object class="com.install4j.runtime.beans.actions.misc.RequestPrivilegesAction">
+                      <void property="obtainIfAdminMac">
+                        <boolean>true</boolean>
+                      </void>
+                      <void property="obtainIfNormalMac">
+                        <boolean>true</boolean>
+                      </void>
+                      <void property="obtainIfNormalWin">
+                        <boolean>true</boolean>
+                      </void>
+                    </object>
                   </java>
                 </serializedBean>
                 <condition />
