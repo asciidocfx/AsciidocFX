@@ -1,5 +1,6 @@
 package com.kodcu.service.ui;
 
+import com.kodcu.component.HtmlPane;
 import com.kodcu.controller.ApplicationController;
 import com.kodcu.service.ThreadService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,22 +14,24 @@ public class IndikatorService {
 
     private final ApplicationController applicationContoller;
     private final ThreadService threadService;
+    private final HtmlPane htmlPane;
     
     @Autowired
-    public IndikatorService(final ApplicationController applicationContoller, final ThreadService threadService) {
+    public IndikatorService(final ApplicationController applicationContoller, final ThreadService threadService, HtmlPane htmlPane) {
         this.applicationContoller = applicationContoller;
         this.threadService = threadService;
+        this.htmlPane = htmlPane;
     }
 
     public void startCycle() {
         threadService.runActionLater(() -> {
-            applicationContoller.getPreviewView().getEngine().executeScript("startProgressBar()");
+            htmlPane.startProgressBar();
         });
     }
 
     public void completeCycle() {
         threadService.runActionLater(() -> {
-            applicationContoller.getPreviewView().getEngine().executeScript("stopProgressBar()");
+            htmlPane.stopProgressBar();
         });
     }
 

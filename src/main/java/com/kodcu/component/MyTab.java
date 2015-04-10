@@ -8,7 +8,6 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
-import javafx.scene.web.WebView;
 import netscape.javascript.JSObject;
 
 import java.nio.file.Path;
@@ -18,11 +17,13 @@ import java.util.Optional;
 /**
  * Created by usta on 17.12.2014.
  */
+
 public class MyTab extends Tab {
 
-    private WebView webView;
+    private EditorPane editorPane;
     private Path path;
     private ChoiceBox<String> markup;
+
 
     private void updateMarkup() {
         String tabText = getTabText();
@@ -64,13 +65,6 @@ public class MyTab extends Tab {
         updateMarkup();
     }
 
-    public WebView getWebView() {
-        return webView;
-    }
-
-    public void setWebView(WebView webView) {
-        this.webView = webView;
-    }
 
     public Path getPath() {
         return path;
@@ -111,9 +105,9 @@ public class MyTab extends Tab {
 
     private boolean isDirty() {
         if ("new *".equals(this.getTabText())) {
-            if (Objects.nonNull(webView)) {
+            if (Objects.nonNull(editorPane)) {
                 try {
-                    String value = (String) webView.getEngine().executeScript("editor.getValue()");
+                    String value = editorPane.getEditorValue();
                     if ("".equals(value))
                         return false;
                 } catch (Exception e) {
@@ -132,7 +126,7 @@ public class MyTab extends Tab {
         this.setUserData(null);
         this.getLabel().setOnMouseClicked(null);
         this.setOnCloseRequest(null);
-        this.setWebView(null);
+        this.setEditorPane(null);
         this.setGraphic(null);
         this.setContent(null);
     }
@@ -151,10 +145,9 @@ public class MyTab extends Tab {
         this.markup = markup;
         ReadOnlyIntegerProperty indexProperty = this.markup.getSelectionModel().selectedIndexProperty();
         indexProperty.addListener((observable, oldValue, newValue) -> {
-            if ((oldValue != newValue) && Objects.nonNull(webView)) {
-                JSObject session = (JSObject) webView.getEngine().executeScript("window");
-                session.call("switchMode", new Object[]{newValue});
-                session.call("rerender", new Object[]{});
+            if ((oldValue != newValue) && Objects.nonNull(editorPane)) {
+                editorPane.switchMode(newValue);
+                editorPane.rerender(new Object[]{});
             }
         });
     }
@@ -172,5 +165,13 @@ public class MyTab extends Tab {
         if (isMarkdown())
             return MarkdownShortcutService.class;
         return AsciidocShortcutService.class;
+    }
+
+    public void setEditorPane(EditorPane editorPane) {
+        this.editorPane = editorPane;
+    }
+
+    public EditorPane getEditorPane() {
+        return editorPane;
     }
 }

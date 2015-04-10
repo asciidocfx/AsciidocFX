@@ -1,5 +1,6 @@
 package com.kodcu.service.ui;
 
+import com.kodcu.component.EditorPane;
 import com.kodcu.component.MyTab;
 import com.kodcu.controller.ApplicationController;
 import com.kodcu.other.Current;
@@ -8,7 +9,6 @@ import com.kodcu.other.Item;
 import com.kodcu.service.DirectoryService;
 import com.kodcu.service.PathResolverService;
 import com.kodcu.service.ThreadService;
-import com.kodcu.service.convert.RenderService;
 import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.collections.FXCollections;
@@ -51,7 +51,6 @@ public class TabService {
     private final ThreadService threadService;
     private final Current current;
     private final DirectoryService directoryService;
-    private final RenderService renderService;
 
     private ObservableList<Optional<Path>> closedPaths = FXCollections.observableArrayList();
 
@@ -59,7 +58,7 @@ public class TabService {
     @Autowired
     public TabService(final ApplicationController controller, final WebviewService webviewService, final EditorService editorService,
                       final PathResolverService pathResolver, final ThreadService threadService, final Current current,
-                      final DirectoryService directoryService, final RenderService renderService) {
+                      final DirectoryService directoryService) {
         this.controller = controller;
         this.webviewService = webviewService;
         this.editorService = editorService;
@@ -67,7 +66,6 @@ public class TabService {
         this.threadService = threadService;
         this.current = current;
         this.directoryService = directoryService;
-        this.renderService = renderService;
 
         final Consumer<Path> openFileConsumer = path -> {
             if (Files.isDirectory(path)) {
@@ -108,16 +106,15 @@ public class TabService {
         }
 
         AnchorPane anchorPane = new AnchorPane();
-        WebView webView = webviewService.createWebView();
-        WebEngine webEngine = webView.getEngine();
+        EditorPane editorPane = webviewService.createWebView();
 
         MyTab tab = createTab();
-        tab.setWebView(webView);
+        tab.setEditorPane(editorPane);
         tab.setTabText(path.getFileName().toString());
 
-        webEngine.setConfirmHandler(param -> {
+        editorPane.confirmHandler(param -> {
             if ("command:ready".equals(param)) {
-                JSObject window = (JSObject) webEngine.executeScript("window");
+                JSObject window = editorPane.getWindow();
                 window.setMember("app", controller);
                 window.call("updateOptions", new Object[]{});
                 Map<String, String> shortCuts = controller.getShortCuts();
@@ -145,7 +142,7 @@ public class TabService {
             tab.select();
         });
 
-        Node editorVBox = editorService.createEditorVBox(webView, tab);
+        Node editorVBox = editorService.createEditorVBox(editorPane, tab);
         controller.fitToParent(editorVBox);
 
         anchorPane.getChildren().add(editorVBox);
@@ -158,7 +155,7 @@ public class TabService {
         recentFiles.remove(path.toString());
         recentFiles.add(0, path.toString());
 
-        webView.requestFocus();
+        editorPane.focus();
 
     }
 
@@ -334,7 +331,7 @@ public class TabService {
         });
 
         tab.setContent(scrollPane);
-        tab.setWebView(null);
+        tab.setEditorPane(null);
         tab.setPath(imagePath);
 
         TabPane tabPane = controller.getTabPane();
@@ -348,11 +345,11 @@ public class TabService {
             if (Objects.isNull(newValue))
                 return;
             threadService.runActionLater(() -> {
-                WebView webView = ((MyTab) newValue).getWebView();
-                if (Objects.nonNull(webView)) {
+                EditorPane editorPane = ((MyTab) newValue).getEditorPane();
+                if (Objects.nonNull(editorPane)) {
                     try {
                         controller.textListener(current.currentEditorValue());
-                        webView.requestFocus();
+                        editorPane.focus();
                     } catch (Exception e) {
                         logger.info(e.getMessage(), e);
                     }

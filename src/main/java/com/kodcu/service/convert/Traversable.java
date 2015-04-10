@@ -11,12 +11,12 @@ import java.util.regex.Pattern;
 /**
  * Created by usta on 20.03.2015.
  */
-public class Converter {
+public interface Traversable {
 
-    private final Pattern ascIncludeRegex = Pattern.compile("(?<=include::)(?<path>.*?)(?=\\[(.*?)\\])");
-    private final Pattern mdIncludeRegex = Pattern.compile("\\[.*?\\]\\((?<path>.*\\.(md|markdown|asc|adoc|asciidoc|ad|txt))\\)");
+    public Pattern ascIncludeRegex = Pattern.compile("(?<=include::)(?<path>.*?)(?=\\[(.*?)\\])");
+    public Pattern mdIncludeRegex = Pattern.compile("\\[.*?\\]\\((?<path>.*\\.(md|markdown|asc|adoc|asciidoc|ad|txt))\\)");
 
-    protected void traverseLines(List<String> lines, StringBuffer buffer, Path rootPath) {
+    public default void traverseLines(List<String> lines, StringBuffer buffer, Path rootPath) {
 
         for (String line : lines) {
 
@@ -38,7 +38,7 @@ public class Converter {
         }
     }
 
-    protected void traverseLine(String line, StringBuffer buffer) {
+    public default void traverseLine(String line, StringBuffer buffer) {
         buffer.append(line + "\n");
     }
 }

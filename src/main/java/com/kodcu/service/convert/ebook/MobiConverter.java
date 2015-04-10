@@ -1,10 +1,11 @@
-package com.kodcu.service.convert;
+package com.kodcu.service.convert.ebook;
 
 import com.kodcu.controller.ApplicationController;
 import com.kodcu.other.Current;
 import com.kodcu.other.IOHelper;
 import com.kodcu.service.DirectoryService;
 import com.kodcu.service.ThreadService;
+import com.kodcu.service.convert.DocumentConverter;
 import com.kodcu.service.ui.IndikatorService;
 import javafx.stage.FileChooser;
 import org.slf4j.Logger;
@@ -16,18 +17,19 @@ import org.zeroturnaround.exec.ProcessExecutor;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.function.Consumer;
 
 /**
  * Created by usta on 02.09.2014.
  */
 @Component
-public class KindleMobiService {
+public class MobiConverter implements DocumentConverter<String> {
 
-    private final Logger logger = LoggerFactory.getLogger(KindleMobiService.class);
+    private final Logger logger = LoggerFactory.getLogger(MobiConverter.class);
 
     private final ApplicationController asciiDocController;
     private final ThreadService threadService;
-    private final Epub3Service epub3Service;
+    private final EpubConverter epubConverter;
     private final Current current;
     private final DirectoryService directoryService;
     private final IndikatorService indikatorService;
@@ -35,27 +37,23 @@ public class KindleMobiService {
     private Path mobiPath;
 
     @Autowired
-    public KindleMobiService(final ApplicationController asciiDocController, final ThreadService threadService, final Epub3Service epub3Service,
-                             final Current current, final DirectoryService directoryService, final IndikatorService indikatorService) {
+    public MobiConverter(final ApplicationController asciiDocController, final ThreadService threadService, final EpubConverter epubConverter,
+                         final Current current, final DirectoryService directoryService, final IndikatorService indikatorService) {
         this.asciiDocController = asciiDocController;
         this.threadService = threadService;
-        this.epub3Service = epub3Service;
+        this.epubConverter = epubConverter;
         this.current = current;
         this.directoryService = directoryService;
         this.indikatorService = indikatorService;
     }
 
-    public void produceMobi() {
-        produceMobi(false);
-    }
-
-    public void produceMobi(boolean askPath) {
-
+    @Override
+    public void convert(boolean askPath, Consumer<String>... nextStep) {
         try {
 
             indikatorService.startCycle();
 
-            final Path epubPath = epub3Service.produceEpub3Temp().join();
+            final Path epubPath = epubConverter.produceEpub3Temp().join();
 
             final Path currentTabPath = current.currentPath().get();
             final Path currentTabPathDir = currentTabPath.getParent();
@@ -71,31 +69,31 @@ public class KindleMobiService {
 
                 threadService.runTaskLater(() -> {
 
-                        final ProcessExecutor processExecutor = new ProcessExecutor();
-                        processExecutor.readOutput(true);
-                        Path kindleGenPath = Paths.get(asciiDocController.getConfig().getKindlegenDir());
+                    final ProcessExecutor processExecutor = new ProcessExecutor();
+                    processExecutor.readOutput(true);
+                    Path kindleGenPath = Paths.get(asciiDocController.getConfig().getKindlegenDir());
 
-                        try {
-                            final String message = processExecutor
-                                    .command(kindleGenPath.resolve("kindlegen").toString(), "-o", mobiPath.getFileName().toString(), epubPath.toString())
-                                    .execute()
-                                    .outputUTF8();
-                            logger.info(message);
+                    try {
+                        final String message = processExecutor
+                                .command(kindleGenPath.resolve("kindlegen").toString(), "-o", mobiPath.getFileName().toString(), epubPath.toString())
+                                .execute()
+                                .outputUTF8();
+                        logger.info(message);
 
-                            IOHelper.move(epubPath.getParent().resolve(mobiPath.getFileName()), mobiPath, StandardCopyOption.REPLACE_EXISTING);
+                        IOHelper.move(epubPath.getParent().resolve(mobiPath.getFileName()), mobiPath, StandardCopyOption.REPLACE_EXISTING);
 
-                            indikatorService.completeCycle();
+                        indikatorService.completeCycle();
 
-                            threadService.runActionLater(() -> {
-                                asciiDocController.getRecentFilesList().remove(mobiPath.toString());
-                                asciiDocController.getRecentFilesList().add(0, mobiPath.toString());
-                            });
+                        threadService.runActionLater(() -> {
+                            asciiDocController.getRecentFilesList().remove(mobiPath.toString());
+                            asciiDocController.getRecentFilesList().add(0, mobiPath.toString());
+                        });
 
-                        } catch (Exception e) {
-                            logger.error(e.getMessage(), e);
-                        } finally {
-                            indikatorService.completeCycle();
-                        }
+                    } catch (Exception e) {
+                        logger.error(e.getMessage(), e);
+                    } finally {
+                        indikatorService.completeCycle();
+                    }
 
                 });
             });
@@ -105,4 +103,5 @@ public class KindleMobiService {
             indikatorService.completeCycle();
         }
     }
+
 }

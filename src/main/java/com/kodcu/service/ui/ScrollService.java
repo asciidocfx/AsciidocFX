@@ -1,5 +1,6 @@
 package com.kodcu.service.ui;
 
+import com.kodcu.component.HtmlPane;
 import com.kodcu.controller.ApplicationController;
 import javafx.scene.web.WebEngine;
 import netscape.javascript.JSObject;
@@ -19,10 +20,12 @@ public class ScrollService {
     private final Logger logger = LoggerFactory.getLogger(ScrollService.class);
 
     private final ApplicationController controller;
+    private final HtmlPane htmlPane;
 
     @Autowired
-    public ScrollService(final ApplicationController controller) {
+    public ScrollService(final ApplicationController controller, HtmlPane htmlPane) {
         this.controller = controller;
+        this.htmlPane = htmlPane;
     }
 
     public void onscroll(Object pos, Object max) {
@@ -32,20 +35,11 @@ public class ScrollService {
         Number position = (Number) pos; // current scroll position for editor
         Number maximum = (Number) max; // max scroll position for editor
 
-        double currentY = (position.doubleValue() < 0) ? 0 : position.doubleValue();
-        double ratio = (currentY * 100) / maximum.doubleValue();
-        WebEngine previewEngine = controller.getPreviewView().getEngine();
-        Integer browserMaxScroll = (Integer) previewEngine.executeScript("document.documentElement.scrollHeight - document.documentElement.clientHeight;");
-        double browserScrollOffset = (Double.valueOf(browserMaxScroll) * ratio) / 100.0;
-        previewEngine.executeScript(String.format("window.scrollTo(0, %f )", browserScrollOffset));
+        htmlPane.onscroll(position,maximum);
     }
 
     public void scrollToCurrentLine(String text) {
-        try {
-            WebEngine engine = controller.getPreviewView().getEngine();
-            ((JSObject) engine.executeScript("window")).call("runScroller", text);
-        } catch (Exception e) {
-            logger.debug(e.getMessage(), e);
-        }
+        htmlPane.scrollToCurrentLine(text);
+
     }
 }

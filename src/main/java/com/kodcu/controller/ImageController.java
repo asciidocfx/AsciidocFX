@@ -20,7 +20,7 @@ import java.util.stream.IntStream;
 /**
  * Created by usta on 25.12.2014.
  */
-@Controller
+//@Controller
 public class ImageController {
 
     private final Current current;

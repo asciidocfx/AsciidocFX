@@ -1,4 +1,4 @@
-package com.kodcu.service.convert;
+package com.kodcu.service.convert.ebook;
 
 import com.icl.saxon.TransformerFactoryImpl;
 import com.kodcu.controller.ApplicationController;
@@ -7,6 +7,7 @@ import com.kodcu.other.IOHelper;
 import com.kodcu.service.DirectoryService;
 import com.kodcu.service.PathResolverService;
 import com.kodcu.service.ThreadService;
+import com.kodcu.service.convert.docbook.DocBookConverter;
 import com.kodcu.service.ui.IndikatorService;
 import javafx.stage.FileChooser;
 import org.joox.Match;
@@ -36,29 +37,29 @@ import static org.joox.JOOX.$;
  * Created by usta on 30.08.2014.
  */
 @Component
-public class Epub3Service {
+public class EpubConverter {
 
-    private final Logger logger = LoggerFactory.getLogger(Epub3Service.class);
+    private final Logger logger = LoggerFactory.getLogger(EpubConverter.class);
 
     private final ApplicationController asciiDocController;
     private final Current current;
     private final ThreadService threadService;
     private final DirectoryService directoryService;
     private final IndikatorService indikatorService;
-    private final DocBookService docBookService;
+    private final DocBookConverter docBookConverter;
     private final PathResolverService pathResolverService;
 
     private Path epubPath;
 
     @Autowired
-    public Epub3Service(final ApplicationController asciiDocController, final Current current, final ThreadService threadService,
-                        final DirectoryService directoryService, final IndikatorService indikatorService, final DocBookService docBookService, PathResolverService pathResolverService) {
+    public EpubConverter(final ApplicationController asciiDocController, final Current current, final ThreadService threadService,
+                         final DirectoryService directoryService, final IndikatorService indikatorService, final DocBookConverter docBookConverter, PathResolverService pathResolverService) {
         this.asciiDocController = asciiDocController;
         this.current = current;
         this.threadService = threadService;
         this.directoryService = directoryService;
         this.indikatorService = indikatorService;
-        this.docBookService = docBookService;
+        this.docBookConverter = docBookConverter;
         this.pathResolverService = pathResolverService;
     }
 
@@ -109,7 +110,7 @@ public class Epub3Service {
 
                     Transformer transformer = factory.newTransformer(xslSource);
 
-                    docBookService.generateDocbook(docbook -> {
+                    docBookConverter.convert(false, docbook -> {
 
                         threadService.runTaskLater(() -> {
                             transformer.setParameter("base.dir", epubTemp.resolve("OEBPS").toString());
