@@ -157,20 +157,9 @@
                     <Insets bottom="5.0" left="15.0" right="15.0" top="5.0" />
                   </padding>
                 </HBox>
-                <TabPane>
-                  <tabs>
-                    <Tab text="HTML">
-                      <content>
-                          <WebView fx:id="previewView" style="" styleClass="null" VBox.vgrow="ALWAYS" />
-                      </content>
-                    </Tab>
-                    <Tab text="Slide">
-                      <content>
-                          <WebView fx:id="slideView" style="" styleClass="null" VBox.vgrow="ALWAYS" />
-                      </content>
-                    </Tab>
-                  </tabs>
-                </TabPane>
+                <AnchorPane fx:id="previewAnchor" VBox.vgrow="ALWAYS" >
+                  <!--  Preview placeholder loaded in runtime here -->
+                </AnchorPane>
               </children>
             </VBox>
           </children>
