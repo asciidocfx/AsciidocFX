@@ -19,6 +19,9 @@ var templateMap = {};
 
                     var self = this;
 
+                    window.selfo = this;
+                    window.nodee = node;
+
                     var obj = {};
                     obj.type = node.$type ? node.$type() : "";
                     obj.name = node.$node_name ? node.$node_name() : "";
@@ -71,10 +74,10 @@ var templateMap = {};
                         var value = node.$document().$attributes()['$[]'](key);
                         obj.document.attr[key] = value;
                     }
-                    //templateMap = {}; // Sonra sil
-                    if(!templateMap[obj.name]){
+                    //templateMap = {}; // Cache disabled icin comment yap
+                    if (!templateMap[obj.name]) {
                         var template = app.getTemplate(obj.name + ".jade");
-                        var fn = jade.compile(template, {pretty:true});
+                        var fn = jade.compile(template, {pretty: true});
                         templateMap[obj.name] = fn;
                     }
 

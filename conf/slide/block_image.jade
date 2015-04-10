@@ -1,4 +1,4 @@
-div.imageblock(id=id,class=[style, role],style={"text-align":attr.align ? "text-align: #{attr.align}" : '', float: attr.float ? "float: #{attr.float}" : ''})
+div.imageblock(id=id,class=["#{style}", "#{role}"],style={"text-align":attr.align ? "text-align: #{attr.align}" : '', float: attr.float ? "float: #{attr.float}" : ''})
     .content
         if attr.link
             a.image(href=attr.link)
