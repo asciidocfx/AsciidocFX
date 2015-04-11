@@ -90,4 +90,8 @@ public class SlidePane extends AnchorPane {
     public void replaceSlides(String rendered) {
         window.call("replaceSlides", rendered);
     }
+
+    public void flipThePage(String rendered) {
+        window.call("flipCurrentPage", rendered);
+    }
 }

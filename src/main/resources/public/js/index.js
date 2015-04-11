@@ -100,9 +100,13 @@ function scrollTo60(position) {
     $(window).scrollTop(position - 60);
 }
 
+function findRenderedSelection(content) {
+    return Opal.Asciidoctor.$render(content);
+}
+
 function runScroller(content) {
 
-    var renderedSelection = Opal.Asciidoctor.$render(content);
+    var renderedSelection = findRenderedSelection(content);
 
     if (renderedSelection.trim() == "") {
         return;
