@@ -163,6 +163,11 @@ public class HtmlPane extends AnchorPane {
         }
     }
 
+    public String findRenderedSelection(String content) {
+        this.setMember("context",content);
+        return (String) webEngine.executeScript("findRenderedSelection(context)");
+    }
+
     public String convertSlide(String asciidoc) {
         this.setMember("editorValue", asciidoc);
         return (String) webEngine.executeScript("convertSlide(editorValue)");

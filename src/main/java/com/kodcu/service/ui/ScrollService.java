@@ -1,6 +1,7 @@
 package com.kodcu.service.ui;
 
 import com.kodcu.component.HtmlPane;
+import com.kodcu.component.SlidePane;
 import com.kodcu.controller.ApplicationController;
 import javafx.scene.web.WebEngine;
 import netscape.javascript.JSObject;
@@ -21,11 +22,13 @@ public class ScrollService {
 
     private final ApplicationController controller;
     private final HtmlPane htmlPane;
+    private final SlidePane slidePane;
 
     @Autowired
-    public ScrollService(final ApplicationController controller, HtmlPane htmlPane) {
+    public ScrollService(final ApplicationController controller, final HtmlPane htmlPane, final SlidePane slidePane) {
         this.controller = controller;
         this.htmlPane = htmlPane;
+        this.slidePane = slidePane;
     }
 
     public void onscroll(Object pos, Object max) {
@@ -39,7 +42,13 @@ public class ScrollService {
     }
 
     public void scrollToCurrentLine(String text) {
-        htmlPane.scrollToCurrentLine(text);
-
+        if((htmlPane.isVisible()))
+            htmlPane.scrollToCurrentLine(text);
+        else{
+            // slidePane in action
+            String content = htmlPane.findRenderedSelection(text);
+            System.out.println(content);
+            slidePane.flipThePage(content);
+        }
     }
 }
