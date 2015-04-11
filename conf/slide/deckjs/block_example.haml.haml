@@ -1,0 +1,5 @@
+%div{:id=>@id, :class=>['exampleblock', role, ('slide' if option? :step)]}
+  - if title?
+    .title=captioned_title
+  .content
+    =content.chomp

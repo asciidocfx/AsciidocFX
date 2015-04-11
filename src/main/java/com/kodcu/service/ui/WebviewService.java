@@ -103,7 +103,7 @@ public class WebviewService {
             }
         });
 
-        editorPane.setOnDragDropped(event -> {
+        editorPane.dragDropped(event -> {
             Dragboard dragboard = event.getDragboard();
             boolean success = false;
 

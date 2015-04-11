@@ -646,7 +646,10 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             if (window.getMember("app").equals("undefined"))
                 window.setMember("app", this);
         });
-        mathjaxEngine.load(String.format("http://localhost:%d/mathjax.html", port));
+
+        threadService.runActionLater(()->{
+            mathjaxEngine.load(String.format("http://localhost:%d/mathjax.html", port));
+        });
 
         htmlPane.load(String.format("http://localhost:%d/preview.html", port));
         htmlPane.whenStateSucceed((observableValue1, state, state2) -> {
@@ -1021,7 +1024,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 //        if (Objects.nonNull(templateMap.get(templateName)))
 //            return templateMap.get(templateName);
 
-        Stream<Path> slide = Files.find(configPath.resolve("slide"), Integer.MAX_VALUE, (path, basicFileAttributes) -> path.toString().contains(templateName));
+        Stream<Path> slide = Files.find(configPath.resolve("slide").resolve("reveal.js"), Integer.MAX_VALUE, (path, basicFileAttributes) -> path.toString().contains(templateName));
 
         Optional<Path> first = slide.findFirst();
 

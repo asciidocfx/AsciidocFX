@@ -21,6 +21,7 @@ var templateMap = {};
 
                     window.selfo = this;
                     window.nodee = node;
+                    window.optss = opts;
 
                     var obj = {};
                     obj.type = node.$type ? node.$type() : "";

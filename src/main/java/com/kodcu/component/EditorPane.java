@@ -1,5 +1,6 @@
 package com.kodcu.component;
 
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.concurrent.Worker;
 import javafx.event.EventHandler;
@@ -61,7 +62,9 @@ public class EditorPane extends AnchorPane {
 
     public void load(String url) {
         if (Objects.nonNull(url))
-            webEngine.load(url);
+            Platform.runLater(()->{
+                webEngine.load(url);
+            });
         else
             logger.error("Url is not loaded. Reason: null reference");
     }

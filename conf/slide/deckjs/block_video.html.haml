@@ -1,0 +1,26 @@
+%div{:id=>@id, :class=>['videoblock', @style, role, ('slide' if option? :step)]}
+  - case attr :poster
+  - when 'vimeo'
+    - start_anchor = (attr? :start) ? "#at=#{attr :start}" : nil
+    - params = []
+    - params << 'autoplay=1' if option? :autoplay
+    - params << 'loop=1' if option? :loop
+    - params << 'title=0' unless option? :title
+    - params << 'byline=0' unless option? :byline
+    - params = params.empty? ? nil : %(?#{params * '&amp;'})
+    - src = %(//player.vimeo.com/video/#{attr :target}#{start_anchor}#{params})
+    %iframe{:width=>(attr :width), :height=>(attr :height), :src=>src, :frameborder=>(attr :frameborder), :webkitAllowFullScreen=>true, :mozallowfullscreen=>true, :allowFullScreen=>true}
+  - when 'youtube'
+    - params = ['rel=0']
+    - params << "start=#{attr :start}" if attr? :start
+    - params << "end=#{attr :end}" if attr? :end
+    - params << 'autoplay=1' if option? :autoplay
+    - params << 'loop=1' if option? :loop
+    - params << 'controls=0' if option? :nocontrols
+    - src = %(//www.youtube.com/embed/#{attr :target}?#{params * '&amp;'})
+    %iframe{:width=>(attr :width), :height=>(attr :height), :src=>src, :frameborder=>(attr :frameborder), :allowfullscreen=>!(option? :nofullscreen)}
+  - else
+    %video{:src=>media_uri(attr :target), :width=>(attr :width), :height=>(attr :height),
+        :poster=>((attr :poster) ? media_uri(attr :poster) : nil), :autoplay=>(option? :autoplay),
+        :controls=>!(option? :nocontrols), :loop=>(option? :loop)}
+      Your browser does not support the video tag.

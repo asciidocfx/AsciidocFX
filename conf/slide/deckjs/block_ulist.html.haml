@@ -1,0 +1,25 @@
+- if (checklist = (option? :checklist) ? 'checklist' : nil)
+  - if @document.attr? :icons, 'font'
+    - marker_checked = '<i class="icon-check"></i>'
+    - marker_unchecked = '<i class="icon-check-empty"></i>'
+  - else 
+    - marker_checked = '&#8864;'
+    - marker_unchecked = '&#9723;'
+%div{:id=>@id, :class=>['ulist', checklist, @style, role]}
+  - if title?
+    .title=title
+  %ul{:class=>(checklist || @style)}
+    - items.each do |item|
+      %li{:class=>('slide' if option? :step)}<
+        - if item.blocks?
+          %p
+            - if checklist && (item.attr? :checkbox)
+              =%(#{(item.attr? :checked) ? marker_checked : marker_unchecked} #{item.text})
+            - else
+              =item.text
+            =item.content.chomp
+        - else
+          - if checklist && (item.attr? :checkbox)
+            =%(#{(item.attr? :checked) ? marker_checked : marker_unchecked} #{item.text})
+          - else
+            =item.text

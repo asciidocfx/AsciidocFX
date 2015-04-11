@@ -7,10 +7,6 @@ import com.kodcu.other.Current;
 import com.kodcu.other.IOHelper;
 import com.kodcu.service.MarkdownService;
 import com.kodcu.service.ThreadService;
-import javafx.application.Platform;
-import javafx.scene.web.WebEngine;
-import javafx.scene.web.WebView;
-import netscape.javascript.JSObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -51,27 +47,27 @@ public class SlideConverter implements DocumentConverter<String> {
     public void convert(boolean askPath, Consumer<String>... nextStep) {
         threadService.runActionLater(() -> {
 
-            String rendered= htmlPane.convertSlide(current.currentEditorValue());
+            String rendered = htmlPane.convertSlide(current.currentEditorValue());
 
             Path resolve = current.currentPath().map(Path::getParent).get().resolve(current.getCurrentTabText().replace("*", "").trim() + ".html");
             IOHelper.writeToFile(resolve, rendered, TRUNCATE_EXISTING, CREATE);
 
-            try {
-                String location = slidePane.getLocation();
-                if (Objects.isNull(location))
-                    slidePane.load(resolve.toUri().toURL().toString());
-                else {
-                    if (slidePane.isReady()) {
-                        threadService.runActionLater(()->{
-                            slidePane.replaceSlides(rendered);
-                        });
+            String location = slidePane.getLocation();
+            if (Objects.isNull(location))
+                    try {
+                        slidePane.load(resolve.toUri().toURL().toString());
+                    } catch (MalformedURLException e) {
+                        e.printStackTrace();
                     }
-                }
+            else {
 
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
+                threadService.runActionLater(() -> {
+                    if (slidePane.isReady()) {
+                        slidePane.replaceSlides(rendered);
+                    }
+                });
+
             }
-
 
             for (Consumer<String> step : nextStep) {
                 step.accept(rendered);

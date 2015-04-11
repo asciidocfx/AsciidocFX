@@ -1,0 +1,229 @@
+- deckjs_version = (attr :deckjs_version, '1.1.0')
+- deckjsdir = (attr :deckjsdir, 'deck.js')
+!!! 5
+%html{:lang=>(attr :lang, 'en')}
+  %head
+    %meta(http-equiv='Content-Type' content="text/html; charset=#{attr :encoding}")
+    %meta(http-equiv='X-UA-Compatible' content='IE=edge,chrome=1')
+    %meta(name='generator' content="Asciidoctor #{attr 'asciidoctor-version'}")
+    - [:description, :author, :viewport, :keywords, :copyright].each do |key|
+      - if attr? key
+        %meta{:name=>key, :content=>(attr key)}
+    %title=((doctitle :sanitize => true) || (attr 'untitled-label'))
+    - unless (attr :stylesheet, '').empty?
+      %link(rel='stylesheet'){:href=>normalize_web_path((attr :stylesheet), (attr :stylesdir, ''))}
+    - if attr? :icons, 'font'
+      %link(rel='stylesheet'){:href=>(attr 'iconfont-cdn', 'http://cdnjs.cloudflare.com/ajax/libs/font-awesome/3.2.1/css/font-awesome.min.css')}
+      %style
+        :plain
+          .conum { display: inline-block; color: white !important; background-color: #222222; -webkit-border-radius: 100px; border-radius: 100px; text-align: center; width: 1.2em; height: 1.2em; font-size: 0.9em; font-weight: bold; line-height: 1.2; font-family: Arial, sans-serif; font-style: normal; position: relative; top: -0.1em; }
+          .conum * { color: white !important; }
+          .conum + b { display: none; }
+          .conum:after { content: attr(data-value); }
+          .conum:not([data-value]):empty { display: none; }
+          .colist table td:first-of-type { padding-right: 0.25em; }
+    - case attr 'source-highlighter'
+    - when 'coderay'
+      - if (attr 'coderay-css', 'class') == 'class'
+        - if @safe >= Asciidoctor::SafeMode::SECURE || (attr? :linkcss)
+          %link(rel='stylesheet'){:href=>normalize_web_path('asciidoctor-coderay.css', (attr :stylesdir, ''))}
+        - else
+          =Asciidoctor::Stylesheets.instance.embed_coderay_stylesheet
+    - when 'pygments'
+      - if (attr 'pygments-css', 'class') == 'class'
+        - if @safe >= Asciidoctor::SafeMode::SECURE || (attr? :linkcss)
+          %link(rel='stylesheet'){:href=>normalize_web_path('asciidoctor-pygments.css', (attr :stylesdir, ''))}
+        - else
+          =Asciidoctor::Stylesheets.instance.embed_pygments_stylesheet(attr 'pygments-style')
+    - when 'highlightjs'
+      %link(rel='stylesheet' href="#{attr :highlightjsdir, '//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4'}/styles/#{attr 'highlightjs-theme', 'default'}.min.css")
+      %script(src="#{attr :highlightjsdir, '//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4'}/highlight.min.js")
+      %script hljs.initHighlightingOnLoad()
+    - when 'prettify'
+      %link(rel='stylesheet' href="#{attr :prettifydir, 'http://cdnjs.cloudflare.com/ajax/libs/prettify/r298'}/#{attr 'prettify-theme', 'prettify'}.min.css")
+      %script(src="#{attr :prettifydir, 'http://cdnjs.cloudflare.com/ajax/libs/prettify/r298'}/prettify.min.js")
+      %script document.addEventListener('DOMContentLoaded', prettyPrint)
+    %link(rel='stylesheet' href="#{deckjsdir}/core/deck.core.css")
+    - if deckjs_version <= '1.0.0'
+      %link(rel='stylesheet' media='screen' href="#{deckjsdir}/extensions/hash/deck.hash.css")
+    %link(rel='stylesheet' media='screen' href="#{deckjsdir}/extensions/scale/deck.scale.css")
+    - if attr? :goto
+      %link(rel='stylesheet' media='screen' href="#{deckjsdir}/extensions/goto/deck.goto.css")
+    - if attr? :menu
+      %link(rel='stylesheet' media='screen' href="#{deckjsdir}/extensions/menu/deck.menu.css")
+    - if attr? :navigation
+      %link(rel='stylesheet' media='screen' href="#{deckjsdir}/extensions/navigation/deck.navigation.css")
+    - if attr? :status
+      %link(rel='stylesheet' media='screen' href="#{deckjsdir}/extensions/status/deck.status.css")
+    - if attr? :toc
+      %link(rel='stylesheet' media='screen' href="#{deckjsdir}/extensions/toc/deck.toc.css")
+    - unless attr :deckjs_theme == 'none'
+      %link(rel='stylesheet' media='screen' href="#{deckjsdir}/themes/style/#{attr :deckjs_theme, 'web-2.0'}.css")
+    - unless attr :deckjs_transition == 'none'
+      %link(rel='stylesheet' media='screen' href="#{deckjsdir}/themes/transition/#{attr :deckjs_transition, 'fade'}.css")
+    - if attr? :customcss
+      %link(rel='stylesheet' href="#{attr :customcss, 'customcss.css'}")
+    %link(rel='stylesheet' media='print' href="#{deckjsdir}/core/print.css")
+    %script(src="#{deckjsdir}/modernizr.custom.js")
+  %body{:id=>@id, :class=>doctype, :style=>("max-width: #{attr 'max-width'};" if (attr? 'max-width'))}
+    .deck-container
+      - unless noheader
+        %section(class='slide' id='title-slide')
+          - unless notitle
+            %h1=@header.title
+          - if attr? :author
+            %span#author=attr :author
+            %br
+            - if attr? :email
+              %span#email=sub_macros(attr :email)
+              %br
+            - if (authorcount = (attr :authorcount).to_i) > 1
+              - (2..authorcount).each do |idx|
+                %span{:id=>"author#{idx}", :class=>"author"}=(attr "author_#{idx}")
+                %br
+                - if attr? "email_#{idx}"
+                  %span{:id=>"email#{idx}", :class=>"email"}=sub_macros(attr "email_#{idx}")
+          - if attr? :revnumber
+            %span#revnumber #{((attr 'version-label') || '').downcase} #{attr :revnumber}#{',' if (attr? :revdate)}
+          - if attr? :revdate
+            %span#revdate=attr :revdate
+          - if attr? :revremark
+            %br
+            %span#revremark=attr :revremark
+        =content
+      - if attr? :navigation
+        %div(aria-role='navigation')
+          %a(href='#' class='deck-prev-link' title='Previous') &#8592;
+          %a(href='#' class='deck-next-link' title='Next') &#8594;
+      - if attr? :status
+        %p.deck-status(aria-role='status')
+          %span.deck-status-current
+          \/
+          %span.deck-status-total
+      - if attr? :goto
+        %form(action='.' method='get' class='goto-form')
+          %label(for='goto-slide') Go to Slide:
+          %input(type='text' name='slidenum' id='goto-slide' list='goto-datalist')
+          %datalist(id='goto-data-list')
+          %input(type='submit' value='Go')
+      - if deckjs_version <= '1.0.0'
+        %a(href='.' title='Permalink to this slide' class='deck-permalink') #
+    %script(src="#{deckjsdir}/jquery.min.js")
+    %script(src="#{deckjsdir}/core/deck.core.js")
+    - if deckjs_version <= '1.0.0'
+      %script(src="#{deckjsdir}/extensions/hash/deck.hash.js")
+    %script(src="#{deckjsdir}/extensions/scale/deck.scale.js")
+    - if attr? :blank
+      %script(src="#{deckjsdir}/extensions/blank/deck.blank.js")
+    - if attr? :goto
+      %script(src="#{deckjsdir}/extensions/goto/deck.goto.js")
+    - if attr? :menu
+      %script(src="#{deckjsdir}/extensions/menu/deck.menu.js")
+    - if attr? :navigation
+      %script(src="#{deckjsdir}/extensions/navigation/deck.navigation.js")
+    - if attr? :split
+      %script(src="#{deckjsdir}/extensions/split/deck.split.js")
+    - if attr? :status
+      %script(src="#{deckjsdir}/extensions/status/deck.status.js")
+    - if attr? :toc
+      %script(src="#{deckjsdir}/extensions/toc/deck.toc.js")
+      %div(class='deck-toc')
+    - if attr? :customjs
+      %script(src="#{attr :customjs, 'customjs.js'}")
+    :javascript
+      (function($, deck, undefined) {
+        $.deck.defaults.keys['previous'] = [8, 33, 37, 39];
+        $.deck.defaults.keys['next'] = [13, 32, 34, 39];
+
+        $.extend(true, $[deck].defaults, {
+            countNested: false
+        });
+
+        $.deck('.slide');
+      })(jQuery, 'deck');
+    :css
+      .slide.canvas-image {
+      -moz-background-size: cover;
+      -webkit-background-size: cover;
+      -o-background-size: cover;
+      background-size: cover;
+      display: -moz-box;
+      display: -webkit-box;
+      display: -ms-box;
+      display: box;
+      -moz-box-orient: vertical;
+      -webkit-box-orient: vertical;
+      -ms-box-orient: vertical;
+      box-orient: vertical;
+      -moz-box-align: start;
+      -webkit-box-align: start;
+      -ms-box-align: start;
+      box-align: start;
+      -moz-box-pack: start;
+      -webkit-box-pack: start;
+      -ms-box-pack: start;
+      box-pack: start;}
+
+      .bottom-left {
+        left: 1%;
+        bottom: 20%; }
+
+      .top-left {
+        left: 1%;
+        top: 20%; }
+
+      .bottom-right {
+        right: 1%;
+        bottom: 20%; }
+
+      .top-right {
+        right: 1%;
+        top: 20%; }
+
+      .center-up {
+        right: 50%;
+        top: 1%;
+      }
+
+      .center-down {
+        right: 50%;
+        bottom: 1%;
+      }
+      .canvas-image .canvas-caption p {
+        text-align: center;
+        padding-top: 0;
+        padding: 0;
+        -moz-transform: none;
+        -webkit-transform: none;
+        -o-transform: none;
+        -ms-transform: none;
+        transform: none;
+        display: inline;
+        position: absolute;
+        background-color: rgba(0, 0, 0, 0.7);
+        font-weight: bold;
+        font-size: 58px;
+        -webkit-box-shadow: 2px 2px 2px #000;
+        -moz-box-shadow: 2px 2px 2px #000;
+        box-shadow: 2px 2px 2px #000;
+        padding: 1rem;
+        color: white; }
+      kbd.keyseq { color: #555555; }
+      kbd:not(.keyseq) {
+        display: inline-block;
+        color: #222222;
+        font-size: 0.7em;
+        line-height: 1.4;
+        background-color: #F7F7F7;
+        border: 1px solid #ccc;
+        -webkit-border-radius: 3px;
+        border-radius: 3px;
+        -webkit-box-shadow: 0 1px 0 rgba(0, 0, 0, 0.2), 0 0 0 2px white inset;
+        box-shadow: 0 1px 0 rgba(0, 0, 0, 0.2), 0 0 0 2px white inset;
+        margin: -0.15em 0.15em 0 0.15em;
+        padding: 0.2em 0.6em;
+        vertical-align: middle;
+        white-space: nowrap;
+      }
+      kbd kbd:first-child { margin-left: 0; }
+      kbd kbd:last-child { margin-right: 0; }

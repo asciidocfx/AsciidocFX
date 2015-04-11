@@ -1,5 +1,6 @@
 package com.kodcu.component;
 
+import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Priority;
@@ -54,7 +55,9 @@ public class SlidePane extends AnchorPane {
 
     public void load(String url) {
         if (Objects.nonNull(url))
-            webEngine.load(url);
+            Platform.runLater(()->{
+                webEngine.load(url);
+            });
         else
             logger.error("Url is not loaded. Reason: null reference");
     }

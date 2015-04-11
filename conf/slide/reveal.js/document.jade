@@ -34,56 +34,56 @@ html(lang="en")
                 // See https://github.com/hakimel/reveal.js#configuration for a full list of configuration options
                 Reveal.initialize({
                     // Display controls in the bottom right corner
-                    controls: !{revealjs_controls ? revealjs_controls : "true"},
+                    controls: #{attr.revealjs_controls ? attr.revealjs_controls : "true"},
                     // Display a presentation progress bar
-                    progress: !{revealjs_progress ? revealjs_progress : "true"},
+                    progress: !{attr.revealjs_progress ? attr.revealjs_progress : "true"},
                     // Display the page number of the current slide
-                    slideNumber: !{revealjs_slidenumber ? revealjs_slidenumber : "true"},
+                    slideNumber: !{attr.revealjs_slidenumber ? attr.revealjs_slidenumber : "true"},
                     // Push each slide change to the browser history
-                    history: !{revealjs_history ? revealjs_history : "true"},
+                    history: !{attr.revealjs_history ? attr.revealjs_history : "true"},
                     // Enable keyboard shortcuts for navigation
-                    keyboard: !{revealjs_keyboard ? revealjs_keyboard : "true"},
+                    keyboard: !{attr.revealjs_keyboard ? attr.revealjs_keyboard : "true"},
                     // Enable the slide overview mode
-                    overview: !{revealjs_overview ? revealjs_overview : "true"},
+                    overview: !{attr.revealjs_overview ? attr.revealjs_overview : "true"},
                     // Vertical centering of slides
-                    center: !{revealjs_center ? revealjs_center : "true"},
+                    center: !{attr.revealjs_center ? attr.revealjs_center : "true"},
                     // Enables touch navigation on devices with touch input
-                    touch: !{revealjs_touch ? revealjs_touch : "true"},
+                    touch: !{attr.revealjs_touch ? attr.revealjs_touch : "true"},
                     // Loop the presentation
-                    loop: !{revealjs_loop ? revealjs_loop : "false"},
+                    loop: !{attr.revealjs_loop ? attr.revealjs_loop : "false"},
                     // Change the presentation direction to be RTL
-                    rtl: !{revealjs_rtl ? revealjs_rtl : "false"},
+                    rtl: !{attr.revealjs_rtl ? attr.revealjs_rtl : "false"},
                     // Turns fragments on and off globally
-                    fragments: !{revealjs_fragments ? revealjs_fragments : "true"},
+                    fragments: !{attr.revealjs_fragments ? attr.revealjs_fragments : "true"},
                     // Flags if the presentation is running in an embedded mode,
                     // i.e. contained within a limited portion of the screen
-                    embedded: !{ revealjs_embedded ? revealjs_embedded : "false"},
+                    embedded: !{attr.revealjs_embedded ? attr.revealjs_embedded : "false"},
                     // Number of milliseconds between automatically proceeding to the
                     // next slide, disabled when set to 0, this value can be overwritten
                     // by using a data-autoslide attribute on your slides
-                    autoSlide: !{revealjs_autoslide ? revealjs_autoslide : 0},
+                    autoSlide: !{attr.revealjs_autoslide ? attr.revealjs_autoslide : 0},
                     // Stop auto-sliding after user input
-                    autoSlideStoppable: !{revealjs_autoslidestoppable ? revealjs_autoslidestoppable : "true"},
+                    autoSlideStoppable: !{attr.revealjs_autoslidestoppable ? attr.revealjs_autoslidestoppable : "true"},
                     // Enable slide navigation via mouse wheel
-                    mouseWheel: !{revealjs_mousewheel ? revealjs_mousewheel : "true"},
+                    mouseWheel: !{attr.revealjs_mousewheel ? attr.revealjs_mousewheel : "true"},
                     // Hides the address bar on mobile devices
-                    hideAddressBar: !{revealjs_hideaddressbar ? revealjs_hideaddressbar : "true" },
+                    hideAddressBar: !{attr.revealjs_hideaddressbar ? attr.revealjs_hideaddressbar : "true" },
                     // Opens links in an iframe preview overlay
-                    previewLinks: !{revealjs_previewlinks ? revealjs_previewlinks : 'false'},
+                    previewLinks: !{attr.revealjs_previewlinks ? attr.revealjs_previewlinks : 'false'},
                     // Theme (e.g., beige, blond, default, moon, night, serif, simple, sky, solarized)
-                    theme: Reveal.getQueryHash().theme || !{revealjs_theme ? revealjs_theme : "\"night\""},
+                    theme: Reveal.getQueryHash().theme || !{attr.revealjs_theme ? attr.revealjs_theme : "\"night\""},
                     // Transition style (e.g., default, cube, page, concave, zoom, linear, fade, none)
-                    transition: Reveal.getQueryHash().transition || !{revealjs_transition ? revealjs_transition : "\"default\""},
+                    transition: Reveal.getQueryHash().transition || !{attr.revealjs_transition ? attr.revealjs_transition : "\"default\""},
                     // Transition speed (e.g., default, fast, slow)
-                    transitionSpeed: !{revealjs_transitionspeed ? revealjs_transitionspeed : '\"default\"' },
+                    transitionSpeed: !{attr.revealjs_transitionspeed ? attr.revealjs_transitionspeed : '\"default\"' },
                     // Transition style for full page slide backgrounds (e.g., default, none, slide, concave, convex, zoom)
-                    backgroundTransition: !{revealjs_backgroundtransition ? revealjs_backgroundtransition : "\"default\""},
+                    backgroundTransition: !{attr.revealjs_backgroundtransition ? attr.revealjs_backgroundtransition : "\"default\""},
                     // Number of slides away from the current that are visible
-                    viewDistance: !{revealjs_viewdistance ? revealjs_viewdistance : 3},
+                    viewDistance: !{attr.revealjs_viewdistance ? attr.revealjs_viewdistance : 3},
                     // Parallax background image (e.g., "'https://s3.amazonaws.com/hakim-static/reveal-js/reveal-parallax-1.jpg'")
-                    parallaxBackgroundImage: !{revealjs_parallaxbackgroundimage ? revealjs_parallaxbackgroundimage : "null" },
+                    parallaxBackgroundImage: !{attr.revealjs_parallaxbackgroundimage ? attr.revealjs_parallaxbackgroundimage : "null" },
                     // Parallax background size in CSS syntax (e.g., "2100px 900px")
-                    parallaxBackgroundSize: !{revealjs_parallaxbackgroundsize ? revealjs_parallaxbackgroundsize : "null" },
+                    parallaxBackgroundSize: !{attr.revealjs_parallaxbackgroundsize ? attr.revealjs_parallaxbackgroundsize : "null" },
                     // Optional libraries used to extend on reveal.js
                     dependencies: [
                         {

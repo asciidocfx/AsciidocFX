@@ -249,7 +249,9 @@ public class TreeService {
                     logger.info(e.getMessage(), e);
                 }
 
-                treeview.getEngine().load(String.format("http://localhost:%d/treeview.html", controller.getPort()));
+                threadService.runActionLater(()->{
+                    treeview.getEngine().load(String.format("http://localhost:%d/treeview.html", controller.getPort()));
+                });
                 controller.getRootAnchor().getChildren().add(treeview);
 
                 treeview.getEngine().setOnAlert(event -> {
