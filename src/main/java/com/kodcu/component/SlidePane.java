@@ -1,16 +1,18 @@
 package com.kodcu.component;
 
+import com.kodcu.controller.ApplicationController;
+import com.kodcu.service.ThreadService;
 import javafx.application.Platform;
-import javafx.event.EventHandler;
+import javafx.concurrent.Worker;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.web.WebEngine;
-import javafx.scene.web.WebEvent;
 import javafx.scene.web.WebView;
 import netscape.javascript.JSObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Objects;
@@ -23,19 +25,19 @@ public class SlidePane extends AnchorPane {
 
     private final WebView webView;
     private final WebEngine webEngine;
-    private EventHandler<WebEvent<String>> readyHandler;
     private final JSObject window;
     private final Logger logger = LoggerFactory.getLogger(SlidePane.class);
+    private final ThreadService threadService;
+    private final ApplicationController controller;
 
-    public SlidePane() {
+    @Autowired
+    public SlidePane(ThreadService threadService, ApplicationController controller) {
+        this.threadService = threadService;
+        this.controller = controller;
         this.webView = new WebView();
         this.getChildren().add(webView);
         this.webEngine = webView.getEngine();
         window = (JSObject) webEngine.executeScript("window");
-        this.webEngine.setOnAlert(event -> {
-            if (Objects.nonNull(readyHandler))
-                readyHandler.handle(event);
-        });
         initializeMargins();
         this.hide();
     }
@@ -55,7 +57,7 @@ public class SlidePane extends AnchorPane {
 
     public void load(String url) {
         if (Objects.nonNull(url))
-            Platform.runLater(()->{
+            Platform.runLater(() -> {
                 webEngine.load(url);
             });
         else
@@ -68,10 +70,6 @@ public class SlidePane extends AnchorPane {
 
     public void show() {
         super.setVisible(true);
-    }
-
-    public void setOnReady(EventHandler<WebEvent<String>> readyHandler) {
-        this.readyHandler = readyHandler;
     }
 
     public boolean isReady() {
@@ -88,10 +86,33 @@ public class SlidePane extends AnchorPane {
     }
 
     public void replaceSlides(String rendered) {
-        window.call("replaceSlides", rendered);
+        ((JSObject) window.eval("revealExt")).call("replaceSlides", rendered);
     }
 
     public void flipThePage(String rendered) {
-        window.call("flipCurrentPage", rendered);
+        ((JSObject) window.eval("revealExt")).call("flipCurrentPage", rendered);
+    }
+
+    public void setOnSuccess(Runnable runnable) {
+        webEngine.getLoadWorker().stateProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue == Worker.State.SUCCEEDED)
+                threadService.runActionLater(runnable);
+        });
+    }
+
+    public void loadJs(String... jsPaths) {
+        threadService.runTaskLater(() -> {
+
+            threadService.runActionLater(() -> {
+                for (String jsPath : jsPaths) {
+                    String format = String.format("var scriptEl = document.createElement('script');\n" +
+                            "scriptEl.setAttribute('src','http://localhost:%d/%s');\n" +
+                            "document.head.appendChild(scriptEl);", controller.getPort(), jsPath);
+                    webEngine.executeScript(format);
+                }
+            });
+
+
+        });
     }
 }

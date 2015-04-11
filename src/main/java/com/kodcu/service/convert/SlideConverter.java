@@ -53,9 +53,13 @@ public class SlideConverter implements DocumentConverter<String> {
             IOHelper.writeToFile(resolve, rendered, TRUNCATE_EXISTING, CREATE);
 
             String location = slidePane.getLocation();
+
             if (Objects.isNull(location))
                     try {
                         slidePane.load(resolve.toUri().toURL().toString());
+                        slidePane.setOnSuccess(() -> {
+                            slidePane.loadJs("js/jquery.js","js/reveal-extensions.js");
+                        });
                     } catch (MalformedURLException e) {
                         e.printStackTrace();
                     }
