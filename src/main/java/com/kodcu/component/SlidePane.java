@@ -16,6 +16,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Objects;
+import javafx.event.EventHandler;
+import javafx.scene.web.WebEvent;
 
 /**
  * Created by usta on 09.04.2015.
@@ -107,7 +109,7 @@ public class SlidePane extends AnchorPane {
                 for (String jsPath : jsPaths) {
                     String format = String.format("var scriptEl = document.createElement('script');\n" +
                             "scriptEl.setAttribute('src','http://localhost:%d/%s');\n" +
-                            "document.head.appendChild(scriptEl);", controller.getPort(), jsPath);
+                            "document.querySelector('body').appendChild(scriptEl);", controller.getPort(), jsPath);
                     webEngine.executeScript(format);
                 }
             });

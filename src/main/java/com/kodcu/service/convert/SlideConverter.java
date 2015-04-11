@@ -31,7 +31,6 @@ public class SlideConverter implements DocumentConverter<String> {
     private final SlidePane slidePane;
     private final HtmlPane htmlPane;
 
-
     @Autowired
     public SlideConverter(final ApplicationController controller, final ThreadService threadService, final MarkdownService markdownService, final Current current, SlidePane slidePane, HtmlPane htmlPane) {
         this.controller = controller;
@@ -41,7 +40,6 @@ public class SlideConverter implements DocumentConverter<String> {
         this.slidePane = slidePane;
         this.htmlPane = htmlPane;
     }
-
 
     @Override
     public void convert(boolean askPath, Consumer<String>... nextStep) {
@@ -54,23 +52,22 @@ public class SlideConverter implements DocumentConverter<String> {
 
             String location = slidePane.getLocation();
 
-            if (Objects.isNull(location))
-                    try {
-                        slidePane.load(resolve.toUri().toURL().toString());
-                        slidePane.setOnSuccess(() -> {
-                            slidePane.loadJs("js/jquery.js","js/reveal-extensions.js");
-                        });
-                    } catch (MalformedURLException e) {
-                        e.printStackTrace();
-                    }
-            else {
+            if (Objects.isNull(location)) {
+                try {
+                    slidePane.load(resolve.toUri().toURL().toString());
+                    slidePane.setOnSuccess(() -> {
+                        slidePane.loadJs("js/jquery.js", "js/reveal-extensions.js");
+                    });
+                } catch (MalformedURLException e) {
+                    e.printStackTrace();
+                }
+            } else {
 
                 threadService.runActionLater(() -> {
                     if (slidePane.isReady()) {
                         slidePane.replaceSlides(rendered);
                     }
                 });
-
             }
 
             for (Consumer<String> step : nextStep) {
@@ -78,6 +75,5 @@ public class SlideConverter implements DocumentConverter<String> {
             }
         });
     }
-
 
 }

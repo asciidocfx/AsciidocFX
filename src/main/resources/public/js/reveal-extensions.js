@@ -3,9 +3,7 @@ revealExt.replaceSlides = function (data) {
     var div = document.createElement("div");
     div.innerHTML = data;
     document.querySelector("div.slides").innerHTML = div.querySelector("div.slides").innerHTML;
-    setTimeout(function () {
-        revealExt.initializeReveal()
-    }, 50);
+    setTimeout(initializeReveal, 50);
 }
 
 revealExt.flipCurrentPage = function (renderedSelection) {
