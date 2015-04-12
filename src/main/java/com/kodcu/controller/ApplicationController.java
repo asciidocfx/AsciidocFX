@@ -58,6 +58,8 @@ import javafx.stage.Popup;
 import javafx.stage.Stage;
 import netscape.javascript.JSObject;
 import org.apache.commons.io.IOUtils;
+import org.odftoolkit.odfdom.doc.OdfDocument;
+import org.odftoolkit.simple.TextDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -96,6 +98,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     public SlidePane slidePane;
     @Autowired
     public HtmlPane htmlPane;
+    public Label odfPro;
 
     private Logger logger = LoggerFactory.getLogger(ApplicationController.class);
 
@@ -505,6 +508,10 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+
+        odfPro.setOnMouseClicked(event->{
+            htmlPane.call("convertOdf",current.currentEditorValue());
+        });
 
         previewAnchor.getChildren().add(htmlPane);
         previewAnchor.getChildren().add(slidePane);
@@ -1014,6 +1021,13 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             }
 
         });
+    }
+
+    public void convertToOdf(String content) throws Exception {
+        TextDocument document = TextDocument.newTextDocument();
+        document.addParagraph(content);
+        document.save("./deneme.odt");
+        System.out.println("Hmm");
     }
 
     Map<String, String> templateMap = new HashMap<>();

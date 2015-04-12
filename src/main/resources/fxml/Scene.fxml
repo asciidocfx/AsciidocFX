@@ -146,6 +146,7 @@
                     <Label fx:id="pdfPro" minWidth="-Infinity" styleClass="pdf" text="PDF" />
                     <Label fx:id="ebookPro" minWidth="-Infinity" styleClass="ebook" text="Ebook" />
                     <Label fx:id="docbookPro" minWidth="-Infinity" styleClass="docbook" text="Docbook" />
+                    <Label fx:id="odfPro" minWidth="-Infinity" styleClass="docbook" text="Odf" />
                     <Pane maxWidth="1.7976931348623157E308" prefHeight="1.0" prefWidth="1.0" HBox.hgrow="ALWAYS">
                       <HBox.margin>
                         <Insets />
