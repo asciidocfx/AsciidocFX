@@ -20,6 +20,7 @@ import com.kodcu.service.convert.html.HtmlArticleConverter;
 import com.kodcu.service.convert.html.HtmlBookConverter;
 import com.kodcu.service.convert.pdf.AbstractPdfConverter;
 import com.kodcu.service.extension.MathJaxService;
+import com.kodcu.service.extension.ODFService;
 import com.kodcu.service.extension.PlantUmlService;
 import com.kodcu.service.extension.TreeService;
 import com.kodcu.service.extension.chart.ChartProvider;
@@ -157,6 +158,9 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     @Autowired
     private TabService tabService;
+
+    @Autowired
+    private ODFService odfService;
 
     @Autowired
     private PathResolverService pathResolver;
@@ -510,7 +514,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     public void initialize(URL url, ResourceBundle rb) {
 
         odfPro.setOnMouseClicked(event->{
-            htmlPane.call("convertOdf",current.currentEditorValue());
+            odfService.generateODFDocument();
         });
 
         previewAnchor.getChildren().add(htmlPane);
@@ -1023,11 +1027,9 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         });
     }
 
-    public void convertToOdf(String content) throws Exception {
-        TextDocument document = TextDocument.newTextDocument();
-        document.addParagraph(content);
-        document.save("./deneme.odt");
-        System.out.println("Hmm");
+    public void convertToOdf(String name, Object obj) throws Exception {
+        JSObject jObj = (JSObject) obj;
+        odfService.buildDocument(name, jObj);
     }
 
     Map<String, String> templateMap = new HashMap<>();
