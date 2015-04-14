@@ -15,6 +15,7 @@ public class TrimWhite {
         BufferedImage newImg = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         Graphics g = newImg.createGraphics();
         g.drawImage(img, 0, 0, null);
+        g.dispose();
         return newImg;
     }
 

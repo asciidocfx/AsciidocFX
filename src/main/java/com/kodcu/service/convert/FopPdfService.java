@@ -36,7 +36,7 @@ import static java.nio.file.StandardOpenOption.*;
 @Component
 public class FopPdfService {
 
-    private final Logger logger = LoggerFactory.getLogger(FopPdfService.class);
+    private static final Logger logger = LoggerFactory.getLogger(FopPdfService.class);
 
     private final ApplicationController asciiDocController;
     private final DocBookService docBookService;

@@ -5,6 +5,8 @@ import com.kodcu.service.DirectoryService;
 import com.kodcu.service.ThreadService;
 import com.kodcu.service.ui.TabService;
 import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -31,6 +33,8 @@ import static java.nio.file.StandardOpenOption.*;
  */
 @Component
 public class GitbookToAsciibookService {
+
+    private static final Logger logger = LoggerFactory.getLogger(GitbookToAsciibookService.class);
 
     private final ScriptEngineManager engineManager;
     private final ScriptEngine js;
@@ -59,7 +63,7 @@ public class GitbookToAsciibookService {
             js.eval(markedExtension);
 
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
         }
     }
 
@@ -74,7 +78,7 @@ public class GitbookToAsciibookService {
         try {
             eval = invocable.invokeFunction("markdownToAsciidoc", content);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
         } finally {
             next.accept((String) eval);
         }

@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -60,7 +61,7 @@ public class AsciiTreeGenerator {
         private Tree parent;
         private Tree sibling;
         private boolean lastChild;
-        private ArrayList<Tree> children;
+        private List<Tree> children;
 
         public boolean isLastChild() {
             return lastChild;
@@ -78,7 +79,7 @@ public class AsciiTreeGenerator {
             this.sibling = sibling;
         }
 
-        private ArrayList<Tree> getChildren() {
+        private List<Tree> getChildren() {
             if (Objects.isNull(children))
                 children = new ArrayList<>();
 
@@ -115,7 +116,7 @@ public class AsciiTreeGenerator {
         }
 
         private void setSiblingAndParent(Tree item) {
-            ArrayList<Tree> children = item.getChildren();
+            List<Tree> children = item.getChildren();
             for (int index = 0; index < children.size(); index++) {
                 Tree currentChild = children.get(index);
                 currentChild.setParent(item);

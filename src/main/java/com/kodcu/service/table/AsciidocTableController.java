@@ -20,7 +20,7 @@ import java.util.ResourceBundle;
 @Component
 public class AsciidocTableController implements Initializable {
 
-    private final Logger logger = LoggerFactory.getLogger(AsciidocTableController.class);
+    private static final Logger logger = LoggerFactory.getLogger(AsciidocTableController.class);
     
     private final Current current;
 
@@ -50,7 +50,7 @@ public class AsciidocTableController implements Initializable {
     @FXML
     private void tablePopupApply(ActionEvent actionEvent) {
 
-        StringBuffer stringBuffer = new StringBuffer();
+        StringBuilder stringBuffer = new StringBuilder();
 
         stringBuffer.append("\n");
         String title = tablePopupTitle.textProperty().getValue();

@@ -35,7 +35,7 @@ import java.util.stream.Collectors;
 @Component
 public class TreeService {
 
-    private final Logger logger = LoggerFactory.getLogger(TreeService.class);
+    private static final Logger logger = LoggerFactory.getLogger(TreeService.class);
 
     private Current current;
     private ApplicationController controller;

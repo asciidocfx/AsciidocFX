@@ -16,7 +16,7 @@ import java.io.StringWriter;
  */
 public class XMLHelper {
 
-    private static Logger logger = LoggerFactory.getLogger(IOHelper.class);
+    private static final Logger logger = LoggerFactory.getLogger(IOHelper.class);
 
     public static String nodeToString(Node node, boolean omitDeclaration) {
         try (StringWriter writer = new StringWriter();) {
