@@ -23,7 +23,7 @@ import java.nio.file.StandardCopyOption;
 @Component
 public class KindleMobiService {
 
-    private final Logger logger = LoggerFactory.getLogger(KindleMobiService.class);
+    private static final Logger logger = LoggerFactory.getLogger(KindleMobiService.class);
 
     private final ApplicationController asciiDocController;
     private final ThreadService threadService;

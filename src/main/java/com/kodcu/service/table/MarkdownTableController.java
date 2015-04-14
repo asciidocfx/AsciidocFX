@@ -42,7 +42,7 @@ public class MarkdownTableController implements Initializable {
     }
 
     public void tablePopupApply(ActionEvent actionEvent) {
-        StringBuffer stringBuffer = new StringBuffer();
+        StringBuilder stringBuffer = new StringBuilder();
 
         stringBuffer.append("\n");
 

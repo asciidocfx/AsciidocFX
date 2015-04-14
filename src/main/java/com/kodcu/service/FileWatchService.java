@@ -19,7 +19,7 @@ import static java.nio.file.StandardWatchEventKinds.ENTRY_DELETE;
 @Component
 public class FileWatchService {
 
-    private static Logger logger = LoggerFactory.getLogger(FileWatchService.class);
+    private static final Logger logger = LoggerFactory.getLogger(FileWatchService.class);
 
     private WatchService watcher = null;
     private Path lastWatchedPath;

@@ -26,7 +26,7 @@ import static java.nio.file.StandardOpenOption.TRUNCATE_EXISTING;
 @Component
 public class Html5BookService extends Converter {
 
-    private final Logger logger = LoggerFactory.getLogger(Html5BookService.class);
+    private static final Logger logger = LoggerFactory.getLogger(Html5BookService.class);
 
     private final Pattern compiledRegex = Pattern.compile("(?<=include::)(.*?)(?=\\[(.*?)\\])");
 
@@ -70,7 +70,7 @@ public class Html5BookService extends Converter {
             indikatorService.startCycle();
 
             List<String> bookAscLines = Arrays.asList(current.currentEditorValue().split("\\r?\\n"));
-            StringBuffer allAscChapters = new StringBuffer();
+            StringBuilder allAscChapters = new StringBuilder();
 
             traverseLines(bookAscLines,allAscChapters,currentTabPathDir);
 
