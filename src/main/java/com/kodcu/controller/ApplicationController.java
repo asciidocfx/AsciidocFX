@@ -59,8 +59,6 @@ import javafx.stage.Popup;
 import javafx.stage.Stage;
 import netscape.javascript.JSObject;
 import org.apache.commons.io.IOUtils;
-import org.odftoolkit.odfdom.doc.OdfDocument;
-import org.odftoolkit.simple.TextDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -513,8 +511,11 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     @Override
     public void initialize(URL url, ResourceBundle rb) {
 
-        odfPro.setOnMouseClicked(event->{
-            odfService.generateODFDocument();
+        odfPro.setOnMouseClicked(event -> {
+            threadService.runActionLater(() -> {
+                if (current.currentPath().isPresent())
+                    odfService.generateODFDocument();
+            });
         });
 
         previewAnchor.getChildren().add(htmlPane);
@@ -658,7 +659,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                 window.setMember("app", this);
         });
 
-        threadService.runActionLater(()->{
+        threadService.runActionLater(() -> {
             mathjaxEngine.load(String.format("http://localhost:%d/mathjax.html", port));
         });
 

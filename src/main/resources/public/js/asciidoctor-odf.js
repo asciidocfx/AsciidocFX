@@ -30,7 +30,8 @@
                     obj.title = node.$title ? node.$title() : null;
                     obj.blocks = node.$blocks ? node.$blocks() : [];
                     obj.sections = node.$sections ? node.$sections() : [];
-                    obj.level = node.$level ? node.$level() : null;
+                    obj.level = node.$level ? node.$level() : 0;
+                    obj.caption = node.$caption ? node.$caption() : "";
                     obj.id = node.$id ? node.$id() : null;
                     obj.columns = node.$columns ? node.$columns() : [];
                     obj.rows = node.$rows ? node.$rows() : [];
@@ -78,7 +79,13 @@
                     if (opts == null) {
                         opts = $hash2([], {})
                     }
-                    return nil;
+
+                    if(obj.name == "inline_quoted" || obj.name == "inline_anchor") {
+                        return obj.text;
+                    }
+                    else {
+                       return nil;
+                    }
                 }, nil) && 'convert'
         })($scope.Converter, ($scope.Converter)._scope.Base)
 
