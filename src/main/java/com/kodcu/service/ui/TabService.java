@@ -42,7 +42,7 @@ import java.util.function.Consumer;
 @Component
 public class TabService {
 
-    private static final Logger logger = LoggerFactory.getLogger(TabService.class);
+    private final Logger logger = LoggerFactory.getLogger(TabService.class);
 
     private final ApplicationController controller;
     private final WebviewService webviewService;

@@ -38,7 +38,7 @@ import static org.joox.JOOX.$;
 @Component
 public class Epub3Service {
 
-    private static final Logger logger = LoggerFactory.getLogger(Epub3Service.class);
+    private final Logger logger = LoggerFactory.getLogger(Epub3Service.class);
 
     private final ApplicationController asciiDocController;
     private final Current current;

@@ -25,7 +25,7 @@ public class MarkdownTableController implements Initializable {
     public TextField rows;
     public Button tablePopupApply;
 
-    private static final Logger logger = LoggerFactory.getLogger(AsciidocTableController.class);
+    private final Logger logger = LoggerFactory.getLogger(MarkdownTableController.class);
     public TextField initialValue;
 
     @Autowired

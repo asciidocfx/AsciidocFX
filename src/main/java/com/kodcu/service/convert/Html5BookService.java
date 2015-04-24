@@ -26,7 +26,7 @@ import static java.nio.file.StandardOpenOption.TRUNCATE_EXISTING;
 @Component
 public class Html5BookService extends Converter {
 
-    private static final Logger logger = LoggerFactory.getLogger(Html5BookService.class);
+    private final Logger logger = LoggerFactory.getLogger(Html5BookService.class);
 
     private final Pattern compiledRegex = Pattern.compile("(?<=include::)(.*?)(?=\\[(.*?)\\])");
 

@@ -31,7 +31,7 @@ import static java.nio.file.StandardOpenOption.*;
 @Component
 public class MathJaxService {
 
-    private static final Logger logger = LoggerFactory.getLogger(MathJaxService.class);
+    private final Logger logger = LoggerFactory.getLogger(MathJaxService.class);
 
     private final ApplicationController controller;
     private final Current current;

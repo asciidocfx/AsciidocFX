@@ -34,7 +34,7 @@ import static java.nio.file.StandardOpenOption.*;
 @Component
 public class GitbookToAsciibookService {
 
-    private static final Logger logger = LoggerFactory.getLogger(GitbookToAsciibookService.class);
+    private final Logger logger = LoggerFactory.getLogger(GitbookToAsciibookService.class);
 
     private final ScriptEngineManager engineManager;
     private final ScriptEngine js;

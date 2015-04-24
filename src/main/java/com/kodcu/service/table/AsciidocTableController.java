@@ -20,7 +20,7 @@ import java.util.ResourceBundle;
 @Component
 public class AsciidocTableController implements Initializable {
 
-    private static final Logger logger = LoggerFactory.getLogger(AsciidocTableController.class);
+    private final Logger logger = LoggerFactory.getLogger(AsciidocTableController.class);
     
     private final Current current;
 

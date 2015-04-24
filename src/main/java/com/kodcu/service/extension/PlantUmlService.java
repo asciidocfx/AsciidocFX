@@ -26,7 +26,7 @@ import static java.nio.file.StandardOpenOption.*;
 @Component
 public class PlantUmlService {
 
-    private static Logger logger = LoggerFactory.getLogger(PlantUmlService.class);
+    private final Logger logger = LoggerFactory.getLogger(PlantUmlService.class);
 
     private final Current current;
     private final ApplicationController controller;
