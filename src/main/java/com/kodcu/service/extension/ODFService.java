@@ -6,6 +6,7 @@ import com.kodcu.other.Constants;
 import com.kodcu.other.Current;
 import com.kodcu.service.ThreadService;
 import com.kodcu.service.ui.IndikatorService;
+import javafx.collections.ObservableList;
 import netscape.javascript.JSObject;
 import org.odftoolkit.odfdom.dom.element.draw.DrawFrameElement;
 import org.odftoolkit.odfdom.dom.element.draw.DrawImageElement;
@@ -57,8 +58,9 @@ public class ODFService {
 
     private TextDocument odtDocument;
     private List<JSObject> unstructuredDocument = new ArrayList<>();
-    private Predicate<String> expectedElement = (name) -> Arrays.asList("paragraph", "image", "section", "listing", "colist",
-            "table", "quote", "page_break", "olist", "ulist", "admonition", "thematic_break", "sidebar").stream().anyMatch(s -> s.equals(name));
+    private final Predicate<String> expectedElement = (name) -> Arrays.asList("paragraph", "image", "section", "listing", "colist", "table", "quote",
+            "page_break", "olist", "ulist", "admonition", "thematic_break", "sidebar", "pass", "example", "literal", "verse", "open").stream().anyMatch(s -> s.equals(name));
+    private final Predicate<String> parentElement = (name) -> Arrays.asList("section", "quote", "admonition", "sidebar", "example", "verse", "open").stream().anyMatch(s -> s.equals(name));
 
     @Autowired
     public ODFService(final ApplicationController controller, final Current current, final HtmlPane htmlPane,
@@ -71,19 +73,19 @@ public class ODFService {
     }
 
     public void generateODFDocument() {
-        threadService.runTaskLater(() -> {
-            indikatorService.startCycle();
-            try {
-                this.openOdtDocument();
-                htmlPane.call("convertOdf", current.currentEditorValue());
-                this.saveOdtDocument();
-            } catch (Exception e) {
-                logger.error(e.getMessage(), e);
-            } finally {
-                unstructuredDocument.clear();
-                indikatorService.completeCycle();
-            }
-        });
+//        threadService.runTaskLater(() -> {
+        indikatorService.startCycle();
+        try {
+            this.openOdtDocument();
+            htmlPane.call("convertOdf", current.currentEditorValue());
+            this.saveOdtDocument();
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+        } finally {
+            unstructuredDocument.clear();
+            indikatorService.completeCycle();
+        }
+//        });
     }
 
     private void openOdtDocument() {
@@ -116,8 +118,8 @@ public class ODFService {
         System.out.println(name);
 
         if (name.equals("document")) {
-            List<AsciiElement> structuredDocument = createNewDocumentStructure();
-            buildODTDocument(Optional.ofNullable(structuredDocument));
+            List<AsciiElement> structuredDocument = this.createNewDocumentStructure();
+            this.buildODTDocument(Optional.ofNullable(structuredDocument), false);
         } else if (expectedElement.test(name)) {
             unstructuredDocument.add(jObj);
         }
@@ -130,10 +132,10 @@ public class ODFService {
             String name = getSpecificProperty(item, "name", String.class);
             JSObject blocks = getSpecificProperty(item, "blocks", JSObject.class);
             Integer nOfBlocks = getSpecificProperty(blocks, "length", Integer.class);
-
+            System.out.println(nOfBlocks + " :" + name);
             AsciiElement element;
-            if (name.equals("section") || name.equals("quote") || name.equals("sidebar") || name.equals("admonition")) {
-                List<AsciiElement> subElements = getSectionChildren(newTree, nOfBlocks);
+            if (parentElement.test(name)) {
+                List<AsciiElement> subElements = this.getElementChildren(newTree, nOfBlocks);
                 element = new AsciiElement(name, item, subElements);
             } else {
                 element = new AsciiElement(name, item);
@@ -143,7 +145,7 @@ public class ODFService {
         return newTree;
     }
 
-    private List<AsciiElement> getSectionChildren(List<AsciiElement> newTree, Integer nOfBlocks) {
+    private List<AsciiElement> getElementChildren(List<AsciiElement> newTree, Integer nOfBlocks) {
         List<AsciiElement> subElements = new ArrayList<>();
         int lastIndex = newTree.size() - 1;
 
@@ -157,10 +159,10 @@ public class ODFService {
         return subElements;
     }
 
-    private void buildODTDocument(Optional<List<AsciiElement>> elements) {
+    private void buildODTDocument(Optional<List<AsciiElement>> elements, boolean appendable) {
         elements.ifPresent(list -> {
             list.forEach(element -> {
-                this.addComponent(element, Paragraph.newParagraph(odtDocument));
+                this.addComponent(element, Paragraph.newParagraph(odtDocument), appendable);
             });
         });
     }
@@ -168,15 +170,15 @@ public class ODFService {
     private void buildODTDocument(Optional<List<AsciiElement>> elements, Component component) {
         elements.ifPresent(list -> {
             list.forEach(element -> {
-                this.addComponent(element, component);
+                this.addComponent(element, component, false);
             });
         });
     }
 
-    private void addComponent(AsciiElement element, Component component) {
+    private void addComponent(AsciiElement element, Component component, boolean appendable) {
         switch (element.getName()) {
             case "paragraph":
-                addParagraph(element, component);
+                addParagraph(element, component, appendable);
                 break;
             case "listing":
                 addListing(element, component);
@@ -193,6 +195,7 @@ public class ODFService {
                 addList(element, component);
                 break;
             case "quote":
+            case "verse":
                 addQuote(element, component);
                 break;
             case "table":
@@ -204,8 +207,16 @@ public class ODFService {
             case "admonition":
                 addAdmonition(element);
                 break;
+            case "example":
             case "sidebar":
-                addSideBlock(element);
+            case "open":
+                addBlock(element);
+                break;
+            case "pass":
+                addPass(element);
+                break;
+            case "literal":
+                addLiteral(element, component);
                 break;
             case "thematic_break":
                 removeParagraph(component);
@@ -213,23 +224,51 @@ public class ODFService {
         }
     }
 
-    private void addSideBlock(AsciiElement element) {
-        String title = element.getTitle();
-        Table table = odtDocument.addTable(1, 1);
-
-        Cell cell = table.getCellByPosition(0, 0);
-        cell.setCellBackgroundColor(new Color("#f8f8f7"));
-        Border border = new Border(new Color("#e0e0dc"), 1.0, SupportedLinearMeasure.PT);
-        cell.setBorders(CellBordersType.ALL_FOUR, border);
-
-        if (!title.equals("")) {
-            Font font = createFont(15, new Color("#7a2518"));
-            Paragraph paragraph = cell.addParagraph(title);
-            paragraph.setHorizontalAlignment(HorizontalAlignmentType.CENTER);
-            paragraph.setFont(font);
+    private void addLiteral(AsciiElement element, Component component) {
+        final ParagraphContainer paragraphContainer;
+        if (component instanceof Cell) {
+            paragraphContainer = (Cell) component;
+        } else {
+            paragraphContainer = odtDocument;
         }
 
-        buildODTDocument(element.getChildren(), cell);
+        this.setTitle(element, FontStyle.ITALIC, HorizontalAlignmentType.LEFT, 12, new Color("#7a2518"), paragraphContainer);
+
+        if (paragraphContainer instanceof Cell) {
+            paragraphContainer.addParagraph(element.getContent());
+        } else {
+            Table table = odtDocument.addTable(1, 1);
+            Cell cell = table.getCellByPosition(0, 0);
+            cell.setCellBackgroundColor(new Color("#f7f7f8"));
+            Border border = new Border(Color.WHITE, 1.0, SupportedLinearMeasure.PT);
+            cell.setBorders(CellBordersType.NONE, border);
+            cell.setStringValue(element.getContent());
+        }
+    }
+
+    private void addPass(AsciiElement element) {
+        odtDocument.addParagraph(element.getContent());
+    }
+
+    private void addBlock(AsciiElement element) {
+        final Table table = odtDocument.addTable(1, 1);
+        Cell cell = table.getCellByPosition(0, 0);
+        if (element.getName().equals("sidebar"))
+            cell.setCellBackgroundColor(new Color("#f8f8f7"));
+
+        HorizontalAlignmentType type;
+        Border border = new Border(new Color("#e0e0dc"), 1.0, SupportedLinearMeasure.PT);
+        if (element.getName().equals("open")) {
+            type = HorizontalAlignmentType.JUSTIFY;
+            border.setColor(Color.WHITE);
+            cell.setBorders(CellBordersType.NONE, border);
+        } else {
+            type = HorizontalAlignmentType.CENTER;
+            cell.setBorders(CellBordersType.ALL_FOUR, border);
+        }
+
+        this.setTitle(element, type, 14, new Color("#7a2518"), cell);
+        this.buildODTDocument(element.getChildren(), cell);
     }
 
     private void removeParagraph(Component component) {
@@ -240,12 +279,7 @@ public class ODFService {
     }
 
     private void addAdmonition(AsciiElement element) {
-        String title = element.getTitle();
-        if (!title.equals("") && !title.equals("undefined")) {
-            Font font = createFont(FontStyle.ITALIC, 12, new Color("#7a2518"));
-            Paragraph paragraph = odtDocument.addParagraph(title);
-            paragraph.setFont(font);
-        }
+        this.setTitle(element, FontStyle.ITALIC, HorizontalAlignmentType.LEFT, 12, new Color("#7a2518"), odtDocument);
 
         Table table = odtDocument.addTable(1, 2);
         Cell rowOColumn0 = table.getCellByPosition(0, 0);
@@ -258,7 +292,7 @@ public class ODFService {
         if (element.getNOfBlocks() == 0)
             rowOColumn1.setStringValue(element.getContent());
         else {
-            buildODTDocument(element.getChildren(), rowOColumn1);
+            this.buildODTDocument(element.getChildren(), rowOColumn1);
         }
 
         Column column = table.getColumnByIndex(0);
@@ -275,27 +309,27 @@ public class ODFService {
 
     private void addQuote(AsciiElement element, Component component) {
         Cell cell = null;
-        ParagraphContainer paragraphContainer;
+        final ParagraphContainer paragraphContainer;
 
         if (component instanceof Cell) {
             cell = (Cell) component;
             paragraphContainer = cell;
         } else {
             paragraphContainer = odtDocument;
-            Paragraph paragraph = (Paragraph) component;
-            paragraph.remove();
         }
 
+        this.setTitle(element, FontStyle.ITALIC, HorizontalAlignmentType.LEFT, 12, new Color("#7a2518"), paragraphContainer);
         if (element.getNOfBlocks() == 0)
             paragraphContainer.addParagraph(element.getContent());
         else {
             if (Objects.nonNull(cell))
                 this.buildODTDocument(element.getChildren(), cell);
-            else
-                this.buildODTDocument(element.getChildren());
+            else {
+                this.buildODTDocument(element.getChildren(), true);
+            }
         }
 
-        addQuoteTypes(element, paragraphContainer);
+        this.addQuoteTypes(element, paragraphContainer);
     }
 
     private void addQuoteTypes(AsciiElement element, ParagraphContainer paragraphContainer) {
@@ -313,8 +347,8 @@ public class ODFService {
         });
     }
 
-    private void addParagraph(AsciiElement element, Component component) {
-        Paragraph paragraph;
+    private void addParagraph(AsciiElement element, Component component, boolean appendable) {
+        final Paragraph paragraph;
         if (component instanceof Cell) {
             Cell cell = (Cell) component;
             paragraph = cell.addParagraph(element.getContent());
@@ -322,7 +356,12 @@ public class ODFService {
             properties.setMarginLeft(1.0);
             properties.setMarginRight(1.0);
         } else {
-            paragraph = odtDocument.addParagraph(element.getContent());
+            if (appendable) {
+                paragraph = (Paragraph) component;
+                paragraph.appendTextContent(element.getContent());
+            } else {
+                paragraph = odtDocument.addParagraph(element.getContent());
+            }
         }
         paragraph.setHorizontalAlignment(HorizontalAlignmentType.JUSTIFY);
     }
@@ -339,14 +378,8 @@ public class ODFService {
             paragraphContainer = odtDocument;
         }
 
-        String title = element.getTitle();
-        if (!title.equals("") && !title.equals("undefined")) {
-            Font font = createFont(FontStyle.ITALIC, 12, new Color("#7a2518"));
-            Paragraph paragraph = paragraphContainer.addParagraph(title);
-            paragraph.setFont(font);
-        }
-
-        addListItems(element, listContainer);
+        this.setTitle(element, FontStyle.ITALIC, HorizontalAlignmentType.LEFT, 12, new Color("#7a2518"), paragraphContainer);
+        this.addListItems(element, listContainer);
     }
 
     private void addListItems(AsciiElement element, ListContainer listContainer) {
@@ -359,7 +392,7 @@ public class ODFService {
                 JSObject blocks = getSpecificProperty(element.getItemByIndex(inc), "blocks", JSObject.class);
                 String text = getSpecificProperty(element.getItemByIndex(inc), "text", String.class);
                 ListItem listItem = list.addItem(text);
-                addSubList(listItem, blocks);
+                this.addSubList(listItem, blocks);
             }
         }
     }
@@ -391,7 +424,7 @@ public class ODFService {
                         list.setDecorator(decorator);
                         ListItem listContainer = list.addItem(itemText);
                         JSObject nestedSubListItemBlocks = getSpecificProperty(subListItem, "blocks", JSObject.class);
-                        addSubList(listContainer, nestedSubListItemBlocks);
+                        this.addSubList(listContainer, nestedSubListItemBlocks);
                     }
                 }
             }
@@ -421,7 +454,7 @@ public class ODFService {
     }
 
     private void addSection(AsciiElement element) {
-        removeFirstEmptyParagraphs(odtDocument);
+        this.removeFirstEmptyParagraphs(odtDocument);
         Font font = createFont(12, new Color("#ba3925"));
 
         switch (element.getLevel()) {
@@ -447,7 +480,7 @@ public class ODFService {
 
         Paragraph paragraph = odtDocument.addParagraph(element.getTitle());
         paragraph.setFont(font);
-        this.buildODTDocument(element.getChildren());
+        this.buildODTDocument(element.getChildren(), false);
     }
 
     private void removeFirstEmptyParagraphs(ParagraphContainer paragraphContainer) {
@@ -456,8 +489,7 @@ public class ODFService {
         if (paragraphLength < 4) {
             Iterator<Paragraph> params = paragraphContainer.getParagraphIterator();
             while (params.hasNext()) {
-                Paragraph param = params.next();
-                param.remove();
+                this.removeParagraph(params.next());
             }
         }
     }
@@ -466,10 +498,7 @@ public class ODFService {
         String imageUrl = getSpecificProperty(element.getAttr(), "target", String.class);
 
         if (Constants.IMAGE_URL_MATCH.matcher(imageUrl).matches()) {
-            if (component instanceof Paragraph) {
-                Paragraph paragraph = (Paragraph) component;
-                paragraph.remove();
-            }
+            this.removeParagraph(component);
             return;
         }
 
@@ -484,8 +513,8 @@ public class ODFService {
         FrameStyleHandler handler = image.getStyleHandler();
         handler.setAchorType(AnchorType.AS_CHARACTER);
 
-        setImageSize(image);
-        setElementTitle(element, "Figure", odtDocument);
+        this.setImageSize(image);
+        this.setElementTitle(element, "Figure", odtDocument);
     }
 
     private void setImageSize(Image image) {
@@ -512,7 +541,7 @@ public class ODFService {
     }
 
     private void addTable(AsciiElement element) {
-        Table table = odtDocument.addTable(element.getRowsLength(), element.getColumnsLength());
+        final Table table = odtDocument.addTable(element.getRowsLength(), element.getColumnsLength());
         boolean headExist = false;
 
         for (String selection : Arrays.asList("head", "body", "foot")) {
@@ -533,16 +562,16 @@ public class ODFService {
                     rowSelection = element.getRowsLength();
                 }
             }
-            traverseCells(element, table, selection, rowSelection, rowTable);
+            this.traverseCells(element, table, selection, rowSelection, rowTable);
         }
-        setElementTitle(element, "Table", odtDocument);
+        this.setElementTitle(element, "Table", odtDocument);
     }
 
     private void traverseCells(AsciiElement element, Table table, String selection, int rowSelection, int rowTable) {
         for (int rowTableIndex = rowTable, rowElement = 0; rowTableIndex < rowSelection; rowTableIndex++, rowElement++) {
             int cellColumns = element.getNOfColumn(selection, rowElement);
             for (int column = 0; column < cellColumns; column++) {
-                editCell(element, table, selection, rowTableIndex, rowElement, column);
+                this.editCell(element, table, selection, rowTableIndex, rowElement, column);
             }
         }
     }
@@ -554,9 +583,9 @@ public class ODFService {
 
         Cell tableCell = getCell(table, rowTableIndex, column, attrs);
 
-        setAlignmentTypes(attrs, tableCell);
-        setSpecificFontStyle(selection, tableCell, attrs);
-        setBorderRight(tableCell);
+        this.setAlignmentTypes(attrs, tableCell);
+        this.setSpecificFontStyle(selection, tableCell, attrs);
+        this.setBorderRight(tableCell);
         tableCell.setStringValue(cellText);
     }
 
@@ -566,9 +595,9 @@ public class ODFService {
         String localName = container.getOdfName().getLocalName();
 
         if (localName.equals("table-cell")) {
-            tableCell = setSpanAttributeOfCell(table, attrs, tableCell, container);
+            tableCell = this.setSpanAttributeOfCell(table, attrs, tableCell, container);
         } else if (localName.equals("covered-table-cell")) {
-            tableCell = getCell(table, rowTableIndex, column + 1, attrs);
+            tableCell = this.getCell(table, rowTableIndex, column + 1, attrs);
         }
 
         return tableCell;
@@ -596,7 +625,7 @@ public class ODFService {
                 cellRange.merge();
             }
         } else {
-            tableCell = getCell(table, row, column + 1, attrs);
+            tableCell = this.getCell(table, row, column + 1, attrs);
         }
         return tableCell;
     }
@@ -647,6 +676,24 @@ public class ODFService {
         return attrList;
     }
 
+    private boolean setTitle(AsciiElement element, FontStyle fontStyle, HorizontalAlignmentType horizontalAlignmentType,
+                             int size, Color color, ParagraphContainer paragraphContainer) {
+        boolean titled = false;
+        String title = element.getTitle();
+        if (!title.equals("") && !title.equals("undefined")) {
+            Font font = createFont(fontStyle, size, color);
+            Paragraph paragraph = paragraphContainer.addParagraph(title);
+            paragraph.setHorizontalAlignment(horizontalAlignmentType);
+            paragraph.setFont(font);
+            titled = true;
+        }
+        return titled;
+    }
+
+    private boolean setTitle(AsciiElement element, HorizontalAlignmentType horizontalAlignmentType, int size, Color color, ParagraphContainer paragraphContainer) {
+        return setTitle(element, FontStyle.REGULAR, horizontalAlignmentType, size, color, paragraphContainer);
+    }
+
     private <T> T getSpecificProperty(JSObject from, String propertyName, Class<T> returnType) {
         return returnType.cast(from.getMember(propertyName));
     }
@@ -656,7 +703,7 @@ public class ODFService {
     }
 
     private Font createFont(int fontSize, Color color) {
-        return new Font("Times New Roman", FontStyle.REGULAR, fontSize, color);
+        return createFont(FontStyle.REGULAR, fontSize, color);
     }
 
     private Font createFont(FontStyle style, int fontSize, Color color) {

@@ -512,10 +512,8 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     public void initialize(URL url, ResourceBundle rb) {
 
         odfPro.setOnMouseClicked(event -> {
-            threadService.runActionLater(() -> {
-                if (current.currentPath().isPresent())
-                    odfService.generateODFDocument();
-            });
+            if (current.currentPath().isPresent())
+                odfService.generateODFDocument();
         });
 
         previewAnchor.getChildren().add(htmlPane);
