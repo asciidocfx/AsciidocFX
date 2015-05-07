@@ -29,7 +29,11 @@
                     obj.items = node.$items ? node.$items() : [];
                     obj.title = node.$title ? node.$title() : null;
                     obj.blocks = node.$blocks ? node.$blocks() : [];
-                    obj.sections = node.$sections ? node.$sections() : [];
+                    if (obj.name != "dlist") {
+                        obj.sections = node.$sections ? node.$sections() : [];
+                    } else {
+                        obj.sections = [];
+                    }
                     obj.level = node.$level ? node.$level() : 0;
                     obj.caption = node.$caption ? node.$caption() : "";
                     obj.id = node.$id ? node.$id() : null;
