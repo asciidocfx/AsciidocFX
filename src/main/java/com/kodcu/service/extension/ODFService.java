@@ -6,7 +6,6 @@ import com.kodcu.other.Constants;
 import com.kodcu.other.Current;
 import com.kodcu.service.ThreadService;
 import com.kodcu.service.ui.IndikatorService;
-import javafx.collections.ObservableList;
 import netscape.javascript.JSObject;
 import org.odftoolkit.odfdom.dom.element.draw.DrawFrameElement;
 import org.odftoolkit.odfdom.dom.element.draw.DrawImageElement;
@@ -59,7 +58,7 @@ public class ODFService {
     private TextDocument odtDocument;
     private List<JSObject> unstructuredDocument = new ArrayList<>();
     private final Predicate<String> expectedElement = (name) -> Arrays.asList("paragraph", "image", "section", "listing", "colist", "table", "quote",
-            "page_break", "olist", "ulist", "admonition", "thematic_break", "sidebar", "pass", "example", "literal", "verse", "open").stream().anyMatch(s -> s.equals(name));
+            "page_break", "olist", "ulist", "admonition", "thematic_break", "sidebar", "pass", "example", "literal", "verse", "open", "dlist", "video").stream().anyMatch(s -> s.equals(name));
     private final Predicate<String> parentElement = (name) -> Arrays.asList("section", "quote", "admonition", "sidebar", "example", "verse", "open").stream().anyMatch(s -> s.equals(name));
 
     @Autowired
@@ -74,6 +73,7 @@ public class ODFService {
 
     public void generateODFDocument() {
 //        threadService.runTaskLater(() -> {
+        // after enabling runTaskLater, I receive "TypeError: 'undefined' is not a function (evaluating 'A.$backtrace()') " if the asciidoc file contains a math block
         indikatorService.startCycle();
         try {
             this.openOdtDocument();
@@ -115,7 +115,7 @@ public class ODFService {
     }
 
     public void buildDocument(String name, JSObject jObj) {
-        System.out.println(name);
+//        System.out.println(name);
 
         if (name.equals("document")) {
             List<AsciiElement> structuredDocument = this.createNewDocumentStructure();
@@ -132,7 +132,7 @@ public class ODFService {
             String name = getSpecificProperty(item, "name", String.class);
             JSObject blocks = getSpecificProperty(item, "blocks", JSObject.class);
             Integer nOfBlocks = getSpecificProperty(blocks, "length", Integer.class);
-            System.out.println(nOfBlocks + " :" + name);
+//            System.out.println(nOfBlocks + " :" + name);
             AsciiElement element;
             if (parentElement.test(name)) {
                 List<AsciiElement> subElements = this.getElementChildren(newTree, nOfBlocks);
@@ -194,6 +194,9 @@ public class ODFService {
             case "ulist":
                 addList(element, component);
                 break;
+            case "dlist":
+                addDList(element, component);
+                break;
             case "quote":
             case "verse":
                 addQuote(element, component);
@@ -219,6 +222,7 @@ public class ODFService {
                 addLiteral(element, component);
                 break;
             case "thematic_break":
+            case "video":
                 removeParagraph(component);
                 break;
         }
@@ -366,9 +370,88 @@ public class ODFService {
         paragraph.setHorizontalAlignment(HorizontalAlignmentType.JUSTIFY);
     }
 
+    private void addDList(AsciiElement element, Component component) {
+        final ParagraphContainer paragraphContainer;
+        final ListContainer listContainer;
+        if (component instanceof Cell) {
+            Cell cell = (Cell) component;
+            paragraphContainer = cell;
+            listContainer = cell;
+        } else {
+            paragraphContainer = odtDocument;
+            listContainer = odtDocument;
+        }
+
+        int dListBlockLength = element.getItemsLength();
+        if (dListBlockLength > 0) {
+            for (int index = 0; index < dListBlockLength; index++) {
+                // traverse each item combining (dd + dt)
+                JSObject items = element.getItemByIndex(index);
+                this.addDListItems(items, paragraphContainer, listContainer);
+            }
+        }
+    }
+
+    // e.g.
+    // CPU:: The brain of the computer.
+    // Hard drive:: Permanent storage for operating system and/or user files.
+    private void addDListItems(JSObject items, ParagraphContainer paragraphContainer, ListContainer listContainer) {
+        int itemsLength = this.getSpecificProperty(items, "length", Integer.class);
+        if (itemsLength > 0) {
+            for (int i = 0; i < itemsLength; i++) {
+                JSObject item = this.getSpecificProperty(items, i, JSObject.class);
+                Object objItem = this.getSpecificProperty(item, 0, Object.class);
+                if (objItem instanceof JSObject) {
+                    // for only title (text | dt) of the dlist
+                    JSObject jObjItem = this.castSpecificProperty(objItem, JSObject.class);
+                    String itemText = this.getSpecificProperty(jObjItem, "text", String.class);
+                    Font font = this.createFont(FontStyle.BOLD, 12, Color.BLACK);
+                    Paragraph paragraph = paragraphContainer.addParagraph(itemText);
+                    paragraph.setFont(font);
+                } else {
+                    // find and construct dd elements
+                    JSObject itemBlocks = this.getSpecificProperty(item, "blocks", JSObject.class);
+                    int bLength = this.getSpecificProperty(itemBlocks, "length", Integer.class);
+                    if (bLength > 0) {
+                        itemBlocks = this.getSpecificProperty(itemBlocks, 0, JSObject.class);
+                        this.addDDListItems(itemBlocks, paragraphContainer, listContainer);
+                    } else {
+                        String text = this.getSpecificProperty(item, "text", String.class);
+                        paragraphContainer.addParagraph("      ".concat(text));
+                    }
+                }
+            }
+        }
+    }
+
+    private void addDDListItems(JSObject itemBlocks, ParagraphContainer paragraphContainer, ListContainer listContainer) {
+        itemBlocks = this.getSpecificProperty(itemBlocks, "blocks", JSObject.class);
+        int blockLength = this.getSpecificProperty(itemBlocks, "length", Integer.class);
+        if (blockLength > 0) {
+            String context = this.getSpecificProperty(itemBlocks, "context", String.class);
+            org.odftoolkit.simple.text.list.List list = listContainer.addList();
+            ListDecorator dec = this.findDecorator(context);
+            list.setDecorator(dec);
+            for (int inc = 0; inc < blockLength; inc++) {
+                JSObject item = this.getSpecificProperty(itemBlocks, inc, JSObject.class);
+                Object subBlocks = this.getSpecificProperty(item, "blocks", Object.class);
+                if (subBlocks instanceof JSObject) {
+                    // only one dd which contain olist or ulist items
+                    String text = this.getSpecificProperty(item, "text", String.class);
+                    ListItem listItem = list.addItem(text);
+                    // look at whether there are sub list items or not in a dd element
+                    this.addSubList(listItem, (JSObject) subBlocks);
+                } else {
+                    // if we go here, this means that we have a hybrid dlist including sub dlist(s) which has/have (dt + dd elements)
+                    this.addDListItems(item, paragraphContainer, listContainer);
+                }
+            }
+        }
+    }
+
     private void addList(AsciiElement element, Component component) {
-        ListContainer listContainer;
-        ParagraphContainer paragraphContainer;
+        final ListContainer listContainer;
+        final ParagraphContainer paragraphContainer;
         if (component instanceof Cell) {
             Cell cell = (Cell) component;
             listContainer = cell;
@@ -386,11 +469,11 @@ public class ODFService {
         int len = element.getItemsLength();
         if (len > 0) {
             org.odftoolkit.simple.text.list.List list = listContainer.addList();
-            ListDecorator dec = findDecorator(element.getName());
+            ListDecorator dec = this.findDecorator(element.getName());
             list.setDecorator(dec);
             for (int inc = 0; inc < len; inc++) {
-                JSObject blocks = getSpecificProperty(element.getItemByIndex(inc), "blocks", JSObject.class);
-                String text = getSpecificProperty(element.getItemByIndex(inc), "text", String.class);
+                JSObject blocks = this.getSpecificProperty(element.getItemByIndex(inc), "blocks", JSObject.class);
+                String text = this.getSpecificProperty(element.getItemByIndex(inc), "text", String.class);
                 ListItem listItem = list.addItem(text);
                 this.addSubList(listItem, blocks);
             }
@@ -408,22 +491,22 @@ public class ODFService {
     }
 
     private void addSubList(ListItem listItem, JSObject blocks) {
-        int nOfBlocks = getSpecificProperty(blocks, "length", Integer.class);
+        int nOfBlocks = this.getSpecificProperty(blocks, "length", Integer.class);
         if (nOfBlocks > 0) {
             for (int counter = 0; counter < nOfBlocks; counter++) {
-                JSObject subList = getSpecificProperty(blocks, counter, JSObject.class);
-                JSObject subListItems = getSpecificProperty(subList, "blocks", JSObject.class);
-                int itemsLength = getSpecificProperty(subListItems, "length", Integer.class);
+                JSObject subList = this.getSpecificProperty(blocks, counter, JSObject.class);
+                JSObject subListItems = this.getSpecificProperty(subList, "blocks", JSObject.class);
+                int itemsLength = this.getSpecificProperty(subListItems, "length", Integer.class);
                 if (itemsLength > 0) {
                     org.odftoolkit.simple.text.list.List list = listItem.addList();
                     for (int itemIndex = 0; itemIndex < itemsLength; itemIndex++) {
-                        JSObject subListItem = getSpecificProperty(subListItems, itemIndex, JSObject.class);
-                        String context = getSpecificProperty(subListItem, "context", String.class);
-                        String itemText = getSpecificProperty(subListItem, "text", String.class);
-                        ListDecorator decorator = findDecorator(context);
+                        JSObject subListItem = this.getSpecificProperty(subListItems, itemIndex, JSObject.class);
+                        String context = this.getSpecificProperty(subListItem, "context", String.class);
+                        String itemText = this.getSpecificProperty(subListItem, "text", String.class);
+                        ListDecorator decorator = this.findDecorator(context);
                         list.setDecorator(decorator);
                         ListItem listContainer = list.addItem(itemText);
-                        JSObject nestedSubListItemBlocks = getSpecificProperty(subListItem, "blocks", JSObject.class);
+                        JSObject nestedSubListItemBlocks = this.getSpecificProperty(subListItem, "blocks", JSObject.class);
                         this.addSubList(listContainer, nestedSubListItemBlocks);
                     }
                 }
@@ -696,6 +779,10 @@ public class ODFService {
 
     private <T> T getSpecificProperty(JSObject from, String propertyName, Class<T> returnType) {
         return returnType.cast(from.getMember(propertyName));
+    }
+
+    private <T> T castSpecificProperty(Object from, Class<T> returnType) {
+        return returnType.cast(from);
     }
 
     private <T> T getSpecificProperty(JSObject from, int index, Class<T> returnType) {
