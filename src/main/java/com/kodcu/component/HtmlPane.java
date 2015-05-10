@@ -57,7 +57,7 @@ public class HtmlPane extends AnchorPane {
 
     public void load(String url) {
         if (Objects.nonNull(url))
-            Platform.runLater(()->{
+            Platform.runLater(() -> {
                 webEngine.load(url);
             });
         else
@@ -167,12 +167,17 @@ public class HtmlPane extends AnchorPane {
     }
 
     public String findRenderedSelection(String content) {
-        this.setMember("context",content);
+        this.setMember("context", content);
         return (String) webEngine.executeScript("findRenderedSelection(context)");
     }
 
     public String convertSlide(String asciidoc) {
         this.setMember("editorValue", asciidoc);
         return (String) webEngine.executeScript("convertSlide(editorValue)");
+    }
+
+    public String convertBasicHtml(String asciidoc) {
+        this.setMember("editorValue", asciidoc);
+        return (String) webEngine.executeScript("convertBasicHtml(editorValue)");
     }
 }

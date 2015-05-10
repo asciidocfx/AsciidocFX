@@ -129,6 +129,7 @@ public class TabService {
                     threadService.runActionLater(() -> {
                         window.call("setEditorValue", new Object[]{content});
                         window.call("setInitialized");
+//                        editorPane.getWebEngine().getLoadWorker().cancel();
                     });
                 });
 

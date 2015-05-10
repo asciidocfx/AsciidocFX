@@ -134,7 +134,7 @@ public class EditorPane extends AnchorPane {
     }
 
     public void rerender(Object... args) {
-        this.call("rerender",args);
+        this.call("rerender", args);
     }
 
     public void focus() {

@@ -22,13 +22,12 @@ public class ScrollService {
 
     private final ApplicationController controller;
     private final HtmlPane htmlPane;
-    private final SlidePane slidePane;
+    private SlidePane slidePane;
 
     @Autowired
-    public ScrollService(final ApplicationController controller, final HtmlPane htmlPane, final SlidePane slidePane) {
+    public ScrollService(final ApplicationController controller, final HtmlPane htmlPane) {
         this.controller = controller;
         this.htmlPane = htmlPane;
-        this.slidePane = slidePane;
     }
 
     public void onscroll(Object pos, Object max) {
@@ -48,7 +47,7 @@ public class ScrollService {
             // slidePane in action
             String content = htmlPane.findRenderedSelection(text);
             System.out.println(content);
-            slidePane.flipThePage(content);
+//        ekle    slidePane.flipThePage(content);
         }
     }
 }

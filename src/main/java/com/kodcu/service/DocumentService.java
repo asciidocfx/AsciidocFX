@@ -90,6 +90,7 @@ public class DocumentService {
                 if (Objects.nonNull(content))
                     window.call("setEditorValue", new Object[]{content});
                 window.call("setInitialized");
+//                editorPane.getWebEngine().getLoadWorker().cancel();
             }
             return false;
         });

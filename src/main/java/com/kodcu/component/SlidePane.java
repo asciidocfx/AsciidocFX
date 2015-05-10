@@ -16,23 +16,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Objects;
-import javafx.event.EventHandler;
-import javafx.scene.web.WebEvent;
 
 /**
  * Created by usta on 09.04.2015.
  */
-@Component
+
 public class SlidePane extends AnchorPane {
 
     private final WebView webView;
     private final WebEngine webEngine;
-    private final JSObject window;
-    private final Logger logger = LoggerFactory.getLogger(SlidePane.class);
+    protected final JSObject window;
+    protected final Logger logger = LoggerFactory.getLogger(SlidePane.class);
     private final ThreadService threadService;
     private final ApplicationController controller;
 
-    @Autowired
+
     public SlidePane(ThreadService threadService, ApplicationController controller) {
         this.threadService = threadService;
         this.controller = controller;
@@ -74,25 +72,8 @@ public class SlidePane extends AnchorPane {
         super.setVisible(true);
     }
 
-    public boolean isReady() {
-        try {
-            return (Boolean) ((JSObject) window.eval("Reveal")).call("isReady");
-        } catch (Exception ex) {
-            logger.info(ex.getMessage(), ex);
-            return false;
-        }
-    }
-
     public String getLocation() {
         return webEngine.getLocation();
-    }
-
-    public void replaceSlides(String rendered) {
-        ((JSObject) window.eval("revealExt")).call("replaceSlides", rendered);
-    }
-
-    public void flipThePage(String rendered) {
-        ((JSObject) window.eval("revealExt")).call("flipCurrentPage", rendered);
     }
 
     public void setOnSuccess(Runnable runnable) {

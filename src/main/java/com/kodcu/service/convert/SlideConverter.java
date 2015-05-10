@@ -28,16 +28,15 @@ public class SlideConverter implements DocumentConverter<String> {
     private final ThreadService threadService;
     private final MarkdownService markdownService;
     private final Current current;
-    private final SlidePane slidePane;
+    private SlidePane slidePane;
     private final HtmlPane htmlPane;
 
     @Autowired
-    public SlideConverter(final ApplicationController controller, final ThreadService threadService, final MarkdownService markdownService, final Current current, SlidePane slidePane, HtmlPane htmlPane) {
+    public SlideConverter(final ApplicationController controller, final ThreadService threadService, final MarkdownService markdownService, final Current current, HtmlPane htmlPane) {
         this.controller = controller;
         this.threadService = threadService;
         this.markdownService = markdownService;
         this.current = current;
-        this.slidePane = slidePane;
         this.htmlPane = htmlPane;
     }
 
@@ -56,7 +55,8 @@ public class SlideConverter implements DocumentConverter<String> {
                 try {
                     slidePane.load(resolve.toUri().toURL().toString());
                     slidePane.setOnSuccess(() -> {
-                        slidePane.loadJs("js/jquery.js", "js/reveal-extensions.js");
+                        slidePane.loadJs("js/deck-extensions.js");
+//                        slidePane.loadJs("js/jquery.js", "js/reveal-extensions.js");
                     });
                 } catch (MalformedURLException e) {
                     e.printStackTrace();
@@ -64,9 +64,9 @@ public class SlideConverter implements DocumentConverter<String> {
             } else {
 
                 threadService.runActionLater(() -> {
-                    if (slidePane.isReady()) {
-                        slidePane.replaceSlides(rendered);
-                    }
+//                    if (slidePane.isReady()) {
+//                        slidePane.replaceSlides(rendered);
+//                    }
                 });
             }
 

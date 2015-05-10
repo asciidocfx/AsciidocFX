@@ -44,6 +44,7 @@ import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.TextFieldTreeCell;
@@ -92,8 +93,9 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     public AnchorPane previewAnchor;
 
-    @Autowired
+//    @Autowired
     public SlidePane slidePane;
+
     @Autowired
     public HtmlPane htmlPane;
 
@@ -1005,8 +1007,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
                 markdownService.convert(text, asciidoc -> {
                     threadService.runActionLater(() -> {
-                        ((JSObject) htmlPane.getWebEngine().executeScript("window")).setMember("editorValue", asciidoc);
-                        String rendered = (String) htmlPane.getWebEngine().executeScript("convertBasicHtml(editorValue)");
+                        String rendered = htmlPane.convertBasicHtml(asciidoc);
                         if (Objects.nonNull(rendered))
                             lastRendered.setValue(rendered);
                     });
@@ -1018,13 +1019,13 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     Map<String, String> templateMap = new HashMap<>();
 
-    public String getTemplate(String templateName) throws IOException {
+    public String getTemplate(String templateName,String templateDir) throws IOException {
 
 
 //        if (Objects.nonNull(templateMap.get(templateName)))
 //            return templateMap.get(templateName);
 
-        Stream<Path> slide = Files.find(configPath.resolve("slide").resolve("reveal.js"), Integer.MAX_VALUE, (path, basicFileAttributes) -> path.toString().contains(templateName));
+        Stream<Path> slide = Files.find(configPath.resolve("slide").resolve(templateDir), Integer.MAX_VALUE, (path, basicFileAttributes) -> path.toString().contains(templateName));
 
         Optional<Path> first = slide.findFirst();
 
