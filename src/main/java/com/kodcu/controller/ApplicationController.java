@@ -20,6 +20,7 @@ import com.kodcu.service.convert.html.HtmlArticleConverter;
 import com.kodcu.service.convert.html.HtmlBookConverter;
 import com.kodcu.service.convert.pdf.AbstractPdfConverter;
 import com.kodcu.service.extension.MathJaxService;
+import com.kodcu.service.extension.ODFService;
 import com.kodcu.service.extension.PlantUmlService;
 import com.kodcu.service.extension.TreeService;
 import com.kodcu.service.extension.chart.ChartProvider;
@@ -101,6 +102,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     @Autowired
     public HtmlPane htmlPane;
+    public Label odfPro;
 
     private Logger logger = LoggerFactory.getLogger(ApplicationController.class);
 
@@ -162,6 +164,9 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     @Autowired
     private TabService tabService;
+
+    @Autowired
+    private ODFService odfService;
 
     @Autowired
     private PathResolverService pathResolver;
@@ -509,6 +514,11 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+
+        odfPro.setOnMouseClicked(event -> {
+            if (current.currentPath().isPresent())
+                odfService.generateODFDocument();
+        });
 
         previewAnchor.getChildren().add(htmlPane);
         previewAnchor.getChildren().add(deckSlidePane);
@@ -1025,6 +1035,11 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             }
 
         });
+    }
+
+    public void convertToOdf(String name, Object obj) throws Exception {
+        JSObject jObj = (JSObject) obj;
+        odfService.buildDocument(name, jObj);
     }
 
     public String getTemplate(String templateName, String templateDir) throws IOException {

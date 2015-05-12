@@ -20,6 +20,21 @@ function convertBasicHtml(content) {
     return doc.$convert();
 }
 
+function convertOdf(content) {
+
+    var options = Opal.hash2(['backend', 'safe', 'attributes'], {
+        backend: 'odf',
+        safe: 'safeMode',
+        attributes: 'showtitle icons=font@ source-highlighter=highlight.js platform=opal platform-opal env=browser env-browser idprefix idseparator=- '
+    });
+
+    var doc = Opal.Asciidoctor.$load(content,options);
+
+    doc.attributes.keys["lang"] = doc.attributes.keys["lang"] || getDefaultLanguage();
+
+    return doc.$convert();
+}
+
 function convertSlide(content) {
 
     var options = Opal.hash2(['backend', 'safe', 'attributes'], {

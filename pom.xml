@@ -151,6 +151,11 @@
             <groupId>i4jruntime</groupId>
             <version>1.1</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.odftoolkit</groupId>
+            <artifactId>simple-odf</artifactId>
+            <version>0.7-incubating</version>
+        </dependency>
     </dependencies>
 
     <build>
