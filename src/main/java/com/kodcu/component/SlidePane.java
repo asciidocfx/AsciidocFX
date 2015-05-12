@@ -1,6 +1,7 @@
 package com.kodcu.component;
 
 import com.kodcu.controller.ApplicationController;
+import com.kodcu.other.Current;
 import com.kodcu.service.ThreadService;
 import javafx.application.Platform;
 import javafx.concurrent.Worker;
@@ -15,13 +16,16 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
 import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created by usta on 09.04.2015.
  */
 
-public class SlidePane extends AnchorPane {
+public abstract class SlidePane extends AnchorPane {
 
     private final WebView webView;
     private final WebEngine webEngine;
@@ -29,11 +33,13 @@ public class SlidePane extends AnchorPane {
     protected final Logger logger = LoggerFactory.getLogger(SlidePane.class);
     private final ThreadService threadService;
     private final ApplicationController controller;
+    private final Current current;
 
 
-    public SlidePane(ThreadService threadService, ApplicationController controller) {
+    public SlidePane(ThreadService threadService, ApplicationController controller, Current current) {
         this.threadService = threadService;
         this.controller = controller;
+        this.current = current;
         this.webView = new WebView();
         this.getChildren().add(webView);
         this.webEngine = webView.getEngine();
@@ -58,6 +64,7 @@ public class SlidePane extends AnchorPane {
     public void load(String url) {
         if (Objects.nonNull(url))
             Platform.runLater(() -> {
+                webEngine.getLoadWorker().cancel();
                 webEngine.load(url);
             });
         else
@@ -82,6 +89,14 @@ public class SlidePane extends AnchorPane {
                 threadService.runActionLater(runnable);
         });
     }
+
+
+
+
+    public abstract boolean isReady();
+    public abstract void replaceSlides(String rendered);
+    public abstract String getTemplate(String templateName, String templateDir) throws IOException;
+    public abstract void flipThePage(String rendered);
 
     public void loadJs(String... jsPaths) {
         threadService.runTaskLater(() -> {

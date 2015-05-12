@@ -44,7 +44,6 @@ import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.TextFieldTreeCell;
@@ -64,6 +63,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.context.embedded.EmbeddedWebApplicationContext;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.socket.TextMessage;
@@ -82,7 +82,6 @@ import java.security.CodeSource;
 import java.util.*;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
-import java.util.stream.Stream;
 
 import static java.nio.file.StandardOpenOption.*;
 
@@ -93,8 +92,12 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     public AnchorPane previewAnchor;
 
-//    @Autowired
-    public SlidePane slidePane;
+    @Autowired
+    public RevealSlidePane revealSlidePane;
+
+    @Autowired
+    public DeckSlidePane deckSlidePane;
+
 
     @Autowired
     public HtmlPane htmlPane;
@@ -138,6 +141,9 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     public Label browserPro;
     private AnchorPane markdownTableAnchor;
     private Stage markdownTableStage;
+
+    @Autowired
+    private ApplicationContext applicationContext;
 
     @Autowired
     private AsciidocTableController asciidocTableController;
@@ -229,9 +235,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     private ThreadService threadService;
 
     @Autowired
-    private ScrollService scrollService;
-
-    @Autowired
     private DocumentService documentService;
 
     @Autowired
@@ -293,7 +296,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     };
     @Autowired
     private SlideConverter slideConverter;
-
 
     public void createAsciidocTable() {
         asciidocTableStage.showAndWait();
@@ -509,7 +511,8 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     public void initialize(URL url, ResourceBundle rb) {
 
         previewAnchor.getChildren().add(htmlPane);
-        previewAnchor.getChildren().add(slidePane);
+        previewAnchor.getChildren().add(deckSlidePane);
+        previewAnchor.getChildren().add(revealSlidePane);
 
         tooltipTimeFixService.fix();
 
@@ -649,7 +652,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                 window.setMember("app", this);
         });
 
-        threadService.runActionLater(()->{
+        threadService.runActionLater(() -> {
             mathjaxEngine.load(String.format("http://localhost:%d/mathjax.html", port));
         });
 
@@ -913,12 +916,18 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         });
     }
 
-    public void onscroll(Object pos, Object max) {
-        scrollService.onscroll(pos, max);
+    public void onscroll(Object pos , Object max) {
+        htmlPane.onscroll(pos, max);
     }
 
     public void scrollToCurrentLine(String text) {
-        scrollService.scrollToCurrentLine(text);
+        if ((htmlPane.isVisible()))
+            htmlPane.scrollToCurrentLine(text);
+        else {
+            // slidePane in action
+            String content = htmlPane.findRenderedSelection(text);
+            slideConverter.currentBean().flipThePage(content); // buraya bak
+        }
     }
 
     public void plantUml(String uml, String type, String fileName) throws IOException {
@@ -996,14 +1005,15 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         threadService.runTaskLater(() -> {
 
             if (getCurrent().getCurrentTabText().contains(".slide")) {
-                slidePane.show();
+//                slidePane.show();
                 htmlPane.hide();
                 slideConverter.convert(false, rendered -> {
                     //
                 });
             } else {
                 htmlPane.show();
-                slidePane.hide();
+                revealSlidePane.hide();
+                deckSlidePane.hide();
 
                 markdownService.convert(text, asciidoc -> {
                     threadService.runActionLater(() -> {
@@ -1017,26 +1027,8 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         });
     }
 
-    Map<String, String> templateMap = new HashMap<>();
-
-    public String getTemplate(String templateName,String templateDir) throws IOException {
-
-
-//        if (Objects.nonNull(templateMap.get(templateName)))
-//            return templateMap.get(templateName);
-
-        Stream<Path> slide = Files.find(configPath.resolve("slide").resolve(templateDir), Integer.MAX_VALUE, (path, basicFileAttributes) -> path.toString().contains(templateName));
-
-        Optional<Path> first = slide.findFirst();
-
-        if (!first.isPresent())
-            return "";
-
-        Path path = first.get();
-
-        String template = IOHelper.readFile(path);
-        templateMap.put(templateName, template);
-        return template;
+    public String getTemplate(String templateName, String templateDir) throws IOException {
+        return slideConverter.currentBean().getTemplate(templateName, templateDir);
     }
 
     public void cutCopy(String data) {

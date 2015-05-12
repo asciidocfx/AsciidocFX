@@ -150,7 +150,14 @@ public class HtmlPane extends AnchorPane {
         return (String) webEngine.executeScript("convertHtmlArticle(editorValue)");
     }
 
-    public void onscroll(Number position, Number maximum) {
+    public void onscroll(Object pos, Object max) {
+
+        if (Objects.isNull(pos) || Objects.isNull(max))
+            return;
+
+        Number position = (Number) pos; // current scroll position for editor
+        Number maximum = (Number) max; // max scroll position for editor
+
         double currentY = (position.doubleValue() < 0) ? 0 : position.doubleValue();
         double ratio = (currentY * 100) / maximum.doubleValue();
         Integer browserMaxScroll = (Integer) webEngine.executeScript("document.documentElement.scrollHeight - document.documentElement.clientHeight;");
