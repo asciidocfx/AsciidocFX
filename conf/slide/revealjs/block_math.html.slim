@@ -1,0 +1,10 @@
+- open, close = Asciidoctor::BLOCK_MATH_DELIMITERS[@style.to_sym]
+- equation = content.strip
+- if (@subs.nil? || @subs.empty?) && !(attr? 'subs')
+  - equation = sub_specialcharacters equation
+- unless (equation.start_with? open) && (equation.end_with? close)
+  - equation = %(#{open}#{equation}#{close})
+.mathblock id=@id class=role
+  - if title?
+    .title=title
+  .content=equation

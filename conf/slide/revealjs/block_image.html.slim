@@ -1,0 +1,10 @@
+.imageblock(id=@id class=[@style,role]
+    style=[("text-align: #{attr :align}" if attr? :align),("float: #{attr :float}" if attr? :float)].compact.join('; '))
+  .content
+    - if attr? :link
+      a.image href=(attr :link)
+        img src=image_uri(attr :target) alt=(attr :alt) width=(attr :width) height=(attr :height) style=((attr? :background) ? "background: #{attr :background}" : nil)
+    - else
+      img src=image_uri(attr :target) alt=(attr :alt) width=(attr :width) height=(attr :height) style=((attr? :background) ? "background: #{attr :background}" : nil)
+  - if title?
+    .title=captioned_title

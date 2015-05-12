@@ -20,15 +20,22 @@ import com.kodcu.controller.ApplicationController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.boot.context.embedded.FilterRegistrationBean;
+import org.springframework.boot.context.embedded.ServletRegistrationBean;
 import org.springframework.boot.context.web.SpringBootServletInitializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;
 import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
 import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
 
+import javax.servlet.*;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.Base64;
 
 
@@ -53,12 +60,12 @@ public class SpringAppConfig extends SpringBootServletInitializer implements Web
     }
 
     @Bean
-    public RestTemplate restTemplate(){
-        return  new RestTemplate();
+    public RestTemplate restTemplate() {
+        return new RestTemplate();
     }
 
     @Bean
-    public Base64.Encoder base64Encoder(){
+    public Base64.Encoder base64Encoder() {
         return Base64.getEncoder();
     }
 

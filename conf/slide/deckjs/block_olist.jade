@@ -1,0 +1,11 @@
+div.ollist(id=id,class=["olist","#{style}", "#{role}"])
+    if title
+        div.title  !{title}
+    ol(class=style,start=attr.start,type=list_marker_keyword)
+        each item in items
+            li(class=[option.step ? "slide" : ""])
+                if item.blocks
+                    p !{item.text}
+                    !{item.content}
+                else
+                    !{item.text}

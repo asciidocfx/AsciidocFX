@@ -1,0 +1,17 @@
+/ support for vertical slides
+- hide_title = (title = self.title) == '!'
+- if @level == 1 && !(subsections = sections).empty?
+  section
+    section id=(hide_title ? nil : @id) data-transition=(attr 'data-transition') data-transition-speed=(attr 'data-transition-speed') data-background=(attr 'data-background') data-background-size=(attr 'data-background-size') data-background-repeat=(attr 'data-background-repeat') data-background-transition=(attr 'data-background-transition')
+      - unless hide_title
+        h2=title
+      - (blocks - subsections).each do |block|
+        =block.convert
+    - subsections.each do |subsection|
+      =subsection.convert
+/ standalone slides
+- else
+  section id=(hide_title ? nil : @id) data-transition=(attr 'data-transition') data-transition-speed=(attr 'data-transition-speed') data-background=(attr 'data-background') data-background-size=(attr 'data-background-size') data-background-repeat=(attr 'data-background-repeat') data-background-transition=(attr 'data-background-transition')
+    - unless hide_title
+      h2=title
+    =content.chomp

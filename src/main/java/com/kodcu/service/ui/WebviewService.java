@@ -1,5 +1,6 @@
 package com.kodcu.service.ui;
 
+import com.kodcu.component.EditorPane;
 import com.kodcu.component.MenuItemBuilt;
 import com.kodcu.controller.ApplicationController;
 import com.kodcu.other.Current;
@@ -8,12 +9,10 @@ import com.kodcu.service.extension.AsciiTreeGenerator;
 import com.kodcu.service.shortcut.ShortcutProvider;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
-import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.MouseButton;
-import javafx.scene.web.WebEngine;
-import javafx.scene.web.WebView;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
@@ -34,6 +33,7 @@ public class WebviewService {
     private final ParserService parserService;
     private final MarkdownService markdownService;
     private final Current current;
+    private final ApplicationContext applicationContext;
 
     private Optional<DocumentService> documentService = Optional.empty();
     private final AsciiTreeGenerator asciiTreeGenerator;
@@ -41,13 +41,14 @@ public class WebviewService {
 
     @Autowired
     public WebviewService(final ApplicationController controller, final PathResolverService pathResolver, final ThreadService threadService,
-                          final ParserService parserService, final MarkdownService markdownService, final Current current, AsciiTreeGenerator asciiTreeGenerator, ShortcutProvider shortcutProvider) {
+                          final ParserService parserService, final MarkdownService markdownService, final Current current, ApplicationContext applicationContext, AsciiTreeGenerator asciiTreeGenerator, ShortcutProvider shortcutProvider) {
         this.controller = controller;
         this.pathResolver = pathResolver;
         this.threadService = threadService;
         this.parserService = parserService;
         this.markdownService = markdownService;
         this.current = current;
+        this.applicationContext = applicationContext;
         this.asciiTreeGenerator = asciiTreeGenerator;
         this.shortcutProvider = shortcutProvider;
     }
@@ -56,12 +57,10 @@ public class WebviewService {
         this.documentService = Optional.ofNullable(documentService);
     }
 
-    public WebView createWebView() {
+    public EditorPane createWebView() {
 
-        WebView webView = new WebView();
-        WebEngine webEngine = webView.getEngine();
-        webEngine.load(String.format("http://localhost:%d/editor.html", controller.getPort()));
-        webView.setContextMenuEnabled(false);
+        EditorPane editorPane = applicationContext.getBean(EditorPane.class);
+        editorPane.load(String.format("http://localhost:%d/editor.html", controller.getPort()));
         ContextMenu menu = new ContextMenu();
 
         MenuItem copy = MenuItemBuilt.item("Copy").click(event1 -> {
@@ -85,13 +84,13 @@ public class WebviewService {
                     });
         });
 
-        webView.setOnMouseClicked(event -> {
+        editorPane.onClicked(event -> {
 
             if (menu.getItems().size() == 0) {
                 menu.getItems().addAll(copy, paste, pasteRaw,
                         markdownToAsciidoc,
                         indexSelection
-                        );
+                );
             }
 
             if (menu.isShowing()) {
@@ -100,11 +99,11 @@ public class WebviewService {
             if (event.getButton() == MouseButton.SECONDARY) {
                 markdownToAsciidoc.setVisible(current.currentTab().isMarkdown());
                 indexSelection.setVisible(current.currentTab().isAsciidoc());
-                menu.show(webView, event.getScreenX(), event.getScreenY());
+                menu.show(editorPane.getWebView(), event.getScreenX(), event.getScreenY());
             }
         });
 
-        webView.setOnDragDropped(event -> {
+        editorPane.dragDropped(event -> {
             Dragboard dragboard = event.getDragboard();
             boolean success = false;
 
@@ -162,6 +161,6 @@ public class WebviewService {
             event.consume();
         });
 
-        return webView;
+        return editorPane;
     }
 }

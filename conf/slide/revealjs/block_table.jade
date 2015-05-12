@@ -1,0 +1,44 @@
+table(id=id,class=["table-block", role])
+    if title
+        caption(title=captioned_title)
+    if attr.rowcount != 0
+        colgroup
+            if option.autowidth
+                each ccc in columns
+                    col
+            else
+                each col in columns
+                    col(style={width: col.$attributes()['$[]']("colpcwidth")})
+            - tblsecs =["$head","$foot","$body"]
+            each tblsec in tblsecs
+                if rows[tblsec]().length != 0
+                    #{"t#{tblsec}"}
+                        each row in rows[tblsec]()
+                            tr
+                                each cell in row
+                                    if tblsec == "$head"
+                                        - cell_content = cell.$text()
+                                    else
+                                        if cell.style == "verse" || cell.style == "literal"
+                                            - cell_content = cell.$text()
+                                        else
+                                            - cell_content = cell.$content()
+                                    #{tblsec == "$head" ? "th" : "td"}(class=['tableblock', "halign-#{cell['$attributes']()['$[]']('halign')}", "valign-#{cell['$attributes']()['$[]']('valign')}"],
+                                    colspan=cell.colspan, rowspan=cell.rowspan,style=document.attr.cellbgcolor ? "background-color:#{document.attr.cellbgcolor}" : "")
+                                        if tblsec == "$head"
+                                            !{cell_content}
+                                        else
+                                            case cell.style
+                                                when "asciidoc"
+                                                    div !{cell_content}
+                                                when "verse"
+                                                    div.verse !{cell_content}
+                                                when "literal"
+                                                    div.literal
+                                                        pre !{cell_content}
+                                                when "header"
+                                                    each text in cell_content
+                                                        p.tableblock.header !{text}
+                                                default
+                                                    each text in cell_content
+                                                        p.tableblock !{text}

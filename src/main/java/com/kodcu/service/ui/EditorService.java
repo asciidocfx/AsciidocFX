@@ -1,5 +1,6 @@
 package com.kodcu.service.ui;
 
+import com.kodcu.component.EditorPane;
 import com.kodcu.component.LabelBuilt;
 import com.kodcu.component.MenuItemBuilt;
 import com.kodcu.component.MyTab;
@@ -14,7 +15,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
-import javafx.scene.web.WebView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -36,7 +36,7 @@ public class EditorService {
     @Autowired
     private ShortcutProvider shortcutProvider;
 
-    public Node createEditorVBox(WebView webView, MyTab myTab) {
+    public Node createEditorVBox(EditorPane editorPane, MyTab myTab) {
         VBox vbox = new VBox();
         String iconSize = "14.0";
         double minSize = 14.01;
@@ -199,14 +199,14 @@ public class EditorService {
         topMenu.setAlignment(Pos.CENTER_LEFT);
 
         topMenu.setOnMouseClicked(event -> {
-            webView.requestFocus();
+            editorPane.focus();
         });
 
         topMenu.setSpacing(9);
         topMenu.getStyleClass().add("top-menu");
 
         final ScrollPane scrollPane = new ScrollPane();
-        scrollPane.setContent(webView);
+        scrollPane.setContent(editorPane);
         scrollPane.setFitToHeight(true);
         scrollPane.setFitToWidth(true);
         VBox.setVgrow(scrollPane, Priority.ALWAYS);

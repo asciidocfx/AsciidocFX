@@ -63,6 +63,17 @@ public class IOHelper {
         }
     }
 
+    public static String readFile(InputStream inputStream) {
+        String content = "";
+        try {
+            content = IOUtils.toString(inputStream, "UTF-8");
+            IOUtils.closeQuietly(inputStream);
+        } catch (IOException e) {
+            logger.info(e.getMessage(), e);
+        }
+        return content;
+    }
+
     public static String readFile(Path path) {
         String content = "";
         try (InputStream is = Files.newInputStream(path, StandardOpenOption.READ)) {
@@ -245,7 +256,7 @@ public class IOHelper {
 
     public static void copyFileToDirectory(File file, File directory) {
         try {
-            FileUtils.copyFileToDirectory(file,directory);
+            FileUtils.copyFileToDirectory(file, directory);
         } catch (IOException e) {
             logger.info(e.getMessage(), e);
         }
@@ -253,7 +264,7 @@ public class IOHelper {
 
     public static void copyFile(File file, File dest) {
         try {
-            FileUtils.copyFile(file,dest);
+            FileUtils.copyFile(file, dest);
         } catch (IOException e) {
             logger.info(e.getMessage(), e);
         }

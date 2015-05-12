@@ -1,0 +1,26 @@
+div.listingblock(id=id,class=role)
+    if title
+        div.title !{captioned_title}
+    div.content
+        - nowrap = !(document.attr ? document.attr.prewrap : null) || option.nowrap
+        if style == "source"
+            - pre_class = ['highlight']
+            - pre_lang = ""
+            case attr["source-highlighter"]
+                when "coderay"
+                    - pre_class = ['CodeRay']
+                when 'pygments'
+                    - pre_class = ['pygments','highlight']
+                when 'prettify'
+                    - pre_class = ['prettyprint']
+                    - pre_class.push(attr.linenums);
+                    - pre_class.push(attr.language);
+                    - pre_class.push("language-#{attr.language}");
+                when 'html-pipeline'
+                    - pre_lang = language
+                    - pre_class = code_class = nil
+                    - nowrap = false
+            pre(class=pre_class,lang=pre_lang)
+                code(class=[language, "language-#{attr.language}"]) !{content}
+        else
+            pre(class=nowrap ? "nowrap" : "") !{content}

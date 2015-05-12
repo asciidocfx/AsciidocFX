@@ -48,7 +48,7 @@ public class Current {
     }
 
     public WebView currentWebView() {
-        return currentTab().getWebView();
+        return currentTab().getEditorPane().getWebView();
     }
 
     public WebEngine currentEngine() {
@@ -107,7 +107,7 @@ public class Current {
     }
 
     public void insertEditorValue(String content) {
-        ((JSObject)currentEngine().executeScript("window")).setMember("insertValue", content);
+        ((JSObject) currentEngine().executeScript("window")).setMember("insertValue", content);
         currentEngine().executeScript("editor.insert(insertValue)");
     }
 

@@ -10,8 +10,17 @@ import com.kodcu.other.Item;
 import com.kodcu.other.XMLHelper;
 import com.kodcu.service.*;
 import com.kodcu.service.config.YamlService;
-import com.kodcu.service.convert.*;
+import com.kodcu.service.convert.GitbookToAsciibookService;
+import com.kodcu.service.convert.SlideConverter;
+import com.kodcu.service.convert.docbook.DocArticleConverter;
+import com.kodcu.service.convert.docbook.DocBookConverter;
+import com.kodcu.service.convert.ebook.EpubConverter;
+import com.kodcu.service.convert.ebook.MobiConverter;
+import com.kodcu.service.convert.html.HtmlArticleConverter;
+import com.kodcu.service.convert.html.HtmlBookConverter;
+import com.kodcu.service.convert.pdf.AbstractPdfConverter;
 import com.kodcu.service.extension.MathJaxService;
+import com.kodcu.service.extension.ODFService;
 import com.kodcu.service.extension.PlantUmlService;
 import com.kodcu.service.extension.TreeService;
 import com.kodcu.service.extension.chart.ChartProvider;
@@ -54,7 +63,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.context.embedded.EmbeddedWebApplicationContext;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.socket.TextMessage;
@@ -81,6 +92,19 @@ import static java.nio.file.StandardOpenOption.*;
 public class ApplicationController extends TextWebSocketHandler implements Initializable {
 
 
+    public AnchorPane previewAnchor;
+
+    @Autowired
+    public RevealSlidePane revealSlidePane;
+
+    @Autowired
+    public DeckSlidePane deckSlidePane;
+
+
+    @Autowired
+    public HtmlPane htmlPane;
+    public Label odfPro;
+
     private Logger logger = LoggerFactory.getLogger(ApplicationController.class);
 
     private Path userHome = Paths.get(System.getProperty("user.home"));
@@ -91,7 +115,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     public MenuItem renameFile;
     public MenuItem createFile;
     public TabPane tabPane;
-    public WebView previewView;
     public SplitPane splitPane;
     public SplitPane splitPaneVertical;
     public TreeView<Item> treeView;
@@ -123,6 +146,9 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     private Stage markdownTableStage;
 
     @Autowired
+    private ApplicationContext applicationContext;
+
+    @Autowired
     private AsciidocTableController asciidocTableController;
 
     @Autowired
@@ -139,6 +165,9 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     @Autowired
     private TabService tabService;
+
+    @Autowired
+    private ODFService odfService;
 
     @Autowired
     private PathResolverService pathResolver;
@@ -159,22 +188,27 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     private WebviewService webviewService;
 
     @Autowired
-    private RenderService renderService;
+    private DocBookConverter docBookConverter;
 
     @Autowired
-    private DocBookService docBookService;
+    private DocArticleConverter docArticleConverter;
 
     @Autowired
-    private Html5BookService htmlBookService;
+    private HtmlBookConverter htmlBookService;
 
     @Autowired
-    private Html5ArticleService htmlArticleService;
+    private HtmlArticleConverter htmlArticleService;
 
     @Autowired
-    private FopPdfService fopServiceRunner;
+    @Qualifier("pdfArticleConverter")
+    private AbstractPdfConverter pdfArticleConverter;
 
     @Autowired
-    private Epub3Service epub3Service;
+    @Qualifier("pdfBookConverter")
+    private AbstractPdfConverter pdfBookConverter;
+
+    @Autowired
+    private EpubConverter epubConverter;
 
     @Autowired
     private Current current;
@@ -186,7 +220,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     private IndikatorService indikatorService;
 
     @Autowired
-    private KindleMobiService kindleMobiService;
+    private MobiConverter mobiConverter;
 
     @Autowired
     private SampleBookService sampleBookService;
@@ -207,9 +241,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     private ThreadService threadService;
 
     @Autowired
-    private ScrollService scrollService;
-
-    @Autowired
     private DocumentService documentService;
 
     @Autowired
@@ -227,8 +258,10 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     @Autowired
     private ChartProvider chartProvider;
 
+    @Autowired
+    private MarkdownService markdownService;
+
     private Stage stage;
-    private WebEngine previewEngine;
     private StringProperty lastRendered = new SimpleStringProperty();
     private List<WebSocketSession> sessionList = new ArrayList<>();
     private Scene scene;
@@ -256,8 +289,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             return;
 
         threadService.runActionLater(() -> {
-            renderService.getWindow().setMember("lastRenderedValue", nev);
-            previewEngine.executeScript("refreshUI(lastRenderedValue)");
+            htmlPane.refreshUI(nev);
         });
 
         sessionList.stream().filter(e -> e.isOpen()).forEach(e -> {
@@ -271,6 +303,9 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     @Value("${application.version}")
     private String version;
+
+    @Autowired
+    private SlideConverter slideConverter;
 
     public void createAsciidocTable() {
         asciidocTableStage.showAndWait();
@@ -306,9 +341,9 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
         threadService.runTaskLater(() -> {
             if (current.currentIsBook()) {
-                fopServiceRunner.generateBook(askPath);
+                pdfBookConverter.convert(askPath);
             } else {
-                fopServiceRunner.generateArticle(askPath);
+                pdfArticleConverter.convert(askPath);
             }
         });
     }
@@ -364,9 +399,9 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                 };
 
                 if (current.currentIsBook()) {
-                    docBookService.generateDocbook(step);
+                    docBookConverter.convert(false, step);
                 } else {
-                    docBookService.generateDocbookArticle(step);
+                    docArticleConverter.convert(false, step);
                 }
 
             });
@@ -380,7 +415,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     }
 
     private void convertEpub(boolean askPath) {
-        epub3Service.produceEpub3(askPath);
+        epubConverter.produceEpub3(askPath);
     }
 
     public void appendFormula(String fileName, String formula) {
@@ -415,7 +450,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         }
 
         threadService.runTaskLater(() -> {
-            kindleMobiService.produceMobi(askPath);
+            mobiConverter.convert(askPath);
         });
 
     }
@@ -431,9 +466,9 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
         threadService.runTaskLater(() -> {
             if (current.currentIsBook())
-                htmlBookService.convertHtmlBook(askPath);
+                htmlBookService.convert(askPath);
             else
-                htmlArticleService.convertHtmlArticle(askPath);
+                htmlArticleService.convert(askPath);
         });
     }
 
@@ -473,7 +508,8 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                 byte[] imageBuffer = restTemplate.getForObject(url, byte[].class);
                 String imageBase64 = base64Encoder.encodeToString(imageBuffer);
                 threadService.runActionLater(() -> {
-                    previewEngine.executeScript(String.format("updateBase64Url(%d,'%s')", index, imageBase64));
+                    htmlPane.updateBase64Url(index, imageBase64);
+
                 });
             } catch (Exception e) {
                 logger.info(e.getMessage(), e);
@@ -483,6 +519,15 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+
+        odfPro.setOnMouseClicked(event -> {
+            if (current.currentPath().isPresent())
+                odfService.generateODFDocument();
+        });
+
+        previewAnchor.getChildren().add(htmlPane);
+        previewAnchor.getChildren().add(deckSlidePane);
+        previewAnchor.getChildren().add(revealSlidePane);
 
         tooltipTimeFixService.fix();
 
@@ -521,7 +566,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             this.cutCopy(lastRendered.getValue());
         }));
         htmlProMenu.getItems().add(MenuItemBuilt.item("Clone source").tip("Copy HTML source (Embedded images)").click(event -> {
-            previewEngine.executeScript("imageToBase64Url()");
+            htmlPane.call("imageToBase64Url", new Object[]{});
         }));
 
         ContextMenu pdfProMenu = new ContextMenu();
@@ -622,22 +667,19 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             if (window.getMember("app").equals("undefined"))
                 window.setMember("app", this);
         });
-        mathjaxEngine.load(String.format("http://localhost:%d/mathjax.html", port));
 
-        previewEngine = previewView.getEngine();
-        previewEngine.load(String.format("http://localhost:%d/preview.html", port));
-        previewEngine.getLoadWorker().stateProperty().addListener((observableValue1, state, state2) -> {
+        threadService.runActionLater(() -> {
+            mathjaxEngine.load(String.format("http://localhost:%d/mathjax.html", port));
+        });
+
+        htmlPane.load(String.format("http://localhost:%d/preview.html", port));
+        htmlPane.whenStateSucceed((observableValue1, state, state2) -> {
             if (state2 == Worker.State.SUCCEEDED) {
-                JSObject window = (JSObject) previewEngine.executeScript("window");
-                if (window.getMember("app").equals("undefined")) {
-                    window.setMember("app", this);
+                if (htmlPane.getMember("app").equals("undefined")) {
+                    htmlPane.setMember("app", this);
                 }
             }
         });
-        previewEngine.getLoadWorker().exceptionProperty().addListener((ov, t, t1) -> {
-            logger.info(t1.getMessage(), t1);
-        });
-
 
         /// Treeview
         if (Objects.nonNull(recentFiles.getWorkingDirectory())) {
@@ -745,9 +787,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             }
         });
 
-        previewView.setContextMenuEnabled(false);
-
-        previewEngine.setOnAlert(event -> {
+        htmlPane.getWebEngine().setOnAlert(event -> {
             if ("PREVIEW_LOADED".equals(event.getData())) {
                 if (Objects.nonNull(lastRendered.getValue()))
                     lastRenderedChangeListener.changed(null, null, lastRendered.getValue());
@@ -756,44 +796,44 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
         ContextMenu previewContextMenu = new ContextMenu(
                 MenuItemBuilt.item("Go back").click(event -> {
-                    WebHistory history = previewEngine.getHistory();
+                    WebHistory history = htmlPane.getWebEngine().getHistory();
                     if (history.getCurrentIndex() != 0)
                         history.go(-1);
 
                 }),
                 MenuItemBuilt.item("Go forward").click(event -> {
-                    WebHistory history = previewEngine.getHistory();
+                    WebHistory history = htmlPane.getWebEngine().getHistory();
                     if (history.getCurrentIndex() + 1 != history.getEntries().size())
                         history.go(+1);
                 }),
                 new SeparatorMenuItem(),
                 MenuItemBuilt.item("Copy Html").click(event -> {
-                    DocumentFragmentImpl selectionDom = (DocumentFragmentImpl) previewEngine.executeScript("window.getSelection().getRangeAt(0).cloneContents()");
+                    DocumentFragmentImpl selectionDom = (DocumentFragmentImpl) htmlPane.getWebEngine().executeScript("window.getSelection().getRangeAt(0).cloneContents()");
                     ClipboardContent content = new ClipboardContent();
                     content.putHtml(XMLHelper.nodeToString(selectionDom, true));
                     clipboard.setContent(content);
                 }),
                 MenuItemBuilt.item("Copy Text").click(event -> {
-                    String selection = (String) previewEngine.executeScript("window.getSelection().toString()");
+                    String selection = (String) htmlPane.getWebEngine().executeScript("window.getSelection().toString()");
                     ClipboardContent content = new ClipboardContent();
                     content.putString(selection);
                     clipboard.setContent(content);
                 }),
                 MenuItemBuilt.item("Copy Source").click(event -> {
-                    DocumentFragmentImpl selectionDom = (DocumentFragmentImpl) previewEngine.executeScript("window.getSelection().getRangeAt(0).cloneContents()");
+                    DocumentFragmentImpl selectionDom = (DocumentFragmentImpl) htmlPane.getWebEngine().executeScript("window.getSelection().getRangeAt(0).cloneContents()");
                     ClipboardContent content = new ClipboardContent();
                     content.putString(XMLHelper.nodeToString(selectionDom, true));
                     clipboard.setContent(content);
                 }),
                 new SeparatorMenuItem(),
                 MenuItemBuilt.item("Refresh").click(event -> {
-                    previewEngine.executeScript("clearImageCache()");
+                    htmlPane.getWebEngine().executeScript("clearImageCache()");
                 })
         );
         previewContextMenu.setAutoHide(true);
-        previewView.setOnMouseClicked(event -> {
+        htmlPane.getWebView().setOnMouseClicked(event -> {
             if (event.getButton() == MouseButton.SECONDARY) {
-                previewContextMenu.show(previewView, event.getScreenX(), event.getScreenY());
+                previewContextMenu.show(htmlPane.getWebView(), event.getScreenX(), event.getScreenY());
             } else {
                 previewContextMenu.hide();
             }
@@ -896,12 +936,18 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         });
     }
 
-    public void onscroll(Object pos, Object max) {
-        scrollService.onscroll(pos, max);
+    public void onscroll(Object pos , Object max) {
+        htmlPane.onscroll(pos, max);
     }
 
     public void scrollToCurrentLine(String text) {
-        scrollService.scrollToCurrentLine(text);
+        if ((htmlPane.isVisible()))
+            htmlPane.scrollToCurrentLine(text);
+        else {
+            // slidePane in action
+            String content = htmlPane.findRenderedSelection(text);
+            slideConverter.currentBean().flipThePage(content); // buraya bak
+        }
     }
 
     public void plantUml(String uml, String type, String fileName) throws IOException {
@@ -977,11 +1023,37 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     public void textListener(String text) {
 
         threadService.runTaskLater(() -> {
-            renderService.convertBasicHtml(text, rendered -> {
-                if (Objects.nonNull(rendered))
-                    lastRendered.setValue(rendered);
-            });
+
+            if (getCurrent().getCurrentTabText().contains(".slide")) {
+//                slidePane.show();
+                htmlPane.hide();
+                slideConverter.convert(false, rendered -> {
+                    //
+                });
+            } else {
+                htmlPane.show();
+                revealSlidePane.hide();
+                deckSlidePane.hide();
+
+                markdownService.convert(text, asciidoc -> {
+                    threadService.runActionLater(() -> {
+                        String rendered = htmlPane.convertBasicHtml(asciidoc);
+                        if (Objects.nonNull(rendered))
+                            lastRendered.setValue(rendered);
+                    });
+                });
+            }
+
         });
+    }
+
+    public void convertToOdf(String name, Object obj) throws Exception {
+        JSObject jObj = (JSObject) obj;
+        odfService.buildDocument(name, jObj);
+    }
+
+    public String getTemplate(String templateName, String templateDir) throws IOException {
+        return slideConverter.currentBean().getTemplate(templateName, templateDir);
     }
 
     public void cutCopy(String data) {
@@ -1016,7 +1088,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     public void paste() {
 
-        JSObject window = renderService.getWindow();
+        JSObject window = (JSObject) htmlPane.getWebEngine().executeScript("window");
         JSObject editor = (JSObject) current.currentEngine().executeScript("editor");
 
         if (clipboard.hasFiles()) {
@@ -1171,10 +1243,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     public AnchorPane getRootAnchor() {
         return rootAnchor;
-    }
-
-    public WebView getPreviewView() {
-        return previewView;
     }
 
     public int getPort() {
@@ -1389,7 +1457,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     }
 
     public void clearImageCache() {
-        previewEngine.executeScript("clearImageCache()");
+        htmlPane.getWebEngine().executeScript("clearImageCache()");
     }
 
     public void removeChildElement(Node node) {

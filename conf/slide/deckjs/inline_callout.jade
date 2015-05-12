@@ -1,0 +1,7 @@
+if document.attr.icons["font"]
+  i.column(data-value=text)
+  b "(#{text})"
+else if document.attr.icons
+  img(src="callouts/#{text}",alt=text)
+else
+  b "(#{text})"

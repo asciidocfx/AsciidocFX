@@ -1,0 +1,10 @@
+div#preample
+    div.sectionbody !{content}
+        if attr.toc && attr["toc-placement"=="preamble"]
+          div#toc(class=)
+#preamble
+  .sectionbody=content
+  - if (attr? :toc) && (attr? 'toc-placement', 'preamble')
+    #toc class=(attr 'toc-class', 'toc')
+      #toctitle=(attr 'toc-title')
+      =Asciidoctor::HTML5::DocumentTemplate.outline(@document, (attr :toclevels, 2).to_i)

@@ -1,0 +1,60 @@
+doctype html
+html(lang="en")
+    head
+        meta(charset="UTF-8")
+        each key in ["description","keywords","author","copyright"]
+            if attr[key]
+                meta(name=key,content=attr[key])
+        title= "Slaytshow"
+        meta(content="yes",name="apple-mobile-web-app-capable")
+        meta(content="black-translucent",name="apple-mobile-web-app-status-bar-style")
+        meta(content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui",name="viewport")
+        link(href="deck.js/core/deck.core.css",rel="stylesheet",media="screen")
+        link(href="deck.js/extensions/goto/deck.goto.css",rel="stylesheet",media="screen")
+        link(href="deck.js/extensions/menu/deck.menu.css",rel="stylesheet",media="screen")
+        link(href="deck.js/extensions/navigation/deck.navigation.css",rel="stylesheet",media="screen")
+        link(href="deck.js/extensions/status/deck.status.css",rel="stylesheet",media="screen")
+        link(href="deck.js/extensions/scale/deck.scale.css",rel="stylesheet",media="screen")
+        link(href="deck.js/themes/style/swiss.css",rel="stylesheet",media="screen")
+        link(href="deck.js/themes/transition/horizontal-slide.css",rel="stylesheet",media="screen")
+        link(href="deck.js/core/print.css",rel="stylesheet",media="print")
+        script(src="deck.js/modernizr.custom.js")
+        script(type='text/javascript').
+            function replaceSlides(data) {
+                var div = document.createElement("div");
+                 div.innerHTML = data;
+                 document.querySelector(".deck-container").innerHTML = div.querySelector(".deck-container").innerHTML
+                 setTimeout(function(){
+                        $.deck('.slide');
+                 },50);
+            }
+    body
+        div(class="deck-container")
+            !{content}
+            div("aria-role"="navigation")
+                a(href="#",class="deck-prev-link",title="Previous")
+                    | &#8592;
+                a(href="#",class="deck-next-link",title="Next")
+                    | &#8594;
+            p(class="deck-status","aria-role"="status")
+                span(class="deck-status-current")
+                | /
+                span(class="deck-status-total")
+            form(action=".",method="get",class="goto-form")
+                label(for="goto-slide")
+                    | "Go to slide:"
+                input(type="text",name="slidenum",id="goto-slide",list="goto-datalist")
+                datalist(id="goto-datalist")
+                input(type="submit",value="Go")
+        script(src = "deck.js/jquery.min.js")
+        script(src = "deck.js/core/deck.core.js")
+        script(src = "deck.js/extensions/menu/deck.menu.js")
+        script(src = "deck.js/extensions/goto/deck.goto.js")
+        script(src = "deck.js/extensions/status/deck.status.js")
+        script(src = "deck.js/extensions/navigation/deck.navigation.js")
+        script(src = "deck.js/extensions/scale/deck.scale.js")
+        script(src = "http://getfirebug.com/firebug-lite.js#startOpened=true")
+        script(type='text/javascript').
+            $(function () {
+                $.deck('.slide');
+            });

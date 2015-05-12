@@ -146,6 +146,7 @@
                     <Label fx:id="pdfPro" minWidth="-Infinity" styleClass="pdf" text="PDF" />
                     <Label fx:id="ebookPro" minWidth="-Infinity" styleClass="ebook" text="Ebook" />
                     <Label fx:id="docbookPro" minWidth="-Infinity" styleClass="docbook" text="Docbook" />
+                    <Label fx:id="odfPro" minWidth="-Infinity" styleClass="docbook" text="Odf" />
                     <Pane maxWidth="1.7976931348623157E308" prefHeight="1.0" prefWidth="1.0" HBox.hgrow="ALWAYS">
                       <HBox.margin>
                         <Insets />
@@ -157,7 +158,9 @@
                     <Insets bottom="5.0" left="15.0" right="15.0" top="5.0" />
                   </padding>
                 </HBox>
-                <WebView fx:id="previewView" style="" styleClass="null" VBox.vgrow="ALWAYS" />
+                <AnchorPane fx:id="previewAnchor" VBox.vgrow="ALWAYS" >
+                  <!--  Preview placeholder loaded in runtime here -->
+                </AnchorPane>
               </children>
             </VBox>
           </children>

@@ -1,0 +1,17 @@
+- if (has_role? 'aside') or (has_role? 'speaker')
+  aside.notes
+    =content
+- else
+  .admonitionblock id=@id class=[(attr :name),role]
+    table: tr
+      td.icon
+	- if @document.attr? :icons, 'font'
+	  i class=%(icon-#{attr :name}) title=@caption
+	- elsif @document.attr? :icons
+	  img src=icon_uri(attr :name) alt=@caption
+	- else
+	  .title=@caption
+      td.content
+	- if title?
+	  .title=title
+	=content

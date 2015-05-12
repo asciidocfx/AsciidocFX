@@ -1,0 +1,25 @@
+- if (checklist = (option? :checklist) ? 'checklist' : nil)
+  - if option? :interactive
+    - marker_checked = '<input type="checkbox" data-item-complete="1" checked>'
+    - marker_unchecked = '<input type="checkbox" data-item-complete="0">'
+  - else
+    - if @document.attr? :icons, 'font'
+      - marker_checked = '<i class="icon-check"></i>'
+      - marker_unchecked = '<i class="icon-check-empty"></i>'
+    - else 
+      / could use &#9745 (checked ballot) and &#9744 (ballot) w/o font instead
+      - marker_checked = '<input type="checkbox" data-item-complete="1" checked disabled>'
+      - marker_unchecked = '<input type="checkbox" data-item-complete="0" disabled>'
+.ulist id=@id class=[checklist,@style,role]
+  - if title?
+    .title=title
+  ul class=(checklist || @style)
+    - items.each do |item|
+      li class=('fragment' if (option? :step) || (has_role? 'step'))
+        p
+          - if checklist && (item.attr? :checkbox)
+            =%(#{(item.attr? :checked) ? marker_checked : marker_unchecked}#{item.text})
+          - else
+            =item.text
+        - if item.blocks?
+          =item.content

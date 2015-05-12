@@ -1,0 +1,7 @@
+div(id=id,class=role)
+  if title
+    div(class="title") !{title}
+  if has_role
+    small !{content}
+  else
+    p(class="paragraph") !{content}

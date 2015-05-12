@@ -1,0 +1,14 @@
+.quoteblock id=@id class=role
+  - if title?
+    .title=title
+  blockquote=content
+  - attribution = (attr? :attribution) ? (attr :attribution) : nil
+  - citetitle = (attr? :citetitle) ? (attr :citetitle) : nil
+  - if attribution || citetitle
+    .attribution
+      - if citetitle
+        cite=citetitle
+      - if attribution
+        - if citetitle
+          br
+        | &#8212; #{attribution}

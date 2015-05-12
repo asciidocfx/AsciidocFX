@@ -1,0 +1,11 @@
+div.quoteblock(id=id,class=role)
+  if title
+    div.title !{title}
+  blockquote !{content}
+  if attr.attribution || attr.citetitle
+    div.attribution
+      if attr.citetitle
+        cite !{attr.citetitle}
+      if attr.attribution && attr.citetitle
+        br
+      | &#8212; !{attr.attribution}

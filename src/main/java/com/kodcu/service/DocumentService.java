@@ -1,5 +1,6 @@
 package com.kodcu.service;
 
+import com.kodcu.component.EditorPane;
 import com.kodcu.component.MyTab;
 import com.kodcu.controller.ApplicationController;
 import com.kodcu.other.Current;
@@ -11,8 +12,6 @@ import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.web.WebEngine;
-import javafx.scene.web.WebView;
 import javafx.stage.FileChooser;
 import netscape.javascript.JSObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -77,11 +76,10 @@ public class DocumentService {
     }
 
     public void newDoc(String content) {
-        WebView webView = webviewService.createWebView();
-        WebEngine webEngine = webView.getEngine();
-        webEngine.setConfirmHandler(param -> {
+        EditorPane editorPane = webviewService.createWebView();
+        editorPane.confirmHandler(param -> {
             if ("command:ready".equals(param)) {
-                JSObject window = (JSObject) webEngine.executeScript("window");
+                JSObject window = editorPane.getWindow();
                 window.setMember("app", controller);
                 window.call("updateOptions", new Object[]{});
                 Map<String, String> shortCuts = controller.getShortCuts();
@@ -92,17 +90,18 @@ public class DocumentService {
                 if (Objects.nonNull(content))
                     window.call("setEditorValue", new Object[]{content});
                 window.call("setInitialized");
+//                editorPane.getWebEngine().getLoadWorker().cancel();
             }
             return false;
         });
 
         AnchorPane anchorPane = new AnchorPane();
         MyTab tab = tabService.createTab();
-        Node editorVBox = editorService.createEditorVBox(webView, tab);
+        Node editorVBox = editorService.createEditorVBox(editorPane, tab);
         controller.fitToParent(editorVBox);
         anchorPane.getChildren().add(editorVBox);
 
-        tab.setWebView(webView);
+        tab.setEditorPane(editorPane);
         tab.setContent(anchorPane);
 
         tab.setTabText("new *");
@@ -110,7 +109,7 @@ public class DocumentService {
         tabPane.getTabs().add(tab);
         tab.select();
 
-        webView.requestFocus();
+        editorPane.focus();
     }
 
     public void openDoc() {

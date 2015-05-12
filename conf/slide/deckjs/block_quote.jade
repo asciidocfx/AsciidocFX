@@ -1,0 +1,12 @@
+div.quoteblock(id=id,class=["#{role}",option.step? "slide":""])
+  if title && title !=""
+    div.title !{title}
+  blockquote
+    !{content}
+  if attr.attribution
+    div.attribution
+      cite
+        if attr.citetitle
+          !{attr.attribution}, !{attr.citetitle}
+        else
+          !{attr.attribution}
