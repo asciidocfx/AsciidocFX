@@ -70,7 +70,7 @@ public class Html5BookService extends Converter {
             indikatorService.startCycle();
 
             List<String> bookAscLines = Arrays.asList(current.currentEditorValue().split("\\r?\\n"));
-            StringBuffer allAscChapters = new StringBuffer();
+            StringBuilder allAscChapters = new StringBuilder();
 
             traverseLines(bookAscLines,allAscChapters,currentTabPathDir);
 

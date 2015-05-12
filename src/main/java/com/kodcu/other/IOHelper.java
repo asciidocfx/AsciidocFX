@@ -31,7 +31,7 @@ import java.util.stream.Stream;
  */
 public class IOHelper {
 
-    private static Logger logger = LoggerFactory.getLogger(IOHelper.class);
+    private static final Logger logger = LoggerFactory.getLogger(IOHelper.class);
 
 //    public static String normalize(String content) {
 //        content = content.replace("\\", "\\\\");
@@ -157,9 +157,9 @@ public class IOHelper {
         try {
             return JOOX.$(inputSource);
         } catch (SAXException e) {
-            e.printStackTrace();
+            logger.info(e.getMessage(), e);
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.info(e.getMessage(), e);
         }
         return null;
     }
@@ -168,9 +168,9 @@ public class IOHelper {
         try {
             return JOOX.$(file);
         } catch (SAXException e) {
-            e.printStackTrace();
+            logger.info(e.getMessage(), e);
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.info(e.getMessage(), e);
         }
         return null;
     }
@@ -179,7 +179,7 @@ public class IOHelper {
         try {
             transformer.transform(xmlSource, streamResult);
         } catch (TransformerException e) {
-            e.printStackTrace();
+            logger.info(e.getMessage(), e);
         }
     }
 
@@ -187,7 +187,7 @@ public class IOHelper {
         try {
             root.write(file);
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.info(e.getMessage(), e);
         }
     }
 
@@ -195,7 +195,7 @@ public class IOHelper {
         try {
             FileUtils.copyDirectoryToDirectory(source, target);
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.info(e.getMessage(), e);
         }
     }
 
@@ -203,9 +203,9 @@ public class IOHelper {
         try {
             fopFactory.setUserConfig(s);
         } catch (SAXException e) {
-            e.printStackTrace();
+            logger.info(e.getMessage(), e);
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.info(e.getMessage(), e);
         }
     }
 
@@ -213,7 +213,7 @@ public class IOHelper {
         try {
             Files.deleteIfExists(path);
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.info(e.getMessage(), e);
         }
     }
 
@@ -221,7 +221,7 @@ public class IOHelper {
         try {
             FileUtils.copyDirectory(sourceDir.toFile(), targetDir.toFile());
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.info(e.getMessage(), e);
         }
     }
 
@@ -229,7 +229,7 @@ public class IOHelper {
         try {
             return Files.find(start, Integer.MAX_VALUE, matcher, options);
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.info(e.getMessage(), e);
         }
         return Stream.empty();
     }
@@ -238,7 +238,7 @@ public class IOHelper {
         try {
             return Files.isHidden(path) || path.getFileName().toString().startsWith(".");
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.info(e.getMessage(), e);
         }
         return false;
     }
@@ -247,7 +247,7 @@ public class IOHelper {
         try {
             FileUtils.copyFileToDirectory(file,directory);
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.info(e.getMessage(), e);
         }
     }
 
@@ -255,7 +255,7 @@ public class IOHelper {
         try {
             FileUtils.copyFile(file,dest);
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.info(e.getMessage(), e);
         }
     }
 }

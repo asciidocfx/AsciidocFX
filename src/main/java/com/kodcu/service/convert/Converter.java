@@ -16,7 +16,7 @@ public class Converter {
     private final Pattern ascIncludeRegex = Pattern.compile("(?<=include::)(?<path>.*?)(?=\\[(.*?)\\])");
     private final Pattern mdIncludeRegex = Pattern.compile("\\[.*?\\]\\((?<path>.*\\.(md|markdown|asc|adoc|asciidoc|ad|txt))\\)");
 
-    protected void traverseLines(List<String> lines, StringBuffer buffer, Path rootPath) {
+    protected void traverseLines(List<String> lines, StringBuilder buffer, Path rootPath) {
 
         for (String line : lines) {
 
@@ -38,7 +38,7 @@ public class Converter {
         }
     }
 
-    protected void traverseLine(String line, StringBuffer buffer) {
+    protected void traverseLine(String line, StringBuilder buffer) {
         buffer.append(line + "\n");
     }
 }

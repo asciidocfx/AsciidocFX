@@ -70,7 +70,7 @@
                             <MenuItem mnemonicParsing="false" onAction="#openGitterChat" text="Gitter Chat" />
                               <SeparatorMenuItem />
                             <MenuItem mnemonicParsing="false" onAction="#openGithubPage" text="Github Page" />
-                            <MenuItem mnemonicParsing="false" onAction="#openAbout" text="About" />
+                            <MenuItem mnemonicParsing="false" disable="true" text="" />
                           </items>
                           <HBox.margin>
                             <Insets />

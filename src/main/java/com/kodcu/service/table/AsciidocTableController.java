@@ -50,7 +50,7 @@ public class AsciidocTableController implements Initializable {
     @FXML
     private void tablePopupApply(ActionEvent actionEvent) {
 
-        StringBuffer stringBuffer = new StringBuffer();
+        StringBuilder stringBuffer = new StringBuilder();
 
         stringBuffer.append("\n");
         String title = tablePopupTitle.textProperty().getValue();

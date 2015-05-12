@@ -34,7 +34,7 @@ public class DocBookService extends Converter {
     }
 
     @Override
-    protected void traverseLine(String line, StringBuffer buffer) {
+    protected void traverseLine(String line, StringBuilder buffer) {
         if (line.matches("^=+ +.*:.*")) // Replace : in headers for a asciidoctor bug
             line = line.replace(":", "00HEADER00COLON00");
         super.traverseLine(line, buffer);
@@ -45,7 +45,7 @@ public class DocBookService extends Converter {
         Path currentTabPath = current.currentPath().get();
         Path currentTabPathDir = currentTabPath.getParent();
 
-        StringBuffer stringBuffer = new StringBuffer();
+        StringBuilder stringBuffer = new StringBuilder();
 
         traverseLines(Arrays.asList(current.currentEditorValue().split("\\r?\\n")), stringBuffer, currentTabPathDir);
 
@@ -80,7 +80,7 @@ public class DocBookService extends Converter {
         Path currentTabPath = current.currentPath().get();
         Path currentTabPathDir = currentTabPath.getParent();
 
-        StringBuffer stringBuffer = new StringBuffer();
+        StringBuilder stringBuffer = new StringBuilder();
 
         traverseLines(Arrays.asList(current.currentEditorValue().split("\\r?\\n")), stringBuffer, currentTabPathDir);
         String text = stringBuffer.toString();
