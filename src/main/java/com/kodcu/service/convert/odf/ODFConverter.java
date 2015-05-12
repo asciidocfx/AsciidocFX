@@ -1,10 +1,11 @@
-package com.kodcu.service.extension;
+package com.kodcu.service.convert.odf;
 
 import com.kodcu.component.HtmlPane;
 import com.kodcu.controller.ApplicationController;
 import com.kodcu.other.Constants;
 import com.kodcu.other.Current;
 import com.kodcu.service.ThreadService;
+import com.kodcu.service.convert.Traversable;
 import com.kodcu.service.ui.IndikatorService;
 import netscape.javascript.JSObject;
 import org.odftoolkit.odfdom.dom.element.draw.DrawFrameElement;
@@ -45,9 +46,9 @@ import java.util.regex.Pattern;
  * Created by Hakan on 4/13/2015.
  */
 @Controller
-public class ODFService {
+public class ODFConverter implements Traversable {
 
-    private final Logger logger = LoggerFactory.getLogger(ODFService.class);
+    private final Logger logger = LoggerFactory.getLogger(ODFConverter.class);
 
     private final ApplicationController controller;
     private final Current current;
@@ -62,8 +63,8 @@ public class ODFService {
     private final Predicate<String> parentElement = (name) -> Arrays.asList("section", "quote", "admonition", "sidebar", "example", "verse", "open").stream().anyMatch(s -> s.equals(name));
 
     @Autowired
-    public ODFService(final ApplicationController controller, final Current current, final HtmlPane htmlPane,
-                      final ThreadService threadService, final IndikatorService indikatorService) {
+    public ODFConverter(final ApplicationController controller, final Current current, final HtmlPane htmlPane,
+                        final ThreadService threadService, final IndikatorService indikatorService) {
         this.controller = controller;
         this.current = current;
         this.htmlPane = htmlPane;
@@ -74,10 +75,18 @@ public class ODFService {
     public void generateODFDocument() {
 //        threadService.runTaskLater(() -> {
         // after enabling runTaskLater, I receive "TypeError: 'undefined' is not a function (evaluating 'A.$backtrace()') " if the asciidoc file contains a math block
+        final Path currentTabPath = current.currentPath().get();
+        final Path currentTabPathDir = currentTabPath.getParent();
+
         indikatorService.startCycle();
         try {
             this.openOdtDocument();
-            htmlPane.call("convertOdf", current.currentEditorValue());
+            List<String> bookAscLines = Arrays.asList(current.currentEditorValue().split("\\r?\\n"));
+            StringBuffer allAscChapters = new StringBuffer();
+
+            traverseLines(bookAscLines, allAscChapters, currentTabPathDir);
+
+            htmlPane.call("convertOdf", allAscChapters.toString());
             this.saveOdtDocument();
         } catch (Exception e) {
             logger.error(e.getMessage(), e);

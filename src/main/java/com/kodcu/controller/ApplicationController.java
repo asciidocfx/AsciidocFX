@@ -20,7 +20,7 @@ import com.kodcu.service.convert.html.HtmlArticleConverter;
 import com.kodcu.service.convert.html.HtmlBookConverter;
 import com.kodcu.service.convert.pdf.AbstractPdfConverter;
 import com.kodcu.service.extension.MathJaxService;
-import com.kodcu.service.extension.ODFService;
+import com.kodcu.service.convert.odf.ODFConverter;
 import com.kodcu.service.extension.PlantUmlService;
 import com.kodcu.service.extension.TreeService;
 import com.kodcu.service.extension.chart.ChartProvider;
@@ -55,10 +55,8 @@ import javafx.scene.web.WebHistory;
 import javafx.scene.web.WebView;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
-import javafx.stage.Popup;
 import javafx.stage.Stage;
 import netscape.javascript.JSObject;
-import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -75,7 +73,6 @@ import org.yaml.snakeyaml.Yaml;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -167,7 +164,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     private TabService tabService;
 
     @Autowired
-    private ODFService odfService;
+    private ODFConverter odfConverter;
 
     @Autowired
     private PathResolverService pathResolver;
@@ -522,7 +519,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
         odfPro.setOnMouseClicked(event -> {
             if (current.currentPath().isPresent())
-                odfService.generateODFDocument();
+                odfConverter.generateODFDocument();
         });
 
         previewAnchor.getChildren().add(htmlPane);
@@ -536,6 +533,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         AwesomeDude.setIcon(pdfPro, AwesomeIcon.FILE_PDF_ALT);
         AwesomeDude.setIcon(ebookPro, AwesomeIcon.BOOK);
         AwesomeDude.setIcon(docbookPro, AwesomeIcon.CODE);
+        AwesomeDude.setIcon(odfPro, AwesomeIcon.FILE_WORD_ALT);
         AwesomeDude.setIcon(browserPro, AwesomeIcon.FLASH);
 
 
@@ -1049,7 +1047,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     public void convertToOdf(String name, Object obj) throws Exception {
         JSObject jObj = (JSObject) obj;
-        odfService.buildDocument(name, jObj);
+        odfConverter.buildDocument(name, jObj);
     }
 
     public String getTemplate(String templateName, String templateDir) throws IOException {
