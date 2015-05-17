@@ -128,11 +128,15 @@ public class HtmlPane extends AnchorPane {
     }
 
     public void startProgressBar() {
-        webEngine.executeScript("startProgressBar()");
+        Platform.runLater(()->{
+            webEngine.executeScript("startProgressBar()");
+        });
     }
 
     public void stopProgressBar() {
-        webEngine.executeScript("stopProgressBar()");
+        Platform.runLater(() -> {
+            webEngine.executeScript("stopProgressBar()");
+        });
     }
 
     public String convertDocbook(String asciidoc, boolean includeHeader) {

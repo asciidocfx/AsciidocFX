@@ -90,9 +90,6 @@ public abstract class SlidePane extends AnchorPane {
         });
     }
 
-
-
-
     public abstract boolean isReady();
     public abstract void replaceSlides(String rendered);
     public abstract String getTemplate(String templateName, String templateDir) throws IOException;
@@ -100,7 +97,6 @@ public abstract class SlidePane extends AnchorPane {
 
     public void loadJs(String... jsPaths) {
         threadService.runTaskLater(() -> {
-
             threadService.runActionLater(() -> {
                 for (String jsPath : jsPaths) {
                     String format = String.format("var scriptEl = document.createElement('script');\n" +

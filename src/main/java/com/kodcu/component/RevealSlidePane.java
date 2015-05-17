@@ -31,6 +31,8 @@ public class RevealSlidePane extends SlidePane {
     }
 
     public boolean isReady() {
+        if (true)
+            return true;
         try {
             return (Boolean) ((JSObject) window.eval("Reveal")).call("isReady");
         } catch (Exception ex) {

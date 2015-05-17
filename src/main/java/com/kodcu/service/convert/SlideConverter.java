@@ -34,6 +34,7 @@ public class SlideConverter implements DocumentConverter<String> {
     private final ApplicationContext applicationContext;
     private final HtmlPane htmlPane;
     private final Pattern pattern = Pattern.compile(":slide-type:.*(deckjs|revealjs)", Pattern.MULTILINE);
+    private String rendered;
 
 
     @Autowired
@@ -79,17 +80,15 @@ public class SlideConverter implements DocumentConverter<String> {
 
             SlidePane slidePane = this.currentBean();
 
-            String rendered = htmlPane.convertSlide(current.currentEditorValue());
+            this.rendered = htmlPane.convertSlide(current.currentEditorValue());
 
-            Path resolve = current.currentPath().map(Path::getParent).get().resolve(current.getCurrentTabText().replace("*", "").trim() + ".html");
-            String newLocation = resolve.toUri().toString();
-            IOHelper.writeToFile(resolve, rendered, TRUNCATE_EXISTING, CREATE);
+//            Path resolve = current.currentPath().map(Path::getParent).get().resolve(current.getCurrentTabText().replace("*", "").trim() + ".html");
+//            String newLocation = resolve.toUri().toString();
+//            IOHelper.writeToFile(resolve, rendered, TRUNCATE_EXISTING, CREATE);
 
             if (Objects.isNull(slidePane.getLocation())) {
-                slidePane.load(newLocation);
-            } else if (!newLocation.equalsIgnoreCase(slidePane.getLocation())) {
-                slidePane.load(newLocation);
-            } else {
+                slidePane.load(String.format("http://localhost:%d/slide/index.slide",controller.getPort()));
+            }  else {
                 threadService.runActionLater(() -> {
                     if (slidePane.isReady()) {
                         slidePane.replaceSlides(rendered);
@@ -103,4 +102,7 @@ public class SlideConverter implements DocumentConverter<String> {
         });
     }
 
+    public String getRendered() {
+        return rendered;
+    }
 }
