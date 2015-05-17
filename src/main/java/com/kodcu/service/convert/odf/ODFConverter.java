@@ -673,7 +673,7 @@ public class ODFConverter implements Traversable {
         Map<String, String> attrs = getCellAttributes(documentCell);
         String cellText = getSpecificProperty(documentCell, "text", String.class);
 
-        Cell tableCell = getCell(table, rowTableIndex, column, attrs);
+        Cell tableCell = this.getCell(table, rowTableIndex, column, attrs);
 
         this.setAlignmentTypes(attrs, tableCell);
         this.setSpecificFontStyle(selection, tableCell, attrs);
@@ -700,26 +700,34 @@ public class ODFConverter implements Traversable {
         int rowspan = Integer.valueOf(attrs.get("rowspan"));
         int row = tableCell.getRowIndex();
         int column = tableCell.getColumnIndex();
+        int tableColumn = table.getColumnCount();
+        int tableRow = table.getRowCount();
 
         boolean hasOfficeValueType = container.hasAttribute("office:value-type");
         if (!hasOfficeValueType) {
-            if (colSpan != rowspan) {
-                if (colSpan == table.getColumnCount())
-                    colSpan -= 1;
-                if (rowspan == table.getRowCount())
-                    rowspan -= 1;
-                if (colSpan == 1)
-                    colSpan = column;
-                if (rowspan == 1)
-                    rowspan = row;
+            if (colSpan != 1 || rowspan != 1) {
+                colSpan = this.getNewSpanValue(colSpan, column, tableColumn);
+                rowspan = this.getNewSpanValue(rowspan, row, tableRow);
                 // spanned attribute in action
                 CellRange cellRange = table.getCellRangeByPosition(column, row, colSpan, rowspan);
                 cellRange.merge();
             }
         } else {
-            tableCell = this.getCell(table, row, column + 1, attrs);
+            int nextColumn = column + 1;
+            if (nextColumn != tableColumn)
+                tableCell = this.getCell(table, row, nextColumn, attrs);
         }
         return tableCell;
+    }
+
+    private int getNewSpanValue(int rowOrColSpan, int rowOrColumn, int tableRowOrColumn) {
+        if (rowOrColSpan == tableRowOrColumn)
+            rowOrColSpan -= 1;
+        else if (rowOrColSpan == 1)
+            rowOrColSpan = rowOrColumn;
+        else if (rowOrColumn != rowOrColSpan)
+            rowOrColSpan += rowOrColumn - 1;
+        return rowOrColSpan;
     }
 
     private void setAlignmentTypes(Map<String, String> attrs, Cell tableCell) {
