@@ -572,6 +572,7 @@ public class ODFConverter implements Traversable {
 
         Paragraph paragraph = odtDocument.addParagraph(element.getTitle());
         paragraph.setFont(font);
+        paragraph.applyHeading(true, element.getLevel());
         this.buildODTDocument(element.getChildren(), false);
     }
 
