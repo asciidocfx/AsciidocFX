@@ -3,10 +3,11 @@ package com.kodcu.controller;
 import com.kodcu.other.Current;
 import com.kodcu.service.DirectoryService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
@@ -25,7 +26,10 @@ import java.util.zip.GZIPOutputStream;
  * Created by usta on 10.04.2015.
  */
 @Controller
-public class FileController {
+/**
+ * Not used for this time
+ */
+public class AsciidoctorResourceController {
 
     private static final int DEFAULT_BUFFER_SIZE = 10240; // ..bytes = 10KB.
     private static final long DEFAULT_EXPIRE_TIME = 604800000L; // ..ms = 1 week.
@@ -39,14 +43,14 @@ public class FileController {
     @Autowired
     private Current current;
 
-    @RequestMapping(value = {"/**/{extension:(?:\\w|\\W)+\\.(?:jpg|bmp|gif|jpeg|png|webp|svg|avi|mpeg|mp4|ogg|mov|wmv|flv)$}"}, method = RequestMethod.GET)
-    public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-        processRequest(request, response, true);
+    @RequestMapping(value = {"/asciidoctor-resource"}, method = RequestMethod.GET)
+    public void doGet(HttpServletRequest request, HttpServletResponse response, @RequestParam("requestedFile") String requestedFile) throws IOException, ServletException {
+        processRequest(request, response,requestedFile, true);
     }
 
-    @RequestMapping(value = {"/**/{extension:(?:\\w|\\W)+\\.(?:jpg|bmp|gif|jpeg|png|webp|svg|avi|mpeg|mp4|ogg|mov|wmv|flv)$}"}, method = RequestMethod.HEAD)
-    public void doHead(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-        processRequest(request, response, false);
+    @RequestMapping(value = {"/asciidoctor-resource"},method = RequestMethod.HEAD)
+    public void doHead(HttpServletRequest request, HttpServletResponse response, @RequestParam("requestedFile") String requestedFile) throws IOException, ServletException {
+        processRequest(request, response,requestedFile, false);
     }
 
 
@@ -55,11 +59,11 @@ public class FileController {
      *
      * @param request  The request to be processed.
      * @param response The response to be created.
-     * @param content  Whether the request body should be written (GET) or not (HEAD).
-     * @throws IOException If something fails at I/O level.
+     * @param requestedFile
+     *@param content  Whether the request body should be written (GET) or not (HEAD).  @throws IOException If something fails at I/O level.
      */
     private void processRequest
-    (HttpServletRequest request, HttpServletResponse response, boolean content)
+    (HttpServletRequest request, HttpServletResponse response, String requestedFile, boolean content)
             throws IOException, ServletException {
         // Validate the requested file ------------------------------------------------------------
 
@@ -72,9 +76,6 @@ public class FileController {
         } catch (Exception e) {
 
         }
-
-        // Get requested file by path info.
-        String requestedFile = request.getRequestURI();
 
         // Check if file is actually supplied to the request URL.
         if (requestedFile == null) {

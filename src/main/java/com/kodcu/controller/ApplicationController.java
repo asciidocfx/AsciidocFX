@@ -79,6 +79,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.CodeSource;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 
@@ -1064,6 +1065,25 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         ClipboardContent clipboardContent = new ClipboardContent();
         clipboardContent.putFiles(Arrays.asList(path.toFile()));
         clipboard.setContent(clipboardContent);
+    }
+
+    public String readAsciidoctorResource(String uri, Integer parent) {
+
+        final CompletableFuture<String> completableFuture = new CompletableFuture();
+
+        completableFuture.runAsync(()->{
+            threadService.runTaskLater(()->{
+                PathFinderService fileReader = applicationContext.getBean("pathFinder", PathFinderService.class);
+                Path path = fileReader.findPath(uri, parent);
+
+                if(!Files.exists(path))
+                    completableFuture.complete("404") ;
+
+                completableFuture.complete(IOHelper.readFile(path));
+            });
+        });
+
+        return completableFuture.join();
     }
 
     public String clipboardValue() {

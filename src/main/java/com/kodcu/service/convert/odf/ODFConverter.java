@@ -81,12 +81,11 @@ public class ODFConverter implements Traversable {
         indikatorService.startCycle();
         try {
             this.openOdtDocument();
-            List<String> bookAscLines = Arrays.asList(current.currentEditorValue().split("\\r?\\n"));
-            StringBuffer allAscChapters = new StringBuffer();
+//            List<String> bookAscLines = Arrays.asList(current.currentEditorValue().split("\\r?\\n"));
+//            StringBuffer allAscChapters = new StringBuffer();
+//            traverseLines(bookAscLines, allAscChapters, currentTabPathDir);
 
-            traverseLines(bookAscLines, allAscChapters, currentTabPathDir);
-
-            htmlPane.call("convertOdf", allAscChapters.toString());
+            htmlPane.call("convertOdf", current.currentEditorValue());
             this.saveOdtDocument();
         } catch (Exception e) {
             logger.error(e.getMessage(), e);

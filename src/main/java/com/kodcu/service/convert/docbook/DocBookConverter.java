@@ -48,16 +48,16 @@ public class DocBookConverter implements DocbookTraversable, DocumentConverter<S
     @Override
     public void convert(boolean askPath, Consumer<String>... nextStep) {
 
-        htmlPane.startProgressBar();
+//        htmlPane.startProgressBar();
 
         Path currentTabPath = current.currentPath().get();
         Path currentTabPathDir = currentTabPath.getParent();
 
         StringBuffer stringBuffer = new StringBuffer();
 
-        DocbookTraversable.super.traverseLines(Arrays.asList(current.currentEditorValue().split("\\r?\\n")), stringBuffer, currentTabPathDir);
+//        DocbookTraversable.super.traverseLines(Arrays.asList(current.currentEditorValue().split("\\r?\\n")), stringBuffer, currentTabPathDir);
 
-        String text = stringBuffer.toString();
+        String text = current.currentEditorValue();
 
         markdownService.convert(text, asciidoc -> {
             threadService.runActionLater(() -> {
@@ -88,7 +88,7 @@ public class DocBookConverter implements DocbookTraversable, DocumentConverter<S
                     step.accept(result);
                 }
 
-                htmlPane.stopProgressBar();
+//                htmlPane.stopProgressBar();
 
             });
         });

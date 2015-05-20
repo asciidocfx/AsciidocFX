@@ -70,12 +70,11 @@ public class HtmlBookConverter implements Traversable,DocumentConverter<String> 
             final Path currentTabPathDir = currentTabPath.getParent();
             final String tabText = current.getCurrentTabText().replace("*", "").trim();
 
-            List<String> bookAscLines = Arrays.asList(current.currentEditorValue().split("\\r?\\n"));
-            StringBuffer allAscChapters = new StringBuffer();
+//            List<String> bookAscLines = Arrays.asList(current.currentEditorValue().split("\\r?\\n"));
+//            StringBuffer allAscChapters = new StringBuffer();
+//            traverseLines(bookAscLines, allAscChapters, currentTabPathDir);
 
-            traverseLines(bookAscLines, allAscChapters, currentTabPathDir);
-
-            final String bookXmlAsciidoc = allAscChapters.toString();
+            final String bookXmlAsciidoc = current.currentEditorValue();
 
             markdownService.convert(bookXmlAsciidoc, asciidoc -> {
                 threadService.runActionLater(() -> {

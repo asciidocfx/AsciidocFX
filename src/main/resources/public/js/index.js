@@ -9,7 +9,7 @@ function convertBasicHtml(content) {
 
     var options = Opal.hash2(['backend', 'safe', 'attributes'], {
         backend: 'html5',
-        safe: 'safeMode',
+        safe: 'safe',
         attributes: 'showtitle icons=font@ source-highlighter=highlight.js platform=opal platform-opal env=browser env-browser idprefix idseparator=- '
     });
 
@@ -24,7 +24,7 @@ function convertOdf(content) {
 
     var options = Opal.hash2(['backend', 'safe', 'attributes'], {
         backend: 'odf',
-        safe: 'safeMode',
+        safe: 'safe',
         attributes: 'showtitle icons=font@ source-highlighter=highlight.js platform=opal platform-opal env=browser env-browser idprefix idseparator=- '
     });
 
@@ -39,7 +39,7 @@ function convertSlide(content) {
 
     var options = Opal.hash2(['backend', 'safe', 'attributes'], {
         backend: 'slide',
-        safe: 'safeMode',
+        safe: 'safe',
         attributes: 'showtitle icons=font@ source-highlighter=highlight.js platform=opal platform-opal env=browser env-browser idprefix idseparator=- '
     });
 
@@ -54,7 +54,7 @@ function convertHtmlBook(content) {
 
     var options = Opal.hash2(['backend', 'safe', 'attributes', "header_footer"], {
         backend: 'html5',
-        safe: 'safeMode',
+        safe: 'safe',
         attributes: 'showtitle icons=font@ source-highlighter=highlight.js platform=opal platform-opal env=browser env-browser idprefix sectanchors idseparator=- '
         , 'header_footer': true
     });
@@ -68,10 +68,11 @@ function convertHtmlBook(content) {
 
 function convertHtmlArticle(content) {
 
-    var options = Opal.hash2(['attributes', 'header_footer'],
+    var options = Opal.hash2(['attributes', 'header_footer','safe'],
         {
             'attributes': ['backend=html5', 'doctype=article',"idprefix=","idseparator=-","sectanchors="],
-            'header_footer': true
+            'header_footer': true,
+            'safe':'safe'
         });
 
     var doc = Opal.Asciidoctor.$load(content,options);
@@ -83,10 +84,11 @@ function convertHtmlArticle(content) {
 
 function convertDocbook(content, includeHeader) {
 
-    var options = Opal.hash2(['attributes', 'header_footer'],
+    var options = Opal.hash2(['attributes', 'header_footer','safe'],
         {
             'attributes': ['backend=docbook5', 'doctype=book'],
-            'header_footer': includeHeader
+            'header_footer': includeHeader,
+            'safe':'safe'
         });
 
     var doc = Opal.Asciidoctor.$load(content, options);
@@ -98,10 +100,11 @@ function convertDocbook(content, includeHeader) {
 
 function convertDocbookArticle(content) {
 
-    var options = Opal.hash2(["lang", 'attributes', 'header_footer'],
+    var options = Opal.hash2(["lang", 'attributes', 'header_footer','safe'],
         {
             'attributes': ['backend=docbook5', 'doctype=article'],
-            'header_footer': true
+            'header_footer': true,
+            'safe':'safe'
         });
 
     var doc = Opal.Asciidoctor.$load(content,options);

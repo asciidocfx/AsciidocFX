@@ -54,8 +54,8 @@ public class DocArticleConverter implements DocbookTraversable, DocumentConverte
 
         StringBuffer stringBuffer = new StringBuffer();
 
-        DocbookTraversable.super.traverseLines(Arrays.asList(current.currentEditorValue().split("\\r?\\n")), stringBuffer, currentTabPathDir);
-        String text = stringBuffer.toString();
+//        DocbookTraversable.super.traverseLines(Arrays.asList(current.currentEditorValue().split("\\r?\\n")), stringBuffer, currentTabPathDir);
+        String text = current.currentEditorValue();
 
         markdownService.convert(text, asciidoc -> {
             threadService.runActionLater(() -> {
