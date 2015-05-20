@@ -82,6 +82,7 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
+import java.util.regex.Pattern;
 
 import static java.nio.file.StandardOpenOption.*;
 
@@ -142,6 +143,8 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     public Label browserPro;
     private AnchorPane markdownTableAnchor;
     private Stage markdownTableStage;
+    private boolean basicMode;
+
 
     @Autowired
     private ApplicationContext applicationContext;
@@ -1069,6 +1072,9 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     public String readAsciidoctorResource(String uri, Integer parent) {
 
+        if(uri.matches(".*?\\.(asc|adoc|ad|asciidoc|md|markdown)") && isBasicMode())
+            return String.format("link:%s[]",uri);
+
         final CompletableFuture<String> completableFuture = new CompletableFuture();
 
         completableFuture.runAsync(()->{
@@ -1468,6 +1474,14 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         hidePreviewPanel.setSelected(true);
         hidePreviewPanel(actionEvent);
         hideFileBrowser(actionEvent);
+    }
+
+    public boolean isBasicMode() {
+        return basicMode;
+    }
+
+    public void setBasicMode(boolean basicMode) {
+        this.basicMode = basicMode;
     }
 
     public RecentFiles getRecentFiles() {

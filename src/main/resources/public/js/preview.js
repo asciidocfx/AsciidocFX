@@ -1,4 +1,3 @@
-
 var imageCacheNumber = Math.floor(Math.random() * (999999999999 - 2)) + 1;
 
 function clearImageCache() {
@@ -42,8 +41,8 @@ function refreshUI(data) {
     var $data = $("<div></div>").append(data);
     $data.find("img").each(function () {
         var attr = $(this).attr("src");
-        if(attr)
-        $(this).attr("src", attr + "?cache=" + imageCacheNumber + "&parent=" + (attr.match(/\.\./g) || []).length);
+        if (attr)
+            $(this).attr("src", attr + "?cache=" + imageCacheNumber + "&parent=" + (attr.match(/\.\./g) || []).length);
     });
 
     $("#placeholder").html($data.html());
@@ -70,7 +69,7 @@ var progressBar;
 
 function startProgressBar() {
     var svg = document.querySelector('#container > svg');
-    if(svg)
+    if (svg)
         document.querySelector('#container').removeChild(svg);
 
     progressBar = new ProgressBar.Line('#container', {
@@ -81,15 +80,16 @@ function startProgressBar() {
 }
 
 function stopProgressBar() {
-    progressBar.animate(1, {
-        duration: 800
-    }, function () {
-        setTimeout(function () {
-            var svg = document.querySelector('#container > svg');
-            if(svg)
-                progressBar._container.removeChild(svg);
-        }, 500);
-    });
+    if (progressBar)
+        progressBar.animate(1, {
+            duration: 800
+        }, function () {
+            setTimeout(function () {
+                var svg = document.querySelector('#container > svg');
+                if (svg)
+                    progressBar._container.removeChild(svg);
+            }, 500);
+        });
 }
 
 alert("PREVIEW_LOADED");
