@@ -47,7 +47,7 @@ public class DeckSlidePane extends SlidePane {
     }
 
     public void replaceSlides(String rendered) {
-        ((JSObject) window.eval("deckExt")).call("replaceSlides", rendered);
+        ((JSObject) getWindow().eval("deckExt")).call("replaceSlides", rendered);
     }
 
     @Override
@@ -67,6 +67,6 @@ public class DeckSlidePane extends SlidePane {
     }
 
     public void flipThePage(String rendered) {
-        ((JSObject) window.eval("deckExt")).call("flipCurrentPage", rendered);
+        ((JSObject) getWindow().eval("deckExt")).call("flipCurrentPage", rendered);
     }
 }

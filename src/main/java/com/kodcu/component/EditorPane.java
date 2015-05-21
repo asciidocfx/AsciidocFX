@@ -31,7 +31,6 @@ public class EditorPane extends AnchorPane {
     private final WebView webView;
     private final WebEngine webEngine;
     private EventHandler<WebEvent<String>> readyHandler;
-    private final JSObject window;
     private final Logger logger = LoggerFactory.getLogger(EditorPane.class);
 
     public EditorPane() {
@@ -39,7 +38,6 @@ public class EditorPane extends AnchorPane {
         this.webView.setContextMenuEnabled(false);
         this.getChildren().add(webView);
         this.webEngine = webView.getEngine();
-        window = (JSObject) webEngine.executeScript("window");
         this.webEngine.setOnAlert(event -> {
             if (Objects.nonNull(readyHandler))
                 readyHandler.handle(event);
@@ -86,11 +84,11 @@ public class EditorPane extends AnchorPane {
     }
 
     public void setMember(String name, Object value) {
-        window.setMember(name, value);
+        getWindow().setMember(name, value);
     }
 
     public void call(String methodName, Object... args) {
-        window.call(methodName, args);
+        getWindow().call(methodName, args);
     }
 
     public void whenStateSucceed(ChangeListener<Worker.State> stateChangeListener) {
@@ -98,7 +96,7 @@ public class EditorPane extends AnchorPane {
     }
 
     public Object getMember(String name) {
-        return window.getMember(name);
+        return getWindow().getMember(name);
     }
 
     public WebEngine getWebEngine() {
@@ -122,7 +120,7 @@ public class EditorPane extends AnchorPane {
     }
 
     public JSObject getWindow() {
-        return window;
+        return (JSObject) webEngine.executeScript("window");
     }
 
     public String getEditorValue() {
@@ -140,4 +138,6 @@ public class EditorPane extends AnchorPane {
     public void focus() {
         webView.requestFocus();
     }
+
+
 }

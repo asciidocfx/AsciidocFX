@@ -26,7 +26,6 @@ public class HtmlPane extends AnchorPane {
     private final WebView webView;
     private final WebEngine webEngine;
     private EventHandler<WebEvent<String>> readyHandler;
-    private final JSObject window;
     private final Logger logger = LoggerFactory.getLogger(HtmlPane.class);
 
     public HtmlPane() {
@@ -34,7 +33,6 @@ public class HtmlPane extends AnchorPane {
         this.webView.setContextMenuEnabled(false);
         this.getChildren().add(webView);
         this.webEngine = webView.getEngine();
-        window = (JSObject) webEngine.executeScript("window");
         this.webEngine.setOnAlert(event -> {
             if (Objects.nonNull(readyHandler))
                 readyHandler.handle(event);
@@ -78,7 +76,7 @@ public class HtmlPane extends AnchorPane {
 
     public boolean isReady() {
         try {
-            return (Boolean) ((JSObject) window.eval("Reveal")).call("isReady");
+            return (Boolean) ((JSObject) getWindow().eval("Reveal")).call("isReady");
         } catch (Exception ex) {
             logger.info(ex.getMessage(), ex);
             return false;
@@ -90,7 +88,7 @@ public class HtmlPane extends AnchorPane {
     }
 
     public void setMember(String name, Object value) {
-        window.setMember(name, value);
+        getWindow().setMember(name, value);
     }
 
     public void refreshUI(String content) {
@@ -99,19 +97,15 @@ public class HtmlPane extends AnchorPane {
     }
 
     public void updateBase64Url(int index, String imageBase64) {
-        window.call("updateBase64Url", index, imageBase64);
+        getWindow().call("updateBase64Url", index, imageBase64);
     }
 
     public void call(String methodName, Object... args) {
-        window.call(methodName, args);
-    }
-
-    public void whenStateSucceed(ChangeListener<Worker.State> stateChangeListener) {
-        webEngine.getLoadWorker().stateProperty().addListener(stateChangeListener);
+        getWindow().call(methodName, args);
     }
 
     public Object getMember(String name) {
-        return window.getMember(name);
+        return getWindow().getMember(name);
     }
 
     public WebEngine getWebEngine() {
@@ -190,5 +184,9 @@ public class HtmlPane extends AnchorPane {
     public String convertBasicHtml(String asciidoc) {
         this.setMember("editorValue", asciidoc);
         return (String) webEngine.executeScript("convertBasicHtml(editorValue)");
+    }
+
+    public JSObject getWindow() {
+        return (JSObject) webEngine.executeScript("window");
     }
 }

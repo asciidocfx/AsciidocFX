@@ -34,7 +34,7 @@ public class RevealSlidePane extends SlidePane {
         if (true)
             return true;
         try {
-            return (Boolean) ((JSObject) window.eval("Reveal")).call("isReady");
+            return (Boolean) ((JSObject) getWindow().eval("Reveal")).call("isReady");
         } catch (Exception ex) {
             logger.info(ex.getMessage(), ex);
             return false;
@@ -51,7 +51,7 @@ public class RevealSlidePane extends SlidePane {
     }
 
     public void replaceSlides(String rendered) {
-        ((JSObject) window.eval("revealExt")).call("replaceSlides", rendered);
+        ((JSObject) getWindow().eval("revealExt")).call("replaceSlides", rendered);
     }
 
     @Override
@@ -71,6 +71,6 @@ public class RevealSlidePane extends SlidePane {
     }
 
     public void flipThePage(String rendered) {
-        ((JSObject) window.eval("revealExt")).call("flipCurrentPage", rendered);
+        ((JSObject) getWindow().eval("revealExt")).call("flipCurrentPage", rendered);
     }
 }

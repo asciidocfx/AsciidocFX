@@ -18,9 +18,9 @@ import com.kodcu.service.convert.ebook.EpubConverter;
 import com.kodcu.service.convert.ebook.MobiConverter;
 import com.kodcu.service.convert.html.HtmlArticleConverter;
 import com.kodcu.service.convert.html.HtmlBookConverter;
+import com.kodcu.service.convert.odf.ODFConverter;
 import com.kodcu.service.convert.pdf.AbstractPdfConverter;
 import com.kodcu.service.extension.MathJaxService;
-import com.kodcu.service.convert.odf.ODFConverter;
 import com.kodcu.service.extension.PlantUmlService;
 import com.kodcu.service.extension.TreeService;
 import com.kodcu.service.extension.chart.ChartProvider;
@@ -60,8 +60,8 @@ import netscape.javascript.JSObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.embedded.EmbeddedWebApplicationContext;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Controller;
@@ -82,7 +82,6 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
-import java.util.regex.Pattern;
 
 import static java.nio.file.StandardOpenOption.*;
 
@@ -550,7 +549,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         AwesomeDude.setIcon(goHomeLabel, AwesomeIcon.HOME, "14.0");
 
         leftButton.setGraphic(AwesomeDude.createIconLabel(AwesomeIcon.ELLIPSIS_H, "14.0"));
-        leftButton.getItems().get(leftButton.getItems().size() -1).setText(String.join(" ","Version", version));
+        leftButton.getItems().get(leftButton.getItems().size() - 1).setText(String.join(" ", "Version", version));
 
         ContextMenu htmlProMenu = new ContextMenu();
         htmlProMenu.getStyleClass().add("build-menu");
@@ -675,13 +674,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         });
 
         htmlPane.load(String.format("http://localhost:%d/preview.html", port));
-        htmlPane.whenStateSucceed((observableValue1, state, state2) -> {
-            if (state2 == Worker.State.SUCCEEDED) {
-                if (htmlPane.getMember("app").equals("undefined")) {
-                    htmlPane.setMember("app", this);
-                }
-            }
-        });
 
         /// Treeview
         if (Objects.nonNull(recentFiles.getWorkingDirectory())) {
@@ -791,6 +783,11 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
         htmlPane.getWebEngine().setOnAlert(event -> {
             if ("PREVIEW_LOADED".equals(event.getData())) {
+
+                if (htmlPane.getMember("app").equals("undefined")) {
+                    htmlPane.setMember("app", this);
+                }
+
                 if (Objects.nonNull(lastRendered.getValue()))
                     lastRenderedChangeListener.changed(null, null, lastRendered.getValue());
             }
@@ -938,7 +935,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         });
     }
 
-    public void onscroll(Object pos , Object max) {
+    public void onscroll(Object pos, Object max) {
         htmlPane.onscroll(pos, max);
     }
 
@@ -1072,18 +1069,18 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     public String readAsciidoctorResource(String uri, Integer parent) {
 
-        if(uri.matches(".*?\\.(asc|adoc|ad|asciidoc|md|markdown)") && isBasicMode())
-            return String.format("link:%s[]",uri);
+        if (uri.matches(".*?\\.(asc|adoc|ad|asciidoc|md|markdown)") && isBasicMode())
+            return String.format("link:%s[]", uri);
 
         final CompletableFuture<String> completableFuture = new CompletableFuture();
 
-        completableFuture.runAsync(()->{
-            threadService.runTaskLater(()->{
+        completableFuture.runAsync(() -> {
+            threadService.runTaskLater(() -> {
                 PathFinderService fileReader = applicationContext.getBean("pathFinder", PathFinderService.class);
                 Path path = fileReader.findPath(uri, parent);
 
-                if(!Files.exists(path))
-                    completableFuture.complete("404") ;
+                if (!Files.exists(path))
+                    completableFuture.complete("404");
 
                 completableFuture.complete(IOHelper.readFile(path));
             });

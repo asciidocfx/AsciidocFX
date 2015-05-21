@@ -29,7 +29,6 @@ public abstract class SlidePane extends AnchorPane {
 
     private final WebView webView;
     private final WebEngine webEngine;
-    protected final JSObject window;
     protected final Logger logger = LoggerFactory.getLogger(SlidePane.class);
     private final ThreadService threadService;
     private final ApplicationController controller;
@@ -43,7 +42,6 @@ public abstract class SlidePane extends AnchorPane {
         this.webView = new WebView();
         this.getChildren().add(webView);
         this.webEngine = webView.getEngine();
-        window = (JSObject) webEngine.executeScript("window");
         initializeMargins();
         this.hide();
     }
@@ -108,5 +106,9 @@ public abstract class SlidePane extends AnchorPane {
 
 
         });
+    }
+
+    protected JSObject getWindow() {
+        return (JSObject) webEngine.executeScript("window");
     }
 }
