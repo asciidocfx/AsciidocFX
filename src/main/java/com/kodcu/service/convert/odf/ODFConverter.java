@@ -352,9 +352,9 @@ public class ODFConverter implements Traversable {
                 Font font = createFont(FontStyle.ITALIC, 12, Color.BLACK);
                 parag.setFont(font);
                 if (type.startsWith("attr"))
-                    parag.setTextContent("—".concat(attr));
+                    parag.setTextContent("—".concat($(attr)));
                 else
-                    parag.setTextContent(attr);
+                    parag.setTextContent($(attr));
             }
         });
     }
@@ -414,7 +414,7 @@ public class ODFConverter implements Traversable {
                     JSObject jObjItem = this.castSpecificProperty(objItem, JSObject.class);
                     String itemText = this.getSpecificProperty(jObjItem, "text", String.class);
                     Font font = this.createFont(FontStyle.BOLD, 12, Color.BLACK);
-                    Paragraph paragraph = paragraphContainer.addParagraph(itemText);
+                    Paragraph paragraph = paragraphContainer.addParagraph($(itemText));
                     paragraph.setFont(font);
                 } else {
                     // find and construct dd elements
@@ -425,7 +425,7 @@ public class ODFConverter implements Traversable {
                         this.addDDListItems(itemBlocks, paragraphContainer, listContainer);
                     } else {
                         String text = this.getSpecificProperty(item, "text", String.class);
-                        paragraphContainer.addParagraph("      ".concat(text));
+                        paragraphContainer.addParagraph("      ".concat($(text)));
                     }
                 }
             }
@@ -446,7 +446,7 @@ public class ODFConverter implements Traversable {
                 if (subBlocks instanceof JSObject) {
                     // only one dd which contain olist or ulist items
                     String text = this.getSpecificProperty(item, "text", String.class);
-                    ListItem listItem = list.addItem(text);
+                    ListItem listItem = list.addItem($(text));
                     // look at whether there are sub list items or not in a dd element
                     this.addSubList(listItem, (JSObject) subBlocks);
                 } else {
@@ -482,7 +482,7 @@ public class ODFConverter implements Traversable {
             for (int inc = 0; inc < len; inc++) {
                 JSObject blocks = this.getSpecificProperty(element.getItemByIndex(inc), "blocks", JSObject.class);
                 String text = this.getSpecificProperty(element.getItemByIndex(inc), "text", String.class);
-                ListItem listItem = list.addItem(text);
+                ListItem listItem = list.addItem($(text));
                 this.addSubList(listItem, blocks);
             }
         }
@@ -513,7 +513,7 @@ public class ODFConverter implements Traversable {
                         String itemText = this.getSpecificProperty(subListItem, "text", String.class);
                         ListDecorator decorator = this.findDecorator(context);
                         list.setDecorator(decorator);
-                        ListItem listContainer = list.addItem(itemText);
+                        ListItem listContainer = list.addItem($(itemText));
                         JSObject nestedSubListItemBlocks = this.getSpecificProperty(subListItem, "blocks", JSObject.class);
                         this.addSubList(listContainer, nestedSubListItemBlocks);
                     }
@@ -670,15 +670,15 @@ public class ODFConverter implements Traversable {
 
     private void editCell(AsciiElement element, Table table, String selection, int rowTableIndex, int rowElement, int column) {
         JSObject documentCell = element.getCell(selection, rowElement, column);
-        Map<String, String> attrs = getCellAttributes(documentCell);
-        String cellText = getSpecificProperty(documentCell, "text", String.class);
+        Map<String, String> attrs = this.getCellAttributes(documentCell);
+        String cellText = this.getSpecificProperty(documentCell, "text", String.class);
 
         Cell tableCell = this.getCell(table, rowTableIndex, column, attrs);
 
         this.setAlignmentTypes(attrs, tableCell);
         this.setSpecificFontStyle(selection, tableCell, attrs);
         this.setBorderRight(tableCell);
-        tableCell.setStringValue(cellText);
+        tableCell.setStringValue($(cellText));
     }
 
     private Cell getCell(Table table, int rowTableIndex, int column, Map<String, String> attrs) {
@@ -814,6 +814,24 @@ public class ODFConverter implements Traversable {
         return new Font("Times New Roman", style, fontSize, color);
     }
 
+    /**
+     * Normalize the string content for the odf file
+     *
+     * @param content
+     * @return normalized content
+     */
+    private String $(String content) {
+        content = content.replace("&gt;", ">");
+        content = content.replace("&lt;", "<");
+        content = content.replace("&#8594;", "→");
+        content = content.replace("&#8217;", "'");
+        content = content.replace("&amp;", "&");
+        content = content.replace("&#8629;", "");
+        content = content.replace("&#8201;&#8212;&#8201;", " --");
+        content = content.replace("&#8230;&#8203;", " …");
+        return content;
+    }
+
     private class AsciiElement {
         private final String name;
         private final JSObject jObj;
@@ -860,11 +878,11 @@ public class ODFConverter implements Traversable {
         }
 
         String getTitle() {
-            return jObj.getMember("title").toString();
+            return $(jObj.getMember("title").toString());
         }
 
         String getContent() {
-            return jObj.getMember("content").toString();
+            return $(jObj.getMember("content").toString());
         }
 
         JSObject getAttr() {
