@@ -81,7 +81,7 @@ var templateMap = {
                     //templateMap = {}; // Cache disabled icin comment yap
                     window.slideType = obj.document.attr["slide-type"] || "revealjs";
                     if (!templateMap[window.slideType][obj.name]) {
-                        var template = app.getTemplate(obj.name + ".jade", window.slideType);
+                        var template = afx.getTemplate(obj.name + ".jade", window.slideType);
                         var fn = jade.compile(template, {pretty: true});
                         templateMap[window.slideType][obj.name] = fn;
                     }

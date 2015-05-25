@@ -1,13 +1,13 @@
 var defaultLanguage = undefined;
 function getDefaultLanguage() {
-    if (!defaultLanguage && app)
-        defaultLanguage = app.getConfig().getDefaultLanguage();
+    if (!defaultLanguage && afx)
+        defaultLanguage = afx.getConfig().getDefaultLanguage();
     return defaultLanguage;
 }
 
 function convertBasicHtml(content) {
 
-    app.setBasicMode(true);
+    afx.setBasicMode(true);
 
     var rendered = "";
 
@@ -25,11 +25,11 @@ function convertBasicHtml(content) {
         rendered = doc.$convert();
     }
     catch (e) {
-        app.setBasicMode(false);
+        afx.setBasicMode(false);
         throw e;
     }
 
-    app.setBasicMode(false);
+    afx.setBasicMode(false);
 
     return rendered;
 }

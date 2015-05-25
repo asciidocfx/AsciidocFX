@@ -19,7 +19,7 @@ var timeouter;
 var updateDelay = 100;
 
 //var maxTop = editor.renderer.layerConfig.maxHeight - editor.renderer.$size.scrollerHeight + editor.renderer.scrollMargin.bottom;
-//app.onscroll(editor.getSession().getScrollTop(), maxTop);
+//afx.onscroll(editor.getSession().getScrollTop(), maxTop);
 
 var updateScrollPosition = function (scroll) {
 
@@ -46,7 +46,7 @@ var updateScrollPosition = function (scroll) {
         lastEditorRow = range.start.row;
 
         var blockText = editor.session.getTextRange(range);
-        app.scrollToCurrentLine(blockText);
+        afx.scrollToCurrentLine(blockText);
     }
     else {
         lastEditorRow = row;
@@ -56,7 +56,7 @@ var updateScrollPosition = function (scroll) {
         if (lineText.trim() == "")
             return;
 
-        app.scrollToCurrentLine(lineText);
+        afx.scrollToCurrentLine(lineText);
     }
 };
 
@@ -65,7 +65,7 @@ editor.getSession().on('changeScrollTop', function (scroll) {
     var maxTop = editor.renderer.layerConfig.maxHeight - editor.renderer.$size.scrollerHeight + editor.renderer.scrollMargin.bottom;
     var scrollTop = editor.getSession().getScrollTop();
     if (Math.abs(maxTop - scrollTop) < 10 || scrollTop < 10) {
-        app.onscroll(scrollTop, maxTop);
+        afx.onscroll(scrollTop, maxTop);
         return;
     }
 
@@ -94,7 +94,7 @@ editor.getSession().selection.on('changeCursor', function (e) {
         lastEditorRow = range.start.row;
 
         var blockText = editor.session.getTextRange(range);
-        app.scrollToCurrentLine(blockText);
+        afx.scrollToCurrentLine(blockText);
     }
     else {
         lastEditorRow = row;
@@ -104,13 +104,13 @@ editor.getSession().selection.on('changeCursor', function (e) {
         if (lineText.trim() == "")
             return;
 
-        app.scrollToCurrentLine(lineText);
+        afx.scrollToCurrentLine(lineText);
     }
 });
 
 editor.getSession().on('change', function (obj) {
     if (initialized)
-        app.appendWildcard();
+        afx.appendWildcard();
 
     if (timeouter)
         clearTimeout(timeouter);
@@ -118,7 +118,7 @@ editor.getSession().on('change', function (obj) {
     sketch.refreshConstructList();
 
     timeouter = setTimeout(function () {
-        app.textListener(editor.getValue());
+        afx.textListener(editor.getValue());
 
         var length = editor.session.getLength();
 
@@ -136,11 +136,11 @@ editor.getSession().on('change', function (obj) {
 
 function updateOptions() {
     editor.setOptions({
-        fontFamily: app.getConfig().getFontFamily(),
-        fontSize: app.getConfig().getFontSize()
+        fontFamily: afx.getConfig().getFontFamily(),
+        fontSize: afx.getConfig().getFontSize()
     });
-    editor.setTheme(app.getConfig().getTheme());
-    editor.setScrollSpeed(app.getConfig().getScrollSpeed());
+    editor.setTheme(afx.getConfig().getTheme());
+    editor.setScrollSpeed(afx.getConfig().getScrollSpeed());
     editor.focus();
 }
 
@@ -161,7 +161,7 @@ function switchMode(index) {
 }
 
 function rerender() {
-    app.textListener(editor.getValue());
+    afx.textListener(editor.getValue());
 }
 
 function setInitialized() {

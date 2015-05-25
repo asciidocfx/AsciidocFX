@@ -41,7 +41,7 @@
                 opt = "" + (attrs['$[]']("opt"));
 
                 if (cache != "enabled") {
-                    app.chartBuildFromCsv(csvFile, filename, chartType, opt);
+                    afx.chartBuildFromCsv(csvFile, filename, chartType, opt);
                 }
 
                 content = "images/" + filename;
@@ -106,7 +106,7 @@
                 opt = "" + (attrs['$[]']("opt"));
 
                 if (cache != "enabled") {
-                    app.chartBuild(reader.$read(), filename, chartType, opt);
+                    afx.chartBuild(reader.$read(), filename, chartType, opt);
                 }
 
                 content = "images/" + filename;

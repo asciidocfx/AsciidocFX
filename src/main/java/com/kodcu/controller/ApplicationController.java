@@ -665,8 +665,8 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         WebEngine mathjaxEngine = mathjaxView.getEngine();
         mathjaxEngine.getLoadWorker().stateProperty().addListener((observableValue1, state, state2) -> {
             JSObject window = (JSObject) mathjaxEngine.executeScript("window");
-            if (window.getMember("app").equals("undefined"))
-                window.setMember("app", this);
+            if (window.getMember("afx").equals("undefined"))
+                window.setMember("afx", this);
         });
 
         threadService.runActionLater(() -> {
@@ -784,8 +784,8 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         htmlPane.getWebEngine().setOnAlert(event -> {
             if ("PREVIEW_LOADED".equals(event.getData())) {
 
-                if (htmlPane.getMember("app").equals("undefined")) {
-                    htmlPane.setMember("app", this);
+                if (htmlPane.getMember("afx").equals("undefined")) {
+                    htmlPane.setMember("afx", this);
                 }
 
                 if (Objects.nonNull(lastRendered.getValue()))

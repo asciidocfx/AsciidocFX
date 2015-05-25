@@ -19,7 +19,7 @@ function imageToBase64Url() {
 
     window.clonedContent = $("#placeholder").clone();
     clonedContent.find("img").each(function (index) {
-        app.imageToBase64Url(this.src, index);
+        afx.imageToBase64Url(this.src, index);
     });
 }
 
@@ -33,7 +33,7 @@ function updateBase64Url(index, base64) {
 
     var imageUrl = "data:image/png;base64," + base64;
     clonedContent.find("img").eq(index).attr("src", imageUrl);
-    app.cutCopy(clonedContent.html());
+    afx.cutCopy(clonedContent.html());
 }
 
 function refreshUI(data) {

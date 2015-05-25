@@ -25,7 +25,7 @@ editor.commands.addCommand({
             return;
         }
 
-        app.cutCopy(textRange);
+        afx.cutCopy(textRange);
         editor.remove(editor.getSelectionRange());
 
     },
@@ -36,7 +36,7 @@ editor.commands.addCommand({
     name: 'close-1',
     bindKey: {win: 'Ctrl-W', mac: 'Command-W'},
     exec: function (editor) {
-        app.saveAndCloseCurrentTab();
+        afx.saveAndCloseCurrentTab();
     },
     readOnly: true
 });
@@ -45,7 +45,7 @@ editor.commands.addCommand({
     name: 'copy-1',
     bindKey: {win: 'Ctrl-C', mac: 'Command-C'},
     exec: function (editor) {
-        app.cutCopy(editor.session.getTextRange(editor.getSelectionRange()));
+        afx.cutCopy(editor.session.getTextRange(editor.getSelectionRange()));
     },
     readOnly: false
 });
@@ -54,7 +54,7 @@ editor.commands.addCommand({
     name: 'paste-1',
     bindKey: {win: 'Ctrl-V', mac: 'Command-V'},
     exec: function (editor) {
-        app.paste();
+        afx.paste();
     },
     readOnly: true
 });
@@ -63,7 +63,7 @@ editor.commands.addCommand({
     name: 'paste-raw-1',
     bindKey: {win: 'Ctrl-Shift-V', mac: 'Command-Shift-V'},
     exec: function (editor) {
-        app.pasteRaw();
+        afx.pasteRaw();
     },
     readOnly: true
 });
@@ -210,7 +210,7 @@ var editorMenu = {
         addHyperLink: function () {
             var cursorPosition = editor.getCursorPosition();
             var session = editor.getSession();
-            var pasted = app.clipboardValue();
+            var pasted = afx.clipboardValue();
             if (isURL(pasted)) {
                 if (pasted.indexOf("http") == -1)
                     session.insert(cursorPosition, "http://" + pasted + "[text]");
@@ -415,7 +415,7 @@ var editorMenu = {
         addHyperLink: function () {
             var cursorPosition = editor.getCursorPosition();
             var session = editor.getSession();
-            var pasted = app.clipboardValue();
+            var pasted = afx.clipboardValue();
             if (isURL(pasted)) {
                 session.insert(cursorPosition, "[text](" + pasted + ")");
                 return;
@@ -475,7 +475,7 @@ editor.commands.addCommand({
     name: 'underline-selected',
     bindKey: {win: 'Ctrl-U', mac: 'Command-U'},
     exec: function () {
-        app.getShortcutProvider().getProvider().addUnderline();
+        afx.getShortcutProvider().getProvider().addUnderline();
     },
     readOnly: true
 });
@@ -484,7 +484,7 @@ editor.commands.addCommand({
     name: 'bold-selected',
     bindKey: {win: 'Ctrl-B', mac: 'Command-B'},
     exec: function () {
-        app.getShortcutProvider().getProvider().addBold();
+        afx.getShortcutProvider().getProvider().addBold();
     },
     readOnly: true
 });
@@ -493,7 +493,7 @@ editor.commands.addCommand({
     name: 'highlight-selected',
     bindKey: {win: 'Ctrl-H', mac: 'Command-H'},
     exec: function () {
-        app.getShortcutProvider().getProvider().addHighlight();
+        afx.getShortcutProvider().getProvider().addHighlight();
     },
     readOnly: true
 });
@@ -521,7 +521,7 @@ editor.commands.addCommand({
         mac: 'Command-i|Command-İ|Command-ı|Command-I'
     },
     exec: function () {
-        app.getShortcutProvider().getProvider().addItalic();
+        afx.getShortcutProvider().getProvider().addItalic();
     },
     readOnly: true
 });
@@ -562,49 +562,49 @@ editor.commands.addCommand({
 
         // img tab
         if (textRange == "img") {
-            app.getShortcutProvider().getProvider().addImage();
+            afx.getShortcutProvider().getProvider().addImage();
             return;
         }
 
         // book tab
         if (textRange == "book") { // source generator
-            app.getShortcutProvider().getProvider().addBookHeader();
+            afx.getShortcutProvider().getProvider().addBookHeader();
             return;
         }
 
         // article tab
         if (textRange == "article") { // source generator
-            app.getShortcutProvider().getProvider().addArticleHeader();
+            afx.getShortcutProvider().getProvider().addArticleHeader();
             return;
         }
 
         // math tab
         if (textRange == "math") { // math block generator
-            app.getShortcutProvider().getProvider().addMathBlock();
+            afx.getShortcutProvider().getProvider().addMathBlock();
             return;
         }
 
         // uml tab
         if (textRange == "uml") { // uml block generator
-            app.getShortcutProvider().getProvider().addUmlBlock();
+            afx.getShortcutProvider().getProvider().addUmlBlock();
             return;
         }
 
         // tree tab
         if (textRange == "tree") { // uml block generator
-            app.getShortcutProvider().getProvider().addTreeBlock();
+            afx.getShortcutProvider().getProvider().addTreeBlock();
             return;
         }
 
         // quote tab
         if (textRange == "quote") { // quote block generator
-            app.getShortcutProvider().getProvider().addQuote();
+            afx.getShortcutProvider().getProvider().addQuote();
             return;
         }
 
         // src tab
         if (textRange == "src") { // source generator
-            app.getShortcutProvider().getProvider().addCode("");
+            afx.getShortcutProvider().getProvider().addCode("");
             return;
         }
         // src,ruby or src.ruby tab
@@ -612,7 +612,7 @@ editor.commands.addCommand({
         if (Array.isArray(srcMatch)) {
             if (srcMatch.length == 3) {
                 var lang = srcMatch[2];
-                app.getShortcutProvider().getProvider().addCode(lang);
+                afx.getShortcutProvider().getProvider().addCode(lang);
                 return;
             }
         }
@@ -628,7 +628,7 @@ editor.commands.addCommand({
                 var row = tableMatch[1];
                 var column = tableMatch[3];
 
-                app.getShortcutProvider().getProvider().addBasicTable(row, column);
+                afx.getShortcutProvider().getProvider().addBasicTable(row, column);
                 return;
             }
 

@@ -35,7 +35,7 @@
                 cache = "" + (attrs['$[]']("cache"));
 
                 if (cache != "enabled") {
-                    app.appendFormula(filename, reader.$read());
+                    afx.appendFormula(filename, reader.$read());
                 }
                 content = "images/" + filename;
 

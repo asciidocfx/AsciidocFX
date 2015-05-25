@@ -115,7 +115,7 @@ public class TabService {
         editorPane.confirmHandler(param -> {
             if ("command:ready".equals(param)) {
                 JSObject window = editorPane.getWindow();
-                window.setMember("app", controller);
+                window.setMember("afx", controller);
                 window.call("updateOptions", new Object[]{});
                 Map<String, String> shortCuts = controller.getShortCuts();
                 Set<String> keySet = shortCuts.keySet();

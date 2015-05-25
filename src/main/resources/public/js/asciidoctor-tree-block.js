@@ -38,9 +38,9 @@
                 if (cache != "enabled") {
                     var readed = reader.$read();
                     if ((readed.match(/#/g) || []).length>(readed.match(/(-|\|)/g) || []).length)
-                        app.createFileTree(readed, type, filename, width, height);
+                        afx.createFileTree(readed, type, filename, width, height);
                     else
-                        app.createHighlightFileTree(readed, type, filename, width, height);
+                        afx.createHighlightFileTree(readed, type, filename, width, height);
                 }
 
                 content = "images/" + filename;

@@ -75,7 +75,7 @@
                         obj.document.attr[key] = value;
                     }
 
-                    app.convertToOdf(obj.name, obj);
+                    afx.convertToOdf(obj.name, obj);
 
                     if (template_name == null) {
                         template_name = nil

@@ -36,7 +36,7 @@
                 cache = "" + (attrs['$[]']("cache"));
 
                 if (cache != "enabled"){
-                    app.plantUml(reader.$read(), type, filename);
+                    afx.plantUml(reader.$read(), type, filename);
                 }
 
 
