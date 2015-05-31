@@ -43,7 +43,6 @@ import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.geometry.NodeOrientation;
 import javafx.geometry.Side;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -830,10 +829,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                 }),
                 MenuItemBuilt.item("Reload").click(event -> {
                     htmlPane.getWebEngine().reload();
-                    htmlPane.setOnSuccess(() -> {
-                        if (current.currentIsSlide())
-                            htmlPane.loadX();
-                    });
                 })
         );
         previewContextMenu.setAutoHide(true);
@@ -905,7 +900,14 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     }
 
     public void externalBrowse() {
-        hostServices.showDocument(String.format("http://localhost:%d/index.html", port));
+        ObservableList<Tab> tabs = previewAnchor.getTabs();
+        for (Tab tab : tabs) {
+            if (tab.isSelected()) {
+                Node content = tab.getContent();
+                if (Objects.nonNull(content))
+                    ((Viewable)content).browse();
+            }
+        }
     }
 
     @FXML

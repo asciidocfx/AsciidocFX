@@ -30,7 +30,7 @@ import java.util.stream.Stream;
  * Created by usta on 09.04.2015.
  */
 @Component
-public class SlidePane extends AnchorPane {
+public class SlidePane extends AnchorPane implements Viewable {
 
     private final WebView webView;
     private WebEngine webEngine;
@@ -145,6 +145,7 @@ public class SlidePane extends AnchorPane {
         });
     }
 
+    @WebkitCall
     public String getTemplate(String templateName, String templateDir) throws IOException {
 
         Stream<Path> slide = Files.find(controller.getConfigPath().resolve("slide").resolve(templateDir), Integer.MAX_VALUE, (path, basicFileAttributes) -> path.toString().contains(templateName));
@@ -185,5 +186,10 @@ public class SlidePane extends AnchorPane {
             if ("deckjs".equals(slideType))
                 this.loadJs("js/deck-extensions.js");
         });
+    }
+
+    @Override
+    public void browse() {
+        controller.getHostServices().showDocument(webEngine.getLocation());
     }
 }

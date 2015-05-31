@@ -28,7 +28,7 @@ import java.util.stream.Stream;
  * Created by usta on 09.04.2015.
  */
 @Component
-public class HtmlPane extends AnchorPane {
+public class HtmlPane extends AnchorPane implements Viewable {
 
     private final WebView webView;
     private WebEngine webEngine;
@@ -147,14 +147,6 @@ public class HtmlPane extends AnchorPane {
         return (String) webEngine.executeScript("convertHtmlArticle(editorValue)");
     }
 
-    public void replaceSlides(String rendered) {
-        ((JSObject) getWindow().eval(current.currentSlideType() + "Ext")).call("replaceSlides", rendered);
-    }
-
-    public void flipThePage(String rendered) {
-        ((JSObject) getWindow().eval(current.currentSlideType() + "Ext")).call("flipCurrentPage", rendered);
-    }
-
     public void loadJs(String... jsPaths) {
         threadService.runTaskLater(() -> {
             threadService.runActionLater(() -> {
@@ -227,29 +219,9 @@ public class HtmlPane extends AnchorPane {
         return (JSObject) webEngine.executeScript("window");
     }
 
-    public void loadX() {
-        if(true)
-        return;
-        Platform.runLater(() -> {
-            this.loadJs(
-                    "js/jade.js",
-                    "js/asciidoctor-all.js",
-                    "js/asciidoctor-uml-block.js",
-                    "js/asciidoctor-math-block.js",
-                    "js/asciidoctor-tree-block.js",
-                    "js/asciidoctor-chart-block.js",
-                    "js/asciidoctor-docbook.js",
-                    "js/asciidoctor-slide.js",
-                    "js/asciidoctor-odf.js",
-                    "js/highlight.pack.js",
-                    "js/to-asciidoc.js",
-                    "js/to-markdown.js",
-                    "js/index.js",
-                    "js/progressbar.min.js",
-                    "js/preview.js",
-                    "js/reveal-extensions.js",
-                    "js/deck-extensions.js"
-            );
-        });
+    @Override
+    public void browse() {
+        controller.getHostServices()
+                .showDocument(String.format("http://localhost:%d/index.html", controller.getPort()));
     }
 }
