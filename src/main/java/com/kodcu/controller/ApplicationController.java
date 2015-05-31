@@ -8,6 +8,7 @@ import com.kodcu.other.Current;
 import com.kodcu.other.IOHelper;
 import com.kodcu.other.Item;
 import com.kodcu.other.XMLHelper;
+import com.kodcu.outline.Section;
 import com.kodcu.service.*;
 import com.kodcu.service.config.YamlService;
 import com.kodcu.service.convert.GitbookToAsciibookService;
@@ -99,6 +100,8 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     private Logger logger = LoggerFactory.getLogger(ApplicationController.class);
 
     private Path userHome = Paths.get(System.getProperty("user.home"));
+
+    private TreeSet<Section> outlineList = new TreeSet<>();
 
     public CheckMenuItem hidePreviewPanel;
     public MenuItem hideFileBrowser;
@@ -905,9 +908,75 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             if (tab.isSelected()) {
                 Node content = tab.getContent();
                 if (Objects.nonNull(content))
-                    ((Viewable)content).browse();
+                    ((Viewable) content).browse();
             }
         }
+    }
+
+    @WebkitCall
+    public void clearOutline() {
+        outlineList = new TreeSet<>();
+    }
+
+    @WebkitCall
+    public void finishOutline() {
+
+        threadService.runTaskLater(()->{
+            threadService.runActionLater(()->{
+                TreeItem<Section> rootItem = new TreeItem<>();
+                rootItem.setExpanded(true);
+                Section rootSection = new Section();
+                rootSection.setLevel(0);
+                rootSection.setTitle("Outline");
+
+                rootItem.setValue(rootSection);
+                TreeView<Section> sectionTreeView = new TreeView<>(rootItem);
+
+                sectionTreeView.setOnMouseClicked(event->{
+                    TreeItem<Section> item = sectionTreeView.getSelectionModel().getSelectedItem();
+                    EditorPane editorPane = current.currentEditor();
+                    editorPane.moveCursorTo(item.getValue().getLineno());
+                });
+
+                for (Section section : outlineList) {
+
+                    TreeItem<Section> sectionItem = new TreeItem<>(section);
+                    rootItem.getChildren().add(sectionItem);
+
+                    TreeSet<Section> subsections = section.getSubsections();
+                    for (Section subsection : subsections) {
+                        sectionItem.getChildren().add(new TreeItem<>(subsection));
+                    }
+                }
+
+                previewAnchor.getTabs().add(new Tab("Outline",sectionTreeView));
+            });
+        });
+
+    }
+
+    @WebkitCall
+    public void fillOutline(String parentLineNo, String level, String title, String lineno, String id) {
+
+        Section section = new Section();
+        section.setLevel(Integer.valueOf(level));
+        section.setTitle(title);
+        section.setLineno(Integer.valueOf(lineno));
+        section.setId(id);
+
+        if (Objects.isNull(parentLineNo))
+            outlineList.add(section);
+        else {
+            Integer parentLine = Integer.valueOf(parentLineNo);
+            Optional<Section> parentSection = outlineList.stream()
+                    .filter(e -> e.getLineno().equals(parentLine))
+                    .findFirst();
+            parentSection.ifPresent(sec -> {
+                sec.getSubsections().add(section);
+            });
+
+        }
+
     }
 
     @FXML

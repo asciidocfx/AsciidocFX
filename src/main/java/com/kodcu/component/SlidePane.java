@@ -47,7 +47,7 @@ public class SlidePane extends AnchorPane implements Viewable {
         this.current = current;
         this.webView = new WebView();
         this.webView.setContextMenuEnabled(false);
-        ContextMenu contextMenu = new ContextMenu(MenuItemBuilt.item("Reload page").click(event->{
+        ContextMenu contextMenu = new ContextMenu(MenuItemBuilt.item("Reload page").click(event -> {
             this.webEngine.reload();
             this.injectExtensions();
         }));
@@ -127,7 +127,11 @@ public class SlidePane extends AnchorPane implements Viewable {
     }
 
     public void flipThePage(String rendered) {
-        ((JSObject) getWindow().eval(current.currentSlideType() + "Ext")).call("flipCurrentPage", rendered);
+        try {
+            ((JSObject) getWindow().eval(current.currentSlideType() + "Ext")).call("flipCurrentPage", rendered);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 
     public void loadJs(String... jsPaths) {
@@ -182,7 +186,7 @@ public class SlidePane extends AnchorPane implements Viewable {
         this.setOnSuccess(() -> {
             String slideType = current.currentSlideType();
             if ("revealjs".equals(slideType))
-                this.loadJs("js/jquery.js","js/reveal-extensions.js");
+                this.loadJs("js/jquery.js", "js/reveal-extensions.js");
             if ("deckjs".equals(slideType))
                 this.loadJs("js/deck-extensions.js");
         });

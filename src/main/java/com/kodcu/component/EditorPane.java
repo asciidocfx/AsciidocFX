@@ -140,4 +140,7 @@ public class EditorPane extends AnchorPane {
     }
 
 
+    public void moveCursorTo(Integer lineno) {
+        webEngine.executeScript(String.format("editor.moveCursorTo(%d,0)",(lineno-1)));
+    }
 }
