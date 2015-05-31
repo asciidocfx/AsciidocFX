@@ -1,21 +1,28 @@
 package com.kodcu.component;
 
+import com.kodcu.controller.ApplicationController;
+import com.kodcu.other.Current;
+import com.kodcu.other.IOHelper;
+import com.kodcu.service.ThreadService;
 import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
 import javafx.concurrent.Worker;
-import javafx.event.EventHandler;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.web.WebEngine;
-import javafx.scene.web.WebEvent;
 import javafx.scene.web.WebView;
 import netscape.javascript.JSObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 /**
  * Created by usta on 09.04.2015.
@@ -24,19 +31,22 @@ import java.util.Objects;
 public class HtmlPane extends AnchorPane {
 
     private final WebView webView;
-    private final WebEngine webEngine;
-    private EventHandler<WebEvent<String>> readyHandler;
+    private WebEngine webEngine;
     private final Logger logger = LoggerFactory.getLogger(HtmlPane.class);
+    private final ThreadService threadService;
+    private final ApplicationController controller;
+    private final Current current;
 
-    public HtmlPane() {
+
+    @Autowired
+    public HtmlPane(ThreadService threadService, ApplicationController controller, Current current) {
+        this.threadService = threadService;
+        this.controller = controller;
+        this.current = current;
         this.webView = new WebView();
         this.webView.setContextMenuEnabled(false);
         this.getChildren().add(webView);
         this.webEngine = webView.getEngine();
-        this.webEngine.setOnAlert(event -> {
-            if (Objects.nonNull(readyHandler))
-                readyHandler.handle(event);
-        });
         initializeMargins();
     }
 
@@ -56,6 +66,8 @@ public class HtmlPane extends AnchorPane {
     public void load(String url) {
         if (Objects.nonNull(url))
             Platform.runLater(() -> {
+                webEngine.getLoadWorker().cancel();
+//                webEngine = webView.getEngine();
                 webEngine.load(url);
             });
         else
@@ -68,19 +80,6 @@ public class HtmlPane extends AnchorPane {
 
     public void show() {
         super.setVisible(true);
-    }
-
-    public void setOnReady(EventHandler<WebEvent<String>> readyHandler) {
-        this.readyHandler = readyHandler;
-    }
-
-    public boolean isReady() {
-        try {
-            return (Boolean) ((JSObject) getWindow().eval("Reveal")).call("isReady");
-        } catch (Exception ex) {
-            logger.info(ex.getMessage(), ex);
-            return false;
-        }
     }
 
     public String getLocation() {
@@ -122,7 +121,7 @@ public class HtmlPane extends AnchorPane {
     }
 
     public void startProgressBar() {
-        Platform.runLater(()->{
+        Platform.runLater(() -> {
             webEngine.executeScript("startProgressBar()");
         });
     }
@@ -148,6 +147,52 @@ public class HtmlPane extends AnchorPane {
         return (String) webEngine.executeScript("convertHtmlArticle(editorValue)");
     }
 
+    public void replaceSlides(String rendered) {
+        ((JSObject) getWindow().eval(current.currentSlideType() + "Ext")).call("replaceSlides", rendered);
+    }
+
+    public void flipThePage(String rendered) {
+        ((JSObject) getWindow().eval(current.currentSlideType() + "Ext")).call("flipCurrentPage", rendered);
+    }
+
+    public void loadJs(String... jsPaths) {
+        threadService.runTaskLater(() -> {
+            threadService.runActionLater(() -> {
+
+                for (String jsPath : jsPaths) {
+                    threadService.runActionLater(() -> {
+                        String format = String.format("var scriptEl = document.createElement('script');\n" +
+                                "scriptEl.setAttribute('src','http://localhost:%d/%s');\n" +
+                                "document.querySelector('body').appendChild(scriptEl);", controller.getPort(), jsPath);
+                        webEngine.executeScript(format);
+                    });
+                }
+            });
+        });
+    }
+
+    public String getTemplate(String templateName, String templateDir) throws IOException {
+
+        Stream<Path> slide = Files.find(controller.getConfigPath().resolve("slide").resolve(templateDir), Integer.MAX_VALUE, (path, basicFileAttributes) -> path.toString().contains(templateName));
+
+        Optional<Path> first = slide.findFirst();
+
+        if (!first.isPresent())
+            return "";
+
+        Path path = first.get();
+
+        String template = IOHelper.readFile(path);
+        return template;
+    }
+
+    public void setOnSuccess(Runnable runnable) {
+        webEngine.getLoadWorker().stateProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue == Worker.State.SUCCEEDED)
+                threadService.runActionLater(runnable);
+        });
+    }
+
     public void onscroll(Object pos, Object max) {
 
         if (Objects.isNull(pos) || Objects.isNull(max))
@@ -161,14 +206,6 @@ public class HtmlPane extends AnchorPane {
         Integer browserMaxScroll = (Integer) webEngine.executeScript("document.documentElement.scrollHeight - document.documentElement.clientHeight;");
         double browserScrollOffset = (Double.valueOf(browserMaxScroll) * ratio) / 100.0;
         webEngine.executeScript(String.format("window.scrollTo(0, %f )", browserScrollOffset));
-    }
-
-    public void scrollToCurrentLine(String text) {
-        try {
-            this.call("runScroller", text);
-        } catch (Exception e) {
-            logger.debug(e.getMessage(), e);
-        }
     }
 
     public String findRenderedSelection(String content) {
@@ -188,5 +225,31 @@ public class HtmlPane extends AnchorPane {
 
     public JSObject getWindow() {
         return (JSObject) webEngine.executeScript("window");
+    }
+
+    public void loadX() {
+        if(true)
+        return;
+        Platform.runLater(() -> {
+            this.loadJs(
+                    "js/jade.js",
+                    "js/asciidoctor-all.js",
+                    "js/asciidoctor-uml-block.js",
+                    "js/asciidoctor-math-block.js",
+                    "js/asciidoctor-tree-block.js",
+                    "js/asciidoctor-chart-block.js",
+                    "js/asciidoctor-docbook.js",
+                    "js/asciidoctor-slide.js",
+                    "js/asciidoctor-odf.js",
+                    "js/highlight.pack.js",
+                    "js/to-asciidoc.js",
+                    "js/to-markdown.js",
+                    "js/index.js",
+                    "js/progressbar.min.js",
+                    "js/preview.js",
+                    "js/reveal-extensions.js",
+                    "js/deck-extensions.js"
+            );
+        });
     }
 }

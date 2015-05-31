@@ -1,5 +1,5 @@
 doctype html
-html(lang="en")
+html(lang=document.attr["lang"] || "tr")
     head
         meta(charset="UTF-8")
         each key in ["description","keywords","author","copyright"]
@@ -11,7 +11,7 @@ html(lang="en")
         meta(content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui",name="viewport")
         link(href="reveal.js/css/reveal.css",rel="stylesheet")
         link(rel='stylesheet',href='reveal.js/css/theme/poang.css',id='theme')
-        link(href="reveal.js/lib/css/zenburn.css",rel="stylesheet")
+        //link(href="reveal.js/lib/css/zenburn.css",rel="stylesheet")
         script(type='text/javascript').
             document.write('<link rel="stylesheet" href="reveal.js/css/print/' + ( window.location.search.match(/print-pdf/gi) ? 'pdf' : 'paper' ) + '.css" type="text/css" media="print">');
     body
@@ -25,7 +25,7 @@ html(lang="en")
                 // See https://github.com/hakimel/reveal.js#configuration for a full list of configuration options
                 Reveal.initialize({
                     // Display controls in the bottom right corner
-                    controls: #{attr.revealjs_controls ? attr.revealjs_controls : "true"},
+                    controls: !{attr.revealjs_controls ? attr.revealjs_controls : "true"},
                     // Display a presentation progress bar
                     progress: !{attr.revealjs_progress ? attr.revealjs_progress : "true"},
                     // Display the page number of the current slide

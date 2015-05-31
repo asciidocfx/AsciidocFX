@@ -101,7 +101,7 @@ function convertDocbook(content, includeHeader) {
 
     var options = Opal.hash2(['attributes', 'header_footer', 'safe'],
         {
-            'attributes': ['backend=docbook5', 'doctype=book'],
+            'attributes': ['backend=docbook5', 'doctype=book','env=browser env-browser'],
             'header_footer': includeHeader,
             'safe': 'safe'
         });

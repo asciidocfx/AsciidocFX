@@ -2,9 +2,12 @@ package com.kodcu.component;
 
 import com.kodcu.controller.ApplicationController;
 import com.kodcu.other.Current;
+import com.kodcu.other.IOHelper;
 import com.kodcu.service.ThreadService;
 import javafx.application.Platform;
 import javafx.concurrent.Worker;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.input.MouseButton;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
@@ -17,33 +20,50 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Objects;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 /**
  * Created by usta on 09.04.2015.
  */
-
-public abstract class SlidePane extends AnchorPane {
+@Component
+public class SlidePane extends AnchorPane {
 
     private final WebView webView;
-    private final WebEngine webEngine;
-    protected final Logger logger = LoggerFactory.getLogger(SlidePane.class);
+    private WebEngine webEngine;
+    private final Logger logger = LoggerFactory.getLogger(SlidePane.class);
     private final ThreadService threadService;
     private final ApplicationController controller;
     private final Current current;
 
 
+    @Autowired
     public SlidePane(ThreadService threadService, ApplicationController controller, Current current) {
         this.threadService = threadService;
         this.controller = controller;
         this.current = current;
         this.webView = new WebView();
+        this.webView.setContextMenuEnabled(false);
+        ContextMenu contextMenu = new ContextMenu(MenuItemBuilt.item("Reload page").click(event->{
+            this.webEngine.reload();
+            this.injectExtensions();
+        }));
+
+        contextMenu.setAutoHide(true);
+        this.getWebView().setOnMouseClicked(event -> {
+            if (event.getButton() == MouseButton.SECONDARY) {
+                contextMenu.show(this.getWebView(), event.getScreenX(), event.getScreenY());
+            } else {
+                contextMenu.hide();
+            }
+        });
+
         this.getChildren().add(webView);
         this.webEngine = webView.getEngine();
         initializeMargins();
-        this.hide();
     }
 
     private void initializeMargins() {
@@ -63,6 +83,7 @@ public abstract class SlidePane extends AnchorPane {
         if (Objects.nonNull(url))
             Platform.runLater(() -> {
                 webEngine.getLoadWorker().cancel();
+//                webEngine = webView.getEngine();
                 webEngine.load(url);
             });
         else
@@ -81,6 +102,64 @@ public abstract class SlidePane extends AnchorPane {
         return webEngine.getLocation();
     }
 
+    public void setMember(String name, Object value) {
+        getWindow().setMember(name, value);
+    }
+
+    public void call(String methodName, Object... args) {
+        getWindow().call(methodName, args);
+    }
+
+    public Object getMember(String name) {
+        return getWindow().getMember(name);
+    }
+
+    public WebEngine getWebEngine() {
+        return webEngine;
+    }
+
+    public WebView getWebView() {
+        return webView;
+    }
+
+    public void replaceSlides(String rendered) {
+        ((JSObject) getWindow().eval(current.currentSlideType() + "Ext")).call("replaceSlides", rendered);
+    }
+
+    public void flipThePage(String rendered) {
+        ((JSObject) getWindow().eval(current.currentSlideType() + "Ext")).call("flipCurrentPage", rendered);
+    }
+
+    public void loadJs(String... jsPaths) {
+        threadService.runTaskLater(() -> {
+            threadService.runActionLater(() -> {
+                for (String jsPath : jsPaths) {
+                    threadService.runActionLater(() -> {
+                        String format = String.format("var scriptEl = document.createElement('script');\n" +
+                                "scriptEl.setAttribute('src','http://localhost:%d/%s');\n" +
+                                "document.querySelector('body').appendChild(scriptEl);", controller.getPort(), jsPath);
+                        webEngine.executeScript(format);
+                    });
+                }
+            });
+        });
+    }
+
+    public String getTemplate(String templateName, String templateDir) throws IOException {
+
+        Stream<Path> slide = Files.find(controller.getConfigPath().resolve("slide").resolve(templateDir), Integer.MAX_VALUE, (path, basicFileAttributes) -> path.toString().contains(templateName));
+
+        Optional<Path> first = slide.findFirst();
+
+        if (!first.isPresent())
+            return "";
+
+        Path path = first.get();
+
+        String template = IOHelper.readFile(path);
+        return template;
+    }
+
     public void setOnSuccess(Runnable runnable) {
         webEngine.getLoadWorker().stateProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue == Worker.State.SUCCEEDED)
@@ -88,27 +167,23 @@ public abstract class SlidePane extends AnchorPane {
         });
     }
 
-    public abstract boolean isReady();
-    public abstract void replaceSlides(String rendered);
-    public abstract String getTemplate(String templateName, String templateDir) throws IOException;
-    public abstract void flipThePage(String rendered);
 
-    public void loadJs(String... jsPaths) {
-        threadService.runTaskLater(() -> {
-            threadService.runActionLater(() -> {
-                for (String jsPath : jsPaths) {
-                    String format = String.format("var scriptEl = document.createElement('script');\n" +
-                            "scriptEl.setAttribute('src','http://localhost:%d/%s');\n" +
-                            "document.querySelector('body').appendChild(scriptEl);", controller.getPort(), jsPath);
-                    webEngine.executeScript(format);
-                }
-            });
-
-
-        });
+    public String findRenderedSelection(String content) {
+        this.setMember("context", content);
+        return (String) webEngine.executeScript("findRenderedSelection(context)");
     }
 
-    protected JSObject getWindow() {
+    public JSObject getWindow() {
         return (JSObject) webEngine.executeScript("window");
+    }
+
+    public void injectExtensions() {
+        this.setOnSuccess(() -> {
+            String slideType = current.currentSlideType();
+            if ("revealjs".equals(slideType))
+                this.loadJs("js/jquery.js","js/reveal-extensions.js");
+            if ("deckjs".equals(slideType))
+                this.loadJs("js/deck-extensions.js");
+        });
     }
 }

@@ -1,2 +1,1952 @@
-!function(a){var b=a.top,c=a.nil,d=(a.breaker,a.slice,a.module),e=a.klass,f=a.hash2;return function(b){var g=d(b,"Asciidoctor"),h=(g._proto,g._scope);!function(b,d){function g(){}var h=g=e(b,d,"DocBook5Converter",g),i=h._proto,j=h._scope;return i.$document=function(a){var b,d=this,e=c,f=c,g=c,h=c,i=c;return e=[],(f=a.$doctype())["$=="]("manpage")&&(f="refentry"),e["$<<"]('<?xml version="1.0" encoding="UTF-8"?>'),(b=g=d.$doctype_declaration(f))===c||b._isBoolean&&1!=b||e["$<<"](g),(b=a["$attr?"]("toc"))===c||b._isBoolean&&1!=b||e["$<<"]((b=a["$attr?"]("toclevels"))===c||b._isBoolean&&1!=b?"<?asciidoc-toc?>":'<?asciidoc-toc maxdepth="'+a.$attr("toclevels")+'"?>'),(b=a["$attr?"]("sectnums"))===c||b._isBoolean&&1!=b||e["$<<"]((b=a["$attr?"]("sectnumlevels"))===c||b._isBoolean&&1!=b?"<?asciidoc-numbered?>":'<?asciidoc-numbered maxdepth="'+a.$attr("sectnumlevels")+'"?>'),h=function(){return(b=a["$attr?"]("nolang"))===c||b._isBoolean&&1!=b?" "+d.$lang_attribute_name()+'="'+a.$attr("lang","en")+'"':c}(),e["$<<"]("<"+f+d.$document_ns_attributes(a)+h+">"),e["$<<"](d.$document_info_element(a,f)),(b=a["$blocks?"]())===c||b._isBoolean&&1!=b||e["$<<"](a.$content()),((b=(i=a.$docinfo("footer"))["$empty?"]())===c||b._isBoolean&&1!=b)&&e["$<<"](i),e["$<<"]("</"+f+">"),e["$*"](j.EOL)},a.defn(h,"$embedded",i.$content),i.$section=function(a){var b,d,e=this,f=c,g=c;return f=a.$document().$doctype(),g=function(){return(b=a.$special())===c||b._isBoolean&&1!=b?(b=(d=f["$=="]("book"))?a.$level()["$<="](1):d)===c||b._isBoolean&&1!=b?"section":function(){return a.$level()["$=="](0)?"part":"chapter"}():a.$level()["$<="](1)?a.$sectname():"section"}(),f["$=="]("manpage")&&(g["$=="]("section")?g="refsection":g["$=="]("synopsis")&&(g="refsynopsisdiv")),"<"+g+e.$common_attributes(a.$id(),a.$role(),a.$reftext())+">\n<title>"+a.$title()+"</title>\n"+a.$content()+"\n</"+g+">"},i.$admonition=function(a){var b=this,d=c;return"<"+(d=a.$attr("name"))+b.$common_attributes(a.$id(),a.$role(),a.$reftext())+">\n"+b.$title_tag(a)+b.$resolve_content(a)+"\n</"+d+">"},a.defn(h,"$audio",i.$skip),i.$colist=function(a){var b,d,e,f=this,g=c;return g=[],g["$<<"]("<calloutlist"+f.$common_attributes(a.$id(),a.$role(),a.$reftext())+">"),(b=a["$title?"]())===c||b._isBoolean&&1!=b||g["$<<"]("<title>"+a.$title()+"</title>"),(b=(d=a.$items()).$each,b._p=(e=function(a){{var b;e._s||this}return null==a&&(a=c),g["$<<"]('<callout arearefs="'+a.$attr("coids")+'">'),g["$<<"]("<para>"+a.$text()+"</para>"),(b=a["$blocks?"]())===c||b._isBoolean&&1!=b||g["$<<"](a.$content()),g["$<<"]("</callout>")},e._s=f,e),b).call(d),g["$<<"]("</calloutlist>"),g["$*"](j.EOL)},a.cdecl(j,"DLIST_TAGS",f(["labeled","qanda","glossary"],{labeled:f(["list","entry","term","item"],{list:"variablelist",entry:"varlistentry",term:"term",item:"listitem"}),qanda:f(["list","entry","label","term","item"],{list:"qandaset",entry:"qandaentry",label:"question",term:"simpara",item:"answer"}),glossary:f(["list","entry","term","item"],{list:c,entry:"glossentry",term:"glossterm",item:"glossdef"})})),j.DLIST_TAGS["$default="](j.DLIST_TAGS["$[]"]("labeled")),i.$dlist=function(a){var b,d,e,f,g,h=this,i=c,k=c,l=c,m=c,n=c,o=c,p=c,q=c;return i=[],a.$style()["$=="]("horizontal")?(i["$<<"]("<"+(k=function(){return(b=a["$title?"]())===c||b._isBoolean&&1!=b?"informaltable":"table"}())+h.$common_attributes(a.$id(),a.$role(),a.$reftext())+' tabstyle="horizontal" frame="none" colsep="0" rowsep="0">\n'+h.$title_tag(a)+'<tgroup cols="2">\n<colspec colwidth="'+a.$attr("labelwidth",15)+'*"/>\n<colspec colwidth="'+a.$attr("itemwidth",85)+'*"/>\n<tbody valign="top">'),(b=(d=a.$items()).$each,b._p=(e=function(a,b){var d,f,g,h=e._s||this;return null==a&&(a=c),null==b&&(b=c),i["$<<"]("<row>\n<entry>"),(d=(f=[].concat(a)).$each,d._p=(g=function(a){g._s||this;return null==a&&(a=c),i["$<<"]("<simpara>"+a.$text()+"</simpara>")},g._s=h,g),d).call(f),i["$<<"]("</entry>\n<entry>"),((d=b["$nil?"]())===c||d._isBoolean&&1!=d)&&((d=b["$text?"]())===c||d._isBoolean&&1!=d||i["$<<"]("<simpara>"+b.$text()+"</simpara>"),(d=b["$blocks?"]())===c||d._isBoolean&&1!=d||i["$<<"](b.$content())),i["$<<"]("</entry>\n</row>")},e._s=h,e),b).call(d),i["$<<"]("</tbody>\n</tgroup>\n</"+k+">")):(l=j.DLIST_TAGS["$[]"](a.$style()),m=l["$[]"]("list"),n=l["$[]"]("entry"),o=l["$[]"]("label"),p=l["$[]"]("term"),q=l["$[]"]("item"),m!==!1&&m!==c&&(i["$<<"]("<"+m+h.$common_attributes(a.$id(),a.$role(),a.$reftext())+">"),(b=a["$title?"]())===c||b._isBoolean&&1!=b||i["$<<"]("<title>"+a.$title()+"</title>")),(b=(f=a.$items()).$each,b._p=(g=function(a,b){var d,e,f,h=g._s||this;return null==a&&(a=c),null==b&&(b=c),i["$<<"]("<"+n+">"),o!==!1&&o!==c&&i["$<<"]("<"+o+">"),(d=(e=[].concat(a)).$each,d._p=(f=function(a){f._s||this;return null==a&&(a=c),i["$<<"]("<"+p+">"+a.$text()+"</"+p+">")},f._s=h,f),d).call(e),o!==!1&&o!==c&&i["$<<"]("</"+o+">"),i["$<<"]("<"+q+">"),((d=b["$nil?"]())===c||d._isBoolean&&1!=d)&&((d=b["$text?"]())===c||d._isBoolean&&1!=d||i["$<<"]("<simpara>"+b.$text()+"</simpara>"),(d=b["$blocks?"]())===c||d._isBoolean&&1!=d||i["$<<"](b.$content())),i["$<<"]("</"+q+">"),i["$<<"]("</"+n+">")},g._s=h,g),b).call(f),m!==!1&&m!==c&&i["$<<"]("</"+m+">")),i["$*"](j.EOL)},i.$example=function(a){var b,d=this;return(b=a["$title?"]())===c||b._isBoolean&&1!=b?"<informalexample"+d.$common_attributes(a.$id(),a.$role(),a.$reftext())+">\n"+d.$resolve_content(a)+"\n</informalexample>":"<example"+d.$common_attributes(a.$id(),a.$role(),a.$reftext())+">\n<title>"+a.$title()+"</title>\n"+d.$resolve_content(a)+"\n</example>"},i.$floating_title=function(a){var b=this;return"<bridgehead"+b.$common_attributes(a.$id(),a.$role(),a.$reftext())+' renderas="sect'+a.$level()+'">'+a.$title()+"</bridgehead>"},i.$image=function(a){var b,d=this,e=c,f=c,g=c,h=c,i=c,j=c;return e=function(){return(b=a["$attr?"]("width"))===c||b._isBoolean&&1!=b?c:' contentwidth="'+a.$attr("width")+'"'}(),f=function(){return(b=a["$attr?"]("height"))===c||b._isBoolean&&1!=b?c:' contentdepth="'+a.$attr("height")+'"'}(),g=function(){return(b=a["$attr?"]("scaledwidth"))===c||b._isBoolean&&1!=b?c:' width="'+a.$attr("scaledwidth")+'" scalefit="1"'}(),h=function(){return(b=a["$attr?"]("scale"))===c||b._isBoolean&&1!=b?c:' scale="'+a.$attr("scale")+'"'}(),i=function(){return(b=a["$attr?"]("align"))===c||b._isBoolean&&1!=b?c:' align="'+a.$attr("align")+'"'}(),j='<mediaobject>\n<imageobject>\n<imagedata fileref="'+a.$image_uri(a.$attr("target"))+'"'+e+f+g+h+i+"/>\n</imageobject>\n<textobject><phrase>"+a.$attr("alt")+"</phrase></textobject>\n</mediaobject>",(b=a["$title?"]())===c||b._isBoolean&&1!=b?"<informalfigure"+d.$common_attributes(a.$id(),a.$role(),a.$reftext())+">\n"+j+"\n</informalfigure>":"<figure"+d.$common_attributes(a.$id(),a.$role(),a.$reftext())+">\n<title>"+a.$title()+"</title>\n"+j+"\n</figure>"},i.$listing=function(a){var b,d,e=this,f=c,g=c,h=c,i=c;return f=a["$title?"]()["$!"](),g=e.$common_attributes(a.$id(),a.$role(),a.$reftext()),(b=(d=a.$style()["$=="]("source"))?a["$attr?"]("language"):d)===c||b._isBoolean&&1!=b?i="<screen"+function(){return f!==!1&&f!==c?g:c}()+">"+a.$content()+"</screen>":(h=function(){return(b=a["$attr?"]("linenums"))===c||b._isBoolean&&1!=b?"unnumbered":"numbered"}(),i="<programlisting"+function(){return f!==!1&&f!==c?g:c}()+' language="'+a.$attr("language",c,!1)+'" linenumbering="'+h+'">'+a.$content()+"</programlisting>"),f!==!1&&f!==c?i:"<formalpara"+g+">\n<title>"+a.$title()+"</title>\n<para>\n"+i+"\n</para>\n</formalpara>"},i.$literal=function(a){var b,d=this;return(b=a["$title?"]())===c||b._isBoolean&&1!=b?"<literallayout"+d.$common_attributes(a.$id(),a.$role(),a.$reftext())+' class="monospaced">'+a.$content()+"</literallayout>":"<formalpara"+d.$common_attributes(a.$id(),a.$role(),a.$reftext())+">\n<title>"+a.$title()+'</title>\n<para>\n<literallayout class="monospaced">'+a.$content()+"</literallayout>\n</para>\n</formalpara>"},i.$stem=function(a){var b,d=this,e=c,f=c,g=c;return(b=e=a.$subs().$index("specialcharacters"))===c||b._isBoolean&&1!=b||a.$subs().$delete("specialcharacters"),f=a.$content(),e!==!1&&e!==c&&a.$subs().$insert(e,"specialcharacters"),g=a.$style()["$=="]("latexmath")?"<alt><![CDATA["+f+"]]></alt>\n<mediaobject><textobject><phrase></phrase></textobject></mediaobject>":"<mediaobject><textobject><phrase><![CDATA["+f+"]]></phrase></textobject></mediaobject>",(b=a["$title?"]())===c||b._isBoolean&&1!=b?"<informalequation"+d.$common_attributes(a.$id(),a.$role(),a.$reftext())+">\n"+g+"\n</informalequation>":"<equation"+d.$common_attributes(a.$id(),a.$role(),a.$reftext())+">\n<title>"+a.$title()+"</title>\n"+g+"\n</equation>"},i.$olist=function(a){var b,d,e,f=this,g=c,h=c,i=c;return g=[],h=function(){return(b=a.$style())===c||b._isBoolean&&1!=b?c:' numeration="'+a.$style()+'"'}(),i=function(){return(b=a["$attr?"]("start"))===c||b._isBoolean&&1!=b?c:' startingnumber="'+a.$attr("start")+'"'}(),g["$<<"]("<orderedlist"+f.$common_attributes(a.$id(),a.$role(),a.$reftext())+h+i+">"),(b=a["$title?"]())===c||b._isBoolean&&1!=b||g["$<<"]("<title>"+a.$title()+"</title>"),(b=(d=a.$items()).$each,b._p=(e=function(a){{var b;e._s||this}return null==a&&(a=c),g["$<<"]("<listitem>"),g["$<<"]("<simpara>"+a.$text()+"</simpara>"),(b=a["$blocks?"]())===c||b._isBoolean&&1!=b||g["$<<"](a.$content()),g["$<<"]("</listitem>")},e._s=f,e),b).call(d),g["$<<"]("</orderedlist>"),g["$*"](j.EOL)},i.$open=function(a){var b,d,e,f=this,g=c;return function(){return g=a.$style(),"abstract"["$==="](g)?(b=(d=a.$parent()["$=="](a.$document()))?a.$document()["$attr?"]("doctype","book"):d)===c||b._isBoolean&&1!=b?"<abstract>\n"+f.$title_tag(a)+f.$resolve_content(a)+"\n</abstract>":(f.$warn("asciidoctor: WARNING: abstract block cannot be used in a document without a title when doctype is book. Excluding block content."),""):"partintro"["$==="](g)?(d=(e=a.$level()["$=="](0))?a.$parent().$context()["$=="]("section"):e,(b=d!==!1&&d!==c?a.$document().$doctype()["$=="]("book"):d)===c||b._isBoolean&&1!=b?(f.$warn("asciidoctor: ERROR: partintro block can only be used when doctype is book and it's a child of a part section. Excluding block content."),""):"<partintro"+f.$common_attributes(a.$id(),a.$role(),a.$reftext())+">\n"+f.$title_tag(a)+f.$resolve_content(a)+"\n</partintro>"):a.$content()}()},i.$page_break=function(){return"<simpara><?asciidoc-pagebreak?></simpara>"},i.$paragraph=function(a){var b,d=this;return(b=a["$title?"]())===c||b._isBoolean&&1!=b?"<simpara"+d.$common_attributes(a.$id(),a.$role(),a.$reftext())+">"+a.$content()+"</simpara>":"<formalpara"+d.$common_attributes(a.$id(),a.$role(),a.$reftext())+">\n<title>"+a.$title()+"</title>\n<para>"+a.$content()+"</para>\n</formalpara>"},i.$preamble=function(a){var b=this;return a.$document().$doctype()["$=="]("book")?"<preface"+b.$common_attributes(a.$id(),a.$role(),a.$reftext())+">\n"+b.$title_tag(a,!1)+a.$content()+"\n</preface>":a.$content()},i.$quote=function(a){var b,d,e=this,f=c;return f=[],f["$<<"]("<blockquote"+e.$common_attributes(a.$id(),a.$role(),a.$reftext())+">"),(b=a["$title?"]())===c||b._isBoolean&&1!=b||f["$<<"]("<title>"+a.$title()+"</title>"),(b=(d=a["$attr?"]("attribution"))!==!1&&d!==c?d:a["$attr?"]("citetitle"))===c||b._isBoolean&&1!=b||(f["$<<"]("<attribution>"),(b=a["$attr?"]("attribution"))===c||b._isBoolean&&1!=b||f["$<<"](a.$attr("attribution")),(b=a["$attr?"]("citetitle"))===c||b._isBoolean&&1!=b||f["$<<"]("<citetitle>"+a.$attr("citetitle")+"</citetitle>"),f["$<<"]("</attribution>")),f["$<<"](e.$resolve_content(a)),f["$<<"]("</blockquote>"),f["$*"](j.EOL)},i.$thematic_break=function(){return"<simpara><?asciidoc-hr?></simpara>"},i.$sidebar=function(a){var b=this;return"<sidebar"+b.$common_attributes(a.$id(),a.$role(),a.$reftext())+">\n"+b.$title_tag(a)+b.$resolve_content(a)+"\n</sidebar>"},a.cdecl(j,"TABLE_PI_NAMES",["dbhtml","dbfo","dblatex"]),a.cdecl(j,"TABLE_SECTIONS",["head","foot","body"]),i.$table=function(a){var b,d,e,f,g,h,i,k,l,m,n=this,o=c,p=c,q=c,r=c,s=c;return o=!1,p=[],q=function(){return(b=a["$option?"]("pgwide"))===c||b._isBoolean&&1!=b?c:' pgwide="1"'}(),p["$<<"]("<"+(r=function(){return(b=a["$title?"]())===c||b._isBoolean&&1!=b?"informaltable":"table"}())+n.$common_attributes(a.$id(),a.$role(),a.$reftext())+q+' frame="'+a.$attr("frame","all")+'" rowsep="'+function(){return(b=["none","cols"]["$include?"](a.$attr("grid")))===c||b._isBoolean&&1!=b?1:0}()+'" colsep="'+function(){return(b=["none","rows"]["$include?"](a.$attr("grid")))===c||b._isBoolean&&1!=b?1:0}()+'">'),r["$=="]("table")&&p["$<<"]("<title>"+a.$title()+"</title>"),(b=s=function(){return(d=a["$attr?"]("width"))===c||d._isBoolean&&1!=d?c:a.$attr("width")}())===c||b._isBoolean&&1!=b||(b=(d=j.TABLE_PI_NAMES).$each,b._p=(e=function(a){e._s||this;return null==a&&(a=c),p["$<<"]("<?"+a+' table-width="'+s+'"?>')},e._s=n,e),b).call(d),p["$<<"]('<tgroup cols="'+a.$attr("colcount")+'">'),(b=(f=a.$columns()).$each,b._p=(g=function(a){g._s||this;return null==a&&(a=c),p["$<<"]('<colspec colname="col_'+a.$attr("colnumber")+'" colwidth="'+a.$attr(function(){return s!==!1&&s!==c?"colabswidth":"colpcwidth"}())+'*"/>')},g._s=n,g),b).call(f),(b=(h=(k=(l=j.TABLE_SECTIONS).$select,k._p=(m=function(b){m._s||this;return null==b&&(b=c),a.$rows()["$[]"](b)["$empty?"]()["$!"]()},m._s=n,m),k).call(l)).$each,b._p=(i=function(b){var d,e,f,g=i._s||this;return null==b&&(b=c),b["$=="]("body")&&(o=!0),p["$<<"]("<t"+b+">"),(d=(e=a.$rows()["$[]"](b)).$each,d._p=(f=function(d){var e,g,h,i=f._s||this;return null==d&&(d=c),p["$<<"]("<row>"),(e=(g=d).$each,e._p=(h=function(d){var e,f,g,i,j,k=h._s||this,l=c,m=c,n=c,o=c,q=c,r=c,s=c,t=c,u=c;return null==d&&(d=c),l=function(){return(e=d["$attr?"]("halign"))===c||e._isBoolean&&1!=e?c:' align="'+d.$attr("halign")+'"'}(),m=function(){return(e=d["$attr?"]("valign"))===c||e._isBoolean&&1!=e?c:' valign="'+d.$attr("valign")+'"'}(),n=function(){return(e=d.$colspan())===c||e._isBoolean&&1!=e?c:' namest="col_'+(o=d.$column().$attr("colnumber"))+'" nameend="col_'+o["$+"](d.$colspan())["$-"](1)+'"'}(),q=function(){return(e=d.$rowspan())===c||e._isBoolean&&1!=e?c:' morerows="'+d.$rowspan()["$-"](1)+'"'}(),r="<entry"+l+m+n+q+">",s=function(){return b["$=="]("head")?d.$text():function(){return t=d.$style(),"asciidoc"["$==="](t)?d.$content():"verse"["$==="](t)?"<literallayout>"+d.$text()+"</literallayout>":"literal"["$==="](t)?'<literallayout class="monospaced">'+d.$text()+"</literallayout>":"header"["$==="](t)?(e=(f=d.$content()).$map,e._p=(g=function(a){g._s||this;return null==a&&(a=c),'<simpara><emphasis role="strong">'+a+"</emphasis></simpara>"},g._s=k,g),e).call(f).$join():(e=(i=d.$content()).$map,e._p=(j=function(a){j._s||this;return null==a&&(a=c),"<simpara>"+a+"</simpara>"},j._s=k,j),e).call(i).$join()}()}(),u=function(){return(e=a.$document()["$attr?"]("cellbgcolor"))===c||e._isBoolean&&1!=e?"</entry>":'<?dbfo bgcolor="'+a.$document().$attr("cellbgcolor")+'"?></entry>'}(),p["$<<"](""+r+s+u)},h._s=i,h),e).call(g),p["$<<"]("</row>")},f._s=g,f),d).call(e),p["$<<"]("</t"+b+">")},i._s=n,i),b).call(h),p["$<<"]("</tgroup>"),p["$<<"]("</"+r+">"),o!==!1&&o!==c||n.$warn("asciidoctor: WARNING: tables must have at least one body row"),p["$*"](j.EOL)},a.defn(h,"$toc",i.$skip),i.$ulist=function(a){var b,d,e,f,g,h=this,i=c,k=c,l=c,m=c;return i=[],a.$style()["$=="]("bibliography")?(i["$<<"]("<bibliodiv"+h.$common_attributes(a.$id(),a.$role(),a.$reftext())+">"),(b=a["$title?"]())===c||b._isBoolean&&1!=b||i["$<<"]("<title>"+a.$title()+"</title>"),(b=(d=a.$items()).$each,b._p=(e=function(a){{var b;e._s||this}return null==a&&(a=c),i["$<<"]("<bibliomixed>"),i["$<<"]("<bibliomisc>"+a.$text()+"</bibliomisc>"),(b=a["$blocks?"]())===c||b._isBoolean&&1!=b||i["$<<"](a.$content()),i["$<<"]("</bibliomixed>")},e._s=h,e),b).call(d),i["$<<"]("</bibliodiv>")):(k=function(){return(b=l=a["$option?"]("checklist"))===c||b._isBoolean&&1!=b?a.$style():"none"}(),m=function(){return k!==!1&&k!==c?' mark="'+k+'"':c}(),i["$<<"]("<itemizedlist"+h.$common_attributes(a.$id(),a.$role(),a.$reftext())+m+">"),(b=a["$title?"]())===c||b._isBoolean&&1!=b||i["$<<"]("<title>"+a.$title()+"</title>"),(b=(f=a.$items()).$each,b._p=(g=function(a){var b,d,e=(g._s||this,c);return null==a&&(a=c),e=function(){return(b=(d=l!==!1&&l!==c)?a["$attr?"]("checkbox"):d)===c||b._isBoolean&&1!=b?c:(b=a["$attr?"]("checked"))===c||b._isBoolean&&1!=b?"&#10063; ":"&#10003; "}(),i["$<<"]("<listitem>"),i["$<<"]("<simpara>"+e+a.$text()+"</simpara>"),(b=a["$blocks?"]())===c||b._isBoolean&&1!=b||i["$<<"](a.$content()),i["$<<"]("</listitem>")},g._s=h,g),b).call(f),i["$<<"]("</itemizedlist>")),i["$*"](j.EOL)},i.$verse=function(a){var b,d,e=this,f=c;return f=[],f["$<<"]("<blockquote"+e.$common_attributes(a.$id(),a.$role(),a.$reftext())+">"),(b=a["$title?"]())===c||b._isBoolean&&1!=b||f["$<<"]("<title>"+a.$title()+"</title>"),(b=(d=a["$attr?"]("attribution"))!==!1&&d!==c?d:a["$attr?"]("citetitle"))===c||b._isBoolean&&1!=b||(f["$<<"]("<attribution>"),(b=a["$attr?"]("attribution"))===c||b._isBoolean&&1!=b||f["$<<"](a.$attr("attribution")),(b=a["$attr?"]("citetitle"))===c||b._isBoolean&&1!=b||f["$<<"]("<citetitle>"+a.$attr("citetitle")+"</citetitle>"),f["$<<"]("</attribution>")),f["$<<"]("<literallayout>"+a.$content()+"</literallayout>"),f["$<<"]("</blockquote>"),f["$*"](j.EOL)},a.defn(h,"$video",i.$skip),i.$inline_anchor=function(a){var b,d=this,e=c,f=c,g=c;return function(){return e=a.$type(),"ref"["$==="](e)?"<anchor"+d.$common_attributes(a.$target(),c,a.$text())+"/>":"xref"["$==="](e)?(b=a["$attr?"]("path",c))===c||b._isBoolean&&1!=b?'<link xlink:href="'+d.$target()+'">'+((b=a.$text())!==!1&&b!==c?b:a.$attr("path"))+"</link>":(f=(b=a.$attr("fragment"))!==!1&&b!==c?b:a.$target(),(b=g=a.$text())===c||b._isBoolean&&1!=b?'<xref linkend="'+f+'"/>':'<link linkend="'+f+'">'+g+"</link>"):"link"["$==="](e)?'<link xlink:href="'+a.$target()+'">'+a.$text()+"</link>":"bibref"["$==="](e)?"<anchor"+d.$common_attributes(a.$target(),c,"["+a.$target()+"]")+"/>["+a.$target()+"]":d.$warn("asciidoctor: WARNING: unknown anchor type: "+a.$type().$inspect())}()},i.$inline_break=function(a){return""+a.$text()+"<?asciidoc-br?>"},i.$inline_button=function(a){return"<guibutton>"+a.$text()+"</guibutton>"},i.$inline_callout=function(a){var b=this;return"<co"+b.$common_attributes(a.$id())+"/>"},i.$inline_footnote=function(a){var b=this;return a.$type()["$=="]("xref")?'<footnoteref linkend="'+a.$target()+'"/>':"<footnote"+b.$common_attributes(a.$id())+"><simpara>"+a.$text()+"</simpara></footnote>"},i.$inline_image=function(a){var b,d=c,e=c;return d=function(){return(b=a["$attr?"]("width"))===c||b._isBoolean&&1!=b?c:' contentwidth="'+a.$attr("width")+'"'}(),e=function(){return(b=a["$attr?"]("height"))===c||b._isBoolean&&1!=b?c:' contentdepth="'+a.$attr("height")+'"'}(),'<inlinemediaobject>\n<imageobject>\n<imagedata fileref="'+function(){return a.$type()["$=="]("icon")?a.$icon_uri(a.$target()):a.$image_uri(a.$target())}()+'"'+d+e+"/>\n</imageobject>\n<textobject><phrase>"+a.$attr("alt")+"</phrase></textobject>\n</inlinemediaobject>"},i.$inline_indexterm=function(a){var b=c,d=c,e=c;return a.$type()["$=="]("visible")?"<indexterm><primary>"+a.$text()+"</primary></indexterm>"+a.$text():(b=a.$attr("terms"),d=[],(e=b.$size())["$>"](2)&&d["$<<"]("<indexterm>\n<primary>"+b["$[]"](0)+"</primary><secondary>"+b["$[]"](1)+"</secondary><tertiary>"+b["$[]"](2)+"</tertiary>\n</indexterm>"),e["$>"](1)&&d["$<<"]("<indexterm>\n<primary>"+b["$[]"](-2)+"</primary><secondary>"+b["$[]"](-1)+"</secondary>\n</indexterm>"),d["$<<"]("<indexterm>\n<primary>"+b["$[]"](-1)+"</primary>\n</indexterm>"),d["$*"](j.EOL))},i.$inline_kbd=function(a){var b,d,e,f=this,g=c,h=c;return(g=a.$attr("keys")).$size()["$=="](1)?"<keycap>"+g["$[]"](0)+"</keycap>":(h=(b=(d=g).$map,b._p=(e=function(a){e._s||this;return null==a&&(a=c),"<keycap>"+a+"</keycap>"},e._s=f,e),b).call(d).$join(),"<keycombo>"+h+"</keycombo>")},i.$inline_menu=function(a){var b,d,e,f=this,g=c,h=c,i=c,j=c;return g=a.$attr("menu"),(b=(h=a.$attr("submenus"))["$empty?"]()["$!"]())===c||b._isBoolean&&1!=b?(b=j=a.$attr("menuitem"))===c||b._isBoolean&&1!=b?"<guimenu>"+g+"</guimenu>":"<menuchoice><guimenu>"+g+"</guimenu> <guimenuitem>"+j+"</guimenuitem></menuchoice>":(i=(b=(d=h).$map,b._p=(e=function(a){e._s||this;return null==a&&(a=c),"<guisubmenu>"+a+"</guisubmenu> "},e._s=f,e),b).call(d).$join().$chop(),"<menuchoice><guimenu>"+g+"</guimenu> "+i+" <guimenuitem>"+a.$attr("menuitem")+"</guimenuitem></menuchoice>")},a.cdecl(j,"QUOTE_TAGS",f(["emphasis","strong","monospaced","superscript","subscript","double","single","mark"],{emphasis:["<emphasis>","</emphasis>",!0],strong:['<emphasis role="strong">',"</emphasis>",!0],monospaced:["<literal>","</literal>",!1],superscript:["<superscript>","</superscript>",!1],subscript:["<subscript>","</subscript>",!1],"double":["&#8220;","&#8221;",!0],single:["&#8216;","&#8217;",!0],mark:['<emphasis role="marked">',"</emphasis>",!1]})),j.QUOTE_TAGS["$default="]([c,c,!0]),i.$inline_quoted=function(b){var d,e=this,f=c,g=c,h=c,i=c,k=c,l=c,m=c;return(f=b.$type())["$=="]("latexmath")?"<inlineequation>\n<alt><![CDATA["+b.$text()+"]]></alt>\n<inlinemediaobject><textobject><phrase><![CDATA["+b.$text()+"]]></phrase></textobject></inlinemediaobject>\n</inlineequation>":(d=a.to_ary(j.QUOTE_TAGS["$[]"](f)),g=null==d[0]?c:d[0],h=null==d[1]?c:d[1],i=null==d[2]?c:d[2],k=b.$text(),m=(d=l=b.$role())===c||d._isBoolean&&1!=d?""+g+k+h:i!==!1&&i!==c?""+g+'<phrase role="'+l+'">'+k+"</phrase>"+h:""+g.$chop()+' role="'+l+'">'+k+h,(d=b.$id())===c||d._isBoolean&&1!=d?m:"<anchor"+e.$common_attributes(b.$id(),c,k)+"/>"+m)},i.$author_element=function(a,b){var d,e=c,f=c,g=c,h=c,i=c;return null==b&&(b=c),e=function(){return b!==!1&&b!==c?"firstname_"+b:"firstname"}(),f=function(){return b!==!1&&b!==c?"middlename_"+b:"middlename"}(),g=function(){return b!==!1&&b!==c?"lastname_"+b:"lastname"}(),h=function(){return b!==!1&&b!==c?"email_"+b:"email"}(),i=[],i["$<<"]("<author>"),i["$<<"]("<personname>"),(d=a["$attr?"](e))===c||d._isBoolean&&1!=d||i["$<<"]("<firstname>"+a.$attr(e)+"</firstname>"),(d=a["$attr?"](f))===c||d._isBoolean&&1!=d||i["$<<"]("<othername>"+a.$attr(f)+"</othername>"),(d=a["$attr?"](g))===c||d._isBoolean&&1!=d||i["$<<"]("<surname>"+a.$attr(g)+"</surname>"),i["$<<"]("</personname>"),(d=a["$attr?"](h))===c||d._isBoolean&&1!=d||i["$<<"]("<email>"+a.$attr(h)+"</email>"),i["$<<"]("</author>"),i["$*"](j.EOL)},i.$common_attributes=function(a,b,d){var e=c;return null==b&&(b=c),null==d&&(d=c),e=function(){return a!==!1&&a!==c?' xml:id="'+a+'"':""}(),b!==!1&&b!==c&&(e=""+e+' role="'+b+'"'),d!==!1&&d!==c&&(e=""+e+' xreflabel="'+d+'"'),e},i.$doctype_declaration=function(){return c},i.$document_info_element=function(a,b,d){var e,g,h,i,k,l=this,m=c,n=c,o=c;return null==d&&(d=!1),d!==!1&&d!==c||(b=""),m=[],m["$<<"]("<"+b+"info>"),((e=a.$notitle())===c||e._isBoolean&&1!=e)&&m["$<<"](l.$document_title_tags(a.$doctitle(f(["partition","use_fallback"],{partition:!0,use_fallback:!0})))),m["$<<"]("<date>"+function(){return a.$attr((e=a["$attr?"]("revdate"))===c||e._isBoolean&&1!=e?"docdate":"revdate")}()+"</date>"),(e=a["$has_header?"]())===c||e._isBoolean&&1!=e||((e=a["$attr?"]("author"))===c||e._isBoolean&&1!=e||((n=a.$attr("authorcount").$to_i())["$<"](2)?(m["$<<"](l.$author_element(a)),(e=a["$attr?"]("authorinitials"))===c||e._isBoolean&&1!=e||m["$<<"]("<authorinitials>"+a.$attr("authorinitials")+"</authorinitials>")):(m["$<<"]("<authorgroup>"),(e=(g=n).$times,e._p=(h=function(b){var d=h._s||this;return null==b&&(b=c),m["$<<"](d.$author_element(a,b["$+"](1)))},h._s=l,h),e).call(g),m["$<<"]("</authorgroup>"))),i=a["$attr?"]("revdate"),(e=i!==!1&&i!==c?(k=a["$attr?"]("revnumber"))!==!1&&k!==c?k:a["$attr?"]("revremark"):i)===c||e._isBoolean&&1!=e||(m["$<<"]("<revhistory>\n<revision>"),(e=a["$attr?"]("revnumber"))===c||e._isBoolean&&1!=e||m["$<<"]("<revnumber>"+a.$attr("revnumber")+"</revnumber>"),(e=a["$attr?"]("revdate"))===c||e._isBoolean&&1!=e||m["$<<"]("<date>"+a.$attr("revdate")+"</date>"),(e=a["$attr?"]("authorinitials"))===c||e._isBoolean&&1!=e||m["$<<"]("<authorinitials>"+a.$attr("authorinitials")+"</authorinitials>"),(e=a["$attr?"]("revremark"))===c||e._isBoolean&&1!=e||m["$<<"]("<revremark>"+a.$attr("revremark")+"</revremark>"),m["$<<"]("</revision>\n</revhistory>")),((e=(o=a.$docinfo("header"))["$empty?"]())===c||e._isBoolean&&1!=e)&&m["$<<"](o),(e=a["$attr?"]("orgname"))===c||e._isBoolean&&1!=e||m["$<<"]("<orgname>"+a.$attr("orgname")+"</orgname>")),m["$<<"]("</"+b+"info>"),a.$doctype()["$=="]("manpage")&&(m["$<<"]("<refmeta>"),(e=a["$attr?"]("mantitle"))===c||e._isBoolean&&1!=e||m["$<<"]("<refentrytitle>"+a.$attr("mantitle")+"</refentrytitle>"),(e=a["$attr?"]("manvolnum"))===c||e._isBoolean&&1!=e||m["$<<"]("<manvolnum>"+a.$attr("manvolnum")+"</manvolnum>"),m["$<<"]("</refmeta>"),m["$<<"]("<refnamediv>"),(e=a["$attr?"]("manname"))===c||e._isBoolean&&1!=e||m["$<<"]("<refname>"+a.$attr("manname")+"</refname>"),(e=a["$attr?"]("manpurpose"))===c||e._isBoolean&&1!=e||m["$<<"]("<refpurpose>"+a.$attr("manpurpose")+"</refpurpose>"),m["$<<"]("</refnamediv>")),m["$*"](j.EOL)},i.$document_ns_attributes=function(){return' xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink" version="5.0"'},i.$lang_attribute_name=function(){return"xml:lang"},i.$document_title_tags=function(a){var b;return(b=a["$subtitle?"]())===c||b._isBoolean&&1!=b?"<title>"+a+"</title>":"<title>"+a.$main()+"</title>\n<subtitle>"+a.$subtitle()+"</subtitle>"},i.$resolve_content=function(a){return a.$content_model()["$=="]("compound")?a.$content():"<simpara>"+a.$content()+"</simpara>"},i.$title_tag=function(a,b){var d,e;return null==b&&(b=!0),(d=(e=b["$!"]())!==!1&&e!==c?e:a["$title?"]())===c||d._isBoolean&&1!=d?c:"<title>"+a.$title()+"</title>\n"},c&&"title_tag"}(h.Converter,h.Converter._scope.BuiltIn)}(b)}(Opal),function(a){var b=a.top,c=a.nil,d=(a.breaker,a.slice),e=a.module,f=a.klass;return function(b){var g=e(b,"Asciidoctor"),h=(g._proto,g._scope);!function(b,e){function g(){}var h,i,j=g=f(b,e,"DocBook45Converter",g),k=j._proto,l=j._scope;return k.$admonition=h=function(b){var c=d.call(arguments,0),e=this,f=h._p;return h._p=null,b.$parent().$context()["$=="]("example")?"<para>\n"+a.find_super_dispatcher(e,"admonition",h,f).apply(e,c)+"\n</para>":a.find_super_dispatcher(e,"admonition",h,f).apply(e,c)},k.$olist=function(a){var b,d,e,f=this,g=c,h=c,i=c;return g=[],h=function(){return(b=a.$style())===c||b._isBoolean&&1!=b?c:' numeration="'+a.$style()+'"'}(),i=function(){return(b=a["$attr?"]("start"))===c||b._isBoolean&&1!=b?c:' override="'+a.$attr("start")+'"'}(),g["$<<"]("<orderedlist"+f.$common_attributes(a.$id(),a.$role(),a.$reftext())+h+">"),(b=a["$title?"]())===c||b._isBoolean&&1!=b||g["$<<"]("<title>"+a.$title()+"</title>"),(b=(d=a.$items()).$each_with_index,b._p=(e=function(a,b){{var d;e._s||this}return null==a&&(a=c),null==b&&(b=c),g["$<<"](function(){return b["$=="](0)?"<listitem"+i+">":"<listitem>"}()),g["$<<"]("<simpara>"+a.$text()+"</simpara>"),(d=a["$blocks?"]())===c||d._isBoolean&&1!=d||g["$<<"](a.$content()),g["$<<"]("</listitem>")},e._s=f,e),b).call(d),g["$<<"]("</orderedlist>"),g["$*"](l.EOL)},k.$inline_anchor=function(a){var b,d=this,e=c,f=c,g=c,h=c;return e=a.$target(),function(){return f=a.$type(),"ref"["$==="](f)?"<anchor"+d.$common_attributes(e,c,a.$text())+"/>":"xref"["$==="](f)?(b=a["$attr?"]("path",c))===c||b._isBoolean&&1!=b?(h=(b=a.$text())!==!1&&b!==c?b:a.$attr("path"),'<ulink url="'+e+'">'+h+"</ulink>"):(g=(b=a.$attr("fragment"))!==!1&&b!==c?b:e,(b=h=a.$text())===c||b._isBoolean&&1!=b?'<xref linkend="'+g+'"/>':'<link linkend="'+g+'">'+h+"</link>"):"link"["$==="](f)?'<ulink url="'+e+'">'+a.$text()+"</ulink>":"bibref"["$==="](f)?"<anchor"+d.$common_attributes(e,c,"["+e+"]")+"/>["+e+"]":c}()},k.$author_element=function(a,b){var d,e=c,f=c,g=c,h=c,i=c;return null==b&&(b=c),e=function(){return b!==!1&&b!==c?"firstname_"+b:"firstname"}(),f=function(){return b!==!1&&b!==c?"middlename_"+b:"middlename"}(),g=function(){return b!==!1&&b!==c?"lastname_"+b:"lastname"}(),h=function(){return b!==!1&&b!==c?"email_"+b:"email"}(),i=[],i["$<<"]("<author>"),(d=a["$attr?"](e))===c||d._isBoolean&&1!=d||i["$<<"]("<firstname>"+a.$attr(e)+"</firstname>"),(d=a["$attr?"](f))===c||d._isBoolean&&1!=d||i["$<<"]("<othername>"+a.$attr(f)+"</othername>"),(d=a["$attr?"](g))===c||d._isBoolean&&1!=d||i["$<<"]("<surname>"+a.$attr(g)+"</surname>"),(d=a["$attr?"](h))===c||d._isBoolean&&1!=d||i["$<<"]("<email>"+a.$attr(h)+"</email>"),i["$<<"]("</author>"),i["$*"](l.EOL)},k.$common_attributes=function(a,b,d){var e=c;return null==b&&(b=c),null==d&&(d=c),e=function(){return a!==!1&&a!==c?' id="'+a+'"':""}(),b!==!1&&b!==c&&(e=""+e+' role="'+b+'"'),d!==!1&&d!==c&&(e=""+e+' xreflabel="'+d+'"'),e},k.$doctype_declaration=function(a){return"<!DOCTYPE "+a+' PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">'},k.$document_info_element=i=function(b,c){{var d=this;i._p}return i._p=null,a.find_super_dispatcher(d,"document_info_element",i,null).apply(d,[b,c,!0])},k.$lang_attribute_name=function(){return"lang"},k.$document_ns_attributes=function(a){var b,d=c;return(b=d=a.$attr("xmlns"))===c||b._isBoolean&&1!=b?c:(b=d["$empty?"]())===c||b._isBoolean&&1!=b?' xmlns="'+d+'"':' xmlns="http://docbook.org/ns/docbook"'},c&&"document_ns_attributes"}(h.Converter,h.Converter._scope.DocBook5Converter)}(b)}(Opal),function(a){var b=a.top,c=a.nil,d=(a.breaker,a.slice,a.module),e=a.klass,f=a.hash2;return function(b){var g=d(b,"Asciidoctor"),h=(g._proto,g._scope);!function(b,d){function g(){}var h=g=e(b,d,"DocBook5Converter",g),i=h._proto,j=h._scope;return i.$document=function(a){var b,d=this,e=c,f=c,g=c,h=c,i=c;return e=[],(f=a.$doctype())["$=="]("manpage")&&(f="refentry"),e["$<<"]('<?xml version="1.0" encoding="UTF-8"?>'),(b=g=d.$doctype_declaration(f))===c||b._isBoolean&&1!=b||e["$<<"](g),(b=a["$attr?"]("toc"))===c||b._isBoolean&&1!=b||e["$<<"]((b=a["$attr?"]("toclevels"))===c||b._isBoolean&&1!=b?"<?asciidoc-toc?>":'<?asciidoc-toc maxdepth="'+a.$attr("toclevels")+'"?>'),(b=a["$attr?"]("sectnums"))===c||b._isBoolean&&1!=b||e["$<<"]((b=a["$attr?"]("sectnumlevels"))===c||b._isBoolean&&1!=b?"<?asciidoc-numbered?>":'<?asciidoc-numbered maxdepth="'+a.$attr("sectnumlevels")+'"?>'),h=function(){return(b=a["$attr?"]("nolang"))===c||b._isBoolean&&1!=b?" "+d.$lang_attribute_name()+'="'+a.$attr("lang","en")+'"':c}(),e["$<<"]("<"+f+d.$document_ns_attributes(a)+h+">"),e["$<<"](d.$document_info_element(a,f)),(b=a["$blocks?"]())===c||b._isBoolean&&1!=b||e["$<<"](a.$content()),((b=(i=a.$docinfo("footer"))["$empty?"]())===c||b._isBoolean&&1!=b)&&e["$<<"](i),e["$<<"]("</"+f+">"),e["$*"](j.EOL)},a.defn(h,"$embedded",i.$content),i.$section=function(a){var b,d,e=this,f=c,g=c;return f=a.$document().$doctype(),g=function(){return(b=a.$special())===c||b._isBoolean&&1!=b?(b=(d=f["$=="]("book"))?a.$level()["$<="](1):d)===c||b._isBoolean&&1!=b?"section":function(){return a.$level()["$=="](0)?"part":"chapter"}():a.$level()["$<="](1)?a.$sectname():"section"}(),f["$=="]("manpage")&&(g["$=="]("section")?g="refsection":g["$=="]("synopsis")&&(g="refsynopsisdiv")),"<"+g+e.$common_attributes(a.$id(),a.$role(),a.$reftext())+">\n<title>"+a.$title()+"</title>\n"+a.$content()+"\n</"+g+">"},i.$admonition=function(a){var b=this,d=c;return"<"+(d=a.$attr("name"))+b.$common_attributes(a.$id(),a.$role(),a.$reftext())+">\n"+b.$title_tag(a)+b.$resolve_content(a)+"\n</"+d+">"},a.defn(h,"$audio",i.$skip),i.$colist=function(a){var b,d,e,f=this,g=c;return g=[],g["$<<"]("<calloutlist"+f.$common_attributes(a.$id(),a.$role(),a.$reftext())+">"),(b=a["$title?"]())===c||b._isBoolean&&1!=b||g["$<<"]("<title>"+a.$title()+"</title>"),(b=(d=a.$items()).$each,b._p=(e=function(a){{var b;e._s||this}return null==a&&(a=c),g["$<<"]('<callout arearefs="'+a.$attr("coids")+'">'),g["$<<"]("<para>"+a.$text()+"</para>"),(b=a["$blocks?"]())===c||b._isBoolean&&1!=b||g["$<<"](a.$content()),g["$<<"]("</callout>")},e._s=f,e),b).call(d),g["$<<"]("</calloutlist>"),g["$*"](j.EOL)
-},a.cdecl(j,"DLIST_TAGS",f(["labeled","qanda","glossary"],{labeled:f(["list","entry","term","item"],{list:"variablelist",entry:"varlistentry",term:"term",item:"listitem"}),qanda:f(["list","entry","label","term","item"],{list:"qandaset",entry:"qandaentry",label:"question",term:"simpara",item:"answer"}),glossary:f(["list","entry","term","item"],{list:c,entry:"glossentry",term:"glossterm",item:"glossdef"})})),j.DLIST_TAGS["$default="](j.DLIST_TAGS["$[]"]("labeled")),i.$dlist=function(a){var b,d,e,f,g,h=this,i=c,k=c,l=c,m=c,n=c,o=c,p=c,q=c;return i=[],a.$style()["$=="]("horizontal")?(i["$<<"]("<"+(k=function(){return(b=a["$title?"]())===c||b._isBoolean&&1!=b?"informaltable":"table"}())+h.$common_attributes(a.$id(),a.$role(),a.$reftext())+' tabstyle="horizontal" frame="none" colsep="0" rowsep="0">\n'+h.$title_tag(a)+'<tgroup cols="2">\n<colspec colwidth="'+a.$attr("labelwidth",15)+'*"/>\n<colspec colwidth="'+a.$attr("itemwidth",85)+'*"/>\n<tbody valign="top">'),(b=(d=a.$items()).$each,b._p=(e=function(a,b){var d,f,g,h=e._s||this;return null==a&&(a=c),null==b&&(b=c),i["$<<"]("<row>\n<entry>"),(d=(f=[].concat(a)).$each,d._p=(g=function(a){g._s||this;return null==a&&(a=c),i["$<<"]("<simpara>"+a.$text()+"</simpara>")},g._s=h,g),d).call(f),i["$<<"]("</entry>\n<entry>"),((d=b["$nil?"]())===c||d._isBoolean&&1!=d)&&((d=b["$text?"]())===c||d._isBoolean&&1!=d||i["$<<"]("<simpara>"+b.$text()+"</simpara>"),(d=b["$blocks?"]())===c||d._isBoolean&&1!=d||i["$<<"](b.$content())),i["$<<"]("</entry>\n</row>")},e._s=h,e),b).call(d),i["$<<"]("</tbody>\n</tgroup>\n</"+k+">")):(l=j.DLIST_TAGS["$[]"](a.$style()),m=l["$[]"]("list"),n=l["$[]"]("entry"),o=l["$[]"]("label"),p=l["$[]"]("term"),q=l["$[]"]("item"),m!==!1&&m!==c&&(i["$<<"]("<"+m+h.$common_attributes(a.$id(),a.$role(),a.$reftext())+">"),(b=a["$title?"]())===c||b._isBoolean&&1!=b||i["$<<"]("<title>"+a.$title()+"</title>")),(b=(f=a.$items()).$each,b._p=(g=function(a,b){var d,e,f,h=g._s||this;return null==a&&(a=c),null==b&&(b=c),i["$<<"]("<"+n+">"),o!==!1&&o!==c&&i["$<<"]("<"+o+">"),(d=(e=[].concat(a)).$each,d._p=(f=function(a){f._s||this;return null==a&&(a=c),i["$<<"]("<"+p+">"+a.$text()+"</"+p+">")},f._s=h,f),d).call(e),o!==!1&&o!==c&&i["$<<"]("</"+o+">"),i["$<<"]("<"+q+">"),((d=b["$nil?"]())===c||d._isBoolean&&1!=d)&&((d=b["$text?"]())===c||d._isBoolean&&1!=d||i["$<<"]("<simpara>"+b.$text()+"</simpara>"),(d=b["$blocks?"]())===c||d._isBoolean&&1!=d||i["$<<"](b.$content())),i["$<<"]("</"+q+">"),i["$<<"]("</"+n+">")},g._s=h,g),b).call(f),m!==!1&&m!==c&&i["$<<"]("</"+m+">")),i["$*"](j.EOL)},i.$example=function(a){var b,d=this;return(b=a["$title?"]())===c||b._isBoolean&&1!=b?"<informalexample"+d.$common_attributes(a.$id(),a.$role(),a.$reftext())+">\n"+d.$resolve_content(a)+"\n</informalexample>":"<example"+d.$common_attributes(a.$id(),a.$role(),a.$reftext())+">\n<title>"+a.$title()+"</title>\n"+d.$resolve_content(a)+"\n</example>"},i.$floating_title=function(a){var b=this;return"<bridgehead"+b.$common_attributes(a.$id(),a.$role(),a.$reftext())+' renderas="sect'+a.$level()+'">'+a.$title()+"</bridgehead>"},i.$image=function(a){var b,d=this,e=c,f=c,g=c,h=c,i=c,j=c;return e=function(){return(b=a["$attr?"]("width"))===c||b._isBoolean&&1!=b?c:' contentwidth="'+a.$attr("width")+'"'}(),f=function(){return(b=a["$attr?"]("height"))===c||b._isBoolean&&1!=b?c:' contentdepth="'+a.$attr("height")+'"'}(),g=function(){return(b=a["$attr?"]("scaledwidth"))===c||b._isBoolean&&1!=b?c:' width="'+a.$attr("scaledwidth")+'" scalefit="1"'}(),h=function(){return(b=a["$attr?"]("scale"))===c||b._isBoolean&&1!=b?c:' scale="'+a.$attr("scale")+'"'}(),i=function(){return(b=a["$attr?"]("align"))===c||b._isBoolean&&1!=b?c:' align="'+a.$attr("align")+'"'}(),j='<mediaobject>\n<imageobject>\n<imagedata fileref="'+a.$image_uri(a.$attr("target"))+'"'+e+f+g+h+i+"/>\n</imageobject>\n<textobject><phrase>"+a.$attr("alt")+"</phrase></textobject>\n</mediaobject>",(b=a["$title?"]())===c||b._isBoolean&&1!=b?"<informalfigure"+d.$common_attributes(a.$id(),a.$role(),a.$reftext())+">\n"+j+"\n</informalfigure>":"<figure"+d.$common_attributes(a.$id(),a.$role(),a.$reftext())+">\n<title>"+a.$title()+"</title>\n"+j+"\n</figure>"},i.$listing=function(a){var b,d,e=this,f=c,g=c,h=c,i=c;return f=a["$title?"]()["$!"](),g=e.$common_attributes(a.$id(),a.$role(),a.$reftext()),(b=(d=a.$style()["$=="]("source"))?a["$attr?"]("language"):d)===c||b._isBoolean&&1!=b?i="<screen"+function(){return f!==!1&&f!==c?g:c}()+">"+a.$content()+"</screen>":(h=function(){return(b=a["$attr?"]("linenums"))===c||b._isBoolean&&1!=b?"unnumbered":"numbered"}(),i="<programlisting"+function(){return f!==!1&&f!==c?g:c}()+' language="'+a.$attr("language",c,!1)+'" linenumbering="'+h+'">'+a.$content()+"</programlisting>"),f!==!1&&f!==c?i:"<formalpara"+g+">\n<title>"+a.$title()+"</title>\n<para>\n"+i+"\n</para>\n</formalpara>"},i.$literal=function(a){var b,d=this;return(b=a["$title?"]())===c||b._isBoolean&&1!=b?"<literallayout"+d.$common_attributes(a.$id(),a.$role(),a.$reftext())+' class="monospaced">'+a.$content()+"</literallayout>":"<formalpara"+d.$common_attributes(a.$id(),a.$role(),a.$reftext())+">\n<title>"+a.$title()+'</title>\n<para>\n<literallayout class="monospaced">'+a.$content()+"</literallayout>\n</para>\n</formalpara>"},i.$stem=function(a){var b,d=this,e=c,f=c,g=c;return(b=e=a.$subs().$index("specialcharacters"))===c||b._isBoolean&&1!=b||a.$subs().$delete("specialcharacters"),f=a.$content(),e!==!1&&e!==c&&a.$subs().$insert(e,"specialcharacters"),g=a.$style()["$=="]("latexmath")?"<alt><![CDATA["+f+"]]></alt>\n<mediaobject><textobject><phrase></phrase></textobject></mediaobject>":"<mediaobject><textobject><phrase><![CDATA["+f+"]]></phrase></textobject></mediaobject>",(b=a["$title?"]())===c||b._isBoolean&&1!=b?"<informalequation"+d.$common_attributes(a.$id(),a.$role(),a.$reftext())+">\n"+g+"\n</informalequation>":"<equation"+d.$common_attributes(a.$id(),a.$role(),a.$reftext())+">\n<title>"+a.$title()+"</title>\n"+g+"\n</equation>"},i.$olist=function(a){var b,d,e,f=this,g=c,h=c,i=c;return g=[],h=function(){return(b=a.$style())===c||b._isBoolean&&1!=b?c:' numeration="'+a.$style()+'"'}(),i=function(){return(b=a["$attr?"]("start"))===c||b._isBoolean&&1!=b?c:' startingnumber="'+a.$attr("start")+'"'}(),g["$<<"]("<orderedlist"+f.$common_attributes(a.$id(),a.$role(),a.$reftext())+h+i+">"),(b=a["$title?"]())===c||b._isBoolean&&1!=b||g["$<<"]("<title>"+a.$title()+"</title>"),(b=(d=a.$items()).$each,b._p=(e=function(a){{var b;e._s||this}return null==a&&(a=c),g["$<<"]("<listitem>"),g["$<<"]("<simpara>"+a.$text()+"</simpara>"),(b=a["$blocks?"]())===c||b._isBoolean&&1!=b||g["$<<"](a.$content()),g["$<<"]("</listitem>")},e._s=f,e),b).call(d),g["$<<"]("</orderedlist>"),g["$*"](j.EOL)},i.$open=function(a){var b,d,e,f=this,g=c;return function(){return g=a.$style(),"abstract"["$==="](g)?(b=(d=a.$parent()["$=="](a.$document()))?a.$document()["$attr?"]("doctype","book"):d)===c||b._isBoolean&&1!=b?"<abstract>\n"+f.$title_tag(a)+f.$resolve_content(a)+"\n</abstract>":(f.$warn("asciidoctor: WARNING: abstract block cannot be used in a document without a title when doctype is book. Excluding block content."),""):"partintro"["$==="](g)?(d=(e=a.$level()["$=="](0))?a.$parent().$context()["$=="]("section"):e,(b=d!==!1&&d!==c?a.$document().$doctype()["$=="]("book"):d)===c||b._isBoolean&&1!=b?(f.$warn("asciidoctor: ERROR: partintro block can only be used when doctype is book and it's a child of a part section. Excluding block content."),""):"<partintro"+f.$common_attributes(a.$id(),a.$role(),a.$reftext())+">\n"+f.$title_tag(a)+f.$resolve_content(a)+"\n</partintro>"):a.$content()}()},i.$page_break=function(){return"<simpara><?asciidoc-pagebreak?></simpara>"},i.$paragraph=function(a){var b,d=this;return(b=a["$title?"]())===c||b._isBoolean&&1!=b?"<simpara"+d.$common_attributes(a.$id(),a.$role(),a.$reftext())+">"+a.$content()+"</simpara>":"<formalpara"+d.$common_attributes(a.$id(),a.$role(),a.$reftext())+">\n<title>"+a.$title()+"</title>\n<para>"+a.$content()+"</para>\n</formalpara>"},i.$preamble=function(a){var b=this;return a.$document().$doctype()["$=="]("book")?"<preface"+b.$common_attributes(a.$id(),a.$role(),a.$reftext())+">\n"+b.$title_tag(a,!1)+a.$content()+"\n</preface>":a.$content()},i.$quote=function(a){var b,d,e=this,f=c;return f=[],f["$<<"]("<blockquote"+e.$common_attributes(a.$id(),a.$role(),a.$reftext())+">"),(b=a["$title?"]())===c||b._isBoolean&&1!=b||f["$<<"]("<title>"+a.$title()+"</title>"),(b=(d=a["$attr?"]("attribution"))!==!1&&d!==c?d:a["$attr?"]("citetitle"))===c||b._isBoolean&&1!=b||(f["$<<"]("<attribution>"),(b=a["$attr?"]("attribution"))===c||b._isBoolean&&1!=b||f["$<<"](a.$attr("attribution")),(b=a["$attr?"]("citetitle"))===c||b._isBoolean&&1!=b||f["$<<"]("<citetitle>"+a.$attr("citetitle")+"</citetitle>"),f["$<<"]("</attribution>")),f["$<<"](e.$resolve_content(a)),f["$<<"]("</blockquote>"),f["$*"](j.EOL)},i.$thematic_break=function(){return"<simpara><?asciidoc-hr?></simpara>"},i.$sidebar=function(a){var b=this;return"<sidebar"+b.$common_attributes(a.$id(),a.$role(),a.$reftext())+">\n"+b.$title_tag(a)+b.$resolve_content(a)+"\n</sidebar>"},a.cdecl(j,"TABLE_PI_NAMES",["dbhtml","dbfo","dblatex"]),a.cdecl(j,"TABLE_SECTIONS",["head","foot","body"]),i.$table=function(a){var b,d,e,f,g,h,i,k,l,m,n=this,o=c,p=c,q=c,r=c,s=c;return o=!1,p=[],q=function(){return(b=a["$option?"]("pgwide"))===c||b._isBoolean&&1!=b?c:' pgwide="1"'}(),p["$<<"]("<"+(r=function(){return(b=a["$title?"]())===c||b._isBoolean&&1!=b?"informaltable":"table"}())+n.$common_attributes(a.$id(),a.$role(),a.$reftext())+q+' frame="'+a.$attr("frame","all")+'" rowsep="'+function(){return(b=["none","cols"]["$include?"](a.$attr("grid")))===c||b._isBoolean&&1!=b?1:0}()+'" colsep="'+function(){return(b=["none","rows"]["$include?"](a.$attr("grid")))===c||b._isBoolean&&1!=b?1:0}()+'">'),r["$=="]("table")&&p["$<<"]("<title>"+a.$title()+"</title>"),(b=s=function(){return(d=a["$attr?"]("width"))===c||d._isBoolean&&1!=d?c:a.$attr("width")}())===c||b._isBoolean&&1!=b||(b=(d=j.TABLE_PI_NAMES).$each,b._p=(e=function(a){e._s||this;return null==a&&(a=c),p["$<<"]("<?"+a+' table-width="'+s+'"?>')},e._s=n,e),b).call(d),p["$<<"]('<tgroup cols="'+a.$attr("colcount")+'">'),(b=(f=a.$columns()).$each,b._p=(g=function(a){g._s||this;return null==a&&(a=c),p["$<<"]('<colspec colname="col_'+a.$attr("colnumber")+'" colwidth="'+a.$attr(function(){return s!==!1&&s!==c?"colabswidth":"colpcwidth"}())+'*"/>')},g._s=n,g),b).call(f),(b=(h=(k=(l=j.TABLE_SECTIONS).$select,k._p=(m=function(b){m._s||this;return null==b&&(b=c),a.$rows()["$[]"](b)["$empty?"]()["$!"]()},m._s=n,m),k).call(l)).$each,b._p=(i=function(b){var d,e,f,g=i._s||this;return null==b&&(b=c),b["$=="]("body")&&(o=!0),p["$<<"]("<t"+b+">"),(d=(e=a.$rows()["$[]"](b)).$each,d._p=(f=function(d){var e,g,h,i=f._s||this;return null==d&&(d=c),p["$<<"]("<row>"),(e=(g=d).$each,e._p=(h=function(d){var e,f,g,i,j,k=h._s||this,l=c,m=c,n=c,o=c,q=c,r=c,s=c,t=c,u=c;return null==d&&(d=c),l=function(){return(e=d["$attr?"]("halign"))===c||e._isBoolean&&1!=e?c:' align="'+d.$attr("halign")+'"'}(),m=function(){return(e=d["$attr?"]("valign"))===c||e._isBoolean&&1!=e?c:' valign="'+d.$attr("valign")+'"'}(),n=function(){return(e=d.$colspan())===c||e._isBoolean&&1!=e?c:' namest="col_'+(o=d.$column().$attr("colnumber"))+'" nameend="col_'+o["$+"](d.$colspan())["$-"](1)+'"'}(),q=function(){return(e=d.$rowspan())===c||e._isBoolean&&1!=e?c:' morerows="'+d.$rowspan()["$-"](1)+'"'}(),r="<entry"+l+m+n+q+">",s=function(){return b["$=="]("head")?d.$text():function(){return t=d.$style(),"asciidoc"["$==="](t)?d.$content():"verse"["$==="](t)?"<literallayout>"+d.$text()+"</literallayout>":"literal"["$==="](t)?'<literallayout class="monospaced">'+d.$text()+"</literallayout>":"header"["$==="](t)?(e=(f=d.$content()).$map,e._p=(g=function(a){g._s||this;return null==a&&(a=c),'<simpara><emphasis role="strong">'+a+"</emphasis></simpara>"},g._s=k,g),e).call(f).$join():(e=(i=d.$content()).$map,e._p=(j=function(a){j._s||this;return null==a&&(a=c),"<simpara>"+a+"</simpara>"},j._s=k,j),e).call(i).$join()}()}(),u=function(){return(e=a.$document()["$attr?"]("cellbgcolor"))===c||e._isBoolean&&1!=e?"</entry>":'<?dbfo bgcolor="'+a.$document().$attr("cellbgcolor")+'"?></entry>'}(),p["$<<"](""+r+s+u)},h._s=i,h),e).call(g),p["$<<"]("</row>")},f._s=g,f),d).call(e),p["$<<"]("</t"+b+">")},i._s=n,i),b).call(h),p["$<<"]("</tgroup>"),p["$<<"]("</"+r+">"),o!==!1&&o!==c||n.$warn("asciidoctor: WARNING: tables must have at least one body row"),p["$*"](j.EOL)},a.defn(h,"$toc",i.$skip),i.$ulist=function(a){var b,d,e,f,g,h=this,i=c,k=c,l=c,m=c;return i=[],a.$style()["$=="]("bibliography")?(i["$<<"]("<bibliodiv"+h.$common_attributes(a.$id(),a.$role(),a.$reftext())+">"),(b=a["$title?"]())===c||b._isBoolean&&1!=b||i["$<<"]("<title>"+a.$title()+"</title>"),(b=(d=a.$items()).$each,b._p=(e=function(a){{var b;e._s||this}return null==a&&(a=c),i["$<<"]("<bibliomixed>"),i["$<<"]("<bibliomisc>"+a.$text()+"</bibliomisc>"),(b=a["$blocks?"]())===c||b._isBoolean&&1!=b||i["$<<"](a.$content()),i["$<<"]("</bibliomixed>")},e._s=h,e),b).call(d),i["$<<"]("</bibliodiv>")):(k=function(){return(b=l=a["$option?"]("checklist"))===c||b._isBoolean&&1!=b?a.$style():"none"}(),m=function(){return k!==!1&&k!==c?' mark="'+k+'"':c}(),i["$<<"]("<itemizedlist"+h.$common_attributes(a.$id(),a.$role(),a.$reftext())+m+">"),(b=a["$title?"]())===c||b._isBoolean&&1!=b||i["$<<"]("<title>"+a.$title()+"</title>"),(b=(f=a.$items()).$each,b._p=(g=function(a){var b,d,e=(g._s||this,c);return null==a&&(a=c),e=function(){return(b=(d=l!==!1&&l!==c)?a["$attr?"]("checkbox"):d)===c||b._isBoolean&&1!=b?c:(b=a["$attr?"]("checked"))===c||b._isBoolean&&1!=b?"&#10063; ":"&#10003; "}(),i["$<<"]("<listitem>"),i["$<<"]("<simpara>"+e+a.$text()+"</simpara>"),(b=a["$blocks?"]())===c||b._isBoolean&&1!=b||i["$<<"](a.$content()),i["$<<"]("</listitem>")},g._s=h,g),b).call(f),i["$<<"]("</itemizedlist>")),i["$*"](j.EOL)},i.$verse=function(a){var b,d,e=this,f=c;return f=[],f["$<<"]("<blockquote"+e.$common_attributes(a.$id(),a.$role(),a.$reftext())+">"),(b=a["$title?"]())===c||b._isBoolean&&1!=b||f["$<<"]("<title>"+a.$title()+"</title>"),(b=(d=a["$attr?"]("attribution"))!==!1&&d!==c?d:a["$attr?"]("citetitle"))===c||b._isBoolean&&1!=b||(f["$<<"]("<attribution>"),(b=a["$attr?"]("attribution"))===c||b._isBoolean&&1!=b||f["$<<"](a.$attr("attribution")),(b=a["$attr?"]("citetitle"))===c||b._isBoolean&&1!=b||f["$<<"]("<citetitle>"+a.$attr("citetitle")+"</citetitle>"),f["$<<"]("</attribution>")),f["$<<"]("<literallayout>"+a.$content()+"</literallayout>"),f["$<<"]("</blockquote>"),f["$*"](j.EOL)},a.defn(h,"$video",i.$skip),i.$inline_anchor=function(a){var b,d=this,e=c,f=c,g=c;return function(){return e=a.$type(),"ref"["$==="](e)?"<anchor"+d.$common_attributes(a.$target(),c,a.$text())+"/>":"xref"["$==="](e)?(b=a["$attr?"]("path",c))===c||b._isBoolean&&1!=b?'<link xlink:href="'+d.$target()+'">'+((b=a.$text())!==!1&&b!==c?b:a.$attr("path"))+"</link>":(f=(b=a.$attr("fragment"))!==!1&&b!==c?b:a.$target(),(b=g=a.$text())===c||b._isBoolean&&1!=b?'<xref linkend="'+f+'"/>':'<link linkend="'+f+'">'+g+"</link>"):"link"["$==="](e)?'<link xlink:href="'+a.$target()+'">'+a.$text()+"</link>":"bibref"["$==="](e)?"<anchor"+d.$common_attributes(a.$target(),c,"["+a.$target()+"]")+"/>["+a.$target()+"]":d.$warn("asciidoctor: WARNING: unknown anchor type: "+a.$type().$inspect())}()},i.$inline_break=function(a){return""+a.$text()+"<?asciidoc-br?>"},i.$inline_button=function(a){return"<guibutton>"+a.$text()+"</guibutton>"},i.$inline_callout=function(a){var b=this;return"<co"+b.$common_attributes(a.$id())+"/>"},i.$inline_footnote=function(a){var b=this;return a.$type()["$=="]("xref")?'<footnoteref linkend="'+a.$target()+'"/>':"<footnote"+b.$common_attributes(a.$id())+"><simpara>"+a.$text()+"</simpara></footnote>"},i.$inline_image=function(a){var b,d=c,e=c;return d=function(){return(b=a["$attr?"]("width"))===c||b._isBoolean&&1!=b?c:' contentwidth="'+a.$attr("width")+'"'}(),e=function(){return(b=a["$attr?"]("height"))===c||b._isBoolean&&1!=b?c:' contentdepth="'+a.$attr("height")+'"'}(),'<inlinemediaobject>\n<imageobject>\n<imagedata fileref="'+function(){return a.$type()["$=="]("icon")?a.$icon_uri(a.$target()):a.$image_uri(a.$target())}()+'"'+d+e+"/>\n</imageobject>\n<textobject><phrase>"+a.$attr("alt")+"</phrase></textobject>\n</inlinemediaobject>"},i.$inline_indexterm=function(a){var b=c,d=c,e=c;return a.$type()["$=="]("visible")?"<indexterm><primary>"+a.$text()+"</primary></indexterm>"+a.$text():(b=a.$attr("terms"),d=[],(e=b.$size())["$>"](2)&&d["$<<"]("<indexterm>\n<primary>"+b["$[]"](0)+"</primary><secondary>"+b["$[]"](1)+"</secondary><tertiary>"+b["$[]"](2)+"</tertiary>\n</indexterm>"),e["$>"](1)&&d["$<<"]("<indexterm>\n<primary>"+b["$[]"](-2)+"</primary><secondary>"+b["$[]"](-1)+"</secondary>\n</indexterm>"),d["$<<"]("<indexterm>\n<primary>"+b["$[]"](-1)+"</primary>\n</indexterm>"),d["$*"](j.EOL))},i.$inline_kbd=function(a){var b,d,e,f=this,g=c,h=c;return(g=a.$attr("keys")).$size()["$=="](1)?"<keycap>"+g["$[]"](0)+"</keycap>":(h=(b=(d=g).$map,b._p=(e=function(a){e._s||this;return null==a&&(a=c),"<keycap>"+a+"</keycap>"},e._s=f,e),b).call(d).$join(),"<keycombo>"+h+"</keycombo>")},i.$inline_menu=function(a){var b,d,e,f=this,g=c,h=c,i=c,j=c;return g=a.$attr("menu"),(b=(h=a.$attr("submenus"))["$empty?"]()["$!"]())===c||b._isBoolean&&1!=b?(b=j=a.$attr("menuitem"))===c||b._isBoolean&&1!=b?"<guimenu>"+g+"</guimenu>":"<menuchoice><guimenu>"+g+"</guimenu> <guimenuitem>"+j+"</guimenuitem></menuchoice>":(i=(b=(d=h).$map,b._p=(e=function(a){e._s||this;return null==a&&(a=c),"<guisubmenu>"+a+"</guisubmenu> "},e._s=f,e),b).call(d).$join().$chop(),"<menuchoice><guimenu>"+g+"</guimenu> "+i+" <guimenuitem>"+a.$attr("menuitem")+"</guimenuitem></menuchoice>")},a.cdecl(j,"QUOTE_TAGS",f(["emphasis","strong","monospaced","superscript","subscript","double","single","mark"],{emphasis:["<emphasis>","</emphasis>",!0],strong:['<emphasis role="strong">',"</emphasis>",!0],monospaced:["<literal>","</literal>",!1],superscript:["<superscript>","</superscript>",!1],subscript:["<subscript>","</subscript>",!1],"double":["&#8220;","&#8221;",!0],single:["&#8216;","&#8217;",!0],mark:['<emphasis role="marked">',"</emphasis>",!1]})),j.QUOTE_TAGS["$default="]([c,c,!0]),i.$inline_quoted=function(b){var d,e=this,f=c,g=c,h=c,i=c,k=c,l=c,m=c;return(f=b.$type())["$=="]("latexmath")?"<inlineequation>\n<alt><![CDATA["+b.$text()+"]]></alt>\n<inlinemediaobject><textobject><phrase><![CDATA["+b.$text()+"]]></phrase></textobject></inlinemediaobject>\n</inlineequation>":(d=a.to_ary(j.QUOTE_TAGS["$[]"](f)),g=null==d[0]?c:d[0],h=null==d[1]?c:d[1],i=null==d[2]?c:d[2],k=b.$text(),m=(d=l=b.$role())===c||d._isBoolean&&1!=d?""+g+k+h:i!==!1&&i!==c?""+g+'<phrase role="'+l+'">'+k+"</phrase>"+h:""+g.$chop()+' role="'+l+'">'+k+h,(d=b.$id())===c||d._isBoolean&&1!=d?m:"<anchor"+e.$common_attributes(b.$id(),c,k)+"/>"+m)},i.$author_element=function(a,b){var d,e=c,f=c,g=c,h=c,i=c;return null==b&&(b=c),e=function(){return b!==!1&&b!==c?"firstname_"+b:"firstname"}(),f=function(){return b!==!1&&b!==c?"middlename_"+b:"middlename"}(),g=function(){return b!==!1&&b!==c?"lastname_"+b:"lastname"}(),h=function(){return b!==!1&&b!==c?"email_"+b:"email"}(),i=[],i["$<<"]("<author>"),i["$<<"]("<personname>"),(d=a["$attr?"](e))===c||d._isBoolean&&1!=d||i["$<<"]("<firstname>"+a.$attr(e)+"</firstname>"),(d=a["$attr?"](f))===c||d._isBoolean&&1!=d||i["$<<"]("<othername>"+a.$attr(f)+"</othername>"),(d=a["$attr?"](g))===c||d._isBoolean&&1!=d||i["$<<"]("<surname>"+a.$attr(g)+"</surname>"),i["$<<"]("</personname>"),(d=a["$attr?"](h))===c||d._isBoolean&&1!=d||i["$<<"]("<email>"+a.$attr(h)+"</email>"),i["$<<"]("</author>"),i["$*"](j.EOL)},i.$common_attributes=function(a,b,d){var e=c;return null==b&&(b=c),null==d&&(d=c),e=function(){return a!==!1&&a!==c?' xml:id="'+a+'"':""}(),b!==!1&&b!==c&&(e=""+e+' role="'+b+'"'),d!==!1&&d!==c&&(e=""+e+' xreflabel="'+d+'"'),e},i.$doctype_declaration=function(){return c},i.$document_info_element=function(a,b,d){var e,g,h,i,k,l=this,m=c,n=c,o=c;return null==d&&(d=!1),d!==!1&&d!==c||(b=""),m=[],m["$<<"]("<"+b+"info>"),((e=a.$notitle())===c||e._isBoolean&&1!=e)&&m["$<<"](l.$document_title_tags(a.$doctitle(f(["partition","use_fallback"],{partition:!0,use_fallback:!0})))),m["$<<"]("<date>"+function(){return a.$attr((e=a["$attr?"]("revdate"))===c||e._isBoolean&&1!=e?"docdate":"revdate")}()+"</date>"),(e=a["$has_header?"]())===c||e._isBoolean&&1!=e||((e=a["$attr?"]("author"))===c||e._isBoolean&&1!=e||((n=a.$attr("authorcount").$to_i())["$<"](2)?(m["$<<"](l.$author_element(a)),(e=a["$attr?"]("authorinitials"))===c||e._isBoolean&&1!=e||m["$<<"]("<authorinitials>"+a.$attr("authorinitials")+"</authorinitials>")):(m["$<<"]("<authorgroup>"),(e=(g=n).$times,e._p=(h=function(b){var d=h._s||this;return null==b&&(b=c),m["$<<"](d.$author_element(a,b["$+"](1)))},h._s=l,h),e).call(g),m["$<<"]("</authorgroup>"))),i=a["$attr?"]("revdate"),(e=i!==!1&&i!==c?(k=a["$attr?"]("revnumber"))!==!1&&k!==c?k:a["$attr?"]("revremark"):i)===c||e._isBoolean&&1!=e||(m["$<<"]("<revhistory>\n<revision>"),(e=a["$attr?"]("revnumber"))===c||e._isBoolean&&1!=e||m["$<<"]("<revnumber>"+a.$attr("revnumber")+"</revnumber>"),(e=a["$attr?"]("revdate"))===c||e._isBoolean&&1!=e||m["$<<"]("<date>"+a.$attr("revdate")+"</date>"),(e=a["$attr?"]("authorinitials"))===c||e._isBoolean&&1!=e||m["$<<"]("<authorinitials>"+a.$attr("authorinitials")+"</authorinitials>"),(e=a["$attr?"]("revremark"))===c||e._isBoolean&&1!=e||m["$<<"]("<revremark>"+a.$attr("revremark")+"</revremark>"),m["$<<"]("</revision>\n</revhistory>")),((e=(o=a.$docinfo("header"))["$empty?"]())===c||e._isBoolean&&1!=e)&&m["$<<"](o),(e=a["$attr?"]("orgname"))===c||e._isBoolean&&1!=e||m["$<<"]("<orgname>"+a.$attr("orgname")+"</orgname>")),m["$<<"]("</"+b+"info>"),a.$doctype()["$=="]("manpage")&&(m["$<<"]("<refmeta>"),(e=a["$attr?"]("mantitle"))===c||e._isBoolean&&1!=e||m["$<<"]("<refentrytitle>"+a.$attr("mantitle")+"</refentrytitle>"),(e=a["$attr?"]("manvolnum"))===c||e._isBoolean&&1!=e||m["$<<"]("<manvolnum>"+a.$attr("manvolnum")+"</manvolnum>"),m["$<<"]("</refmeta>"),m["$<<"]("<refnamediv>"),(e=a["$attr?"]("manname"))===c||e._isBoolean&&1!=e||m["$<<"]("<refname>"+a.$attr("manname")+"</refname>"),(e=a["$attr?"]("manpurpose"))===c||e._isBoolean&&1!=e||m["$<<"]("<refpurpose>"+a.$attr("manpurpose")+"</refpurpose>"),m["$<<"]("</refnamediv>")),m["$*"](j.EOL)},i.$document_ns_attributes=function(){return' xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink" version="5.0"'},i.$lang_attribute_name=function(){return"xml:lang"},i.$document_title_tags=function(a){var b;return(b=a["$subtitle?"]())===c||b._isBoolean&&1!=b?"<title>"+a+"</title>":"<title>"+a.$main()+"</title>\n<subtitle>"+a.$subtitle()+"</subtitle>"},i.$resolve_content=function(a){return a.$content_model()["$=="]("compound")?a.$content():"<simpara>"+a.$content()+"</simpara>"},i.$title_tag=function(a,b){var d,e;return null==b&&(b=!0),(d=(e=b["$!"]())!==!1&&e!==c?e:a["$title?"]())===c||d._isBoolean&&1!=d?c:"<title>"+a.$title()+"</title>\n"},c&&"title_tag"}(h.Converter,h.Converter._scope.BuiltIn)}(b)}(Opal);
+/* Generated by Opal 0.6.3 */
+(function($opal) {
+    var self = $opal.top, $scope = $opal, nil = $opal.nil, $breaker = $opal.breaker, $slice = $opal.slice, $module = $opal.module, $klass = $opal.klass, $hash2 = $opal.hash2;
+
+    return (function($base) {
+        var self = $module($base, 'Asciidoctor');
+
+        var def = self._proto, $scope = self._scope;
+
+        (function($base, $super) {
+            function $DocBook5Converter(){};
+            var self = $DocBook5Converter = $klass($base, $super, 'DocBook5Converter', $DocBook5Converter);
+
+            var def = self._proto, $scope = self._scope;
+
+            def.$document = function(node) {
+                var $a, self = this, result = nil, root_tag_name = nil, doctype_line = nil, lang_attribute = nil, footer_docinfo = nil;
+
+                result = [];
+                if (((root_tag_name = node.$doctype()))['$==']("manpage")) {
+                    root_tag_name = "refentry"};
+                result['$<<']("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+                if ((($a = (doctype_line = self.$doctype_declaration(root_tag_name))) !== nil && (!$a._isBoolean || $a == true))) {
+                    result['$<<'](doctype_line)};
+                if ((($a = node['$attr?']("toc")) !== nil && (!$a._isBoolean || $a == true))) {
+                    if ((($a = node['$attr?']("toclevels")) !== nil && (!$a._isBoolean || $a == true))) {
+                        result['$<<']("<?asciidoc-toc maxdepth=\"" + (node.$attr("toclevels")) + "\"?>")
+                    } else {
+                        result['$<<']("<?asciidoc-toc?>")
+                    }};
+                if ((($a = node['$attr?']("sectnums")) !== nil && (!$a._isBoolean || $a == true))) {
+                    if ((($a = node['$attr?']("sectnumlevels")) !== nil && (!$a._isBoolean || $a == true))) {
+                        result['$<<']("<?asciidoc-numbered maxdepth=\"" + (node.$attr("sectnumlevels")) + "\"?>")
+                    } else {
+                        result['$<<']("<?asciidoc-numbered?>")
+                    }};
+                lang_attribute = (function() {if ((($a = (node['$attr?']("nolang"))) !== nil && (!$a._isBoolean || $a == true))) {
+                    return nil
+                } else {
+                    return " " + (self.$lang_attribute_name()) + "=\"" + (node.$attr("lang", "en")) + "\""
+                }; return nil; })();
+                result['$<<']("<" + (root_tag_name) + (self.$document_ns_attributes(node)) + (lang_attribute) + ">");
+                result['$<<']((self.$document_info_element(node, root_tag_name)));
+                if ((($a = node['$blocks?']()) !== nil && (!$a._isBoolean || $a == true))) {
+                    result['$<<'](node.$content())};
+                if ((($a = ((footer_docinfo = node.$docinfo("footer")))['$empty?']()) !== nil && (!$a._isBoolean || $a == true))) {
+                } else {
+                    result['$<<'](footer_docinfo)
+                };
+                result['$<<']("</" + (root_tag_name) + ">");
+                return result['$*']($scope.EOL);
+            };
+
+            $opal.defn(self, '$embedded', def.$content);
+
+            def.$section = function(node) {
+                var $a, $b, self = this, doctype = nil, tag_name = nil;
+
+                doctype = node.$document().$doctype();
+                tag_name = (function() {if ((($a = node.$special()) !== nil && (!$a._isBoolean || $a == true))) {
+                    if (node.$level()['$<='](1)) {
+                        return node.$sectname()
+                    } else {
+                        return "section"
+                    }
+                } else if ((($a = (($b = doctype['$==']("book")) ? node.$level()['$<='](1) : $b)) !== nil && (!$a._isBoolean || $a == true))) {
+                    return ((function() {if (node.$level()['$=='](0)) {
+                        return "part"
+                    } else {
+                        return "chapter"
+                    }; return nil; })())
+                } else {
+                    return "section"
+                }; return nil; })();
+                if (doctype['$==']("manpage")) {
+                    if (tag_name['$==']("section")) {
+                        tag_name = "refsection"
+                    } else if (tag_name['$==']("synopsis")) {
+                        tag_name = "refsynopsisdiv"}};
+                return "<" + (tag_name) + (self.$common_attributes(node.$id(), node.$role(), node.$reftext())) + ">\n<title>" + (node.$title()) + "</title>\n" + (node.$content()) + "\n</" + (tag_name) + ">";
+            };
+
+            def.$admonition = function(node) {
+                var self = this, tag_name = nil;
+
+                return "<" + (tag_name = node.$attr("name")) + (self.$common_attributes(node.$id(), node.$role(), node.$reftext())) + ">\n" + (self.$title_tag(node)) + (self.$resolve_content(node)) + "\n</" + (tag_name) + ">";
+            };
+
+            $opal.defn(self, '$audio', def.$skip);
+
+            def.$colist = function(node) {
+                var $a, $b, TMP_1, self = this, result = nil;
+
+                result = [];
+                result['$<<']("<calloutlist" + (self.$common_attributes(node.$id(), node.$role(), node.$reftext())) + ">");
+                if ((($a = node['$title?']()) !== nil && (!$a._isBoolean || $a == true))) {
+                    result['$<<']("<title>" + (node.$title()) + "</title>")};
+                ($a = ($b = node.$items()).$each, $a._p = (TMP_1 = function(item){var self = TMP_1._s || this, $a;
+                    if (item == null) item = nil;
+                    result['$<<']("<callout arearefs=\"" + (item.$attr("coids")) + "\">");
+                    result['$<<']("<para>" + (item.$text()) + "</para>");
+                    if ((($a = item['$blocks?']()) !== nil && (!$a._isBoolean || $a == true))) {
+                        result['$<<'](item.$content())};
+                    return result['$<<']("</callout>");}, TMP_1._s = self, TMP_1), $a).call($b);
+                result['$<<']("</calloutlist>");
+                return result['$*']($scope.EOL);
+            };
+
+            $opal.cdecl($scope, 'DLIST_TAGS', $hash2(["labeled", "qanda", "glossary"], {"labeled": $hash2(["list", "entry", "term", "item"], {"list": "variablelist", "entry": "varlistentry", "term": "term", "item": "listitem"}), "qanda": $hash2(["list", "entry", "label", "term", "item"], {"list": "qandaset", "entry": "qandaentry", "label": "question", "term": "simpara", "item": "answer"}), "glossary": $hash2(["list", "entry", "term", "item"], {"list": nil, "entry": "glossentry", "term": "glossterm", "item": "glossdef"})}));
+
+            $scope.DLIST_TAGS['$default=']($scope.DLIST_TAGS['$[]']("labeled"));
+
+            def.$dlist = function(node) {
+                var $a, $b, TMP_2, $c, TMP_4, self = this, result = nil, tag_name = nil, tags = nil, list_tag = nil, entry_tag = nil, label_tag = nil, term_tag = nil, item_tag = nil;
+
+                result = [];
+                if (node.$style()['$==']("horizontal")) {
+                    result['$<<']("<" + (tag_name = (function() {if ((($a = node['$title?']()) !== nil && (!$a._isBoolean || $a == true))) {
+                            return "table"
+                        } else {
+                            return "informaltable"
+                        }; return nil; })()) + (self.$common_attributes(node.$id(), node.$role(), node.$reftext())) + " tabstyle=\"horizontal\" frame=\"none\" colsep=\"0\" rowsep=\"0\">\n" + (self.$title_tag(node)) + "<tgroup cols=\"2\">\n<colspec colwidth=\"" + (node.$attr("labelwidth", 15)) + "*\"/>\n<colspec colwidth=\"" + (node.$attr("itemwidth", 85)) + "*\"/>\n<tbody valign=\"top\">");
+                    ($a = ($b = node.$items()).$each, $a._p = (TMP_2 = function(terms, dd){var self = TMP_2._s || this, $a, $b, TMP_3;
+                        if (terms == null) terms = nil;if (dd == null) dd = nil;
+                        result['$<<']("<row>\n<entry>");
+                        ($a = ($b = [].concat(terms)).$each, $a._p = (TMP_3 = function(dt){var self = TMP_3._s || this;
+                            if (dt == null) dt = nil;
+                            return result['$<<']("<simpara>" + (dt.$text()) + "</simpara>")}, TMP_3._s = self, TMP_3), $a).call($b);
+                        result['$<<']("</entry>\n<entry>");
+                        if ((($a = dd['$nil?']()) !== nil && (!$a._isBoolean || $a == true))) {
+                        } else {
+                            if ((($a = dd['$text?']()) !== nil && (!$a._isBoolean || $a == true))) {
+                                result['$<<']("<simpara>" + (dd.$text()) + "</simpara>")};
+                            if ((($a = dd['$blocks?']()) !== nil && (!$a._isBoolean || $a == true))) {
+                                result['$<<'](dd.$content())};
+                        };
+                        return result['$<<']("</entry>\n</row>");}, TMP_2._s = self, TMP_2), $a).call($b);
+                    result['$<<']("</tbody>\n</tgroup>\n</" + (tag_name) + ">");
+                } else {
+                    tags = $scope.DLIST_TAGS['$[]'](node.$style());
+                    list_tag = tags['$[]']("list");
+                    entry_tag = tags['$[]']("entry");
+                    label_tag = tags['$[]']("label");
+                    term_tag = tags['$[]']("term");
+                    item_tag = tags['$[]']("item");
+                    if (list_tag !== false && list_tag !== nil) {
+                        result['$<<']("<" + (list_tag) + (self.$common_attributes(node.$id(), node.$role(), node.$reftext())) + ">");
+                        if ((($a = node['$title?']()) !== nil && (!$a._isBoolean || $a == true))) {
+                            result['$<<']("<title>" + (node.$title()) + "</title>")};};
+                    ($a = ($c = node.$items()).$each, $a._p = (TMP_4 = function(terms, dd){var self = TMP_4._s || this, $a, $b, TMP_5;
+                        if (terms == null) terms = nil;if (dd == null) dd = nil;
+                        result['$<<']("<" + (entry_tag) + ">");
+                        if (label_tag !== false && label_tag !== nil) {
+                            result['$<<']("<" + (label_tag) + ">")};
+                        ($a = ($b = [].concat(terms)).$each, $a._p = (TMP_5 = function(dt){var self = TMP_5._s || this;
+                            if (dt == null) dt = nil;
+                            return result['$<<']("<" + (term_tag) + ">" + (dt.$text()) + "</" + (term_tag) + ">")}, TMP_5._s = self, TMP_5), $a).call($b);
+                        if (label_tag !== false && label_tag !== nil) {
+                            result['$<<']("</" + (label_tag) + ">")};
+                        result['$<<']("<" + (item_tag) + ">");
+                        if ((($a = dd['$nil?']()) !== nil && (!$a._isBoolean || $a == true))) {
+                        } else {
+                            if ((($a = dd['$text?']()) !== nil && (!$a._isBoolean || $a == true))) {
+                                result['$<<']("<simpara>" + (dd.$text()) + "</simpara>")};
+                            if ((($a = dd['$blocks?']()) !== nil && (!$a._isBoolean || $a == true))) {
+                                result['$<<'](dd.$content())};
+                        };
+                        result['$<<']("</" + (item_tag) + ">");
+                        return result['$<<']("</" + (entry_tag) + ">");}, TMP_4._s = self, TMP_4), $a).call($c);
+                    if (list_tag !== false && list_tag !== nil) {
+                        result['$<<']("</" + (list_tag) + ">")};
+                };
+                return result['$*']($scope.EOL);
+            };
+
+            def.$example = function(node) {
+                var $a, self = this;
+
+                if ((($a = node['$title?']()) !== nil && (!$a._isBoolean || $a == true))) {
+                    return "<example" + (self.$common_attributes(node.$id(), node.$role(), node.$reftext())) + ">\n<title>" + (node.$title()) + "</title>\n" + (self.$resolve_content(node)) + "\n</example>"
+                } else {
+                    return "<informalexample" + (self.$common_attributes(node.$id(), node.$role(), node.$reftext())) + ">\n" + (self.$resolve_content(node)) + "\n</informalexample>"
+                };
+            };
+
+            def.$floating_title = function(node) {
+                var self = this;
+
+                return "<bridgehead" + (self.$common_attributes(node.$id(), node.$role(), node.$reftext())) + " renderas=\"sect" + (node.$level()) + "\">" + (node.$title()) + "</bridgehead>";
+            };
+
+            def.$image = function(node) {
+                var $a, self = this, width_attribute = nil, depth_attribute = nil, swidth_attribute = nil, scale_attribute = nil, align_attribute = nil, mediaobject = nil;
+
+                width_attribute = (function() {if ((($a = (node['$attr?']("width"))) !== nil && (!$a._isBoolean || $a == true))) {
+                    return " contentwidth=\"" + (node.$attr("width")) + "\""
+                } else {
+                    return nil
+                }; return nil; })();
+                depth_attribute = (function() {if ((($a = (node['$attr?']("height"))) !== nil && (!$a._isBoolean || $a == true))) {
+                    return " contentdepth=\"" + (node.$attr("height")) + "\""
+                } else {
+                    return nil
+                }; return nil; })();
+                swidth_attribute = (function() {if ((($a = (node['$attr?']("scaledwidth"))) !== nil && (!$a._isBoolean || $a == true))) {
+                    return " width=\"" + (node.$attr("scaledwidth")) + "\" scalefit=\"1\""
+                } else {
+                    return nil
+                }; return nil; })();
+                scale_attribute = (function() {if ((($a = (node['$attr?']("scale"))) !== nil && (!$a._isBoolean || $a == true))) {
+                    return " scale=\"" + (node.$attr("scale")) + "\""
+                } else {
+                    return nil
+                }; return nil; })();
+                align_attribute = (function() {if ((($a = (node['$attr?']("align"))) !== nil && (!$a._isBoolean || $a == true))) {
+                    return " align=\"" + (node.$attr("align")) + "\""
+                } else {
+                    return nil
+                }; return nil; })();
+                mediaobject = "<mediaobject>\n<imageobject>\n<imagedata fileref=\"" + (node.$image_uri(node.$attr("target"))) + "\"" + (width_attribute) + (depth_attribute) + (swidth_attribute) + (scale_attribute) + (align_attribute) + "/>\n</imageobject>\n<textobject><phrase>" + (node.$attr("alt")) + "</phrase></textobject>\n</mediaobject>";
+                if ((($a = node['$title?']()) !== nil && (!$a._isBoolean || $a == true))) {
+                    return "<figure" + (self.$common_attributes(node.$id(), node.$role(), node.$reftext())) + ">\n<title>" + (node.$title()) + "</title>\n" + (mediaobject) + "\n</figure>"
+                } else {
+                    return "<informalfigure" + (self.$common_attributes(node.$id(), node.$role(), node.$reftext())) + ">\n" + (mediaobject) + "\n</informalfigure>"
+                };
+            };
+
+            def.$listing = function(node) {
+                var $a, $b, self = this, informal = nil, listing_attributes = nil, numbering = nil, listing_content = nil;
+
+                informal = node['$title?']()['$!']();
+                listing_attributes = (self.$common_attributes(node.$id(), node.$role(), node.$reftext()));
+                if ((($a = (($b = node.$style()['$==']("source")) ? (node['$attr?']("language")) : $b)) !== nil && (!$a._isBoolean || $a == true))) {
+                    numbering = (function() {if ((($a = (node['$attr?']("linenums"))) !== nil && (!$a._isBoolean || $a == true))) {
+                        return "numbered"
+                    } else {
+                        return "unnumbered"
+                    }; return nil; })();
+                    listing_content = "<programlisting" + ((function() {if (informal !== false && informal !== nil) {
+                            return listing_attributes
+                        } else {
+                            return nil
+                        }; return nil; })()) + " language=\"" + (node.$attr("language", nil, false)) + "\" linenumbering=\"" + (numbering) + "\">" + (node.$content()) + "</programlisting>";
+                } else {
+                    listing_content = "<screen" + ((function() {if (informal !== false && informal !== nil) {
+                            return listing_attributes
+                        } else {
+                            return nil
+                        }; return nil; })()) + ">" + (node.$content()) + "</screen>"
+                };
+                if (informal !== false && informal !== nil) {
+                    return listing_content
+                } else {
+                    return "<formalpara" + (listing_attributes) + ">\n<title>" + (node.$title()) + "</title>\n<para>\n" + (listing_content) + "\n</para>\n</formalpara>"
+                };
+            };
+
+            def.$literal = function(node) {
+                var $a, self = this;
+
+                if ((($a = node['$title?']()) !== nil && (!$a._isBoolean || $a == true))) {
+                    return "<formalpara" + (self.$common_attributes(node.$id(), node.$role(), node.$reftext())) + ">\n<title>" + (node.$title()) + "</title>\n<para>\n<literallayout class=\"monospaced\">" + (node.$content()) + "</literallayout>\n</para>\n</formalpara>"
+                } else {
+                    return "<literallayout" + (self.$common_attributes(node.$id(), node.$role(), node.$reftext())) + " class=\"monospaced\">" + (node.$content()) + "</literallayout>"
+                };
+            };
+
+            def.$stem = function(node) {
+                var $a, self = this, idx = nil, equation = nil, equation_data = nil;
+
+                if ((($a = (idx = node.$subs().$index("specialcharacters"))) !== nil && (!$a._isBoolean || $a == true))) {
+                    node.$subs().$delete("specialcharacters")};
+                equation = node.$content();
+                if (idx !== false && idx !== nil) {
+                    node.$subs().$insert(idx, "specialcharacters")};
+                if (node.$style()['$==']("latexmath")) {
+                    equation_data = "<alt><![CDATA[" + (equation) + "]]></alt>\n<mediaobject><textobject><phrase></phrase></textobject></mediaobject>"
+                } else {
+                    equation_data = "<mediaobject><textobject><phrase><![CDATA[" + (equation) + "]]></phrase></textobject></mediaobject>"
+                };
+                if ((($a = node['$title?']()) !== nil && (!$a._isBoolean || $a == true))) {
+                    return "<equation" + (self.$common_attributes(node.$id(), node.$role(), node.$reftext())) + ">\n<title>" + (node.$title()) + "</title>\n" + (equation_data) + "\n</equation>"
+                } else {
+                    return "<informalequation" + (self.$common_attributes(node.$id(), node.$role(), node.$reftext())) + ">\n" + (equation_data) + "\n</informalequation>"
+                };
+            };
+
+            def.$olist = function(node) {
+                var $a, $b, TMP_6, self = this, result = nil, num_attribute = nil, start_attribute = nil;
+
+                result = [];
+                num_attribute = (function() {if ((($a = node.$style()) !== nil && (!$a._isBoolean || $a == true))) {
+                    return " numeration=\"" + (node.$style()) + "\""
+                } else {
+                    return nil
+                }; return nil; })();
+                start_attribute = (function() {if ((($a = (node['$attr?']("start"))) !== nil && (!$a._isBoolean || $a == true))) {
+                    return " startingnumber=\"" + (node.$attr("start")) + "\""
+                } else {
+                    return nil
+                }; return nil; })();
+                result['$<<']("<orderedlist" + (self.$common_attributes(node.$id(), node.$role(), node.$reftext())) + (num_attribute) + (start_attribute) + ">");
+                if ((($a = node['$title?']()) !== nil && (!$a._isBoolean || $a == true))) {
+                    result['$<<']("<title>" + (node.$title()) + "</title>")};
+                ($a = ($b = node.$items()).$each, $a._p = (TMP_6 = function(item){var self = TMP_6._s || this, $a;
+                    if (item == null) item = nil;
+                    result['$<<']("<listitem>");
+                    result['$<<']("<simpara>" + (item.$text()) + "</simpara>");
+                    if ((($a = item['$blocks?']()) !== nil && (!$a._isBoolean || $a == true))) {
+                        result['$<<'](item.$content())};
+                    return result['$<<']("</listitem>");}, TMP_6._s = self, TMP_6), $a).call($b);
+                result['$<<']("</orderedlist>");
+                return result['$*']($scope.EOL);
+            };
+
+            def.$open = function(node) {
+                var $a, $b, $c, self = this, $case = nil;
+
+                return (function() {$case = node.$style();if ("abstract"['$===']($case)) {if ((($a = (($b = node.$parent()['$=='](node.$document())) ? node.$document()['$attr?']("doctype", "book") : $b)) !== nil && (!$a._isBoolean || $a == true))) {
+                    self.$warn("asciidoctor: WARNING: abstract block cannot be used in a document without a title when doctype is book. Excluding block content.");
+                    return "";
+                } else {
+                    return "<abstract>\n" + (self.$title_tag(node)) + (self.$resolve_content(node)) + "\n</abstract>"
+                }}else if ("partintro"['$===']($case)) {if ((($a = ($b = (($c = node.$level()['$=='](0)) ? node.$parent().$context()['$==']("section") : $c), $b !== false && $b !== nil ?node.$document().$doctype()['$==']("book") : $b)) !== nil && (!$a._isBoolean || $a == true))) {
+                    return "<partintro" + (self.$common_attributes(node.$id(), node.$role(), node.$reftext())) + ">\n" + (self.$title_tag(node)) + (self.$resolve_content(node)) + "\n</partintro>"
+                } else {
+                    self.$warn("asciidoctor: ERROR: partintro block can only be used when doctype is book and it's a child of a part section. Excluding block content.");
+                    return "";
+                }}else {return node.$content()}})();
+            };
+
+            def.$page_break = function(node) {
+                var self = this;
+
+                return "<simpara><?asciidoc-pagebreak?></simpara>";
+            };
+
+            def.$paragraph = function(node) {
+                var $a, self = this;
+
+                if ((($a = node['$title?']()) !== nil && (!$a._isBoolean || $a == true))) {
+                    return "<formalpara" + (self.$common_attributes(node.$id(), node.$role(), node.$reftext())) + ">\n<title>" + (node.$title()) + "</title>\n<para>" + (node.$content()) + "</para>\n</formalpara>"
+                } else {
+                    return "<simpara" + (self.$common_attributes(node.$id(), node.$role(), node.$reftext())) + ">" + (node.$content()) + "</simpara>"
+                };
+            };
+
+            def.$preamble = function(node) {
+                var self = this;
+
+                if (node.$document().$doctype()['$==']("book")) {
+                    return "<preface" + (self.$common_attributes(node.$id(), node.$role(), node.$reftext())) + ">\n" + (self.$title_tag(node, false)) + (node.$content()) + "\n</preface>"
+                } else {
+                    return node.$content()
+                };
+            };
+
+            def.$quote = function(node) {
+                var $a, $b, self = this, result = nil;
+
+                result = [];
+                result['$<<']("<blockquote" + (self.$common_attributes(node.$id(), node.$role(), node.$reftext())) + ">");
+                if ((($a = node['$title?']()) !== nil && (!$a._isBoolean || $a == true))) {
+                    result['$<<']("<title>" + (node.$title()) + "</title>")};
+                if ((($a = ((($b = (node['$attr?']("attribution"))) !== false && $b !== nil) ? $b : (node['$attr?']("citetitle")))) !== nil && (!$a._isBoolean || $a == true))) {
+                    result['$<<']("<attribution>");
+                    if ((($a = node['$attr?']("attribution")) !== nil && (!$a._isBoolean || $a == true))) {
+                        result['$<<']((node.$attr("attribution")))};
+                    if ((($a = node['$attr?']("citetitle")) !== nil && (!$a._isBoolean || $a == true))) {
+                        result['$<<']("<citetitle>" + (node.$attr("citetitle")) + "</citetitle>")};
+                    result['$<<']("</attribution>");};
+                result['$<<']((self.$resolve_content(node)));
+                result['$<<']("</blockquote>");
+                return result['$*']($scope.EOL);
+            };
+
+            def.$thematic_break = function(node) {
+                var self = this;
+
+                return "<simpara><?asciidoc-hr?></simpara>";
+            };
+
+            def.$sidebar = function(node) {
+                var self = this;
+
+                return "<sidebar" + (self.$common_attributes(node.$id(), node.$role(), node.$reftext())) + ">\n" + (self.$title_tag(node)) + (self.$resolve_content(node)) + "\n</sidebar>";
+            };
+
+            $opal.cdecl($scope, 'TABLE_PI_NAMES', ["dbhtml", "dbfo", "dblatex"]);
+
+            $opal.cdecl($scope, 'TABLE_SECTIONS', ["head", "foot", "body"]);
+
+            def.$table = function(node) {
+                var $a, $b, TMP_7, $c, TMP_8, $d, TMP_9, $e, $f, TMP_14, self = this, has_body = nil, result = nil, pgwide_attribute = nil, tag_name = nil, width = nil;
+
+                has_body = false;
+                result = [];
+                pgwide_attribute = (function() {if ((($a = (node['$option?']("pgwide"))) !== nil && (!$a._isBoolean || $a == true))) {
+                    return " pgwide=\"1\""
+                } else {
+                    return nil
+                }; return nil; })();
+                result['$<<']("<" + (tag_name = (function() {if ((($a = node['$title?']()) !== nil && (!$a._isBoolean || $a == true))) {
+                        return "table"
+                    } else {
+                        return "informaltable"
+                    }; return nil; })()) + (self.$common_attributes(node.$id(), node.$role(), node.$reftext())) + (pgwide_attribute) + " frame=\"" + (node.$attr("frame", "all")) + "\" rowsep=\"" + ((function() {if ((($a = ["none", "cols"]['$include?'](node.$attr("grid"))) !== nil && (!$a._isBoolean || $a == true))) {
+                        return 0
+                    } else {
+                        return 1
+                    }; return nil; })()) + "\" colsep=\"" + ((function() {if ((($a = ["none", "rows"]['$include?'](node.$attr("grid"))) !== nil && (!$a._isBoolean || $a == true))) {
+                        return 0
+                    } else {
+                        return 1
+                    }; return nil; })()) + "\">");
+                if (tag_name['$==']("table")) {
+                    result['$<<']("<title>" + (node.$title()) + "</title>")};
+                if ((($a = (width = (function() {if ((($b = (node['$attr?']("width"))) !== nil && (!$b._isBoolean || $b == true))) {
+                        return (node.$attr("width"))
+                    } else {
+                        return nil
+                    }; return nil; })())) !== nil && (!$a._isBoolean || $a == true))) {
+                    ($a = ($b = $scope.TABLE_PI_NAMES).$each, $a._p = (TMP_7 = function(pi_name){var self = TMP_7._s || this;
+                        if (pi_name == null) pi_name = nil;
+                        return result['$<<']("<?" + (pi_name) + " table-width=\"" + (width) + "\"?>")}, TMP_7._s = self, TMP_7), $a).call($b)};
+                result['$<<']("<tgroup cols=\"" + (node.$attr("colcount")) + "\">");
+                ($a = ($c = node.$columns()).$each, $a._p = (TMP_8 = function(col){var self = TMP_8._s || this;
+                    if (col == null) col = nil;
+                    return result['$<<']("<colspec colname=\"col_" + (col.$attr("colnumber")) + "\" colwidth=\"" + (col.$attr((function() {if (width !== false && width !== nil) {
+                            return "colabswidth"
+                        } else {
+                            return "colpcwidth"
+                        }; return nil; })())) + "*\"/>")}, TMP_8._s = self, TMP_8), $a).call($c);
+                ($a = ($d = ($e = ($f = $scope.TABLE_SECTIONS).$select, $e._p = (TMP_14 = function(tblsec){var self = TMP_14._s || this;
+                    if (tblsec == null) tblsec = nil;
+                    return node.$rows()['$[]'](tblsec)['$empty?']()['$!']()}, TMP_14._s = self, TMP_14), $e).call($f)).$each, $a._p = (TMP_9 = function(tblsec){var self = TMP_9._s || this, $a, $b, TMP_10;
+                    if (tblsec == null) tblsec = nil;
+                    if (tblsec['$==']("body")) {
+                        has_body = true};
+                    result['$<<']("<t" + (tblsec) + ">");
+                    ($a = ($b = node.$rows()['$[]'](tblsec)).$each, $a._p = (TMP_10 = function(row){var self = TMP_10._s || this, $a, $b, TMP_11;
+                        if (row == null) row = nil;
+                        result['$<<']("<row>");
+                        ($a = ($b = row).$each, $a._p = (TMP_11 = function(cell){var self = TMP_11._s || this, $a, $b, TMP_12, $c, TMP_13, halign_attribute = nil, valign_attribute = nil, colspan_attribute = nil, colnum = nil, rowspan_attribute = nil, entry_start = nil, cell_content = nil, $case = nil, entry_end = nil;
+                            if (cell == null) cell = nil;
+                            halign_attribute = (function() {if ((($a = (cell['$attr?']("halign"))) !== nil && (!$a._isBoolean || $a == true))) {
+                                return " align=\"" + (cell.$attr("halign")) + "\""
+                            } else {
+                                return nil
+                            }; return nil; })();
+                            valign_attribute = (function() {if ((($a = (cell['$attr?']("valign"))) !== nil && (!$a._isBoolean || $a == true))) {
+                                return " valign=\"" + (cell.$attr("valign")) + "\""
+                            } else {
+                                return nil
+                            }; return nil; })();
+                            colspan_attribute = (function() {if ((($a = cell.$colspan()) !== nil && (!$a._isBoolean || $a == true))) {
+                                return " namest=\"col_" + (colnum = cell.$column().$attr("colnumber")) + "\" nameend=\"col_" + (colnum['$+'](cell.$colspan())['$-'](1)) + "\""
+                            } else {
+                                return nil
+                            }; return nil; })();
+                            rowspan_attribute = (function() {if ((($a = cell.$rowspan()) !== nil && (!$a._isBoolean || $a == true))) {
+                                return " morerows=\"" + (cell.$rowspan()['$-'](1)) + "\""
+                            } else {
+                                return nil
+                            }; return nil; })();
+                            entry_start = "<entry" + (halign_attribute) + (valign_attribute) + (colspan_attribute) + (rowspan_attribute) + ">";
+                            cell_content = (function() {if (tblsec['$==']("head")) {
+                                return cell.$text()
+                            } else {
+                                return (function() {$case = cell.$style();if ("asciidoc"['$===']($case)) {return cell.$content()}else if ("verse"['$===']($case)) {return "<literallayout>" + (cell.$text()) + "</literallayout>"}else if ("literal"['$===']($case)) {return "<literallayout class=\"monospaced\">" + (cell.$text()) + "</literallayout>"}else if ("header"['$===']($case)) {return ($a = ($b = cell.$content()).$map, $a._p = (TMP_12 = function(text){var self = TMP_12._s || this;
+                                    if (text == null) text = nil;
+                                    return "<simpara><emphasis role=\"strong\">" + (text) + "</emphasis></simpara>"}, TMP_12._s = self, TMP_12), $a).call($b).$join()}else {return ($a = ($c = cell.$content()).$map, $a._p = (TMP_13 = function(text){var self = TMP_13._s || this;
+                                    if (text == null) text = nil;
+                                    return "<simpara>" + (text) + "</simpara>"}, TMP_13._s = self, TMP_13), $a).call($c).$join()}})()
+                            }; return nil; })();
+                            entry_end = (function() {if ((($a = (node.$document()['$attr?']("cellbgcolor"))) !== nil && (!$a._isBoolean || $a == true))) {
+                                return "<?dbfo bgcolor=\"" + (node.$document().$attr("cellbgcolor")) + "\"?></entry>"
+                            } else {
+                                return "</entry>"
+                            }; return nil; })();
+                            return result['$<<']("" + (entry_start) + (cell_content) + (entry_end));}, TMP_11._s = self, TMP_11), $a).call($b);
+                        return result['$<<']("</row>");}, TMP_10._s = self, TMP_10), $a).call($b);
+                    return result['$<<']("</t" + (tblsec) + ">");}, TMP_9._s = self, TMP_9), $a).call($d);
+                result['$<<']("</tgroup>");
+                result['$<<']("</" + (tag_name) + ">");
+                if (has_body !== false && has_body !== nil) {
+                } else {
+                    self.$warn("asciidoctor: WARNING: tables must have at least one body row")
+                };
+                return result['$*']($scope.EOL);
+            };
+
+            $opal.defn(self, '$toc', def.$skip);
+
+            def.$ulist = function(node) {
+                var $a, $b, TMP_15, $c, TMP_16, self = this, result = nil, mark_type = nil, checklist = nil, mark_attribute = nil;
+
+                result = [];
+                if (node.$style()['$==']("bibliography")) {
+                    result['$<<']("<bibliodiv" + (self.$common_attributes(node.$id(), node.$role(), node.$reftext())) + ">");
+                    if ((($a = node['$title?']()) !== nil && (!$a._isBoolean || $a == true))) {
+                        result['$<<']("<title>" + (node.$title()) + "</title>")};
+                    ($a = ($b = node.$items()).$each, $a._p = (TMP_15 = function(item){var self = TMP_15._s || this, $a;
+                        if (item == null) item = nil;
+                        result['$<<']("<bibliomixed>");
+                        result['$<<']("<bibliomisc>" + (item.$text()) + "</bibliomisc>");
+                        if ((($a = item['$blocks?']()) !== nil && (!$a._isBoolean || $a == true))) {
+                            result['$<<'](item.$content())};
+                        return result['$<<']("</bibliomixed>");}, TMP_15._s = self, TMP_15), $a).call($b);
+                    result['$<<']("</bibliodiv>");
+                } else {
+                    mark_type = (function() {if ((($a = (checklist = node['$option?']("checklist"))) !== nil && (!$a._isBoolean || $a == true))) {
+                        return "none"
+                    } else {
+                        return node.$style()
+                    }; return nil; })();
+                    mark_attribute = (function() {if (mark_type !== false && mark_type !== nil) {
+                        return " mark=\"" + (mark_type) + "\""
+                    } else {
+                        return nil
+                    }; return nil; })();
+                    result['$<<']("<itemizedlist" + (self.$common_attributes(node.$id(), node.$role(), node.$reftext())) + (mark_attribute) + ">");
+                    if ((($a = node['$title?']()) !== nil && (!$a._isBoolean || $a == true))) {
+                        result['$<<']("<title>" + (node.$title()) + "</title>")};
+                    ($a = ($c = node.$items()).$each, $a._p = (TMP_16 = function(item){var self = TMP_16._s || this, $a, $b, text_marker = nil;
+                        if (item == null) item = nil;
+                        text_marker = (function() {if ((($a = (($b = checklist !== false && checklist !== nil) ? (item['$attr?']("checkbox")) : $b)) !== nil && (!$a._isBoolean || $a == true))) {
+                            if ((($a = (item['$attr?']("checked"))) !== nil && (!$a._isBoolean || $a == true))) {
+                                return "&#10003; "
+                            } else {
+                                return "&#10063; "
+                            }
+                        } else {
+                            return nil
+                        }; return nil; })();
+                        result['$<<']("<listitem>");
+                        result['$<<']("<simpara>" + (text_marker) + (item.$text()) + "</simpara>");
+                        if ((($a = item['$blocks?']()) !== nil && (!$a._isBoolean || $a == true))) {
+                            result['$<<'](item.$content())};
+                        return result['$<<']("</listitem>");}, TMP_16._s = self, TMP_16), $a).call($c);
+                    result['$<<']("</itemizedlist>");
+                };
+                return result['$*']($scope.EOL);
+            };
+
+            def.$verse = function(node) {
+                var $a, $b, self = this, result = nil;
+
+                result = [];
+                result['$<<']("<blockquote" + (self.$common_attributes(node.$id(), node.$role(), node.$reftext())) + ">");
+                if ((($a = node['$title?']()) !== nil && (!$a._isBoolean || $a == true))) {
+                    result['$<<']("<title>" + (node.$title()) + "</title>")};
+                if ((($a = ((($b = (node['$attr?']("attribution"))) !== false && $b !== nil) ? $b : (node['$attr?']("citetitle")))) !== nil && (!$a._isBoolean || $a == true))) {
+                    result['$<<']("<attribution>");
+                    if ((($a = node['$attr?']("attribution")) !== nil && (!$a._isBoolean || $a == true))) {
+                        result['$<<']((node.$attr("attribution")))};
+                    if ((($a = node['$attr?']("citetitle")) !== nil && (!$a._isBoolean || $a == true))) {
+                        result['$<<']("<citetitle>" + (node.$attr("citetitle")) + "</citetitle>")};
+                    result['$<<']("</attribution>");};
+                result['$<<']("<literallayout>" + (node.$content()) + "</literallayout>");
+                result['$<<']("</blockquote>");
+                return result['$*']($scope.EOL);
+            };
+
+            $opal.defn(self, '$video', def.$skip);
+
+            def.$inline_anchor = function(node) {
+                var $a, self = this, $case = nil, linkend = nil, text = nil;
+
+                return (function() {$case = node.$type();if ("ref"['$===']($case)) {return "<anchor" + (self.$common_attributes(node.$target(), nil, node.$text())) + "/>"}else if ("xref"['$===']($case)) {if ((($a = node['$attr?']("path", nil)) !== nil && (!$a._isBoolean || $a == true))) {
+                    linkend = ((($a = (node.$attr("fragment"))) !== false && $a !== nil) ? $a : node.$target());
+                    if ((($a = (text = node.$text())) !== nil && (!$a._isBoolean || $a == true))) {
+                        return "<link linkend=\"" + (linkend) + "\">" + (text) + "</link>"
+                    } else {
+                        return "<xref linkend=\"" + (linkend) + "\"/>"
+                    };
+                } else {
+                    return "<link xlink:href=\"" + (self.$target()) + "\">" + (((($a = node.$text()) !== false && $a !== nil) ? $a : (node.$attr("path")))) + "</link>"
+                }}else if ("link"['$===']($case)) {return "<link xlink:href=\"" + (node.$target()) + "\">" + (node.$text()) + "</link>"}else if ("bibref"['$===']($case)) {return "<anchor" + (self.$common_attributes(node.$target(), nil, "[" + (node.$target()) + "]")) + "/>[" + (node.$target()) + "]"}else {return self.$warn("asciidoctor: WARNING: unknown anchor type: " + (node.$type().$inspect()))}})();
+            };
+
+            def.$inline_break = function(node) {
+                var self = this;
+
+                return "" + (node.$text()) + "<?asciidoc-br?>";
+            };
+
+            def.$inline_button = function(node) {
+                var self = this;
+
+                return "<guibutton>" + (node.$text()) + "</guibutton>";
+            };
+
+            def.$inline_callout = function(node) {
+                var self = this;
+
+                return "<co" + (self.$common_attributes(node.$id())) + "/>";
+            };
+
+            def.$inline_footnote = function(node) {
+                var self = this;
+
+                if (node.$type()['$==']("xref")) {
+                    return "<footnoteref linkend=\"" + (node.$target()) + "\"/>"
+                } else {
+                    return "<footnote" + (self.$common_attributes(node.$id())) + "><simpara>" + (node.$text()) + "</simpara></footnote>"
+                };
+            };
+
+            def.$inline_image = function(node) {
+                var $a, self = this, width_attribute = nil, depth_attribute = nil;
+
+                width_attribute = (function() {if ((($a = (node['$attr?']("width"))) !== nil && (!$a._isBoolean || $a == true))) {
+                    return " contentwidth=\"" + (node.$attr("width")) + "\""
+                } else {
+                    return nil
+                }; return nil; })();
+                depth_attribute = (function() {if ((($a = (node['$attr?']("height"))) !== nil && (!$a._isBoolean || $a == true))) {
+                    return " contentdepth=\"" + (node.$attr("height")) + "\""
+                } else {
+                    return nil
+                }; return nil; })();
+                return "<inlinemediaobject>\n<imageobject>\n<imagedata fileref=\"" + ((function() {if (node.$type()['$==']("icon")) {
+                        return (node.$icon_uri(node.$target()))
+                    } else {
+                        return (node.$image_uri(node.$target()))
+                    }; return nil; })()) + "\"" + (width_attribute) + (depth_attribute) + "/>\n</imageobject>\n<textobject><phrase>" + (node.$attr("alt")) + "</phrase></textobject>\n</inlinemediaobject>";
+            };
+
+            def.$inline_indexterm = function(node) {
+                var self = this, terms = nil, result = nil, numterms = nil;
+
+                if (node.$type()['$==']("visible")) {
+                    return "<indexterm><primary>" + (node.$text()) + "</primary></indexterm>" + (node.$text())
+                } else {
+                    terms = node.$attr("terms");
+                    result = [];
+                    if (((numterms = terms.$size()))['$>'](2)) {
+                        result['$<<']("<indexterm>\n<primary>" + (terms['$[]'](0)) + "</primary><secondary>" + (terms['$[]'](1)) + "</secondary><tertiary>" + (terms['$[]'](2)) + "</tertiary>\n</indexterm>")};
+                    if (numterms['$>'](1)) {
+                        result['$<<']("<indexterm>\n<primary>" + (terms['$[]'](-2)) + "</primary><secondary>" + (terms['$[]'](-1)) + "</secondary>\n</indexterm>")};
+                    result['$<<']("<indexterm>\n<primary>" + (terms['$[]'](-1)) + "</primary>\n</indexterm>");
+                    return result['$*']($scope.EOL);
+                };
+            };
+
+            def.$inline_kbd = function(node) {
+                var $a, $b, TMP_17, self = this, keys = nil, key_combo = nil;
+
+                if (((keys = node.$attr("keys"))).$size()['$=='](1)) {
+                    return "<keycap>" + (keys['$[]'](0)) + "</keycap>"
+                } else {
+                    key_combo = ($a = ($b = keys).$map, $a._p = (TMP_17 = function(key){var self = TMP_17._s || this;
+                        if (key == null) key = nil;
+                        return "<keycap>" + (key) + "</keycap>"}, TMP_17._s = self, TMP_17), $a).call($b).$join();
+                    return "<keycombo>" + (key_combo) + "</keycombo>";
+                };
+            };
+
+            def.$inline_menu = function(node) {
+                var $a, $b, TMP_18, self = this, menu = nil, submenus = nil, submenu_path = nil, menuitem = nil;
+
+                menu = node.$attr("menu");
+                if ((($a = ((submenus = node.$attr("submenus")))['$empty?']()['$!']()) !== nil && (!$a._isBoolean || $a == true))) {
+                    submenu_path = ($a = ($b = submenus).$map, $a._p = (TMP_18 = function(submenu){var self = TMP_18._s || this;
+                        if (submenu == null) submenu = nil;
+                        return "<guisubmenu>" + (submenu) + "</guisubmenu> "}, TMP_18._s = self, TMP_18), $a).call($b).$join().$chop();
+                    return "<menuchoice><guimenu>" + (menu) + "</guimenu> " + (submenu_path) + " <guimenuitem>" + (node.$attr("menuitem")) + "</guimenuitem></menuchoice>";
+                } else if ((($a = (menuitem = node.$attr("menuitem"))) !== nil && (!$a._isBoolean || $a == true))) {
+                    return "<menuchoice><guimenu>" + (menu) + "</guimenu> <guimenuitem>" + (menuitem) + "</guimenuitem></menuchoice>"
+                } else {
+                    return "<guimenu>" + (menu) + "</guimenu>"
+                };
+            };
+
+            $opal.cdecl($scope, 'QUOTE_TAGS', $hash2(["emphasis", "strong", "monospaced", "superscript", "subscript", "double", "single", "mark"], {"emphasis": ["<emphasis>", "</emphasis>", true], "strong": ["<emphasis role=\"strong\">", "</emphasis>", true], "monospaced": ["<literal>", "</literal>", false], "superscript": ["<superscript>", "</superscript>", false], "subscript": ["<subscript>", "</subscript>", false], "double": ["&#8220;", "&#8221;", true], "single": ["&#8216;", "&#8217;", true], "mark": ["<emphasis role=\"marked\">", "</emphasis>", false]}));
+
+            $scope.QUOTE_TAGS['$default=']([nil, nil, true]);
+
+            def.$inline_quoted = function(node) {
+                var $a, self = this, type = nil, open = nil, close = nil, supports_phrase = nil, text = nil, role = nil, quoted_text = nil;
+
+                if (((type = node.$type()))['$==']("latexmath")) {
+                    return "<inlineequation>\n<alt><![CDATA[" + (node.$text()) + "]]></alt>\n<inlinemediaobject><textobject><phrase><![CDATA[" + (node.$text()) + "]]></phrase></textobject></inlinemediaobject>\n</inlineequation>"
+                } else {
+                    $a = $opal.to_ary($scope.QUOTE_TAGS['$[]'](type)), open = ($a[0] == null ? nil : $a[0]), close = ($a[1] == null ? nil : $a[1]), supports_phrase = ($a[2] == null ? nil : $a[2]);
+                    text = node.$text();
+                    if ((($a = (role = node.$role())) !== nil && (!$a._isBoolean || $a == true))) {
+                        if (supports_phrase !== false && supports_phrase !== nil) {
+                            quoted_text = "" + (open) + "<phrase role=\"" + (role) + "\">" + (text) + "</phrase>" + (close)
+                        } else {
+                            quoted_text = "" + (open.$chop()) + " role=\"" + (role) + "\">" + (text) + (close)
+                        }
+                    } else {
+                        quoted_text = "" + (open) + (text) + (close)
+                    };
+                    if ((($a = node.$id()) !== nil && (!$a._isBoolean || $a == true))) {
+                        return "<anchor" + (self.$common_attributes(node.$id(), nil, text)) + "/>" + (quoted_text)
+                    } else {
+                        return quoted_text
+                    };
+                };
+            };
+
+            def.$author_element = function(doc, index) {
+                var $a, self = this, firstname_key = nil, middlename_key = nil, lastname_key = nil, email_key = nil, result = nil;
+
+                if (index == null) {
+                    index = nil
+                }
+                firstname_key = (function() {if (index !== false && index !== nil) {
+                    return "firstname_" + (index)
+                } else {
+                    return "firstname"
+                }; return nil; })();
+                middlename_key = (function() {if (index !== false && index !== nil) {
+                    return "middlename_" + (index)
+                } else {
+                    return "middlename"
+                }; return nil; })();
+                lastname_key = (function() {if (index !== false && index !== nil) {
+                    return "lastname_" + (index)
+                } else {
+                    return "lastname"
+                }; return nil; })();
+                email_key = (function() {if (index !== false && index !== nil) {
+                    return "email_" + (index)
+                } else {
+                    return "email"
+                }; return nil; })();
+                result = [];
+                result['$<<']("<author>");
+                result['$<<']("<personname>");
+                if ((($a = doc['$attr?'](firstname_key)) !== nil && (!$a._isBoolean || $a == true))) {
+                    result['$<<']("<firstname>" + (doc.$attr(firstname_key)) + "</firstname>")};
+                if ((($a = doc['$attr?'](middlename_key)) !== nil && (!$a._isBoolean || $a == true))) {
+                    result['$<<']("<othername>" + (doc.$attr(middlename_key)) + "</othername>")};
+                if ((($a = doc['$attr?'](lastname_key)) !== nil && (!$a._isBoolean || $a == true))) {
+                    result['$<<']("<surname>" + (doc.$attr(lastname_key)) + "</surname>")};
+                result['$<<']("</personname>");
+                if ((($a = doc['$attr?'](email_key)) !== nil && (!$a._isBoolean || $a == true))) {
+                    result['$<<']("<email>" + (doc.$attr(email_key)) + "</email>")};
+                result['$<<']("</author>");
+                return result['$*']($scope.EOL);
+            };
+
+            def.$common_attributes = function(id, role, reftext) {
+                var self = this, res = nil;
+
+                if (role == null) {
+                    role = nil
+                }
+                if (reftext == null) {
+                    reftext = nil
+                }
+                res = (function() {if (id !== false && id !== nil) {
+                    return " xml:id=\"" + (id) + "\""
+                } else {
+                    return ""
+                }; return nil; })();
+                if (role !== false && role !== nil) {
+                    res = "" + (res) + " role=\"" + (role) + "\""};
+                if (reftext !== false && reftext !== nil) {
+                    res = "" + (res) + " xreflabel=\"" + (reftext) + "\""};
+                return res;
+            };
+
+            def.$doctype_declaration = function(root_tag_name) {
+                var self = this;
+
+                return nil;
+            };
+
+            def.$document_info_element = function(doc, info_tag_prefix, use_info_tag_prefix) {
+                var $a, $b, TMP_19, $c, $d, self = this, result = nil, authorcount = nil, header_docinfo = nil;
+
+                if (use_info_tag_prefix == null) {
+                    use_info_tag_prefix = false
+                }
+                if (use_info_tag_prefix !== false && use_info_tag_prefix !== nil) {
+                } else {
+                    info_tag_prefix = ""
+                };
+                result = [];
+                result['$<<']("<" + (info_tag_prefix) + "info>");
+                if ((($a = doc.$notitle()) !== nil && (!$a._isBoolean || $a == true))) {
+                } else {
+                    result['$<<'](self.$document_title_tags(doc.$doctitle($hash2(["partition", "use_fallback"], {"partition": true, "use_fallback": true}))))
+                };
+                result['$<<']("<date>" + ((function() {if ((($a = (doc['$attr?']("revdate"))) !== nil && (!$a._isBoolean || $a == true))) {
+                        return (doc.$attr("revdate"))
+                    } else {
+                        return (doc.$attr("docdate"))
+                    }; return nil; })()) + "</date>");
+                if ((($a = doc['$has_header?']()) !== nil && (!$a._isBoolean || $a == true))) {
+                    if ((($a = doc['$attr?']("author")) !== nil && (!$a._isBoolean || $a == true))) {
+                        if (((authorcount = (doc.$attr("authorcount")).$to_i()))['$<'](2)) {
+                            result['$<<']((self.$author_element(doc)));
+                            if ((($a = doc['$attr?']("authorinitials")) !== nil && (!$a._isBoolean || $a == true))) {
+                                result['$<<']("<authorinitials>" + (doc.$attr("authorinitials")) + "</authorinitials>")};
+                        } else {
+                            result['$<<']("<authorgroup>");
+                            ($a = ($b = authorcount).$times, $a._p = (TMP_19 = function(index){var self = TMP_19._s || this;
+                                if (index == null) index = nil;
+                                return result['$<<']((self.$author_element(doc, index['$+'](1))))}, TMP_19._s = self, TMP_19), $a).call($b);
+                            result['$<<']("</authorgroup>");
+                        }};
+                    if ((($a = ($c = (doc['$attr?']("revdate")), $c !== false && $c !== nil ?(((($d = (doc['$attr?']("revnumber"))) !== false && $d !== nil) ? $d : (doc['$attr?']("revremark")))) : $c)) !== nil && (!$a._isBoolean || $a == true))) {
+                        result['$<<']("<revhistory>\n<revision>");
+                        if ((($a = doc['$attr?']("revnumber")) !== nil && (!$a._isBoolean || $a == true))) {
+                            result['$<<']("<revnumber>" + (doc.$attr("revnumber")) + "</revnumber>")};
+                        if ((($a = doc['$attr?']("revdate")) !== nil && (!$a._isBoolean || $a == true))) {
+                            result['$<<']("<date>" + (doc.$attr("revdate")) + "</date>")};
+                        if ((($a = doc['$attr?']("authorinitials")) !== nil && (!$a._isBoolean || $a == true))) {
+                            result['$<<']("<authorinitials>" + (doc.$attr("authorinitials")) + "</authorinitials>")};
+                        if ((($a = doc['$attr?']("revremark")) !== nil && (!$a._isBoolean || $a == true))) {
+                            result['$<<']("<revremark>" + (doc.$attr("revremark")) + "</revremark>")};
+                        result['$<<']("</revision>\n</revhistory>");};
+                    if ((($a = ((header_docinfo = doc.$docinfo("header")))['$empty?']()) !== nil && (!$a._isBoolean || $a == true))) {
+                    } else {
+                        result['$<<'](header_docinfo)
+                    };
+                    if ((($a = doc['$attr?']("orgname")) !== nil && (!$a._isBoolean || $a == true))) {
+                        result['$<<']("<orgname>" + (doc.$attr("orgname")) + "</orgname>")};};
+                result['$<<']("</" + (info_tag_prefix) + "info>");
+                if (doc.$doctype()['$==']("manpage")) {
+                    result['$<<']("<refmeta>");
+                    if ((($a = doc['$attr?']("mantitle")) !== nil && (!$a._isBoolean || $a == true))) {
+                        result['$<<']("<refentrytitle>" + (doc.$attr("mantitle")) + "</refentrytitle>")};
+                    if ((($a = doc['$attr?']("manvolnum")) !== nil && (!$a._isBoolean || $a == true))) {
+                        result['$<<']("<manvolnum>" + (doc.$attr("manvolnum")) + "</manvolnum>")};
+                    result['$<<']("</refmeta>");
+                    result['$<<']("<refnamediv>");
+                    if ((($a = doc['$attr?']("manname")) !== nil && (!$a._isBoolean || $a == true))) {
+                        result['$<<']("<refname>" + (doc.$attr("manname")) + "</refname>")};
+                    if ((($a = doc['$attr?']("manpurpose")) !== nil && (!$a._isBoolean || $a == true))) {
+                        result['$<<']("<refpurpose>" + (doc.$attr("manpurpose")) + "</refpurpose>")};
+                    result['$<<']("</refnamediv>");};
+                return result['$*']($scope.EOL);
+            };
+
+            def.$document_ns_attributes = function(doc) {
+                var self = this;
+
+                return " xmlns=\"http://docbook.org/ns/docbook\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" version=\"5.0\"";
+            };
+
+            def.$lang_attribute_name = function() {
+                var self = this;
+
+                return "xml:lang";
+            };
+
+            def.$document_title_tags = function(title) {
+                var $a, self = this;
+
+                if ((($a = title['$subtitle?']()) !== nil && (!$a._isBoolean || $a == true))) {
+                    return "<title>" + (title.$main()) + "</title>\n<subtitle>" + (title.$subtitle()) + "</subtitle>"
+                } else {
+                    return "<title>" + (title) + "</title>"
+                };
+            };
+
+            def.$resolve_content = function(node) {
+                var self = this;
+
+                if (node.$content_model()['$==']("compound")) {
+                    return node.$content()
+                } else {
+                    return "<simpara>" + (node.$content()) + "</simpara>"
+                };
+            };
+
+            return (def.$title_tag = function(node, optional) {
+                    var $a, $b, self = this;
+
+                    if (optional == null) {
+                        optional = true
+                    }
+                    if ((($a = ((($b = optional['$!']()) !== false && $b !== nil) ? $b : node['$title?']())) !== nil && (!$a._isBoolean || $a == true))) {
+                        return "<title>" + (node.$title()) + "</title>\n"
+                    } else {
+                        return nil
+                    };
+                }, nil) && 'title_tag';
+        })($scope.Converter, ($scope.Converter)._scope.BuiltIn)
+
+    })(self)
+})(Opal);
+/* Generated by Opal 0.6.3 */
+(function($opal) {
+    var self = $opal.top, $scope = $opal, nil = $opal.nil, $breaker = $opal.breaker, $slice = $opal.slice, $module = $opal.module, $klass = $opal.klass;
+
+    ;
+    return (function($base) {
+        var self = $module($base, 'Asciidoctor');
+
+        var def = self._proto, $scope = self._scope;
+
+        (function($base, $super) {
+            function $DocBook45Converter(){};
+            var self = $DocBook45Converter = $klass($base, $super, 'DocBook45Converter', $DocBook45Converter);
+
+            var def = self._proto, $scope = self._scope, TMP_1, TMP_3;
+
+            def.$admonition = TMP_1 = function(node) {var $zuper = $slice.call(arguments, 0);
+                var self = this, $iter = TMP_1._p, $yield = $iter || nil;
+
+                TMP_1._p = null;
+                if (node.$parent().$context()['$==']("example")) {
+                    return "<para>\n" + ($opal.find_super_dispatcher(self, 'admonition', TMP_1, $iter).apply(self, $zuper)) + "\n</para>"
+                } else {
+                    return $opal.find_super_dispatcher(self, 'admonition', TMP_1, $iter).apply(self, $zuper)
+                };
+            };
+
+            def.$olist = function(node) {
+                var $a, $b, TMP_2, self = this, result = nil, num_attribute = nil, start_attribute = nil;
+
+                result = [];
+                num_attribute = (function() {if ((($a = node.$style()) !== nil && (!$a._isBoolean || $a == true))) {
+                    return " numeration=\"" + (node.$style()) + "\""
+                } else {
+                    return nil
+                }; return nil; })();
+                start_attribute = (function() {if ((($a = (node['$attr?']("start"))) !== nil && (!$a._isBoolean || $a == true))) {
+                    return " override=\"" + (node.$attr("start")) + "\""
+                } else {
+                    return nil
+                }; return nil; })();
+                result['$<<']("<orderedlist" + (self.$common_attributes(node.$id(), node.$role(), node.$reftext())) + (num_attribute) + ">");
+                if ((($a = node['$title?']()) !== nil && (!$a._isBoolean || $a == true))) {
+                    result['$<<']("<title>" + (node.$title()) + "</title>")};
+                ($a = ($b = node.$items()).$each_with_index, $a._p = (TMP_2 = function(item, idx){var self = TMP_2._s || this, $a;
+                    if (item == null) item = nil;if (idx == null) idx = nil;
+                    result['$<<'](((function() {if (idx['$=='](0)) {
+                        return "<listitem" + (start_attribute) + ">"
+                    } else {
+                        return "<listitem>"
+                    }; return nil; })()));
+                    result['$<<']("<simpara>" + (item.$text()) + "</simpara>");
+                    if ((($a = item['$blocks?']()) !== nil && (!$a._isBoolean || $a == true))) {
+                        result['$<<'](item.$content())};
+                    return result['$<<']("</listitem>");}, TMP_2._s = self, TMP_2), $a).call($b);
+                result['$<<']("</orderedlist>");
+                return result['$*']($scope.EOL);
+            };
+
+            def.$inline_anchor = function(node) {
+                var $a, self = this, target = nil, $case = nil, linkend = nil, text = nil;
+
+                target = node.$target();
+                return (function() {$case = node.$type();if ("ref"['$===']($case)) {return "<anchor" + (self.$common_attributes(target, nil, node.$text())) + "/>"}else if ("xref"['$===']($case)) {if ((($a = node['$attr?']("path", nil)) !== nil && (!$a._isBoolean || $a == true))) {
+                    linkend = ((($a = (node.$attr("fragment"))) !== false && $a !== nil) ? $a : target);
+                    if ((($a = (text = node.$text())) !== nil && (!$a._isBoolean || $a == true))) {
+                        return "<link linkend=\"" + (linkend) + "\">" + (text) + "</link>"
+                    } else {
+                        return "<xref linkend=\"" + (linkend) + "\"/>"
+                    };
+                } else {
+                    text = ((($a = node.$text()) !== false && $a !== nil) ? $a : (node.$attr("path")));
+                    return "<ulink url=\"" + (target) + "\">" + (text) + "</ulink>";
+                }}else if ("link"['$===']($case)) {return "<ulink url=\"" + (target) + "\">" + (node.$text()) + "</ulink>"}else if ("bibref"['$===']($case)) {return "<anchor" + (self.$common_attributes(target, nil, "[" + (target) + "]")) + "/>[" + (target) + "]"}else { return nil }})();
+            };
+
+            def.$author_element = function(doc, index) {
+                var $a, self = this, firstname_key = nil, middlename_key = nil, lastname_key = nil, email_key = nil, result = nil;
+
+                if (index == null) {
+                    index = nil
+                }
+                firstname_key = (function() {if (index !== false && index !== nil) {
+                    return "firstname_" + (index)
+                } else {
+                    return "firstname"
+                }; return nil; })();
+                middlename_key = (function() {if (index !== false && index !== nil) {
+                    return "middlename_" + (index)
+                } else {
+                    return "middlename"
+                }; return nil; })();
+                lastname_key = (function() {if (index !== false && index !== nil) {
+                    return "lastname_" + (index)
+                } else {
+                    return "lastname"
+                }; return nil; })();
+                email_key = (function() {if (index !== false && index !== nil) {
+                    return "email_" + (index)
+                } else {
+                    return "email"
+                }; return nil; })();
+                result = [];
+                result['$<<']("<author>");
+                if ((($a = doc['$attr?'](firstname_key)) !== nil && (!$a._isBoolean || $a == true))) {
+                    result['$<<']("<firstname>" + (doc.$attr(firstname_key)) + "</firstname>")};
+                if ((($a = doc['$attr?'](middlename_key)) !== nil && (!$a._isBoolean || $a == true))) {
+                    result['$<<']("<othername>" + (doc.$attr(middlename_key)) + "</othername>")};
+                if ((($a = doc['$attr?'](lastname_key)) !== nil && (!$a._isBoolean || $a == true))) {
+                    result['$<<']("<surname>" + (doc.$attr(lastname_key)) + "</surname>")};
+                if ((($a = doc['$attr?'](email_key)) !== nil && (!$a._isBoolean || $a == true))) {
+                    result['$<<']("<email>" + (doc.$attr(email_key)) + "</email>")};
+                result['$<<']("</author>");
+                return result['$*']($scope.EOL);
+            };
+
+            def.$common_attributes = function(id, role, reftext) {
+                var self = this, res = nil;
+
+                if (role == null) {
+                    role = nil
+                }
+                if (reftext == null) {
+                    reftext = nil
+                }
+                res = (function() {if (id !== false && id !== nil) {
+                    return " id=\"" + (id) + "\""
+                } else {
+                    return ""
+                }; return nil; })();
+                if (role !== false && role !== nil) {
+                    res = "" + (res) + " role=\"" + (role) + "\""};
+                if (reftext !== false && reftext !== nil) {
+                    res = "" + (res) + " xreflabel=\"" + (reftext) + "\""};
+                return res;
+            };
+
+            def.$doctype_declaration = function(root_tag_name) {
+                var self = this;
+
+                return "<!DOCTYPE " + (root_tag_name) + " PUBLIC \"-//OASIS//DTD DocBook XML V4.5//EN\" \"http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd\">";
+            };
+
+            def.$document_info_element = TMP_3 = function(doc, info_tag_prefix) {
+                var self = this, $iter = TMP_3._p, $yield = $iter || nil;
+
+                TMP_3._p = null;
+                return $opal.find_super_dispatcher(self, 'document_info_element', TMP_3, null).apply(self, [doc, info_tag_prefix, true]);
+            };
+
+            def.$lang_attribute_name = function() {
+                var self = this;
+
+                return "lang";
+            };
+
+            return (def.$document_ns_attributes = function(doc) {
+                    var $a, self = this, ns = nil;
+
+                    if ((($a = (ns = doc.$attr("xmlns"))) !== nil && (!$a._isBoolean || $a == true))) {
+                        if ((($a = ns['$empty?']()) !== nil && (!$a._isBoolean || $a == true))) {
+                            return " xmlns=\"http://docbook.org/ns/docbook\""
+                        } else {
+                            return " xmlns=\"" + (ns) + "\""
+                        }
+                    } else {
+                        return nil
+                    };
+                }, nil) && 'document_ns_attributes';
+        })($scope.Converter, ($scope.Converter)._scope.DocBook5Converter)
+
+    })(self);
+})(Opal);
+
+/* Generated by Opal 0.6.3 */
+(function($opal) {
+    var self = $opal.top, $scope = $opal, nil = $opal.nil, $breaker = $opal.breaker, $slice = $opal.slice, $module = $opal.module, $klass = $opal.klass, $hash2 = $opal.hash2;
+
+    return (function($base) {
+        var self = $module($base, 'Asciidoctor');
+
+        var def = self._proto, $scope = self._scope;
+
+        (function($base, $super) {
+            function $DocBook5Converter(){};
+            var self = $DocBook5Converter = $klass($base, $super, 'DocBook5Converter', $DocBook5Converter);
+
+            var def = self._proto, $scope = self._scope;
+
+            def.$document = function(node) {
+                var $a, self = this, result = nil, root_tag_name = nil, doctype_line = nil, lang_attribute = nil, footer_docinfo = nil;
+
+                result = [];
+                if (((root_tag_name = node.$doctype()))['$==']("manpage")) {
+                    root_tag_name = "refentry"};
+                result['$<<']("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+                if ((($a = (doctype_line = self.$doctype_declaration(root_tag_name))) !== nil && (!$a._isBoolean || $a == true))) {
+                    result['$<<'](doctype_line)};
+                if ((($a = node['$attr?']("toc")) !== nil && (!$a._isBoolean || $a == true))) {
+                    if ((($a = node['$attr?']("toclevels")) !== nil && (!$a._isBoolean || $a == true))) {
+                        result['$<<']("<?asciidoc-toc maxdepth=\"" + (node.$attr("toclevels")) + "\"?>")
+                    } else {
+                        result['$<<']("<?asciidoc-toc?>")
+                    }};
+                if ((($a = node['$attr?']("sectnums")) !== nil && (!$a._isBoolean || $a == true))) {
+                    if ((($a = node['$attr?']("sectnumlevels")) !== nil && (!$a._isBoolean || $a == true))) {
+                        result['$<<']("<?asciidoc-numbered maxdepth=\"" + (node.$attr("sectnumlevels")) + "\"?>")
+                    } else {
+                        result['$<<']("<?asciidoc-numbered?>")
+                    }};
+                lang_attribute = (function() {if ((($a = (node['$attr?']("nolang"))) !== nil && (!$a._isBoolean || $a == true))) {
+                    return nil
+                } else {
+                    return " " + (self.$lang_attribute_name()) + "=\"" + (node.$attr("lang", "en")) + "\""
+                }; return nil; })();
+                result['$<<']("<" + (root_tag_name) + (self.$document_ns_attributes(node)) + (lang_attribute) + ">");
+                result['$<<']((self.$document_info_element(node, root_tag_name)));
+                if ((($a = node['$blocks?']()) !== nil && (!$a._isBoolean || $a == true))) {
+                    result['$<<'](node.$content())};
+                if ((($a = ((footer_docinfo = node.$docinfo("footer")))['$empty?']()) !== nil && (!$a._isBoolean || $a == true))) {
+                } else {
+                    result['$<<'](footer_docinfo)
+                };
+                result['$<<']("</" + (root_tag_name) + ">");
+                return result['$*']($scope.EOL);
+            };
+
+            $opal.defn(self, '$embedded', def.$content);
+
+            def.$section = function(node) {
+                var $a, $b, self = this, doctype = nil, tag_name = nil;
+
+                doctype = node.$document().$doctype();
+                tag_name = (function() {if ((($a = node.$special()) !== nil && (!$a._isBoolean || $a == true))) {
+                    if (node.$level()['$<='](1)) {
+                        return node.$sectname()
+                    } else {
+                        return "section"
+                    }
+                } else if ((($a = (($b = doctype['$==']("book")) ? node.$level()['$<='](1) : $b)) !== nil && (!$a._isBoolean || $a == true))) {
+                    return ((function() {if (node.$level()['$=='](0)) {
+                        return "part"
+                    } else {
+                        return "chapter"
+                    }; return nil; })())
+                } else {
+                    return "section"
+                }; return nil; })();
+                if (doctype['$==']("manpage")) {
+                    if (tag_name['$==']("section")) {
+                        tag_name = "refsection"
+                    } else if (tag_name['$==']("synopsis")) {
+                        tag_name = "refsynopsisdiv"}};
+                return "<" + (tag_name) + (self.$common_attributes(node.$id(), node.$role(), node.$reftext())) + ">\n<title>" + (node.$title()) + "</title>\n" + (node.$content()) + "\n</" + (tag_name) + ">";
+            };
+
+            def.$admonition = function(node) {
+                var self = this, tag_name = nil;
+
+                return "<" + (tag_name = node.$attr("name")) + (self.$common_attributes(node.$id(), node.$role(), node.$reftext())) + ">\n" + (self.$title_tag(node)) + (self.$resolve_content(node)) + "\n</" + (tag_name) + ">";
+            };
+
+            $opal.defn(self, '$audio', def.$skip);
+
+            def.$colist = function(node) {
+                var $a, $b, TMP_1, self = this, result = nil;
+
+                result = [];
+                result['$<<']("<calloutlist" + (self.$common_attributes(node.$id(), node.$role(), node.$reftext())) + ">");
+                if ((($a = node['$title?']()) !== nil && (!$a._isBoolean || $a == true))) {
+                    result['$<<']("<title>" + (node.$title()) + "</title>")};
+                ($a = ($b = node.$items()).$each, $a._p = (TMP_1 = function(item){var self = TMP_1._s || this, $a;
+                    if (item == null) item = nil;
+                    result['$<<']("<callout arearefs=\"" + (item.$attr("coids")) + "\">");
+                    result['$<<']("<para>" + (item.$text()) + "</para>");
+                    if ((($a = item['$blocks?']()) !== nil && (!$a._isBoolean || $a == true))) {
+                        result['$<<'](item.$content())};
+                    return result['$<<']("</callout>");}, TMP_1._s = self, TMP_1), $a).call($b);
+                result['$<<']("</calloutlist>");
+                return result['$*']($scope.EOL);
+            };
+
+            $opal.cdecl($scope, 'DLIST_TAGS', $hash2(["labeled", "qanda", "glossary"], {"labeled": $hash2(["list", "entry", "term", "item"], {"list": "variablelist", "entry": "varlistentry", "term": "term", "item": "listitem"}), "qanda": $hash2(["list", "entry", "label", "term", "item"], {"list": "qandaset", "entry": "qandaentry", "label": "question", "term": "simpara", "item": "answer"}), "glossary": $hash2(["list", "entry", "term", "item"], {"list": nil, "entry": "glossentry", "term": "glossterm", "item": "glossdef"})}));
+
+            $scope.DLIST_TAGS['$default=']($scope.DLIST_TAGS['$[]']("labeled"));
+
+            def.$dlist = function(node) {
+                var $a, $b, TMP_2, $c, TMP_4, self = this, result = nil, tag_name = nil, tags = nil, list_tag = nil, entry_tag = nil, label_tag = nil, term_tag = nil, item_tag = nil;
+
+                result = [];
+                if (node.$style()['$==']("horizontal")) {
+                    result['$<<']("<" + (tag_name = (function() {if ((($a = node['$title?']()) !== nil && (!$a._isBoolean || $a == true))) {
+                            return "table"
+                        } else {
+                            return "informaltable"
+                        }; return nil; })()) + (self.$common_attributes(node.$id(), node.$role(), node.$reftext())) + " tabstyle=\"horizontal\" frame=\"none\" colsep=\"0\" rowsep=\"0\">\n" + (self.$title_tag(node)) + "<tgroup cols=\"2\">\n<colspec colwidth=\"" + (node.$attr("labelwidth", 15)) + "*\"/>\n<colspec colwidth=\"" + (node.$attr("itemwidth", 85)) + "*\"/>\n<tbody valign=\"top\">");
+                    ($a = ($b = node.$items()).$each, $a._p = (TMP_2 = function(terms, dd){var self = TMP_2._s || this, $a, $b, TMP_3;
+                        if (terms == null) terms = nil;if (dd == null) dd = nil;
+                        result['$<<']("<row>\n<entry>");
+                        ($a = ($b = [].concat(terms)).$each, $a._p = (TMP_3 = function(dt){var self = TMP_3._s || this;
+                            if (dt == null) dt = nil;
+                            return result['$<<']("<simpara>" + (dt.$text()) + "</simpara>")}, TMP_3._s = self, TMP_3), $a).call($b);
+                        result['$<<']("</entry>\n<entry>");
+                        if ((($a = dd['$nil?']()) !== nil && (!$a._isBoolean || $a == true))) {
+                        } else {
+                            if ((($a = dd['$text?']()) !== nil && (!$a._isBoolean || $a == true))) {
+                                result['$<<']("<simpara>" + (dd.$text()) + "</simpara>")};
+                            if ((($a = dd['$blocks?']()) !== nil && (!$a._isBoolean || $a == true))) {
+                                result['$<<'](dd.$content())};
+                        };
+                        return result['$<<']("</entry>\n</row>");}, TMP_2._s = self, TMP_2), $a).call($b);
+                    result['$<<']("</tbody>\n</tgroup>\n</" + (tag_name) + ">");
+                } else {
+                    tags = $scope.DLIST_TAGS['$[]'](node.$style());
+                    list_tag = tags['$[]']("list");
+                    entry_tag = tags['$[]']("entry");
+                    label_tag = tags['$[]']("label");
+                    term_tag = tags['$[]']("term");
+                    item_tag = tags['$[]']("item");
+                    if (list_tag !== false && list_tag !== nil) {
+                        result['$<<']("<" + (list_tag) + (self.$common_attributes(node.$id(), node.$role(), node.$reftext())) + ">");
+                        if ((($a = node['$title?']()) !== nil && (!$a._isBoolean || $a == true))) {
+                            result['$<<']("<title>" + (node.$title()) + "</title>")};};
+                    ($a = ($c = node.$items()).$each, $a._p = (TMP_4 = function(terms, dd){var self = TMP_4._s || this, $a, $b, TMP_5;
+                        if (terms == null) terms = nil;if (dd == null) dd = nil;
+                        result['$<<']("<" + (entry_tag) + ">");
+                        if (label_tag !== false && label_tag !== nil) {
+                            result['$<<']("<" + (label_tag) + ">")};
+                        ($a = ($b = [].concat(terms)).$each, $a._p = (TMP_5 = function(dt){var self = TMP_5._s || this;
+                            if (dt == null) dt = nil;
+                            return result['$<<']("<" + (term_tag) + ">" + (dt.$text()) + "</" + (term_tag) + ">")}, TMP_5._s = self, TMP_5), $a).call($b);
+                        if (label_tag !== false && label_tag !== nil) {
+                            result['$<<']("</" + (label_tag) + ">")};
+                        result['$<<']("<" + (item_tag) + ">");
+                        if ((($a = dd['$nil?']()) !== nil && (!$a._isBoolean || $a == true))) {
+                        } else {
+                            if ((($a = dd['$text?']()) !== nil && (!$a._isBoolean || $a == true))) {
+                                result['$<<']("<simpara>" + (dd.$text()) + "</simpara>")};
+                            if ((($a = dd['$blocks?']()) !== nil && (!$a._isBoolean || $a == true))) {
+                                result['$<<'](dd.$content())};
+                        };
+                        result['$<<']("</" + (item_tag) + ">");
+                        return result['$<<']("</" + (entry_tag) + ">");}, TMP_4._s = self, TMP_4), $a).call($c);
+                    if (list_tag !== false && list_tag !== nil) {
+                        result['$<<']("</" + (list_tag) + ">")};
+                };
+                return result['$*']($scope.EOL);
+            };
+
+            def.$example = function(node) {
+                var $a, self = this;
+
+                if ((($a = node['$title?']()) !== nil && (!$a._isBoolean || $a == true))) {
+                    return "<example" + (self.$common_attributes(node.$id(), node.$role(), node.$reftext())) + ">\n<title>" + (node.$title()) + "</title>\n" + (self.$resolve_content(node)) + "\n</example>"
+                } else {
+                    return "<informalexample" + (self.$common_attributes(node.$id(), node.$role(), node.$reftext())) + ">\n" + (self.$resolve_content(node)) + "\n</informalexample>"
+                };
+            };
+
+            def.$floating_title = function(node) {
+                var self = this;
+
+                return "<bridgehead" + (self.$common_attributes(node.$id(), node.$role(), node.$reftext())) + " renderas=\"sect" + (node.$level()) + "\">" + (node.$title()) + "</bridgehead>";
+            };
+
+            def.$image = function(node) {
+                var $a, self = this, width_attribute = nil, depth_attribute = nil, swidth_attribute = nil, scale_attribute = nil, align_attribute = nil, mediaobject = nil;
+
+                width_attribute = (function() {if ((($a = (node['$attr?']("width"))) !== nil && (!$a._isBoolean || $a == true))) {
+                    return " contentwidth=\"" + (node.$attr("width")) + "\""
+                } else {
+                    return nil
+                }; return nil; })();
+                depth_attribute = (function() {if ((($a = (node['$attr?']("height"))) !== nil && (!$a._isBoolean || $a == true))) {
+                    return " contentdepth=\"" + (node.$attr("height")) + "\""
+                } else {
+                    return nil
+                }; return nil; })();
+                swidth_attribute = (function() {if ((($a = (node['$attr?']("scaledwidth"))) !== nil && (!$a._isBoolean || $a == true))) {
+                    return " width=\"" + (node.$attr("scaledwidth")) + "\" scalefit=\"1\""
+                } else {
+                    return nil
+                }; return nil; })();
+                scale_attribute = (function() {if ((($a = (node['$attr?']("scale"))) !== nil && (!$a._isBoolean || $a == true))) {
+                    return " scale=\"" + (node.$attr("scale")) + "\""
+                } else {
+                    return nil
+                }; return nil; })();
+                align_attribute = (function() {if ((($a = (node['$attr?']("align"))) !== nil && (!$a._isBoolean || $a == true))) {
+                    return " align=\"" + (node.$attr("align")) + "\""
+                } else {
+                    return nil
+                }; return nil; })();
+                mediaobject = "<mediaobject>\n<imageobject>\n<imagedata fileref=\"" + (node.$image_uri(node.$attr("target"))) + "\"" + (width_attribute) + (depth_attribute) + (swidth_attribute) + (scale_attribute) + (align_attribute) + "/>\n</imageobject>\n<textobject><phrase>" + (node.$attr("alt")) + "</phrase></textobject>\n</mediaobject>";
+                if ((($a = node['$title?']()) !== nil && (!$a._isBoolean || $a == true))) {
+                    return "<figure" + (self.$common_attributes(node.$id(), node.$role(), node.$reftext())) + ">\n<title>" + (node.$title()) + "</title>\n" + (mediaobject) + "\n</figure>"
+                } else {
+                    return "<informalfigure" + (self.$common_attributes(node.$id(), node.$role(), node.$reftext())) + ">\n" + (mediaobject) + "\n</informalfigure>"
+                };
+            };
+
+            def.$listing = function(node) {
+                var $a, $b, self = this, informal = nil, listing_attributes = nil, numbering = nil, listing_content = nil;
+
+                informal = node['$title?']()['$!']();
+                listing_attributes = (self.$common_attributes(node.$id(), node.$role(), node.$reftext()));
+                if ((($a = (($b = node.$style()['$==']("source")) ? (node['$attr?']("language")) : $b)) !== nil && (!$a._isBoolean || $a == true))) {
+                    numbering = (function() {if ((($a = (node['$attr?']("linenums"))) !== nil && (!$a._isBoolean || $a == true))) {
+                        return "numbered"
+                    } else {
+                        return "unnumbered"
+                    }; return nil; })();
+                    listing_content = "<programlisting" + ((function() {if (informal !== false && informal !== nil) {
+                            return listing_attributes
+                        } else {
+                            return nil
+                        }; return nil; })()) + " language=\"" + (node.$attr("language", nil, false)) + "\" linenumbering=\"" + (numbering) + "\">" + (node.$content()) + "</programlisting>";
+                } else {
+                    listing_content = "<screen" + ((function() {if (informal !== false && informal !== nil) {
+                            return listing_attributes
+                        } else {
+                            return nil
+                        }; return nil; })()) + ">" + (node.$content()) + "</screen>"
+                };
+                if (informal !== false && informal !== nil) {
+                    return listing_content
+                } else {
+                    return "<formalpara" + (listing_attributes) + ">\n<title>" + (node.$title()) + "</title>\n<para>\n" + (listing_content) + "\n</para>\n</formalpara>"
+                };
+            };
+
+            def.$literal = function(node) {
+                var $a, self = this;
+
+                if ((($a = node['$title?']()) !== nil && (!$a._isBoolean || $a == true))) {
+                    return "<formalpara" + (self.$common_attributes(node.$id(), node.$role(), node.$reftext())) + ">\n<title>" + (node.$title()) + "</title>\n<para>\n<literallayout class=\"monospaced\">" + (node.$content()) + "</literallayout>\n</para>\n</formalpara>"
+                } else {
+                    return "<literallayout" + (self.$common_attributes(node.$id(), node.$role(), node.$reftext())) + " class=\"monospaced\">" + (node.$content()) + "</literallayout>"
+                };
+            };
+
+            def.$stem = function(node) {
+                var $a, self = this, idx = nil, equation = nil, equation_data = nil;
+
+                if ((($a = (idx = node.$subs().$index("specialcharacters"))) !== nil && (!$a._isBoolean || $a == true))) {
+                    node.$subs().$delete("specialcharacters")};
+                equation = node.$content();
+                if (idx !== false && idx !== nil) {
+                    node.$subs().$insert(idx, "specialcharacters")};
+                if (node.$style()['$==']("latexmath")) {
+                    equation_data = "<alt><![CDATA[" + (equation) + "]]></alt>\n<mediaobject><textobject><phrase></phrase></textobject></mediaobject>"
+                } else {
+                    equation_data = "<mediaobject><textobject><phrase><![CDATA[" + (equation) + "]]></phrase></textobject></mediaobject>"
+                };
+                if ((($a = node['$title?']()) !== nil && (!$a._isBoolean || $a == true))) {
+                    return "<equation" + (self.$common_attributes(node.$id(), node.$role(), node.$reftext())) + ">\n<title>" + (node.$title()) + "</title>\n" + (equation_data) + "\n</equation>"
+                } else {
+                    return "<informalequation" + (self.$common_attributes(node.$id(), node.$role(), node.$reftext())) + ">\n" + (equation_data) + "\n</informalequation>"
+                };
+            };
+
+            def.$olist = function(node) {
+                var $a, $b, TMP_6, self = this, result = nil, num_attribute = nil, start_attribute = nil;
+
+                result = [];
+                num_attribute = (function() {if ((($a = node.$style()) !== nil && (!$a._isBoolean || $a == true))) {
+                    return " numeration=\"" + (node.$style()) + "\""
+                } else {
+                    return nil
+                }; return nil; })();
+                start_attribute = (function() {if ((($a = (node['$attr?']("start"))) !== nil && (!$a._isBoolean || $a == true))) {
+                    return " startingnumber=\"" + (node.$attr("start")) + "\""
+                } else {
+                    return nil
+                }; return nil; })();
+                result['$<<']("<orderedlist" + (self.$common_attributes(node.$id(), node.$role(), node.$reftext())) + (num_attribute) + (start_attribute) + ">");
+                if ((($a = node['$title?']()) !== nil && (!$a._isBoolean || $a == true))) {
+                    result['$<<']("<title>" + (node.$title()) + "</title>")};
+                ($a = ($b = node.$items()).$each, $a._p = (TMP_6 = function(item){var self = TMP_6._s || this, $a;
+                    if (item == null) item = nil;
+                    result['$<<']("<listitem>");
+                    result['$<<']("<simpara>" + (item.$text()) + "</simpara>");
+                    if ((($a = item['$blocks?']()) !== nil && (!$a._isBoolean || $a == true))) {
+                        result['$<<'](item.$content())};
+                    return result['$<<']("</listitem>");}, TMP_6._s = self, TMP_6), $a).call($b);
+                result['$<<']("</orderedlist>");
+                return result['$*']($scope.EOL);
+            };
+
+            def.$open = function(node) {
+                var $a, $b, $c, self = this, $case = nil;
+
+                return (function() {$case = node.$style();if ("abstract"['$===']($case)) {if ((($a = (($b = node.$parent()['$=='](node.$document())) ? node.$document()['$attr?']("doctype", "book") : $b)) !== nil && (!$a._isBoolean || $a == true))) {
+                    self.$warn("asciidoctor: WARNING: abstract block cannot be used in a document without a title when doctype is book. Excluding block content.");
+                    return "";
+                } else {
+                    return "<abstract>\n" + (self.$title_tag(node)) + (self.$resolve_content(node)) + "\n</abstract>"
+                }}else if ("partintro"['$===']($case)) {if ((($a = ($b = (($c = node.$level()['$=='](0)) ? node.$parent().$context()['$==']("section") : $c), $b !== false && $b !== nil ?node.$document().$doctype()['$==']("book") : $b)) !== nil && (!$a._isBoolean || $a == true))) {
+                    return "<partintro" + (self.$common_attributes(node.$id(), node.$role(), node.$reftext())) + ">\n" + (self.$title_tag(node)) + (self.$resolve_content(node)) + "\n</partintro>"
+                } else {
+                    self.$warn("asciidoctor: ERROR: partintro block can only be used when doctype is book and it's a child of a part section. Excluding block content.");
+                    return "";
+                }}else {return node.$content()}})();
+            };
+
+            def.$page_break = function(node) {
+                var self = this;
+
+                return "<simpara><?asciidoc-pagebreak?></simpara>";
+            };
+
+            def.$paragraph = function(node) {
+                var $a, self = this;
+
+                if ((($a = node['$title?']()) !== nil && (!$a._isBoolean || $a == true))) {
+                    return "<formalpara" + (self.$common_attributes(node.$id(), node.$role(), node.$reftext())) + ">\n<title>" + (node.$title()) + "</title>\n<para>" + (node.$content()) + "</para>\n</formalpara>"
+                } else {
+                    return "<simpara" + (self.$common_attributes(node.$id(), node.$role(), node.$reftext())) + ">" + (node.$content()) + "</simpara>"
+                };
+            };
+
+            def.$preamble = function(node) {
+                var self = this;
+
+                if (node.$document().$doctype()['$==']("book")) {
+                    return "<preface" + (self.$common_attributes(node.$id(), node.$role(), node.$reftext())) + ">\n" + (self.$title_tag(node, false)) + (node.$content()) + "\n</preface>"
+                } else {
+                    return node.$content()
+                };
+            };
+
+            def.$quote = function(node) {
+                var $a, $b, self = this, result = nil;
+
+                result = [];
+                result['$<<']("<blockquote" + (self.$common_attributes(node.$id(), node.$role(), node.$reftext())) + ">");
+                if ((($a = node['$title?']()) !== nil && (!$a._isBoolean || $a == true))) {
+                    result['$<<']("<title>" + (node.$title()) + "</title>")};
+                if ((($a = ((($b = (node['$attr?']("attribution"))) !== false && $b !== nil) ? $b : (node['$attr?']("citetitle")))) !== nil && (!$a._isBoolean || $a == true))) {
+                    result['$<<']("<attribution>");
+                    if ((($a = node['$attr?']("attribution")) !== nil && (!$a._isBoolean || $a == true))) {
+                        result['$<<']((node.$attr("attribution")))};
+                    if ((($a = node['$attr?']("citetitle")) !== nil && (!$a._isBoolean || $a == true))) {
+                        result['$<<']("<citetitle>" + (node.$attr("citetitle")) + "</citetitle>")};
+                    result['$<<']("</attribution>");};
+                result['$<<']((self.$resolve_content(node)));
+                result['$<<']("</blockquote>");
+                return result['$*']($scope.EOL);
+            };
+
+            def.$thematic_break = function(node) {
+                var self = this;
+
+                return "<simpara><?asciidoc-hr?></simpara>";
+            };
+
+            def.$sidebar = function(node) {
+                var self = this;
+
+                return "<sidebar" + (self.$common_attributes(node.$id(), node.$role(), node.$reftext())) + ">\n" + (self.$title_tag(node)) + (self.$resolve_content(node)) + "\n</sidebar>";
+            };
+
+            $opal.cdecl($scope, 'TABLE_PI_NAMES', ["dbhtml", "dbfo", "dblatex"]);
+
+            $opal.cdecl($scope, 'TABLE_SECTIONS', ["head", "foot", "body"]);
+
+            def.$table = function(node) {
+                var $a, $b, TMP_7, $c, TMP_8, $d, TMP_9, $e, $f, TMP_14, self = this, has_body = nil, result = nil, pgwide_attribute = nil, tag_name = nil, width = nil;
+
+                has_body = false;
+                result = [];
+                pgwide_attribute = (function() {if ((($a = (node['$option?']("pgwide"))) !== nil && (!$a._isBoolean || $a == true))) {
+                    return " pgwide=\"1\""
+                } else {
+                    return nil
+                }; return nil; })();
+                result['$<<']("<" + (tag_name = (function() {if ((($a = node['$title?']()) !== nil && (!$a._isBoolean || $a == true))) {
+                        return "table"
+                    } else {
+                        return "informaltable"
+                    }; return nil; })()) + (self.$common_attributes(node.$id(), node.$role(), node.$reftext())) + (pgwide_attribute) + " frame=\"" + (node.$attr("frame", "all")) + "\" rowsep=\"" + ((function() {if ((($a = ["none", "cols"]['$include?'](node.$attr("grid"))) !== nil && (!$a._isBoolean || $a == true))) {
+                        return 0
+                    } else {
+                        return 1
+                    }; return nil; })()) + "\" colsep=\"" + ((function() {if ((($a = ["none", "rows"]['$include?'](node.$attr("grid"))) !== nil && (!$a._isBoolean || $a == true))) {
+                        return 0
+                    } else {
+                        return 1
+                    }; return nil; })()) + "\">");
+                if (tag_name['$==']("table")) {
+                    result['$<<']("<title>" + (node.$title()) + "</title>")};
+                if ((($a = (width = (function() {if ((($b = (node['$attr?']("width"))) !== nil && (!$b._isBoolean || $b == true))) {
+                        return (node.$attr("width"))
+                    } else {
+                        return nil
+                    }; return nil; })())) !== nil && (!$a._isBoolean || $a == true))) {
+                    ($a = ($b = $scope.TABLE_PI_NAMES).$each, $a._p = (TMP_7 = function(pi_name){var self = TMP_7._s || this;
+                        if (pi_name == null) pi_name = nil;
+                        return result['$<<']("<?" + (pi_name) + " table-width=\"" + (width) + "\"?>")}, TMP_7._s = self, TMP_7), $a).call($b)};
+                result['$<<']("<tgroup cols=\"" + (node.$attr("colcount")) + "\">");
+                ($a = ($c = node.$columns()).$each, $a._p = (TMP_8 = function(col){var self = TMP_8._s || this;
+                    if (col == null) col = nil;
+                    return result['$<<']("<colspec colname=\"col_" + (col.$attr("colnumber")) + "\" colwidth=\"" + (col.$attr((function() {if (width !== false && width !== nil) {
+                            return "colabswidth"
+                        } else {
+                            return "colpcwidth"
+                        }; return nil; })())) + "*\"/>")}, TMP_8._s = self, TMP_8), $a).call($c);
+                ($a = ($d = ($e = ($f = $scope.TABLE_SECTIONS).$select, $e._p = (TMP_14 = function(tblsec){var self = TMP_14._s || this;
+                    if (tblsec == null) tblsec = nil;
+                    return node.$rows()['$[]'](tblsec)['$empty?']()['$!']()}, TMP_14._s = self, TMP_14), $e).call($f)).$each, $a._p = (TMP_9 = function(tblsec){var self = TMP_9._s || this, $a, $b, TMP_10;
+                    if (tblsec == null) tblsec = nil;
+                    if (tblsec['$==']("body")) {
+                        has_body = true};
+                    result['$<<']("<t" + (tblsec) + ">");
+                    ($a = ($b = node.$rows()['$[]'](tblsec)).$each, $a._p = (TMP_10 = function(row){var self = TMP_10._s || this, $a, $b, TMP_11;
+                        if (row == null) row = nil;
+                        result['$<<']("<row>");
+                        ($a = ($b = row).$each, $a._p = (TMP_11 = function(cell){var self = TMP_11._s || this, $a, $b, TMP_12, $c, TMP_13, halign_attribute = nil, valign_attribute = nil, colspan_attribute = nil, colnum = nil, rowspan_attribute = nil, entry_start = nil, cell_content = nil, $case = nil, entry_end = nil;
+                            if (cell == null) cell = nil;
+                            halign_attribute = (function() {if ((($a = (cell['$attr?']("halign"))) !== nil && (!$a._isBoolean || $a == true))) {
+                                return " align=\"" + (cell.$attr("halign")) + "\""
+                            } else {
+                                return nil
+                            }; return nil; })();
+                            valign_attribute = (function() {if ((($a = (cell['$attr?']("valign"))) !== nil && (!$a._isBoolean || $a == true))) {
+                                return " valign=\"" + (cell.$attr("valign")) + "\""
+                            } else {
+                                return nil
+                            }; return nil; })();
+                            colspan_attribute = (function() {if ((($a = cell.$colspan()) !== nil && (!$a._isBoolean || $a == true))) {
+                                return " namest=\"col_" + (colnum = cell.$column().$attr("colnumber")) + "\" nameend=\"col_" + (colnum['$+'](cell.$colspan())['$-'](1)) + "\""
+                            } else {
+                                return nil
+                            }; return nil; })();
+                            rowspan_attribute = (function() {if ((($a = cell.$rowspan()) !== nil && (!$a._isBoolean || $a == true))) {
+                                return " morerows=\"" + (cell.$rowspan()['$-'](1)) + "\""
+                            } else {
+                                return nil
+                            }; return nil; })();
+                            entry_start = "<entry" + (halign_attribute) + (valign_attribute) + (colspan_attribute) + (rowspan_attribute) + ">";
+                            cell_content = (function() {if (tblsec['$==']("head")) {
+                                return cell.$text()
+                            } else {
+                                return (function() {$case = cell.$style();if ("asciidoc"['$===']($case)) {return cell.$content()}else if ("verse"['$===']($case)) {return "<literallayout>" + (cell.$text()) + "</literallayout>"}else if ("literal"['$===']($case)) {return "<literallayout class=\"monospaced\">" + (cell.$text()) + "</literallayout>"}else if ("header"['$===']($case)) {return ($a = ($b = cell.$content()).$map, $a._p = (TMP_12 = function(text){var self = TMP_12._s || this;
+                                    if (text == null) text = nil;
+                                    return "<simpara><emphasis role=\"strong\">" + (text) + "</emphasis></simpara>"}, TMP_12._s = self, TMP_12), $a).call($b).$join()}else {return ($a = ($c = cell.$content()).$map, $a._p = (TMP_13 = function(text){var self = TMP_13._s || this;
+                                    if (text == null) text = nil;
+                                    return "<simpara>" + (text) + "</simpara>"}, TMP_13._s = self, TMP_13), $a).call($c).$join()}})()
+                            }; return nil; })();
+                            entry_end = (function() {if ((($a = (node.$document()['$attr?']("cellbgcolor"))) !== nil && (!$a._isBoolean || $a == true))) {
+                                return "<?dbfo bgcolor=\"" + (node.$document().$attr("cellbgcolor")) + "\"?></entry>"
+                            } else {
+                                return "</entry>"
+                            }; return nil; })();
+                            return result['$<<']("" + (entry_start) + (cell_content) + (entry_end));}, TMP_11._s = self, TMP_11), $a).call($b);
+                        return result['$<<']("</row>");}, TMP_10._s = self, TMP_10), $a).call($b);
+                    return result['$<<']("</t" + (tblsec) + ">");}, TMP_9._s = self, TMP_9), $a).call($d);
+                result['$<<']("</tgroup>");
+                result['$<<']("</" + (tag_name) + ">");
+                if (has_body !== false && has_body !== nil) {
+                } else {
+                    self.$warn("asciidoctor: WARNING: tables must have at least one body row")
+                };
+                return result['$*']($scope.EOL);
+            };
+
+            $opal.defn(self, '$toc', def.$skip);
+
+            def.$ulist = function(node) {
+                var $a, $b, TMP_15, $c, TMP_16, self = this, result = nil, mark_type = nil, checklist = nil, mark_attribute = nil;
+
+                result = [];
+                if (node.$style()['$==']("bibliography")) {
+                    result['$<<']("<bibliodiv" + (self.$common_attributes(node.$id(), node.$role(), node.$reftext())) + ">");
+                    if ((($a = node['$title?']()) !== nil && (!$a._isBoolean || $a == true))) {
+                        result['$<<']("<title>" + (node.$title()) + "</title>")};
+                    ($a = ($b = node.$items()).$each, $a._p = (TMP_15 = function(item){var self = TMP_15._s || this, $a;
+                        if (item == null) item = nil;
+                        result['$<<']("<bibliomixed>");
+                        result['$<<']("<bibliomisc>" + (item.$text()) + "</bibliomisc>");
+                        if ((($a = item['$blocks?']()) !== nil && (!$a._isBoolean || $a == true))) {
+                            result['$<<'](item.$content())};
+                        return result['$<<']("</bibliomixed>");}, TMP_15._s = self, TMP_15), $a).call($b);
+                    result['$<<']("</bibliodiv>");
+                } else {
+                    mark_type = (function() {if ((($a = (checklist = node['$option?']("checklist"))) !== nil && (!$a._isBoolean || $a == true))) {
+                        return "none"
+                    } else {
+                        return node.$style()
+                    }; return nil; })();
+                    mark_attribute = (function() {if (mark_type !== false && mark_type !== nil) {
+                        return " mark=\"" + (mark_type) + "\""
+                    } else {
+                        return nil
+                    }; return nil; })();
+                    result['$<<']("<itemizedlist" + (self.$common_attributes(node.$id(), node.$role(), node.$reftext())) + (mark_attribute) + ">");
+                    if ((($a = node['$title?']()) !== nil && (!$a._isBoolean || $a == true))) {
+                        result['$<<']("<title>" + (node.$title()) + "</title>")};
+                    ($a = ($c = node.$items()).$each, $a._p = (TMP_16 = function(item){var self = TMP_16._s || this, $a, $b, text_marker = nil;
+                        if (item == null) item = nil;
+                        text_marker = (function() {if ((($a = (($b = checklist !== false && checklist !== nil) ? (item['$attr?']("checkbox")) : $b)) !== nil && (!$a._isBoolean || $a == true))) {
+                            if ((($a = (item['$attr?']("checked"))) !== nil && (!$a._isBoolean || $a == true))) {
+                                return "&#10003; "
+                            } else {
+                                return "&#10063; "
+                            }
+                        } else {
+                            return nil
+                        }; return nil; })();
+                        result['$<<']("<listitem>");
+                        result['$<<']("<simpara>" + (text_marker) + (item.$text()) + "</simpara>");
+                        if ((($a = item['$blocks?']()) !== nil && (!$a._isBoolean || $a == true))) {
+                            result['$<<'](item.$content())};
+                        return result['$<<']("</listitem>");}, TMP_16._s = self, TMP_16), $a).call($c);
+                    result['$<<']("</itemizedlist>");
+                };
+                return result['$*']($scope.EOL);
+            };
+
+            def.$verse = function(node) {
+                var $a, $b, self = this, result = nil;
+
+                result = [];
+                result['$<<']("<blockquote" + (self.$common_attributes(node.$id(), node.$role(), node.$reftext())) + ">");
+                if ((($a = node['$title?']()) !== nil && (!$a._isBoolean || $a == true))) {
+                    result['$<<']("<title>" + (node.$title()) + "</title>")};
+                if ((($a = ((($b = (node['$attr?']("attribution"))) !== false && $b !== nil) ? $b : (node['$attr?']("citetitle")))) !== nil && (!$a._isBoolean || $a == true))) {
+                    result['$<<']("<attribution>");
+                    if ((($a = node['$attr?']("attribution")) !== nil && (!$a._isBoolean || $a == true))) {
+                        result['$<<']((node.$attr("attribution")))};
+                    if ((($a = node['$attr?']("citetitle")) !== nil && (!$a._isBoolean || $a == true))) {
+                        result['$<<']("<citetitle>" + (node.$attr("citetitle")) + "</citetitle>")};
+                    result['$<<']("</attribution>");};
+                result['$<<']("<literallayout>" + (node.$content()) + "</literallayout>");
+                result['$<<']("</blockquote>");
+                return result['$*']($scope.EOL);
+            };
+
+            $opal.defn(self, '$video', def.$skip);
+
+            def.$inline_anchor = function(node) {
+                var $a, self = this, $case = nil, linkend = nil, text = nil;
+
+                return (function() {$case = node.$type();if ("ref"['$===']($case)) {return "<anchor" + (self.$common_attributes(node.$target(), nil, node.$text())) + "/>"}else if ("xref"['$===']($case)) {if ((($a = node['$attr?']("path", nil)) !== nil && (!$a._isBoolean || $a == true))) {
+                    linkend = ((($a = (node.$attr("fragment"))) !== false && $a !== nil) ? $a : node.$target());
+                    if ((($a = (text = node.$text())) !== nil && (!$a._isBoolean || $a == true))) {
+                        return "<link linkend=\"" + (linkend) + "\">" + (text) + "</link>"
+                    } else {
+                        return "<xref linkend=\"" + (linkend) + "\"/>"
+                    };
+                } else {
+                    return "<link xlink:href=\"" + (self.$target()) + "\">" + (((($a = node.$text()) !== false && $a !== nil) ? $a : (node.$attr("path")))) + "</link>"
+                }}else if ("link"['$===']($case)) {return "<link xlink:href=\"" + (node.$target()) + "\">" + (node.$text()) + "</link>"}else if ("bibref"['$===']($case)) {return "<anchor" + (self.$common_attributes(node.$target(), nil, "[" + (node.$target()) + "]")) + "/>[" + (node.$target()) + "]"}else {return self.$warn("asciidoctor: WARNING: unknown anchor type: " + (node.$type().$inspect()))}})();
+            };
+
+            def.$inline_break = function(node) {
+                var self = this;
+
+                return "" + (node.$text()) + "<?asciidoc-br?>";
+            };
+
+            def.$inline_button = function(node) {
+                var self = this;
+
+                return "<guibutton>" + (node.$text()) + "</guibutton>";
+            };
+
+            def.$inline_callout = function(node) {
+                var self = this;
+
+                return "<co" + (self.$common_attributes(node.$id())) + "/>";
+            };
+
+            def.$inline_footnote = function(node) {
+                var self = this;
+
+                if (node.$type()['$==']("xref")) {
+                    return "<footnoteref linkend=\"" + (node.$target()) + "\"/>"
+                } else {
+                    return "<footnote" + (self.$common_attributes(node.$id())) + "><simpara>" + (node.$text()) + "</simpara></footnote>"
+                };
+            };
+
+            def.$inline_image = function(node) {
+                var $a, self = this, width_attribute = nil, depth_attribute = nil;
+
+                width_attribute = (function() {if ((($a = (node['$attr?']("width"))) !== nil && (!$a._isBoolean || $a == true))) {
+                    return " contentwidth=\"" + (node.$attr("width")) + "\""
+                } else {
+                    return nil
+                }; return nil; })();
+                depth_attribute = (function() {if ((($a = (node['$attr?']("height"))) !== nil && (!$a._isBoolean || $a == true))) {
+                    return " contentdepth=\"" + (node.$attr("height")) + "\""
+                } else {
+                    return nil
+                }; return nil; })();
+                return "<inlinemediaobject>\n<imageobject>\n<imagedata fileref=\"" + ((function() {if (node.$type()['$==']("icon")) {
+                        return (node.$icon_uri(node.$target()))
+                    } else {
+                        return (node.$image_uri(node.$target()))
+                    }; return nil; })()) + "\"" + (width_attribute) + (depth_attribute) + "/>\n</imageobject>\n<textobject><phrase>" + (node.$attr("alt")) + "</phrase></textobject>\n</inlinemediaobject>";
+            };
+
+            def.$inline_indexterm = function(node) {
+                var self = this, terms = nil, result = nil, numterms = nil;
+
+                if (node.$type()['$==']("visible")) {
+                    return "<indexterm><primary>" + (node.$text()) + "</primary></indexterm>" + (node.$text())
+                } else {
+                    terms = node.$attr("terms");
+                    result = [];
+                    if (((numterms = terms.$size()))['$>'](2)) {
+                        result['$<<']("<indexterm>\n<primary>" + (terms['$[]'](0)) + "</primary><secondary>" + (terms['$[]'](1)) + "</secondary><tertiary>" + (terms['$[]'](2)) + "</tertiary>\n</indexterm>")};
+                    if (numterms['$>'](1)) {
+                        result['$<<']("<indexterm>\n<primary>" + (terms['$[]'](-2)) + "</primary><secondary>" + (terms['$[]'](-1)) + "</secondary>\n</indexterm>")};
+                    result['$<<']("<indexterm>\n<primary>" + (terms['$[]'](-1)) + "</primary>\n</indexterm>");
+                    return result['$*']($scope.EOL);
+                };
+            };
+
+            def.$inline_kbd = function(node) {
+                var $a, $b, TMP_17, self = this, keys = nil, key_combo = nil;
+
+                if (((keys = node.$attr("keys"))).$size()['$=='](1)) {
+                    return "<keycap>" + (keys['$[]'](0)) + "</keycap>"
+                } else {
+                    key_combo = ($a = ($b = keys).$map, $a._p = (TMP_17 = function(key){var self = TMP_17._s || this;
+                        if (key == null) key = nil;
+                        return "<keycap>" + (key) + "</keycap>"}, TMP_17._s = self, TMP_17), $a).call($b).$join();
+                    return "<keycombo>" + (key_combo) + "</keycombo>";
+                };
+            };
+
+            def.$inline_menu = function(node) {
+                var $a, $b, TMP_18, self = this, menu = nil, submenus = nil, submenu_path = nil, menuitem = nil;
+
+                menu = node.$attr("menu");
+                if ((($a = ((submenus = node.$attr("submenus")))['$empty?']()['$!']()) !== nil && (!$a._isBoolean || $a == true))) {
+                    submenu_path = ($a = ($b = submenus).$map, $a._p = (TMP_18 = function(submenu){var self = TMP_18._s || this;
+                        if (submenu == null) submenu = nil;
+                        return "<guisubmenu>" + (submenu) + "</guisubmenu> "}, TMP_18._s = self, TMP_18), $a).call($b).$join().$chop();
+                    return "<menuchoice><guimenu>" + (menu) + "</guimenu> " + (submenu_path) + " <guimenuitem>" + (node.$attr("menuitem")) + "</guimenuitem></menuchoice>";
+                } else if ((($a = (menuitem = node.$attr("menuitem"))) !== nil && (!$a._isBoolean || $a == true))) {
+                    return "<menuchoice><guimenu>" + (menu) + "</guimenu> <guimenuitem>" + (menuitem) + "</guimenuitem></menuchoice>"
+                } else {
+                    return "<guimenu>" + (menu) + "</guimenu>"
+                };
+            };
+
+            $opal.cdecl($scope, 'QUOTE_TAGS', $hash2(["emphasis", "strong", "monospaced", "superscript", "subscript", "double", "single", "mark"], {"emphasis": ["<emphasis>", "</emphasis>", true], "strong": ["<emphasis role=\"strong\">", "</emphasis>", true], "monospaced": ["<literal>", "</literal>", false], "superscript": ["<superscript>", "</superscript>", false], "subscript": ["<subscript>", "</subscript>", false], "double": ["&#8220;", "&#8221;", true], "single": ["&#8216;", "&#8217;", true], "mark": ["<emphasis role=\"marked\">", "</emphasis>", false]}));
+
+            $scope.QUOTE_TAGS['$default=']([nil, nil, true]);
+
+            def.$inline_quoted = function(node) {
+                var $a, self = this, type = nil, open = nil, close = nil, supports_phrase = nil, text = nil, role = nil, quoted_text = nil;
+
+                if (((type = node.$type()))['$==']("latexmath")) {
+                    return "<inlineequation>\n<alt><![CDATA[" + (node.$text()) + "]]></alt>\n<inlinemediaobject><textobject><phrase><![CDATA[" + (node.$text()) + "]]></phrase></textobject></inlinemediaobject>\n</inlineequation>"
+                } else {
+                    $a = $opal.to_ary($scope.QUOTE_TAGS['$[]'](type)), open = ($a[0] == null ? nil : $a[0]), close = ($a[1] == null ? nil : $a[1]), supports_phrase = ($a[2] == null ? nil : $a[2]);
+                    text = node.$text();
+                    if ((($a = (role = node.$role())) !== nil && (!$a._isBoolean || $a == true))) {
+                        if (supports_phrase !== false && supports_phrase !== nil) {
+                            quoted_text = "" + (open) + "<phrase role=\"" + (role) + "\">" + (text) + "</phrase>" + (close)
+                        } else {
+                            quoted_text = "" + (open.$chop()) + " role=\"" + (role) + "\">" + (text) + (close)
+                        }
+                    } else {
+                        quoted_text = "" + (open) + (text) + (close)
+                    };
+                    if ((($a = node.$id()) !== nil && (!$a._isBoolean || $a == true))) {
+                        return "<anchor" + (self.$common_attributes(node.$id(), nil, text)) + "/>" + (quoted_text)
+                    } else {
+                        return quoted_text
+                    };
+                };
+            };
+
+            def.$author_element = function(doc, index) {
+                var $a, self = this, firstname_key = nil, middlename_key = nil, lastname_key = nil, email_key = nil, result = nil;
+
+                if (index == null) {
+                    index = nil
+                }
+                firstname_key = (function() {if (index !== false && index !== nil) {
+                    return "firstname_" + (index)
+                } else {
+                    return "firstname"
+                }; return nil; })();
+                middlename_key = (function() {if (index !== false && index !== nil) {
+                    return "middlename_" + (index)
+                } else {
+                    return "middlename"
+                }; return nil; })();
+                lastname_key = (function() {if (index !== false && index !== nil) {
+                    return "lastname_" + (index)
+                } else {
+                    return "lastname"
+                }; return nil; })();
+                email_key = (function() {if (index !== false && index !== nil) {
+                    return "email_" + (index)
+                } else {
+                    return "email"
+                }; return nil; })();
+                result = [];
+                result['$<<']("<author>");
+                result['$<<']("<personname>");
+                if ((($a = doc['$attr?'](firstname_key)) !== nil && (!$a._isBoolean || $a == true))) {
+                    result['$<<']("<firstname>" + (doc.$attr(firstname_key)) + "</firstname>")};
+                if ((($a = doc['$attr?'](middlename_key)) !== nil && (!$a._isBoolean || $a == true))) {
+                    result['$<<']("<othername>" + (doc.$attr(middlename_key)) + "</othername>")};
+                if ((($a = doc['$attr?'](lastname_key)) !== nil && (!$a._isBoolean || $a == true))) {
+                    result['$<<']("<surname>" + (doc.$attr(lastname_key)) + "</surname>")};
+                result['$<<']("</personname>");
+                if ((($a = doc['$attr?'](email_key)) !== nil && (!$a._isBoolean || $a == true))) {
+                    result['$<<']("<email>" + (doc.$attr(email_key)) + "</email>")};
+                result['$<<']("</author>");
+                return result['$*']($scope.EOL);
+            };
+
+            def.$common_attributes = function(id, role, reftext) {
+                var self = this, res = nil;
+
+                if (role == null) {
+                    role = nil
+                }
+                if (reftext == null) {
+                    reftext = nil
+                }
+                res = (function() {if (id !== false && id !== nil) {
+                    return " xml:id=\"" + (id) + "\""
+                } else {
+                    return ""
+                }; return nil; })();
+                if (role !== false && role !== nil) {
+                    res = "" + (res) + " role=\"" + (role) + "\""};
+                if (reftext !== false && reftext !== nil) {
+                    res = "" + (res) + " xreflabel=\"" + (reftext) + "\""};
+                return res;
+            };
+
+            def.$doctype_declaration = function(root_tag_name) {
+                var self = this;
+
+                return nil;
+            };
+
+            def.$document_info_element = function(doc, info_tag_prefix, use_info_tag_prefix) {
+                var $a, $b, TMP_19, $c, $d, self = this, result = nil, authorcount = nil, header_docinfo = nil;
+
+                if (use_info_tag_prefix == null) {
+                    use_info_tag_prefix = false
+                }
+                if (use_info_tag_prefix !== false && use_info_tag_prefix !== nil) {
+                } else {
+                    info_tag_prefix = ""
+                };
+                result = [];
+                result['$<<']("<" + (info_tag_prefix) + "info>");
+                if ((($a = doc.$notitle()) !== nil && (!$a._isBoolean || $a == true))) {
+                } else {
+                    result['$<<'](self.$document_title_tags(doc.$doctitle($hash2(["partition", "use_fallback"], {"partition": true, "use_fallback": true}))))
+                };
+                result['$<<']("<date>" + ((function() {if ((($a = (doc['$attr?']("revdate"))) !== nil && (!$a._isBoolean || $a == true))) {
+                        return (doc.$attr("revdate"))
+                    } else {
+                        return (doc.$attr("docdate"))
+                    }; return nil; })()) + "</date>");
+                if ((($a = doc['$has_header?']()) !== nil && (!$a._isBoolean || $a == true))) {
+                    if ((($a = doc['$attr?']("author")) !== nil && (!$a._isBoolean || $a == true))) {
+                        if (((authorcount = (doc.$attr("authorcount")).$to_i()))['$<'](2)) {
+                            result['$<<']((self.$author_element(doc)));
+                            if ((($a = doc['$attr?']("authorinitials")) !== nil && (!$a._isBoolean || $a == true))) {
+                                result['$<<']("<authorinitials>" + (doc.$attr("authorinitials")) + "</authorinitials>")};
+                        } else {
+                            result['$<<']("<authorgroup>");
+                            ($a = ($b = authorcount).$times, $a._p = (TMP_19 = function(index){var self = TMP_19._s || this;
+                                if (index == null) index = nil;
+                                return result['$<<']((self.$author_element(doc, index['$+'](1))))}, TMP_19._s = self, TMP_19), $a).call($b);
+                            result['$<<']("</authorgroup>");
+                        }};
+                    if ((($a = ($c = (doc['$attr?']("revdate")), $c !== false && $c !== nil ?(((($d = (doc['$attr?']("revnumber"))) !== false && $d !== nil) ? $d : (doc['$attr?']("revremark")))) : $c)) !== nil && (!$a._isBoolean || $a == true))) {
+                        result['$<<']("<revhistory>\n<revision>");
+                        if ((($a = doc['$attr?']("revnumber")) !== nil && (!$a._isBoolean || $a == true))) {
+                            result['$<<']("<revnumber>" + (doc.$attr("revnumber")) + "</revnumber>")};
+                        if ((($a = doc['$attr?']("revdate")) !== nil && (!$a._isBoolean || $a == true))) {
+                            result['$<<']("<date>" + (doc.$attr("revdate")) + "</date>")};
+                        if ((($a = doc['$attr?']("authorinitials")) !== nil && (!$a._isBoolean || $a == true))) {
+                            result['$<<']("<authorinitials>" + (doc.$attr("authorinitials")) + "</authorinitials>")};
+                        if ((($a = doc['$attr?']("revremark")) !== nil && (!$a._isBoolean || $a == true))) {
+                            result['$<<']("<revremark>" + (doc.$attr("revremark")) + "</revremark>")};
+                        result['$<<']("</revision>\n</revhistory>");};
+                    if ((($a = ((header_docinfo = doc.$docinfo("header")))['$empty?']()) !== nil && (!$a._isBoolean || $a == true))) {
+                    } else {
+                        result['$<<'](header_docinfo)
+                    };
+                    if ((($a = doc['$attr?']("orgname")) !== nil && (!$a._isBoolean || $a == true))) {
+                        result['$<<']("<orgname>" + (doc.$attr("orgname")) + "</orgname>")};};
+                result['$<<']("</" + (info_tag_prefix) + "info>");
+                if (doc.$doctype()['$==']("manpage")) {
+                    result['$<<']("<refmeta>");
+                    if ((($a = doc['$attr?']("mantitle")) !== nil && (!$a._isBoolean || $a == true))) {
+                        result['$<<']("<refentrytitle>" + (doc.$attr("mantitle")) + "</refentrytitle>")};
+                    if ((($a = doc['$attr?']("manvolnum")) !== nil && (!$a._isBoolean || $a == true))) {
+                        result['$<<']("<manvolnum>" + (doc.$attr("manvolnum")) + "</manvolnum>")};
+                    result['$<<']("</refmeta>");
+                    result['$<<']("<refnamediv>");
+                    if ((($a = doc['$attr?']("manname")) !== nil && (!$a._isBoolean || $a == true))) {
+                        result['$<<']("<refname>" + (doc.$attr("manname")) + "</refname>")};
+                    if ((($a = doc['$attr?']("manpurpose")) !== nil && (!$a._isBoolean || $a == true))) {
+                        result['$<<']("<refpurpose>" + (doc.$attr("manpurpose")) + "</refpurpose>")};
+                    result['$<<']("</refnamediv>");};
+                return result['$*']($scope.EOL);
+            };
+
+            def.$document_ns_attributes = function(doc) {
+                var self = this;
+
+                return " xmlns=\"http://docbook.org/ns/docbook\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" version=\"5.0\"";
+            };
+
+            def.$lang_attribute_name = function() {
+                var self = this;
+
+                return "xml:lang";
+            };
+
+            def.$document_title_tags = function(title) {
+                var $a, self = this;
+
+                if ((($a = title['$subtitle?']()) !== nil && (!$a._isBoolean || $a == true))) {
+                    return "<title>" + (title.$main()) + "</title>\n<subtitle>" + (title.$subtitle()) + "</subtitle>"
+                } else {
+                    return "<title>" + (title) + "</title>"
+                };
+            };
+
+            def.$resolve_content = function(node) {
+                var self = this;
+
+                if (node.$content_model()['$==']("compound")) {
+                    return node.$content()
+                } else {
+                    return "<simpara>" + (node.$content()) + "</simpara>"
+                };
+            };
+
+            return (def.$title_tag = function(node, optional) {
+                    var $a, $b, self = this;
+
+                    if (optional == null) {
+                        optional = true
+                    }
+                    if ((($a = ((($b = optional['$!']()) !== false && $b !== nil) ? $b : node['$title?']())) !== nil && (!$a._isBoolean || $a == true))) {
+                        return "<title>" + (node.$title()) + "</title>\n"
+                    } else {
+                        return nil
+                    };
+                }, nil) && 'title_tag';
+        })($scope.Converter, ($scope.Converter)._scope.BuiltIn)
+
+    })(self)
+})(Opal);

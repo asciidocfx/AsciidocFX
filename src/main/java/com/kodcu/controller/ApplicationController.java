@@ -39,11 +39,12 @@ import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
-import javafx.concurrent.Worker;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.NodeOrientation;
+import javafx.geometry.Side;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -90,14 +91,7 @@ import static java.nio.file.StandardOpenOption.*;
 public class ApplicationController extends TextWebSocketHandler implements Initializable {
 
 
-    public AnchorPane previewAnchor;
-
-    @Autowired
-    public RevealSlidePane revealSlidePane;
-
-    @Autowired
-    public DeckSlidePane deckSlidePane;
-
+    public TabPane previewAnchor;
 
     @Autowired
     public HtmlPane htmlPane;
@@ -307,6 +301,9 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     @Autowired
     private SlideConverter slideConverter;
 
+    @Autowired
+    private SlidePane slidePane;
+
     public void createAsciidocTable() {
         asciidocTableStage.showAndWait();
     }
@@ -394,8 +391,10 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                     threadService.runTaskLater(() -> {
                         IOHelper.writeToFile(docbookPath, finalDocbook, CREATE, TRUNCATE_EXISTING, WRITE);
                     });
-                    getRecentFilesList().remove(docbookPath.toString());
-                    getRecentFilesList().add(0, docbookPath.toString());
+                    threadService.runActionLater(() -> {
+                        getRecentFilesList().remove(docbookPath.toString());
+                        getRecentFilesList().add(0, docbookPath.toString());
+                    });
                 };
 
                 if (current.currentIsBook()) {
@@ -525,9 +524,10 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                 odfConverter.generateODFDocument();
         });
 
-        previewAnchor.getChildren().add(htmlPane);
-        previewAnchor.getChildren().add(deckSlidePane);
-        previewAnchor.getChildren().add(revealSlidePane);
+        previewAnchor.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
+        previewAnchor.setSide(Side.RIGHT);
+        previewAnchor.getTabs().add(new Tab("HTML", htmlPane));
+        previewAnchor.getTabs().add(new Tab("Slide", slidePane));
 
         tooltipTimeFixService.fix();
 
@@ -827,6 +827,13 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                 new SeparatorMenuItem(),
                 MenuItemBuilt.item("Refresh").click(event -> {
                     htmlPane.getWebEngine().executeScript("clearImageCache()");
+                }),
+                MenuItemBuilt.item("Reload").click(event -> {
+                    htmlPane.getWebEngine().reload();
+                    htmlPane.setOnSuccess(() -> {
+                        if (current.currentIsSlide())
+                            htmlPane.loadX();
+                    });
                 })
         );
         previewContextMenu.setAutoHide(true);
@@ -940,12 +947,11 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     }
 
     public void scrollToCurrentLine(String text) {
-        if ((htmlPane.isVisible()))
-            htmlPane.scrollToCurrentLine(text);
-        else {
-            // slidePane in action
-            String content = htmlPane.findRenderedSelection(text);
-            slideConverter.currentBean().flipThePage(content); // buraya bak
+        slidePane.flipThePage(htmlPane.findRenderedSelection(text)); // slide
+        try {
+            htmlPane.call("runScroller", text);
+        } catch (Exception e) {
+            logger.debug(e.getMessage(), e);
         }
     }
 
@@ -1022,26 +1028,16 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     public void textListener(String text) {
 
         threadService.runTaskLater(() -> {
-
-            if (getCurrent().getCurrentTabText().contains(".slide")) {
-//                slidePane.show();
-                htmlPane.hide();
-                slideConverter.convert(false, rendered -> {
-                    //
-                });
-            } else {
-                htmlPane.show();
-                revealSlidePane.hide();
-                deckSlidePane.hide();
-
-                markdownService.convert(text, asciidoc -> {
-                    threadService.runActionLater(() -> {
-                        String rendered = htmlPane.convertBasicHtml(asciidoc);
-                        if (Objects.nonNull(rendered))
-                            lastRendered.setValue(rendered);
-                    });
-                });
+            if (current.currentIsSlide()) {
+                slideConverter.convert(false);
             }
+            markdownService.convert(text, asciidoc -> {
+                threadService.runActionLater(() -> {
+                    String rendered = htmlPane.convertBasicHtml(asciidoc);
+                    if (Objects.nonNull(rendered))
+                        lastRendered.setValue(rendered);
+                });
+            });
 
         });
     }
@@ -1052,7 +1048,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     }
 
     public String getTemplate(String templateName, String templateDir) throws IOException {
-        return slideConverter.currentBean().getTemplate(templateName, templateDir);
+        return htmlPane.getTemplate(templateName, templateDir);
     }
 
     public void cutCopy(String data) {

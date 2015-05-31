@@ -1,5 +1,6 @@
 package com.kodcu.other;
 
+import com.kodcu.component.EditorPane;
 import com.kodcu.component.MyTab;
 import com.kodcu.controller.ApplicationController;
 import com.kodcu.service.ThreadService;
@@ -26,6 +27,8 @@ import java.util.regex.Pattern;
 public class Current {
 
     private final Pattern bookPattern = Pattern.compile(":doctype:(.*?)book");
+    private final Pattern slidePattern = Pattern.compile(":doctype:(.*?)slide");
+    private final Pattern slideTypePattern = Pattern.compile(":slide-type:.*(deckjs|revealjs)", Pattern.MULTILINE);
 
     private final ApplicationController controller;
     private final ThreadService threadService;
@@ -49,6 +52,10 @@ public class Current {
 
     public WebView currentWebView() {
         return currentTab().getEditorPane().getWebView();
+    }
+
+    public EditorPane currentEditor() {
+        return currentTab().getEditorPane();
     }
 
     public WebEngine currentEngine() {
@@ -101,6 +108,11 @@ public class Current {
         return !matcher.find();
     }
 
+    public boolean currentIsSlide() {
+        String editorValue = currentEditorValue();
+        return slidePattern.matcher(editorValue).find();
+    }
+
     public String currentEditorSelection() {
         String value = (String) currentEngine().executeScript("editor.session.getTextRange(editor.getSelectionRange())");
         return value;
@@ -115,4 +127,14 @@ public class Current {
         currentEngine().executeScript(String.format("editor.setValue('')"));
     }
 
+    public String currentSlideType() {
+        Matcher matcher = slideTypePattern.matcher(currentEditorValue());
+
+        String slideType = "revealjs";
+
+        if (matcher.find()) {
+            slideType = matcher.group(1);
+        }
+        return slideType;
+    }
 }

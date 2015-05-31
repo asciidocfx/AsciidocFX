@@ -78,15 +78,26 @@ var templateMap = {
                         var value = node.$document().$attributes()['$[]'](key);
                         obj.document.attr[key] = value;
                     }
-                    //templateMap = {}; // Cache disabled icin comment yap
-                    window.slideType = obj.document.attr["slide-type"] || "revealjs";
-                    if (!templateMap[window.slideType][obj.name]) {
+
+                    // Cache disabled icin comment yap
+                    //var templateMap = {
+                    //    revealjs: {},
+                    //    deckjs: {}
+                    //};
+
+                    window.slideType = obj.document.attr["slide-type"] == "deckjs" ? "deckjs" : "revealjs";
+                    var map = templateMap[window.slideType];
+
+                    if (!map)
+                        return "";
+
+                    if (!map[obj.name]) {
                         var template = afx.getTemplate(obj.name + ".jade", window.slideType);
                         var fn = jade.compile(template, {pretty: true});
-                        templateMap[window.slideType][obj.name] = fn;
+                        map[obj.name] = fn;
                     }
 
-                    var result = templateMap[window.slideType][obj.name](obj);
+                    var result = map[obj.name](obj);
 
                     return result;
 
