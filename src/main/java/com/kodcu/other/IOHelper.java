@@ -269,4 +269,12 @@ public class IOHelper {
             logger.info(e.getMessage(), e);
         }
     }
+
+    public static void createDirectory(Path path) {
+        try {
+            Files.createDirectory(path);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }

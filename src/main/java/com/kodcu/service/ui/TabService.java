@@ -20,8 +20,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.web.WebEngine;
-import javafx.scene.web.WebView;
 import netscape.javascript.JSObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -77,9 +75,11 @@ public class TabService {
             else if (pathResolver.isEpub(path))
                 controller.getHostServices()
                         .showDocument(String.format("http://localhost:%d/epub/viewer?path=%s", controller.getPort(), path.toString()));
-            else
-                controller.getHostServices()
-                        .showDocument(path.toUri().toString());
+            else {
+                addTab(path);
+//                controller.getHostServices()
+//                        .showDocument(path.toUri().toString());
+            }
         };
         directoryService.setOpenFileConsumer(openFileConsumer);
 
@@ -129,6 +129,7 @@ public class TabService {
                     threadService.runActionLater(() -> {
                         window.call("setEditorValue", new Object[]{content});
                         window.call("setInitialized");
+                        editorPane.changeEditorMode(path);
 //                        editorPane.getWebEngine().getLoadWorker().cancel();
                     });
                 });
@@ -157,6 +158,7 @@ public class TabService {
         recentFiles.add(0, path.toString());
 
         editorPane.focus();
+        editorPane.changeEditorMode(tab.getPath());
 
     }
 
@@ -349,7 +351,7 @@ public class TabService {
                 EditorPane editorPane = ((MyTab) newValue).getEditorPane();
                 if (Objects.nonNull(editorPane)) {
                     try {
-                        controller.textListener(current.currentEditorValue());
+                        editorPane.rerender();
                         editorPane.focus();
                     } catch (Exception e) {
                         logger.info(e.getMessage(), e);

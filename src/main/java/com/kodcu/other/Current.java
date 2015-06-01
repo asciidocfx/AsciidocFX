@@ -137,4 +137,8 @@ public class Current {
         }
         return slideType;
     }
+
+    public String currentEditorMode() {
+        return currentEditor().editorMode();
+    }
 }

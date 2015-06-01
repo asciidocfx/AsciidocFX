@@ -74,7 +74,7 @@ public class PathResolverService {
     }
 
     public boolean isViewable(Path path) {
-        return Files.isDirectory(path)
+        return true || Files.isDirectory(path)
                 || isAsciidoc(path)
                 || isImage(path)
                 || isPDF(path)

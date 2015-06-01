@@ -26,7 +26,7 @@ public class DirectoryService {
     private final ApplicationController controller;
     private final FileBrowseService fileBrowser;
     private final Current current;
-    
+
     private Optional<Path> workingDirectory = Optional.of(Paths.get(System.getProperty("user.home")));
     private Optional<File> initialDirectory = Optional.empty();
 
@@ -34,14 +34,14 @@ public class DirectoryService {
     private Consumer<Path> openFileConsumer;
     private Supplier<Path> pathSaveSupplier;
 
-    
+
     @Autowired
     public DirectoryService(final ApplicationController controller, final FileBrowseService fileBrowser, final Current current) {
         this.controller = controller;
         this.fileBrowser = fileBrowser;
         this.current = current;
-        
-         workingDirectorySupplier = () -> {
+
+        workingDirectorySupplier = () -> {
             final DirectoryChooser directoryChooser = newDirectoryChooser("Select working directory");
             final File file = directoryChooser.showDialog(null);
 
@@ -51,7 +51,7 @@ public class DirectoryService {
 
             return Objects.nonNull(file) ? file.toPath() : null;
         };
-        
+
 //        openFileConsumer = path -> {
 //            if (Files.isDirectory(path)) {
 //                changeWorkigDir(path.equals(workingDirectory()) ? path.getParent() : path);
@@ -69,8 +69,8 @@ public class DirectoryService {
 
         pathSaveSupplier = () -> {
             final FileChooser chooser = newFileChooser("Save Document");
-            chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Asciidoc", "*.asc", "*.asciidoc", "*.adoc", "*.ad", "*.txt","*.*"));
-            chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Markdown", "*.md", "*.markdown", "*.txt","*.*"));
+            chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Asciidoc", "*.asc", "*.asciidoc", "*.adoc", "*.ad", "*.txt", "*.*"));
+            chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Markdown", "*.md", "*.markdown", "*.txt", "*.*"));
             File file = chooser.showSaveDialog(null);
             return Objects.nonNull(file) ? file.toPath() : null;
         };
@@ -165,6 +165,7 @@ public class DirectoryService {
     public void changeWorkigDir(Path path) {
         if (Objects.isNull(path))
             return;
+
         controller.getRecentFiles().setWorkingDirectory(path.toString());
         this.setWorkingDirectory(Optional.of(path));
         fileBrowser.browse(controller.getTreeView(), path);

@@ -107,11 +107,9 @@
               <children>
                 <VBox AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                   <children>
-                    <MenuBar fx:id="recentFilesBar" maxHeight="26.0" minHeight="26.0" styleClass="recentFilesBar">
-                      <menus>
-                        <Menu mnemonicParsing="false" style="" text="Recent Files" />
-                      </menus>
-                    </MenuBar>
+                    <AnchorPane fx:id="recentFilesBar" maxHeight="26.0" minHeight="26.0">
+                      <Label AnchorPane.leftAnchor="7" AnchorPane.topAnchor="5" text="Recent Files"></Label>
+                    </AnchorPane>
                     <ListView id="recetListView" fx:id="recentListView" maxHeight="-1.0" styleClass="recentListView" VBox.vgrow="ALWAYS">
                       <contextMenu>
                         <ContextMenu>

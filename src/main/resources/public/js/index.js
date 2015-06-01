@@ -27,6 +27,7 @@ function fillOutlines(doc) {
             var title = subsection.$title();
             var lineno = subsection.$lineno();
             var id = subsection.$id();
+
             afx.fillOutline(parentLineNo, level, title, lineno, id);
         });
 

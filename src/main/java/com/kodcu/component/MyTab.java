@@ -26,14 +26,14 @@ public class MyTab extends Tab {
 
 
     private void updateMarkup() {
-        String tabText = getTabText();
-        if (Objects.isNull(tabText) || Objects.isNull(markup))
-            return;
-
-        if (tabText.contains(".md") || tabText.contains(".markdown"))
-            markup.getSelectionModel().selectLast();
-        else
-            markup.getSelectionModel().selectFirst();
+//        String tabText = getTabText();
+//        if (Objects.isNull(tabText) || Objects.isNull(markup))
+//            return;
+//
+//        if (tabText.contains(".md") || tabText.contains(".markdown"))
+//            markup.getSelectionModel().selectLast();
+//        else
+//            markup.getSelectionModel().selectFirst();
     }
 
     public Label getLabel() {

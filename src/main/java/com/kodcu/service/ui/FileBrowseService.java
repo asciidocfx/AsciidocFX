@@ -48,7 +48,7 @@ public class FileBrowseService {
         this.watchService = watchService;
     }
 
-    public void browse(final TreeView<Item> treeView, final Path browserPath) {
+    public synchronized void browse(final TreeView<Item> treeView, final Path browserPath) {
 
         int selectedIndex = treeView.getSelectionModel().getSelectedIndex();
         if (selectedIndex != -1)

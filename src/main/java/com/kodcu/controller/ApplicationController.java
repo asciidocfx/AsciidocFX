@@ -51,6 +51,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.TextFieldTreeCell;
 import javafx.scene.input.*;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Pane;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebHistory;
 import javafx.scene.web.WebView;
@@ -117,7 +118,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     public Label goHomeLabel;
     public Label refreshLabel;
     public AnchorPane rootAnchor;
-    public MenuBar recentFilesBar;
     public ProgressIndicator indikator;
     public ListView<String> recentListView;
     public MenuItem openFileTreeItem;
@@ -921,35 +921,45 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     @WebkitCall
     public void finishOutline() {
 
-        threadService.runTaskLater(()->{
-            threadService.runActionLater(()->{
-                TreeItem<Section> rootItem = new TreeItem<>();
-                rootItem.setExpanded(true);
-                Section rootSection = new Section();
-                rootSection.setLevel(0);
-                rootSection.setTitle("Outline");
+        threadService.runTaskLater(() -> {
 
-                rootItem.setValue(rootSection);
-                TreeView<Section> sectionTreeView = new TreeView<>(rootItem);
+            TreeItem<Section> rootItem = new TreeItem<>();
+            rootItem.setExpanded(true);
+            Section rootSection = new Section();
+            rootSection.setLevel(0);
+            String outlineTitle = "Outline";
+            rootSection.setTitle(outlineTitle);
 
-                sectionTreeView.setOnMouseClicked(event->{
-                    TreeItem<Section> item = sectionTreeView.getSelectionModel().getSelectedItem();
-                    EditorPane editorPane = current.currentEditor();
-                    editorPane.moveCursorTo(item.getValue().getLineno());
-                });
+            rootItem.setValue(rootSection);
+            TreeView<Section> sectionTreeView = new TreeView<>(rootItem);
 
-                for (Section section : outlineList) {
+            sectionTreeView.setOnMouseClicked(event -> {
+                TreeItem<Section> item = sectionTreeView.getSelectionModel().getSelectedItem();
+                EditorPane editorPane = current.currentEditor();
+                editorPane.moveCursorTo(item.getValue().getLineno());
+            });
 
-                    TreeItem<Section> sectionItem = new TreeItem<>(section);
-                    rootItem.getChildren().add(sectionItem);
+            for (Section section : outlineList) {
 
-                    TreeSet<Section> subsections = section.getSubsections();
-                    for (Section subsection : subsections) {
-                        sectionItem.getChildren().add(new TreeItem<>(subsection));
-                    }
+                TreeItem<Section> sectionItem = new TreeItem<>(section);
+                rootItem.getChildren().add(sectionItem);
+
+                TreeSet<Section> subsections = section.getSubsections();
+                for (Section subsection : subsections) {
+                    sectionItem.getChildren().add(new TreeItem<>(subsection));
+                }
+            }
+
+            threadService.runActionLater(() -> {
+                Optional<Tab> optional = previewAnchor.getTabs().stream()
+                        .filter(t -> outlineTitle.equals(t.getText())).findFirst();
+
+                if (optional.isPresent()) {
+                    optional.get().setContent(sectionTreeView);
+                } else {
+                    previewAnchor.getTabs().add(new Tab(outlineTitle, sectionTreeView));
                 }
 
-                previewAnchor.getTabs().add(new Tab("Outline",sectionTreeView));
             });
         });
 
@@ -1017,8 +1027,10 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         htmlPane.onscroll(pos, max);
     }
 
+    @WebkitCall
     public void scrollToCurrentLine(String text) {
-        slidePane.flipThePage(htmlPane.findRenderedSelection(text)); // slide
+        if (current.currentIsSlide())
+            slidePane.flipThePage(htmlPane.findRenderedSelection(text)); // slide
         try {
             htmlPane.call("runScroller", text);
         } catch (Exception e) {
@@ -1096,20 +1108,24 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             current.setCurrentTabText(currentTabText + " *");
     }
 
-    public void textListener(String text) {
+    public void textListener(String text, String mode) {
 
         threadService.runTaskLater(() -> {
-            if (current.currentIsSlide()) {
-                slideConverter.convert(false);
-            }
-            markdownService.convert(text, asciidoc -> {
-                threadService.runActionLater(() -> {
-                    String rendered = htmlPane.convertBasicHtml(asciidoc);
-                    if (Objects.nonNull(rendered))
-                        lastRendered.setValue(rendered);
-                });
-            });
 
+            if ("asciidoc".equals(mode)) {
+
+                markdownService.convert(text, asciidoc -> {
+                    threadService.runActionLater(() -> {
+                        String rendered = htmlPane.convertBasicHtml(asciidoc);
+                        if (Objects.nonNull(rendered))
+                            lastRendered.setValue(rendered);
+                    });
+                });
+
+                if (current.currentIsSlide()) {
+                    slideConverter.convert(false);
+                }
+            }
         });
     }
 
@@ -1398,15 +1414,45 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     }
 
     @FXML
-    public void createFile(ActionEvent actionEvent) {
+    public void createFolder(ActionEvent actionEvent) {
 
-        SaveDialog dialog = SaveDialog.create();
+        DialogBuilder dialog = DialogBuilder.newFolderDialog();
 
         Consumer<String> consumer = result -> {
             if (dialog.isShowing())
                 dialog.hide();
 
-            if (result.matches("^[^\\\\/:?*\"<>|]+\\.(asc|md|adoc|asciidoc|ad|markdown|txt)")) {
+            if (result.matches(DialogBuilder.FOLDER_NAME_REGEX)) {
+
+                Path path = treeView.getSelectionModel().getSelectedItem()
+                        .getValue().getPath();
+
+                Path folderPath = path.resolve(result);
+                IOHelper.createDirectory(folderPath);
+//
+                threadService.runTaskLater(() -> {
+                    directoryService.changeWorkigDir(folderPath);
+                });
+            }
+        };
+
+        dialog.getEditor().setOnAction(event -> {
+            consumer.accept(dialog.getEditor().getText());
+        });
+
+        dialog.showAndWait().ifPresent(consumer);
+    }
+
+    @FXML
+    public void createFile(ActionEvent actionEvent) {
+
+        DialogBuilder dialog = DialogBuilder.newFileDialog();
+
+        Consumer<String> consumer = result -> {
+            if (dialog.isShowing())
+                dialog.hide();
+
+            if (result.matches(DialogBuilder.FILE_NAME_REGEX)) {
 
                 Path path = treeView.getSelectionModel().getSelectedItem()
                         .getValue().getPath();

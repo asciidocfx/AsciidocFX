@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import java.nio.file.Path;
 import java.util.Objects;
 
 /**
@@ -60,7 +61,7 @@ public class EditorPane extends AnchorPane {
 
     public void load(String url) {
         if (Objects.nonNull(url))
-            Platform.runLater(()->{
+            Platform.runLater(() -> {
                 webEngine.load(url);
             });
         else
@@ -87,8 +88,8 @@ public class EditorPane extends AnchorPane {
         getWindow().setMember(name, value);
     }
 
-    public void call(String methodName, Object... args) {
-        getWindow().call(methodName, args);
+    public Object call(String methodName, Object... args) {
+        return getWindow().call(methodName, args);
     }
 
     public void whenStateSucceed(ChangeListener<Worker.State> stateChangeListener) {
@@ -141,6 +142,16 @@ public class EditorPane extends AnchorPane {
 
 
     public void moveCursorTo(Integer lineno) {
-        webEngine.executeScript(String.format("editor.moveCursorTo(%d,0)",(lineno-1)));
+        if (Objects.nonNull(lineno))
+            webEngine.executeScript(String.format("editor.moveCursorTo(%d,0)", (lineno - 1)));
+    }
+
+    public void changeEditorMode(Path path) {
+        if (Objects.nonNull(path))
+            this.call("changeEditorMode", path.toUri().toString());
+    }
+
+    public String editorMode() {
+        return (String) this.call("editorMode", new Object[]{});
     }
 }

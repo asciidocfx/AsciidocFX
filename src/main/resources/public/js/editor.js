@@ -1,4 +1,5 @@
 var editor = ace.edit("editor");
+var modelist = ace.require("ace/ext/modelist");
 editor.renderer.setShowGutter(false);
 editor.setHighlightActiveLine(false);
 editor.getSession().setMode("ace/mode/asciidoc");
@@ -118,7 +119,7 @@ editor.getSession().on('change', function (obj) {
     sketch.refreshConstructList();
 
     timeouter = setTimeout(function () {
-        afx.textListener(editor.getValue());
+        afx.textListener(editor.getValue(), editorMode());
 
         var length = editor.session.getLength();
 
@@ -154,14 +155,40 @@ function setEditorValue(content) {
 }
 
 function switchMode(index) {
-    if (index == 0)
-        editor.getSession().setMode("ace/mode/asciidoc");
-    if (index == 1)
-        editor.getSession().setMode("ace/mode/markdown");
+    //if (index == 0)
+    //    editor.getSession().setMode("ace/mode/asciidoc");
+    //if (index == 1)
+    //    editor.getSession().setMode("ace/mode/markdown");
+}
+
+function changeEditorMode(filePath) {
+    var mode = modelist.getModeForPath(filePath).mode;
+    editor.session.setMode(mode);
+
+    if ((mode == "ace/mode/html"))
+        initializeEmmet(mode);
+}
+
+function initializeEmmet(mode) {
+
+    ace.require("ace/ext/emmet");
+
+    ["js/emmet.js", "ace/src/ext-emmet.js"].forEach(function (path) {
+        var script = document.createElement("script");
+        script.src = path;
+        document.querySelector("body").appendChild(script);
+    });
+
+    editor.setOption("enableEmmet", true);
 }
 
 function rerender() {
-    afx.textListener(editor.getValue());
+    afx.textListener(editor.getValue(), editorMode());
+}
+
+function editorMode() {
+    var mode = editor.getSession().getMode().$id;
+    return mode.replace("ace/mode/", "");
 }
 
 function setInitialized() {

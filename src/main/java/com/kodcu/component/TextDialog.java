@@ -25,7 +25,7 @@ public class TextDialog extends TextInputDialog implements DefenderDialog {
         super.getEditor().setOnKeyReleased(event -> {
             String text = super.getEditor().getText();
             boolean matches = text.matches(regex);
-            if (text.contains(".") && matches) {
+            if (matches) {
                 super.getEditor().setStyle("-fx-border-color: blue; -fx-focus-color: blue;");
             } else {
                 super.getEditor().setStyle("-fx-border-color: red; -fx-focus-color: red;");
