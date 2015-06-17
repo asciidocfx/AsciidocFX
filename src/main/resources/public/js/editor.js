@@ -9,7 +9,7 @@ editor.setBehavioursEnabled(true);
 editor.session.setFoldStyle("manual");
 editor.setOptions({
     enableSnippets: true,
-    dragEnabled: false
+    dragEnabled: true
 });
 editor.setScrollSpeed("0.1");
 editor.setTheme("ace/theme/ace");
@@ -80,9 +80,23 @@ editor.getSession().on('changeScrollTop', function (scroll) {
     }, 50);
 });
 
+function updateStatusBox() {
+    var cursorPosition = editor.getCursorPosition();
+    var row = cursorPosition.row;
+    var column = cursorPosition.column;
+
+    var lineCount = editor.session.getLength();
+    var wordCount = editor.session.getValue().length;
+
+    afx.updateStatusBox(row, column, lineCount, wordCount);
+}
+
 editor.getSession().selection.on('changeCursor', function (e) {
 
-    var row = editor.getCursorPosition().row;
+    var cursorPosition = editor.getCursorPosition();
+    var row = cursorPosition.row;
+
+    updateStatusBox();
 
     if (lastEditorRow == row)
         return;
@@ -154,11 +168,12 @@ function setEditorValue(content) {
 
 }
 
-function switchMode(index) {
-    //if (index == 0)
-    //    editor.getSession().setMode("ace/mode/asciidoc");
-    //if (index == 1)
-    //    editor.getSession().setMode("ace/mode/markdown");
+function switchMode(mode) {
+    if (mode) {
+        editor.getSession().setMode(mode);
+        if ((mode == "ace/mode/html"))
+            initializeEmmet(mode);
+    }
 }
 
 function changeEditorMode(filePath) {
@@ -167,23 +182,31 @@ function changeEditorMode(filePath) {
 
     if ((mode == "ace/mode/html"))
         initializeEmmet(mode);
+
+    return mode;
 }
 
 function initializeEmmet(mode) {
 
     ace.require("ace/ext/emmet");
 
-    ["js/emmet.js", "ace/src/ext-emmet.js"].forEach(function (path) {
+    ["js/emmet.js", "ace/src/ext-emmet.js"].forEach(function (path, index) {
         var script = document.createElement("script");
         script.src = path;
         document.querySelector("body").appendChild(script);
+
+        if (index == 1) {
+            script.onload = function () {
+                editor.setOption("enableEmmet", true);
+            }
+        }
     });
 
-    editor.setOption("enableEmmet", true);
 }
 
 function rerender() {
     afx.textListener(editor.getValue(), editorMode());
+    updateStatusBox();
 }
 
 function editorMode() {
@@ -194,4 +217,5 @@ function editorMode() {
 function setInitialized() {
     initialized = true;
     editor.renderer.setScrollMargin(10, 10, 10, 10);
+    updateStatusBox();
 }
