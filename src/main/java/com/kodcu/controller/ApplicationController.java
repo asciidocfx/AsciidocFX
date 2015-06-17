@@ -1,13 +1,14 @@
 package com.kodcu.controller;
 
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kodcu.bean.Config;
 import com.kodcu.bean.RecentFiles;
 import com.kodcu.component.*;
-import com.kodcu.other.Current;
-import com.kodcu.other.IOHelper;
-import com.kodcu.other.Item;
-import com.kodcu.other.XMLHelper;
+import com.kodcu.log.MyLog;
+import com.kodcu.log.TableViewLogAppender;
+import com.kodcu.other.*;
 import com.kodcu.outline.Section;
 import com.kodcu.service.*;
 import com.kodcu.service.config.YamlService;
@@ -32,6 +33,7 @@ import com.sun.javafx.application.HostServicesDelegate;
 import com.sun.webkit.dom.DocumentFragmentImpl;
 import de.jensd.fx.fontawesome.AwesomeDude;
 import de.jensd.fx.fontawesome.AwesomeIcon;
+import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -40,18 +42,22 @@ import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Insets;
 import javafx.geometry.Side;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTreeCell;
 import javafx.scene.input.*;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.Pane;
+import javafx.scene.layout.*;
+import javafx.scene.text.Text;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebHistory;
 import javafx.scene.web.WebView;
@@ -75,6 +81,7 @@ import org.yaml.snakeyaml.Yaml;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -82,6 +89,7 @@ import java.nio.file.Paths;
 import java.security.CodeSource;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 
@@ -92,17 +100,24 @@ import static java.nio.file.StandardOpenOption.*;
 public class ApplicationController extends TextWebSocketHandler implements Initializable {
 
 
-    public TabPane previewAnchor;
+    public TabPane previewTabPane;
 
     @Autowired
     public HtmlPane htmlPane;
     public Label odfPro;
+    public VBox logVBox;
+    public Label statusText;
+    public SplitPane editorSplitPane;
+    public Label statusMessage;
+    public Label showHideLogs;
+    public Tab outlineTab;
 
     private Logger logger = LoggerFactory.getLogger(ApplicationController.class);
 
     private Path userHome = Paths.get(System.getProperty("user.home"));
 
     private TreeSet<Section> outlineList = new TreeSet<>();
+    private ObservableList<DocumentMode> modeList = FXCollections.observableArrayList();
 
     public CheckMenuItem hidePreviewPanel;
     public MenuItem hideFileBrowser;
@@ -140,6 +155,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     private Stage markdownTableStage;
     private boolean basicMode;
 
+    private static ObservableList<MyLog> logList = FXCollections.synchronizedObservableList(FXCollections.observableArrayList());
 
     @Autowired
     private ApplicationContext applicationContext;
@@ -305,6 +321,11 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     @Autowired
     private SlidePane slidePane;
+    private Path installationPath;
+    private Path logPath;
+
+    @Autowired
+    private LiveReloadPane liveReloadPane;
 
     public void createAsciidocTable() {
         asciidocTableStage.showAndWait();
@@ -502,6 +523,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         directoryService.changeWorkigDir(userHome);
     }
 
+    @WebkitCall
     public void imageToBase64Url(final String url, final int index) {
 
         threadService.runTaskLater(() -> {
@@ -521,16 +543,31 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     @Override
     public void initialize(URL url, ResourceBundle rb) {
 
+        port = server.getEmbeddedServletContainer().getPort();
+
+        previewTabPane.getTabs().addListener((ListChangeListener) change -> {
+            final StackPane header = (StackPane) previewTabPane.lookup(".tab-header-area");
+
+            if (header != null) {
+                if (previewTabPane.getTabs().size() == 1)
+                    header.setPrefHeight(0);
+                else
+                    header.setPrefHeight(-1);
+            }
+        });
+        previewTabPane.setRotateGraphic(true);
+
+        initializePaths();
+        initializeLogViewer();
+        initializeDoctypes();
+
         odfPro.setOnMouseClicked(event -> {
             if (current.currentPath().isPresent())
                 odfConverter.generateODFDocument();
         });
 
-        previewAnchor.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
-        previewAnchor.setSide(Side.RIGHT);
-        previewAnchor.getTabs().add(new Tab("HTML", htmlPane));
-        previewAnchor.getTabs().add(new Tab("Slide", slidePane));
-
+        previewTabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
+        previewTabPane.setSide(Side.RIGHT);
         tooltipTimeFixService.fix();
 
         // Convert menu label icons
@@ -630,11 +667,11 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                 this.externalBrowse();
         });
 
-        port = server.getEmbeddedServletContainer().getPort();
 
         loadConfigurations();
         loadRecentFileList();
         loadShortCuts();
+
 
         recentListView.setItems(recentFilesList);
         recentFilesList.addListener((ListChangeListener<String>) c -> {
@@ -707,8 +744,8 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
             ObservableList<TreeItem<Item>> selectedItems = treeView.getSelectionModel().getSelectedItems();
 
-            AlertHelper.deleteAlert().ifPresent(button -> {
-                if (button == ButtonType.YES)
+            AlertHelper.deleteAlert().ifPresent(btn -> {
+                if (btn == ButtonType.YES)
                     selectedItems.stream()
                             .map(e -> e.getValue())
                             .map(e -> e.getPath())
@@ -783,7 +820,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             }
         });
 
-        htmlPane.getWebEngine().setOnAlert(event -> {
+        htmlPane.webEngine().setOnAlert(event -> {
             if ("PREVIEW_LOADED".equals(event.getData())) {
 
                 if (htmlPane.getMember("afx").equals("undefined")) {
@@ -797,41 +834,41 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
         ContextMenu previewContextMenu = new ContextMenu(
                 MenuItemBuilt.item("Go back").click(event -> {
-                    WebHistory history = htmlPane.getWebEngine().getHistory();
+                    WebHistory history = htmlPane.webEngine().getHistory();
                     if (history.getCurrentIndex() != 0)
                         history.go(-1);
 
                 }),
                 MenuItemBuilt.item("Go forward").click(event -> {
-                    WebHistory history = htmlPane.getWebEngine().getHistory();
+                    WebHistory history = htmlPane.webEngine().getHistory();
                     if (history.getCurrentIndex() + 1 != history.getEntries().size())
                         history.go(+1);
                 }),
                 new SeparatorMenuItem(),
                 MenuItemBuilt.item("Copy Html").click(event -> {
-                    DocumentFragmentImpl selectionDom = (DocumentFragmentImpl) htmlPane.getWebEngine().executeScript("window.getSelection().getRangeAt(0).cloneContents()");
+                    DocumentFragmentImpl selectionDom = (DocumentFragmentImpl) htmlPane.webEngine().executeScript("window.getSelection().getRangeAt(0).cloneContents()");
                     ClipboardContent content = new ClipboardContent();
                     content.putHtml(XMLHelper.nodeToString(selectionDom, true));
                     clipboard.setContent(content);
                 }),
                 MenuItemBuilt.item("Copy Text").click(event -> {
-                    String selection = (String) htmlPane.getWebEngine().executeScript("window.getSelection().toString()");
+                    String selection = (String) htmlPane.webEngine().executeScript("window.getSelection().toString()");
                     ClipboardContent content = new ClipboardContent();
                     content.putString(selection);
                     clipboard.setContent(content);
                 }),
                 MenuItemBuilt.item("Copy Source").click(event -> {
-                    DocumentFragmentImpl selectionDom = (DocumentFragmentImpl) htmlPane.getWebEngine().executeScript("window.getSelection().getRangeAt(0).cloneContents()");
+                    DocumentFragmentImpl selectionDom = (DocumentFragmentImpl) htmlPane.webEngine().executeScript("window.getSelection().getRangeAt(0).cloneContents()");
                     ClipboardContent content = new ClipboardContent();
                     content.putString(XMLHelper.nodeToString(selectionDom, true));
                     clipboard.setContent(content);
                 }),
                 new SeparatorMenuItem(),
                 MenuItemBuilt.item("Refresh").click(event -> {
-                    htmlPane.getWebEngine().executeScript("clearImageCache()");
+                    htmlPane.webEngine().executeScript("clearImageCache()");
                 }),
                 MenuItemBuilt.item("Reload").click(event -> {
-                    htmlPane.getWebEngine().reload();
+                    htmlPane.webEngine().reload();
                 })
         );
         previewContextMenu.setAutoHide(true);
@@ -846,6 +883,230 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         tabService.initializeTabChangeListener(tabPane);
 
         newDoc(null);
+
+        Platform.runLater(() -> {
+//            editorSplitPane.setDividerPositions(1);
+//            splitPane.setDividerPositions();
+        });
+
+    }
+
+    private void initializeDoctypes() {
+
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            Object readValue = mapper.readValue(configPath.resolve("doctypes.json").toFile(), new TypeReference<List<DocumentMode>>() {
+            });
+            modeList.addAll((Collection) readValue);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void initializePaths() {
+
+        try {
+            CodeSource codeSource = ApplicationController.class.getProtectionDomain().getCodeSource();
+            File jarFile = new File(codeSource.getLocation().toURI().getPath());
+            installationPath = jarFile.toPath().getParent().getParent();
+            configPath = installationPath.resolve("conf");
+            logPath = installationPath.resolve("log");
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    @WebkitCall
+    public void updateStatusBox(long row, long column, long linecount, long wordcount) {
+        threadService.runTaskLater(() -> {
+            threadService.runActionLater(() -> {
+                statusText.setText(String.format("(Characters: %d) (Lines: %d) (%d:%d)", wordcount, linecount, row, column));
+            });
+        });
+    }
+
+    private void initializeLogViewer() {
+        TableView<MyLog> logViewer = new TableView<>();
+        logViewer.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+        ContextMenu logViewerContextMenu = new ContextMenu();
+        logViewerContextMenu.getItems().add(MenuItemBuilt.item("Copy").click(e -> {
+            ObservableList<MyLog> rowList = (ObservableList) logViewer.getSelectionModel().getSelectedItems();
+
+            StringBuilder clipboardString = new StringBuilder();
+
+            for (MyLog rowLog : rowList) {
+                clipboardString.append(String.format("%s => %s", rowLog.getLevel(), rowLog.getMessage()));
+                clipboardString.append("\n\n");
+            }
+
+            ClipboardContent clipboardContent = new ClipboardContent();
+            clipboardContent.putString(clipboardString.toString());
+
+            clipboard.setContent(clipboardContent);
+        }));
+
+        logViewer.setContextMenu(logViewerContextMenu);
+        logViewer.getStyleClass().add("log-viewer");
+
+        FilteredList<MyLog> logFilteredList = new FilteredList<MyLog>(logList, log -> true);
+        logViewer.setItems(logFilteredList);
+
+//        logViewer.setColumnResizePolicy((param) -> true);
+        logViewer.getItems().addListener((ListChangeListener<MyLog>) c -> {
+            c.next();
+            final int size = logViewer.getItems().size();
+            if (size > 0) {
+                logViewer.scrollTo(size - 1);
+            }
+        });
+
+        TableColumn<MyLog, String> levelColumn = new TableColumn<>("Level");
+        levelColumn.getStyleClass().add("level-column");
+        TableColumn<MyLog, String> messageColumn = new TableColumn<>("Message");
+        levelColumn.setCellValueFactory(new PropertyValueFactory<MyLog, String>("level"));
+        messageColumn.setCellValueFactory(new PropertyValueFactory<MyLog, String>("message"));
+        messageColumn.prefWidthProperty().bind(logViewer.widthProperty().subtract(levelColumn.widthProperty()).subtract(5));
+
+        logViewer.setRowFactory(param -> new TableRow<MyLog>() {
+            @Override
+            protected void updateItem(MyLog item, boolean empty) {
+                super.updateItem(item, empty);
+                if (!empty) {
+                    getStyleClass().removeAll("DEBUG", "INFO", "WARN", "ERROR");
+                    getStyleClass().add(item.getLevel());
+                }
+            }
+        });
+
+        messageColumn.setCellFactory(param -> new TableCell<MyLog, String>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (!empty) {
+                    Text text = new Text();
+                    text.setText(item);
+                    text.wrappingWidthProperty().bind(messageColumn.widthProperty().subtract(0));
+                    setGraphic(text);
+                }
+            }
+        });
+
+        logViewer.getColumns().addAll(levelColumn, messageColumn);
+        logViewer.setEditable(true);
+
+        TableViewLogAppender.setLogList(logList);
+        TableViewLogAppender.setLogShortMessage(statusMessage);
+        TableViewLogAppender.setLogViewer(logViewer);
+
+        final EventHandler<ActionEvent> filterByLogLevel = event -> {
+            ToggleButton logLevelItem = (ToggleButton) event.getTarget();
+            if (Objects.nonNull(logLevelItem)) {
+                logFilteredList.setPredicate(myLog -> {
+                    String text = logLevelItem.getText();
+                    return text.equals("All") || text.equalsIgnoreCase(myLog.getLevel());
+                });
+            }
+        };
+
+
+        ToggleGroup toggleGroup = new ToggleGroup();
+        ToggleButton allToggle = ToggleButtonBuilt.item("All").tip("Show all").click(filterByLogLevel);
+        ToggleButton errorToggle = ToggleButtonBuilt.item("Error").tip("Filter by Error").click(filterByLogLevel);
+        ToggleButton warnToggle = ToggleButtonBuilt.item("Warn").tip("Filter by Warn").click(filterByLogLevel);
+        ToggleButton infoToggle = ToggleButtonBuilt.item("Info").tip("Filter by Info").click(filterByLogLevel);
+        ToggleButton debugToggle = ToggleButtonBuilt.item("Debug").tip("Filter by Debug").click(filterByLogLevel);
+
+        toggleGroup.getToggles().addAll(
+                allToggle,
+                errorToggle,
+                warnToggle,
+                infoToggle,
+                debugToggle
+        );
+        toggleGroup.selectToggle(allToggle);
+
+        Button clearLogsButton = new Button("Clear");
+        clearLogsButton.setOnAction(e -> {
+            logList.clear();
+        });
+
+        Button browseLogsButton = new Button("Browse");
+        browseLogsButton.setOnAction(e -> {
+            getHostServices().showDocument(logPath.toUri().toString());
+        });
+
+        TextField searchLogField = new TextField();
+        searchLogField.setPromptText("Search in logs..");
+        searchLogField.textProperty().addListener((observable, oldValue, newValue) -> {
+
+            if (Objects.isNull(newValue)) {
+                return;
+            }
+
+            if (newValue.isEmpty()) {
+                logFilteredList.setPredicate(myLog -> true);
+            }
+
+            logFilteredList.setPredicate(myLog -> {
+
+                final AtomicBoolean result = new AtomicBoolean(false);
+
+                String message = myLog.getMessage();
+                if (Objects.nonNull(message)) {
+                    if (!result.get())
+                        result.set(message.toLowerCase().contains(newValue.toLowerCase()));
+                }
+
+                String level = myLog.getLevel();
+                String toggleText = ((ToggleButton) toggleGroup.getSelectedToggle()).getText();
+                boolean inputContains = level.toLowerCase().contains(newValue.toLowerCase());
+
+                if (Objects.nonNull(level)) {
+                    if (!result.get()) {
+                        result.set(inputContains);
+                    }
+                }
+
+                boolean levelContains = toggleText.toLowerCase().equalsIgnoreCase(level);
+
+                if (!toggleText.equals("All") && !levelContains) {
+                    result.set(false);
+                }
+
+                return result.get();
+            });
+        });
+
+        List<Control> controls = Arrays.asList(allToggle,
+                errorToggle, warnToggle, infoToggle, debugToggle,
+                searchLogField, clearLogsButton, browseLogsButton);
+
+        HBox logHBox = new HBox();
+
+        for (Control control : controls) {
+            logHBox.getChildren().add(control);
+            HBox.setMargin(control, new Insets(3));
+            control.prefHeightProperty().bind(searchLogField.heightProperty());
+        }
+
+        AwesomeDude.setIcon(showHideLogs, AwesomeIcon.CHEVRON_CIRCLE_UP, "14.0");
+
+        HBox.setMargin(showHideLogs, new Insets(0, 0, 0, 3));
+        HBox.setMargin(statusText, new Insets(0, 3, 0, 0));
+
+        showHideLogs.setOnMouseClicked(event -> {
+            showHideLogs.setRotate(showHideLogs.getRotate() + 180);
+            if (showHideLogs.getRotate() % 360 == 0)
+                editorSplitPane.setDividerPositions(1);
+            else
+                editorSplitPane.setDividerPositions(0.5);
+        });
+
+        logVBox.getChildren().addAll(logHBox, logViewer);
+
+        VBox.setVgrow(logViewer, Priority.ALWAYS);
 
     }
 
@@ -870,10 +1131,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     private void loadConfigurations() {
         try {
-            CodeSource codeSource = ApplicationController.class.getProtectionDomain().getCodeSource();
-            File jarFile = new File(codeSource.getLocation().toURI().getPath());
-            configPath = jarFile.toPath().getParent().getParent().resolve("conf");
-
             String yamlContent = IOHelper.readFile(configPath.resolve("config.yml"));
             Yaml yaml = new Yaml();
             config = yaml.loadAs(yamlContent, Config.class);
@@ -903,12 +1160,12 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     }
 
     public void externalBrowse() {
-        ObservableList<Tab> tabs = previewAnchor.getTabs();
+        ObservableList<Tab> tabs = previewTabPane.getTabs();
         for (Tab tab : tabs) {
             if (tab.isSelected()) {
                 Node content = tab.getContent();
                 if (Objects.nonNull(content))
-                    ((Viewable) content).browse();
+                    ((ViewPanel) content).browse();
             }
         }
     }
@@ -950,17 +1207,10 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                 }
             }
 
-            threadService.runActionLater(() -> {
-                Optional<Tab> optional = previewAnchor.getTabs().stream()
-                        .filter(t -> outlineTitle.equals(t.getText())).findFirst();
-
-                if (optional.isPresent()) {
-                    optional.get().setContent(sectionTreeView);
-                } else {
-                    previewAnchor.getTabs().add(new Tab(outlineTitle, sectionTreeView));
-                }
-
-            });
+            if (Objects.isNull(outlineTab.getContent()))
+                threadService.runActionLater(() -> {
+                    outlineTab.setContent(sectionTreeView);
+                });
         });
 
     }
@@ -1112,19 +1362,87 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
         threadService.runTaskLater(() -> {
 
-            if ("asciidoc".equals(mode)) {
+            boolean currentIsSlide = current.currentIsSlide();
 
-                markdownService.convert(text, asciidoc -> {
-                    threadService.runActionLater(() -> {
-                        String rendered = htmlPane.convertBasicHtml(asciidoc);
-                        if (Objects.nonNull(rendered))
-                            lastRendered.setValue(rendered);
-                    });
+            if ("asciidoc".equalsIgnoreCase(mode)) {
+
+                checkTabAndAdd("HTML", htmlPane);
+
+                threadService.runActionLater(() -> {
+                    String rendered = htmlPane.convertBasicHtml(text);
+                    if (Objects.nonNull(rendered))
+                        lastRendered.setValue(rendered);
                 });
 
-                if (current.currentIsSlide()) {
+                previewTabPane.getTabs().stream()
+                        .filter(t -> "HTML".equals(t.getText()))
+                        .filter(t -> !currentIsSlide)
+                        .filter(t -> previewTabPane.getSelectionModel().getSelectedItem() != t)
+                        .findFirst()
+                        .ifPresent(previewTabPane.getSelectionModel()::select);
+
+            }
+
+            if ("asciidoc".equalsIgnoreCase(mode)) {
+
+                if (currentIsSlide) {
+
+                    checkTabAndAdd("Slide", slidePane);
+
                     slideConverter.convert(false);
+                    previewTabPane.getTabs().stream()
+                            .filter(t -> "Slide".equals(t.getText()))
+                            .filter(t -> previewTabPane.getSelectionModel().getSelectedItem() != t)
+                            .findFirst()
+                            .ifPresent(previewTabPane.getSelectionModel()::select);
+
+
                 }
+            }
+
+            if ("markdown".equalsIgnoreCase(mode)) {
+
+                checkTabAndAdd("HTML", htmlPane);
+
+                threadService.runTaskLater(() -> {
+                    markdownService.convertToAsciidoc(text, asciidoc -> {
+                        threadService.runActionLater(() -> {
+                            String rendered = htmlPane.convertBasicHtml(asciidoc);
+                            if (Objects.nonNull(rendered))
+                                lastRendered.setValue(rendered);
+                        });
+                    });
+                });
+            }
+
+            if ("html".equalsIgnoreCase(mode)) {
+
+                checkTabAndAdd("Live Reload", liveReloadPane);
+
+                if (Objects.isNull(liveReloadPane.getLocation())) {
+                    liveReloadPane.setOnSuccess(() -> {
+                        liveReloadPane.setMember("afx", this);
+                        liveReloadPane.initializeDiffReplacer();
+                    });
+                    liveReloadPane.load(String.format("http://localhost:%d/livereload/index.reload", port));
+                } else {
+                    liveReloadPane.updateDomdom();
+                }
+
+                previewTabPane.getTabs().stream()
+                        .filter(t -> "Live Reload".equals(t.getText()))
+                        .filter(t -> previewTabPane.getSelectionModel().getSelectedItem() != t)
+                        .findFirst()
+                        .ifPresent(previewTabPane.getSelectionModel()::select);
+            }
+        });
+    }
+
+    private void checkTabAndAdd(String text, AnchorPane anchorPane) {
+        threadService.runActionLater(() -> {
+            ObservableList<Tab> tabs = previewTabPane.getTabs();
+            if (!tabs.contains(new PreviewTab(text))) {
+                tabs.add(new PreviewTab(text, anchorPane));
             }
         });
     }
@@ -1172,6 +1490,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         return completableFuture.join();
     }
 
+    @WebkitCall
     public String clipboardValue() {
         return clipboard.getString();
     }
@@ -1192,7 +1511,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     public void paste() {
 
-        JSObject window = (JSObject) htmlPane.getWebEngine().executeScript("window");
+        JSObject window = (JSObject) htmlPane.webEngine().executeScript("window");
         JSObject editor = (JSObject) current.currentEngine().executeScript("editor");
 
         if (clipboard.hasFiles()) {
@@ -1204,9 +1523,11 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         }
 
         try {
+
             if (clipboard.hasHtml() || (Boolean) window.call("isHtml", clipboard.getString())) {
-                String html = Optional.ofNullable(clipboard.getHtml()).orElse(clipboard.getString());
-                String content = (String) window.call(current.currentTab().htmlToMarkupFunction(), html);
+                String content = Optional.ofNullable(clipboard.getHtml()).orElse(clipboard.getString());
+                if (current.currentTab().isAsciidoc() || current.currentTab().isMarkdown())
+                    content = (String) window.call(current.currentTab().htmlToMarkupFunction(), content);
                 editor.call("insert", content);
                 return;
             }
@@ -1226,6 +1547,26 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             showFileBrowser();
             showPreviewPanel();
         }
+    }
+
+    @WebkitCall
+    public void debug(String message) {
+        logger.debug(message);
+    }
+
+    @WebkitCall
+    public void error(String message) {
+        logger.error(message);
+    }
+
+    @WebkitCall
+    public void info(String message) {
+        logger.info(message);
+    }
+
+    @WebkitCall
+    public void warn(String message) {
+        logger.warn(message);
     }
 
     public void saveDoc() {
@@ -1585,6 +1926,13 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         hidePreviewPanel(actionEvent);
         hideFileBrowser(actionEvent);
     }
+/*
+    @WebkitCall
+    public void fillModeList(String mode) {
+        threadService.runActionLater(() -> {
+            modeList.add(mode);
+        });
+    }*/
 
     public boolean isBasicMode() {
         return basicMode;
@@ -1599,10 +1947,22 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     }
 
     public void clearImageCache() {
-        htmlPane.getWebEngine().executeScript("clearImageCache()");
+        htmlPane.webEngine().executeScript("clearImageCache()");
+    }
+
+    public ObservableList getModeList() {
+        return modeList;
     }
 
     public void removeChildElement(Node node) {
         getRootAnchor().getChildren().remove(node);
+    }
+
+    public void switchSlideView(ActionEvent actionEvent) {
+        splitPane.setDividerPositions(0, 0.45);
+    }
+
+    public TabPane getPreviewTabPane() {
+        return previewTabPane;
     }
 }
