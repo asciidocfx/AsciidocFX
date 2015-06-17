@@ -30,29 +30,19 @@ import java.util.stream.Stream;
  * Created by usta on 09.04.2015.
  */
 @Component
-public class SlidePane extends AnchorPane implements Viewable {
-
-    private final WebView webView;
-    private WebEngine webEngine;
-    private final Logger logger = LoggerFactory.getLogger(SlidePane.class);
-    private final ThreadService threadService;
-    private final ApplicationController controller;
-    private final Current current;
-
+public class SlidePane extends ViewPanel {
 
     @Autowired
     public SlidePane(ThreadService threadService, ApplicationController controller, Current current) {
-        this.threadService = threadService;
-        this.controller = controller;
-        this.current = current;
-        this.webView = new WebView();
-        this.webView.setContextMenuEnabled(false);
+        super(threadService,controller,current);
+        
         ContextMenu contextMenu = new ContextMenu(MenuItemBuilt.item("Reload page").click(event -> {
-            this.webEngine.reload();
+            super.webEngine().reload();
             this.injectExtensions();
         }));
 
         contextMenu.setAutoHide(true);
+        
         this.getWebView().setOnMouseClicked(event -> {
             if (event.getButton() == MouseButton.SECONDARY) {
                 contextMenu.show(this.getWebView(), event.getScreenX(), event.getScreenY());
@@ -60,66 +50,6 @@ public class SlidePane extends AnchorPane implements Viewable {
                 contextMenu.hide();
             }
         });
-
-        this.getChildren().add(webView);
-        this.webEngine = webView.getEngine();
-        initializeMargins();
-    }
-
-    private void initializeMargins() {
-        AnchorPane.setBottomAnchor(this, 0D);
-        AnchorPane.setTopAnchor(this, 0D);
-        AnchorPane.setLeftAnchor(this, 0D);
-        AnchorPane.setRightAnchor(this, 0D);
-        VBox.setVgrow(this, Priority.ALWAYS);
-        AnchorPane.setBottomAnchor(webView, 0D);
-        AnchorPane.setTopAnchor(webView, 0D);
-        AnchorPane.setLeftAnchor(webView, 0D);
-        AnchorPane.setRightAnchor(webView, 0D);
-        VBox.setVgrow(webView, Priority.ALWAYS);
-    }
-
-    public void load(String url) {
-        if (Objects.nonNull(url))
-            Platform.runLater(() -> {
-                webEngine.getLoadWorker().cancel();
-//                webEngine = webView.getEngine();
-                webEngine.load(url);
-            });
-        else
-            logger.error("Url is not loaded. Reason: null reference");
-    }
-
-    public void hide() {
-        super.setVisible(false);
-    }
-
-    public void show() {
-        super.setVisible(true);
-    }
-
-    public String getLocation() {
-        return webEngine.getLocation();
-    }
-
-    public void setMember(String name, Object value) {
-        getWindow().setMember(name, value);
-    }
-
-    public void call(String methodName, Object... args) {
-        getWindow().call(methodName, args);
-    }
-
-    public Object getMember(String name) {
-        return getWindow().getMember(name);
-    }
-
-    public WebEngine getWebEngine() {
-        return webEngine;
-    }
-
-    public WebView getWebView() {
-        return webView;
     }
 
     public void replaceSlides(String rendered) {
@@ -132,21 +62,6 @@ public class SlidePane extends AnchorPane implements Viewable {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-    }
-
-    public void loadJs(String... jsPaths) {
-        threadService.runTaskLater(() -> {
-            threadService.runActionLater(() -> {
-                for (String jsPath : jsPaths) {
-                    threadService.runActionLater(() -> {
-                        String format = String.format("var scriptEl = document.createElement('script');\n" +
-                                "scriptEl.setAttribute('src','http://localhost:%d/%s');\n" +
-                                "document.querySelector('body').appendChild(scriptEl);", controller.getPort(), jsPath);
-                        webEngine.executeScript(format);
-                    });
-                }
-            });
-        });
     }
 
     @WebkitCall
@@ -165,21 +80,9 @@ public class SlidePane extends AnchorPane implements Viewable {
         return template;
     }
 
-    public void setOnSuccess(Runnable runnable) {
-        webEngine.getLoadWorker().stateProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue == Worker.State.SUCCEEDED)
-                threadService.runActionLater(runnable);
-        });
-    }
-
-
     public String findRenderedSelection(String content) {
         this.setMember("context", content);
-        return (String) webEngine.executeScript("findRenderedSelection(context)");
-    }
-
-    public JSObject getWindow() {
-        return (JSObject) webEngine.executeScript("window");
+        return (String) webEngine().executeScript("findRenderedSelection(context)");
     }
 
     public void injectExtensions() {
@@ -194,6 +97,6 @@ public class SlidePane extends AnchorPane implements Viewable {
 
     @Override
     public void browse() {
-        controller.getHostServices().showDocument(webEngine.getLocation());
+        controller.getHostServices().showDocument(webEngine().getLocation());
     }
 }

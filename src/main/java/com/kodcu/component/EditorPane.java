@@ -2,6 +2,7 @@ package com.kodcu.component;
 
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
+import javafx.collections.ObservableList;
 import javafx.concurrent.Worker;
 import javafx.event.EventHandler;
 import javafx.scene.input.DragEvent;
@@ -33,6 +34,7 @@ public class EditorPane extends AnchorPane {
     private final WebEngine webEngine;
     private EventHandler<WebEvent<String>> readyHandler;
     private final Logger logger = LoggerFactory.getLogger(EditorPane.class);
+    private String mode;
 
     public EditorPane() {
         this.webView = new WebView();
@@ -140,18 +142,37 @@ public class EditorPane extends AnchorPane {
         webView.requestFocus();
     }
 
-
     public void moveCursorTo(Integer lineno) {
         if (Objects.nonNull(lineno))
             webEngine.executeScript(String.format("editor.moveCursorTo(%d,0)", (lineno - 1)));
     }
 
     public void changeEditorMode(Path path) {
-        if (Objects.nonNull(path))
-            this.call("changeEditorMode", path.toUri().toString());
+        if (Objects.nonNull(path)) {
+            String mode = (String) this.call("changeEditorMode", path.toUri().toString());
+            setMode(mode);
+        }
     }
 
     public String editorMode() {
         return (String) this.call("editorMode", new Object[]{});
+    }
+
+    public void fillModeList(ObservableList modeList) {
+        Platform.runLater(() -> {
+            this.call("fillModeList", modeList);
+        });
+    }
+
+    public boolean is(String mode) {
+        return ("ace/mode/" + mode).equalsIgnoreCase(this.mode);
+    }
+
+    public void setMode(String mode) {
+        this.mode = mode;
+    }
+
+    public String getMode() {
+        return mode;
     }
 }
