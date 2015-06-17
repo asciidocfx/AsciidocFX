@@ -99,11 +99,7 @@ public class AppStarter extends Application {
         Scene scene = new Scene(root);
 
         scene.getStylesheets().add("/styles/Styles.css");
-        Rectangle2D bounds = Screen.getPrimary().getVisualBounds();
-        stage.setWidth(bounds.getWidth());
-        stage.setHeight(bounds.getHeight());
-        stage.setX(0);
-        stage.setY(0);
+        stage.setMaximized(true);
         stage.setTitle("AsciidocFX");
         InputStream logoStream = getClass().getResourceAsStream("/logo.png");
         stage.getIcons().add(new Image(logoStream));
