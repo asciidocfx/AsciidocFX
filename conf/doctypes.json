@@ -1,0 +1,740 @@
+[
+  {
+    "name": "asciidoc",
+    "caption": "AsciiDoc",
+    "mode": "ace/mode/asciidoc",
+    "extensions": "asciidoc|adoc|asc|ad"
+  },
+  {
+    "name": "markdown",
+    "caption": "Markdown",
+    "mode": "ace/mode/markdown",
+    "extensions": "md|markdown"
+  },
+  {
+    "name": "html",
+    "caption": "HTML",
+    "mode": "ace/mode/html",
+    "extensions": "html|htm|xhtml"
+  },
+  {
+    "name": "xml",
+    "caption": "XML",
+    "mode": "ace/mode/xml",
+    "extensions": "xml|rdf|rss|wsdl|xslt|atom|mathml|mml|xul|xbl|xaml"
+  },
+  {
+    "name": "abap",
+    "caption": "ABAP",
+    "mode": "ace/mode/abap",
+    "extensions": "abap"
+  },
+  {
+    "name": "abc",
+    "caption": "ABC",
+    "mode": "ace/mode/abc",
+    "extensions": "abc"
+  },
+  {
+    "name": "actionscript",
+    "caption": "ActionScript",
+    "mode": "ace/mode/actionscript",
+    "extensions": "as"
+  },
+  {
+    "name": "ada",
+    "caption": "ADA",
+    "mode": "ace/mode/ada",
+    "extensions": "ada|adb"
+  },
+  {
+    "name": "apache_conf",
+    "caption": "Apache Conf",
+    "mode": "ace/mode/apache_conf",
+    "extensions": "^htaccess|^htgroups|^htpasswd|^conf|htaccess|htgroups|htpasswd"
+  },
+  {
+    "name": "assembly_x86",
+    "caption": "Assembly x86",
+    "mode": "ace/mode/assembly_x86",
+    "extensions": "asm"
+  },
+  {
+    "name": "autohotkey",
+    "caption": "AutoHotKey",
+    "mode": "ace/mode/autohotkey",
+    "extensions": "ahk"
+  },
+  {
+    "name": "batchfile",
+    "caption": "BatchFile",
+    "mode": "ace/mode/batchfile",
+    "extensions": "bat|cmd"
+  },
+  {
+    "name": "c9search",
+    "caption": "C9Search",
+    "mode": "ace/mode/c9search",
+    "extensions": "c9search_results"
+  },
+  {
+    "name": "c_cpp",
+    "caption": "C and C++",
+    "mode": "ace/mode/c_cpp",
+    "extensions": "cpp|c|cc|cxx|h|hh|hpp"
+  },
+  {
+    "name": "cirru",
+    "caption": "Cirru",
+    "mode": "ace/mode/cirru",
+    "extensions": "cirru|cr"
+  },
+  {
+    "name": "clojure",
+    "caption": "Clojure",
+    "mode": "ace/mode/clojure",
+    "extensions": "clj|cljs"
+  },
+  {
+    "name": "cobol",
+    "caption": "Cobol",
+    "mode": "ace/mode/cobol",
+    "extensions": "CBL|COB"
+  },
+  {
+    "name": "coffee",
+    "caption": "CoffeeScript",
+    "mode": "ace/mode/coffee",
+    "extensions": "coffee|cf|cson|^Cakefile"
+  },
+  {
+    "name": "coldfusion",
+    "caption": "ColdFusion",
+    "mode": "ace/mode/coldfusion",
+    "extensions": "cfm"
+  },
+  {
+    "name": "csharp",
+    "caption": "C#",
+    "mode": "ace/mode/csharp",
+    "extensions": "cs"
+  },
+  {
+    "name": "css",
+    "caption": "CSS",
+    "mode": "ace/mode/css",
+    "extensions": "css"
+  },
+  {
+    "name": "curly",
+    "caption": "Curly",
+    "mode": "ace/mode/curly",
+    "extensions": "curly"
+  },
+  {
+    "name": "d",
+    "caption": "D",
+    "mode": "ace/mode/d",
+    "extensions": "d|di"
+  },
+  {
+    "name": "dart",
+    "caption": "Dart",
+    "mode": "ace/mode/dart",
+    "extensions": "dart"
+  },
+  {
+    "name": "diff",
+    "caption": "Diff",
+    "mode": "ace/mode/diff",
+    "extensions": "diff|patch"
+  },
+  {
+    "name": "dockerfile",
+    "caption": "Dockerfile",
+    "mode": "ace/mode/dockerfile",
+    "extensions": "^Dockerfile"
+  },
+  {
+    "name": "dot",
+    "caption": "Dot",
+    "mode": "ace/mode/dot",
+    "extensions": "dot"
+  },
+  {
+    "name": "dummy",
+    "caption": "Dummy",
+    "mode": "ace/mode/dummy",
+    "extensions": "dummy"
+  },
+  {
+    "name": "dummysyntax",
+    "caption": "DummySyntax",
+    "mode": "ace/mode/dummysyntax",
+    "extensions": "dummy"
+  },
+  {
+    "name": "eiffel",
+    "caption": "Eiffel",
+    "mode": "ace/mode/eiffel",
+    "extensions": "e"
+  },
+  {
+    "name": "ejs",
+    "caption": "EJS",
+    "mode": "ace/mode/ejs",
+    "extensions": "ejs"
+  },
+  {
+    "name": "elixir",
+    "caption": "Elixir",
+    "mode": "ace/mode/elixir",
+    "extensions": "ex|exs"
+  },
+  {
+    "name": "elm",
+    "caption": "Elm",
+    "mode": "ace/mode/elm",
+    "extensions": "elm"
+  },
+  {
+    "name": "erlang",
+    "caption": "Erlang",
+    "mode": "ace/mode/erlang",
+    "extensions": "erl|hrl"
+  },
+  {
+    "name": "forth",
+    "caption": "Forth",
+    "mode": "ace/mode/forth",
+    "extensions": "frt|fs|ldr"
+  },
+  {
+    "name": "ftl",
+    "caption": "FreeMarker",
+    "mode": "ace/mode/ftl",
+    "extensions": "ftl"
+  },
+  {
+    "name": "gcode",
+    "caption": "Gcode",
+    "mode": "ace/mode/gcode",
+    "extensions": "gcode"
+  },
+  {
+    "name": "gherkin",
+    "caption": "Gherkin",
+    "mode": "ace/mode/gherkin",
+    "extensions": "feature"
+  },
+  {
+    "name": "gitignore",
+    "caption": "Gitignore",
+    "mode": "ace/mode/gitignore",
+    "extensions": "^.gitignore"
+  },
+  {
+    "name": "glsl",
+    "caption": "Glsl",
+    "mode": "ace/mode/glsl",
+    "extensions": "glsl|frag|vert"
+  },
+  {
+    "name": "golang",
+    "caption": "Go",
+    "mode": "ace/mode/golang",
+    "extensions": "go"
+  },
+  {
+    "name": "groovy",
+    "caption": "Groovy",
+    "mode": "ace/mode/groovy",
+    "extensions": "groovy"
+  },
+  {
+    "name": "haml",
+    "caption": "HAML",
+    "mode": "ace/mode/haml",
+    "extensions": "haml"
+  },
+  {
+    "name": "handlebars",
+    "caption": "Handlebars",
+    "mode": "ace/mode/handlebars",
+    "extensions": "hbs|handlebars|tpl|mustache"
+  },
+  {
+    "name": "haskell",
+    "caption": "Haskell",
+    "mode": "ace/mode/haskell",
+    "extensions": "hs"
+  },
+  {
+    "name": "haxe",
+    "caption": "HAXE",
+    "mode": "ace/mode/haxe",
+    "extensions": "hx"
+  },
+  {
+    "name": "html_ruby",
+    "caption": "HTML (Ruby)",
+    "mode": "ace/mode/html_ruby",
+    "extensions": "erb|rhtml|html.erb"
+  },
+  {
+    "name": "ini",
+    "caption": "INI",
+    "mode": "ace/mode/ini",
+    "extensions": "ini|conf|cfg|prefs"
+  },
+  {
+    "name": "io",
+    "caption": "Io",
+    "mode": "ace/mode/io",
+    "extensions": "io"
+  },
+  {
+    "name": "jack",
+    "caption": "Jack",
+    "mode": "ace/mode/jack",
+    "extensions": "jack"
+  },
+  {
+    "name": "jade",
+    "caption": "Jade",
+    "mode": "ace/mode/jade",
+    "extensions": "jade"
+  },
+  {
+    "name": "java",
+    "caption": "Java",
+    "mode": "ace/mode/java",
+    "extensions": "java"
+  },
+  {
+    "name": "javascript",
+    "caption": "JavaScript",
+    "mode": "ace/mode/javascript",
+    "extensions": "js|jsm"
+  },
+  {
+    "name": "json",
+    "caption": "JSON",
+    "mode": "ace/mode/json",
+    "extensions": "json"
+  },
+  {
+    "name": "jsoniq",
+    "caption": "JSONiq",
+    "mode": "ace/mode/jsoniq",
+    "extensions": "jq"
+  },
+  {
+    "name": "jsp",
+    "caption": "JSP",
+    "mode": "ace/mode/jsp",
+    "extensions": "jsp"
+  },
+  {
+    "name": "jsx",
+    "caption": "JSX",
+    "mode": "ace/mode/jsx",
+    "extensions": "jsx"
+  },
+  {
+    "name": "julia",
+    "caption": "Julia",
+    "mode": "ace/mode/julia",
+    "extensions": "jl"
+  },
+  {
+    "name": "latex",
+    "caption": "LaTeX",
+    "mode": "ace/mode/latex",
+    "extensions": "tex|latex|ltx|bib"
+  },
+  {
+    "name": "lean",
+    "caption": "Lean",
+    "mode": "ace/mode/lean",
+    "extensions": "lean|hlean"
+  },
+  {
+    "name": "less",
+    "caption": "LESS",
+    "mode": "ace/mode/less",
+    "extensions": "less"
+  },
+  {
+    "name": "liquid",
+    "caption": "Liquid",
+    "mode": "ace/mode/liquid",
+    "extensions": "liquid"
+  },
+  {
+    "name": "lisp",
+    "caption": "Lisp",
+    "mode": "ace/mode/lisp",
+    "extensions": "lisp"
+  },
+  {
+    "name": "livescript",
+    "caption": "LiveScript",
+    "mode": "ace/mode/livescript",
+    "extensions": "ls"
+  },
+  {
+    "name": "logiql",
+    "caption": "LogiQL",
+    "mode": "ace/mode/logiql",
+    "extensions": "logic|lql"
+  },
+  {
+    "name": "lsl",
+    "caption": "LSL",
+    "mode": "ace/mode/lsl",
+    "extensions": "lsl"
+  },
+  {
+    "name": "lua",
+    "caption": "Lua",
+    "mode": "ace/mode/lua",
+    "extensions": "lua"
+  },
+  {
+    "name": "luapage",
+    "caption": "LuaPage",
+    "mode": "ace/mode/luapage",
+    "extensions": "lp"
+  },
+  {
+    "name": "lucene",
+    "caption": "Lucene",
+    "mode": "ace/mode/lucene",
+    "extensions": "lucene"
+  },
+  {
+    "name": "makefile",
+    "caption": "Makefile",
+    "mode": "ace/mode/makefile",
+    "extensions": "^Makefile|^GNUmakefile|^makefile|^OCamlMakefile|make"
+  },
+  {
+    "name": "mask",
+    "caption": "Mask",
+    "mode": "ace/mode/mask",
+    "extensions": "mask"
+  },
+  {
+    "name": "matlab",
+    "caption": "MATLAB",
+    "mode": "ace/mode/matlab",
+    "extensions": "matlab"
+  },
+  {
+    "name": "mel",
+    "caption": "MEL",
+    "mode": "ace/mode/mel",
+    "extensions": "mel"
+  },
+  {
+    "name": "mushcode",
+    "caption": "MUSHCode",
+    "mode": "ace/mode/mushcode",
+    "extensions": "mc|mush"
+  },
+  {
+    "name": "mysql",
+    "caption": "MySQL",
+    "mode": "ace/mode/mysql",
+    "extensions": "mysql"
+  },
+  {
+    "name": "nix",
+    "caption": "Nix",
+    "mode": "ace/mode/nix",
+    "extensions": "nix"
+  },
+  {
+    "name": "objectivec",
+    "caption": "Objective-C",
+    "mode": "ace/mode/objectivec",
+    "extensions": "m|mm"
+  },
+  {
+    "name": "ocaml",
+    "caption": "OCaml",
+    "mode": "ace/mode/ocaml",
+    "extensions": "ml|mli"
+  },
+  {
+    "name": "pascal",
+    "caption": "Pascal",
+    "mode": "ace/mode/pascal",
+    "extensions": "pas|p"
+  },
+  {
+    "name": "perl",
+    "caption": "Perl",
+    "mode": "ace/mode/perl",
+    "extensions": "pl|pm"
+  },
+  {
+    "name": "pgsql",
+    "caption": "PGSQL",
+    "mode": "ace/mode/pgsql",
+    "extensions": "pgsql"
+  },
+  {
+    "name": "php",
+    "caption": "PHP",
+    "mode": "ace/mode/php",
+    "extensions": "php|phtml"
+  },
+  {
+    "name": "powershell",
+    "caption": "Powershell",
+    "mode": "ace/mode/powershell",
+    "extensions": "ps1"
+  },
+  {
+    "name": "praat",
+    "caption": "Praat",
+    "mode": "ace/mode/praat",
+    "extensions": "praat|praatscript|psc|proc"
+  },
+  {
+    "name": "prolog",
+    "caption": "Prolog",
+    "mode": "ace/mode/prolog",
+    "extensions": "plg|prolog"
+  },
+  {
+    "name": "properties",
+    "caption": "Properties",
+    "mode": "ace/mode/properties",
+    "extensions": "properties"
+  },
+  {
+    "name": "protobuf",
+    "caption": "Protobuf",
+    "mode": "ace/mode/protobuf",
+    "extensions": "proto"
+  },
+  {
+    "name": "python",
+    "caption": "Python",
+    "mode": "ace/mode/python",
+    "extensions": "py"
+  },
+  {
+    "name": "r",
+    "caption": "R",
+    "mode": "ace/mode/r",
+    "extensions": "r"
+  },
+  {
+    "name": "rdoc",
+    "caption": "RDoc",
+    "mode": "ace/mode/rdoc",
+    "extensions": "Rd"
+  },
+  {
+    "name": "rhtml",
+    "caption": "RHTML",
+    "mode": "ace/mode/rhtml",
+    "extensions": "Rhtml"
+  },
+  {
+    "name": "ruby",
+    "caption": "Ruby",
+    "mode": "ace/mode/ruby",
+    "extensions": "rb|ru|gemspec|rake|^Guardfile|^Rakefile|^Gemfile"
+  },
+  {
+    "name": "rust",
+    "caption": "Rust",
+    "mode": "ace/mode/rust",
+    "extensions": "rs"
+  },
+  {
+    "name": "sass",
+    "caption": "SASS",
+    "mode": "ace/mode/sass",
+    "extensions": "sass"
+  },
+  {
+    "name": "scad",
+    "caption": "SCAD",
+    "mode": "ace/mode/scad",
+    "extensions": "scad"
+  },
+  {
+    "name": "scala",
+    "caption": "Scala",
+    "mode": "ace/mode/scala",
+    "extensions": "scala"
+  },
+  {
+    "name": "scheme",
+    "caption": "Scheme",
+    "mode": "ace/mode/scheme",
+    "extensions": "scm|rkt"
+  },
+  {
+    "name": "scss",
+    "caption": "SCSS",
+    "mode": "ace/mode/scss",
+    "extensions": "scss"
+  },
+  {
+    "name": "sh",
+    "caption": "SH",
+    "mode": "ace/mode/sh",
+    "extensions": "sh|bash|^.bashrc"
+  },
+  {
+    "name": "sjs",
+    "caption": "SJS",
+    "mode": "ace/mode/sjs",
+    "extensions": "sjs"
+  },
+  {
+    "name": "smarty",
+    "caption": "Smarty",
+    "mode": "ace/mode/smarty",
+    "extensions": "smarty|tpl"
+  },
+  {
+    "name": "snippets",
+    "caption": "Snippets",
+    "mode": "ace/mode/snippets",
+    "extensions": "snippets"
+  },
+  {
+    "name": "soy_template",
+    "caption": "Soy Template",
+    "mode": "ace/mode/soy_template",
+    "extensions": "soy"
+  },
+  {
+    "name": "space",
+    "caption": "Space",
+    "mode": "ace/mode/space",
+    "extensions": "space"
+  },
+  {
+    "name": "sql",
+    "caption": "SQL",
+    "mode": "ace/mode/sql",
+    "extensions": "sql"
+  },
+  {
+    "name": "sqlserver",
+    "caption": "SQLServer",
+    "mode": "ace/mode/sqlserver",
+    "extensions": "sqlserver"
+  },
+  {
+    "name": "stylus",
+    "caption": "Stylus",
+    "mode": "ace/mode/stylus",
+    "extensions": "styl|stylus"
+  },
+  {
+    "name": "svg",
+    "caption": "SVG",
+    "mode": "ace/mode/svg",
+    "extensions": "svg"
+  },
+  {
+    "name": "tcl",
+    "caption": "Tcl",
+    "mode": "ace/mode/tcl",
+    "extensions": "tcl"
+  },
+  {
+    "name": "tex",
+    "caption": "Tex",
+    "mode": "ace/mode/tex",
+    "extensions": "tex"
+  },
+  {
+    "name": "text",
+    "caption": "Text",
+    "mode": "ace/mode/text",
+    "extensions": "txt"
+  },
+  {
+    "name": "textile",
+    "caption": "Textile",
+    "mode": "ace/mode/textile",
+    "extensions": "textile"
+  },
+  {
+    "name": "toml",
+    "caption": "Toml",
+    "mode": "ace/mode/toml",
+    "extensions": "toml"
+  },
+  {
+    "name": "twig",
+    "caption": "Twig",
+    "mode": "ace/mode/twig",
+    "extensions": "twig"
+  },
+  {
+    "name": "typescript",
+    "caption": "Typescript",
+    "mode": "ace/mode/typescript",
+    "extensions": "ts|typescript|str"
+  },
+  {
+    "name": "vala",
+    "caption": "Vala",
+    "mode": "ace/mode/vala",
+    "extensions": "vala"
+  },
+  {
+    "name": "vbscript",
+    "caption": "VBScript",
+    "mode": "ace/mode/vbscript",
+    "extensions": "vbs|vb"
+  },
+  {
+    "name": "velocity",
+    "caption": "Velocity",
+    "mode": "ace/mode/velocity",
+    "extensions": "vm"
+  },
+  {
+    "name": "verilog",
+    "caption": "Verilog",
+    "mode": "ace/mode/verilog",
+    "extensions": "v|vh|sv|svh"
+  },
+  {
+    "name": "vhdl",
+    "caption": "VHDL",
+    "mode": "ace/mode/vhdl",
+    "extensions": "vhd|vhdl"
+  },
+  {
+    "name": "xquery",
+    "caption": "XQuery",
+    "mode": "ace/mode/xquery",
+    "extensions": "xq"
+  },
+  {
+    "name": "yaml",
+    "caption": "YAML",
+    "mode": "ace/mode/yaml",
+    "extensions": "yaml|yml"
+  },
+  {
+    "name": "django",
+    "caption": "Django",
+    "mode": "ace/mode/django",
+    "extensions": "html"
+  }
+]
