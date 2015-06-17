@@ -6,8 +6,10 @@ import com.kodcu.component.MenuItemBuilt;
 import com.kodcu.component.MyTab;
 import com.kodcu.controller.ApplicationController;
 import com.kodcu.other.Current;
+import com.kodcu.other.DocumentMode;
 import com.kodcu.service.shortcut.ShortcutProvider;
 import de.jensd.fx.fontawesome.AwesomeIcon;
+import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.*;
@@ -17,6 +19,10 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Created by usta on 25.12.2014.
@@ -162,14 +168,32 @@ public class EditorService {
             }
         });
 
-        final ChoiceBox<String> choiceBox = new ChoiceBox<>();
-        choiceBox.setFocusTraversable(false);
-        choiceBox.setManaged(true);
-        choiceBox.setVisible(true);
-        choiceBox.getItems().addAll("Asciidoc", "Markdown");
-        choiceBox.getSelectionModel().selectFirst();
+        ObservableList<DocumentMode> modeList = controller.getModeList();
 
-        myTab.setMarkup(choiceBox);
+        MenuButton menuButton = new MenuButton("AsciiDoc");
+
+        Map<String, List<String>> modulus = modeList.stream()
+                .map(e -> e.getCaption())
+                .collect(Collectors.groupingBy(e -> e.substring(0, 1)));
+
+        for (Map.Entry<String, List<String>> listEntry : modulus.entrySet()) {
+            Menu e = new Menu(listEntry.getKey());
+            menuButton.getItems().add(e);
+
+            for (String val : listEntry.getValue()) {
+                MenuItem menuItem = new MenuItem(val);
+                e.getItems().add(menuItem);
+                menuItem.setOnAction(event -> {
+                    menuButton.setText(menuItem.getText());
+                    modeList.stream().filter(d -> d.getCaption().equals(menuItem.getText()))
+                            .findFirst().ifPresent(documentMode -> {
+                        editorPane.setMode(documentMode.getMode());
+                        editorPane.switchMode(documentMode.getMode());
+                    });
+                    ;
+                });
+            }
+        }
 
         final HBox topMenu = new HBox(
                 showFileBrowser,
@@ -190,7 +214,7 @@ public class EditorService {
                 imageLabel,
                 subscriptLabel,
                 superScriptLabel,
-                choiceBox,
+                menuButton,
                 openMenuLabel,
                 placeholderPane,
                 showPreviewPanel
@@ -335,7 +359,7 @@ public class EditorService {
             shortcutProvider.getProvider().addStackedBarChart();
         }));
 
-        final HBox topMenu = new HBox(admonitionButton, blocks, documentHelpers, extensions,chartMenu);
+        final HBox topMenu = new HBox(admonitionButton, blocks, documentHelpers, extensions, chartMenu);
 
         topMenu.setSpacing(9);
         topMenu.getStyleClass().add("top-menu");
