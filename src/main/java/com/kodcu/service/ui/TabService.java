@@ -2,6 +2,7 @@ package com.kodcu.service.ui;
 
 import com.kodcu.component.EditorPane;
 import com.kodcu.component.MyTab;
+import com.kodcu.component.PreviewTab;
 import com.kodcu.controller.ApplicationController;
 import com.kodcu.other.Current;
 import com.kodcu.other.IOHelper;
@@ -11,6 +12,8 @@ import com.kodcu.service.PathResolverService;
 import com.kodcu.service.ThreadService;
 import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyObjectProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
@@ -310,11 +313,17 @@ public class TabService {
     }
 
     public void addImageTab(Path imagePath) {
-        MyTab tab = createTab();
-        tab.setTabText(imagePath.getFileName().toString());
-        ImageView imageView = new ImageView(new Image(IOHelper.pathToUrl(imagePath)));
+        Tab tab = new PreviewTab();
+        tab.setText(imagePath.getFileName().toString());
+        Image image = new Image(IOHelper.pathToUrl(imagePath));
+        ImageView imageView = new ImageView(image);
         imageView.setPreserveRatio(true);
-        imageView.setFitWidth(imageView.getImage().getWidth());
+        TabPane previewTabPane = controller.getPreviewTabPane();
+        imageView.setFitWidth(previewTabPane.getWidth());
+
+        previewTabPane.widthProperty().addListener((observable, oldValue, newValue) -> {
+            imageView.setFitWidth(previewTabPane.getWidth());
+        });
 
         Tooltip tip = new Tooltip(imagePath.toString());
         Tooltip.install(tab.getGraphic(), tip);
@@ -334,10 +343,8 @@ public class TabService {
         });
 
         tab.setContent(scrollPane);
-        tab.setEditorPane(null);
-        tab.setPath(imagePath);
 
-        TabPane tabPane = controller.getTabPane();
+        TabPane tabPane = previewTabPane;
         tabPane.getTabs().add(tab);
         tabPane.getSelectionModel().select(tab);
     }
