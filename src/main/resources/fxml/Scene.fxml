@@ -4,9 +4,11 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.web.WebView?>
+<?import javafx.scene.text.Text?>
+<?import javafx.scene.shape.Rectangle?>
 <AnchorPane id="AnchorPane" fx:id="rootAnchor" styleClass="rootAnchor" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="com.kodcu.controller.ApplicationController">
   <children>
-    <SplitPane fx:id="splitPane" dividerPositions="0.17, 0.60" focusTraversable="true" AnchorPane.bottomAnchor="1.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="-1.0">
+    <SplitPane fx:id="splitPane" id="splitPane" dividerPositions="0.17, 0.60" focusTraversable="true" AnchorPane.bottomAnchor="1.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="-1.0">
       <items>
         <SplitPane fx:id="splitPaneVertical" dividerPositions="0.715076071922545" minWidth="0.0" orientation="VERTICAL">
           <items>
@@ -20,7 +22,8 @@
                               <items>
                                   <MenuItem mnemonicParsing="false" text="Hide File Browser" onAction="#hideFileBrowser" fx:id="hideFileBrowser" />
                                   <CheckMenuItem mnemonicParsing="false" text="Hide Preview Panel" onAction="#hidePreviewPanel" fx:id="hidePreviewPanel" />
-                                  <MenuItem mnemonicParsing="false" text="Hide All" onAction="#hideFileAndPreviewPanels" />
+                                  <MenuItem mnemonicParsing="false" text="Full Editor" onAction="#hideFileAndPreviewPanels" />
+                                  <MenuItem mnemonicParsing="false" text="Slide View" onAction="#switchSlideView" />
                               </items>
                               <tooltip>
                                   <Tooltip text="Hide/Show Panels" />
@@ -81,24 +84,33 @@
                         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                       </padding>
                     </HBox>
-                    <TreeView fx:id="treeView" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minWidth="0.0" prefHeight="-1.0" prefWidth="-1.0" showRoot="true" VBox.vgrow="ALWAYS">
-                      <contextMenu>
-                        <ContextMenu>
-                          <items>
-                            <MenuItem mnemonicParsing="false" text="Open" fx:id="openFileTreeItem" />
-                            <MenuItem id="openFolderTreeItem" mnemonicParsing="false" text="Browse" fx:id="openFolderTreeItem" />
-                            <SeparatorMenuItem />
-                            <MenuItem mnemonicParsing="false" fx:id="createFile" text="Create" onAction="#createFile"/>
-                            <MenuItem mnemonicParsing="false" fx:id="renameFile" text="Rename" onAction="#renameFile"/>
-                            <SeparatorMenuItem />
-                            <MenuItem mnemonicParsing="false" text="Copy Path" fx:id="copyPathTreeItem" />
-                            <MenuItem mnemonicParsing="false" text="Copy" fx:id="copyTreeItem" />
-                            <SeparatorMenuItem />
-                            <MenuItem mnemonicParsing="false" text="Remove" fx:id="removePathItem" />
-                          </items>
-                        </ContextMenu>
-                      </contextMenu>
-                    </TreeView>
+                    <TabPane side="BOTTOM" tabClosingPolicy="UNAVAILABLE" VBox.vgrow="ALWAYS">
+                      <tabs>
+                        <Tab text="Directory" >
+                          <TreeView fx:id="treeView" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minWidth="0.0" prefHeight="-1.0" prefWidth="-1.0" showRoot="true" VBox.vgrow="ALWAYS">
+                            <contextMenu>
+                              <ContextMenu>
+                                <items>
+                                  <MenuItem mnemonicParsing="false" text="Open" fx:id="openFileTreeItem" />
+                                  <MenuItem id="openFolderTreeItem" mnemonicParsing="false" text="Browse" fx:id="openFolderTreeItem" />
+                                  <SeparatorMenuItem />
+                                  <MenuItem mnemonicParsing="false" fx:id="createFile" text="Create" onAction="#createFile"/>
+                                  <MenuItem mnemonicParsing="false" fx:id="renameFile" text="Rename" onAction="#renameFile"/>
+                                  <SeparatorMenuItem />
+                                  <MenuItem mnemonicParsing="false" text="Copy Path" fx:id="copyPathTreeItem" />
+                                  <MenuItem mnemonicParsing="false" text="Copy" fx:id="copyTreeItem" />
+                                  <SeparatorMenuItem />
+                                  <MenuItem mnemonicParsing="false" text="Remove" fx:id="removePathItem" />
+                                </items>
+                              </ContextMenu>
+                            </contextMenu>
+                          </TreeView>
+                        </Tab>
+                        <Tab text="Outline" fx:id="outlineTab">
+
+                        </Tab>
+                      </tabs>
+                    </TabPane>
                   </children>
                 </VBox>
               </children>
@@ -128,12 +140,25 @@
             </AnchorPane>
           </items>
         </SplitPane>
-        <AnchorPane minHeight="0.0" minWidth="0.0">
-          <children>
-            <TabPane fx:id="tabPane" opacity="1.0" rotateGraphic="false" tabClosingPolicy="ALL_TABS" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-          </children>
-        </AnchorPane>
-        <AnchorPane minHeight="0.0" minWidth="0.0" style="">
+        <SplitPane fx:id="editorSplitPane" dividerPositions="1" orientation="VERTICAL">
+          <items>
+            <VBox minHeight="0" minWidth="0">
+              <TabPane VBox.vgrow="ALWAYS" minHeight="0" minWidth="0" fx:id="tabPane" tabClosingPolicy="ALL_TABS" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+              <HBox fx:id="statusBox" spacing="3" alignment="CENTER_LEFT">
+                <children>
+                  <Label fx:id="showHideLogs" id="showHideLogs" ></Label>
+                  <Label fx:id="statusMessage" text="PDF conversation completed"></Label>
+                  <Pane HBox.hgrow="ALWAYS" ></Pane>
+                  <Label fx:id="statusText" ></Label>
+                </children>
+              </HBox>
+            </VBox>
+            <VBox minHeight="0" minWidth="0" fx:id="logVBox">
+
+            </VBox>
+          </items>
+        </SplitPane>
+        <AnchorPane minWidth="0"  style="">
           <children>
             <VBox styleClass="preview-box" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
               <children>
@@ -156,7 +181,7 @@
                     <Insets bottom="5.0" left="15.0" right="15.0" top="5.0" />
                   </padding>
                 </HBox>
-                <TabPane fx:id="previewAnchor" VBox.vgrow="ALWAYS" >
+                <TabPane fx:id="previewTabPane" styleClass="previewTabPane" VBox.vgrow="ALWAYS" >
                   <!--  Preview placeholder loaded in runtime here -->
                 </TabPane>
               </children>
