@@ -23,12 +23,12 @@
     -fx-close-tab-animation: NONE;
 }
 
-.tab-close-button{
-    -fx-background-color:grey;
+.tab-close-button {
+    -fx-background-color: grey;
 }
 
-.tab-close-button:hover{
-    -fx-background-color:black;
+.tab-close-button:hover {
+    -fx-background-color: black;
 }
 
 .tree-view {
@@ -375,18 +375,17 @@
 .text-field {
     -fx-font: 12px "Segoe UI";
     -fx-text-fill: #212121;
-    -fx-background-radius: 0;
+    -fx-background-radius: 3;
     -fx-highlight-fill: rgb(45, 137, 239);
     -fx-background-color: -fx-box-border, white;
     -fx-border-color: transparent;
-    -fx-border-insets: 6pt;
 }
 
 .text-field:focused {
     -fx-background-color: -fx-box-border, -fx-box-border, white;
-    -fx-background-radius: 0;
+    -fx-background-radius: 3;
+    -fx-background-color: -fx-box-border, white;
     -fx-border-color: transparent;
-    -fx-border-insets: 6pt;
 }
 
 /*******************************************************************************
@@ -423,7 +422,7 @@
     -fx-background-radius: 0;
 }
 
-.leftMenuBar *{
+.leftMenuBar * {
     -fx-cursor: hand;
     -icons-color: #1e1e1e;
     -fx-text-fill: #1e1e1e;
@@ -439,65 +438,70 @@
     -fx-text-fill: #1e1e1e;
 }
 
-.file-tree{
+.file-tree {
     -fx-border-color: #ccc !important;
 }
 
-.menu-hbox{
+.menu-hbox {
     -fx-background-color: white;
 }
 
-.label.browser *, .label.browser{
+.label.browser *, .label.browser {
     -fx-cursor: hand;
     -fx-font: 14px "Segoe UI";
     -fx-font-weight: bold;
     -fx-text-fill: rgba(205, 199, 120, 0.83);
 }
-.label.browser *:hover, .label.browser:hover{
-    -fx-text-fill: #BDB76B ;
+
+.label.browser *:hover, .label.browser:hover {
+    -fx-text-fill: #BDB76B;
 }
 
-.label.pdf *, .label.pdf{
+.label.pdf *, .label.pdf {
     -fx-cursor: hand;
     -fx-font: 14px "Segoe UI";
     -fx-font-weight: bold;
     -fx-text-fill: rgba(255, 0, 0, 0.43);
 }
-.label.pdf *:hover, .label.pdf:hover{
+
+.label.pdf *:hover, .label.pdf:hover {
     -fx-text-fill: rgba(255, 0, 0, 0.68);
 }
 
-.label.html *, .label.html{
+.label.html *, .label.html {
     -fx-cursor: hand;
     -fx-font: 14px "Segoe UI";
     -fx-font-weight: bold;
     -fx-text-fill: #d1d1d1;
 }
-.label.html *:hover, .label.html:hover{
+
+.label.html *:hover, .label.html:hover {
     -fx-text-fill: #b0b0b0;
 }
 
-.label.ebook *, .label.ebook{
+.label.ebook *, .label.ebook {
     -fx-cursor: hand;
     -fx-font: 14px "Segoe UI";
     -fx-font-weight: bold;
     -fx-text-fill: rgba(160, 205, 219, 0.82);
 }
-.label.ebook *:hover, .label.ebook:hover{
+
+.label.ebook *:hover, .label.ebook:hover {
     -fx-text-fill: #87acba;
 }
 
-.label.docbook *, .label.docbook{
+.label.docbook *, .label.docbook {
     -fx-cursor: hand;
     -fx-font: 14px "Segoe UI";
     -fx-font-weight: bold;
     -fx-text-fill: rgba(108, 209, 130, 0.65);
 }
-.label.docbook *:hover, .label.docbook:hover{
+
+.label.docbook *:hover, .label.docbook:hover {
     -fx-text-fill: rgba(90, 180, 106, 0.82);
 }
 
-.preview-box{
+.preview-box {
     -fx-background-color: transparent;
 }
 
@@ -517,7 +521,7 @@
     -fx-text-fill: black;
 }
 
-.about-popup{
+.about-popup {
     -fx-background-color: rgb(255, 241, 162);
     -fx-border-radius: 5px;
     -fx-background-radius: 5px;
@@ -532,20 +536,50 @@
     -fx-padding: 15px;
 }
 
-.build-menu .menu-item,.build-menu .menu-item * {
+.build-menu .menu-item, .build-menu .menu-item * {
     -fx-cursor: hand;
 }
 
 .top-menu {
-    -fx-padding:5px 10px 5px 10px;
+    -fx-padding: 5px 10px 5px 10px;
 }
 
-.top-menu .top-label {
+.top-menu .top-label ,#showHideLogs *{
     -fx-text-fill: #7c7c7c;
+    -fx-fill : -fx-text-fill;
     -fx-cursor: hand;
 }
 
-.top-menu .top-label:hover {
+.top-menu .top-label:hover,#showHideLogs *:hover {
     -fx-text-fill: #1e1e1e;
+    -fx-fill : -fx-text-fill;
     -fx-background-color: rgba(255, 255, 255, 0.10);
+}
+
+.log-viewer .ERROR .level-column * {
+    -fx-text-fill: #ff3224;
+    -fx-fill: #ff3224;
+    -fx-font-weight: bold;
+}
+
+.log-viewer .DEBUG .level-column * {
+    -fx-text-fill: #33a4ff;
+    -fx-fill: -fx-text-fill;
+    -fx-font-weight: bold;
+}
+
+.log-viewer .INFO .level-column * {
+    -fx-text-fill: #ffd172;
+    -fx-fill: -fx-text-fill;
+    -fx-font-weight: bold;
+}
+
+.log-viewer .WARN .level-column * {
+    -fx-text-fill: #ffae5d;
+    -fx-fill: -fx-text-fill;
+    -fx-font-weight: bold;
+}
+
+.previewTabPane{
+    -fx-background-color : white;
 }
