@@ -107,7 +107,7 @@ public class WebviewService {
             Dragboard dragboard = event.getDragboard();
             boolean success = false;
 
-            if (dragboard.hasFiles()) {
+            if (dragboard.hasFiles() && !dragboard.hasString()) {
 
                 List<File> dragboardFiles = dragboard.getFiles();
 
