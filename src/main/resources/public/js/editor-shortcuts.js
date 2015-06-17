@@ -25,8 +25,8 @@ editor.commands.addCommand({
             return;
         }
 
-        afx.cutCopy(textRange);
-        editor.remove(editor.getSelectionRange());
+        afx.cutCopy(editor.getCopyText());
+        editor.execCommand("cut");
 
     },
     readOnly: true
@@ -45,7 +45,8 @@ editor.commands.addCommand({
     name: 'copy-1',
     bindKey: {win: 'Ctrl-C', mac: 'Command-C'},
     exec: function (editor) {
-        afx.cutCopy(editor.session.getTextRange(editor.getSelectionRange()));
+        afx.cutCopy(editor.getCopyText());
+        editor.execCommand("copy");
     },
     readOnly: false
 });
@@ -54,7 +55,10 @@ editor.commands.addCommand({
     name: 'paste-1',
     bindKey: {win: 'Ctrl-V', mac: 'Command-V'},
     exec: function (editor) {
+
         afx.paste();
+
+        //editor.execCommand("paste");
     },
     readOnly: true
 });
@@ -63,7 +67,27 @@ editor.commands.addCommand({
     name: 'paste-raw-1',
     bindKey: {win: 'Ctrl-Shift-V', mac: 'Command-Shift-V'},
     exec: function (editor) {
-        afx.pasteRaw();
+        //afx.pasteRaw();
+        var text = afx.clipboardValue();
+
+        if (!editor.inMultiSelectMode || editor.inVirtualSelectionMode) {
+            editor.insert(text);
+        } else {
+            var lines = text.split(/\r\n|\r|\n/);
+            var ranges = editor.selection.rangeList.ranges;
+            if (lines.length > ranges.length || lines.length < 2 || !lines[1]) {
+                return editor.commands.exec("insertstring", editor, text);
+            }
+
+            for (var i = ranges.length; i--;) {
+                var range = ranges[i];
+                if (!range.isEmpty()) {
+                    editor.session.remove(range);
+                }
+
+                editor.session.insert(range.start, lines[i]);
+            }
+        }
     },
     readOnly: true
 });
@@ -318,34 +342,34 @@ var editorMenu = {
         addGlossary: function () {
             editor.removeToLineStart();
             editor.insert("[glossary]\n== Example Glossary\n\n" +
-            "Glossaries are optional. Glossaries entries are an example of a style of AsciiDoc labeled lists.\n\n" +
-            "[glossary]\n" +
-            "A glossary term::\n\tThe corresponding (indented) definition.\n\n" +
-            "A second glossary term::\n\tThe corresponding (indented) definition.");
+                "Glossaries are optional. Glossaries entries are an example of a style of AsciiDoc labeled lists.\n\n" +
+                "[glossary]\n" +
+                "A glossary term::\n\tThe corresponding (indented) definition.\n\n" +
+                "A second glossary term::\n\tThe corresponding (indented) definition.");
         },
         addBibliography: function () {
             editor.removeToLineStart();
             editor.insert("[bibliography]\n" +
-            "== Example Bibliography\n" +
-            "\n" +
-            "The bibliography list is a style of AsciiDoc bulleted list.\n" +
-            "\n" +
-            "[bibliography]\n" +
-            ".Books\n" +
-            "- [[[taoup]]] Eric Steven Raymond. 'The Art of Unix\n" +
-            "  Programming'. Addison-Wesley. ISBN 0-13-142901-9.\n" +
-            "- [[[walsh-muellner]]] Norman Walsh & Leonard Muellner.\n" +
-            "  'DocBook - The Definitive Guide'. O'Reilly & Associates. 1999.\n" +
-            "  ISBN 1-56592-580-7.");
+                "== Example Bibliography\n" +
+                "\n" +
+                "The bibliography list is a style of AsciiDoc bulleted list.\n" +
+                "\n" +
+                "[bibliography]\n" +
+                ".Books\n" +
+                "- [[[taoup]]] Eric Steven Raymond. 'The Art of Unix\n" +
+                "  Programming'. Addison-Wesley. ISBN 0-13-142901-9.\n" +
+                "- [[[walsh-muellner]]] Norman Walsh & Leonard Muellner.\n" +
+                "  'DocBook - The Definitive Guide'. O'Reilly & Associates. 1999.\n" +
+                "  ISBN 1-56592-580-7.");
         },
         addIndex: function () {
             editor.removeToLineStart();
             editor.insert("[index]\n" +
-            "== Example Index\n" +
-            "////////////////////////////////////////////////////////////////\n" +
-            "The index is normally left completely empty, it's contents being\n" +
-            "generated automatically by the DocBook toolchain.\n" +
-            "////////////////////////////////////////////////////////////////  ");
+                "== Example Index\n" +
+                "////////////////////////////////////////////////////////////////\n" +
+                "The index is normally left completely empty, it's contents being\n" +
+                "generated automatically by the DocBook toolchain.\n" +
+                "////////////////////////////////////////////////////////////////  ");
         },
         addMathBlock: function () {
             var range = editor.getSelectionRange();
