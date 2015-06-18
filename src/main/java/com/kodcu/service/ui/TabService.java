@@ -12,8 +12,6 @@ import com.kodcu.service.PathResolverService;
 import com.kodcu.service.ThreadService;
 import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyObjectProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
@@ -24,6 +22,7 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.AnchorPane;
 import netscape.javascript.JSObject;
+import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,10 +30,7 @@ import org.springframework.stereotype.Component;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Consumer;
 
 /**
@@ -71,17 +67,23 @@ public class TabService {
         final Consumer<Path> openFileConsumer = path -> {
             if (Files.isDirectory(path)) {
                 directoryService.changeWorkigDir(path.equals(directoryService.workingDirectory()) ? path.getParent() : path);
-            } else if (pathResolver.isAsciidoc(path) || pathResolver.isMarkdown(path))
-                addTab(path);
-            else if (pathResolver.isImage(path))
+            } else if (pathResolver.isImage(path)) {
                 addImageTab(path);
-            else if (pathResolver.isEpub(path))
+
+            } else if (pathResolver.isEpub(path)) {
                 controller.getHostServices()
                         .showDocument(String.format("http://localhost:%d/epub/viewer?path=%s", controller.getPort(), path.toString()));
-            else {
-                addTab(path);
-//                controller.getHostServices()
-//                        .showDocument(path.toUri().toString());
+            } else {
+                List<String> supportedModes = controller.getSupportedModes();
+                String extension = FilenameUtils.getExtension(path.toString());
+
+                if ("".equals(extension) || supportedModes.contains(extension)) {
+                    addTab(path);
+                } else {
+                    controller.getHostServices()
+                            .showDocument(path.toUri().toString());
+                }
+
             }
         };
         directoryService.setOpenFileConsumer(openFileConsumer);

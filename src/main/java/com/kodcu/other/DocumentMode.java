@@ -6,7 +6,6 @@ package com.kodcu.other;
 public class DocumentMode {
 
     private String caption;
-    private String extRe;
     private String extensions;
     private String mode;
     private String name;
@@ -17,14 +16,6 @@ public class DocumentMode {
 
     public void setCaption(String caption) {
         this.caption = caption;
-    }
-
-    public String getExtRe() {
-        return extRe;
-    }
-
-    public void setExtRe(String extRe) {
-        this.extRe = extRe;
     }
 
     public String getExtensions() {

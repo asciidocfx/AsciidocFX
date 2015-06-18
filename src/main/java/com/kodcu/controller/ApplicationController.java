@@ -92,6 +92,8 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.nio.file.StandardOpenOption.*;
 
@@ -328,6 +330,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     @Autowired
     private LiveReloadPane liveReloadPane;
+    private List<String> supportedModes;
 
     public void createAsciidocTable() {
         asciidocTableStage.showAndWait();
@@ -909,6 +912,14 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             Object readValue = mapper.readValue(configPath.resolve("doctypes.json").toFile(), new TypeReference<List<DocumentMode>>() {
             });
             modeList.addAll((Collection) readValue);
+
+            supportedModes=modeList.stream()
+                    .map(d -> d.getExtensions())
+                    .filter(Objects::nonNull)
+                    .flatMap(d -> Arrays.asList(d.split("\\|")).stream())
+                    .collect(Collectors.toList());
+
+
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -1975,8 +1986,12 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         htmlPane.webEngine().executeScript("clearImageCache()");
     }
 
-    public ObservableList getModeList() {
+    public ObservableList<DocumentMode> getModeList() {
         return modeList;
+    }
+
+    public List<String> getSupportedModes() {
+        return supportedModes;
     }
 
     public void removeChildElement(Node node) {
