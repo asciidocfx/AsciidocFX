@@ -155,6 +155,8 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     private Stage markdownTableStage;
     private boolean basicMode;
 
+    private TreeView<Section> sectionTreeView;
+
     private static ObservableList<MyLog> logList = FXCollections.synchronizedObservableList(FXCollections.observableArrayList());
 
     @Autowired
@@ -556,6 +558,15 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             }
         });
         previewTabPane.setRotateGraphic(true);
+
+        outlineTab.getTabPane()
+                .getSelectionModel()
+                .selectedItemProperty()
+                .addListener((observable, oldValue, newValue) -> {
+                    if (newValue == outlineTab) {
+                        current.currentEditor().rerender();
+                    }
+                });
 
         initializePaths();
         initializeLogViewer();
@@ -1171,6 +1182,14 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     }
 
     @WebkitCall
+    public void fillOutlines(JSObject doc) {
+        if (outlineTab.isSelected())
+            threadService.runActionLater(() -> {
+                htmlPane.fillOutlines(doc);
+            });
+    }
+
+    @WebkitCall
     public void clearOutline() {
         outlineList = new TreeSet<>();
     }
@@ -1180,26 +1199,32 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
         threadService.runTaskLater(() -> {
 
-            TreeItem<Section> rootItem = new TreeItem<>();
-            rootItem.setExpanded(true);
-            Section rootSection = new Section();
-            rootSection.setLevel(0);
-            String outlineTitle = "Outline";
-            rootSection.setTitle(outlineTitle);
+            if (Objects.isNull(sectionTreeView)) {
+                sectionTreeView = new TreeView<Section>();
+                TreeItem<Section> rootItem = new TreeItem<>();
+                rootItem.setExpanded(true);
+                Section rootSection = new Section();
+                rootSection.setLevel(0);
+                String outlineTitle = "Outline";
+                rootSection.setTitle(outlineTitle);
 
-            rootItem.setValue(rootSection);
-            TreeView<Section> sectionTreeView = new TreeView<>(rootItem);
+                rootItem.setValue(rootSection);
 
-            sectionTreeView.setOnMouseClicked(event -> {
-                TreeItem<Section> item = sectionTreeView.getSelectionModel().getSelectedItem();
-                EditorPane editorPane = current.currentEditor();
-                editorPane.moveCursorTo(item.getValue().getLineno());
-            });
+                sectionTreeView.setRoot(rootItem);
+
+                sectionTreeView.setOnMouseClicked(event -> {
+                    TreeItem<Section> item = sectionTreeView.getSelectionModel().getSelectedItem();
+                    EditorPane editorPane = current.currentEditor();
+                    editorPane.moveCursorTo(item.getValue().getLineno());
+                });
+            }
+
+            sectionTreeView.getRoot().getChildren().clear();
 
             for (Section section : outlineList) {
 
                 TreeItem<Section> sectionItem = new TreeItem<>(section);
-                rootItem.getChildren().add(sectionItem);
+                sectionTreeView.getRoot().getChildren().add(sectionItem);
 
                 TreeSet<Section> subsections = section.getSubsections();
                 for (Section subsection : subsections) {

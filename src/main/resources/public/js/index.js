@@ -50,13 +50,12 @@ function convertBasicHtml(content) {
         });
 
         var doc = Opal.Asciidoctor.$load(content, options);
-        window.docdoc = doc;
 
         try {
-            fillOutlines(doc);
+            afx.fillOutlines(doc);
         }
         catch (e) {
-            console.log(e);
+            throw e;
         }
 
         doc.attributes.keys["lang"] = doc.attributes.keys["lang"] || getDefaultLanguage();

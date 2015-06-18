@@ -119,4 +119,8 @@ public class HtmlPane extends ViewPanel {
         controller.getHostServices()
                 .showDocument(String.format("http://localhost:%d/index.html", controller.getPort()));
     }
+
+    public void fillOutlines(JSObject doc) {
+        getWindow().call("fillOutlines",doc);
+    }
 }
