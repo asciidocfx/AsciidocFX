@@ -87,10 +87,10 @@ public class DocumentService {
                 for (String key : keySet) {
                     window.call("addNewCommand", new Object[]{key, shortCuts.get(key)});
                 }
-                if (Objects.nonNull(content))
+                if (Objects.nonNull(content)) {
                     window.call("setEditorValue", new Object[]{content});
+                }
                 window.call("setInitialized");
-//                editorPane.getWebEngine().getLoadWorker().cancel();
             }
             return false;
         });

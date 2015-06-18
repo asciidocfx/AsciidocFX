@@ -93,7 +93,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static java.nio.file.StandardOpenOption.*;
 
@@ -913,12 +912,11 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             });
             modeList.addAll((Collection) readValue);
 
-            supportedModes=modeList.stream()
+            supportedModes = modeList.stream()
                     .map(d -> d.getExtensions())
                     .filter(Objects::nonNull)
                     .flatMap(d -> Arrays.asList(d.split("\\|")).stream())
                     .collect(Collectors.toList());
-
 
 
         } catch (Exception e) {
@@ -1394,6 +1392,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             current.setCurrentTabText(currentTabText + " *");
     }
 
+    @WebkitCall
     public void textListener(String text, String mode) {
 
         threadService.runTaskLater(() -> {
@@ -1410,12 +1409,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                         lastRendered.setValue(rendered);
                 });
 
-                previewTabPane.getTabs().stream()
-                        .filter(t -> "HTML".equals(t.getText()))
-                        .filter(t -> !currentIsSlide)
-                        .filter(t -> previewTabPane.getSelectionModel().getSelectedItem() != t)
-                        .findFirst()
-                        .ifPresent(previewTabPane.getSelectionModel()::select);
+                checkTabAndSelect("HTML");
 
             }
 
@@ -1426,12 +1420,8 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                     checkTabAndAdd("Slide", slidePane);
 
                     slideConverter.convert(false);
-                    previewTabPane.getTabs().stream()
-                            .filter(t -> "Slide".equals(t.getText()))
-                            .filter(t -> previewTabPane.getSelectionModel().getSelectedItem() != t)
-                            .findFirst()
-                            .ifPresent(previewTabPane.getSelectionModel()::select);
 
+                    checkTabAndSelect("Slide");
 
                 }
             }
@@ -1449,6 +1439,8 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                         });
                     });
                 });
+
+                checkTabAndSelect("HTML");
             }
 
             if ("html".equalsIgnoreCase(mode)) {
@@ -1465,22 +1457,34 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                     liveReloadPane.updateDomdom();
                 }
 
-                previewTabPane.getTabs().stream()
-                        .filter(t -> "Live Reload".equals(t.getText()))
-                        .filter(t -> previewTabPane.getSelectionModel().getSelectedItem() != t)
-                        .findFirst()
-                        .ifPresent(previewTabPane.getSelectionModel()::select);
+                checkTabAndSelect("Live Reload");
+
             }
         });
     }
 
+    private void checkTabAndSelect(String tabText) {
+        previewTabPane.getTabs().stream()
+                .filter(t -> !t.isSelected())
+                .filter(t -> tabText.equals(t.getText()))
+                .findFirst()
+                .ifPresent(tab -> {
+                    threadService.runActionLater(() -> {
+                        previewTabPane.getSelectionModel().select(tab);
+                    });
+                });
+
+    }
+
     private void checkTabAndAdd(String text, AnchorPane anchorPane) {
-        threadService.runActionLater(() -> {
-            ObservableList<Tab> tabs = previewTabPane.getTabs();
-            if (!tabs.contains(new PreviewTab(text))) {
-                tabs.add(new PreviewTab(text, anchorPane));
-            }
-        });
+        ObservableList<Tab> tabs = previewTabPane.getTabs();
+        if (!tabs.contains(new PreviewTab(text))) {
+            threadService.runActionLater(() -> {
+                PreviewTab previewTab = new PreviewTab(text, anchorPane);
+                tabs.add(previewTab);
+                previewTabPane.getSelectionModel().select(previewTab);
+            });
+        }
     }
 
     public void convertToOdf(String name, Object obj) throws Exception {
@@ -1927,9 +1931,8 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     @FXML
     public void hideFileBrowser(ActionEvent actionEvent) {
-        splitPane.setDividerPositions(0, splitPane.getDividerPositions()[1]);
+        splitPane.setDividerPosition(0, 0);
         fileBrowserVisibility.setValue(true);
-
     }
 
     public void showFileBrowser() {
@@ -1938,20 +1941,22 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     }
 
-    @FXML
-    public void hidePreviewPanel(ActionEvent actionEvent) {
-        if (hidePreviewPanel.isSelected()) {
-            splitPane.setDividerPositions(splitPane.getDividerPositions()[0], 1);
-            previewPanelVisibility.setValue(true);
-        } else {
-            splitPane.setDividerPositions(splitPane.getDividerPositions()[0], 0.6);
-            previewPanelVisibility.setValue(false);
-        }
+    public void hidePreviewPanel() {
+        splitPane.setDividerPosition(1, 1);
+        previewPanelVisibility.setValue(true);
+    }
 
+    @FXML
+    public void togglePreviewPanel(ActionEvent actionEvent) {
+        if (hidePreviewPanel.isSelected()) {
+            hidePreviewPanel();
+        } else {
+            showPreviewPanel();
+        }
     }
 
     public void showPreviewPanel() {
-        splitPane.setDividerPositions(splitPane.getDividerPositions()[0], 0.6);
+        splitPane.setDividerPosition(1, 0.6);
         previewPanelVisibility.setValue(false);
         hidePreviewPanel.setSelected(false);
     }
@@ -1959,7 +1964,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     @FXML
     public void hideFileAndPreviewPanels(ActionEvent actionEvent) {
         hidePreviewPanel.setSelected(true);
-        hidePreviewPanel(actionEvent);
+        togglePreviewPanel(actionEvent);
         hideFileBrowser(actionEvent);
     }
 /*
@@ -1998,8 +2003,10 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         getRootAnchor().getChildren().remove(node);
     }
 
+    @FXML
     public void switchSlideView(ActionEvent actionEvent) {
         splitPane.setDividerPositions(0, 0.45);
+        fileBrowserVisibility.setValue(true);
     }
 
     public TabPane getPreviewTabPane() {

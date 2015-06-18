@@ -170,7 +170,7 @@ public class EditorService {
 
         ObservableList<DocumentMode> modeList = controller.getModeList();
 
-        MenuButton menuButton = new MenuButton("AsciiDoc");
+        MenuButton menuButton = new MenuButton("Doctype");
 
         Map<String, List<String>> modulus = modeList.stream()
                 .map(e -> e.getCaption())

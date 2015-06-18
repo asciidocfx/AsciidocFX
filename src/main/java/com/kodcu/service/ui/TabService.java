@@ -69,7 +69,8 @@ public class TabService {
                 directoryService.changeWorkigDir(path.equals(directoryService.workingDirectory()) ? path.getParent() : path);
             } else if (pathResolver.isImage(path)) {
                 addImageTab(path);
-
+            } else if (pathResolver.isHTML(path) || pathResolver.isAsciidoc(path) || pathResolver.isMarkdown(path)) {
+                addTab(path);
             } else if (pathResolver.isEpub(path)) {
                 controller.getHostServices()
                         .showDocument(String.format("http://localhost:%d/epub/viewer?path=%s", controller.getPort(), path.toString()));
@@ -79,11 +80,11 @@ public class TabService {
 
                 if ("".equals(extension) || supportedModes.contains(extension)) {
                     addTab(path);
+                    controller.hidePreviewPanel();
                 } else {
                     controller.getHostServices()
                             .showDocument(path.toUri().toString());
                 }
-
             }
         };
         directoryService.setOpenFileConsumer(openFileConsumer);
@@ -132,10 +133,9 @@ public class TabService {
                 threadService.runTaskLater(() -> {
                     String content = IOHelper.readFile(path);
                     threadService.runActionLater(() -> {
-                        window.call("setEditorValue", new Object[]{content});
+                        window.call("changeEditorMode",path.toUri().toString());
                         window.call("setInitialized");
-                        editorPane.changeEditorMode(path);
-//                        editorPane.getWebEngine().getLoadWorker().cancel();
+                        window.call("setEditorValue", new Object[]{content});
                     });
                 });
 
@@ -163,8 +163,6 @@ public class TabService {
         recentFiles.add(0, path.toString());
 
         editorPane.focus();
-        editorPane.changeEditorMode(tab.getPath());
-
     }
 
 
@@ -353,11 +351,11 @@ public class TabService {
 
     public void initializeTabChangeListener(TabPane tabPane) {
         ReadOnlyObjectProperty<Tab> itemProperty = tabPane.getSelectionModel().selectedItemProperty();
-        itemProperty.addListener((observable, oldValue, newValue) -> {
-            if (Objects.isNull(newValue))
+        itemProperty.addListener((observable, oldValue, selectedTab) -> {
+            if (Objects.isNull(selectedTab))
                 return;
             threadService.runActionLater(() -> {
-                EditorPane editorPane = ((MyTab) newValue).getEditorPane();
+                EditorPane editorPane = ((MyTab) selectedTab).getEditorPane();
                 if (Objects.nonNull(editorPane)) {
                     try {
                         editorPane.rerender();

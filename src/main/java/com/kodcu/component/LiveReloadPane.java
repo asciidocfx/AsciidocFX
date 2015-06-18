@@ -38,6 +38,7 @@ public class LiveReloadPane extends ViewPanel {
     @Autowired
     public LiveReloadPane(ThreadService threadService, ApplicationController controller, Current current) {
         super(threadService,controller,current);
+        this.webView.setContextMenuEnabled(true);
     }
 
     @Override

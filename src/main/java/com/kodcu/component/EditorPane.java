@@ -1,5 +1,6 @@
 package com.kodcu.component;
 
+import com.kodcu.controller.ApplicationController;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.ObservableList;
@@ -17,6 +18,7 @@ import javafx.util.Callback;
 import netscape.javascript.JSObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -31,17 +33,18 @@ import java.util.Objects;
 public class EditorPane extends AnchorPane {
 
     private final WebView webView;
-    private final WebEngine webEngine;
     private EventHandler<WebEvent<String>> readyHandler;
     private final Logger logger = LoggerFactory.getLogger(EditorPane.class);
+    private final ApplicationController controller;
     private String mode;
 
-    public EditorPane() {
+    @Autowired
+    public EditorPane(ApplicationController controller) {
+        this.controller = controller;
         this.webView = new WebView();
         this.webView.setContextMenuEnabled(false);
         this.getChildren().add(webView);
-        this.webEngine = webView.getEngine();
-        this.webEngine.setOnAlert(event -> {
+        webEngine().setOnAlert(event -> {
             if (Objects.nonNull(readyHandler))
                 readyHandler.handle(event);
         });
@@ -64,7 +67,7 @@ public class EditorPane extends AnchorPane {
     public void load(String url) {
         if (Objects.nonNull(url))
             Platform.runLater(() -> {
-                webEngine.load(url);
+                webEngine().load(url);
             });
         else
             logger.error("Url is not loaded. Reason: null reference");
@@ -83,7 +86,7 @@ public class EditorPane extends AnchorPane {
     }
 
     public String getLocation() {
-        return webEngine.getLocation();
+        return webEngine().getLocation();
     }
 
     public void setMember(String name, Object value) {
@@ -95,15 +98,15 @@ public class EditorPane extends AnchorPane {
     }
 
     public void whenStateSucceed(ChangeListener<Worker.State> stateChangeListener) {
-        webEngine.getLoadWorker().stateProperty().addListener(stateChangeListener);
+        webEngine().getLoadWorker().stateProperty().addListener(stateChangeListener);
     }
 
     public Object getMember(String name) {
         return getWindow().getMember(name);
     }
 
-    public WebEngine getWebEngine() {
-        return webEngine;
+    public WebEngine webEngine() {
+        return webView.getEngine();
     }
 
     public WebView getWebView() {
@@ -119,15 +122,15 @@ public class EditorPane extends AnchorPane {
     }
 
     public void confirmHandler(Callback<String, Boolean> confirmHandler) {
-        webEngine.setConfirmHandler(confirmHandler);
+        webEngine().setConfirmHandler(confirmHandler);
     }
 
     public JSObject getWindow() {
-        return (JSObject) webEngine.executeScript("window");
+        return (JSObject) webEngine().executeScript("window");
     }
 
     public String getEditorValue() {
-        return (String) webEngine.executeScript("editor.getValue()");
+        return (String) webEngine().executeScript("editor.getValue()");
     }
 
     public void switchMode(Object... args) {
@@ -144,12 +147,12 @@ public class EditorPane extends AnchorPane {
 
     public void moveCursorTo(Integer lineno) {
         if (Objects.nonNull(lineno))
-            webEngine.executeScript(String.format("editor.moveCursorTo(%d,0)", (lineno - 1)));
+            webEngine().executeScript(String.format("editor.moveCursorTo(%d,0)", (lineno - 1)));
     }
 
     public void changeEditorMode(Path path) {
         if (Objects.nonNull(path)) {
-            String mode = (String) this.call("changeEditorMode", path.toUri().toString());
+            String mode = (String) webEngine().executeScript(String.format("changeEditorMode('%s')", path.toUri().toString()));
             setMode(mode);
         }
     }

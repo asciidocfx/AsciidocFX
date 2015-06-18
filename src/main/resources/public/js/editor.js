@@ -15,7 +15,6 @@ editor.setScrollSpeed("0.1");
 editor.setTheme("ace/theme/ace");
 
 var lastEditorRow = 0;
-var initialized = false;
 var timeouter;
 var updateDelay = 100;
 
@@ -123,8 +122,7 @@ editor.getSession().selection.on('changeCursor', function (e) {
     }
 });
 
-editor.getSession().on('change', function (obj) {
-    if (initialized)
+var editorChangeListener = function (obj) {
         afx.appendWildcard();
 
     if (timeouter)
@@ -146,8 +144,7 @@ editor.getSession().on('change', function (obj) {
 
     }, updateDelay);
 
-});
-
+};
 
 function updateOptions() {
     editor.setOptions({
@@ -178,7 +175,7 @@ function switchMode(mode) {
 
 function changeEditorMode(filePath) {
     var mode = modelist.getModeForPath(filePath).mode;
-    editor.session.setMode(mode);
+    editor.getSession().setMode(mode);
 
     if ((mode == "ace/mode/html"))
         initializeEmmet(mode);
@@ -215,7 +212,7 @@ function editorMode() {
 }
 
 function setInitialized() {
-    initialized = true;
+    editor.getSession().on('change', editorChangeListener);
     editor.renderer.setScrollMargin(10, 10, 10, 10);
     updateStatusBox();
 }

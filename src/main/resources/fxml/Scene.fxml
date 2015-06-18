@@ -21,7 +21,7 @@
                           <MenuButton mnemonicParsing="false" fx:id="panelShowHideMenuButton" >
                               <items>
                                   <MenuItem mnemonicParsing="false" text="Hide File Browser" onAction="#hideFileBrowser" fx:id="hideFileBrowser" />
-                                  <CheckMenuItem mnemonicParsing="false" text="Hide Preview Panel" onAction="#hidePreviewPanel" fx:id="hidePreviewPanel" />
+                                  <CheckMenuItem mnemonicParsing="false" text="Hide Preview Panel" onAction="#togglePreviewPanel" fx:id="hidePreviewPanel" />
                                   <MenuItem mnemonicParsing="false" text="Full Editor" onAction="#hideFileAndPreviewPanels" />
                                   <MenuItem mnemonicParsing="false" text="Slide View" onAction="#switchSlideView" />
                               </items>
