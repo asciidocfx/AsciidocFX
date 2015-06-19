@@ -87,10 +87,13 @@ public class DocumentService {
                 for (String key : keySet) {
                     window.call("addNewCommand", new Object[]{key, shortCuts.get(key)});
                 }
+
+                window.call("setInitialized");
+
                 if (Objects.nonNull(content)) {
                     window.call("setEditorValue", new Object[]{content});
                 }
-                window.call("setInitialized");
+
             }
             return false;
         });

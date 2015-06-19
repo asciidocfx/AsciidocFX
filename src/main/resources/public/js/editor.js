@@ -15,6 +15,7 @@ editor.setScrollSpeed("0.1");
 editor.setTheme("ace/theme/ace");
 
 var lastEditorRow = 0;
+var afterFirstChange = false;
 var timeouter;
 var updateDelay = 100;
 
@@ -123,6 +124,8 @@ editor.getSession().selection.on('changeCursor', function (e) {
 });
 
 var editorChangeListener = function (obj) {
+
+    if (afterFirstChange)
         afx.appendWildcard();
 
     if (timeouter)
@@ -162,6 +165,7 @@ function setEditorValue(content) {
     editor.clearSelection();
     editor.session.setScrollTop(-100);
     editor.focus();
+    afterFirstChange = true;
 
 }
 
