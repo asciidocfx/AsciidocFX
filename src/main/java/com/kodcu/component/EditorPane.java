@@ -146,8 +146,10 @@ public class EditorPane extends AnchorPane {
     }
 
     public void moveCursorTo(Integer lineno) {
-        if (Objects.nonNull(lineno))
-            webEngine().executeScript(String.format("editor.moveCursorTo(%d,0)", (lineno - 1)));
+        if (Objects.nonNull(lineno)) {
+            webEngine().executeScript(String.format("editor.gotoLine(%d,-1,false)", (lineno)));
+            webEngine().executeScript(String.format("editor.scrollToLine(%d,false,false,function(){})", (lineno - 3)));
+        }
     }
 
     public void changeEditorMode(Path path) {
