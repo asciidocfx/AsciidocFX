@@ -12,4 +12,11 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface WebkitCall {
+
+    /**
+     * Defines the JS file from which the method called
+     *
+     * @return
+     */
+    String from() default "";
 }

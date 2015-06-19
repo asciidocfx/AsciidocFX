@@ -1190,7 +1190,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         }
     }
 
-    @WebkitCall
+    @WebkitCall(from = "index")
     public void fillOutlines(JSObject doc) {
         if (outlineTab.isSelected())
             threadService.runActionLater(() -> {
@@ -1198,12 +1198,12 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             });
     }
 
-    @WebkitCall
+    @WebkitCall(from = "index")
     public void clearOutline() {
         outlineList = new TreeSet<>();
     }
 
-    @WebkitCall
+    @WebkitCall(from = "index")
     public void finishOutline() {
 
         threadService.runTaskLater(() -> {
@@ -1264,7 +1264,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         }
     }
 
-    @WebkitCall
+    @WebkitCall(from = "index")
     public void fillOutline(String parentLineNo, String level, String title, String lineno, String id) {
 
         Section section = new Section();
