@@ -6,11 +6,9 @@ function getDefaultLanguage() {
 }
 
 function fillOutlines(doc) {
+    afx.clearOutline();
     var sections = doc.$sections();
     sections.forEach(function (section, i) {
-
-        if (i == 0)
-            afx.clearOutline();
 
         var level = section.$level();
         var title = section.$title();
@@ -18,23 +16,28 @@ function fillOutlines(doc) {
         var id = section.$id();
         var parentLineNo = lineno;
 
-        var subsections = section.$sections();
-
         afx.fillOutline(null, level, title, lineno, id);
+        fillOutlinesSubSections(section);
 
-        subsections.forEach(function (subsection) {
-            var level = subsection.$level();
-            var title = subsection.$title();
-            var lineno = subsection.$lineno();
-            var id = subsection.$id();
+    });
+    afx.finishOutline();
+}
 
-            afx.fillOutline(parentLineNo, level, title, lineno, id);
-        });
+function fillOutlinesSubSections(section) {
+    var sections = section.$sections();
+    var parentLineNo = section.$lineno();
+    sections.forEach(function (subsection, i) {
 
-        if (i == (sections.length-1))
-            afx.finishOutline();
+        var level = subsection.$level();
+        var title = subsection.$title();
+        var lineno = subsection.$lineno();
+        var id = subsection.$id();
+
+        afx.fillOutline(parentLineNo, level, title, lineno, id);
+        fillOutlinesSubSections(subsection);
     });
 }
+
 function convertBasicHtml(content) {
 
     afx.setBasicMode(true);

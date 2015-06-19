@@ -1213,7 +1213,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                 TreeItem<Section> rootItem = new TreeItem<>();
                 rootItem.setExpanded(true);
                 Section rootSection = new Section();
-                rootSection.setLevel(0);
+                rootSection.setLevel(-1);
                 String outlineTitle = "Outline";
                 rootSection.setTitle(outlineTitle);
 
@@ -1231,13 +1231,14 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             sectionTreeView.getRoot().getChildren().clear();
 
             for (Section section : outlineList) {
-
                 TreeItem<Section> sectionItem = new TreeItem<>(section);
                 sectionTreeView.getRoot().getChildren().add(sectionItem);
 
                 TreeSet<Section> subsections = section.getSubsections();
                 for (Section subsection : subsections) {
-                    sectionItem.getChildren().add(new TreeItem<>(subsection));
+                    TreeItem<Section> subItem = new TreeItem<>(subsection);
+                    sectionItem.getChildren().add(subItem);
+                    this.addSubSections(subItem, subsection.getSubsections());
                 }
             }
 
@@ -1247,6 +1248,20 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                 });
         });
 
+    }
+
+    private void addSubSections(TreeItem<Section> subItem, TreeSet<Section> outlineList) {
+        for (Section section : outlineList) {
+            TreeItem<Section> sectionItem = new TreeItem<>(section);
+            subItem.getChildren().add(sectionItem);
+
+            TreeSet<Section> subsections = section.getSubsections();
+            for (Section subsection : subsections) {
+                TreeItem<Section> item = new TreeItem<>(subsection);
+                sectionItem.getChildren().add(item);
+                this.addSubSections(item, subsection.getSubsections());
+            }
+        }
     }
 
     @WebkitCall
@@ -1265,12 +1280,26 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             Optional<Section> parentSection = outlineList.stream()
                     .filter(e -> e.getLineno().equals(parentLine))
                     .findFirst();
-            parentSection.ifPresent(sec -> {
-                sec.getSubsections().add(section);
-            });
 
+            if (parentSection.isPresent())
+                parentSection.get().getSubsections().add(section);
+            else {
+                this.traverseEachSubSection(outlineList, parentLine, section);
+            }
         }
+    }
 
+    private void traverseEachSubSection(TreeSet<Section> sections, Integer parentLine, Section section) {
+        sections.stream().forEach(s -> {
+            Optional<Section> subs = s.getSubsections().stream()
+                    .filter(e -> e.getLineno().equals(parentLine))
+                    .findFirst();
+
+            if (subs.isPresent())
+                subs.get().getSubsections().add(section);
+            else
+                this.traverseEachSubSection(s.getSubsections(), parentLine, section);
+        });
     }
 
     @FXML

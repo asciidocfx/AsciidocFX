@@ -65,9 +65,9 @@ public class Section implements Comparable<Section> {
 
     @Override
     public String toString() {
-        if(level==0)
+        if (level == -1)
             return String.format("%s", title);
 
-        return String.format("H%d - %s", level, title);
+        return String.format("H%d - %s", level + 1, title);
     }
 }
