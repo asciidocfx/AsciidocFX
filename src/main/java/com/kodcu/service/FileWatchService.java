@@ -6,7 +6,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import java.nio.file.*;
+import java.io.IOException;
+import java.nio.file.FileSystems;
+import java.nio.file.Path;
+import java.nio.file.WatchKey;
+import java.nio.file.WatchService;
 import java.util.Objects;
 import java.util.function.BiConsumer;
 
@@ -23,6 +27,7 @@ public class FileWatchService {
 
     private WatchService watcher = null;
     private Path lastWatchedPath;
+    private WatchKey watckKey;
 
     public void registerWatcher(TreeView<Item> treeView, Path path, BiConsumer<TreeView<Item>, Path> browseCallback) {
         try {
@@ -39,13 +44,25 @@ public class FileWatchService {
                 path.register(watcher, ENTRY_CREATE, ENTRY_DELETE);
             }
 
-            WatchKey watckKey = watcher.take();
+            this.watckKey = watcher.take();
             watckKey.pollEvents();
             watckKey.reset();
-            browseCallback.accept(treeView, path);
+            if (watckKey.isValid()) {
+                browseCallback.accept(treeView, path);
+            }
 
         } catch (Exception e) {
             logger.info("Could not register watcher for path: {}", path, e);
+        }
+    }
+
+    public void invalidate() {
+        if(Objects.nonNull(watcher)){
+            try {
+                watcher.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 }
