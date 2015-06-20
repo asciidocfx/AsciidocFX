@@ -1,0 +1,557 @@
+@import url(https://fonts.googleapis.com/css?family=Lato:300,400,700,900,300italic,400italic,700italic,900italic);
+@import url(https://fonts.googleapis.com/css?family=Inconsolata:400,700);
+/**
+ * Poang theme for reveal.js.
+ *
+ * Based on the league theme from reveal.js (copyright (C) 2011-2012 Hakim El Hattab, http://hakim.se)
+ *
+ * Copyright (C) 2015 Dan Allen
+ */
+body {
+  background-color: #2b2b2b;
+}
+
+.reveal {
+  font-family: "Lato", sans-serif;
+  font-size: 2.25rem;
+  font-weight: normal;
+  color: #eee;
+}
+
+::selection {
+  color: #fff;
+  background-color: #ff5e99;
+  background-color: #1aacc7;
+  text-shadow: none;
+}
+
+.reveal .slides > section,
+.reveal .slides > section > section {
+  line-height: 1.3;
+  font-weight: inherit;
+}
+
+.reveal h1,
+.reveal h2,
+.reveal h3,
+.reveal h4,
+.reveal h5,
+.reveal h6 {
+  margin: 0 0 20px 0;
+  color: #eee;
+  font-family: 'Lato', sans-serif;
+  font-weight: 900;
+  line-height: 1.2;
+  letter-spacing: normal;
+  text-transform: uppercase;
+  text-shadow: 0px 0px 6px rgba(0, 0, 0, 0.2);
+  /*word-wrap: break-word;*/
+}
+
+.reveal h1 {
+  /*font-size: 3.052em;*/
+  /*font-size: 2.441em;*/
+  font-size: 1.953em;
+  /*text-shadow: 0 1px 0 #ccc, 0 2px 0 #c9c9c9, 0 3px 0 #bbb, 0 4px 0 #b9b9b9, 0 5px 0 #aaa, 0 6px 1px rgba(0, 0, 0, 0.1), 0 0 5px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.3), 0 3px 5px rgba(0, 0, 0, 0.2), 0 5px 10px rgba(0, 0, 0, 0.25), 0 20px 20px rgba(0, 0, 0, 0.15);*/
+  font-weight: 300;
+  /*text-transform: none;*/
+  text-align: left;
+}
+
+.reveal h1 + p {
+  text-align: right;
+}
+
+.reveal h1 strong {
+  color: #71ebf4;
+  color: #abc34a;
+  /*
+  line-height: 1;
+  font-size: 1.25em;
+  */
+
+  /*text-transform: none;*/
+}
+
+.reveal h2 {
+  font-size: 1.5em;
+}
+
+.reveal h3 {
+  font-size: 1.563em;
+}
+
+.reveal h4 {
+  font-size: 1.25em;
+}
+
+.reveal h5 {
+  font-size: 1em;
+}
+
+.reveal p {
+  margin: 20px 0;
+  line-height: 1.3;
+}
+
+/* Ensure certain elements are never larger than the slide itself */
+.reveal img,
+.reveal video,
+.reveal iframe {
+  max-width: 95%;
+  max-height: 580px;
+}
+
+.reveal strong,
+.reveal b {
+  font-weight: bold;
+}
+
+.reveal em {
+  font-style: italic;
+}
+
+.reveal ol,
+.reveal dl,
+.reveal ul {
+  display: inline-block;
+  text-align: left;
+  margin: 0 0 0 1em;
+}
+
+.reveal ol {
+  list-style-type: decimal;
+}
+
+.reveal ul {
+  list-style-type: disc;
+}
+
+.reveal ul ul {
+  list-style-type: square;
+}
+
+.reveal ul ul ul {
+  list-style-type: circle;
+}
+
+.reveal ul ul,
+.reveal ul ol,
+.reveal ol ol,
+.reveal ol ul {
+  display: block;
+  margin-left: 40px;
+}
+
+.reveal dt {
+  font-weight: bold;
+}
+
+.reveal dd {
+  margin-left: 40px;
+}
+
+.reveal blockquote,
+.reveal q {
+  quotes: none;
+}
+
+/* FIXME quotes won't work for blockquotes with paragraph content */
+.reveal blockquote::before,
+.reveal blockquote::after {
+  font-size: 1.1em;
+  line-height: 0.8em;
+  color: #71ebf4;
+  color: #abc34a;
+}
+
+.reveal blockquote::before {
+  content: '“';
+  padding-right: 0.1ex;
+}
+
+.reveal blockquote::after {
+  content: '”';
+  padding-left: 0.1ex;
+}
+
+.reveal blockquote {
+  display: block;
+  position: relative;
+  width: 70%;
+  margin: 20px auto;
+  padding: 5px;
+  font-style: italic;
+  /*background: rgba(255, 255, 255, 0.05);
+  box-shadow: 0px 0px 2px rgba(0, 0, 0, 0.2);*/
+  font-size: 4.5rem;
+  width: 100%;
+  line-height: 1.1;
+  word-spacing: 0.25ex;
+  letter-spacing: -0.025ex;
+}
+
+.reveal blockquote p:first-child,
+.reveal blockquote p:last-child {
+  display: inline-block;
+}
+
+.reveal q {
+  font-style: italic;
+}
+
+.reveal pre {
+  display: block;
+  position: relative;
+  width: 90%;
+  margin: 20px auto;
+  text-align: left;
+  font-size: 1.575rem;
+  font-family: Inconsolata, monospace;
+  line-height: 1.3;
+  word-wrap: break-word;
+  box-shadow: 0px 0px 6px rgba(0, 0, 0, 0.3);
+}
+
+.reveal code {
+  font-family: Inconsolata, monospace;
+  font-size: 0.9em;
+}
+
+.reveal pre code {
+  font-size: 1em;
+  display: block;
+  padding: 0.5ex;
+  overflow: auto;
+  /*max-height: 500px;*/
+  word-wrap: normal;
+  /*
+  background: #3f3f3f;
+  color: #dcdcdc;
+  */
+  color: #2b2b2b;
+  /*background: #eee;*/
+  background: #f9fcfc;
+}
+
+.reveal .condense pre code {
+  font-size: 0.85em;
+}
+
+.reveal table {
+  margin: auto;
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+.reveal table th {
+  font-weight: bold;
+}
+
+.reveal table th,
+.reveal table td {
+  text-align: left;
+  padding: 0.2em 0.5em 0.2em 0.5em;
+  border-bottom: 1px solid;
+}
+
+.reveal table tr:last-child td {
+  border-bottom: none;
+}
+
+.reveal sup {
+  vertical-align: super;
+}
+
+.reveal sub {
+  vertical-align: sub;
+}
+
+.reveal small {
+  display: inline-block;
+  font-size: 0.6em;
+  line-height: 1.2;
+  vertical-align: top;
+}
+
+.reveal small * {
+  vertical-align: top;
+}
+
+.reveal a {
+  color: #13daec;
+  color: #abc34a;
+  color: #d77933;
+  text-decoration: none;
+  -webkit-transition: color 0.15s ease;
+  -moz-transition: color 0.15s ease;
+  transition: color 0.15s ease;
+}
+
+.reveal a:hover {
+  color: #71ebf4;
+  color: #abc34a;
+  text-shadow: none;
+  border: none;
+}
+
+.reveal .roll span:after {
+  color: #fff;
+  background: #0d9ba5;
+}
+
+.reveal section img {
+  margin: 15px 0px;
+  /*background: rgba(255, 255, 255, 0.12);
+  border: 4px solid #eee;*/
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
+}
+
+.reveal .imageblock.ui-window img {
+  border-radius: 5px;
+}
+
+.reveal a img {
+  -webkit-transition: all 0.15s linear;
+  -moz-transition: all 0.15s linear;
+  transition: all 0.15s linear;
+}
+
+.reveal a:hover img {
+  /*background: rgba(255, 255, 255, 0.2);
+  border-color: #13DAEC;*/
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.55);
+}
+
+.reveal .controls div.navigate-left,
+.reveal .controls div.navigate-left.enabled {
+  border-right-color: #13daec;
+}
+
+.reveal .controls div.navigate-right,
+.reveal .controls div.navigate-right.enabled {
+  border-left-color: #13daec;
+}
+
+.reveal .controls div.navigate-up,
+.reveal .controls div.navigate-up.enabled {
+  border-bottom-color: #13daec;
+}
+
+.reveal .controls div.navigate-down,
+.reveal .controls div.navigate-down.enabled {
+  border-top-color: #13daec;
+}
+
+.reveal .controls div.navigate-left.enabled:hover {
+  border-right-color: #71ebf4;
+}
+
+.reveal .controls div.navigate-right.enabled:hover {
+  border-left-color: #71ebf4;
+}
+
+.reveal .controls div.navigate-up.enabled:hover {
+  border-bottom-color: #71ebf4;
+}
+
+.reveal .controls div.navigate-down.enabled:hover {
+  border-top-color: #71ebf4;
+}
+
+.reveal .progress {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.reveal .progress span {
+  background: #13daec;
+  -webkit-transition: width 800ms cubic-bezier(0.26, 0.86, 0.44, 0.985);
+  -moz-transition: width 800ms cubic-bezier(0.26, 0.86, 0.44, 0.985);
+  transition: width 800ms cubic-bezier(0.26, 0.86, 0.44, 0.985);
+}
+
+.reveal .slide-number {
+  color: #13daec;
+}
+
+.reveal i.fa {
+  font-family: FontAwesome;
+  font-style: normal;
+}
+
+.reveal .listingblock pre code {
+  max-height: 600px;
+}
+
+.reveal h2 + .listingblock pre code {
+  max-height: 500px;
+}
+
+.reveal .push-right {
+  width: 75%;
+  margin-left: auto;
+  margin-right: 0;
+}
+
+.listingblock.push-right pre {
+  width: 100%;
+}
+
+td.valign-top {
+  vertical-align: top;
+}
+
+/* FIXME a bit of a hack */
+.reveal .icon.illuminate {
+  color: #71ebf4;
+  color: #abc34a;
+  color: #53B6BC;
+  margin-bottom: 0.2em;
+  font-size: 5rem;
+  display: inline-block;
+}
+
+.tableblock.emblems td.tableblock,
+.tableblock.icons td.tableblock {
+  text-align: center;
+}
+
+.tableblock.emblems .icon,
+.tableblock.icons .icon {
+  color: #71ebf4;
+  color: #abc34a;
+  color: #53B6BC;
+  display: inline-block;
+  font-size: 5rem;
+  height: 2em;
+  width: 2em;
+  line-height: 2;
+  border: 2px solid #eee;
+  border-radius: 2em;
+  margin-bottom: 0.2em;
+}
+
+.tableblock.compare td.tableblock {
+  text-align: center;
+}
+
+.tableblock.compare td:first-of-type {
+  border-right: 1px solid #eee;
+}
+
+.reveal .proper * {
+  text-transform: none;
+}
+
+/* FIXME a bit of a hack */
+.title-subtitle {
+  text-align: left;
+}
+
+.title-subtitle .subtitle {
+  text-transform: none;
+  font-size: 1.25em;
+  margin-top: -0.5em;
+  font-weight: normal;
+}
+
+.text-left {
+  text-align: left;
+  display: inline-block;
+}
+
+.text-right {
+  text-align: right;
+}
+
+.reveal .size-3x {
+  font-size: 3em;
+}
+
+.reveal section.interjection h2 {
+  color: #71ebf4;
+  color: #abc34a;
+}
+
+.reveal .illuminate {
+  color: #53B6BC;
+}
+
+.reveal .light {
+  font-weight: 300;
+}
+
+.reveal .lead p {
+  font-size: 1.25em;
+  line-height: 1.5;
+  /*font-weight: 300;*/
+}
+
+.reveal .title {
+  text-align: center;
+}
+
+.reveal .exampleblock {
+  display: inline-block;
+  border-radius: 1ex;
+  padding: 0 0.75em;
+  font-size: 0.7em;
+  /*
+  border: 1px solid #eee;
+  color: #dcdcdc;
+  */
+  color: #3f3f3f;
+  background-color: #dcdcdc;
+}
+
+ul.no-bullet {
+  margin: 0;
+  text-align: center;
+}
+
+ul.no-bullet li {
+  list-style: none;
+}
+
+/* usage planned */
+/*
+section.topic {
+  background-color: #b81652;
+}
+*/
+
+.reveal span.atten {
+  opacity: 0.75;
+}
+
+.reveal span.delete {
+  text-decoration: line-through;
+}
+
+.reveal h2 .fa {
+  padding: 0 0.1em;
+}
+
+.reveal section.masked h2 {
+  background-color: rgba(0,0,0,0.33);
+  -webkit-transform: translateY(50%);
+  padding: 0.5em 0;
+  width: 100%;
+}
+
+.reveal p.authors .name,
+.reveal p.authors .email {
+/*.reveal p.authors .separator*/
+  padding: 0 3px;
+}
+
+.reveal .slides > section:first-of-type h1,
+.reveal .slides section.mask h2 {
+  line-height: 1.2;
+  font-size: 2em;
+  width: 100%;
+  padding: 0.5em 0 0.25em 0;
+  background-color: rgba(25,25,25,0.9);
+  border-top: 2px solid #191919;
+  border-bottom: 2px solid #191919;
+}

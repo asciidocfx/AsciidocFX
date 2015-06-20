@@ -1,0 +1,9 @@
+div.ollist(id=id,class=[style, role])
+    if title
+        div.title  !{title}
+    ol(class=style,start=attr.start,type=list_marker_keyword)
+        each item in items
+            li(class=[(option.step || role.step) ? "fragment" : ""])
+                p !{item.text}
+                if item.blocks
+                     !{item.content}

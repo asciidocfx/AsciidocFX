@@ -1,0 +1,12 @@
+if role == "aside" || role == "speaker"
+    aside.notes !{content}
+else
+    div.admonitionblock(id=id)
+        table
+            tr
+                td.icon
+                    i(class="icon-#{attr.name}",title=caption)
+                td.content
+                    if title
+                        div.title !{title}
+                    !{content}

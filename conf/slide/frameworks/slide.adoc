@@ -1,0 +1,13 @@
+include::_settings_reveal.adoc[]
+
+// include::_settings_deck.adoc[]
+
+= Slide Title
+
+== Slide 1
+
+Slide 1 Content
+
+== Slide 2
+
+Slide 2 Content
