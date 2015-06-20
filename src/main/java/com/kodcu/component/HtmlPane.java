@@ -1,6 +1,7 @@
 package com.kodcu.component;
 
 import com.kodcu.controller.ApplicationController;
+import com.kodcu.other.ConverterResult;
 import com.kodcu.other.Current;
 import com.kodcu.other.IOHelper;
 import com.kodcu.service.ThreadService;
@@ -82,7 +83,7 @@ public class HtmlPane extends ViewPanel {
 
     public String getTemplate(String templateName, String templateDir) throws IOException {
 
-        Stream<Path> slide = Files.find(controller.getConfigPath().resolve("slide").resolve(templateDir), Integer.MAX_VALUE, (path, basicFileAttributes) -> path.toString().contains(templateName));
+        Stream<Path> slide = Files.find(controller.getConfigPath().resolve("slide/templates").resolve(templateDir), Integer.MAX_VALUE, (path, basicFileAttributes) -> path.toString().contains(templateName));
 
         Optional<Path> first = slide.findFirst();
 
@@ -122,5 +123,21 @@ public class HtmlPane extends ViewPanel {
 
     public void fillOutlines(JSObject doc) {
         getWindow().call("fillOutlines",doc);
+    }
+
+    public ConverterResult convertAsciidoc(String asciidoc) {
+        this.setMember("editorValue", asciidoc);
+        JSObject result = (JSObject) webEngine().executeScript("convertAsciidoc(editorValue)");
+
+        String rendered = (String) result.getMember("rendered");
+        String backend = (String) result.getMember("backend");
+        String doctype = (String) result.getMember("doctype");
+
+        ConverterResult converterResult = new ConverterResult();
+        converterResult.setRendered(rendered);
+        converterResult.setBackend(backend);
+        converterResult.setDoctype(doctype);
+
+        return converterResult;
     }
 }

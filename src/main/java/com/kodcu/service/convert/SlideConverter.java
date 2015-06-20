@@ -55,11 +55,10 @@ public class SlideConverter implements DocumentConverter<String> {
         return slideType;
     }
 
-    @Override
-    public void convert(boolean askPath, Consumer<String>... nextStep) {
+    public void convert(String rendered,Consumer<String>... nextStep) {
         threadService.runActionLater(() -> {
 
-            this.rendered = htmlPane.convertSlide(current.currentEditorValue());
+            this.rendered = rendered;
 
             if (Objects.isNull(slidePane.getLocation())) {
                 slidePane.load(String.format("http://localhost:%d/slide/index.slide", controller.getPort()));
@@ -78,5 +77,10 @@ public class SlideConverter implements DocumentConverter<String> {
 
     public String getRendered() {
         return rendered;
+    }
+
+    @Override
+    public void convert(boolean askPath, Consumer<String>... nextStep) {
+        throw new RuntimeException("Not implemented");
     }
 }

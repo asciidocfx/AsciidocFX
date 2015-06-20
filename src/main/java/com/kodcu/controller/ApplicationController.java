@@ -331,6 +331,10 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     private LiveReloadPane liveReloadPane;
     private List<String> supportedModes;
 
+    @Autowired
+    private FileWatchService fileWatchService;
+    private PreviewTab previewTab;
+
     public void createAsciidocTable() {
         asciidocTableStage.showAndWait();
     }
@@ -549,6 +553,13 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
         port = server.getEmbeddedServletContainer().getPort();
 
+        this.previewTab = new PreviewTab("Preview", htmlPane);
+
+        threadService.runActionLater(() -> {
+            previewTabPane.getTabs().add(previewTab);
+        });
+
+        // Hide tab if one in tabpane
         previewTabPane.getTabs().addListener((ListChangeListener) change -> {
             final StackPane header = (StackPane) previewTabPane.lookup(".tab-header-area");
 
@@ -1415,112 +1426,68 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         return optMap;
     }
 
+    @WebkitCall(from = "editor")
     public void appendWildcard() {
         String currentTabText = current.getCurrentTabText();
         if (!currentTabText.contains(" *"))
             current.setCurrentTabText(currentTabText + " *");
     }
 
-    @WebkitCall
+    @WebkitCall(from = "editor")
     public void textListener(String text, String mode) {
 
         threadService.runTaskLater(() -> {
 
-            boolean currentIsSlide = current.currentIsSlide();
+            threadService.runActionLater(() -> {
 
-            if ("asciidoc".equalsIgnoreCase(mode)) {
+                if ("asciidoc".equalsIgnoreCase(mode)) {
 
-                checkTabAndAdd("HTML", htmlPane);
+                    ConverterResult result = htmlPane.convertAsciidoc(text);
 
-                threadService.runActionLater(() -> {
-                    String rendered = htmlPane.convertBasicHtml(text);
-                    if (Objects.nonNull(rendered))
-                        lastRendered.setValue(rendered);
-                });
+                    result.isBackend("html5", lastRendered::setValue, () -> {
+                        previewTab.setContent(htmlPane);
+                    });
+                    result.isBackend("slide", slideConverter::convert, () -> {
+                        previewTab.setContent(slidePane);
+                    });
 
-                checkTabAndSelect("HTML");
 
-            }
+                } else if ("html".equalsIgnoreCase(mode)) {
 
-            if ("asciidoc".equalsIgnoreCase(mode)) {
+                    if (Objects.isNull(liveReloadPane.getLocation())) {
+                        liveReloadPane.setOnSuccess(() -> {
+                            liveReloadPane.setMember("afx", this);
+                            liveReloadPane.initializeDiffReplacer();
+                        });
+                        liveReloadPane.load(String.format("http://localhost:%d/livereload/index.reload", port));
+                    } else {
+                        liveReloadPane.updateDomdom();
+                    }
 
-                if (currentIsSlide) {
+                    previewTab.setContent(liveReloadPane);
 
-                    checkTabAndAdd("Slide", slidePane);
-
-                    slideConverter.convert(false);
-
-                    checkTabAndSelect("Slide");
-
-                }
-            }
-
-            if ("markdown".equalsIgnoreCase(mode)) {
-
-                checkTabAndAdd("HTML", htmlPane);
-
-                threadService.runTaskLater(() -> {
+                } else if ("markdown".equalsIgnoreCase(mode)) {
                     markdownService.convertToAsciidoc(text, asciidoc -> {
                         threadService.runActionLater(() -> {
-                            String rendered = htmlPane.convertBasicHtml(asciidoc);
-                            if (Objects.nonNull(rendered))
-                                lastRendered.setValue(rendered);
+                            ConverterResult result = htmlPane.convertAsciidoc(asciidoc);
+                            result.afterRender(lastRendered::setValue);
                         });
                     });
-                });
-
-                checkTabAndSelect("HTML");
-            }
-
-            if ("html".equalsIgnoreCase(mode)) {
-
-                checkTabAndAdd("Live Reload", liveReloadPane);
-
-                if (Objects.isNull(liveReloadPane.getLocation())) {
-                    liveReloadPane.setOnSuccess(() -> {
-                        liveReloadPane.setMember("afx", this);
-                        liveReloadPane.initializeDiffReplacer();
-                    });
-                    liveReloadPane.load(String.format("http://localhost:%d/livereload/index.reload", port));
-                } else {
-                    liveReloadPane.updateDomdom();
+                    previewTab.setContent(htmlPane);
                 }
 
-                checkTabAndSelect("Live Reload");
+            });
 
-            }
         });
     }
 
-    private void checkTabAndSelect(String tabText) {
-        previewTabPane.getTabs().stream()
-                .filter(t -> !t.isSelected())
-                .filter(t -> tabText.equals(t.getText()))
-                .findFirst()
-                .ifPresent(tab -> {
-                    threadService.runActionLater(() -> {
-                        previewTabPane.getSelectionModel().select(tab);
-                    });
-                });
-
-    }
-
-    private void checkTabAndAdd(String text, AnchorPane anchorPane) {
-        ObservableList<Tab> tabs = previewTabPane.getTabs();
-        if (!tabs.contains(new PreviewTab(text))) {
-            threadService.runActionLater(() -> {
-                PreviewTab previewTab = new PreviewTab(text, anchorPane);
-                tabs.add(previewTab);
-                previewTabPane.getSelectionModel().select(previewTab);
-            });
-        }
-    }
-
+    @WebkitCall
     public void convertToOdf(String name, Object obj) throws Exception {
         JSObject jObj = (JSObject) obj;
         odfConverter.buildDocument(name, jObj);
     }
 
+    @WebkitCall
     public String getTemplate(String templateName, String templateDir) throws IOException {
         return htmlPane.getTemplate(templateName, templateDir);
     }
@@ -1537,10 +1504,12 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         clipboard.setContent(clipboardContent);
     }
 
+    @WebkitCall(from = "asciidoctor")
     public String readAsciidoctorResource(String uri, Integer parent) {
 
-        if (uri.matches(".*?\\.(asc|adoc|ad|asciidoc|md|markdown)") && isBasicMode())
-            return String.format("link:%s[]", uri);
+        if (!current.currentIsSlide())
+            if (uri.matches(".*?\\.(asc|adoc|ad|asciidoc|md|markdown)") && isBasicMode())
+                return String.format("link:%s[]", uri);
 
         final CompletableFuture<String> completableFuture = new CompletableFuture();
 
@@ -1564,6 +1533,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         return clipboard.getString();
     }
 
+    @WebkitCall
     public void pasteRaw() {
 
         JSObject editor = (JSObject) current.currentEngine().executeScript("editor");
@@ -1578,6 +1548,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         editor.call("insert", clipboard.getString());
     }
 
+    @WebkitCall
     public void paste() {
 
         JSObject window = (JSObject) htmlPane.webEngine().executeScript("window");
@@ -2040,5 +2011,34 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     public TabPane getPreviewTabPane() {
         return previewTabPane;
+    }
+
+    @FXML
+    public void newSlide(ActionEvent actionEvent) {
+
+        DialogBuilder dialog = DialogBuilder.newFolderDialog();
+
+        dialog.showAndWait().ifPresent(folderName -> {
+            if (dialog.isShowing())
+                dialog.hide();
+
+            if (folderName.matches(DialogBuilder.FOLDER_NAME_REGEX)) {
+
+                Path path = treeView.getSelectionModel().getSelectedItem()
+                        .getValue().getPath();
+
+                Path folderPath = path.resolve(folderName);
+
+                // it needs to invalidate file watchservice
+                fileWatchService.invalidate();
+
+                threadService.runTaskLater(() -> {
+                    IOHelper.createDirectory(folderPath);
+                    IOHelper.copyDirectory(configPath.resolve("slide/frameworks"), folderPath);
+                    directoryService.changeWorkigDir(folderPath);
+                });
+            }
+        });
+
     }
 }

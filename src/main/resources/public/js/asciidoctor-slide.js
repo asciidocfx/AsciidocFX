@@ -43,6 +43,7 @@ var templateMap = {
                     obj.id = node.$id ? node.$id() : null;
                     obj.columns = node.$columns ? node.$columns() : [];
                     obj.rows = node.$rows ? node.$rows() : [];
+                    obj.captioned_title = node.$captioned_title ? node.$captioned_title() :null;
                     obj.attr = {};
 
                     obj.disregard = function (arr1, arr2) {
@@ -85,7 +86,7 @@ var templateMap = {
                     //    deckjs: {}
                     //};
 
-                    window.slideType = obj.document.attr["slide-type"] == "deckjs" ? "deckjs" : "revealjs";
+                    window.slideType = obj.document.attr["doctype"] == "deckjs" ? "deckjs" : "revealjs";
                     var map = templateMap[window.slideType];
 
                     if (!map)

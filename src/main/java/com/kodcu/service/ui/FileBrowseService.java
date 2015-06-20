@@ -33,11 +33,11 @@ public class FileBrowseService {
     private final PathResolverService pathResolver;
     private final AwesomeService awesomeService;
     private final FileWatchService watchService;
-    
+
     private TreeItem<Item> rootItem;
-    
+
     private Integer lastSelectedItem;
-    
+
     @Autowired
     public FileBrowseService(final PathOrderService pathOrder, final ThreadService threadService, final PathResolverService pathResolver,
             final AwesomeService awesomeService, final FileWatchService watchService) {

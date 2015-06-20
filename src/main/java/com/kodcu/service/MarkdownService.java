@@ -53,18 +53,20 @@ public class MarkdownService {
 
     public void convertToAsciidoc(String content, Consumer<String> next) {
 
-        if (Objects.isNull(content))
-            return;
+        threadService.runTaskLater(()->{
+            if (Objects.isNull(content))
+                return;
 
-        Object eval = "";
-        try {
-            Invocable invocable = (Invocable) js;
-            eval = invocable.invokeFunction("markdownToAsciidoc", content);
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            next.accept((String) eval);
-        }
+            Object eval = "";
+            try {
+                Invocable invocable = (Invocable) js;
+                eval = invocable.invokeFunction("markdownToAsciidoc", content);
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                next.accept((String) eval);
+            }
+        });
 
     }
 
