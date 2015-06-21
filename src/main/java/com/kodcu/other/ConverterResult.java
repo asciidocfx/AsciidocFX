@@ -1,5 +1,7 @@
 package com.kodcu.other;
 
+import netscape.javascript.JSObject;
+
 import java.util.Objects;
 import java.util.function.Consumer;
 
@@ -10,6 +12,16 @@ public class ConverterResult {
     private String rendered;
     private String backend;
     private String doctype;
+
+    public ConverterResult(JSObject jsObject) {
+        String rendered = (String) jsObject.getMember("rendered");
+        String backend = (String) jsObject.getMember("backend");
+        String doctype = (String) jsObject.getMember("doctype");
+
+        setRendered(rendered);
+        setBackend(backend);
+        setDoctype(doctype);
+    }
 
     public void setRendered(String rendered) {
         this.rendered = rendered;

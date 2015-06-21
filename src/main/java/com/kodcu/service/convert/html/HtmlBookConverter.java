@@ -5,23 +5,18 @@ import com.kodcu.controller.ApplicationController;
 import com.kodcu.other.Current;
 import com.kodcu.other.IOHelper;
 import com.kodcu.service.DirectoryService;
-import com.kodcu.service.MarkdownService;
+import com.kodcu.service.convert.markdown.MarkdownService;
 import com.kodcu.service.ThreadService;
 import com.kodcu.service.convert.DocumentConverter;
 import com.kodcu.service.convert.Traversable;
 import com.kodcu.service.ui.IndikatorService;
-import javafx.scene.web.WebEngine;
-import javafx.scene.web.WebView;
 import javafx.stage.FileChooser;
-import netscape.javascript.JSObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.nio.file.Path;
-import java.util.Arrays;
-import java.util.List;
 import java.util.function.Consumer;
 import java.util.regex.Pattern;
 
@@ -70,16 +65,11 @@ public class HtmlBookConverter implements Traversable,DocumentConverter<String> 
             final Path currentTabPathDir = currentTabPath.getParent();
             final String tabText = current.getCurrentTabText().replace("*", "").trim();
 
-//            List<String> bookAscLines = Arrays.asList(current.currentEditorValue().split("\\r?\\n"));
-//            StringBuffer allAscChapters = new StringBuffer();
-//            traverseLines(bookAscLines, allAscChapters, currentTabPathDir);
+            final String asciidoc = current.currentEditorValue();
 
-            final String bookXmlAsciidoc = current.currentEditorValue();
-
-            markdownService.convert(bookXmlAsciidoc, asciidoc -> {
                 threadService.runActionLater(() -> {
 
-                    String rendered = htmlPane.convertHtmlBook(asciidoc);
+                    String rendered = htmlPane.convertHtml(asciidoc).getRendered();
 
                     if (askPath) {
                         final FileChooser fileChooser = directoryService.newFileChooser("Save HTML file");
@@ -99,8 +89,6 @@ public class HtmlBookConverter implements Traversable,DocumentConverter<String> 
 
                     indikatorService.completeCycle();
                 });
-            });
-
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
         } finally {

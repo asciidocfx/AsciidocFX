@@ -69,6 +69,76 @@ function convertAsciidoc(content) {
     };
 }
 
+function convertOdf(content) {
+
+    var options = Opal.hash2(['backend', 'safe', 'attributes'], {
+        backend: 'odf',
+        safe: 'safe',
+        attributes: 'showtitle icons=font@ source-highlighter=highlight.js platform=opal platform-opal env=browser env-browser idprefix idseparator=- '
+    });
+
+    var doc = Opal.Asciidoctor.$load(content, options);
+
+    doc.attributes.keys["lang"] = doc.attributes.keys["lang"] || getDefaultLanguage();
+
+    return doc.$convert();
+}
+
+function convertSlide(content) {
+
+    var options = Opal.hash2(['backend', 'safe', 'attributes'], {
+        backend: 'slide',
+        safe: 'safe',
+        attributes: 'showtitle icons=font@ source-highlighter=highlight.js platform=opal platform-opal env=browser env-browser idprefix idseparator=- '
+    });
+
+    var doc = Opal.Asciidoctor.$load(content, options);
+
+    doc.attributes.keys["lang"] = doc.attributes.keys["lang"] || getDefaultLanguage();
+
+    return doc.$convert();
+}
+
+function convertHtml(content) {
+
+    var options = Opal.hash2(['backend', 'safe', 'attributes', "header_footer"], {
+        backend: 'html5',
+        safe: 'safe',
+        attributes: 'linkcss showtitle icons=font@ source-highlighter=highlight.js platform=opal platform-opal env=browser env-browser idprefix sectanchors idseparator=- '
+        , 'header_footer': true
+    });
+
+    var doc = Opal.Asciidoctor.$load(content, options);
+
+    doc.attributes.keys["lang"] = doc.attributes.keys["lang"] || getDefaultLanguage();
+
+    return {
+        rendered: doc.$render(),
+        doctype: doc.doctype,
+        backend: doc.$backend()
+    };
+}
+
+function convertDocbook(content) {
+
+    var options = Opal.hash2(['attributes', 'safe','header_footer'],
+        {
+            'attributes': ['backend=docbook5', 'env=browser env-browser'],
+            'safe': 'safe',
+            'header_footer':true
+        });
+
+    var doc = Opal.Asciidoctor.$load(content, options);
+
+    doc.attributes.keys["lang"] = doc.attributes.keys["lang"] || getDefaultLanguage();
+
+     return {
+        rendered: doc.$render(),
+        doctype: doc.doctype,
+        backend: doc.$backend()
+    };
+}
+
 function scrollTo60(position) {
     $(window).scrollTop(position - 60);
 }

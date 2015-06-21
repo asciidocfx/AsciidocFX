@@ -1,6 +1,7 @@
-package com.kodcu.service;
+package com.kodcu.service.convert.markdown;
 
 import com.kodcu.other.Current;
+import com.kodcu.service.ThreadService;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,9 +52,9 @@ public class MarkdownService {
         }
     }
 
-    public void convertToAsciidoc(String content, Consumer<String> next) {
+    public void convertToAsciidoc(String content, Consumer<String>... next) {
 
-        threadService.runTaskLater(()->{
+        threadService.runTaskLater(() -> {
             if (Objects.isNull(content))
                 return;
 
@@ -64,21 +65,12 @@ public class MarkdownService {
             } catch (Exception e) {
                 e.printStackTrace();
             } finally {
-                next.accept((String) eval);
+                for (Consumer<String> n : next) {
+                    n.accept((String) eval);
+                }
             }
         });
 
     }
 
-    public void convert(String markdownOrAsciidoc, Consumer<String> next) {
-
-        if (current.currentTab().isAsciidoc()) {
-            next.accept(markdownOrAsciidoc);
-            return;
-        }
-
-        threadService.runTaskLater(() -> {
-            convertToAsciidoc(markdownOrAsciidoc, next);
-        });
-    }
 }

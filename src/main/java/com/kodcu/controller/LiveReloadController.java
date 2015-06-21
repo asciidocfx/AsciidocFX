@@ -2,7 +2,7 @@ package com.kodcu.controller;
 
 import com.kodcu.other.Current;
 import com.kodcu.other.IOHelper;
-import com.kodcu.service.convert.SlideConverter;
+import com.kodcu.service.convert.slide.SlideConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;

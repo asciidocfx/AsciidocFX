@@ -29,7 +29,6 @@ public class PdfBookConverter extends AbstractPdfConverter {
 
     private final Logger logger = LoggerFactory.getLogger(PdfBookConverter.class);
 
-
     private final ApplicationController asciiDocController;
     private final DocBookConverter docBookConverter;
     private final IndikatorService indikatorService;

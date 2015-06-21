@@ -1,10 +1,10 @@
-package com.kodcu.service.convert;
+package com.kodcu.service.convert.slide;
 
 import com.kodcu.component.HtmlPane;
 import com.kodcu.component.SlidePane;
 import com.kodcu.controller.ApplicationController;
 import com.kodcu.other.Current;
-import com.kodcu.service.MarkdownService;
+import com.kodcu.service.convert.markdown.MarkdownService;
 import com.kodcu.service.ThreadService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -19,7 +19,7 @@ import java.util.regex.Pattern;
  * Created by usta on 09.04.2015.
  */
 @Component
-public class SlideConverter implements DocumentConverter<String> {
+public class SlideConverter  {
 
     private final ApplicationController controller;
     private final ThreadService threadService;
@@ -55,7 +55,7 @@ public class SlideConverter implements DocumentConverter<String> {
         return slideType;
     }
 
-    public void convert(String rendered,Consumer<String>... nextStep) {
+    public void convert(String rendered, Consumer<String>... nextStep) {
         threadService.runActionLater(() -> {
 
             this.rendered = rendered;
@@ -77,10 +77,5 @@ public class SlideConverter implements DocumentConverter<String> {
 
     public String getRendered() {
         return rendered;
-    }
-
-    @Override
-    public void convert(boolean askPath, Consumer<String>... nextStep) {
-        throw new RuntimeException("Not implemented");
     }
 }
