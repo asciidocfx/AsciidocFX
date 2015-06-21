@@ -3,5 +3,5 @@ fontFamily: '''Monaco'', ''Menlo'', ''Ubuntu Mono'', ''Consolas'', ''source-code
 fontSize: 14px
 recentFileListSize: 10
 scrollSpeed: 0.1
-theme: ace/theme/ace
+theme: ace/theme/xcode
 defaultLanguage: en
