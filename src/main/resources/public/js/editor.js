@@ -12,7 +12,7 @@ editor.setOptions({
     dragEnabled: true
 });
 editor.setScrollSpeed("0.1");
-editor.setTheme("ace/theme/ace");
+editor.setTheme("ace/theme/xcode");
 
 var lastEditorRow = 0;
 var afterFirstChange = false;
@@ -185,6 +185,13 @@ function changeEditorMode(filePath) {
         initializeEmmet(mode);
 
     return mode;
+}
+
+function addAnnotation(row,column,text,type) {
+    editor.renderer.setShowGutter(true);
+    editor.session.setOption("useWorker", false);
+    editor.getSession().setAnnotations([{row: row, column: column, text: text, type: type}]);
+    editor.scrollToLine(row,false,false,function(){});
 }
 
 function initializeEmmet(mode) {
