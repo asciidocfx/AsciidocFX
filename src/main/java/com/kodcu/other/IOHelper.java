@@ -23,6 +23,7 @@ import java.net.MalformedURLException;
 import java.nio.charset.Charset;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.Objects;
 import java.util.function.BiPredicate;
 import java.util.stream.Stream;
 
@@ -104,6 +105,9 @@ public class IOHelper {
     }
 
     public static Path createTempFile(Path path, String suffix) {
+        if (Objects.isNull(path)) {
+            return createTempFile(suffix);
+        }
         try {
             return Files.createTempFile(path, "asciidoc-temp", suffix);
         } catch (IOException e) {
