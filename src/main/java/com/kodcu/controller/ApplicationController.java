@@ -71,6 +71,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.embedded.EmbeddedWebApplicationContext;
 import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.socket.TextMessage;
@@ -96,7 +97,7 @@ import java.util.stream.Collectors;
 import static java.nio.file.StandardOpenOption.*;
 
 
-@Controller
+@Component
 public class ApplicationController extends TextWebSocketHandler implements Initializable {
 
 
