@@ -13,15 +13,14 @@ import com.kodcu.outline.Section;
 import com.kodcu.service.*;
 import com.kodcu.service.config.YamlService;
 import com.kodcu.service.convert.GitbookToAsciibookService;
-import com.kodcu.service.convert.SlideConverter;
-import com.kodcu.service.convert.docbook.DocArticleConverter;
 import com.kodcu.service.convert.docbook.DocBookConverter;
 import com.kodcu.service.convert.ebook.EpubConverter;
 import com.kodcu.service.convert.ebook.MobiConverter;
-import com.kodcu.service.convert.html.HtmlArticleConverter;
 import com.kodcu.service.convert.html.HtmlBookConverter;
+import com.kodcu.service.convert.markdown.MarkdownService;
 import com.kodcu.service.convert.odf.ODFConverter;
 import com.kodcu.service.convert.pdf.AbstractPdfConverter;
+import com.kodcu.service.convert.slide.SlideConverter;
 import com.kodcu.service.extension.MathJaxService;
 import com.kodcu.service.extension.PlantUmlService;
 import com.kodcu.service.extension.TreeService;
@@ -206,17 +205,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     private DocBookConverter docBookConverter;
 
     @Autowired
-    private DocArticleConverter docArticleConverter;
-
-    @Autowired
     private HtmlBookConverter htmlBookService;
-
-    @Autowired
-    private HtmlArticleConverter htmlArticleService;
-
-    @Autowired
-    @Qualifier("pdfArticleConverter")
-    private AbstractPdfConverter pdfArticleConverter;
 
     @Autowired
     @Qualifier("pdfBookConverter")
@@ -368,11 +357,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             saveDoc();
 
         threadService.runTaskLater(() -> {
-            if (current.currentIsBook()) {
-                pdfBookConverter.convert(askPath);
-            } else {
-                pdfArticleConverter.convert(askPath);
-            }
+            pdfBookConverter.convert(askPath);
         });
     }
 
@@ -428,11 +413,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                     });
                 };
 
-                if (current.currentIsBook()) {
-                    docBookConverter.convert(false, step);
-                } else {
-                    docArticleConverter.convert(false, step);
-                }
+                docBookConverter.convert(false, step);
 
             });
 
@@ -495,10 +476,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             this.saveDoc();
 
         threadService.runTaskLater(() -> {
-            if (current.currentIsBook())
-                htmlBookService.convert(askPath);
-            else
-                htmlArticleService.convert(askPath);
+            htmlBookService.convert(askPath);
         });
     }
 
@@ -1507,9 +1485,9 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     @WebkitCall(from = "asciidoctor")
     public String readAsciidoctorResource(String uri, Integer parent) {
 
-        if (!current.currentIsSlide())
-            if (uri.matches(".*?\\.(asc|adoc|ad|asciidoc|md|markdown)") && isBasicMode())
-                return String.format("link:%s[]", uri);
+//        if (!current.currentIsSlide())
+//            if (uri.matches(".*?\\.(asc|adoc|ad|asciidoc|md|markdown)") && isBasicMode())
+//                return String.format("link:%s[]", uri);
 
         final CompletableFuture<String> completableFuture = new CompletableFuture();
 
@@ -1809,9 +1787,12 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                         .getValue().getPath();
 
                 Path folderPath = path.resolve(result);
-                IOHelper.createDirectory(folderPath);
-//
+
+                // it needs to invalidate file watchservice
+                fileWatchService.invalidate();
+
                 threadService.runTaskLater(() -> {
+                    IOHelper.createDirectory(folderPath);
                     directoryService.changeWorkigDir(folderPath);
                 });
             }
@@ -2034,8 +2015,14 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
                 threadService.runTaskLater(() -> {
                     IOHelper.createDirectory(folderPath);
+                    htmlPane.startProgressBar();
                     IOHelper.copyDirectory(configPath.resolve("slide/frameworks"), folderPath);
+                    htmlPane.stopProgressBar();
                     directoryService.changeWorkigDir(folderPath);
+                    threadService.runActionLater(() -> {
+                        tabService.addTab(folderPath.resolve("slide.adoc"));
+                        this.switchSlideView(actionEvent);
+                    });
                 });
             }
         });

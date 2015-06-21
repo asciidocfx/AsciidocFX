@@ -36,7 +36,7 @@ public class EditorPane extends AnchorPane {
     private EventHandler<WebEvent<String>> readyHandler;
     private final Logger logger = LoggerFactory.getLogger(EditorPane.class);
     private final ApplicationController controller;
-    private String mode;
+    private String mode = "ace/mode/asciidoc";
 
     @Autowired
     public EditorPane(ApplicationController controller) {

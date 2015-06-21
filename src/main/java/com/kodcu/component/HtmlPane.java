@@ -5,23 +5,14 @@ import com.kodcu.other.ConverterResult;
 import com.kodcu.other.Current;
 import com.kodcu.other.IOHelper;
 import com.kodcu.service.ThreadService;
-import javafx.application.Platform;
-import javafx.concurrent.Worker;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.VBox;
-import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import netscape.javascript.JSObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -49,11 +40,6 @@ public class HtmlPane extends ViewPanel {
         return webView;
     }
 
-    public String convertDocbookArticle(String asciidoc) {
-        this.setMember("editorValue", asciidoc);
-        return (String) webEngine().executeScript("convertDocbookArticle(editorValue)");
-    }
-
     public void startProgressBar() {
         threadService.runActionLater(() -> {
             webEngine().executeScript("startProgressBar()");
@@ -66,19 +52,10 @@ public class HtmlPane extends ViewPanel {
         });
     }
 
-    public String convertDocbook(String asciidoc, boolean includeHeader) {
+    public ConverterResult convertDocbook(String asciidoc) {
         this.setMember("editorValue", asciidoc);
-        return (String) webEngine().executeScript(String.format("convertDocbook(editorValue,%b)", includeHeader));
-    }
-
-    public String convertHtmlBook(String asciidoc) {
-        this.setMember("editorValue", asciidoc);
-        return (String) webEngine().executeScript("convertHtmlBook(editorValue)");
-    }
-
-    public String convertHtmlArticle(String asciidoc) {
-        this.setMember("editorValue", asciidoc);
-        return (String) webEngine().executeScript("convertHtmlArticle(editorValue)");
+        JSObject result = (JSObject) webEngine().executeScript(String.format("convertDocbook(editorValue)"));
+        return new ConverterResult(result);
     }
 
     public String getTemplate(String templateName, String templateDir) throws IOException {
@@ -122,22 +99,20 @@ public class HtmlPane extends ViewPanel {
     }
 
     public void fillOutlines(JSObject doc) {
-        getWindow().call("fillOutlines",doc);
+        getWindow().call("fillOutlines", doc);
     }
 
     public ConverterResult convertAsciidoc(String asciidoc) {
         this.setMember("editorValue", asciidoc);
         JSObject result = (JSObject) webEngine().executeScript("convertAsciidoc(editorValue)");
 
-        String rendered = (String) result.getMember("rendered");
-        String backend = (String) result.getMember("backend");
-        String doctype = (String) result.getMember("doctype");
+        return new ConverterResult(result);
+    }
 
-        ConverterResult converterResult = new ConverterResult();
-        converterResult.setRendered(rendered);
-        converterResult.setBackend(backend);
-        converterResult.setDoctype(doctype);
+    public ConverterResult convertHtml(String asciidoc) {
+        this.setMember("editorValue", asciidoc);
+        JSObject result = (JSObject) webEngine().executeScript("convertHtml(editorValue)");
 
-        return converterResult;
+        return new ConverterResult(result);
     }
 }

@@ -21,6 +21,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.AnchorPane;
+import net.sourceforge.plantuml.Run;
 import netscape.javascript.JSObject;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
@@ -92,7 +93,7 @@ public class TabService {
     }
 
 
-    public void addTab(Path path) {
+    public void addTab(Path path,Runnable ... runnables) {
 
         ObservableList<String> recentFiles = controller.getRecentFilesList();
         if (Files.notExists(path)) {
@@ -133,9 +134,12 @@ public class TabService {
                 threadService.runTaskLater(() -> {
                     String content = IOHelper.readFile(path);
                     threadService.runActionLater(() -> {
-                        window.call("changeEditorMode",path.toUri().toString());
+                        window.call("changeEditorMode", path.toUri().toString());
                         window.call("setInitialized");
                         window.call("setEditorValue", new Object[]{content});
+                        for (Runnable runnable : runnables) {
+                            runnable.run();
+                        }
                     });
                 });
 
