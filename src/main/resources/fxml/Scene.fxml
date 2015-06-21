@@ -96,8 +96,9 @@
                                   <SeparatorMenuItem />
                                   <MenuItem text="New Slide" fx:id="newSlide" onAction="#newSlide"/>
                                   <SeparatorMenuItem />
-                                  <MenuItem mnemonicParsing="false" fx:id="createFile" text="Create" onAction="#createFile"/>
-                                  <MenuItem mnemonicParsing="false" fx:id="renameFile" text="Rename" onAction="#renameFile"/>
+                                  <MenuItem mnemonicParsing="false" fx:id="createFolder" text="Create Folder" onAction="#createFolder"/>
+                                  <MenuItem mnemonicParsing="false" fx:id="createFile" text="Create File" onAction="#createFile"/>
+                                  <MenuItem mnemonicParsing="false" fx:id="renameFile" text="Rename File" onAction="#renameFile"/>
                                   <SeparatorMenuItem />
                                   <MenuItem mnemonicParsing="false" text="Copy Path" fx:id="copyPathTreeItem" />
                                   <MenuItem mnemonicParsing="false" text="Copy" fx:id="copyTreeItem" />
