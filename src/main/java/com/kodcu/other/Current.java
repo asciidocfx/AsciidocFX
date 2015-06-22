@@ -26,13 +26,8 @@ import java.util.regex.Pattern;
 @Component
 public class Current {
 
-    private final Pattern bookPattern = Pattern.compile(":doctype:(.*?)book");
-    private final Pattern slidePattern = Pattern.compile(":doctype:(.*?)slide");
-    private final Pattern slideTypePattern = Pattern.compile(":slide-type:.*(deckjs|revealjs)", Pattern.MULTILINE);
-
     private final ApplicationController controller;
     private final ThreadService threadService;
-
 
     private Map<String, Integer> cache;
 
@@ -103,23 +98,6 @@ public class Current {
 
     }
 
-    public boolean currentIsBook() {
-        String editorValue = currentEditorValue();
-        Matcher matcher = bookPattern.matcher(editorValue);
-        return matcher.find();
-    }
-
-    public boolean currentIsArticle() {
-        String editorValue = currentEditorValue();
-        Matcher matcher = bookPattern.matcher(editorValue);
-        return !matcher.find();
-    }
-
-    public boolean currentIsSlide() {
-        String editorValue = currentEditorValue();
-        return slidePattern.matcher(editorValue).find();
-    }
-
     public String currentEditorSelection() {
         String value = (String) currentEngine().executeScript("editor.session.getTextRange(editor.getSelectionRange())");
         return value;
@@ -132,17 +110,6 @@ public class Current {
 
     public void clearEditorValue() {
         currentEngine().executeScript(String.format("editor.setValue('')"));
-    }
-
-    public String currentSlideType() {
-        Matcher matcher = slideTypePattern.matcher(currentEditorValue());
-
-        String slideType = "revealjs";
-
-        if (matcher.find()) {
-            slideType = matcher.group(1);
-        }
-        return slideType;
     }
 
     public String currentEditorMode() {

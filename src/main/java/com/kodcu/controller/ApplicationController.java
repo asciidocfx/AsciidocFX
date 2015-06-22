@@ -72,7 +72,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.embedded.EmbeddedWebApplicationContext;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
@@ -1333,13 +1332,19 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     @WebkitCall
     public void scrollToCurrentLine(String text) {
-        if (current.currentIsSlide())
+
+        if (previewTab.getContent() == slidePane) {
             slidePane.flipThePage(htmlPane.findRenderedSelection(text)); // slide
-        try {
-            htmlPane.call("runScroller", text);
-        } catch (Exception e) {
-            logger.debug(e.getMessage(), e);
         }
+
+        if (previewTab.getContent() == htmlPane) {
+            try {
+                htmlPane.call("runScroller", text);
+            } catch (Exception e) {
+                logger.debug(e.getMessage(), e);
+            }
+        }
+
     }
 
     public void plantUml(String uml, String type, String fileName) throws IOException {
@@ -1428,6 +1433,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                         previewTab.setContent(htmlPane);
                     });
                     result.isBackend("slide", slideConverter::convert, () -> {
+                        slidePane.setDocType(result.getDoctype());
                         previewTab.setContent(slidePane);
                     });
 
