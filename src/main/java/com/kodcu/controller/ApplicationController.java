@@ -533,6 +533,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         port = server.getEmbeddedServletContainer().getPort();
 
         this.previewTab = new PreviewTab("Preview", htmlPane);
+        this.previewTab.setClosable(false);
 
         threadService.runActionLater(() -> {
             previewTabPane.getTabs().add(previewTab);
@@ -569,7 +570,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                 odfConverter.generateODFDocument();
         });
 
-        previewTabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
+        previewTabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.ALL_TABS);
         previewTabPane.setSide(Side.RIGHT);
         tooltipTimeFixService.fix();
 

@@ -1,9 +1,7 @@
 package com.kodcu.component;
 
 import javafx.scene.Node;
-import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Tab;
-import javafx.scene.control.TabPane;
 
 import java.util.Objects;
 
@@ -17,19 +15,10 @@ public class PreviewTab extends Tab {
     }
 
     public PreviewTab(String text, Node content) {
-
         super(text, content);
-        initializeContextMenu();
-    }
-
-    private void initializeContextMenu() {
-        this.setContextMenu(new ContextMenu(MenuItemBuilt.item("Close").click(e -> {
-            this.getTabPane().getTabs().remove(this);
-        })));
     }
 
     public PreviewTab() {
-        initializeContextMenu();
     }
 
     @Override
