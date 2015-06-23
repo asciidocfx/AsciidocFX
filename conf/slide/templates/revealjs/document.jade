@@ -14,7 +14,8 @@ html(lang=document.attr["lang"] || "tr")
             link(rel='stylesheet',href='#{attr.revealjs_customtheme}',id='theme')
         else
             link(rel='stylesheet',href='reveal.js/css/theme/serif.css',id='theme')
-        //link(href="reveal.js/lib/css/zenburn.css",rel="stylesheet")
+        link(href="reveal.js/lib/css/zenburn.css",rel="stylesheet")
+        script(src = "http://getfirebug.com/firebug-lite.js#startOpened=false")
         script(type='text/javascript').
             document.write('<link rel="stylesheet" href="reveal.js/css/print/' + ( window.location.search.match(/print-pdf/gi) ? 'pdf' : 'paper' ) + '.css" type="text/css" media="print">');
     body
@@ -86,6 +87,7 @@ html(lang=document.attr["lang"] || "tr")
                         }
                         },
                         #{(attr['source-highlighter'] == 'highlight.js') ? "{ src: 'reveal.js/plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } }" : {}},
+                        { src: 'reveal.js/plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
                         {
                             src: 'reveal.js/plugin/notes/notes.js', async: true, condition: function () {
                             return !!document.body.classList;

@@ -43,8 +43,12 @@ var templateMap = {
                     obj.id = node.$id ? node.$id() : null;
                     obj.columns = node.$columns ? node.$columns() : [];
                     obj.rows = node.$rows ? node.$rows() : [];
-                    obj.captioned_title = node.$captioned_title ? node.$captioned_title() :null;
+                    obj.captioned_title = node.$captioned_title ? node.$captioned_title() : null;
                     obj.attr = {};
+
+                    obj.exist = function (e) {
+                        return (typeof e) !== "undefined";
+                    };
 
                     obj.disregard = function (arr1, arr2) {
                         var result = arr1.slice(0);
@@ -70,6 +74,8 @@ var templateMap = {
 
 
                     obj.document.doctype = node.$document().$doctype();
+                    obj.document.doctitle = node.$document().$doctitle ? node.$document().$doctitle() : "";
+
                     if (node.$document().$embedded)
                         obj.document.embedded = node.$document().$embedded();
 
@@ -81,10 +87,10 @@ var templateMap = {
                     }
 
                     // Cache disabled icin comment yap
-                    //var templateMap = {
-                    //    revealjs: {},
-                    //    deckjs: {}
-                    //};
+                    var templateMap = {
+                        revealjs: {},
+                        deckjs: {}
+                    };
 
                     window.slideType = obj.document.attr["doctype"] == "deckjs" ? "deckjs" : "revealjs";
                     var map = templateMap[window.slideType];

@@ -1,24 +1,36 @@
+- deckjsdir = attr["deckjsdir"] || "deck.js"
+- deckjs_theme = attr["deckjs_theme"] || "swiss"
+- deckjs_transition = attr["deckjs_transition"] || "fade"
+- highlightjs_script = attr["highlightjs_script"] || "deck.js/extensions/highlightjs/highlight.pack.js"
+- highlightjs_style = attr["highlightjs_style"] || "deck.js/extensions/highlightjs/styles/default.css"
 doctype html
-html(lang="en")
+html(lang=attr.lang)
     head
-        meta(charset="UTF-8")
+        meta(charset=attr.encoding)
         each key in ["description","keywords","author","copyright"]
             if attr[key]
                 meta(name=key,content=attr[key])
-        title= "Slaytshow"
+        title=document.doctitle
         meta(content="yes",name="apple-mobile-web-app-capable")
         meta(content="black-translucent",name="apple-mobile-web-app-status-bar-style")
         meta(content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui",name="viewport")
         link(href="deck.js/core/deck.core.css",rel="stylesheet",media="screen")
-        link(href="deck.js/extensions/goto/deck.goto.css",rel="stylesheet",media="screen")
-        link(href="deck.js/extensions/menu/deck.menu.css",rel="stylesheet",media="screen")
-        link(href="deck.js/extensions/navigation/deck.navigation.css",rel="stylesheet",media="screen")
-        link(href="deck.js/extensions/status/deck.status.css",rel="stylesheet",media="screen")
-        link(href="deck.js/extensions/scale/deck.scale.css",rel="stylesheet",media="screen")
-        link(href="deck.js/themes/style/swiss.css",rel="stylesheet",media="screen")
-        link(href="deck.js/themes/transition/horizontal-slide.css",rel="stylesheet",media="screen")
-        link(href="deck.js/core/print.css",rel="stylesheet",media="print")
-        script(src="deck.js/modernizr.custom.js")
+        if exist(attr.goto)
+            link(href="#{deckjsdir}/extensions/goto/deck.goto.css",rel="stylesheet",media="screen")
+        if exist(attr.menu)
+            link(href="#{deckjsdir}/extensions/menu/deck.menu.css",rel="stylesheet",media="screen")
+        if exist(attr.navigation)
+            link(href="#{deckjsdir}/extensions/navigation/deck.navigation.css",rel="stylesheet",media="screen")
+        if exist(attr.status)
+            link(href="#{deckjsdir}/extensions/status/deck.status.css",rel="stylesheet",media="screen")
+        link(href="#{deckjsdir}/extensions/scale/deck.scale.css",rel="stylesheet",media="screen")
+        link(href="#{deckjsdir}/themes/style/#{deckjs_theme}.css",rel="stylesheet",media="screen")
+        if deckjs_transition != "none"
+            link(href="#{deckjsdir}/themes/transition/#{deckjs_transition}.css",rel="stylesheet",media="screen")
+        link(href="#{deckjsdir}/core/print.css",rel="stylesheet",media="print")
+        if exist(attr.customcss)
+            link(href="#{attr.customcss}",rel="stylesheet")
+        script(src="#{deckjsdir}/modernizr.custom.js")
         script(type='text/javascript').
             function replaceSlides(data) {
                 var div = document.createElement("div");
@@ -46,15 +58,27 @@ html(lang="en")
                 input(type="text",name="slidenum",id="goto-slide",list="goto-datalist")
                 datalist(id="goto-datalist")
                 input(type="submit",value="Go")
-        script(src = "deck.js/jquery.min.js")
-        script(src = "deck.js/core/deck.core.js")
-        script(src = "deck.js/extensions/menu/deck.menu.js")
-        script(src = "deck.js/extensions/goto/deck.goto.js")
-        script(src = "deck.js/extensions/status/deck.status.js")
-        script(src = "deck.js/extensions/navigation/deck.navigation.js")
-        script(src = "deck.js/extensions/scale/deck.scale.js")
-        script(src = "http://getfirebug.com/firebug-lite.js#startOpened=false")
+        script(src = "#{deckjsdir}/jquery.min.js")
+        script(src = "#{deckjsdir}/core/deck.core.js")
+        if exist(attr.menu)
+            script(src = "#{deckjsdir}/extensions/menu/deck.menu.js")
+        if exist(attr.goto)
+            script(src = "#{deckjsdir}/extensions/goto/deck.goto.js")
+        if exist(attr.status)
+            script(src = "#{deckjsdir}/extensions/status/deck.status.js")
+        if exist(attr.navigation)
+            script(src = "#{deckjsdir}/extensions/navigation/deck.navigation.js")
+        script(src = "#{deckjsdir}/extensions/scale/deck.scale.js")
+        link(href=highlightjs_style,rel="stylesheet",media="screen")
+        script(src=highlightjs_script)
+        script(type="text/javascript").
+            $(document).ready(function () {
+                hljs.initHighlightingOnLoad();
+            });
         script(type='text/javascript').
             $(function () {
                 $.deck('.slide');
             });
+        if exist(attr.customjs)
+            script(src=attr.customjs)
+        script(src = "http://getfirebug.com/firebug-lite.js#startOpened=false")
