@@ -34,30 +34,33 @@ html(lang=attr.lang)
         script(type='text/javascript').
             function replaceSlides(data) {
                 var div = document.createElement("div");
-                 div.innerHTML = data;
-                 document.querySelector(".deck-container").innerHTML = div.querySelector(".deck-container").innerHTML
-                 setTimeout(function(){
-                        $.deck('.slide');
-                 },50);
+                div.innerHTML = data;
+                document.querySelector(".deck-container").innerHTML = div.querySelector(".deck-container").innerHTML
+                setTimeout(function () {
+                    $.deck('.slide');
+                }, 50);
             }
     body
         div(class="deck-container")
             !{content}
-            div("aria-role"="navigation")
-                a(href="#",class="deck-prev-link",title="Previous")
-                    | &#8592;
-                a(href="#",class="deck-next-link",title="Next")
-                    | &#8594;
-            p(class="deck-status","aria-role"="status")
-                span(class="deck-status-current")
-                | /
-                span(class="deck-status-total")
-            form(action=".",method="get",class="goto-form")
-                label(for="goto-slide")
-                    | "Go to slide:"
-                input(type="text",name="slidenum",id="goto-slide",list="goto-datalist")
-                datalist(id="goto-datalist")
-                input(type="submit",value="Go")
+            if exist(attr.navigation)
+                div("aria-role"="navigation")
+                    a(href="#",class="deck-prev-link",title="Previous")
+                        | &#8592;
+                    a(href="#",class="deck-next-link",title="Next")
+                        | &#8594;
+            if exist(attr.status)
+                p(class="deck-status","aria-role"="status")
+                    span(class="deck-status-current")
+                    | /
+                    span(class="deck-status-total")
+            if exist(attr.goto)
+                form(action=".",method="get",class="goto-form")
+                    label(for="goto-slide")
+                        | "Go to slide:"
+                    input(type="text",name="slidenum",id="goto-slide",list="goto-datalist")
+                    datalist(id="goto-datalist")
+                    input(type="submit",value="Go")
         script(src = "#{deckjsdir}/jquery.min.js")
         script(src = "#{deckjsdir}/core/deck.core.js")
         if exist(attr.menu)
@@ -73,7 +76,11 @@ html(lang=attr.lang)
         script(src=highlightjs_script)
         script(type="text/javascript").
             $(document).ready(function () {
-                hljs.initHighlightingOnLoad();
+                if ((typeof hljs) != "undefined"){
+                    $('pre code').each(function (i, block) {
+                        hljs.highlightBlock(block);
+                    });
+                }
             });
         script(type='text/javascript').
             $(function () {

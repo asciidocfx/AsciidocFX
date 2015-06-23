@@ -21,6 +21,6 @@ div.listingblock(id=id,class=role)
                     - pre_class = code_class = nil
                     - nowrap = false
             pre(class=pre_class,lang=pre_lang)
-                code(class=[language, "language-#{attr.language}"]) !{content}
+                code(class=[language,attr.language ? "language-#{attr.language}" :""]) !{content}
         else
             pre(class=nowrap ? "nowrap" : "") !{content}
