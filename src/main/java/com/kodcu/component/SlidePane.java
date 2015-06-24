@@ -22,7 +22,7 @@ import java.util.stream.Stream;
 @Component
 public class SlidePane extends ViewPanel {
 
-    private String docType;
+    private String backend = "revealjs";
 
     @Autowired
     public SlidePane(ThreadService threadService, ApplicationController controller, Current current) {
@@ -45,12 +45,12 @@ public class SlidePane extends ViewPanel {
     }
 
     public void replaceSlides(String rendered) {
-        ((JSObject) getWindow().eval(docType + "Ext")).call("replaceSlides", rendered);
+        ((JSObject) getWindow().eval(backend + "Ext")).call("replaceSlides", rendered);
     }
 
     public void flipThePage(String rendered) {
         try {
-            ((JSObject) getWindow().eval(docType + "Ext")).call("flipCurrentPage", rendered);
+            ((JSObject) getWindow().eval(backend + "Ext")).call("flipCurrentPage", rendered);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -79,9 +79,9 @@ public class SlidePane extends ViewPanel {
 
     public void injectExtensions() {
         this.setOnSuccess(() -> {
-            if ("revealjs".equals(docType))
+            if ("revealjs".equals(backend))
                 this.loadJs("js/jquery.js", "js/reveal-extensions.js");
-            if ("deckjs".equals(docType))
+            if ("deckjs".equals(backend))
                 this.loadJs("js/deck-extensions.js");
         });
     }
@@ -91,11 +91,11 @@ public class SlidePane extends ViewPanel {
         controller.getHostServices().showDocument(webEngine().getLocation());
     }
 
-    public void setDocType(String docType) {
-        this.docType = docType;
+    public void setBackend(String backend) {
+        this.backend = backend;
     }
 
-    public String getDocType() {
-        return docType;
+    public String getBackend() {
+        return backend;
     }
 }

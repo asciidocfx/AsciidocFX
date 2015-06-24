@@ -2,6 +2,7 @@
 <configuration>
     <logger name="org.springframework" level="ERROR"/>
     <logger name="org.apache.fop" level="ERROR"/>
+    <logger name="org.apache.xmlgraphics" level="ERROR"/>
     <logger name="org.xnio" level="ERROR"/>
     <logger name="io.undertow" level="ERROR"/>
 

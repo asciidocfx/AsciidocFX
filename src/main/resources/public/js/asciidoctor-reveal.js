@@ -12,19 +12,15 @@ var templateMap = {
         var def = self._proto, $scope = self._scope;
 
         (function ($base, $super) {
-            function $SlideConverter() {
+            function $RevealjsConverter() {
             };
-            var self = $SlideConverter = $klass($base, $super, 'SlideConverter', $SlideConverter);
+            var self = $RevealjsConverter = $klass($base, $super, 'RevealjsConverter', $RevealjsConverter);
 
             var def = self._proto, $scope = self._scope;
 
             return (def.$convert = function (node, template_name, opts) {
 
                     var self = this;
-
-                    window.selfo = this;
-                    window.nodee = node;
-                    window.optss = opts;
 
                     var obj = {};
                     obj.type = node.$type ? node.$type() : "";
@@ -87,19 +83,18 @@ var templateMap = {
                     }
 
                     // Cache disabled icin comment yap
-                    var templateMap = {
-                        revealjs: {},
-                        deckjs: {}
-                    };
+                    //var templateMap = {
+                    //    revealjs: {},
+                    //    deckjs: {}
+                    //};
 
-                    window.slideType = obj.document.attr["doctype"] == "deckjs" ? "deckjs" : "revealjs";
-                    var map = templateMap[window.slideType];
+                    var map = templateMap["revealjs"];
 
                     if (!map)
                         return "";
 
                     if (!map[obj.name]) {
-                        var template = afx.getTemplate(obj.name + ".jade", window.slideType);
+                        var template = afx.getTemplate(obj.name + ".jade", "revealjs");
                         var fn = jade.compile(template, {pretty: true});
                         map[obj.name] = fn;
                     }

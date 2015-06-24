@@ -1,5 +1,4 @@
-:backend: slide
-:doctype: revealjs
+:backend: revealjs
 :encoding: utf-8
 :lang: en
 ////

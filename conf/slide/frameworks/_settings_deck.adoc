@@ -1,5 +1,4 @@
-:backend: slide
-:doctype: deckjs
+:backend: deckjs
 :encoding: utf-8
 :lang: en
 ////

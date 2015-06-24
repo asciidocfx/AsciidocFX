@@ -1441,8 +1441,12 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                     result.isBackend("html5", lastRendered::setValue, () -> {
                         previewTab.setContent(htmlPane);
                     });
-                    result.isBackend("slide", slideConverter::convert, () -> {
-                        slidePane.setDocType(result.getDoctype());
+                    result.isBackend("revealjs", slideConverter::convert, () -> {
+                        slidePane.setBackend(result.getBackend());
+                        previewTab.setContent(slidePane);
+                    });
+                    result.isBackend("deckjs", slideConverter::convert, () -> {
+                        slidePane.setBackend(result.getBackend());
                         previewTab.setContent(slidePane);
                     });
 
