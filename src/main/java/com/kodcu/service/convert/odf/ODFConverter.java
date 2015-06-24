@@ -4,9 +4,12 @@ import com.kodcu.component.HtmlPane;
 import com.kodcu.controller.ApplicationController;
 import com.kodcu.other.Constants;
 import com.kodcu.other.Current;
+import com.kodcu.service.DirectoryService;
 import com.kodcu.service.ThreadService;
 import com.kodcu.service.convert.Traversable;
+import com.kodcu.service.convert.pdf.AbstractPdfConverter;
 import com.kodcu.service.ui.IndikatorService;
+import javafx.stage.FileChooser;
 import netscape.javascript.JSObject;
 import org.odftoolkit.odfdom.dom.element.draw.DrawFrameElement;
 import org.odftoolkit.odfdom.dom.element.draw.DrawImageElement;
@@ -55,35 +58,41 @@ public class ODFConverter implements Traversable {
     private final HtmlPane htmlPane;
     private final ThreadService threadService;
     private final IndikatorService indikatorService;
+    private final DirectoryService directoryService;
 
     private TextDocument odtDocument;
     private List<JSObject> unstructuredDocument = new ArrayList<>();
     private final Predicate<String> expectedElement = (name) -> Arrays.asList("paragraph", "image", "section", "listing", "colist", "table", "quote",
             "page_break", "olist", "ulist", "admonition", "thematic_break", "sidebar", "pass", "example", "literal", "verse", "open", "dlist", "video").stream().anyMatch(s -> s.equals(name));
     private final Predicate<String> parentElement = (name) -> Arrays.asList("section", "quote", "admonition", "sidebar", "example", "verse", "open").stream().anyMatch(s -> s.equals(name));
+    private Path odtFilePath;
 
     @Autowired
     public ODFConverter(final ApplicationController controller, final Current current, final HtmlPane htmlPane,
-                        final ThreadService threadService, final IndikatorService indikatorService) {
+                        final ThreadService threadService, final IndikatorService indikatorService, DirectoryService directoryService) {
         this.controller = controller;
         this.current = current;
         this.htmlPane = htmlPane;
         this.threadService = threadService;
         this.indikatorService = indikatorService;
+        this.directoryService = directoryService;
     }
 
-    public void generateODFDocument() {
+    public void generateODFDocument(boolean askPath) {
 //        threadService.runTaskLater(() -> {
         // after enabling runTaskLater, I receive "TypeError: 'undefined' is not a function (evaluating 'A.$backtrace()') " if the asciidoc file contains a math block
         final Path currentTabPath = current.currentPath().get();
         final Path currentTabPathDir = currentTabPath.getParent();
 
+        if (askPath) {
+            final FileChooser fileChooser = directoryService.newFileChooser("Save ODt file");
+            fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("ODt", "*.odt"));
+            odtFilePath = fileChooser.showSaveDialog(null).toPath();
+        } else
+            odtFilePath = currentTabPathDir.resolve(String.format("%s.odt", currentTabPath.getFileName()));
         indikatorService.startCycle();
         try {
             this.openOdtDocument();
-//            List<String> bookAscLines = Arrays.asList(current.currentEditorValue().split("\\r?\\n"));
-//            StringBuffer allAscChapters = new StringBuffer();
-//            traverseLines(bookAscLines, allAscChapters, currentTabPathDir);
 
             htmlPane.call("convertOdf", current.currentEditorValue());
             this.saveOdtDocument();
@@ -106,9 +115,6 @@ public class ODFConverter implements Traversable {
     }
 
     private void saveOdtDocument() {
-        Path currentTabPath = current.currentPath().get();
-        Path currentTabPathDir = currentTabPath.getParent();
-        Path odtFilePath = currentTabPathDir.resolve(String.format("%s.odt", currentTabPath.getFileName()));
         try {
             odtDocument.save(odtFilePath.toString());
             threadService.runActionLater(() -> {

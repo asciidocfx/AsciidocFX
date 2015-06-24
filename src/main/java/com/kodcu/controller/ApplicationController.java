@@ -564,11 +564,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         initializeLogViewer();
         initializeDoctypes();
 
-        odfPro.setOnMouseClicked(event -> {
-            if (current.currentPath().isPresent())
-                odfConverter.generateODFDocument();
-        });
-
         previewTabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.ALL_TABS);
         previewTabPane.setSide(Side.RIGHT);
         tooltipTimeFixService.fix();
@@ -664,6 +659,21 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         });
 
         ebookPro.setContextMenu(ebookProMenu);
+
+        ContextMenu odfProMenu = new ContextMenu();
+        odfProMenu.getStyleClass().add("build-menu");
+        odfProMenu.getItems().add(MenuItemBuilt.item("Save").click(event -> {
+            this.generateODFDocument();
+        }));
+        odfProMenu.getItems().add(MenuItemBuilt.item("Save as").click(event -> {
+            this.generateODFDocument(true);
+        }));
+
+        odfPro.setContextMenu(odfProMenu);
+
+        odfPro.setOnMouseClicked(event -> {
+            odfProMenu.show(odfPro, event.getScreenX(), 50);
+        });
 
         browserPro.setOnMouseClicked(event -> {
             if (event.getButton() == MouseButton.PRIMARY)
@@ -892,6 +902,19 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 //            splitPane.setDividerPositions();
         });
 
+    }
+
+    private void generateODFDocument(boolean askPath) {
+
+        if (!current.currentPath().isPresent())
+            this.saveDoc();
+
+        odfConverter.generateODFDocument(askPath);
+
+    }
+
+    private void generateODFDocument() {
+        this.generateODFDocument(false);
     }
 
     private void initializeDoctypes() {
@@ -1347,11 +1370,13 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         }
 
         if (previewTab.getContent() == htmlPane) {
-            try {
-                htmlPane.call("runScroller", text);
-            } catch (Exception e) {
-                logger.debug(e.getMessage(), e);
-            }
+            threadService.runActionLater(()->{
+                try {
+                    htmlPane.call("runScroller", text);
+                } catch (Exception e) {
+                    logger.debug(e.getMessage(), e);
+                }
+            });
         }
 
     }
@@ -1481,7 +1506,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     }
 
     @WebkitCall(from = "asciidoctor-odf.js")
-    public synchronized void convertToOdf(String name, Object obj) throws Exception {
+    public void convertToOdf(String name, Object obj) throws Exception {
         JSObject jObj = (JSObject) obj;
         odfConverter.buildDocument(name, jObj);
     }
