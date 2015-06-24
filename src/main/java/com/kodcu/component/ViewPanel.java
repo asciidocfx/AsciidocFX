@@ -14,7 +14,6 @@ import javafx.scene.web.WebView;
 import netscape.javascript.JSObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Objects;
 
@@ -57,6 +56,17 @@ public abstract class ViewPanel extends AnchorPane {
 
     public void onscroll(Object pos, Object max) {
 
+        if (Platform.isFxApplicationThread()) {
+            runScrolling(pos, max);
+        } else {
+            Platform.runLater(() -> {
+                runScrolling(pos, max);
+            });
+        }
+
+    }
+
+    private void runScrolling(Object pos, Object max) {
         if (Objects.isNull(pos) || Objects.isNull(max))
             return;
 
@@ -69,7 +79,6 @@ public abstract class ViewPanel extends AnchorPane {
         double browserScrollOffset = (Double.valueOf(browserMaxScroll) * ratio) / 100.0;
         webEngine().executeScript(String.format("window.scrollTo(0, %f )", browserScrollOffset));
     }
-
 
 
     public WebEngine webEngine() {
@@ -103,7 +112,7 @@ public abstract class ViewPanel extends AnchorPane {
     }
 
     public void call(String methodName, Object... args) {
-        threadService.runActionLater(()->{
+        threadService.runActionLater(() -> {
             getWindow().call(methodName, args);
         });
     }
@@ -132,7 +141,7 @@ public abstract class ViewPanel extends AnchorPane {
     }
 
     public void setOnSuccess(Runnable runnable) {
-        threadService.runActionLater(()->{
+        threadService.runActionLater(() -> {
             Worker<Void> loadWorker = webEngine().getLoadWorker();
             ReadOnlyObjectProperty<Worker.State> stateProperty = loadWorker.stateProperty();
             stateProperty.addListener((observable, oldValue, newValue) -> {

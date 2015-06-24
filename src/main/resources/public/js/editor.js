@@ -66,10 +66,8 @@ editor.getSession().on('changeScrollTop', function (scroll) {
     var maxTop = editor.renderer.layerConfig.maxHeight - editor.renderer.$size.scrollerHeight + editor.renderer.scrollMargin.bottom;
     var scrollTop = editor.getSession().getScrollTop();
 
-    var isLiveReloadPane = afx.isLiveReloadPane(scrollTop, maxTop);
-    if (isLiveReloadPane) return;
 
-    if (Math.abs(maxTop - scrollTop) < 10 || scrollTop < 10) {
+    if (Math.abs(maxTop - scrollTop) < 10 || scrollTop < 10 || afx.isLiveReloadPane()) {
         afx.onscroll(scrollTop, maxTop);
         return;
     }

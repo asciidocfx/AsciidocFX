@@ -1327,8 +1327,16 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     }
 
     @WebkitCall(from = "editor")
+    public boolean isLiveReloadPane() {
+        return previewTab.getContent() == liveReloadPane;
+    }
+
+    @WebkitCall(from = "editor")
     public void onscroll(Object pos, Object max) {
-        htmlPane.onscroll(pos, max);
+        Node content = previewTab.getContent();
+        if(Objects.nonNull(content)){
+            ((ViewPanel)content).onscroll(pos,max);
+        }
     }
 
     @WebkitCall(from = "editor")
@@ -1417,15 +1425,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         String currentTabText = current.getCurrentTabText();
         if (!currentTabText.contains(" *"))
             current.setCurrentTabText(currentTabText + " *");
-    }
-
-    @WebkitCall(from = "editor")
-    public boolean isLiveReloadPane(Object pos, Object max) {
-        if (previewTab.getContent() == liveReloadPane) {
-            liveReloadPane.onscroll(pos, max);
-            return true;
-        }
-        return false;
     }
 
     @WebkitCall(from = "editor")
