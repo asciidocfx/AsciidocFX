@@ -1,20 +1,14 @@
 package com.kodcu.logging;
 
+import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.UnsynchronizedAppenderBase;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableView;
-import org.apache.logging.log4j.core.Filter;
-import org.apache.logging.log4j.core.Layout;
-import org.apache.logging.log4j.core.LogEvent;
-import org.apache.logging.log4j.core.appender.AbstractAppender;
-import org.apache.logging.log4j.core.config.plugins.Plugin;
-import org.apache.logging.log4j.core.config.plugins.PluginAttribute;
-import org.apache.logging.log4j.core.config.plugins.PluginElement;
-import org.apache.logging.log4j.core.config.plugins.PluginFactory;
-import org.apache.logging.log4j.core.layout.PatternLayout;
 
-import java.io.Serializable;
+import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -24,32 +18,15 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * Created by usta on 02.06.2015.
  */
-@Plugin(name = "TableViewLogAppender", category = "Core", elementType = "appender", printObject = true)
-public class TableViewLogAppender extends AbstractAppender {
+
+public class TableViewLogAppender extends UnsynchronizedAppenderBase<ILoggingEvent> {
 
     private static TableView<MyLog> logViewer;
     private static ObservableList<MyLog> logList;
-    private static final ExecutorService logExecutor = Executors.newSingleThreadExecutor();
     private List<MyLog> buffer = Collections.synchronizedList(new LinkedList<MyLog>());
     private final AtomicBoolean scheduled = new AtomicBoolean(false);
     private static Label logShortMessage;
-
-    protected TableViewLogAppender(String name, Filter filter, Layout<? extends Serializable> layout) {
-        super(name, filter, layout);
-    }
-
-    @PluginFactory
-    public static TableViewLogAppender createAppender(@PluginAttribute("name") String name,
-                                                      @PluginAttribute("ignoreExceptions") boolean ignoreExceptions,
-                                                      @PluginElement("Layout") Layout layout,
-                                                      @PluginElement("Filters") Filter filter) {
-
-        if (layout == null) {
-            layout = PatternLayout.createDefaultLayout();
-        }
-
-        return new TableViewLogAppender(name, filter, layout);
-    }
+    PatternLayoutEncoder encoder;
 
     public static void setLogViewer(TableView<MyLog> logViewer) {
         TableViewLogAppender.logViewer = logViewer;
@@ -64,13 +41,13 @@ public class TableViewLogAppender extends AbstractAppender {
     }
 
     @Override
-    public void append(LogEvent event) {
+    protected void append(ILoggingEvent event) {
 
         if (Objects.isNull(logViewer))
             return;
 
-        String message = event.getMessage().getFormattedMessage();
-        String level = event.getLevel().name();
+        String message = event.getMessage();
+        String level = event.getLevel().toString();
         MyLog myLog = new MyLog(level, message);
         buffer.add(myLog);
 
@@ -92,5 +69,13 @@ public class TableViewLogAppender extends AbstractAppender {
                 }
             }, 3000);
         }
+    }
+
+    public PatternLayoutEncoder getEncoder() {
+        return encoder;
+    }
+
+    public void setEncoder(PatternLayoutEncoder encoder) {
+        this.encoder = encoder;
     }
 }

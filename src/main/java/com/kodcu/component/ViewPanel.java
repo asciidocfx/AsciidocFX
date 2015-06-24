@@ -111,6 +111,11 @@ public abstract class ViewPanel extends AnchorPane {
         getWindow().setMember(name, value);
     }
 
+    /**
+     * bug sıralı yapması gerkeiyor
+     * @param methodName
+     * @param args
+     */
     public void call(String methodName, Object... args) {
         threadService.runActionLater(() -> {
             getWindow().call(methodName, args);

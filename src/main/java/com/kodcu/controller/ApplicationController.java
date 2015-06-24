@@ -1476,8 +1476,8 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         });
     }
 
-    @WebkitCall
-    public void convertToOdf(String name, Object obj) throws Exception {
+    @WebkitCall(from = "asciidoctor-odf.js")
+    public synchronized void convertToOdf(String name, Object obj) throws Exception {
         JSObject jObj = (JSObject) obj;
         odfConverter.buildDocument(name, jObj);
     }
