@@ -63,7 +63,7 @@ public class MarkdownService {
                 Invocable invocable = (Invocable) js;
                 eval = invocable.invokeFunction("markdownToAsciidoc", content);
             } catch (Exception e) {
-                e.printStackTrace();
+                logger.error("Problem occured while converting Asciidoc to Markdown",e);
             } finally {
                 for (Consumer<String> n : next) {
                     n.accept((String) eval);

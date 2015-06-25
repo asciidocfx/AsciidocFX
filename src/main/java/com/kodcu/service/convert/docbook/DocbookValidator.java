@@ -38,7 +38,7 @@ public class DocbookValidator {
         this.current = current;
     }
 
-    public void validateDocbook(String rendered) {
+    public boolean validateDocbook(String rendered) {
         try {
             SchemaFactory schemaFactory = SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema");
 
@@ -48,7 +48,9 @@ public class DocbookValidator {
 
             validator.validate(new StreamSource(new ByteArrayInputStream(rendered.getBytes(Charset.forName("UTF-8")))));
 
-            logger.info("Successfully validated");
+            logger.debug("Docbook successfully validated");
+
+            return true;
 
         } catch (Exception e) {
 
@@ -67,9 +69,9 @@ public class DocbookValidator {
                 });
             }
 
-            logger.error(e.getMessage());
+            logger.error("Problem occured while validating Docbook content c");
 
-            throw new RuntimeException(e);
+            return false;
         }
     }
 }

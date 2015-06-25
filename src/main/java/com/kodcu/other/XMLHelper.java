@@ -27,7 +27,7 @@ public class XMLHelper {
             transformer.transform(new DOMSource(node), new StreamResult(writer));
             return writer.toString();
         } catch (Exception ex) {
-           logger.error(ex.getMessage(),ex);
+           logger.error("Problem occured while converting Node to String",ex);
         }
         return "";
     }

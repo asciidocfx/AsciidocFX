@@ -61,8 +61,6 @@ public class PdfBookConverter extends AbstractPdfConverter {
             final Path currentTabPath = current.currentPath().get();
             final Path currentTabPathDir = currentTabPath.getParent();
             final Path configPath = asciiDocController.getConfigPath();
-            // FIXME: this var is unused, is it intensional?
-            final String tabText = current.getCurrentTabText().replace("*", "").trim();
 
             final Vector<String> params = new Vector<>();
             params.add("body.font.family");
@@ -90,7 +88,7 @@ public class PdfBookConverter extends AbstractPdfConverter {
             });
 
         } catch (Exception e) {
-            logger.error(e.getMessage(), e);
+            logger.error("Problem occured while converting to PDF", e);
         }
     }
 }

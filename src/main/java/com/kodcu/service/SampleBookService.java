@@ -23,7 +23,7 @@ public class SampleBookService {
         try {
             FileUtils.copyDirectory(booksample, destDir);
         } catch (IOException e) {
-            logger.error(e.getMessage(), e);
+            logger.error("Problem occured while producing sample book", e);
         }
 
     }

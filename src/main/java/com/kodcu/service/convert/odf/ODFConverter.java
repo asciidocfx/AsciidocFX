@@ -91,16 +91,18 @@ public class ODFConverter implements Traversable {
         } else
             odtFilePath = currentTabPathDir.resolve(String.format("%s.odt", currentTabPath.getFileName()));
         indikatorService.startCycle();
+        logger.debug("ODF conversion started");
         try {
             this.openOdtDocument();
 
             htmlPane.call("convertOdf", current.currentEditorValue());
             this.saveOdtDocument();
         } catch (Exception e) {
-            logger.error(e.getMessage(), e);
+            logger.error("Problem occured while converting to ODF", e);
         } finally {
             unstructuredDocument.clear();
             indikatorService.completeCycle();
+            logger.debug("ODF conversion ended");
         }
 //        });
     }
@@ -110,7 +112,7 @@ public class ODFConverter implements Traversable {
         try {
             odtDocument = TextDocument.newTextDocument();
         } catch (Exception e) {
-            logger.error(e.getMessage(), e);
+            logger.error("Problem occured while creating new OdtTextDocument", e);
         }
     }
 
@@ -122,7 +124,7 @@ public class ODFConverter implements Traversable {
                 controller.getRecentFilesList().add(0, odtFilePath.toString());
             });
         } catch (Exception e) {
-            logger.error(e.getMessage(), e);
+            logger.error("Problem occured while saving OdtDocument", e);
         } finally {
             odtDocument.close();
         }

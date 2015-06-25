@@ -52,6 +52,7 @@ public class MobiConverter implements DocumentConverter<String> {
         try {
 
             indikatorService.startCycle();
+            logger.debug("Mobi conversion started");
 
             final Path epubPath = epubConverter.produceEpub3Temp().join();
 
@@ -78,11 +79,12 @@ public class MobiConverter implements DocumentConverter<String> {
                                 .command(kindleGenPath.resolve("kindlegen").toString(), "-o", mobiPath.getFileName().toString(), epubPath.toString())
                                 .execute()
                                 .outputUTF8();
-                        logger.info(message);
+                        logger.debug(message);
 
                         IOHelper.move(epubPath.getParent().resolve(mobiPath.getFileName()), mobiPath, StandardCopyOption.REPLACE_EXISTING);
 
                         indikatorService.completeCycle();
+                        logger.debug("Mobi conversion ended");
 
                         threadService.runActionLater(() -> {
                             asciiDocController.getRecentFilesList().remove(mobiPath.toString());
@@ -90,7 +92,7 @@ public class MobiConverter implements DocumentConverter<String> {
                         });
 
                     } catch (Exception e) {
-                        logger.error(e.getMessage(), e);
+                        logger.error("Problem occured while converting to Mobi", e);
                     } finally {
                         indikatorService.completeCycle();
                     }
@@ -99,7 +101,7 @@ public class MobiConverter implements DocumentConverter<String> {
             });
 
         } catch (Exception e) {
-            logger.error(e.getMessage(), e);
+            logger.error("Problem occured while converting to Mobi", e);
             indikatorService.completeCycle();
         }
     }

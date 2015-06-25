@@ -87,9 +87,7 @@ public class AsciidocTableController implements Initializable {
         try {
             row = Integer.valueOf(tablePopupRows.textProperty().getValue());
             column = Integer.valueOf(tablePopupColumns.textProperty().getValue());
-        } catch (RuntimeException e) {
-            logger.debug(e.getMessage(), e);
-        }
+        } catch (RuntimeException e) {}
 
         stringBuffer.append("|====================\n");
 

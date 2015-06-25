@@ -70,6 +70,7 @@ public abstract class AbstractPdfConverter implements DocumentConverter<String> 
 
             threadService.runTaskLater(() -> {
                 indikatorService.startCycle();
+                logger.debug("PDF conversion started");
                 try (FileOutputStream outputStream = new FileOutputStream(pdfPath.toFile());) {
                     FOUserAgent userAgent = new FOUserAgent(fopFactory);
                     userAgent.setURIResolver(new FOURIResolver(true) {
@@ -94,7 +95,7 @@ public abstract class AbstractPdfConverter implements DocumentConverter<String> 
 
                                     }
                                 } catch (Exception e) {
-                                    logger.info(e.getMessage(),e);
+                                    logger.error("Problem occured while converting to PDF",e);
                                 }
                             }
 
@@ -104,10 +105,11 @@ public abstract class AbstractPdfConverter implements DocumentConverter<String> 
                     handler.renderTo(userAgent, "application/pdf", outputStream);
                     Files.deleteIfExists(docbookTempfile);
                 } catch (Exception e) {
-                    logger.error(e.getMessage(), e);
+                    logger.error("Problem occured while converting to PDF", e);
                 } finally {
 
                     indikatorService.completeCycle();
+                    logger.debug("PDF conversion ended");
 
                     threadService.runActionLater(() -> {
                         asciiDocController.getRecentFilesList().remove(pdfPath.toString());

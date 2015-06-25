@@ -1,15 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
     <logger name="org.springframework" level="ERROR"/>
-    <logger name="org.apache.fop" level="ERROR"/>
-    <logger name="org.apache.xmlgraphics" level="ERROR"/>
+    <logger name="org.apache" level="ERROR"/>
     <logger name="org.xnio" level="ERROR"/>
     <logger name="io.undertow" level="ERROR"/>
+    <logger name="de.tototec" level="ERROR"/>
+    <logger name="org.hibernate" level="ERROR"/>
+    <logger name="org.jboss" level="ERROR"/>
 
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
 
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
-            <level>ERROR</level>
+            <level>debug</level>
         </filter>
 
         <encoder>

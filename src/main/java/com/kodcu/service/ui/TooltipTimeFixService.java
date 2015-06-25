@@ -34,7 +34,7 @@ public class TooltipTimeFixService {
             objTimer.getKeyFrames().clear();
             objTimer.getKeyFrames().add(new KeyFrame(new Duration(600)));
         } catch (Exception e) {
-            logger.info(e.getMessage(),e);
+            logger.debug("Problem occured while fixing tooltip time, but dont worry",e);
         }
     }
 }

@@ -1,16 +1,14 @@
 package com.kodcu.service;
 
+import com.kodcu.other.IOHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.PathMatcher;
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * Created by usta on 07.09.2014.
@@ -49,12 +47,7 @@ public class PathResolverService {
     }
 
     public boolean isHidden(Path path) {
-        try {
-            return path.getFileName().toString().startsWith(".") || Files.isHidden(path);
-        } catch (IOException e) {
-            logger.info(e.getMessage(), e);
-        }
-        return false;
+        return IOHelper.isHidden(path);
     }
 
     public boolean isMarkdown(Path path) {

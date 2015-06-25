@@ -62,6 +62,8 @@ public class PlantUmlService {
             if (hashCode == cacheHit)
                 return;
 
+        logger.debug("UML extension is started for {}", fileName);
+
         SourceStringReader reader = new SourceStringReader(uml);
 
         try (ByteArrayOutputStream os = new ByteArrayOutputStream()) {
@@ -76,18 +78,20 @@ public class PlantUmlService {
 
             threadService.runTaskLater(() -> {
                 try {
-                    // FIXME: unused var, why?
-                    String desc = reader.generateImage(os, new FileFormatOption(fileType));
+
+                    reader.generateImage(os, new FileFormatOption(fileType));
 
                     Files.createDirectories(path.resolve("images"));
 
                     IOHelper.writeToFile(umlPath, os.toByteArray(), CREATE, WRITE, TRUNCATE_EXISTING);
 
+                    logger.debug("UML extension is ended for {}", fileName);
+
                     threadService.runActionLater(() -> {
                         controller.clearImageCache();
                     });
                 } catch (Exception e) {
-                    logger.error(e.getMessage(), e);
+                    logger.error("Problem occured while generating UML diagram", e);
                 }
             });
 
@@ -95,7 +99,7 @@ public class PlantUmlService {
             current.getCache().put(fileName, hashCode);
 
         } catch (IOException e) {
-            logger.info(e.getMessage(), e);
+            logger.error("Problem occured while generating UML diagram", e);
         }
     }
 }

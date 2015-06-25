@@ -88,7 +88,7 @@ public class FileBrowseService {
                     .forEach(consumer);
 
         } catch (IOException e) {
-            logger.error(e.getMessage(), e);
+            logger.error("Problem occured while updating WorkDir panel", e);
         }
 
     }

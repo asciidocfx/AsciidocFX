@@ -5,9 +5,9 @@ import com.kodcu.controller.ApplicationController;
 import com.kodcu.other.Current;
 import com.kodcu.other.IOHelper;
 import com.kodcu.other.XMLHelper;
-import com.kodcu.service.convert.markdown.MarkdownService;
 import com.kodcu.service.ThreadService;
 import com.kodcu.service.convert.DocumentConverter;
+import com.kodcu.service.convert.markdown.MarkdownService;
 import org.joox.Match;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,9 +61,12 @@ public class DocBookConverter implements DocbookTraversable, DocumentConverter<S
 
             String rendered = htmlPane.convertDocbook(asciidoc).getRendered();
 
-            docbookValidator.validateDocbook(rendered);
+            boolean validated = docbookValidator.validateDocbook(rendered);
 
-            rendered = rendered.replace("<?xml version=\"1.0\" encoding=\"UTF-8\"?>", "<?xml version=\"1.1\" encoding=\"UTF-8\"?>");
+            if (!validated)
+                return;
+
+//            rendered = rendered.replace("<?xml version=\"1.0\" encoding=\"UTF-8\"?>", "<?xml version=\"1.1\" encoding=\"UTF-8\"?>");
 
             StringReader bookReader = new StringReader(rendered);
             Match rootDocument = IOHelper.$(new InputSource(bookReader));
@@ -90,7 +93,6 @@ public class DocBookConverter implements DocbookTraversable, DocumentConverter<S
 //                htmlPane.stopProgressBar();
         });
     }
-
 
 
 }

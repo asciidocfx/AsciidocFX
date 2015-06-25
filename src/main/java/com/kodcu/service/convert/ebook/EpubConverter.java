@@ -28,6 +28,7 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
+import java.util.zip.Deflater;
 
 import static java.nio.file.StandardOpenOption.TRUNCATE_EXISTING;
 import static java.nio.file.StandardOpenOption.WRITE;
@@ -98,8 +99,10 @@ public class EpubConverter {
             threadService.runTaskLater(() -> {
 
                 try {
-                    if (!isTemp)
+                    if (!isTemp) {
                         indikatorService.startCycle();
+                        logger.debug("Epub conversion started");
+                    }
 
                     Path epubTemp = Files.createTempDirectory("epub");
 
@@ -113,7 +116,8 @@ public class EpubConverter {
                     docBookConverter.convert(false, docbook -> {
 
                         threadService.runTaskLater(() -> {
-                            transformer.setParameter("base.dir", epubTemp.resolve("OEBPS").toString());
+                            Path oebps = epubTemp.resolve("OEBPS");
+                            transformer.setParameter("base.dir", oebps.toString());
                             try (StringReader reader = new StringReader(docbook);) {
                                 StreamSource xmlSource = new StreamSource(reader);
                                 IOHelper.transform(transformer, xmlSource, new StreamResult());
@@ -142,7 +146,7 @@ public class EpubConverter {
                             Stream<Path> imageStream = IOHelper.find(currentTabPathDir, Integer.MAX_VALUE, (p, attr) -> pathResolverService.isImage(p));
 
                             imageStream.forEach(img -> {
-                                IOHelper.copyFile(img.toFile(), epubTemp.resolve("OEBPS").resolve(currentTabPathDir.relativize(img)).toFile());
+                                IOHelper.copyFile(img.toFile(), oebps.resolve(currentTabPathDir.relativize(img)).toFile());
                             });
 
                             IOHelper.copyDirectoryToDirectory(configPath.resolve("docbook/images/callouts").toFile(), epubTemp.resolve("OEBPS/images")
@@ -154,6 +158,7 @@ public class EpubConverter {
 
                             if (!isTemp) {
                                 indikatorService.completeCycle();
+                                logger.debug("Epub conversion ended");
                                 threadService.runActionLater(() -> {
                                     asciiDocController.getRecentFilesList().remove(epubPath.toString());
                                     asciiDocController.getRecentFilesList().add(0, epubPath.toString());
@@ -163,7 +168,7 @@ public class EpubConverter {
                     });
 
                 } catch (Exception e) {
-                    logger.error(e.getMessage(), e);
+                    logger.error("Problem occured while converting to Epub", e);
                 } finally {
                     completableFuture.complete(epubPath);
                 }
@@ -171,7 +176,7 @@ public class EpubConverter {
             });
 
         } catch (Exception e) {
-            logger.error(e.getMessage(), e);
+            logger.error("Problem occured while converting to Epub", e);
             indikatorService.completeCycle();
         }
 

@@ -7,6 +7,8 @@ import com.kodcu.service.ThreadService;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.input.MouseButton;
 import netscape.javascript.JSObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -23,6 +25,7 @@ import java.util.stream.Stream;
 public class SlidePane extends ViewPanel {
 
     private String backend = "revealjs";
+    private Logger logger = LoggerFactory.getLogger(SlidePane.class);
 
     @Autowired
     public SlidePane(ThreadService threadService, ApplicationController controller, Current current) {
@@ -45,14 +48,21 @@ public class SlidePane extends ViewPanel {
     }
 
     public void replaceSlides(String rendered) {
-        ((JSObject) getWindow().eval(backend + "Ext")).call("replaceSlides", rendered);
+        String backendExt = backend + "Ext";
+        try{
+            ((JSObject) getWindow().eval(backendExt)).call("replaceSlides", rendered);
+        }catch (Exception e){
+            logger.debug("{} is not found while replacing slide, but don't worry.",backendExt, e);
+        }
+
     }
 
     public void flipThePage(String rendered) {
+        String backendExt = backend + "Ext";
         try {
-            ((JSObject) getWindow().eval(backend + "Ext")).call("flipCurrentPage", rendered);
-        } catch (Exception ex) {
-            ex.printStackTrace();
+            ((JSObject) getWindow().eval(backendExt)).call("flipCurrentPage", rendered);
+        } catch (Exception e) {
+            logger.debug("{} is not found while flipping page, but don't worry.",backendExt, e);
         }
     }
 

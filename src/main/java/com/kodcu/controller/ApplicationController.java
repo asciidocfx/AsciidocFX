@@ -300,7 +300,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             try {
                 e.sendMessage(new TextMessage(nev));
             } catch (Exception ex) {
-                logger.info(ex.getMessage(), ex);
+                logger.error("Problem occured while sending content over WebSocket", ex);
             }
         });
     };
@@ -521,7 +521,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
                 });
             } catch (Exception e) {
-                logger.info(e.getMessage(), e);
+                logger.error("Problem occured while converting image to base64 for {}", url);
             }
         });
     }
@@ -934,6 +934,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
         } catch (Exception e) {
             e.printStackTrace();
+            logger.error("Problem occured while loading document types", e);
         }
     }
 
@@ -946,7 +947,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             configPath = installationPath.resolve("conf");
             logPath = installationPath.resolve("log");
         } catch (URISyntaxException e) {
-            e.printStackTrace();
+            logger.error("Problem occured while resolving conf and log paths", e);
         }
 
     }
@@ -1151,7 +1152,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             this.shortCuts = yaml.loadAs(yamlC, Map.class);
 
         } catch (Exception e) {
-            logger.error(e.getMessage(), e);
+            logger.error("Problem occured while loading shortcuts.yml file", e);
         }
     }
 
@@ -1169,7 +1170,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             config = yaml.loadAs(yamlContent, Config.class);
 
         } catch (Exception e) {
-            logger.error(e.getMessage(), e);
+            logger.error("Problem occured while loading config.yml file", e);
         }
 
         if (!config.getDirectoryPanel())
@@ -1188,7 +1189,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
             recentFilesList.addAll(recentFiles.getFiles());
         } catch (Exception e) {
-            logger.error(e.getMessage(), e);
+            logger.error("Problem occured while loading recent file list", e);
         }
     }
 
@@ -1333,7 +1334,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         try {
             yamlService.persist();
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Error while closing app", e);
         }
     }
 
@@ -1357,8 +1358,8 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     @WebkitCall(from = "editor")
     public void onscroll(Object pos, Object max) {
         Node content = previewTab.getContent();
-        if(Objects.nonNull(content)){
-            ((ViewPanel)content).onscroll(pos,max);
+        if (Objects.nonNull(content)) {
+            ((ViewPanel) content).onscroll(pos, max);
         }
     }
 
@@ -1370,7 +1371,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         }
 
         if (previewTab.getContent() == htmlPane) {
-            threadService.runActionLater(()->{
+            threadService.runActionLater(() -> {
                 try {
                     htmlPane.call("runScroller", text);
                 } catch (Exception e) {
@@ -1933,9 +1934,11 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         final File finalAsciibookRoot = asciibookRoot;
 
         threadService.runTaskLater(() -> {
+            logger.debug("Gitbook to Asciibook conversion started");
             indikatorService.startCycle();
             gitbookToAsciibook.gitbookToAsciibook(finalGitbookRoot.toPath(), finalAsciibookRoot.toPath());
             indikatorService.completeCycle();
+            logger.debug("Gitbook to Asciibook conversion ended");
         });
 
     }

@@ -13,6 +13,8 @@ import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.image.WritableImage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.awt.image.BufferedImage;
 import java.util.*;
@@ -25,6 +27,7 @@ public abstract class XYChartBuilderService extends ChartBuilderService {
     private final ThreadService threadService;
     private final Current current;
     private final ApplicationController controller;
+    private final Logger logger = LoggerFactory.getLogger(XYChartBuilderService.class);
 
     public XYChartBuilderService(ThreadService threadService, Current current, ApplicationController controller) {
         super(threadService, current, controller);
@@ -41,6 +44,8 @@ public abstract class XYChartBuilderService extends ChartBuilderService {
         } catch (InterruptedException e) {
             throw e;
         }
+
+        logger.debug("Chart extension is started for {}", fileName);
 
         String[] split = chartContent.split("\\r?\\n");
         List<String> lines = Arrays.asList(split);
@@ -199,6 +204,7 @@ public abstract class XYChartBuilderService extends ChartBuilderService {
         BufferedImage bufferedImage = SwingFXUtils.fromFXImage(writableImage, null);
         IOHelper.createDirectories(currentRoot.resolve("images"));
         IOHelper.imageWrite(bufferedImage, "png", imagePath.toFile());
+        logger.debug("Chart extension is ended for {}", fileName);
         controller.clearImageCache();
     }
 

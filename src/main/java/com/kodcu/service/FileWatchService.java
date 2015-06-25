@@ -52,7 +52,7 @@ public class FileWatchService {
             }
 
         } catch (Exception e) {
-            logger.info("Could not register watcher for path: {}", path, e);
+            logger.debug("Could not register watcher for path: {}, but dont worry", path, e);
         }
     }
 
@@ -61,7 +61,7 @@ public class FileWatchService {
             try {
                 watcher.close();
             } catch (IOException e) {
-                e.printStackTrace();
+                logger.debug("Problem occured while invalidating watcherservice", e);
             }
         }
     }

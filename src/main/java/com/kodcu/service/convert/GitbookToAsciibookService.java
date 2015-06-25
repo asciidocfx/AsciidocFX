@@ -63,7 +63,7 @@ public class GitbookToAsciibookService {
             js.eval(markedExtension);
 
         } catch (Exception e) {
-            logger.error(e.getMessage(), e);
+            logger.error("Problem occured while initializing marked.js", e);
         }
     }
 
@@ -78,7 +78,7 @@ public class GitbookToAsciibookService {
         try {
             eval = invocable.invokeFunction("markdownToAsciidoc", content);
         } catch (Exception e) {
-            logger.error(e.getMessage(), e);
+            logger.error("Problem occured while converting Markdown to Asciidoc", e);
         } finally {
             next.accept((String) eval);
         }

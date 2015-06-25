@@ -46,7 +46,7 @@ public class TableViewLogAppender extends UnsynchronizedAppenderBase<ILoggingEve
         if (Objects.isNull(logViewer))
             return;
 
-        String message = event.getMessage();
+        String message = event.getFormattedMessage();
         String level = event.getLevel().toString();
         MyLog myLog = new MyLog(level, message);
         buffer.add(myLog);

@@ -75,6 +75,8 @@ public class TreeService {
             int hashCode = (fileName + type + tree + width + height).hashCode();
             if (Objects.isNull(cacheHit) || hashCode != cacheHit) {
 
+                logger.debug("Tree extension is started for {}", fileName);
+
                 TreeView<Tuple<Integer, String>> fileView = new TreeView<>();
 
                 fileView.getStyleClass().add("file-tree");
@@ -162,9 +164,7 @@ public class TreeService {
                             fileView.setPrefWidth(fileView.getPrefWidth() + value);
                         else
                             fileView.setPrefWidth(value);
-                    } catch (Exception e) {
-                        logger.debug(e.getMessage(), e);
-                    }
+                    } catch (Exception e) {}
 
                     try {
                         Double value = Double.valueOf(height);
@@ -173,9 +173,7 @@ public class TreeService {
                             fileView.setPrefHeight(fileView.getPrefHeight() + value);
                         else
                             fileView.setPrefHeight(value);
-                    } catch (Exception e) {
-                        logger.debug(e.getMessage(), e);
-                    }
+                    } catch (Exception e) {}
 
                     threadService.runActionLater(() -> {
                         controller.getRootAnchor().getChildren().add(fileView);
@@ -186,13 +184,15 @@ public class TreeService {
                         IOHelper.createDirectories(path.resolve("images"));
                         IOHelper.imageWrite(bufferedImage, "png", treePath.toFile());
 
+                        logger.debug("Tree extension is ended for {}", fileName);
+
                         controller.clearImageCache();
 
                         controller.getRootAnchor().getChildren().remove(fileView);
                     });
 
                 } catch (Exception e) {
-                    logger.error(e.getMessage(), e);
+                    logger.error("Problem occured while generating Filesystem Tree", e);
                 }
             }
 
@@ -234,9 +234,7 @@ public class TreeService {
                         treeview.setPrefWidth(treeview.getPrefWidth() + value);
                     else
                         treeview.setPrefWidth(value);
-                } catch (Exception e) {
-                    logger.info(e.getMessage(), e);
-                }
+                } catch (Exception e) {}
 
                 try {
                     Double value = Double.valueOf(height);
@@ -245,11 +243,9 @@ public class TreeService {
                         treeview.setPrefHeight(treeview.getPrefHeight() + value);
                     else
                         treeview.setPrefHeight(value);
-                } catch (Exception e) {
-                    logger.info(e.getMessage(), e);
-                }
+                } catch (Exception e) {}
 
-                threadService.runActionLater(()->{
+                threadService.runActionLater(() -> {
                     treeview.getEngine().load(String.format("http://localhost:%d/treeview.html", controller.getPort()));
                 });
                 controller.getRootAnchor().getChildren().add(treeview);

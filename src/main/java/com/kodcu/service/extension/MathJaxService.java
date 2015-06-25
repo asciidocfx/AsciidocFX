@@ -67,6 +67,8 @@ public class MathJaxService {
             if (hashCode == cacheHit)
                 return;
 
+        logger.debug("MatJax extension is started for {}", fileName);
+
         current.getCache().put(fileName, hashCode);
 
         if (fileName.endsWith(".png"))
@@ -86,11 +88,12 @@ public class MathJaxService {
 
             Files.write(path.resolve("images/").resolve(fileName), svg.getBytes(Charset.forName("UTF-8")), CREATE, WRITE, TRUNCATE_EXISTING);
 
+            logger.debug("MathJax extension is ended for {}", fileName);
             threadService.runActionLater(() -> {
                 controller.clearImageCache();
             });
         } catch (IOException e) {
-            logger.error(e.getMessage(), e);
+            logger.error("Problem occured while generating MathJax svg", e);
         }
     }
 
@@ -118,12 +121,13 @@ public class MathJaxService {
 
             Files.write(path.resolve("images/").resolve(fileName), ostream.toByteArray(), CREATE, WRITE, TRUNCATE_EXISTING);
 
+            logger.debug("MathJax extension is ended for {}", fileName);
             threadService.runActionLater(() -> {
                 controller.clearImageCache();
             });
 
         } catch (Exception e) {
-            logger.error(e.getMessage(), e);
+            logger.error("Problem occured while generating MathJax png", e);
         }
     }
 }

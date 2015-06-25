@@ -52,9 +52,7 @@ public class MarkdownTableController implements Initializable {
         try {
             row = Integer.valueOf(rows.textProperty().getValue());
             column = Integer.valueOf(columns.textProperty().getValue());
-        } catch (RuntimeException e) {
-            logger.debug(e.getMessage(), e);
-        }
+        } catch (RuntimeException e) {}
 
         for (int i = 0; i < row; i++) {
             if (i == 1) {
