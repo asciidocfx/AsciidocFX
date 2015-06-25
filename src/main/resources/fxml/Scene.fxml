@@ -150,7 +150,7 @@
               <HBox fx:id="statusBox" spacing="3" alignment="CENTER_LEFT">
                 <children>
                   <Label fx:id="showHideLogs" id="showHideLogs" ></Label>
-                  <Label fx:id="statusMessage" text="PDF conversation completed"></Label>
+                  <Label fx:id="statusMessage"></Label>
                   <Pane HBox.hgrow="ALWAYS" ></Pane>
                   <Label fx:id="statusText" ></Label>
                 </children>
