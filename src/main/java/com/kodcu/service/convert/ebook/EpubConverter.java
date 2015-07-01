@@ -15,20 +15,20 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.zeroturnaround.zip.ZipUtil;
 
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
-import java.io.File;
-import java.io.StringReader;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
+import java.io.*;
+import java.nio.file.*;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.zip.Deflater;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import static java.nio.file.StandardOpenOption.TRUNCATE_EXISTING;
 import static java.nio.file.StandardOpenOption.WRITE;
@@ -116,8 +116,10 @@ public class EpubConverter {
                     docBookConverter.convert(false, docbook -> {
 
                         threadService.runTaskLater(() -> {
-                            Path oebps = epubTemp.resolve("OEBPS");
-                            transformer.setParameter("base.dir", oebps.toString());
+                            Path oebpsPath = epubTemp.resolve("OEBPS");
+                            Path mimePath = epubTemp.resolve("mimetype");
+                            Path metaPath = epubTemp.resolve("META-INF");
+                            transformer.setParameter("base.dir", oebpsPath.toString());
                             try (StringReader reader = new StringReader(docbook);) {
                                 StreamSource xmlSource = new StreamSource(reader);
                                 IOHelper.transform(transformer, xmlSource, new StreamResult());
@@ -146,13 +148,32 @@ public class EpubConverter {
                             Stream<Path> imageStream = IOHelper.find(currentTabPathDir, Integer.MAX_VALUE, (p, attr) -> pathResolverService.isImage(p));
 
                             imageStream.forEach(img -> {
-                                IOHelper.copyFile(img.toFile(), oebps.resolve(currentTabPathDir.relativize(img)).toFile());
+                                IOHelper.copyFile(img.toFile(), oebpsPath.resolve(currentTabPathDir.relativize(img)).toFile());
                             });
 
                             IOHelper.copyDirectoryToDirectory(configPath.resolve("docbook/images/callouts").toFile(), epubTemp.resolve("OEBPS/images")
                                     .toFile());
-                            ZipUtil.pack(epubTemp.toFile(), epubOut.toFile());
-                            ZipUtil.removeEntry(epubOut.toFile(), "book.epub");
+
+//                            Path defaultEpub = configPath.resolve("epub/mimetype");
+
+                            try (FileOutputStream fileOutputStream = new FileOutputStream(epubOut.toFile());
+                                 ZipOutputStream zipOutputStream = new ZipOutputStream(fileOutputStream);) {
+
+                                zipOutputStream.setMethod(ZipOutputStream.STORED);
+                                ZipEntry zipEntry = new ZipEntry("mimetype");
+                                zipOutputStream.putNextEntry(zipEntry);
+                                zipOutputStream.write("application/epub+zip".getBytes());
+
+                            } catch (Exception e) {
+                                logger.error("Problem occured while zipping mimetype");
+                            }
+
+                            try (FileSystem zipfs = FileSystems.newFileSystem(epubOut, null)) {
+                                iterativelyPackDir(epubTemp.resolve("OEBPS"), epubTemp, zipfs);
+                                iterativelyPackDir(epubTemp.resolve("META-INF"), epubTemp, zipfs);
+                            } catch (IOException e) {
+                                logger.error("Problem occured while packing epub content");
+                            }
 
                             IOHelper.move(epubOut, epubPath, StandardCopyOption.REPLACE_EXISTING);
 
@@ -164,13 +185,14 @@ public class EpubConverter {
                                     asciiDocController.getRecentFilesList().add(0, epubPath.toString());
                                 });
                             }
+
+                            completableFuture.complete(epubPath);
                         });
                     });
 
                 } catch (Exception e) {
                     logger.error("Problem occured while converting to Epub", e);
-                } finally {
-                    completableFuture.complete(epubPath);
+                    completableFuture.completeExceptionally(e);
                 }
 
             });
@@ -178,8 +200,24 @@ public class EpubConverter {
         } catch (Exception e) {
             logger.error("Problem occured while converting to Epub", e);
             indikatorService.completeCycle();
+            completableFuture.completeExceptionally(e);
         }
 
         return completableFuture;
+    }
+
+    private void iterativelyPackDir(Path rootPath, Path realRoot, FileSystem zipfs) throws IOException {
+        List<Path> fileList = IOHelper.list(rootPath).collect(Collectors.toList());
+        for (Path oebpsFile : fileList) {
+
+            if (Files.isDirectory(oebpsFile)) {
+                iterativelyPackDir(oebpsFile, realRoot, zipfs);
+            } else {
+                Path relativeFile = realRoot.relativize(oebpsFile);
+                Path relativeRoot = realRoot.relativize(oebpsFile.getParent());
+                Files.createDirectories(zipfs.getPath(relativeRoot.toString()));
+                Files.copy(oebpsFile, zipfs.getPath(relativeFile.toString()), StandardCopyOption.REPLACE_EXISTING);
+            }
+        }
     }
 }

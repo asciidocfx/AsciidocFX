@@ -111,26 +111,18 @@
         </dependency>
         <dependency>
             <groupId>org.zeroturnaround</groupId>
-            <artifactId>zt-zip</artifactId>
-            <version>1.8</version>
-        </dependency>
-        <dependency>
-            <groupId>org.zeroturnaround</groupId>
             <artifactId>zt-exec</artifactId>
             <version>1.7</version>
         </dependency>
         <dependency>
             <groupId>net.sourceforge.plantuml</groupId>
             <artifactId>plantuml</artifactId>
-            <version>8015</version>
+            <version>8027</version>
         </dependency>
         <dependency>
             <groupId>org.apache.xmlgraphics</groupId>
             <artifactId>batik-codec</artifactId>
             <version>1.7</version>
-            <exclusions>
-
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>de.tototec</groupId>
