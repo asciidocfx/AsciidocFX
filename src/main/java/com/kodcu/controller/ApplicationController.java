@@ -1835,8 +1835,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
                 Path folderPath = path.resolve(result);
 
-                // it needs to invalidate file watchservice
-                fileWatchService.invalidate();
 
                 threadService.runTaskLater(() -> {
                     IOHelper.createDirectory(folderPath);

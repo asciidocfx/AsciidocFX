@@ -33,13 +33,15 @@ public class DirectoryService {
     private Supplier<Path> workingDirectorySupplier;
     private Consumer<Path> openFileConsumer;
     private Supplier<Path> pathSaveSupplier;
+    private final FileWatchService fileWatchService;
 
 
     @Autowired
-    public DirectoryService(final ApplicationController controller, final FileBrowseService fileBrowser, final Current current) {
+    public DirectoryService(final ApplicationController controller, final FileBrowseService fileBrowser, final Current current, FileWatchService fileWatchService) {
         this.controller = controller;
         this.fileBrowser = fileBrowser;
         this.current = current;
+        this.fileWatchService = fileWatchService;
 
         workingDirectorySupplier = () -> {
             final DirectoryChooser directoryChooser = newDirectoryChooser("Select working directory");
@@ -165,6 +167,9 @@ public class DirectoryService {
     public void changeWorkigDir(Path path) {
         if (Objects.isNull(path))
             return;
+
+        // it needs to invalidate file watchservice
+        fileWatchService.invalidate();
 
         controller.getRecentFiles().setWorkingDirectory(path.toString());
         this.setWorkingDirectory(Optional.of(path));

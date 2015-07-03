@@ -37,7 +37,7 @@ public class FileWatchService {
 
             if (!path.equals(lastWatchedPath)) {
                 if (Objects.nonNull(lastWatchedPath)) {
-                    watcher.close();
+                    invalidate();
                     watcher = FileSystems.getDefault().newWatchService();
                 }
                 lastWatchedPath = path;
@@ -45,9 +45,9 @@ public class FileWatchService {
             }
 
             this.watckKey = watcher.take();
-            watckKey.pollEvents();
-            watckKey.reset();
             if (watckKey.isValid()) {
+                watckKey.pollEvents();
+                watckKey.reset();
                 browseCallback.accept(treeView, path);
             }
 
@@ -57,7 +57,7 @@ public class FileWatchService {
     }
 
     public void invalidate() {
-        if(Objects.nonNull(watcher)){
+        if (Objects.nonNull(watcher)) {
             try {
                 watcher.close();
             } catch (IOException e) {
