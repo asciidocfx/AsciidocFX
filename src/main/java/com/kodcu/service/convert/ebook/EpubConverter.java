@@ -159,7 +159,8 @@ public class EpubConverter {
                             try (FileOutputStream fileOutputStream = new FileOutputStream(epubOut.toFile());
                                  ZipOutputStream zipOutputStream = new ZipOutputStream(fileOutputStream);) {
 
-                                zipOutputStream.setMethod(ZipOutputStream.STORED);
+                                zipOutputStream.setMethod(ZipOutputStream.DEFLATED);
+                                zipOutputStream.setLevel(Deflater.NO_COMPRESSION);
                                 ZipEntry zipEntry = new ZipEntry("mimetype");
                                 zipOutputStream.putNextEntry(zipEntry);
                                 zipOutputStream.write("application/epub+zip".getBytes());
