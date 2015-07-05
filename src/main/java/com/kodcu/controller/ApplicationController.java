@@ -1500,12 +1500,11 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                         if (result.isBackend("revealjs") || result.isBackend("deckjs")) {
                             slidePane.setBackend(result.getBackend());
                             slideConverter.convert(result.getRendered());
-                            previewTab.setContent(slidePane);
                         }
 
                     } else if ("html".equalsIgnoreCase(mode)) {
 
-                        if (Objects.isNull(liveReloadPane.getLocation())) {
+                        if (previewTab.getContent() != liveReloadPane) {
                             liveReloadPane.setOnSuccess(() -> {
                                 liveReloadPane.setMember("afx", this);
                                 liveReloadPane.initializeDiffReplacer();
@@ -2068,6 +2067,10 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     public TabPane getPreviewTabPane() {
         return previewTabPane;
+    }
+
+    public PreviewTab getPreviewTab() {
+        return previewTab;
     }
 
     @FXML

@@ -1,11 +1,13 @@
 package com.kodcu.service.convert.slide;
 
 import com.kodcu.component.HtmlPane;
+import com.kodcu.component.PreviewTab;
 import com.kodcu.component.SlidePane;
 import com.kodcu.controller.ApplicationController;
 import com.kodcu.other.Current;
-import com.kodcu.service.convert.markdown.MarkdownService;
 import com.kodcu.service.ThreadService;
+import com.kodcu.service.convert.markdown.MarkdownService;
+import javafx.scene.Node;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
@@ -19,7 +21,7 @@ import java.util.regex.Pattern;
  * Created by usta on 09.04.2015.
  */
 @Component
-public class SlideConverter  {
+public class SlideConverter {
 
     private final ApplicationController controller;
     private final ThreadService threadService;
@@ -60,7 +62,9 @@ public class SlideConverter  {
 
             this.rendered = rendered;
 
-            if (Objects.isNull(slidePane.getLocation())) {
+            PreviewTab previewTab = controller.getPreviewTab();
+
+            if (previewTab.getContent() != slidePane) {
                 slidePane.load(String.format("http://localhost:%d/slide/index.slide", controller.getPort()));
                 slidePane.injectExtensions();
             } else {
@@ -68,6 +72,7 @@ public class SlideConverter  {
                     slidePane.replaceSlides(rendered);
                 });
             }
+            previewTab.setContent(slidePane);
 
             for (Consumer<String> step : nextStep) {
                 step.accept(rendered);
