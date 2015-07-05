@@ -47,12 +47,8 @@ public class ConverterResult {
         return doctype;
     }
 
-    public boolean isBackend(String backend, Consumer<String> consumer, Runnable... runnable) {
-        boolean equals = backend.equals(this.backend);
-        if (equals) {
-            this.afterRender(consumer, runnable);
-        }
-        return equals;
+    public boolean isBackend(String backend) {
+        return backend.equals(this.backend);
     }
 
     public void afterRender(Consumer<String> consumer, Runnable... runnable) {
