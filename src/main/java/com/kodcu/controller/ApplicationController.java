@@ -91,6 +91,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static java.nio.file.StandardOpenOption.*;
@@ -118,6 +119,12 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     private TreeSet<Section> outlineList = new TreeSet<>();
     private ObservableList<DocumentMode> modeList = FXCollections.observableArrayList();
+
+    private final Pattern bookArticleHeaderRegex =
+            Pattern.compile("^:doctype:.*(book|article)", Pattern.MULTILINE);
+
+    private final Pattern forceIncludeRegex =
+            Pattern.compile("^:forceinclude:", Pattern.MULTILINE);
 
     public CheckMenuItem hidePreviewPanel;
     public MenuItem hideFileBrowser;
@@ -153,9 +160,10 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     public Label browserPro;
     private AnchorPane markdownTableAnchor;
     private Stage markdownTableStage;
-    private boolean basicMode;
 
     private TreeView<Section> sectionTreeView;
+
+    private AtomicBoolean includeAsciidocResource = new AtomicBoolean(false);
 
     private static ObservableList<MyLog> logList = FXCollections.synchronizedObservableList(FXCollections.observableArrayList());
 
@@ -1017,12 +1025,18 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         messageColumn.setCellFactory(param -> new TableCell<MyLog, String>() {
             @Override
             protected void updateItem(String item, boolean empty) {
+                if (item == getItem())
+                    return;
+
                 super.updateItem(item, empty);
-                if (!empty) {
-                    Text text = new Text();
-                    text.setText(item);
+
+                if (item == null) {
+                    super.setText(null);
+                    super.setGraphic(null);
+                } else {
+                    Text text = new Text(item);
+                    super.setGraphic(text);
                     text.wrappingWidthProperty().bind(messageColumn.widthProperty().subtract(0));
-                    setGraphic(text);
                 }
             }
         });
@@ -1063,6 +1077,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
         Button clearLogsButton = new Button("Clear");
         clearLogsButton.setOnAction(e -> {
+            statusText.setText("");
             logList.clear();
         });
 
@@ -1236,9 +1251,13 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                 sectionTreeView.setRoot(rootItem);
 
                 sectionTreeView.setOnMouseClicked(event -> {
-                    TreeItem<Section> item = sectionTreeView.getSelectionModel().getSelectedItem();
-                    EditorPane editorPane = current.currentEditor();
-                    editorPane.moveCursorTo(item.getValue().getLineno());
+                    try {
+                        TreeItem<Section> item = sectionTreeView.getSelectionModel().getSelectedItem();
+                        EditorPane editorPane = current.currentEditor();
+                        editorPane.moveCursorTo(item.getValue().getLineno());
+                    } catch (Exception e) {
+                        logger.error("Problem occured while jumping from outline");
+                    }
                 });
             }
 
@@ -1458,47 +1477,58 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
         threadService.runTaskLater(() -> {
 
+            boolean bookArticleHeader = this.bookArticleHeaderRegex.matcher(text).find();
+            boolean forceInclude = this.forceIncludeRegex.matcher(text).find();
+
             threadService.runActionLater(() -> {
 
-                if ("asciidoc".equalsIgnoreCase(mode)) {
+                try {
+                    if ("asciidoc".equalsIgnoreCase(mode)) {
 
-                    ConverterResult result = htmlPane.convertAsciidoc(text);
+                        if (bookArticleHeader && !forceInclude)
+                            setIncludeAsciidocResource(true);
 
-                    result.isBackend("html5", lastRendered::setValue, () -> {
+                        ConverterResult result = htmlPane.convertAsciidoc(text);
+
+                        setIncludeAsciidocResource(false);
+
+                        if (result.isBackend("html5")) {
+                            lastRendered.setValue(result.getRendered());
+                            previewTab.setContent(htmlPane);
+                        }
+
+                        if (result.isBackend("revealjs") || result.isBackend("deckjs")) {
+                            slidePane.setBackend(result.getBackend());
+                            slideConverter.convert(result.getRendered());
+                            previewTab.setContent(slidePane);
+                        }
+
+                    } else if ("html".equalsIgnoreCase(mode)) {
+
+                        if (Objects.isNull(liveReloadPane.getLocation())) {
+                            liveReloadPane.setOnSuccess(() -> {
+                                liveReloadPane.setMember("afx", this);
+                                liveReloadPane.initializeDiffReplacer();
+                            });
+                            liveReloadPane.load(String.format("http://localhost:%d/livereload/index.reload", port));
+                        } else {
+                            liveReloadPane.updateDomdom();
+                        }
+
+                        previewTab.setContent(liveReloadPane);
+
+                    } else if ("markdown".equalsIgnoreCase(mode)) {
+                        markdownService.convertToAsciidoc(text, asciidoc -> {
+                            threadService.runActionLater(() -> {
+                                ConverterResult result = htmlPane.convertAsciidoc(asciidoc);
+                                result.afterRender(lastRendered::setValue);
+                            });
+                        });
                         previewTab.setContent(htmlPane);
-                    });
-                    result.isBackend("revealjs", slideConverter::convert, () -> {
-                        slidePane.setBackend(result.getBackend());
-                        previewTab.setContent(slidePane);
-                    });
-                    result.isBackend("deckjs", slideConverter::convert, () -> {
-                        slidePane.setBackend(result.getBackend());
-                        previewTab.setContent(slidePane);
-                    });
-
-
-                } else if ("html".equalsIgnoreCase(mode)) {
-
-                    if (Objects.isNull(liveReloadPane.getLocation())) {
-                        liveReloadPane.setOnSuccess(() -> {
-                            liveReloadPane.setMember("afx", this);
-                            liveReloadPane.initializeDiffReplacer();
-                        });
-                        liveReloadPane.load(String.format("http://localhost:%d/livereload/index.reload", port));
-                    } else {
-                        liveReloadPane.updateDomdom();
                     }
-
-                    previewTab.setContent(liveReloadPane);
-
-                } else if ("markdown".equalsIgnoreCase(mode)) {
-                    markdownService.convertToAsciidoc(text, asciidoc -> {
-                        threadService.runActionLater(() -> {
-                            ConverterResult result = htmlPane.convertAsciidoc(asciidoc);
-                            result.afterRender(lastRendered::setValue);
-                        });
-                    });
-                    previewTab.setContent(htmlPane);
+                } catch (Exception e) {
+                    setIncludeAsciidocResource(false);
+                    logger.error("Problem occured while rendering content", e);
                 }
 
             });
@@ -1532,9 +1562,8 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     @WebkitCall(from = "asciidoctor")
     public String readAsciidoctorResource(String uri, Integer parent) {
 
-//        if (!current.currentIsSlide())
-//            if (uri.matches(".*?\\.(asc|adoc|ad|asciidoc|md|markdown)") && isBasicMode())
-//                return String.format("link:%s[]", uri);
+        if (uri.matches(".*?\\.(asc|adoc|ad|asciidoc|md|markdown)") && getIncludeAsciidocResource())
+            return String.format("link:%s[]", uri);
 
         final CompletableFuture<String> completableFuture = new CompletableFuture();
 
@@ -2003,14 +2032,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         });
     }*/
 
-    public boolean isBasicMode() {
-        return basicMode;
-    }
-
-    public void setBasicMode(boolean basicMode) {
-        this.basicMode = basicMode;
-    }
-
     public RecentFiles getRecentFiles() {
         return recentFiles;
     }
@@ -2025,6 +2046,14 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     public List<String> getSupportedModes() {
         return supportedModes;
+    }
+
+    public boolean getIncludeAsciidocResource() {
+        return includeAsciidocResource.get();
+    }
+
+    public void setIncludeAsciidocResource(boolean includeAsciidocResource) {
+        this.includeAsciidocResource.set(includeAsciidocResource);
     }
 
     public void removeChildElement(Node node) {
