@@ -78,16 +78,6 @@ public class HtmlPane extends ViewPanel {
         return (String) webEngine().executeScript("findRenderedSelection(context)");
     }
 
-    public String convertSlide(String asciidoc) {
-        this.setMember("editorValue", asciidoc);
-        return (String) webEngine().executeScript("convertSlide(editorValue)");
-    }
-
-    public String convertBasicHtml(String asciidoc) {
-        this.setMember("editorValue", asciidoc);
-        return (String) webEngine().executeScript("convertBasicHtml(editorValue)");
-    }
-
     public JSObject getWindow() {
         return (JSObject) webEngine().executeScript("window");
     }
