@@ -23,8 +23,8 @@ public class TableViewLogAppender extends UnsynchronizedAppenderBase<ILoggingEve
 
     private static TableView<MyLog> logViewer;
     private static ObservableList<MyLog> logList;
-    private List<MyLog> buffer = Collections.synchronizedList(new LinkedList<MyLog>());
-    private final AtomicBoolean scheduled = new AtomicBoolean(false);
+    private static List<MyLog> buffer = Collections.synchronizedList(new LinkedList<MyLog>());
+    private static AtomicBoolean scheduled = new AtomicBoolean(false);
     private static Label logShortMessage;
     PatternLayoutEncoder encoder;
 
