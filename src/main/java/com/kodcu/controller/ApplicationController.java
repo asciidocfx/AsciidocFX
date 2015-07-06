@@ -1077,7 +1077,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
         Button clearLogsButton = new Button("Clear");
         clearLogsButton.setOnAction(e -> {
-            statusText.setText("");
+            statusMessage.setText("");
             logList.clear();
         });
 
