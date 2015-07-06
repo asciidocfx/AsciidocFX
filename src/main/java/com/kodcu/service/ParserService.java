@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.LinkedList;
 import java.util.List;
@@ -24,7 +25,7 @@ public class ParserService {
     private final ApplicationController asciiDocController;
     private final Current current;
     private final PathResolverService pathResolver;
-    
+
     @Autowired
     public ParserService(final ApplicationController asciiDocController, final Current current, final PathResolverService pathResolver) {
         this.asciiDocController = asciiDocController;
@@ -38,7 +39,7 @@ public class ParserService {
 
         Path currentPath = current.currentPath().map(Path::getParent).get();
 
-        List<Path> files = dropFiles.stream().map(File::toPath).filter(pathResolver::isAsciidoc).collect(Collectors.toList());
+        List<Path> files = dropFiles.stream().map(File::toPath).filter(p -> !Files.isDirectory(p)).collect(Collectors.toList());
 
         List<String> buffer = new LinkedList<>();
 
