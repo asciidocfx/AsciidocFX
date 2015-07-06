@@ -1,8 +1,8 @@
 package com.kodcu.component;
 
-import com.kodcu.other.DocumentMode;
 import com.kodcu.service.shortcut.AsciidocShortcutService;
 import com.kodcu.service.shortcut.MarkdownShortcutService;
+import com.kodcu.service.shortcut.NoneShortcutService;
 import javafx.application.Platform;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
@@ -97,9 +97,13 @@ public class MyTab extends Tab {
     }
 
     public Class getShortcutType() {
-        if (isMarkdown())
+        if (isAsciidoc()) {
+            return AsciidocShortcutService.class;
+        } else if (isMarkdown()) {
             return MarkdownShortcutService.class;
-        return AsciidocShortcutService.class;
+        }
+
+        return NoneShortcutService.class;
     }
 
     public boolean isMarkdown() {
