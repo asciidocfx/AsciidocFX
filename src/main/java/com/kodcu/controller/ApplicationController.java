@@ -112,6 +112,9 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     public Label statusMessage;
     public Label showHideLogs;
     public Tab outlineTab;
+    public MenuItem newFolder;
+    public MenuItem newSlide;
+    public Menu newMenu;
 
     private Logger logger = LoggerFactory.getLogger(ApplicationController.class);
 
@@ -130,7 +133,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     public MenuItem hideFileBrowser;
     public MenuButton panelShowHideMenuButton;
     public MenuItem renameFile;
-    public MenuItem createFile;
+    public MenuItem newFile;
     public TabPane tabPane;
     public SplitPane splitPane;
     public SplitPane splitPaneVertical;
@@ -143,7 +146,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     public ProgressIndicator indikator;
     public ListView<String> recentListView;
     public MenuItem openFileTreeItem;
-    public MenuItem removePathItem;
+    public MenuItem deletePathItem;
     public MenuItem openFolderTreeItem;
     public MenuItem openFileListItem;
     public MenuItem openFolderListItem;
@@ -761,7 +764,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                     .forEach(directoryService.getOpenFileConsumer()::accept);
         });
 
-        removePathItem.setOnAction(event -> {
+        deletePathItem.setOnAction(event -> {
 
             ObservableList<TreeItem<Item>> selectedItems = treeView.getSelectionModel().getSelectedItems();
 
@@ -770,7 +773,14 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                     selectedItems.stream()
                             .map(e -> e.getValue())
                             .map(e -> e.getPath())
-                            .forEach(IOHelper::deleteIfExists);
+                            .forEach(path -> threadService.runTaskLater(() -> {
+                                if (Files.isDirectory(path)) {
+                                    IOHelper.deleteDirectory(path);
+                                } else {
+                                    IOHelper.deleteIfExists(path);
+                                }
+                            }));
+
             });
 
         });
@@ -823,21 +833,16 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         });
 
         treeView.getSelectionModel().getSelectedIndices().addListener((ListChangeListener<? super Integer>) p -> {
-            boolean selectedAnyFolder = ((ObservableList<Integer>) p.getList()).stream().anyMatch(index -> {
-                TreeItem<Item> item = treeView.getTreeItem(index);
-                Path itemPath = item.getValue().getPath();
-                boolean isFile = itemPath.toFile().isFile();
-                return !isFile;
-            });
 
-            if (selectedAnyFolder) {
-                removePathItem.setDisable(true);
-                renameFile.setDisable(true);
-                createFile.setDisable(false);
-            } else {
-                removePathItem.setDisable(false);
-                renameFile.setDisable(false);
-                createFile.setDisable(true);
+            ObservableList<TreeItem<Item>> selectedItems = treeView.getSelectionModel().getSelectedItems();
+            if (selectedItems.size() > 1) {
+                renameFile.setVisible(false);
+                newMenu.setVisible(false);
+            } else if (selectedItems.size() == 1) {
+                Path path = selectedItems.get(0).getValue().getPath();
+                boolean isDirectory = Files.isDirectory(path);
+                newMenu.setVisible(isDirectory);
+                renameFile.setVisible(!isDirectory);
             }
         });
 

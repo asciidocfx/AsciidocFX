@@ -13,7 +13,7 @@ public final class AlertHelper {
 
     public static Optional<ButtonType> deleteAlert() {
         AlertDialog deleteAlert = new AlertDialog(AlertType.WARNING, null, ButtonType.YES, ButtonType.CANCEL);
-        deleteAlert.setHeaderText("Do you want to remove file(s)?");
+        deleteAlert.setHeaderText("Do you want to delete selected path(s)?");
         return deleteAlert.showAndWait();
     }
 

@@ -145,7 +145,7 @@ public class IOHelper {
         try {
             return Files.readAllBytes(path);
         } catch (IOException e) {
-            logger.error("Problem occured while reding {}", path, e);
+            logger.error("Problem occured while reading {}", path, e);
         }
         return new byte[]{};
     }
@@ -264,6 +264,14 @@ public class IOHelper {
             Files.createDirectory(path);
         } catch (IOException e) {
             logger.error("Problem occured while creating {} path", path, e);
+        }
+    }
+
+    public static void deleteDirectory(Path path) {
+        try {
+            FileUtils.deleteDirectory(path.toFile());
+        } catch (IOException e) {
+            logger.error("Problem occured while deleting {} path", path, e);
         }
     }
 }

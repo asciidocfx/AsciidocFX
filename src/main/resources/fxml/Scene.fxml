@@ -94,16 +94,19 @@
                                   <MenuItem mnemonicParsing="false" text="Open" fx:id="openFileTreeItem" />
                                   <MenuItem id="openFolderTreeItem" mnemonicParsing="false" text="Browse" fx:id="openFolderTreeItem" />
                                   <SeparatorMenuItem />
-                                  <MenuItem text="New Slide" fx:id="newSlide" onAction="#newSlide"/>
-                                  <SeparatorMenuItem />
-                                  <MenuItem mnemonicParsing="false" fx:id="createFolder" text="Create Folder" onAction="#createFolder"/>
-                                  <MenuItem mnemonicParsing="false" fx:id="createFile" text="Create File" onAction="#createFile"/>
-                                  <MenuItem mnemonicParsing="false" fx:id="renameFile" text="Rename File" onAction="#renameFile"/>
+                                  <MenuItem mnemonicParsing="false" fx:id="renameFile" text="Rename" onAction="#renameFile"/>
+                                  <Menu fx:id="newMenu" text="New">
+                                    <items>
+                                      <MenuItem mnemonicParsing="false" fx:id="newFile" text="New File" onAction="#createFile"/>
+                                      <MenuItem mnemonicParsing="false" fx:id="newFolder" text="New Folder" onAction="#createFolder"/>
+                                      <MenuItem text="New Slide" fx:id="newSlide" onAction="#newSlide"/>
+                                    </items>
+                                  </Menu>
                                   <SeparatorMenuItem />
                                   <MenuItem mnemonicParsing="false" text="Copy Path" fx:id="copyPathTreeItem" />
                                   <MenuItem mnemonicParsing="false" text="Copy" fx:id="copyTreeItem" />
                                   <SeparatorMenuItem />
-                                  <MenuItem mnemonicParsing="false" text="Remove" fx:id="removePathItem" />
+                                  <MenuItem mnemonicParsing="false" text="Delete" fx:id="deletePathItem" />
                                 </items>
                               </ContextMenu>
                             </contextMenu>
