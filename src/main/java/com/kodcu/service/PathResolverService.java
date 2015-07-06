@@ -24,19 +24,19 @@ public class PathResolverService {
     private final PathMatcher docBookMatcher = FileSystems.getDefault().getPathMatcher("glob:**.xml");
     private final PathMatcher ascMatcher = FileSystems.getDefault().getPathMatcher("glob:**.{asc,asciidoc,ad,adoc,txt}");
     private final PathMatcher imageMatcher = FileSystems.getDefault().getPathMatcher("glob:**.{png,svg,jpg,jpeg,bmp,gif}");
-    private final PathMatcher pptMatcher = FileSystems.getDefault().getPathMatcher("glob:**.{ppt,pptx}");
-    private final PathMatcher docxMatcher = FileSystems.getDefault().getPathMatcher("glob:**.{doc,docx}");
-    private final PathMatcher excelMatcher = FileSystems.getDefault().getPathMatcher("glob:**.{xls,xlsx}");
-    private final PathMatcher archieveMatcher = FileSystems.getDefault().getPathMatcher("glob:**.{zip,jar,tar,rar,tar.gz}");
+    private final PathMatcher pptMatcher = FileSystems.getDefault().getPathMatcher("glob:**.{ppt,pptx,odp,fodp}");
+    private final PathMatcher excelMatcher = FileSystems.getDefault().getPathMatcher("glob:**.{xls,xlsx,ods,fods}");
+    private final PathMatcher archieveMatcher = FileSystems.getDefault().getPathMatcher("glob:**.{zip,jar,tar,rar,tar.gz,gz,epub,ear}");
     private final PathMatcher videoMatcher = FileSystems.getDefault().getPathMatcher("glob:**.{cda,avi,flv,mkv,mov,mp4,mpeg,mpg,ogv,webm,divx,wmv}");
     private final PathMatcher cssMatcher = FileSystems.getDefault().getPathMatcher("glob:**.{css,css3,scss,less}");
-    private final PathMatcher terminalMatcher = FileSystems.getDefault().getPathMatcher("glob:**.{bat,sh,cmd}");
+    private final PathMatcher terminalMatcher = FileSystems.getDefault().getPathMatcher("glob:**.{bat,sh,cmd,exe,msi,dmg}");
     private final PathMatcher codeMatcher = FileSystems.getDefault().getPathMatcher("glob:**.{asp,aspx,c,cpp,java,js,aj,php,rb,yml,py}");
     private final PathMatcher epubMatcher = FileSystems.getDefault().getPathMatcher("glob:**.{epub,epub3}");
     private final PathMatcher mobiMatcher = FileSystems.getDefault().getPathMatcher("glob:**.{mobi,azw,azw3}");
     private final PathMatcher anyMatcher = FileSystems.getDefault().getPathMatcher("glob:**.{*}");
     private final PathMatcher uniqueMatcher = FileSystems.getDefault().getPathMatcher("glob:{license,readme,gradlew}");
     private final PathMatcher bookMatcher = FileSystems.getDefault().getPathMatcher("glob:{**book.asc,**book.txt,**book.asciidoc,**book.adoc,**book.ad}");
+    private final PathMatcher wordMatcher = FileSystems.getDefault().getPathMatcher("glob:**.{doc,dot,docx,docm,dotx,dotm,docb,odt,fodt}");
 
     public boolean isPDF(Path path) {
         return pdfMatcher.matches(path);
@@ -91,10 +91,6 @@ public class PathResolverService {
         return pptMatcher.matches(path);
     }
 
-    public boolean isDocx(Path path) {
-        return docxMatcher.matches(path);
-    }
-
     public boolean isExcel(Path path) {
         return excelMatcher.matches(path);
     }
@@ -125,5 +121,9 @@ public class PathResolverService {
 
     public boolean isEpub(Path path) {
         return epubMatcher.matches(path);
+    }
+
+    public boolean isWord(Path path) {
+        return wordMatcher.matches(path);
     }
 }
