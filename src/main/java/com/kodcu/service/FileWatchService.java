@@ -7,10 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.nio.file.FileSystems;
-import java.nio.file.Path;
-import java.nio.file.WatchKey;
-import java.nio.file.WatchService;
+import java.nio.file.*;
 import java.util.Objects;
 import java.util.function.BiConsumer;
 
@@ -44,6 +41,8 @@ public class FileWatchService {
                 path.register(watcher, ENTRY_CREATE, ENTRY_DELETE);
             }
 
+            logger.debug("Watchservice started for: {}", path);
+
             this.watckKey = watcher.take();
             if (watckKey.isValid()) {
                 watckKey.pollEvents();
@@ -51,7 +50,11 @@ public class FileWatchService {
                 browseCallback.accept(treeView, path);
             }
 
-        } catch (Exception e) {
+        }
+        catch (ClosedWatchServiceException e){
+            logger.debug("Watchservice closed for: {}", path, e);
+        }
+        catch (Exception e) {
             logger.debug("Could not register watcher for path: {}, but dont worry", path, e);
         }
     }
