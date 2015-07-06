@@ -174,8 +174,9 @@ function setEditorValue(content) {
 function switchMode(mode) {
     if (mode) {
         editor.getSession().setMode(mode);
-        if ((mode == "ace/mode/html"))
+        if (/^ace\/mode\/(css|less|scss|sass|stylus|html|php|twig|ejs|handlebars)$/.test(mode)) {
             initializeEmmet(mode);
+        }
     }
 }
 
@@ -189,11 +190,12 @@ function changeEditorMode(filePath) {
     return mode;
 }
 
-function addAnnotation(row,column,text,type) {
+function addAnnotation(row, column, text, type) {
     editor.renderer.setShowGutter(true);
     editor.session.setOption("useWorker", false);
     editor.getSession().setAnnotations([{row: row, column: column, text: text, type: type}]);
-    editor.scrollToLine(row,false,false,function(){});
+    editor.scrollToLine(row, false, false, function () {
+    });
 }
 
 function initializeEmmet(mode) {
