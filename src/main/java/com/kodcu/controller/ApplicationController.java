@@ -673,10 +673,13 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
         ContextMenu odfProMenu = new ContextMenu();
         odfProMenu.getStyleClass().add("build-menu");
+        odfProMenu.setAutoHide(true);
         odfProMenu.getItems().add(MenuItemBuilt.item("Save").click(event -> {
+            odfProMenu.hide();
             this.generateODFDocument();
         }));
         odfProMenu.getItems().add(MenuItemBuilt.item("Save as").click(event -> {
+            odfProMenu.hide();
             this.generateODFDocument(true);
         }));
 
