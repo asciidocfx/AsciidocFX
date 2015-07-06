@@ -1,8 +1,8 @@
 package com.kodcu.service.ui;
 
 import com.kodcu.component.EditorPane;
+import com.kodcu.component.ImageTab;
 import com.kodcu.component.MyTab;
-import com.kodcu.component.PreviewTab;
 import com.kodcu.controller.ApplicationController;
 import com.kodcu.other.Current;
 import com.kodcu.other.IOHelper;
@@ -316,12 +316,22 @@ public class TabService {
     }
 
     public void addImageTab(Path imagePath) {
-        Tab tab = new PreviewTab();
+
+        TabPane previewTabPane = controller.getPreviewTabPane();
+
+        ImageTab tab = new ImageTab();
+        tab.setPath(imagePath);
         tab.setText(imagePath.getFileName().toString());
+
+        if (previewTabPane.getTabs().contains(tab)) {
+            previewTabPane.getSelectionModel().select(tab);
+            return;
+        }
+
         Image image = new Image(IOHelper.pathToUrl(imagePath));
         ImageView imageView = new ImageView(image);
         imageView.setPreserveRatio(true);
-        TabPane previewTabPane = controller.getPreviewTabPane();
+
         imageView.setFitWidth(previewTabPane.getWidth());
 
         previewTabPane.widthProperty().addListener((observable, oldValue, newValue) -> {

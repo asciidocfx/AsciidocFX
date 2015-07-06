@@ -121,7 +121,7 @@ public class DocumentService {
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Markdown", "*.md", "*.markdown", "*.txt", "*.*"));
         List<File> chosenFiles = fileChooser.showOpenMultipleDialog(controller.getStage());
         if (chosenFiles != null) {
-            chosenFiles.stream().map(e -> e.toPath()).forEach(tabService::addTab);
+            chosenFiles.stream().map(e -> e.toPath()).forEach(directoryService.getOpenFileConsumer()::accept);
             chosenFiles.stream()
                     .map(File::toString).filter(file -> !controller.getRecentFilesList().contains(file))
                     .forEach(controller.getRecentFilesList()::addAll);
