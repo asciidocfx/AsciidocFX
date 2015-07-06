@@ -67,9 +67,11 @@ public class DocbookValidator {
                         current.currentEditor().call("addAnnotation", lineNumber, columnNumber, pe.getMessage(), "error");
                     });
                 });
+                logger.error("Please fix Docbook validation error. LineNumber: {}, Column: {}", lineNumber, columnNumber, pe);
+            } else {
+                logger.error("Problem occured while validating Docbook content", e);
             }
 
-            logger.error("Problem occured while validating Docbook content c");
 
             return false;
         }
