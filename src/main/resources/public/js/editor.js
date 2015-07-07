@@ -171,10 +171,11 @@ function setEditorValue(content) {
 
 }
 
+var emmetRegex = /^ace\/mode\/(css|less|scss|sass|stylus|html|php|twig|ejs|handlebars)$/;
 function switchMode(mode) {
     if (mode) {
         editor.getSession().setMode(mode);
-        if (/^ace\/mode\/(css|less|scss|sass|stylus|html|php|twig|ejs|handlebars)$/.test(mode)) {
+        if (emmetRegex.test(mode)) {
             initializeEmmet(mode);
         }
     }
@@ -184,7 +185,7 @@ function changeEditorMode(filePath) {
     var mode = modelist.getModeForPath(filePath).mode;
     editor.getSession().setMode(mode);
 
-    if ((mode == "ace/mode/html"))
+    if (emmetRegex.test(mode))
         initializeEmmet(mode);
 
     return mode;
