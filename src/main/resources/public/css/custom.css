@@ -54,6 +54,6 @@ pre.highlight > code {
     top: 0;
 }
 
-div#placeholder :nth-child(1):not(h1) {
+div#placeholder > :nth-child(1):not(h1) {
     margin-top: 27px;
 }
