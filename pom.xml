@@ -28,7 +28,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>1.2.4.RELEASE</version>
+        <version>1.2.5.RELEASE</version>
     </parent>
 
     <dependencies>
@@ -133,6 +133,7 @@
             <artifactId>install4j</artifactId>
             <groupId>i4jruntime</groupId>
             <version>1.1</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.odftoolkit</groupId>
