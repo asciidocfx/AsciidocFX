@@ -150,7 +150,7 @@
           <items>
             <VBox minHeight="0" minWidth="0">
               <TabPane VBox.vgrow="ALWAYS" minHeight="0" minWidth="0" fx:id="tabPane" tabClosingPolicy="ALL_TABS" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-              <HBox fx:id="statusBox" spacing="3" alignment="CENTER_LEFT">
+              <HBox fx:id="statusBox" spacing="3" alignment="CENTER_LEFT" maxHeight="30">
                 <children>
                   <Label fx:id="showHideLogs" id="showHideLogs" ></Label>
                   <Label fx:id="statusMessage"></Label>
