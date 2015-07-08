@@ -133,7 +133,6 @@
             <artifactId>install4j</artifactId>
             <groupId>i4jruntime</groupId>
             <version>1.1</version>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.odftoolkit</groupId>
