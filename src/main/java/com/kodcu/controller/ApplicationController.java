@@ -3,6 +3,7 @@ package com.kodcu.controller;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.install4j.api.launcher.ApplicationLauncher;
 import com.kodcu.bean.Config;
 import com.kodcu.bean.RecentFiles;
 import com.kodcu.component.*;
@@ -918,6 +919,27 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 //            splitPane.setDividerPositions();
         });
 
+        threadService.runTaskLater(() -> {
+            checkNewVersion();
+        });
+
+    }
+
+    private void checkNewVersion() {
+        try {
+            ApplicationLauncher.launchApplication("504", null, false, new ApplicationLauncher.Callback() {
+                        public void exited(int exitValue) {
+                            //TODO add your code here (not invoked on event dispatch thread)
+                        }
+
+                        public void prepareShutdown() {
+                            //TODO add your code here (not invoked on event dispatch thread)
+                        }
+                    }
+            );
+        } catch (IOException e) {
+            logger.error("Problem occured while checking new version", e);
+        }
     }
 
     private void generateODFDocument(boolean askPath) {
