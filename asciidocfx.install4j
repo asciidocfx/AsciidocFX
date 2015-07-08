@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<install4j version="6.0.1" transformSequenceNumber="5">
+<install4j version="6.0.3" transformSequenceNumber="5">
   <directoryPresets config="outputs" />
-  <application name="AsciidocFX" distributionSourceDir="" applicationId="7853-9376-5862-1224" mediaDir="target" mediaFilePattern="${compiler:sys.shortName}_${compiler:sys.platform}_${compiler:sys.version}" compression="9" lzmaCompression="true" pack200Compression="true" excludeSignedFromPacking="false" commonExternalFiles="false" createMd5Sums="true" shrinkRuntime="true" shortName="AsciidocFX" publisher="AsciidocFX" publisherWeb="http://asciidocfx.com" version="1.3.6" allPathsRelative="false" backupOnSave="false" autoSave="false" convertDotsToUnderscores="true" macSignature="????" macVolumeId="b98c377570068f5e" javaMinVersion="1.8" javaMaxVersion="" allowBetaVM="true" jdkMode="runtimeJre" jdkName="">
+  <application name="AsciidocFX" distributionSourceDir="" applicationId="7853-9376-5862-1224" mediaDir="target" mediaFilePattern="${compiler:sys.shortName}_${compiler:sys.platform}_${compiler:sys.version}" compression="9" lzmaCompression="true" pack200Compression="true" excludeSignedFromPacking="false" commonExternalFiles="false" createMd5Sums="true" shrinkRuntime="true" shortName="AsciidocFX" publisher="AsciidocFX" publisherWeb="http://asciidocfx.com" version="1.3.7-RC1" allPathsRelative="false" backupOnSave="false" autoSave="false" convertDotsToUnderscores="true" macSignature="????" macVolumeId="b98c377570068f5e" javaMinVersion="1.8" javaMaxVersion="" allowBetaVM="true" jdkMode="runtimeJre" jdkName="">
     <languages skipLanguageSelection="false" languageSelectionInPrincipalLanguage="false">
       <principalLanguage id="en" customLocalizationFile="" />
       <additionalLanguages />
     </languages>
     <searchSequence>
-      <registry />
       <envVar name="JAVA_HOME" />
       <envVar name="JDK_HOME" />
+      <registry />
     </searchSequence>
     <variables />
     <mergedProjects />
     <codeSigning macEnabled="false" macPkcs12File="" windowsEnabled="false" windowsKeySource="pkcs12" windowsPvkFile="" windowsSpcFile="" windowsPkcs12File="" />
   </application>
-  <files keepModificationTimes="false" missingFilesStrategy="warn" globalExcludeSuffixes="bin" defaultOverwriteMode="4" defaultUninstallMode="0" launcherOverwriteMode="3" defaultFileMode="644" defaultDirMode="755">
+  <files keepModificationTimes="false" missingFilesStrategy="warn" globalExcludeSuffixes="bin" defaultOverwriteMode="4" defaultUninstallMode="0" launcherOverwriteMode="3" defaultFileMode="755" defaultDirMode="755">
     <filesets />
     <roots />
     <mountPoints>
@@ -30,7 +30,7 @@
   </files>
   <launchers>
     <launcher name="AsciidocFX" id="24" customizedId="" external="false" excludeFromMenu="false" unixMode="755" menuName="" icnsFile="" customMacBundleIdentifier="false" macBundleIdentifier="" swtApp="false" fileset="" macBundleBinary="JavaApplicationStub" addMacEntitlements="false" macEntitlementsFile="" useCustomMacosExecutableName="false" customMacosExecutableName="">
-      <executable name="AsciidocFX" type="1" iconSet="true" iconFile="" executableDir="" redirectStderr="true" stderrFile="log/asciidocfx.log" stderrMode="append" redirectStdout="false" stdoutFile="log/asciidocfx.log" stdoutMode="append" failOnStderrOutput="true" executableMode="1" changeWorkingDirectory="true" workingDirectory="." singleInstance="true" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="" executionLevel="asInvoker" checkConsoleParameter="false" globalSingleInstance="false" singleInstanceActivate="true" dpiAware="false">
+      <executable name="AsciidocFX" type="1" iconSet="true" iconFile="" executableDir="" redirectStderr="true" stderrFile="log/asciidocfx.log" stderrMode="append" redirectStdout="false" stdoutFile="log/asciidocfx.log" stdoutMode="append" failOnStderrOutput="true" executableMode="1" changeWorkingDirectory="true" workingDirectory="." singleInstance="true" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="" executionLevel="asInvoker" checkConsoleParameter="false" globalSingleInstance="false" singleInstanceActivate="true" dpiAware="true">
         <versionInfo include="false" fileVersion="" fileDescription="" legalCopyright="" internalName="" productName="" />
       </executable>
       <splashScreen show="false" width="0" height="0" bitmapFile="E:/asciidoc-fx-editor.png" windowsNative="true" textOverlay="false">
@@ -39,7 +39,7 @@
           <versionLine x="20" y="40" text="version ${compiler:sys.version}" fontSize="8" fontColor="0,0,0" bold="false" />
         </text>
       </splashScreen>
-      <java mainClass="com.kodcu.boot.AppStarter" vmParameters="-Duser.language=en -Duser.country=US -XX:+UseG1GC" arguments="" allowVMPassthroughParameters="true" preferredVM="" bundleRuntime="true">
+      <java mainClass="com.kodcu.boot.AppStarter" vmParameters="" arguments="" allowVMPassthroughParameters="true" preferredVM="" bundleRuntime="true">
         <classPath>
           <scanDirectory location="lib" failOnError="false" />
         </classPath>
@@ -47,8 +47,13 @@
       </java>
       <includedFiles />
       <unextractableFiles />
-      <vmOptionsFile mode="template" overwriteMode="0" fileMode="644">
-        <content />
+      <vmOptionsFile mode="content" overwriteMode="0" fileMode="755">
+        <content># Enter one VM parameter per line
+
+-Duser.language=en
+-Duser.country=US
+-Xmx1024M
+-XX:+UseG1GC</content>
       </vmOptionsFile>
       <customScript mode="1" file="">
         <content />
@@ -425,6 +430,78 @@
                     </serializedBean>
                     <condition />
                   </action>
+                  <action name="" id="615" customizedId="" beanClass="com.install4j.runtime.beans.actions.desktop.CreateFileAssociationAction" enabled="true" commentSet="false" comment="" actionElevationType="elevated" rollbackBarrier="false" multiExec="false" failureStrategy="1" errorMessage="">
+                    <serializedBean>
+                      <java class="java.beans.XMLDecoder">
+                        <object class="com.install4j.runtime.beans.actions.desktop.CreateFileAssociationAction">
+                          <void property="description">
+                            <string>HTML File</string>
+                          </void>
+                          <void property="extension">
+                            <string>html</string>
+                          </void>
+                          <void property="launcherId">
+                            <string>24</string>
+                          </void>
+                          <void property="macRole">
+                            <object class="java.lang.Enum" method="valueOf">
+                              <class>com.install4j.runtime.beans.actions.desktop.MacAssociationRole</class>
+                              <string>EDITOR</string>
+                            </object>
+                          </void>
+                        </object>
+                      </java>
+                    </serializedBean>
+                    <condition />
+                  </action>
+                  <action name="" id="616" customizedId="" beanClass="com.install4j.runtime.beans.actions.desktop.CreateFileAssociationAction" enabled="true" commentSet="false" comment="" actionElevationType="elevated" rollbackBarrier="false" multiExec="false" failureStrategy="1" errorMessage="">
+                    <serializedBean>
+                      <java class="java.beans.XMLDecoder">
+                        <object class="com.install4j.runtime.beans.actions.desktop.CreateFileAssociationAction">
+                          <void property="description">
+                            <string>JavaScript File</string>
+                          </void>
+                          <void property="extension">
+                            <string>js</string>
+                          </void>
+                          <void property="launcherId">
+                            <string>24</string>
+                          </void>
+                          <void property="macRole">
+                            <object class="java.lang.Enum" method="valueOf">
+                              <class>com.install4j.runtime.beans.actions.desktop.MacAssociationRole</class>
+                              <string>EDITOR</string>
+                            </object>
+                          </void>
+                        </object>
+                      </java>
+                    </serializedBean>
+                    <condition />
+                  </action>
+                  <action name="" id="617" customizedId="" beanClass="com.install4j.runtime.beans.actions.desktop.CreateFileAssociationAction" enabled="true" commentSet="false" comment="" actionElevationType="elevated" rollbackBarrier="false" multiExec="false" failureStrategy="1" errorMessage="">
+                    <serializedBean>
+                      <java class="java.beans.XMLDecoder">
+                        <object class="com.install4j.runtime.beans.actions.desktop.CreateFileAssociationAction">
+                          <void property="description">
+                            <string>Css File</string>
+                          </void>
+                          <void property="extension">
+                            <string>css</string>
+                          </void>
+                          <void property="launcherId">
+                            <string>24</string>
+                          </void>
+                          <void property="macRole">
+                            <object class="java.lang.Enum" method="valueOf">
+                              <class>com.install4j.runtime.beans.actions.desktop.MacAssociationRole</class>
+                              <string>EDITOR</string>
+                            </object>
+                          </void>
+                        </object>
+                      </java>
+                    </serializedBean>
+                    <condition />
+                  </action>
                 </beans>
               </group>
             </actions>
@@ -562,7 +639,7 @@
           </screen>
         </screens>
       </application>
-      <application name="Updater with silent version check" id="113" customizedId="" beanClass="com.install4j.runtime.beans.applications.CustomApplication" enabled="true" commentSet="false" comment="" actionElevationType="none" fileset="" customIcnsFile="" customIcoFile="" macEntitlementsFile="" automaticLauncherIntegration="true" launchMode="startupAsync" launchInNewProcess="true" launchSchedule="always" allLaunchers="true">
+      <application name="Updater with silent version check" id="504" customizedId="" beanClass="com.install4j.runtime.beans.applications.CustomApplication" enabled="true" commentSet="false" comment="" actionElevationType="none" fileset="" customIcnsFile="" customIcoFile="" macEntitlementsFile="" automaticLauncherIntegration="false" launchMode="startupFirstWindow" launchInNewProcess="false" launchSchedule="updateSchedule" allLaunchers="true">
         <serializedBean>
           <java class="java.beans.XMLDecoder">
             <object class="com.install4j.runtime.beans.applications.CustomApplication" id="CustomApplication0">
@@ -594,7 +671,7 @@
                 </void>
               </void>
               <void property="executableName">
-                <string>automaticUpdater</string>
+                <string>Updater</string>
               </void>
               <void property="useCustomIcon">
                 <boolean>true</boolean>
@@ -608,7 +685,7 @@
         <launcherIds />
         <variables />
         <startup>
-          <screen name="" id="114" customizedId="" beanClass="com.install4j.runtime.beans.screens.StartupScreen" enabled="true" commentSet="false" comment="" actionElevationType="inherit" rollbackBarrier="false" backButton="2" finishScreen="false" wizardIndexChangeType="unchanged" wizardIndexKey="">
+          <screen name="" id="505" customizedId="" beanClass="com.install4j.runtime.beans.screens.StartupScreen" enabled="true" commentSet="false" comment="" actionElevationType="inherit" rollbackBarrier="false" backButton="2" finishScreen="false" wizardIndexChangeType="unchanged" wizardIndexKey="">
             <serializedBean>
               <java class="java.beans.XMLDecoder">
                 <object class="com.install4j.runtime.beans.screens.StartupScreen" />
@@ -619,7 +696,7 @@
             <preActivation />
             <postActivation />
             <actions>
-              <action name="" id="149" customizedId="" beanClass="com.install4j.runtime.beans.actions.update.CheckForUpdateAction" enabled="true" commentSet="false" comment="" actionElevationType="none" rollbackBarrier="false" multiExec="false" failureStrategy="2" errorMessage="">
+              <action name="" id="540" customizedId="" beanClass="com.install4j.runtime.beans.actions.update.CheckForUpdateAction" enabled="true" commentSet="false" comment="" actionElevationType="none" rollbackBarrier="false" multiExec="false" failureStrategy="2" errorMessage="">
                 <serializedBean>
                   <java class="java.beans.XMLDecoder">
                     <object class="com.install4j.runtime.beans.actions.update.CheckForUpdateAction">
@@ -637,7 +714,7 @@
                 </serializedBean>
                 <condition />
               </action>
-              <action name="Update descriptor entry" id="150" customizedId="" beanClass="com.install4j.runtime.beans.actions.control.SetVariableAction" enabled="true" commentSet="false" comment="" actionElevationType="inherit" rollbackBarrier="false" multiExec="false" failureStrategy="2" errorMessage="">
+              <action name="Update descriptor entry" id="541" customizedId="" beanClass="com.install4j.runtime.beans.actions.control.SetVariableAction" enabled="true" commentSet="false" comment="" actionElevationType="inherit" rollbackBarrier="false" multiExec="false" failureStrategy="2" errorMessage="">
                 <serializedBean>
                   <java class="java.beans.XMLDecoder">
                     <object class="com.install4j.runtime.beans.actions.control.SetVariableAction">
@@ -659,7 +736,7 @@
                 </serializedBean>
                 <condition />
               </action>
-              <group name="Update available" id="151" customizedId="" beanClass="com.install4j.runtime.beans.groups.ActionGroup" enabled="true" commentSet="false" comment="" actionElevationType="inherit">
+              <group name="Update available" id="542" customizedId="" beanClass="com.install4j.runtime.beans.groups.ActionGroup" enabled="true" commentSet="false" comment="" actionElevationType="inherit">
                 <serializedBean>
                   <java class="java.beans.XMLDecoder">
                     <object class="com.install4j.runtime.beans.groups.ActionGroup">
@@ -674,7 +751,7 @@
                   </java>
                 </serializedBean>
                 <beans>
-                  <action name="New version" id="152" customizedId="" beanClass="com.install4j.runtime.beans.actions.control.SetVariableAction" enabled="true" commentSet="false" comment="" actionElevationType="inherit" rollbackBarrier="false" multiExec="false" failureStrategy="1" errorMessage="">
+                  <action name="New version" id="543" customizedId="" beanClass="com.install4j.runtime.beans.actions.control.SetVariableAction" enabled="true" commentSet="false" comment="" actionElevationType="inherit" rollbackBarrier="false" multiExec="false" failureStrategy="1" errorMessage="">
                     <serializedBean>
                       <java class="java.beans.XMLDecoder">
                         <object class="com.install4j.runtime.beans.actions.control.SetVariableAction">
@@ -693,7 +770,7 @@
                     </serializedBean>
                     <condition />
                   </action>
-                  <action name="Download size" id="153" customizedId="" beanClass="com.install4j.runtime.beans.actions.control.SetVariableAction" enabled="true" commentSet="false" comment="" actionElevationType="inherit" rollbackBarrier="false" multiExec="false" failureStrategy="1" errorMessage="">
+                  <action name="Download size" id="544" customizedId="" beanClass="com.install4j.runtime.beans.actions.control.SetVariableAction" enabled="true" commentSet="false" comment="" actionElevationType="inherit" rollbackBarrier="false" multiExec="false" failureStrategy="1" errorMessage="">
                     <serializedBean>
                       <java class="java.beans.XMLDecoder">
                         <object class="com.install4j.runtime.beans.actions.control.SetVariableAction">
@@ -712,7 +789,7 @@
                     </serializedBean>
                     <condition />
                   </action>
-                  <action name="Comment" id="154" customizedId="" beanClass="com.install4j.runtime.beans.actions.control.SetVariableAction" enabled="true" commentSet="false" comment="" actionElevationType="inherit" rollbackBarrier="false" multiExec="false" failureStrategy="1" errorMessage="">
+                  <action name="Comment" id="545" customizedId="" beanClass="com.install4j.runtime.beans.actions.control.SetVariableAction" enabled="true" commentSet="false" comment="" actionElevationType="inherit" rollbackBarrier="false" multiExec="false" failureStrategy="1" errorMessage="">
                     <serializedBean>
                       <java class="java.beans.XMLDecoder">
                         <object class="com.install4j.runtime.beans.actions.control.SetVariableAction">
@@ -731,7 +808,7 @@
                     </serializedBean>
                     <condition />
                   </action>
-                  <action name="Download URL" id="155" customizedId="" beanClass="com.install4j.runtime.beans.actions.control.SetVariableAction" enabled="true" commentSet="false" comment="" actionElevationType="inherit" rollbackBarrier="false" multiExec="false" failureStrategy="1" errorMessage="">
+                  <action name="Download URL" id="546" customizedId="" beanClass="com.install4j.runtime.beans.actions.control.SetVariableAction" enabled="true" commentSet="false" comment="" actionElevationType="inherit" rollbackBarrier="false" multiExec="false" failureStrategy="1" errorMessage="">
                     <serializedBean>
                       <java class="java.beans.XMLDecoder">
                         <object class="com.install4j.runtime.beans.actions.control.SetVariableAction">
@@ -750,7 +827,7 @@
                     </serializedBean>
                     <condition />
                   </action>
-                  <action name="Archive" id="156" customizedId="" beanClass="com.install4j.runtime.beans.actions.control.SetVariableAction" enabled="true" commentSet="false" comment="" actionElevationType="inherit" rollbackBarrier="false" multiExec="false" failureStrategy="1" errorMessage="">
+                  <action name="Archive" id="547" customizedId="" beanClass="com.install4j.runtime.beans.actions.control.SetVariableAction" enabled="true" commentSet="false" comment="" actionElevationType="inherit" rollbackBarrier="false" multiExec="false" failureStrategy="1" errorMessage="">
                     <serializedBean>
                       <java class="java.beans.XMLDecoder">
                         <object class="com.install4j.runtime.beans.actions.control.SetVariableAction">
@@ -769,7 +846,7 @@
                     </serializedBean>
                     <condition />
                   </action>
-                  <action name="DMG" id="157" customizedId="" beanClass="com.install4j.runtime.beans.actions.control.SetVariableAction" enabled="true" commentSet="false" comment="" actionElevationType="inherit" rollbackBarrier="false" multiExec="false" failureStrategy="1" errorMessage="">
+                  <action name="DMG" id="548" customizedId="" beanClass="com.install4j.runtime.beans.actions.control.SetVariableAction" enabled="true" commentSet="false" comment="" actionElevationType="inherit" rollbackBarrier="false" multiExec="false" failureStrategy="1" errorMessage="">
                     <serializedBean>
                       <java class="java.beans.XMLDecoder">
                         <object class="com.install4j.runtime.beans.actions.control.SetVariableAction">
@@ -795,7 +872,7 @@
           </screen>
         </startup>
         <screens>
-          <group name="Update available" id="115" customizedId="" beanClass="com.install4j.runtime.beans.groups.ScreenGroup" enabled="true" commentSet="false" comment="" actionElevationType="inherit">
+          <group name="Update available" id="506" customizedId="" beanClass="com.install4j.runtime.beans.groups.ScreenGroup" enabled="true" commentSet="false" comment="" actionElevationType="inherit">
             <serializedBean>
               <java class="java.beans.XMLDecoder">
                 <object class="com.install4j.runtime.beans.groups.ScreenGroup">
@@ -810,7 +887,7 @@
               </java>
             </serializedBean>
             <beans>
-              <screen name="New version available" id="116" customizedId="" beanClass="com.install4j.runtime.beans.screens.FormScreen" enabled="true" commentSet="false" comment="" actionElevationType="inherit" rollbackBarrier="false" backButton="2" finishScreen="false" wizardIndexChangeType="unchanged" wizardIndexKey="">
+              <screen name="New version available" id="507" customizedId="" beanClass="com.install4j.runtime.beans.screens.FormScreen" enabled="true" commentSet="false" comment="" actionElevationType="inherit" rollbackBarrier="false" backButton="2" finishScreen="false" wizardIndexChangeType="unchanged" wizardIndexKey="">
                 <serializedBean>
                   <java class="java.beans.XMLDecoder">
                     <object class="com.install4j.runtime.beans.screens.FormScreen">
@@ -829,7 +906,7 @@
                 <postActivation />
                 <actions />
                 <formComponents>
-                  <formComponent name="" id="117" customizedId="" beanClass="com.install4j.runtime.beans.formcomponents.KeyValuePairComponent" enabled="true" commentSet="false" comment="" insetTop="" insetLeft="" insetBottom="" insetRight="" resetInitOnPrevious="false">
+                  <formComponent name="" id="508" customizedId="" beanClass="com.install4j.runtime.beans.formcomponents.KeyValuePairComponent" enabled="true" commentSet="false" comment="" insetTop="" insetLeft="" insetBottom="" insetRight="" resetInitOnPrevious="false">
                     <serializedBean>
                       <java class="java.beans.XMLDecoder">
                         <object class="com.install4j.runtime.beans.formcomponents.KeyValuePairComponent">
@@ -860,14 +937,14 @@
                     <initScript />
                     <visibilityScript />
                   </formComponent>
-                  <group name="" id="118" customizedId="" beanClass="com.install4j.runtime.beans.groups.HorizontalFormComponentGroup" enabled="true" commentSet="false" comment="" actionElevationType="inherit">
+                  <group name="" id="509" customizedId="" beanClass="com.install4j.runtime.beans.groups.HorizontalFormComponentGroup" enabled="true" commentSet="false" comment="" actionElevationType="inherit">
                     <serializedBean>
                       <java class="java.beans.XMLDecoder">
                         <object class="com.install4j.runtime.beans.groups.HorizontalFormComponentGroup" />
                       </java>
                     </serializedBean>
                     <beans>
-                      <formComponent name="" id="119" customizedId="" beanClass="com.install4j.runtime.beans.formcomponents.KeyValuePairComponent" enabled="true" commentSet="false" comment="" insetTop="" insetLeft="" insetBottom="" insetRight="" resetInitOnPrevious="false">
+                      <formComponent name="" id="510" customizedId="" beanClass="com.install4j.runtime.beans.formcomponents.KeyValuePairComponent" enabled="true" commentSet="false" comment="" insetTop="" insetLeft="" insetBottom="" insetRight="" resetInitOnPrevious="false">
                         <serializedBean>
                           <java class="java.beans.XMLDecoder">
                             <object class="com.install4j.runtime.beans.formcomponents.KeyValuePairComponent">
@@ -898,7 +975,7 @@
                         <initScript />
                         <visibilityScript />
                       </formComponent>
-                      <formComponent name="" id="120" customizedId="" beanClass="com.install4j.runtime.beans.formcomponents.HyperlinkActionLabelComponent" enabled="true" commentSet="false" comment="" insetTop="" insetLeft="5" insetBottom="" insetRight="" resetInitOnPrevious="false">
+                      <formComponent name="" id="511" customizedId="" beanClass="com.install4j.runtime.beans.formcomponents.HyperlinkActionLabelComponent" enabled="true" commentSet="false" comment="" insetTop="" insetLeft="5" insetBottom="" insetRight="" resetInitOnPrevious="false">
                         <serializedBean>
                           <java class="java.beans.XMLDecoder">
                             <object class="com.install4j.runtime.beans.formcomponents.HyperlinkActionLabelComponent">
@@ -920,7 +997,7 @@
                       </formComponent>
                     </beans>
                   </group>
-                  <formComponent name="" id="121" customizedId="" beanClass="com.install4j.runtime.beans.formcomponents.SpacerComponent" enabled="true" commentSet="false" comment="" insetTop="" insetLeft="" insetBottom="" insetRight="" resetInitOnPrevious="false">
+                  <formComponent name="" id="512" customizedId="" beanClass="com.install4j.runtime.beans.formcomponents.SpacerComponent" enabled="true" commentSet="false" comment="" insetTop="" insetLeft="" insetBottom="" insetRight="" resetInitOnPrevious="false">
                     <serializedBean>
                       <java class="java.beans.XMLDecoder">
                         <object class="com.install4j.runtime.beans.formcomponents.SpacerComponent" />
@@ -929,7 +1006,7 @@
                     <initScript />
                     <visibilityScript />
                   </formComponent>
-                  <formComponent name="" id="122" customizedId="" beanClass="com.install4j.runtime.beans.formcomponents.MultilineLabelComponent" enabled="true" commentSet="false" comment="" insetTop="" insetLeft="" insetBottom="" insetRight="" resetInitOnPrevious="false">
+                  <formComponent name="" id="513" customizedId="" beanClass="com.install4j.runtime.beans.formcomponents.MultilineLabelComponent" enabled="true" commentSet="false" comment="" insetTop="" insetLeft="" insetBottom="" insetRight="" resetInitOnPrevious="false">
                     <serializedBean>
                       <java class="java.beans.XMLDecoder">
                         <object class="com.install4j.runtime.beans.formcomponents.MultilineLabelComponent">
@@ -942,7 +1019,7 @@
                     <initScript />
                     <visibilityScript />
                   </formComponent>
-                  <formComponent name="" id="123" customizedId="" beanClass="com.install4j.runtime.beans.formcomponents.DirectoryChooserComponent" enabled="true" commentSet="false" comment="" insetTop="" insetLeft="" insetBottom="" insetRight="" resetInitOnPrevious="false">
+                  <formComponent name="" id="514" customizedId="" beanClass="com.install4j.runtime.beans.formcomponents.DirectoryChooserComponent" enabled="true" commentSet="false" comment="" insetTop="" insetLeft="" insetBottom="" insetRight="" resetInitOnPrevious="false">
                     <serializedBean>
                       <java class="java.beans.XMLDecoder">
                         <object class="com.install4j.runtime.beans.formcomponents.DirectoryChooserComponent">
@@ -964,7 +1041,7 @@
                     <initScript />
                     <visibilityScript />
                   </formComponent>
-                  <formComponent name="" id="124" customizedId="" beanClass="com.install4j.runtime.beans.formcomponents.KeyValuePairComponent" enabled="true" commentSet="false" comment="" insetTop="" insetLeft="" insetBottom="" insetRight="" resetInitOnPrevious="false">
+                  <formComponent name="" id="515" customizedId="" beanClass="com.install4j.runtime.beans.formcomponents.KeyValuePairComponent" enabled="true" commentSet="false" comment="" insetTop="" insetLeft="" insetBottom="" insetRight="" resetInitOnPrevious="false">
                     <serializedBean>
                       <java class="java.beans.XMLDecoder">
                         <object class="com.install4j.runtime.beans.formcomponents.KeyValuePairComponent">
@@ -982,7 +1059,7 @@
                   </formComponent>
                 </formComponents>
               </screen>
-              <screen name="Update message" id="125" customizedId="" beanClass="com.install4j.runtime.beans.screens.CustomizableInfoScreen" enabled="true" commentSet="false" comment="" actionElevationType="inherit" rollbackBarrier="false" backButton="2" finishScreen="false" wizardIndexChangeType="unchanged" wizardIndexKey="">
+              <screen name="Update message" id="516" customizedId="" beanClass="com.install4j.runtime.beans.screens.CustomizableInfoScreen" enabled="true" commentSet="false" comment="" actionElevationType="inherit" rollbackBarrier="false" backButton="2" finishScreen="false" wizardIndexChangeType="unchanged" wizardIndexKey="">
                 <serializedBean>
                   <java class="java.beans.XMLDecoder">
                     <object class="com.install4j.runtime.beans.screens.CustomizableInfoScreen">
@@ -1020,7 +1097,7 @@ wizardContext.setCancelButtonVisible(false);</preActivation>
                 <actions />
                 <formComponents />
               </screen>
-              <screen name="Download new version" id="126" customizedId="" beanClass="com.install4j.runtime.beans.screens.CustomizableProgressScreen" enabled="true" commentSet="false" comment="" actionElevationType="inherit" rollbackBarrier="false" backButton="2" finishScreen="false" wizardIndexChangeType="unchanged" wizardIndexKey="">
+              <screen name="Download new version" id="517" customizedId="" beanClass="com.install4j.runtime.beans.screens.CustomizableProgressScreen" enabled="true" commentSet="false" comment="" actionElevationType="inherit" rollbackBarrier="false" backButton="2" finishScreen="false" wizardIndexChangeType="unchanged" wizardIndexKey="">
                 <serializedBean>
                   <java class="java.beans.XMLDecoder">
                     <object class="com.install4j.runtime.beans.screens.CustomizableProgressScreen">
@@ -1038,7 +1115,7 @@ wizardContext.setCancelButtonVisible(false);</preActivation>
                 <preActivation />
                 <postActivation />
                 <actions>
-                  <action name="Download location" id="127" customizedId="" beanClass="com.install4j.runtime.beans.actions.control.SetVariableAction" enabled="true" commentSet="false" comment="" actionElevationType="inherit" rollbackBarrier="false" multiExec="false" failureStrategy="1" errorMessage="">
+                  <action name="Download location" id="518" customizedId="" beanClass="com.install4j.runtime.beans.actions.control.SetVariableAction" enabled="true" commentSet="false" comment="" actionElevationType="inherit" rollbackBarrier="false" multiExec="false" failureStrategy="1" errorMessage="">
                     <serializedBean>
                       <java class="java.beans.XMLDecoder">
                         <object class="com.install4j.runtime.beans.actions.control.SetVariableAction">
@@ -1057,7 +1134,7 @@ wizardContext.setCancelButtonVisible(false);</preActivation>
                     </serializedBean>
                     <condition />
                   </action>
-                  <action name="" id="128" customizedId="" beanClass="com.install4j.runtime.beans.actions.net.DownloadFileAction" enabled="true" commentSet="false" comment="" actionElevationType="elevated" rollbackBarrier="false" multiExec="false" failureStrategy="2" errorMessage="">
+                  <action name="" id="519" customizedId="" beanClass="com.install4j.runtime.beans.actions.net.DownloadFileAction" enabled="true" commentSet="false" comment="" actionElevationType="elevated" rollbackBarrier="false" multiExec="false" failureStrategy="2" errorMessage="">
                     <serializedBean>
                       <java class="java.beans.XMLDecoder">
                         <object class="com.install4j.runtime.beans.actions.net.DownloadFileAction">
@@ -1074,7 +1151,7 @@ wizardContext.setCancelButtonVisible(false);</preActivation>
                     </serializedBean>
                     <condition />
                   </action>
-                  <action name="" id="129" customizedId="" beanClass="com.install4j.runtime.beans.actions.files.SetModeAction" enabled="true" commentSet="false" comment="" actionElevationType="elevated" rollbackBarrier="false" multiExec="false" failureStrategy="1" errorMessage="">
+                  <action name="" id="520" customizedId="" beanClass="com.install4j.runtime.beans.actions.files.SetModeAction" enabled="true" commentSet="false" comment="" actionElevationType="elevated" rollbackBarrier="false" multiExec="false" failureStrategy="1" errorMessage="">
                     <serializedBean>
                       <java class="java.beans.XMLDecoder">
                         <object class="com.install4j.runtime.beans.actions.files.SetModeAction">
@@ -1098,14 +1175,14 @@ wizardContext.setCancelButtonVisible(false);</preActivation>
                 </actions>
                 <formComponents />
               </screen>
-              <group name="Finish" id="130" customizedId="" beanClass="com.install4j.runtime.beans.groups.ScreenGroup" enabled="true" commentSet="false" comment="" actionElevationType="inherit">
+              <group name="Finish" id="521" customizedId="" beanClass="com.install4j.runtime.beans.groups.ScreenGroup" enabled="true" commentSet="false" comment="" actionElevationType="inherit">
                 <serializedBean>
                   <java class="java.beans.XMLDecoder">
                     <object class="com.install4j.runtime.beans.groups.ScreenGroup" />
                   </java>
                 </serializedBean>
                 <beans>
-                  <screen name="Finish" id="131" customizedId="" beanClass="com.install4j.runtime.beans.screens.BannerFormScreen" enabled="true" commentSet="false" comment="" actionElevationType="inherit" rollbackBarrier="false" backButton="2" finishScreen="true" wizardIndexChangeType="unchanged" wizardIndexKey="">
+                  <screen name="Finish" id="522" customizedId="" beanClass="com.install4j.runtime.beans.screens.BannerFormScreen" enabled="true" commentSet="false" comment="" actionElevationType="inherit" rollbackBarrier="false" backButton="2" finishScreen="true" wizardIndexChangeType="unchanged" wizardIndexKey="">
                     <serializedBean>
                       <java class="java.beans.XMLDecoder">
                         <object class="com.install4j.runtime.beans.screens.BannerFormScreen">
@@ -1123,7 +1200,7 @@ wizardContext.setCancelButtonVisible(false);</preActivation>
                     <preActivation />
                     <postActivation />
                     <actions>
-                      <group name="Execute installer" id="132" customizedId="" beanClass="com.install4j.runtime.beans.groups.ActionGroup" enabled="true" commentSet="false" comment="" actionElevationType="inherit">
+                      <group name="Execute installer" id="523" customizedId="" beanClass="com.install4j.runtime.beans.groups.ActionGroup" enabled="true" commentSet="false" comment="" actionElevationType="inherit">
                         <serializedBean>
                           <java class="java.beans.XMLDecoder">
                             <object class="com.install4j.runtime.beans.groups.ActionGroup">
@@ -1138,7 +1215,7 @@ wizardContext.setCancelButtonVisible(false);</preActivation>
                           </java>
                         </serializedBean>
                         <beans>
-                          <action name="Set installer arguments" id="133" customizedId="" beanClass="com.install4j.runtime.beans.actions.control.SetVariableAction" enabled="true" commentSet="false" comment="" actionElevationType="inherit" rollbackBarrier="false" multiExec="false" failureStrategy="1" errorMessage="">
+                          <action name="Set installer arguments" id="524" customizedId="" beanClass="com.install4j.runtime.beans.actions.control.SetVariableAction" enabled="true" commentSet="false" comment="" actionElevationType="inherit" rollbackBarrier="false" multiExec="false" failureStrategy="1" errorMessage="">
                             <serializedBean>
                               <java class="java.beans.XMLDecoder">
                                 <object class="com.install4j.runtime.beans.actions.control.SetVariableAction">
@@ -1164,7 +1241,7 @@ if (context.isUnattended()) {
                             </serializedBean>
                             <condition />
                           </action>
-                          <action name="" id="134" customizedId="" beanClass="com.install4j.runtime.beans.actions.update.ShutdownCallingLauncherAction" enabled="true" commentSet="false" comment="" actionElevationType="none" rollbackBarrier="false" multiExec="false" failureStrategy="1" errorMessage="">
+                          <action name="" id="525" customizedId="" beanClass="com.install4j.runtime.beans.actions.update.ShutdownCallingLauncherAction" enabled="true" commentSet="false" comment="" actionElevationType="none" rollbackBarrier="false" multiExec="false" failureStrategy="1" errorMessage="">
                             <serializedBean>
                               <java class="java.beans.XMLDecoder">
                                 <object class="com.install4j.runtime.beans.actions.update.ShutdownCallingLauncherAction" />
@@ -1172,7 +1249,7 @@ if (context.isUnattended()) {
                             </serializedBean>
                             <condition />
                           </action>
-                          <action name="" id="135" customizedId="" beanClass="com.install4j.runtime.beans.actions.misc.RunExecutableAction" enabled="true" commentSet="false" comment="" actionElevationType="elevated" rollbackBarrier="false" multiExec="false" failureStrategy="2" errorMessage="${i18n:updater.LaunchError}">
+                          <action name="" id="526" customizedId="" beanClass="com.install4j.runtime.beans.actions.misc.RunExecutableAction" enabled="true" commentSet="false" comment="" actionElevationType="elevated" rollbackBarrier="false" multiExec="false" failureStrategy="2" errorMessage="${i18n:updater.LaunchError}">
                             <serializedBean>
                               <java class="java.beans.XMLDecoder">
                                 <object class="com.install4j.runtime.beans.actions.misc.RunExecutableAction">
@@ -1202,7 +1279,7 @@ if (context.isUnattended()) {
                       </group>
                     </actions>
                     <formComponents>
-                      <formComponent name="" id="136" customizedId="" beanClass="com.install4j.runtime.beans.formcomponents.LabelComponent" enabled="true" commentSet="false" comment="" insetTop="" insetLeft="" insetBottom="" insetRight="" resetInitOnPrevious="false">
+                      <formComponent name="" id="527" customizedId="" beanClass="com.install4j.runtime.beans.formcomponents.LabelComponent" enabled="true" commentSet="false" comment="" insetTop="" insetLeft="" insetBottom="" insetRight="" resetInitOnPrevious="false">
                         <serializedBean>
                           <java class="java.beans.XMLDecoder">
                             <object class="com.install4j.runtime.beans.formcomponents.LabelComponent">
@@ -1215,7 +1292,7 @@ if (context.isUnattended()) {
                         <initScript />
                         <visibilityScript />
                       </formComponent>
-                      <formComponent name="" id="137" customizedId="" beanClass="com.install4j.runtime.beans.formcomponents.SpacerComponent" enabled="true" commentSet="false" comment="" insetTop="" insetLeft="" insetBottom="" insetRight="" resetInitOnPrevious="false">
+                      <formComponent name="" id="528" customizedId="" beanClass="com.install4j.runtime.beans.formcomponents.SpacerComponent" enabled="true" commentSet="false" comment="" insetTop="" insetLeft="" insetBottom="" insetRight="" resetInitOnPrevious="false">
                         <serializedBean>
                           <java class="java.beans.XMLDecoder">
                             <object class="com.install4j.runtime.beans.formcomponents.SpacerComponent">
@@ -1228,7 +1305,7 @@ if (context.isUnattended()) {
                         <initScript />
                         <visibilityScript />
                       </formComponent>
-                      <formComponent name="" id="138" customizedId="" beanClass="com.install4j.runtime.beans.formcomponents.RadiobuttonsComponent" enabled="true" commentSet="false" comment="" insetTop="" insetLeft="" insetBottom="" insetRight="" resetInitOnPrevious="false">
+                      <formComponent name="" id="529" customizedId="" beanClass="com.install4j.runtime.beans.formcomponents.RadiobuttonsComponent" enabled="true" commentSet="false" comment="" insetTop="" insetLeft="" insetBottom="" insetRight="" resetInitOnPrevious="false">
                         <serializedBean>
                           <java class="java.beans.XMLDecoder">
                             <object class="com.install4j.runtime.beans.formcomponents.RadiobuttonsComponent">
@@ -1251,7 +1328,7 @@ if (context.isUnattended()) {
                         <initScript />
                         <visibilityScript>!context.getBooleanVariable("isArchive")</visibilityScript>
                       </formComponent>
-                      <formComponent name="" id="139" customizedId="" beanClass="com.install4j.runtime.beans.formcomponents.HyperlinkActionLabelComponent" enabled="true" commentSet="false" comment="" insetTop="" insetLeft="" insetBottom="" insetRight="" resetInitOnPrevious="false">
+                      <formComponent name="" id="530" customizedId="" beanClass="com.install4j.runtime.beans.formcomponents.HyperlinkActionLabelComponent" enabled="true" commentSet="false" comment="" insetTop="" insetLeft="" insetBottom="" insetRight="" resetInitOnPrevious="false">
                         <serializedBean>
                           <java class="java.beans.XMLDecoder">
                             <object class="com.install4j.runtime.beans.formcomponents.HyperlinkActionLabelComponent">
@@ -1271,7 +1348,7 @@ if (context.isUnattended()) {
                         <initScript />
                         <visibilityScript>!context.isConsole()</visibilityScript>
                       </formComponent>
-                      <formComponent name="" id="140" customizedId="" beanClass="com.install4j.runtime.beans.formcomponents.ProgressComponent" enabled="true" commentSet="false" comment="" insetTop="" insetLeft="" insetBottom="" insetRight="" resetInitOnPrevious="false">
+                      <formComponent name="" id="531" customizedId="" beanClass="com.install4j.runtime.beans.formcomponents.ProgressComponent" enabled="true" commentSet="false" comment="" insetTop="" insetLeft="" insetBottom="" insetRight="" resetInitOnPrevious="false">
                         <serializedBean>
                           <java class="java.beans.XMLDecoder">
                             <object class="com.install4j.runtime.beans.formcomponents.ProgressComponent">
@@ -1289,7 +1366,7 @@ if (context.isUnattended()) {
                       </formComponent>
                     </formComponents>
                   </screen>
-                  <screen name="Finish DMG Archive" id="141" customizedId="" beanClass="com.install4j.runtime.beans.screens.BannerFormScreen" enabled="true" commentSet="false" comment="" actionElevationType="inherit" rollbackBarrier="false" backButton="2" finishScreen="true" wizardIndexChangeType="unchanged" wizardIndexKey="">
+                  <screen name="Finish DMG Archive" id="532" customizedId="" beanClass="com.install4j.runtime.beans.screens.BannerFormScreen" enabled="true" commentSet="false" comment="" actionElevationType="inherit" rollbackBarrier="false" backButton="2" finishScreen="true" wizardIndexChangeType="unchanged" wizardIndexKey="">
                     <serializedBean>
                       <java class="java.beans.XMLDecoder">
                         <object class="com.install4j.runtime.beans.screens.BannerFormScreen">
@@ -1307,7 +1384,7 @@ if (context.isUnattended()) {
                     <preActivation />
                     <postActivation />
                     <actions>
-                      <group name="Execute installer" id="142" customizedId="" beanClass="com.install4j.runtime.beans.groups.ActionGroup" enabled="true" commentSet="false" comment="" actionElevationType="inherit">
+                      <group name="Execute installer" id="533" customizedId="" beanClass="com.install4j.runtime.beans.groups.ActionGroup" enabled="true" commentSet="false" comment="" actionElevationType="inherit">
                         <serializedBean>
                           <java class="java.beans.XMLDecoder">
                             <object class="com.install4j.runtime.beans.groups.ActionGroup">
@@ -1322,7 +1399,7 @@ if (context.isUnattended()) {
                           </java>
                         </serializedBean>
                         <beans>
-                          <action name="" id="143" customizedId="" beanClass="com.install4j.runtime.beans.actions.update.ShutdownCallingLauncherAction" enabled="true" commentSet="false" comment="" actionElevationType="none" rollbackBarrier="false" multiExec="false" failureStrategy="1" errorMessage="">
+                          <action name="" id="534" customizedId="" beanClass="com.install4j.runtime.beans.actions.update.ShutdownCallingLauncherAction" enabled="true" commentSet="false" comment="" actionElevationType="none" rollbackBarrier="false" multiExec="false" failureStrategy="1" errorMessage="">
                             <serializedBean>
                               <java class="java.beans.XMLDecoder">
                                 <object class="com.install4j.runtime.beans.actions.update.ShutdownCallingLauncherAction" />
@@ -1330,7 +1407,7 @@ if (context.isUnattended()) {
                             </serializedBean>
                             <condition />
                           </action>
-                          <action name="Open DMG" id="144" customizedId="" beanClass="com.install4j.runtime.beans.actions.control.RunScriptAction" enabled="true" commentSet="false" comment="" actionElevationType="inherit" rollbackBarrier="false" multiExec="false" failureStrategy="1" errorMessage="">
+                          <action name="Open DMG" id="535" customizedId="" beanClass="com.install4j.runtime.beans.actions.control.RunScriptAction" enabled="true" commentSet="false" comment="" actionElevationType="inherit" rollbackBarrier="false" multiExec="false" failureStrategy="1" errorMessage="">
                             <serializedBean>
                               <java class="java.beans.XMLDecoder">
                                 <object class="com.install4j.runtime.beans.actions.control.RunScriptAction">
@@ -1351,7 +1428,7 @@ return true;</string>
                       </group>
                     </actions>
                     <formComponents>
-                      <formComponent name="" id="145" customizedId="" beanClass="com.install4j.runtime.beans.formcomponents.LabelComponent" enabled="true" commentSet="false" comment="" insetTop="" insetLeft="" insetBottom="" insetRight="" resetInitOnPrevious="false">
+                      <formComponent name="" id="536" customizedId="" beanClass="com.install4j.runtime.beans.formcomponents.LabelComponent" enabled="true" commentSet="false" comment="" insetTop="" insetLeft="" insetBottom="" insetRight="" resetInitOnPrevious="false">
                         <serializedBean>
                           <java class="java.beans.XMLDecoder">
                             <object class="com.install4j.runtime.beans.formcomponents.LabelComponent">
@@ -1364,7 +1441,7 @@ return true;</string>
                         <initScript />
                         <visibilityScript />
                       </formComponent>
-                      <formComponent name="" id="146" customizedId="" beanClass="com.install4j.runtime.beans.formcomponents.SpacerComponent" enabled="true" commentSet="false" comment="" insetTop="" insetLeft="" insetBottom="" insetRight="" resetInitOnPrevious="false">
+                      <formComponent name="" id="537" customizedId="" beanClass="com.install4j.runtime.beans.formcomponents.SpacerComponent" enabled="true" commentSet="false" comment="" insetTop="" insetLeft="" insetBottom="" insetRight="" resetInitOnPrevious="false">
                         <serializedBean>
                           <java class="java.beans.XMLDecoder">
                             <object class="com.install4j.runtime.beans.formcomponents.SpacerComponent">
@@ -1377,7 +1454,7 @@ return true;</string>
                         <initScript />
                         <visibilityScript />
                       </formComponent>
-                      <formComponent name="" id="147" customizedId="" beanClass="com.install4j.runtime.beans.formcomponents.CheckboxComponent" enabled="true" commentSet="false" comment="" insetTop="" insetLeft="" insetBottom="" insetRight="" resetInitOnPrevious="false">
+                      <formComponent name="" id="538" customizedId="" beanClass="com.install4j.runtime.beans.formcomponents.CheckboxComponent" enabled="true" commentSet="false" comment="" insetTop="" insetLeft="" insetBottom="" insetRight="" resetInitOnPrevious="false">
                         <serializedBean>
                           <java class="java.beans.XMLDecoder">
                             <object class="com.install4j.runtime.beans.formcomponents.CheckboxComponent">
@@ -1396,7 +1473,7 @@ return true;</string>
                         <initScript />
                         <visibilityScript />
                       </formComponent>
-                      <formComponent name="" id="148" customizedId="" beanClass="com.install4j.runtime.beans.formcomponents.ProgressComponent" enabled="true" commentSet="false" comment="" insetTop="" insetLeft="" insetBottom="" insetRight="" resetInitOnPrevious="false">
+                      <formComponent name="" id="539" customizedId="" beanClass="com.install4j.runtime.beans.formcomponents.ProgressComponent" enabled="true" commentSet="false" comment="" insetTop="" insetLeft="" insetBottom="" insetRight="" resetInitOnPrevious="false">
                         <serializedBean>
                           <java class="java.beans.XMLDecoder">
                             <object class="com.install4j.runtime.beans.formcomponents.ProgressComponent">
@@ -1423,7 +1500,9 @@ return true;</string>
     </applications>
   </installerGui>
   <mediaSets>
-    <windows name="Windows Installer" id="86" customizedId="" mediaFileName="AsciidocFX_Windows" installDir="${compiler:sys.shortName}" overridePrincipalLanguage="false" jreBitType="64" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" includedJRE="windows-amd64-1.8.0_40" manualJREEntry="false" bundleType="1" jreURL="" jreShared="false" directDownload="false" installOnlyIfNecessary="false" customInstallBaseDir="" contentFilesType="1" downloadURL="" verifyIntegrity="true">
+    <windows name="Windows Installer" id="86" customizedId="" mediaFileName="AsciidocFX_Windows" installDir="${compiler:sys.shortName}" overridePrincipalLanguage="false" jreBitType="64" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" downloadURL="" includeAllDownloadableComponents="false" includedJRE="windows-amd64-1.8.0_60" manualJREEntry="false" bundleType="1" jreURL="" jreShared="false" directDownload="false" installOnlyIfNecessary="false" customInstallBaseDir="" contentFilesType="1" verifyIntegrity="true">
+      <excludedComponents />
+      <includedDownloadableComponents />
       <excludedLaunchers />
       <excludedBeans />
       <overriddenPrincipalLanguage id="en" customLocalizationFile="" />
@@ -1433,10 +1512,10 @@ return true;</string>
         <commentFiles />
         <customAttributes />
       </autoUpdate>
+    </windows>
+    <macos name="Mac OS X Single Bundle" id="108" customizedId="" mediaFileName="AsciidocFX_Mac" installDir="${compiler:sys.fullName}" overridePrincipalLanguage="false" jreBitType="all" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" downloadURL="" includeAllDownloadableComponents="false" includedJRE="macosx-amd64-1.8.0_60" manualJREEntry="false" bundleType="1" jreURL="" jreShared="false" directDownload="false" installOnlyIfNecessary="false" appleJre="false" requiredVmIdPrefix="" customInstallBaseDir="" contentFilesType="1" installerName="${i18n:InstallerName(${compiler:sys.fullName})}" volumeName="${compiler:sys.shortName}" compressDmg="false" launcherId="24">
       <excludedComponents />
       <includedDownloadableComponents />
-    </windows>
-    <macos name="Mac OS X Single Bundle" id="108" customizedId="" mediaFileName="AsciidocFX_Mac" installDir="${compiler:sys.fullName}" overridePrincipalLanguage="false" jreBitType="all" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" includedJRE="macosx-amd64-1.8.0_40" manualJREEntry="false" bundleType="1" jreURL="" jreShared="false" directDownload="false" installOnlyIfNecessary="false" appleJre="false" requiredVmIdPrefix="" customInstallBaseDir="" contentFilesType="1" downloadURL="" installerName="${i18n:InstallerName(${compiler:sys.fullName})}" volumeName="${compiler:sys.shortName}" compressDmg="false" launcherId="24">
       <excludedBeans />
       <overriddenPrincipalLanguage id="en" customLocalizationFile="" />
       <exclude />
@@ -1445,11 +1524,11 @@ return true;</string>
         <commentFiles />
         <customAttributes />
       </autoUpdate>
-      <excludedComponents />
-      <includedDownloadableComponents />
       <topLevelFiles />
     </macos>
-    <windowsArchive name="Windows Archive" id="223" customizedId="" mediaFileName="AsciidocFX_Windows" installDir="${compiler:sys.shortName}" overridePrincipalLanguage="false" jreBitType="64" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" includedJRE="windows-amd64-1.8.0_40" manualJREEntry="false">
+    <windowsArchive name="Windows Archive" id="223" customizedId="" mediaFileName="AsciidocFX_Windows" installDir="${compiler:sys.shortName}" overridePrincipalLanguage="false" jreBitType="64" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" downloadURL="" includeAllDownloadableComponents="true" includedJRE="windows-amd64-1.8.0_60" manualJREEntry="false">
+      <excludedComponents />
+      <includedDownloadableComponents />
       <excludedLaunchers />
       <excludedBeans />
       <overriddenPrincipalLanguage id="en" customLocalizationFile="" />
@@ -1460,31 +1539,9 @@ return true;</string>
         <customAttributes />
       </autoUpdate>
     </windowsArchive>
-    <unixArchive name="Unix Archive" id="224" customizedId="" mediaFileName="AsciidocFX_Linux" installDir="${compiler:sys.shortName}" overridePrincipalLanguage="false" jreBitType="all" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" includedJRE="linux-amd64-1.8.0_40" manualJREEntry="false">
-      <excludedLaunchers />
-      <excludedBeans />
-      <overriddenPrincipalLanguage id="en" customLocalizationFile="" />
-      <exclude />
-      <variables />
-      <autoUpdate useMinUpdatableVersion="false" minUpdatableVersion="" useMaxUpdatableVersion="false" maxUpdatableVersion="">
-        <commentFiles />
-        <customAttributes />
-      </autoUpdate>
-    </unixArchive>
-    <windows name="Windows Installer No JRE" id="407" customizedId="" mediaFileName="AsciidocFX_Windows_No_JRE" installDir="${compiler:sys.shortName}" overridePrincipalLanguage="false" jreBitType="64" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" includedJRE="" manualJREEntry="false" bundleType="1" jreURL="" jreShared="false" directDownload="false" installOnlyIfNecessary="false" customInstallBaseDir="" contentFilesType="1" downloadURL="" verifyIntegrity="true">
-      <excludedLaunchers />
-      <excludedBeans />
-      <overriddenPrincipalLanguage id="en" customLocalizationFile="" />
-      <exclude />
-      <variables />
-      <autoUpdate useMinUpdatableVersion="false" minUpdatableVersion="" useMaxUpdatableVersion="false" maxUpdatableVersion="">
-        <commentFiles />
-        <customAttributes />
-      </autoUpdate>
+    <unixArchive name="Unix Archive" id="224" customizedId="" mediaFileName="AsciidocFX_Linux" installDir="${compiler:sys.shortName}" overridePrincipalLanguage="false" jreBitType="all" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" downloadURL="" includeAllDownloadableComponents="true" includedJRE="linux-amd64-1.8.0_60" manualJREEntry="false">
       <excludedComponents />
       <includedDownloadableComponents />
-    </windows>
-    <unixArchive name="Unix Archive No JRE" id="413" customizedId="" mediaFileName="AsciidocFX_Linux_No_JRE" installDir="${compiler:sys.shortName}" overridePrincipalLanguage="false" jreBitType="all" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" includedJRE="" manualJREEntry="false">
       <excludedLaunchers />
       <excludedBeans />
       <overriddenPrincipalLanguage id="en" customLocalizationFile="" />
@@ -1495,7 +1552,35 @@ return true;</string>
         <customAttributes />
       </autoUpdate>
     </unixArchive>
-    <windowsArchive name="Windows Archive No JRE" id="416" customizedId="" mediaFileName="AsciidocFX_Windows_No_JRE" installDir="${compiler:sys.shortName}" overridePrincipalLanguage="false" jreBitType="64" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" includedJRE="" manualJREEntry="false">
+    <windows name="Windows Installer No JRE" id="407" customizedId="" mediaFileName="AsciidocFX_Windows_No_JRE" installDir="${compiler:sys.shortName}" overridePrincipalLanguage="false" jreBitType="64" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" downloadURL="" includeAllDownloadableComponents="false" includedJRE="" manualJREEntry="false" bundleType="1" jreURL="" jreShared="false" directDownload="false" installOnlyIfNecessary="false" customInstallBaseDir="" contentFilesType="1" verifyIntegrity="true">
+      <excludedComponents />
+      <includedDownloadableComponents />
+      <excludedLaunchers />
+      <excludedBeans />
+      <overriddenPrincipalLanguage id="en" customLocalizationFile="" />
+      <exclude />
+      <variables />
+      <autoUpdate useMinUpdatableVersion="false" minUpdatableVersion="" useMaxUpdatableVersion="false" maxUpdatableVersion="">
+        <commentFiles />
+        <customAttributes />
+      </autoUpdate>
+    </windows>
+    <unixArchive name="Unix Archive No JRE" id="413" customizedId="" mediaFileName="AsciidocFX_Linux_No_JRE" installDir="${compiler:sys.shortName}" overridePrincipalLanguage="false" jreBitType="all" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" downloadURL="" includeAllDownloadableComponents="true" includedJRE="" manualJREEntry="false">
+      <excludedComponents />
+      <includedDownloadableComponents />
+      <excludedLaunchers />
+      <excludedBeans />
+      <overriddenPrincipalLanguage id="en" customLocalizationFile="" />
+      <exclude />
+      <variables />
+      <autoUpdate useMinUpdatableVersion="false" minUpdatableVersion="" useMaxUpdatableVersion="false" maxUpdatableVersion="">
+        <commentFiles />
+        <customAttributes />
+      </autoUpdate>
+    </unixArchive>
+    <windowsArchive name="Windows Archive No JRE" id="416" customizedId="" mediaFileName="AsciidocFX_Windows_No_JRE" installDir="${compiler:sys.shortName}" overridePrincipalLanguage="false" jreBitType="64" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" downloadURL="" includeAllDownloadableComponents="true" includedJRE="" manualJREEntry="false">
+      <excludedComponents />
+      <includedDownloadableComponents />
       <excludedLaunchers />
       <excludedBeans />
       <overriddenPrincipalLanguage id="en" customLocalizationFile="" />
