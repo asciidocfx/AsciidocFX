@@ -548,7 +548,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
         threadService.runActionLater(() -> {
             previewTabPane.getTabs().add(previewTab);
-        });
+        }, true);
 
         // Hide tab if one in tabpane
         previewTabPane.getTabs().addListener((ListChangeListener) change -> {
@@ -938,7 +938,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                     }
             );
         } catch (IOException e) {
-           // logger.error("Problem occured while checking new version", e);
+            // logger.error("Problem occured while checking new version", e);
         }
     }
 
@@ -1396,7 +1396,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     public void newDoc(Event event) {
         threadService.runActionLater(() -> {
             documentService.newDoc();
-        });
+        },true);
     }
 
     @WebkitCall(from = "editor")

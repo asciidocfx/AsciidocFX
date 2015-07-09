@@ -42,11 +42,27 @@ public class ThreadService {
 
     // Runs task in JavaFX Thread
     public void runActionLater(Consumer<ActionEvent> consumer) {
-        Platform.runLater(() -> consumer.accept(null));
+        if (Platform.isFxApplicationThread()) {
+            consumer.accept(null);
+        } else {
+            Platform.runLater(() -> consumer.accept(null));
+        }
     }
 
     // Runs task in JavaFX Thread
     public void runActionLater(Runnable runnable) {
-        Platform.runLater(runnable);
+        if (Platform.isFxApplicationThread()) {
+            runnable.run();
+        } else {
+            Platform.runLater(runnable);
+        }
+    }
+
+    public void runActionLater(Runnable runnable, boolean force) {
+        if (force) {
+            Platform.runLater(runnable);
+        } else {
+            runActionLater(runnable);
+        }
     }
 }
