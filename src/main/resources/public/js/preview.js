@@ -65,31 +65,4 @@ document.onkeydown = function (e) {
 
 };
 
-var progressBar;
-
-function startProgressBar() {
-    var svg = document.querySelector('#container > svg');
-    if (svg)
-        document.querySelector('#container').removeChild(svg);
-
-    progressBar = new ProgressBar.Line('#container', {
-        color: '#FCB03C',
-        duration: 20000
-    });
-    progressBar.animate(1);
-}
-
-function stopProgressBar() {
-    if (progressBar)
-        progressBar.animate(1, {
-            duration: 800
-        }, function () {
-            setTimeout(function () {
-                var svg = document.querySelector('#container > svg');
-                if (svg)
-                    progressBar._container.removeChild(svg);
-            }, 500);
-        });
-}
-
 alert("PREVIEW_LOADED");

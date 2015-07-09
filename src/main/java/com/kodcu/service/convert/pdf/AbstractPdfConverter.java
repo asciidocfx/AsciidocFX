@@ -69,7 +69,7 @@ public abstract class AbstractPdfConverter implements DocumentConverter<String> 
                 pdfPath = currentTabPathDir.resolve(tabText + ".pdf");
 
             threadService.runTaskLater(() -> {
-                indikatorService.startCycle();
+                indikatorService.startProgressBar();
                 logger.debug("PDF conversion started");
                 try (FileOutputStream outputStream = new FileOutputStream(pdfPath.toFile());) {
                     FOUserAgent userAgent = new FOUserAgent(fopFactory);
@@ -108,7 +108,7 @@ public abstract class AbstractPdfConverter implements DocumentConverter<String> 
                     logger.error("Problem occured while converting to PDF", e);
                 } finally {
 
-                    indikatorService.completeCycle();
+                    indikatorService.stopProgressBar();
                     logger.debug("PDF conversion ended");
 
                     threadService.runActionLater(() -> {

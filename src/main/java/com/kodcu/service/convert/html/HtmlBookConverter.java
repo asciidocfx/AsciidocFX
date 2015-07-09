@@ -78,7 +78,7 @@ public class HtmlBookConverter implements Traversable,DocumentConverter<String> 
                     } else
                         htmlBookPath = currentTabPathDir.resolve(tabText + ".html");
 
-                    indikatorService.startCycle();
+                    indikatorService.startProgressBar();
                     logger.debug("HTML conversion started");
 
                     IOHelper.writeToFile(htmlBookPath, rendered, CREATE, TRUNCATE_EXISTING);
@@ -88,13 +88,13 @@ public class HtmlBookConverter implements Traversable,DocumentConverter<String> 
                         controller.getRecentFilesList().add(0, htmlBookPath.toString());
                     });
 
-                    indikatorService.completeCycle();
+                    indikatorService.stopProgressBar();
                     logger.debug("HTML conversion ended");
                 });
         } catch (Exception e) {
             logger.error("Problem occured while converting to HTML", e);
         } finally {
-            indikatorService.completeCycle();
+            indikatorService.stopProgressBar();
         }
 
     }

@@ -3,6 +3,11 @@ package com.kodcu.service.ui;
 import com.kodcu.component.HtmlPane;
 import com.kodcu.controller.ApplicationController;
 import com.kodcu.service.ThreadService;
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
+import javafx.animation.Timeline;
+import javafx.scene.control.ProgressBar;
+import javafx.util.Duration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -23,15 +28,24 @@ public class IndikatorService {
         this.htmlPane = htmlPane;
     }
 
-    public void startCycle() {
+    public void startProgressBar() {
+
         threadService.runActionLater(() -> {
-            htmlPane.startProgressBar();
+            ProgressBar progressBar = applicationContoller.getProgressBar();
+            Timeline timeline = applicationContoller.getProgressBarTimeline();
+            progressBar.setVisible(true);
+            progressBar.setManaged(true);
+            timeline.playFromStart();
         });
     }
 
-    public void completeCycle() {
+    public void stopProgressBar() {
         threadService.runActionLater(() -> {
-            htmlPane.stopProgressBar();
+            ProgressBar progressBar = applicationContoller.getProgressBar();
+            Timeline timeline = applicationContoller.getProgressBarTimeline();
+            progressBar.setVisible(false);
+            progressBar.setManaged(false);
+            timeline.stop();
         });
     }
 

@@ -544,15 +544,15 @@
     -fx-padding: 5px 10px 5px 10px;
 }
 
-.top-menu .top-label ,#showHideLogs *{
+.top-menu .top-label, #showHideLogs * {
     -fx-text-fill: #7c7c7c;
-    -fx-fill : -fx-text-fill;
+    -fx-fill: -fx-text-fill;
     -fx-cursor: hand;
 }
 
-.top-menu .top-label:hover,#showHideLogs *:hover {
+.top-menu .top-label:hover, #showHideLogs *:hover {
     -fx-text-fill: #1e1e1e;
-    -fx-fill : -fx-text-fill;
+    -fx-fill: -fx-text-fill;
     -fx-background-color: rgba(255, 255, 255, 0.10);
 }
 
@@ -580,6 +580,15 @@
     -fx-font-weight: bold;
 }
 
-.previewTabPane{
-    -fx-background-color : white;
+.previewTabPane {
+    -fx-background-color: white;
+}
+
+.progress-bar .bar {
+    -fx-padding: 1px;
+    -fx-background-insets: 0;
+}
+
+.progress-bar .track{
+    -fx-background-color: #ccc;
 }

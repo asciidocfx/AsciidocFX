@@ -33,6 +33,9 @@ import com.sun.javafx.application.HostServicesDelegate;
 import com.sun.webkit.dom.DocumentFragmentImpl;
 import de.jensd.fx.fontawesome.AwesomeDude;
 import de.jensd.fx.fontawesome.AwesomeIcon;
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
+import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -64,6 +67,7 @@ import javafx.scene.web.WebView;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 import netscape.javascript.JSObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -116,6 +120,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     public MenuItem newFolder;
     public MenuItem newSlide;
     public Menu newMenu;
+    public ProgressBar progressBar;
 
     private Logger logger = LoggerFactory.getLogger(ApplicationController.class);
 
@@ -336,6 +341,8 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     private FileWatchService fileWatchService;
     private PreviewTab previewTab;
 
+    private Timeline progressBarTimeline = null;
+
     public void createAsciidocTable() {
         asciidocTableStage.showAndWait();
     }
@@ -542,6 +549,18 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     public void initialize(URL url, ResourceBundle rb) {
 
         port = server.getEmbeddedServletContainer().getPort();
+
+        progressBar.prefWidthProperty().bind(previewTabPane.widthProperty());
+
+        progressBarTimeline = new Timeline(
+                new KeyFrame(
+                        Duration.ZERO,
+                        new KeyValue(progressBar.progressProperty(), 0)
+                ),
+                new KeyFrame(
+                        Duration.seconds(15),
+                        new KeyValue(progressBar.progressProperty(), 1)
+                ));
 
         this.previewTab = new PreviewTab("Preview", htmlPane);
         this.previewTab.setClosable(false);
@@ -1396,7 +1415,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     public void newDoc(Event event) {
         threadService.runActionLater(() -> {
             documentService.newDoc();
-        },true);
+        }, true);
     }
 
     @WebkitCall(from = "editor")
@@ -1991,9 +2010,9 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
         threadService.runTaskLater(() -> {
             logger.debug("Gitbook to Asciibook conversion started");
-            indikatorService.startCycle();
+            indikatorService.startProgressBar();
             gitbookToAsciibook.gitbookToAsciibook(finalGitbookRoot.toPath(), finalAsciibookRoot.toPath());
-            indikatorService.completeCycle();
+            indikatorService.stopProgressBar();
             logger.debug("Gitbook to Asciibook conversion ended");
         });
 
@@ -2103,6 +2122,14 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         return previewTab;
     }
 
+    public ProgressBar getProgressBar() {
+        return progressBar;
+    }
+
+    public Timeline getProgressBarTimeline() {
+        return progressBarTimeline;
+    }
+
     @FXML
     public void newSlide(ActionEvent actionEvent) {
 
@@ -2124,9 +2151,9 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
                 threadService.runTaskLater(() -> {
                     IOHelper.createDirectory(folderPath);
-                    htmlPane.startProgressBar();
+                    indikatorService.startProgressBar();
                     IOHelper.copyDirectory(configPath.resolve("slide/frameworks"), folderPath);
-                    htmlPane.stopProgressBar();
+                    indikatorService.stopProgressBar();
                     directoryService.changeWorkigDir(folderPath);
                     threadService.runActionLater(() -> {
                         tabService.addTab(folderPath.resolve("slide.adoc"));

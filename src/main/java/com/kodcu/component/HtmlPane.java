@@ -40,18 +40,6 @@ public class HtmlPane extends ViewPanel {
         return webView;
     }
 
-    public void startProgressBar() {
-        threadService.runActionLater(() -> {
-            webEngine().executeScript("startProgressBar()");
-        });
-    }
-
-    public void stopProgressBar() {
-        threadService.runActionLater(() -> {
-            webEngine().executeScript("stopProgressBar()");
-        });
-    }
-
     public ConverterResult convertDocbook(String asciidoc) {
         this.setMember("editorValue", asciidoc);
         JSObject result = (JSObject) webEngine().executeScript(String.format("convertDocbook(editorValue)"));

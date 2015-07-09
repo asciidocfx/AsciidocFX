@@ -90,7 +90,7 @@ public class ODFConverter implements Traversable {
             odtFilePath = fileChooser.showSaveDialog(null).toPath();
         } else
             odtFilePath = currentTabPathDir.resolve(String.format("%s.odt", currentTabPath.getFileName()));
-        indikatorService.startCycle();
+        indikatorService.startProgressBar();
         logger.debug("ODF conversion started");
         try {
             this.openOdtDocument();
@@ -101,7 +101,7 @@ public class ODFConverter implements Traversable {
             logger.error("Problem occured while converting to ODF", e);
         } finally {
             unstructuredDocument.clear();
-            indikatorService.completeCycle();
+            indikatorService.stopProgressBar();
             logger.debug("ODF conversion ended");
         }
 //        });

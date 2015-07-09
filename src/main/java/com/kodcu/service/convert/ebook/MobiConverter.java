@@ -51,7 +51,7 @@ public class MobiConverter implements DocumentConverter<String> {
     public void convert(boolean askPath, Consumer<String>... nextStep) {
         try {
 
-            indikatorService.startCycle();
+            indikatorService.startProgressBar();
             logger.debug("Mobi conversion started");
 
             final Path epubPath = epubConverter.produceEpub3Temp().join();
@@ -83,7 +83,7 @@ public class MobiConverter implements DocumentConverter<String> {
 
                         IOHelper.move(epubPath.getParent().resolve(mobiPath.getFileName()), mobiPath, StandardCopyOption.REPLACE_EXISTING);
 
-                        indikatorService.completeCycle();
+                        indikatorService.stopProgressBar();
                         logger.debug("Mobi conversion ended");
 
                         threadService.runActionLater(() -> {
@@ -94,7 +94,7 @@ public class MobiConverter implements DocumentConverter<String> {
                     } catch (Exception e) {
                         logger.error("Problem occured while converting to Mobi", e);
                     } finally {
-                        indikatorService.completeCycle();
+                        indikatorService.stopProgressBar();
                     }
 
                 });
@@ -102,7 +102,7 @@ public class MobiConverter implements DocumentConverter<String> {
 
         } catch (Exception e) {
             logger.error("Problem occured while converting to Mobi", e);
-            indikatorService.completeCycle();
+            indikatorService.stopProgressBar();
         }
     }
 

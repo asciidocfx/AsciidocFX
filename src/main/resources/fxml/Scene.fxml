@@ -6,6 +6,7 @@
 <?import javafx.scene.web.WebView?>
 <?import javafx.scene.text.Text?>
 <?import javafx.scene.shape.Rectangle?>
+<?import com.sun.javafx.webkit.theme.RenderThemeImpl.FormProgressBar?>
 <AnchorPane id="AnchorPane" fx:id="rootAnchor" styleClass="rootAnchor" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="com.kodcu.controller.ApplicationController">
   <children>
     <SplitPane fx:id="splitPane" id="splitPane" dividerPositions="0.17, 0.60" focusTraversable="true" AnchorPane.bottomAnchor="1.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="-1.0">
@@ -187,6 +188,7 @@
                     <Insets bottom="5.0" left="15.0" right="15.0" top="5.0" />
                   </padding>
                 </HBox>
+                <ProgressBar fx:id="progressBar"  visible="false" managed="false"></ProgressBar>
                 <TabPane fx:id="previewTabPane" styleClass="previewTabPane" VBox.vgrow="ALWAYS" >
                   <!--  Preview placeholder loaded in runtime here -->
                 </TabPane>

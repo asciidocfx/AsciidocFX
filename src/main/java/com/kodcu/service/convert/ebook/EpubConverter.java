@@ -100,7 +100,7 @@ public class EpubConverter {
 
                 try {
                     if (!isTemp) {
-                        indikatorService.startCycle();
+                        indikatorService.startProgressBar();
                         logger.debug("Epub conversion started");
                     }
 
@@ -179,7 +179,7 @@ public class EpubConverter {
                             IOHelper.move(epubOut, epubPath, StandardCopyOption.REPLACE_EXISTING);
 
                             if (!isTemp) {
-                                indikatorService.completeCycle();
+                                indikatorService.stopProgressBar();
                                 logger.debug("Epub conversion ended");
                                 threadService.runActionLater(() -> {
                                     asciiDocController.getRecentFilesList().remove(epubPath.toString());
@@ -200,7 +200,7 @@ public class EpubConverter {
 
         } catch (Exception e) {
             logger.error("Problem occured while converting to Epub", e);
-            indikatorService.completeCycle();
+            indikatorService.stopProgressBar();
             completableFuture.completeExceptionally(e);
         }
 

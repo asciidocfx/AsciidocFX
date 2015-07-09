@@ -50,7 +50,7 @@ public class DocBookConverter implements DocbookTraversable, DocumentConverter<S
     @Override
     public void convert(boolean askPath, Consumer<String>... nextStep) {
 
-//        htmlPane.startProgressBar();
+//        indikatorService.startProgressBar();
 
         Path currentTabPath = current.currentPath().get();
         Path currentTabPathDir = currentTabPath.getParent();
@@ -90,7 +90,7 @@ public class DocBookConverter implements DocbookTraversable, DocumentConverter<S
                 step.accept(result);
             }
 
-//                htmlPane.stopProgressBar();
+//                indikatorService.stopProgressBar();
         });
     }
 
