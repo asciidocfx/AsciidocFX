@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.*;
 
@@ -58,7 +59,12 @@ public class DocumentService {
         if (Objects.isNull(currentPath) || !current.getCurrentTabText().contains(" *"))
             return;
 
-        IOHelper.writeToFile(currentPath, (String) current.currentEngine().executeScript("editor.getValue();"), TRUNCATE_EXISTING, CREATE);
+        Optional<IOException> exception =
+                IOHelper.writeToFile(currentPath, current.currentEditorValue(), TRUNCATE_EXISTING, CREATE);
+
+        if(exception.isPresent())
+            return;
+
         current.setCurrentTabText(currentPath.getFileName().toString());
         ObservableList<String> recentFiles = controller.getRecentFilesList();
         recentFiles.remove(currentPath.toString());

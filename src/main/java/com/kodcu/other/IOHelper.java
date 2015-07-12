@@ -24,6 +24,7 @@ import java.nio.charset.Charset;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.BiPredicate;
 import java.util.stream.Stream;
 
@@ -38,12 +39,14 @@ public class IOHelper {
         writeToFile(file.toPath(), content, openOption);
     }
 
-    public static void writeToFile(Path path, String content, StandardOpenOption... openOption) {
+    public static Optional<IOException> writeToFile(Path path, String content, StandardOpenOption... openOption) {
         try {
             Files.write(path, content.getBytes(Charset.forName("UTF-8")), openOption);
         } catch (IOException e) {
             logger.error("Problem occured while writing to {}", path, e);
+            return Optional.of(e);
         }
+        return Optional.empty();
     }
 
     public static void writeToFile(Path path, byte[] content, StandardOpenOption... openOption) {
