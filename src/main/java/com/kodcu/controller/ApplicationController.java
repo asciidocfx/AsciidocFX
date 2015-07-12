@@ -121,6 +121,8 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     public MenuItem newSlide;
     public Menu newMenu;
     public ProgressBar progressBar;
+    public Menu favoriteDirMenu;
+    public MenuItem addToFavoriteDir;
 
     private Logger logger = LoggerFactory.getLogger(ApplicationController.class);
 
@@ -171,6 +173,8 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     private Stage markdownTableStage;
 
     private TreeView<Section> sectionTreeView;
+
+    private BooleanProperty stopRendering = new SimpleBooleanProperty(false);
 
     private AtomicBoolean includeAsciidocResource = new AtomicBoolean(false);
 
@@ -342,6 +346,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     private PreviewTab previewTab;
 
     private Timeline progressBarTimeline = null;
+    private ObservableList<String> favoriteDirectories = FXCollections.observableArrayList();
 
     public void createAsciidocTable() {
         asciidocTableStage.showAndWait();
@@ -731,6 +736,33 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             }
         });
 
+        if (favoriteDirectories.size() == 0) {
+            favoriteDirMenu.setVisible(false);
+        }
+
+        for (String favoriteDirectory : favoriteDirectories) {
+            favoriteDirMenu.getItems().add(MenuItemBuilt
+                    .item(favoriteDirectory)
+                    .tip("Go to favorite dir")
+                    .click(event -> {
+                        directoryService.changeWorkigDir(Paths.get(favoriteDirectory));
+                    }));
+        }
+
+        favoriteDirectories.addListener((ListChangeListener<String>) c -> {
+            c.next();
+            favoriteDirMenu.setVisible(true);
+            List<? extends String> addedSubList = c.getAddedSubList();
+            for (String path : addedSubList) {
+                favoriteDirMenu.getItems().add(MenuItemBuilt
+                        .item(path)
+                        .tip("Go to favorite dir")
+                        .click(event -> {
+                            directoryService.changeWorkigDir(Paths.get(path));
+                        }));
+            }
+        });
+
         treeView.setCellFactory(param -> {
             TreeCell<Item> cell = new TextFieldTreeCell<Item>();
             cell.setOnDragDetected(event -> {
@@ -861,11 +893,13 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             if (selectedItems.size() > 1) {
                 renameFile.setVisible(false);
                 newMenu.setVisible(false);
+                addToFavoriteDir.setVisible(false);
             } else if (selectedItems.size() == 1) {
                 Path path = selectedItems.get(0).getValue().getPath();
                 boolean isDirectory = Files.isDirectory(path);
                 newMenu.setVisible(isDirectory);
                 renameFile.setVisible(!isDirectory);
+                addToFavoriteDir.setVisible(isDirectory);
             }
         });
 
@@ -881,6 +915,9 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             }
         });
 
+        CheckMenuItem renderingCheckbox = new CheckMenuItem("Stop rendering");
+        stopRendering.bind(renderingCheckbox.selectedProperty());
+
         ContextMenu previewContextMenu = new ContextMenu(
                 MenuItemBuilt.item("Go back").click(event -> {
                     WebHistory history = htmlPane.webEngine().getHistory();
@@ -893,6 +930,8 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                     if (history.getCurrentIndex() + 1 != history.getEntries().size())
                         history.go(+1);
                 }),
+                new SeparatorMenuItem(),
+                renderingCheckbox,
                 new SeparatorMenuItem(),
                 MenuItemBuilt.item("Copy Html").click(event -> {
                     DocumentFragmentImpl selectionDom = (DocumentFragmentImpl) htmlPane.webEngine().executeScript("window.getSelection().getRangeAt(0).cloneContents()");
@@ -1252,6 +1291,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             recentFiles = yaml.loadAs(yamlContent, RecentFiles.class);
 
             recentFilesList.addAll(recentFiles.getFiles());
+            favoriteDirectories.addAll(recentFiles.getFavoriteDirectories());
         } catch (Exception e) {
             logger.error("Problem occured while loading recent file list", e);
         }
@@ -1523,6 +1563,10 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     @WebkitCall(from = "editor")
     public void textListener(String text, String mode) {
+
+        if (stopRendering.get()) {
+            return;
+        }
 
         threadService.runTaskLater(() -> {
 
@@ -2163,5 +2207,14 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             }
         });
 
+    }
+
+    @FXML
+    public void addToFavoriteDir(ActionEvent actionEvent) {
+        Path selectedTabPath = tabService.getSelectedTabPath();
+        if (Files.isDirectory(selectedTabPath)) {
+            favoriteDirectories.add(selectedTabPath.toString());
+            recentFiles.getFavoriteDirectories().add(selectedTabPath.toString());
+        }
     }
 }

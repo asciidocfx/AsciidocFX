@@ -107,6 +107,9 @@
                                   <MenuItem mnemonicParsing="false" text="Copy Path" fx:id="copyPathTreeItem" />
                                   <MenuItem mnemonicParsing="false" text="Copy" fx:id="copyTreeItem" />
                                   <SeparatorMenuItem />
+                                  <MenuItem fx:id="addToFavoriteDir" onAction="#addToFavoriteDir" text="Add to Fav. Dirs"/>
+                                  <Menu fx:id="favoriteDirMenu" text="Favorite Dirs"/>
+                                  <SeparatorMenuItem />
                                   <MenuItem mnemonicParsing="false" text="Delete" fx:id="deletePathItem" />
                                 </items>
                               </ContextMenu>

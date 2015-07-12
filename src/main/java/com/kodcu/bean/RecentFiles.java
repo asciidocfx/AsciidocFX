@@ -10,6 +10,7 @@ import java.util.Objects;
 public class RecentFiles {
 
     private List<String> files;
+    private List<String> favoriteDirectories;
     private String workingDirectory;
 
     public RecentFiles(List<String> files) {
@@ -23,6 +24,16 @@ public class RecentFiles {
         if(Objects.isNull(files))
             files = new ArrayList<>();
         return files;
+    }
+
+    public List<String> getFavoriteDirectories() {
+        if(Objects.isNull(favoriteDirectories))
+            favoriteDirectories = new ArrayList<>();
+        return favoriteDirectories;
+    }
+
+    public void setFavoriteDirectories(List<String> favoriteDirectories) {
+        this.favoriteDirectories = favoriteDirectories;
     }
 
     public void setFiles(List<String> files) {
