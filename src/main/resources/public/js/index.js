@@ -11,7 +11,7 @@ function fillOutlines(doc) {
     sections.forEach(function (section, i) {
 
         var level = section.$level();
-        var title = section.$title();
+        var title = section.title;
         var lineno = section.$lineno();
         var id = section.$id();
         var parentLineNo = lineno;
