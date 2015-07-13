@@ -52,6 +52,7 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.geometry.Side;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -61,6 +62,7 @@ import javafx.scene.control.cell.TextFieldTreeCell;
 import javafx.scene.input.*;
 import javafx.scene.layout.*;
 import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebHistory;
 import javafx.scene.web.WebView;
@@ -1354,20 +1356,25 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
             for (Section section : outlineList) {
                 TreeItem<Section> sectionItem = new TreeItem<>(section);
+                sectionItem.setExpanded(true);
                 sectionTreeView.getRoot().getChildren().add(sectionItem);
 
                 TreeSet<Section> subsections = section.getSubsections();
                 for (Section subsection : subsections) {
                     TreeItem<Section> subItem = new TreeItem<>(subsection);
+                    subItem.setExpanded(true);
                     sectionItem.getChildren().add(subItem);
                     this.addSubSections(subItem, subsection.getSubsections());
                 }
             }
 
-            if (Objects.isNull(outlineTab.getContent()))
-                threadService.runActionLater(() -> {
+            threadService.runActionLater(() -> {
+                if (outlineList.size() == 0) {
+                    outlineTab.setContent(new Label(" There is no Asciidoc header to generate outline."));
+                } else {
                     outlineTab.setContent(sectionTreeView);
-                });
+                }
+            });
         });
 
     }
