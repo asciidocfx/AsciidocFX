@@ -52,7 +52,6 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.geometry.Side;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -62,7 +61,6 @@ import javafx.scene.control.cell.TextFieldTreeCell;
 import javafx.scene.input.*;
 import javafx.scene.layout.*;
 import javafx.scene.text.Text;
-import javafx.scene.text.TextAlignment;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebHistory;
 import javafx.scene.web.WebView;
@@ -171,6 +169,8 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     public Label ebookPro;
     public Label docbookPro;
     public Label browserPro;
+    public SeparatorMenuItem renameSeparator;
+    public SeparatorMenuItem addToFavSeparator;
     private AnchorPane markdownTableAnchor;
     private Stage markdownTableStage;
 
@@ -740,29 +740,25 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
         if (favoriteDirectories.size() == 0) {
             favoriteDirMenu.setVisible(false);
-        }
-
-        for (String favoriteDirectory : favoriteDirectories) {
-            favoriteDirMenu.getItems().add(MenuItemBuilt
-                    .item(favoriteDirectory)
-                    .tip("Go to favorite dir")
-                    .click(event -> {
-                        directoryService.changeWorkigDir(Paths.get(favoriteDirectory));
-                    }));
+        } else {
+            int size = 0;
+            for (String favoriteDirectory : favoriteDirectories) {
+                this.addItemToFavoriteDir(size++, favoriteDirectory);
+            }
+            this.includeClearAllToFavoriteDir();
         }
 
         favoriteDirectories.addListener((ListChangeListener<String>) c -> {
             c.next();
             favoriteDirMenu.setVisible(true);
+            int size = favoriteDirMenu.getItems().size();
+            boolean empty = size == 0;
             List<? extends String> addedSubList = c.getAddedSubList();
             for (String path : addedSubList) {
-                favoriteDirMenu.getItems().add(MenuItemBuilt
-                        .item(path)
-                        .tip("Go to favorite dir")
-                        .click(event -> {
-                            directoryService.changeWorkigDir(Paths.get(path));
-                        }));
+                if (size > 0) this.addItemToFavoriteDir(size++ - 2, path);
+                else this.addItemToFavoriteDir(size++, path);
             }
+            if (empty) this.includeClearAllToFavoriteDir();
         });
 
         treeView.setCellFactory(param -> {
@@ -896,12 +892,29 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                 renameFile.setVisible(false);
                 newMenu.setVisible(false);
                 addToFavoriteDir.setVisible(false);
+                renameSeparator.setVisible(false);
+                if (favoriteDirMenu.getItems().size() > 0) {
+                    addToFavSeparator.setVisible(true);
+                } else {
+                    addToFavSeparator.setVisible(false);
+                }
             } else if (selectedItems.size() == 1) {
                 Path path = selectedItems.get(0).getValue().getPath();
                 boolean isDirectory = Files.isDirectory(path);
                 newMenu.setVisible(isDirectory);
                 renameFile.setVisible(!isDirectory);
+                renameSeparator.setVisible(true);
                 addToFavoriteDir.setVisible(isDirectory);
+                if (favoriteDirMenu.getItems().size() == 0 && !isDirectory) {
+                    addToFavSeparator.setVisible(false);
+                } else {
+                    addToFavSeparator.setVisible(true);
+                }
+                if (favoriteDirectories.size() > 0) {
+                    boolean has = favoriteDirectories.contains(path.toString());
+                    if (has) addToFavoriteDir.setDisable(true);
+                    else addToFavoriteDir.setDisable(false);
+                }
             }
         });
 
@@ -917,7 +930,8 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             }
         });
 
-        CheckMenuItem renderingCheckbox = new CheckMenuItem("Stop rendering");
+        CheckMenuItem renderingCheckbox = new CheckMenuItem();
+        renderingCheckbox.setGraphic(new Label("Stop rendering"));
         stopRendering.bind(renderingCheckbox.selectedProperty());
 
         ContextMenu previewContextMenu = new ContextMenu(
@@ -983,6 +997,33 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             checkNewVersion();
         });
 
+    }
+
+    private void includeClearAllToFavoriteDir() {
+        favoriteDirMenu.getItems().addAll(new SeparatorMenuItem(), MenuItemBuilt
+                .item("Clear List")
+                .click(event -> {
+                    ObservableList<TreeItem<Item>> selectedItems = treeView.getSelectionModel().getSelectedItems();
+                    if (selectedItems.size() == 1) {
+                        Path path = selectedItems.get(0).getValue().getPath();
+                        boolean isDirectory = Files.isDirectory(path);
+                        addToFavSeparator.setVisible(isDirectory);
+                    } else addToFavSeparator.setVisible(false);
+                    favoriteDirectories.clear();
+                    favoriteDirMenu.getItems().clear();
+                    recentFiles.getFavoriteDirectories().clear();
+                    favoriteDirMenu.setVisible(false);
+                    addToFavoriteDir.setDisable(false);
+                }));
+    }
+
+    private void addItemToFavoriteDir(int index, String path) {
+        favoriteDirMenu.getItems().add(index, MenuItemBuilt
+                .item(path)
+                .tip("Go to favorite dir")
+                .click(event -> {
+                    directoryService.changeWorkigDir(Paths.get(path));
+                }));
     }
 
     private void checkNewVersion() {
@@ -2220,8 +2261,11 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     public void addToFavoriteDir(ActionEvent actionEvent) {
         Path selectedTabPath = tabService.getSelectedTabPath();
         if (Files.isDirectory(selectedTabPath)) {
-            favoriteDirectories.add(selectedTabPath.toString());
-            recentFiles.getFavoriteDirectories().add(selectedTabPath.toString());
+            boolean has = favoriteDirectories.contains(selectedTabPath.toString());
+            if (!has) {
+                favoriteDirectories.add(selectedTabPath.toString());
+                recentFiles.getFavoriteDirectories().add(selectedTabPath.toString());
+            }
         }
     }
 }
