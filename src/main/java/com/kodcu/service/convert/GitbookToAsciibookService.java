@@ -102,10 +102,10 @@ public class GitbookToAsciibookService {
         for (Path path : markdownFileList) {
             this.markdownToAsciidoc(IOHelper.readFile(path), result -> {
                 String fileName = path.getFileName().toString();
-                fileName = fileName.replaceAll("\\.md|\\.markdown", ".asciidoc");
+                fileName = fileName.replaceAll("\\.md|\\.markdown", ".adoc");
 
                 for (String name : markdownFileNameList) {
-                    result = result.replace(name, name.replaceAll(".md|.markdown", ".asciidoc"));
+                    result = result.replace(name, name.replaceAll(".md|.markdown", ".adoc"));
                 }
 
                 LinkedList<String> stringList = new LinkedList<String>(Arrays.asList(result.split("\n")));
@@ -142,7 +142,7 @@ public class GitbookToAsciibookService {
         directoryService.changeWorkigDir(asciibookDir);
 
         threadService.runActionLater(() -> {
-            tabService.addTab(asciibookDir.resolve("SUMMARY.asciidoc"));
+            tabService.addTab(asciibookDir.resolve("SUMMARY.adoc"));
         });
 
 

@@ -402,7 +402,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             fileWatchService.registerWatcher(file.toPath());
             threadService.runActionLater(() -> {
                 directoryView(null);
-                tabService.addTab(file.toPath().resolve("book.asc"));
+                tabService.addTab(file.toPath().resolve("book.adoc"));
             });
         });
     }
@@ -1969,7 +1969,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     @FXML
     public void generateCheatSheet(ActionEvent actionEvent) {
-        Path cheatsheetPath = configPath.resolve("cheatsheet/cheatsheet.asc");
+        Path cheatsheetPath = configPath.resolve("cheatsheet/cheatsheet.adoc");
         tabService.addTab(cheatsheetPath);
     }
 

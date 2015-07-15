@@ -71,7 +71,7 @@ public class DirectoryService {
 
         pathSaveSupplier = () -> {
             final FileChooser chooser = newFileChooser("Save Document");
-            chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Asciidoc", "*.asc", "*.asciidoc", "*.adoc", "*.ad", "*.txt", "*.*"));
+            chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Asciidoc", "*.adoc", "*.asciidoc", "*.asc", "*.ad", "*.txt", "*.*"));
             chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Markdown", "*.md", "*.markdown", "*.txt", "*.*"));
             File file = chooser.showSaveDialog(null);
             return Objects.nonNull(file) ? file.toPath() : null;
