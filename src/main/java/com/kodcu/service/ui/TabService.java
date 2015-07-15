@@ -289,6 +289,11 @@ public class TabService {
         MenuItem menuItem8 = new MenuItem("New File");
         menuItem8.setOnAction(controller::newDoc);
 
+        MenuItem reloadMenuItem = new MenuItem("Reload");
+        reloadMenuItem.setOnAction(event -> {
+            tab.reloadDocument("Do you want reload this unsaved document?");
+        });
+
         MenuItem gotoWorkdir = new MenuItem("Go to Workdir");
         gotoWorkdir.setOnAction(event -> {
             current.currentPath().map(Path::getParent).ifPresent(directoryService::changeWorkigDir);
@@ -296,8 +301,8 @@ public class TabService {
 
         ContextMenu contextMenu = new ContextMenu();
         contextMenu.getItems().addAll(menuItem0, menuItem1, menuItem2, new SeparatorMenuItem(),
-                menuItem4, menuItem5, menuItem6, new SeparatorMenuItem(),
-                gotoWorkdir, new SeparatorMenuItem(),
+                menuItem4, menuItem5, menuItem6, new SeparatorMenuItem(),reloadMenuItem,
+                new SeparatorMenuItem(), gotoWorkdir, new SeparatorMenuItem(),
                 menuItem7, menuItem8);
 
         tab.contextMenuProperty().setValue(contextMenu);

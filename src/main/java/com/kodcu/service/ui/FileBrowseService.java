@@ -1,7 +1,7 @@
 package com.kodcu.service.ui;
 
+import com.kodcu.controller.ApplicationController;
 import com.kodcu.other.Item;
-import com.kodcu.service.FileWatchService;
 import com.kodcu.service.PathOrderService;
 import com.kodcu.service.PathResolverService;
 import com.kodcu.service.ThreadService;
@@ -32,7 +32,7 @@ public class FileBrowseService {
     private final ThreadService threadService;
     private final PathResolverService pathResolver;
     private final AwesomeService awesomeService;
-    private final FileWatchService watchService;
+    private final ApplicationController controller;
 
     private TreeItem<Item> rootItem;
 
@@ -40,15 +40,17 @@ public class FileBrowseService {
 
     @Autowired
     public FileBrowseService(final PathOrderService pathOrder, final ThreadService threadService, final PathResolverService pathResolver,
-            final AwesomeService awesomeService, final FileWatchService watchService) {
+                             final AwesomeService awesomeService, ApplicationController controller) {
         this.pathOrder = pathOrder;
         this.threadService = threadService;
         this.pathResolver = pathResolver;
         this.awesomeService = awesomeService;
-        this.watchService = watchService;
+        this.controller = controller;
     }
 
-    public synchronized void browse(final TreeView<Item> treeView, final Path browserPath) {
+    public void browse(final Path browserPath) {
+
+        TreeView<Item> treeView = controller.getTreeView();
 
         int selectedIndex = treeView.getSelectionModel().getSelectedIndex();
         if (selectedIndex != -1)
@@ -70,9 +72,11 @@ public class FileBrowseService {
                         treeView.getSelectionModel().select(lastSelectedItem);
                 });
 
-                watchService.registerWatcher(treeView, browserPath, this::browse);
             });
         });
+
+        logger.debug("Filesystem Tree relisted for {}", browserPath);
+
     }
 
 

@@ -17,6 +17,12 @@ public final class AlertHelper {
         return deleteAlert.showAndWait();
     }
 
+    public static Optional<ButtonType> showAlert(String alertMessage) {
+        AlertDialog deleteAlert = new AlertDialog(AlertType.WARNING, null, ButtonType.YES, ButtonType.CANCEL);
+        deleteAlert.setHeaderText(alertMessage);
+        return deleteAlert.showAndWait();
+    }
+
     public static Optional<ButtonType> nullDirectoryAlert() {
         AlertDialog deleteAlert = new AlertDialog(AlertType.WARNING, null, ButtonType.OK);
         deleteAlert.setHeaderText("Please select directorie(s)");

@@ -350,6 +350,9 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     private Timeline progressBarTimeline = null;
     private ObservableList<String> favoriteDirectories = FXCollections.observableArrayList();
 
+    @Autowired
+    private FileWatchService watchService;
+
     public void createAsciidocTable() {
         asciidocTableStage.showAndWait();
     }
@@ -395,7 +398,8 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         threadService.runTaskLater(() -> {
             sampleBookService.produceSampleBook(configPath, file.toPath());
             directoryService.setWorkingDirectory(Optional.of(file.toPath()));
-            fileBrowser.browse(treeView, file.toPath());
+            fileBrowser.browse(file.toPath());
+            fileWatchService.registerWatcher(file.toPath());
             threadService.runActionLater(() -> {
                 directoryView(null);
                 tabService.addTab(file.toPath().resolve("book.asc"));
@@ -800,7 +804,8 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
 
         Path workDir = directoryService.getWorkingDirectory().orElse(userHome);
-        fileBrowser.browse(treeView, workDir);
+        fileBrowser.browse(workDir);
+        watchService.registerWatcher(workDir);
 
         openFileTreeItem.setOnAction(event -> {
 
@@ -2035,10 +2040,10 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
                 IOHelper.writeToFile(path.resolve(result), "");
                 tabService.addTab(path.resolve(result));
-
-                threadService.runActionLater(() -> {
-                    directoryService.changeWorkigDir(path);
-                });
+// dikkat
+//                threadService.runActionLater(() -> {
+//                    directoryService.changeWorkigDir(path);
+//                });
             }
         };
 
@@ -2237,9 +2242,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                         .getValue().getPath();
 
                 Path folderPath = path.resolve(folderName);
-
-                // it needs to invalidate file watchservice
-                fileWatchService.invalidate();
 
                 threadService.runTaskLater(() -> {
                     IOHelper.createDirectory(folderPath);

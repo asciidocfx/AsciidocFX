@@ -49,7 +49,7 @@ public class DirectoryService {
 
             workingDirectory = Optional.ofNullable(file.toPath());
 
-            workingDirectory.ifPresent(path -> fileBrowser.browse(controller.getTreeView(), path));
+            workingDirectory.ifPresent(fileBrowser::browse);
 
             return Objects.nonNull(file) ? file.toPath() : null;
         };
@@ -158,7 +158,8 @@ public class DirectoryService {
         if (Objects.nonNull(selectedDir)) {
             controller.getRecentFiles().setWorkingDirectory(selectedDir.toString());
             this.setWorkingDirectory(Optional.of(selectedDir.toPath()));
-            fileBrowser.browse(controller.getTreeView(), selectedDir.toPath());
+            fileBrowser.browse(selectedDir.toPath());
+            fileWatchService.registerWatcher(selectedDir.toPath());
             this.setInitialDirectory(Optional.ofNullable(selectedDir));
 
         }
@@ -169,11 +170,12 @@ public class DirectoryService {
             return;
 
         // it needs to invalidate file watchservice
-        fileWatchService.invalidate();
-
+//        fileWatchService.invalidate();
+//
         controller.getRecentFiles().setWorkingDirectory(path.toString());
         this.setWorkingDirectory(Optional.of(path));
-        fileBrowser.browse(controller.getTreeView(), path);
+        fileBrowser.browse(path);
+        fileWatchService.registerWatcher(path);
         this.setInitialDirectory(Optional.ofNullable(path.toFile()));
 
     }

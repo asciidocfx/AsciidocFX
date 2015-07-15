@@ -1,5 +1,6 @@
 package com.kodcu.component;
 
+import com.kodcu.other.IOHelper;
 import com.kodcu.service.shortcut.AsciidocShortcutService;
 import com.kodcu.service.shortcut.MarkdownShortcutService;
 import com.kodcu.service.shortcut.NoneShortcutService;
@@ -7,6 +8,8 @@ import javafx.application.Platform;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.nio.file.Path;
 import java.util.Objects;
@@ -20,6 +23,8 @@ public class MyTab extends Tab {
 
     private EditorPane editorPane;
     private Path path;
+
+    private final Logger logger = LoggerFactory.getLogger(MyTab.class);
 
     public Label getLabel() {
         if (Objects.isNull(this.getGraphic()))
@@ -124,6 +129,49 @@ public class MyTab extends Tab {
 
     public String htmlToMarkupFunction() {
         return isAsciidoc() ? "toAsciidoc" : "toMarkdown";
+    }
+
+    public void reloadDocument(String alertMessage) {
+
+        if (Objects.nonNull(path)) {
+            String content = IOHelper.readFile(path);
+
+            if(!content.equals(getEditorPane().getEditorValue())){
+                if (isSaved()) {
+                    getEditorPane().setEditorValue(content);
+                } else {
+                    Optional<ButtonType> reloadAlert = AlertHelper.showAlert(alertMessage);
+                    reloadAlert.ifPresent(buttonType -> {
+                        if (ButtonType.YES == buttonType) {
+                            getEditorPane().setEditorValue(content);
+                        }
+                    });
+                }
+            }
+
+        } else {
+            logger.error("There is not path for this tab to reload");
+        }
+
+    }
+
+    public void askReloadDocument(String alertMessage) {
+
+        if (Objects.nonNull(path)) {
+            String content = IOHelper.readFile(path);
+            if(!content.equals(getEditorPane().getEditorValue())){
+                this.select();
+                Optional<ButtonType> reloadAlert = AlertHelper.showAlert(alertMessage);
+                reloadAlert.ifPresent(buttonType -> {
+                    if (ButtonType.YES == buttonType) {
+                        getEditorPane().setEditorValue(content);
+                    }
+                });
+            }
+        } else {
+            logger.error("There is not path for this tab to reload");
+        }
+
     }
 
 }

@@ -1,11 +1,13 @@
 package com.kodcu.component;
 
 import com.kodcu.controller.ApplicationController;
+import com.kodcu.other.IOHelper;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Worker;
 import javafx.event.EventHandler;
+import javafx.scene.control.ButtonType;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
@@ -24,6 +26,7 @@ import org.springframework.stereotype.Component;
 
 import java.nio.file.Path;
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * Created by usta on 09.04.2015.
@@ -131,6 +134,11 @@ public class EditorPane extends AnchorPane {
 
     public String getEditorValue() {
         return (String) webEngine().executeScript("editor.getValue()");
+    }
+
+    public void setEditorValue(String value) {
+        getWindow().setMember("editorValue",value);
+        webEngine().executeScript("editor.setValue(editorValue)");
     }
 
     public void switchMode(Object... args) {
