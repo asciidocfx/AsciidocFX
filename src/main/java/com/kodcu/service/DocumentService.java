@@ -62,7 +62,7 @@ public class DocumentService {
         Optional<IOException> exception =
                 IOHelper.writeToFile(currentPath, current.currentEditorValue(), TRUNCATE_EXISTING, CREATE);
 
-        if(exception.isPresent())
+        if (exception.isPresent())
             return;
 
         current.setCurrentTabText(currentPath.getFileName().toString());
@@ -81,7 +81,7 @@ public class DocumentService {
         newDoc(null);
     }
 
-    public void newDoc(String content) {
+    public void newDoc(final String content) {
         EditorPane editorPane = webviewService.createWebView();
         editorPane.confirmHandler(param -> {
             if ("command:ready".equals(param)) {
@@ -96,9 +96,12 @@ public class DocumentService {
 
                 window.call("setInitialized");
 
-                if (Objects.nonNull(content)) {
-                    window.call("setEditorValue", new Object[]{content});
-                }
+                String finalContent = content;
+
+                if (Objects.isNull(finalContent))
+                    finalContent = "";
+
+                window.call("setEditorValue", new Object[]{finalContent});
 
             }
             return false;
