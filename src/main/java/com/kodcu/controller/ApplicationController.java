@@ -1705,11 +1705,11 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     }
 
     @WebkitCall(from = "asciidoctor")
-    public String readDefaultStylesheet(){
+    public String readDefaultStylesheet() {
         final CompletableFuture<String> completableFuture = new CompletableFuture();
 
-        completableFuture.runAsync(()->{
-            threadService.runTaskLater(()->{
+        completableFuture.runAsync(() -> {
+            threadService.runTaskLater(() -> {
                 Path defaultCssPath = configPath.resolve("data/stylesheets/asciidoctor-default.css");
                 String defaultCss = IOHelper.readFile(defaultCssPath);
                 completableFuture.complete(defaultCss);
@@ -1732,10 +1732,11 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                 PathFinderService fileReader = applicationContext.getBean("pathFinder", PathFinderService.class);
                 Path path = fileReader.findPath(uri, parent);
 
-                if (!Files.exists(path))
+                if (!Files.exists(path)) {
                     completableFuture.complete("404");
-
-                completableFuture.complete(IOHelper.readFile(path));
+                } else {
+                    completableFuture.complete(IOHelper.readFile(path));
+                }
             });
         });
 
