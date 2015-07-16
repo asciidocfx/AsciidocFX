@@ -1759,7 +1759,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             }
         }
 
-        editor.call("insert", clipboard.getString());
+        editor.call("execCommand", "paste-raw-1");
     }
 
     @WebkitCall
@@ -1789,7 +1789,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             logger.error(e.getMessage(), e);
         }
 
-        editor.call("insert", clipboard.getString());
+        editor.call("execCommand", "paste-raw-1");
 
     }
 
