@@ -1705,6 +1705,21 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     }
 
     @WebkitCall(from = "asciidoctor")
+    public String readDefaultStylesheet(){
+        final CompletableFuture<String> completableFuture = new CompletableFuture();
+
+        completableFuture.runAsync(()->{
+            threadService.runTaskLater(()->{
+                Path defaultCssPath = configPath.resolve("data/stylesheets/asciidoctor-default.css");
+                String defaultCss = IOHelper.readFile(defaultCssPath);
+                completableFuture.complete(defaultCss);
+            });
+        });
+
+        return completableFuture.join();
+    }
+
+    @WebkitCall(from = "asciidoctor")
     public String readAsciidoctorResource(String uri, Integer parent) {
 
         if (uri.matches(".*?\\.(asc|adoc|ad|asciidoc|md|markdown)") && getIncludeAsciidocResource())

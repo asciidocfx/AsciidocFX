@@ -89,7 +89,7 @@ function convertHtml(content) {
     var options = Opal.hash2(['backend', 'safe', 'attributes', "header_footer"], {
         backend: 'html5',
         safe: 'safe',
-        attributes: 'linkcss showtitle icons=font@ source-highlighter=highlight.js platform=opal platform-opal env=browser env-browser idprefix sectanchors idseparator=- '
+        attributes: 'showtitle icons=font@ source-highlighter=highlight.js platform=opal platform-opal env=browser env-browser idprefix sectanchors idseparator=- '
         , 'header_footer': true
     });
 
