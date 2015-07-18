@@ -62,17 +62,12 @@ public class FileBrowseService {
             rootItem.setExpanded(true);
             treeView.setRoot(rootItem);
 
-            threadService.runTaskLater(() -> {
-                this.addPathToTree(browserPath, path -> {
-                    threadService.runActionLater(r -> addToTreeView(path, rootItem));
-                });
-
-                threadService.runActionLater(r -> {
-                    if (Objects.nonNull(lastSelectedItem))
-                        treeView.getSelectionModel().select(lastSelectedItem);
-                });
-
+            this.addPathToTree(browserPath, path -> {
+                this.addToTreeView(path, rootItem);
             });
+
+            if (Objects.nonNull(lastSelectedItem))
+                treeView.getSelectionModel().select(lastSelectedItem);
         });
 
         logger.debug("Filesystem Tree relisted for {}", browserPath);

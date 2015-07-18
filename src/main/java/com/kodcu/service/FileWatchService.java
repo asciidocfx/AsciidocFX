@@ -51,6 +51,8 @@ public class FileWatchService {
                 if (!path.equals(lastWatchedPath)) {
                     if (Objects.nonNull(lastWatchKey)) {
                         lastWatchKey.cancel();
+                        watcher.close();
+                        watcher = FileSystems.getDefault().newWatchService();
                     }
                     lastWatchedPath = path;
                     this.lastWatchKey = path.register(watcher, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY);
