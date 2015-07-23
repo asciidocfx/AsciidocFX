@@ -25,7 +25,7 @@ public final class AlertHelper {
 
     public static Optional<ButtonType> nullDirectoryAlert() {
         AlertDialog deleteAlert = new AlertDialog(AlertType.WARNING, null, ButtonType.OK);
-        deleteAlert.setHeaderText("Please select directorie(s)");
+        deleteAlert.setHeaderText("Please select source and destination directories.");
         return deleteAlert.showAndWait();
     }
 
