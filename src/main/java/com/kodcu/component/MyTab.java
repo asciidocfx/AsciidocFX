@@ -72,7 +72,7 @@ public class MyTab extends Tab {
     }
 
     private boolean isDirty() {
-        if ("new *".equals(this.getTabText())) {
+        if (isNew()) {
             if (Objects.nonNull(editorPane)) {
                 try {
                     String value = editorPane.getEditorValue();
@@ -84,6 +84,10 @@ public class MyTab extends Tab {
             }
         }
         return true;
+    }
+
+    public boolean isNew(){
+        return "new *".equals(this.getTabText());
     }
 
     public void select() {
