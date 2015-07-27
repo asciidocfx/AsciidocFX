@@ -66,7 +66,9 @@ public class TabService {
 
         final Consumer<Path> openFileConsumer = path -> {
             if (Files.isDirectory(path)) {
-                directoryService.changeWorkigDir(path.equals(directoryService.workingDirectory()) ? path.getParent() : path);
+                if (!path.equals(directoryService.workingDirectory())) {
+                    directoryService.changeWorkigDir(path);
+                }
             } else if (pathResolver.isImage(path)) {
                 addImageTab(path);
             } else if (pathResolver.isHTML(path) || pathResolver.isAsciidoc(path) || pathResolver.isMarkdown(path)) {
@@ -301,7 +303,7 @@ public class TabService {
 
         ContextMenu contextMenu = new ContextMenu();
         contextMenu.getItems().addAll(menuItem0, menuItem1, menuItem2, new SeparatorMenuItem(),
-                menuItem4, menuItem5, menuItem6, new SeparatorMenuItem(),reloadMenuItem,
+                menuItem4, menuItem5, menuItem6, new SeparatorMenuItem(), reloadMenuItem,
                 new SeparatorMenuItem(), gotoWorkdir, new SeparatorMenuItem(),
                 menuItem7, menuItem8);
 
