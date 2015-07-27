@@ -6,7 +6,6 @@
 <?import javafx.scene.web.WebView?>
 <?import javafx.scene.text.Text?>
 <?import javafx.scene.shape.Rectangle?>
-<?import com.sun.javafx.webkit.theme.RenderThemeImpl.FormProgressBar?>
 <AnchorPane id="AnchorPane" fx:id="rootAnchor" styleClass="rootAnchor" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="com.kodcu.controller.ApplicationController">
   <children>
     <SplitPane fx:id="splitPane" id="splitPane" dividerPositions="0.17, 0.60" focusTraversable="true" AnchorPane.bottomAnchor="1.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="-1.0">
@@ -74,7 +73,8 @@
                             <MenuItem mnemonicParsing="false" onAction="#openGitterChat" text="Gitter Chat" />
                               <SeparatorMenuItem />
                             <MenuItem mnemonicParsing="false" onAction="#openGithubPage" text="Github Page" />
-                            <MenuItem mnemonicParsing="false" disable="true" text="" />
+                            <MenuItem fx:id="afxVersionItem" mnemonicParsing="false" disable="true" text="" />
+                            <MenuItem mnemonicParsing="false" onAction="#showSettings" text="Settings" />
                           </items>
                           <HBox.margin>
                             <Insets />
