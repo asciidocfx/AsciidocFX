@@ -17,7 +17,6 @@ editor.setTheme("ace/theme/xcode");
 var lastEditorRow = 0;
 var afterFirstChange = false;
 var timeouter;
-var updateDelay = 100;
 
 //var maxTop = editor.renderer.layerConfig.maxHeight - editor.renderer.$size.scrollerHeight + editor.renderer.scrollMargin.bottom;
 //afx.onscroll(editor.getSession().getScrollTop(), maxTop);
@@ -137,17 +136,7 @@ var editorChangeListener = function (obj) {
 
     timeouter = setTimeout(function () {
         afx.textListener(editor.getValue(), editorMode());
-
-        var length = editor.session.getLength();
-
-        if (length > 1000)
-            updateDelay = 1000;
-        else if (length > 2000)
-            updateDelay = 2000;
-        else
-            updateDelay = length;
-
-    }, updateDelay);
+    }, 0);
 
 };
 
