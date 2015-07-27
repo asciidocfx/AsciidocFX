@@ -152,13 +152,25 @@ var editorChangeListener = function (obj) {
 };
 
 function updateOptions() {
+    var editorConfigBean = afx.getEditorConfigBean();
     editor.setOptions({
-        fontFamily: afx.getConfig().getFontFamily(),
-        fontSize: afx.getConfig().getFontSize()
+        fontFamily: editorConfigBean.getFontFamily(),
+        fontSize: editorConfigBean.getFontSize()
     });
-    editor.setTheme(afx.getConfig().getTheme());
-    editor.setScrollSpeed(afx.getConfig().getScrollSpeed());
+    var themes = editorConfigBean.getEditorTheme();
+    if (themes.size() > 0) {
+        editor.setTheme(themes.get(0));
+    }
+    editor.setScrollSpeed(editorConfigBean.getScrollSpeed());
     editor.focus();
+}
+
+function changeTheme(theme) {
+    editor.setTheme("ace/theme/" + theme);
+}
+
+function changeFontSize(fontSize) {
+    editor.setFontSize(fontSize);
 }
 
 function setEditorValue(content) {

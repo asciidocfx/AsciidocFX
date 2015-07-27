@@ -1,13 +1,12 @@
 package com.kodcu.component;
 
 import com.kodcu.controller.ApplicationController;
-import com.kodcu.other.IOHelper;
+import com.kodcu.service.ThreadService;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Worker;
 import javafx.event.EventHandler;
-import javafx.scene.control.ButtonType;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
@@ -26,7 +25,6 @@ import org.springframework.stereotype.Component;
 
 import java.nio.file.Path;
 import java.util.Objects;
-import java.util.Optional;
 
 /**
  * Created by usta on 09.04.2015.
@@ -39,11 +37,13 @@ public class EditorPane extends AnchorPane {
     private EventHandler<WebEvent<String>> readyHandler;
     private final Logger logger = LoggerFactory.getLogger(EditorPane.class);
     private final ApplicationController controller;
+    private final ThreadService threadService;
     private String mode = "ace/mode/asciidoc";
 
     @Autowired
-    public EditorPane(ApplicationController controller) {
+    public EditorPane(ApplicationController controller, ThreadService threadService) {
         this.controller = controller;
+        this.threadService = threadService;
         this.webView = new WebView();
         this.webView.setContextMenuEnabled(false);
         this.getChildren().add(webView);
@@ -137,7 +137,7 @@ public class EditorPane extends AnchorPane {
     }
 
     public void setEditorValue(String value) {
-        getWindow().setMember("editorValue",value);
+        getWindow().setMember("editorValue", value);
         webEngine().executeScript("editor.setValue(editorValue)");
     }
 
@@ -172,7 +172,7 @@ public class EditorPane extends AnchorPane {
     }
 
     public void fillModeList(ObservableList modeList) {
-        Platform.runLater(() -> {
+        threadService.runActionLater(() -> {
             this.call("fillModeList", modeList);
         });
     }
@@ -187,5 +187,17 @@ public class EditorPane extends AnchorPane {
 
     public String getMode() {
         return mode;
+    }
+
+    public void setTheme(String theme) {
+        threadService.runActionLater(() -> {
+            this.call("changeTheme", theme);
+        });
+    }
+
+    public void setFontSize(int fontSize) {
+        threadService.runActionLater(() -> {
+            this.call("changeFontSize", fontSize);
+        });
     }
 }

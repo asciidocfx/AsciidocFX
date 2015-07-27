@@ -1,5 +1,6 @@
 package com.kodcu.service.convert.ebook;
 
+import com.kodcu.config.EditorConfigBean;
 import com.kodcu.controller.ApplicationController;
 import com.kodcu.other.Current;
 import com.kodcu.other.IOHelper;
@@ -33,18 +34,20 @@ public class MobiConverter implements DocumentConverter<String> {
     private final Current current;
     private final DirectoryService directoryService;
     private final IndikatorService indikatorService;
+    private final EditorConfigBean editorConfigBean;
 
     private Path mobiPath;
 
     @Autowired
     public MobiConverter(final ApplicationController asciiDocController, final ThreadService threadService, final EpubConverter epubConverter,
-                         final Current current, final DirectoryService directoryService, final IndikatorService indikatorService) {
+                         final Current current, final DirectoryService directoryService, final IndikatorService indikatorService, EditorConfigBean editorConfigBean) {
         this.asciiDocController = asciiDocController;
         this.threadService = threadService;
         this.epubConverter = epubConverter;
         this.current = current;
         this.directoryService = directoryService;
         this.indikatorService = indikatorService;
+        this.editorConfigBean = editorConfigBean;
     }
 
     @Override
@@ -72,11 +75,11 @@ public class MobiConverter implements DocumentConverter<String> {
 
                     final ProcessExecutor processExecutor = new ProcessExecutor();
                     processExecutor.readOutput(true);
-                    Path kindleGenPath = Paths.get(asciiDocController.getConfig().getKindlegenDir());
+                    Path kindleGenPath = editorConfigBean.getKindlegen();
 
                     try {
                         final String message = processExecutor
-                                .command(kindleGenPath.resolve("kindlegen").toString(), "-o", mobiPath.getFileName().toString(), epubPath.toString())
+                                .command(kindleGenPath.toString(), "-o", mobiPath.getFileName().toString(), epubPath.toString())
                                 .execute()
                                 .outputUTF8();
                         logger.debug(message);

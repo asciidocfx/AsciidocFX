@@ -1,7 +1,32 @@
-var defaultLanguage = undefined;
+function getOption(opt) {
+
+    var jsonObject = JSON.parse(opt);
+
+    var attrs = jsonObject.attributes;
+    var attrKeys = Object.keys(attrs);
+    var fixAttr = [];
+
+    fixAttr.push("lang=" + getDefaultLanguage());
+
+    attrKeys.forEach(function (key, index) {
+        fixAttr.push(key + "=" + attrs[key]);
+    });
+
+    jsonObject.attributes = fixAttr;
+
+    return Opal.hash2(Object.keys(jsonObject), jsonObject);
+};
+
+
 function getDefaultLanguage() {
-    if (!defaultLanguage && afx)
-        defaultLanguage = afx.getConfig().getDefaultLanguage();
+    var defaultLanguage = "en";
+
+    if ((typeof afx) != "undefined") {
+        var languages = afx.getEditorConfigBean().getDefaultLanguage();
+        if (languages.size() > 0) {
+            defaultLanguage = languages.get(0);
+        }
+    }
     return defaultLanguage;
 }
 
@@ -38,17 +63,11 @@ function fillOutlinesSubSections(section) {
     });
 }
 
-function convertAsciidoc(content) {
+function convertAsciidoc(content, options) {
 
     var rendered = "";
 
-    var options = Opal.hash2(['safe', 'attributes', 'sourcemap'], {
-        safe: 'safe',
-        attributes: 'showtitle icons=font@ source-highlighter=highlight.js platform=opal platform-opal env=browser env-browser idprefix idseparator=- ',
-        sourcemap: true
-    });
-
-    var doc = Opal.Asciidoctor.$load(content, options);
+    var doc = Opal.Asciidoctor.$load(content, getOption(options));
 
     try {
         afx.fillOutlines(doc);
@@ -57,10 +76,9 @@ function convertAsciidoc(content) {
         throw e;
     }
 
-    doc.attributes.keys["lang"] = doc.attributes.keys["lang"] || getDefaultLanguage();
+    window.docdoc = doc;
 
     rendered = doc.$convert();
-
 
     return {
         rendered: rendered,
@@ -69,31 +87,18 @@ function convertAsciidoc(content) {
     };
 }
 
-function convertOdf(content) {
+function convertOdf(content, options) {
 
-    var options = Opal.hash2(['backend', 'safe', 'attributes'], {
-        backend: 'odf',
-        safe: 'safe',
-        attributes: 'showtitle icons=font@ source-highlighter=highlight.js platform=opal platform-opal env=browser env-browser idprefix idseparator=- '
-    });
-
-    var doc = Opal.Asciidoctor.$load(content, options);
+    var doc = Opal.Asciidoctor.$load(content, getOption(options));
 
     doc.attributes.keys["lang"] = doc.attributes.keys["lang"] || getDefaultLanguage();
 
     return doc.$convert();
 }
 
-function convertHtml(content) {
+function convertHtml(content, options) {
 
-    var options = Opal.hash2(['backend', 'safe', 'attributes', "header_footer"], {
-        backend: 'html5',
-        safe: 'safe',
-        attributes: 'showtitle icons=font@ source-highlighter=highlight.js platform=opal platform-opal env=browser env-browser idprefix sectanchors idseparator=- '
-        , 'header_footer': true
-    });
-
-    var doc = Opal.Asciidoctor.$load(content, options);
+    var doc = Opal.Asciidoctor.$load(content, getOption(options));
 
     doc.attributes.keys["lang"] = doc.attributes.keys["lang"] || getDefaultLanguage();
 
@@ -104,18 +109,11 @@ function convertHtml(content) {
     };
 }
 
-function convertDocbook(content) {
+function convertDocbook(content, options) {
 
-    var options = Opal.hash2(['attributes', 'safe', 'header_footer'],
-        {
-            'attributes': ['backend=docbook5', 'env=browser env-browser'],
-            'safe': 'safe',
-            'header_footer': true
-        });
+    var doc = Opal.Asciidoctor.$load(content, getOption(options));
 
-    var doc = Opal.Asciidoctor.$load(content, options);
-
-    doc.attributes.keys["lang"] = doc.attributes.keys["lang"] || getDefaultLanguage();
+    //doc.attributes.keys["lang"] = doc.attributes.keys["lang"] || getDefaultLanguage();
 
     return {
         rendered: doc.$render(),

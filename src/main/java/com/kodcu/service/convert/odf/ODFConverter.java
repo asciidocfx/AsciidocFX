@@ -94,8 +94,7 @@ public class ODFConverter implements Traversable {
         logger.debug("ODF conversion started");
         try {
             this.openOdtDocument();
-
-            htmlPane.call("convertOdf", current.currentEditorValue());
+            htmlPane.convertOdf(current.currentEditorValue());
             this.saveOdtDocument();
         } catch (Exception e) {
             logger.error("Problem occured while converting to ODF", e);

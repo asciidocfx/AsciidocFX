@@ -1,0 +1,10 @@
+
+{
+    "backend":"docbook5",
+    "safe":"safe",
+    "header_footer":true,
+    "attributes":{
+        "env":"browser",
+        "env-browser":"true"
+    }
+}

@@ -7,12 +7,12 @@ Asciidoc is a rich text based markup language. Document that written with Asciid
 
 '''
 
-= +++<u>Basic formats</u>+++
+= [underline]#Basic formats#
 
 *Bold* , _İtalic_ , +++<u>Underscore</u>+++, To^p^ , Dow~n~
 
 '''
-= +++<u>Title levels</u>+++
+= [underline]#Title levels#
 
 There is 6 Level titles as HTML. First one is for document title.
 
@@ -40,7 +40,7 @@ Content ...
 
 '''
 
-= +++<u>Lists</u>+++
+= [underline]#Lists#
 
 There is ordered, unordered, checked and labeled list elements.
 
@@ -72,7 +72,7 @@ Armut:: Gülgiller (Rosaceae) familyasının Maloideae alt familyasında sınıf
 
 '''
 
-= +++<u>Links</u>+++
+= [underline]#Links#
 
 You can use links
 
@@ -82,7 +82,7 @@ http://asciidocfx.org[AsciidocFX]
 
 '''
 
-= +++<u>Images</u>+++
+= [underline]#Images#
 
 You can declare images with `image::` prefix and `[]` suffix. Path may be _relative_ or _absolute_ .
 
@@ -96,7 +96,7 @@ image::http://kodcu.com/wp/wp-content/uploads/2014/11/logo-kodcu-com5.png[captio
 
 '''
 
-= +++<u>Code higlighting</u>+++
+= [underline]#Code higlighting#
 
 You can declare inline or block based codes with Asciidoc syntax.
 
@@ -130,7 +130,7 @@ end
 
 '''
 
-= +++<u>Blocks</u>+++
+= [underline]#Blocks#
 
 Sınırlandırılmış bloklar 4'er özel karakter ile sınırlandırılmış alanlardır.
 
@@ -177,7 +177,7 @@ ____
 
 '''
 
-= +++<u>Uyarı blokları</u>+++
+= [underline]#Uyarı blokları#
 
 Asciidoc işaretleme dilinde 5 tip uyarı (admonition) bloğu bulunmaktadır. Bu blokların kendine has ikonları bulunmaktadır.
 
@@ -225,7 +225,7 @@ icon:twitter[] ruby, asciidoctor
 ////
 
 '''
-= +++<u>Tablolar</u>+++
+= [underline]#Tablolar#
 
 Asciidoc ile hemen hemen tüm kompleks tablo yapılarını kurabilirsiniz.
 
@@ -259,7 +259,7 @@ Back-to-back with previous interval.
 
 |====
 
-= +++<u>AsciidocFX eklentileri</u>+++
+= [underline]#AsciidocFX eklentileri#
 
 AsciidocFX metin editörü, *UML* diagramları, *matematiksel kompleks formüller* ve *JavaFX Chart* için üç özel eklentiye sahiptir.
 

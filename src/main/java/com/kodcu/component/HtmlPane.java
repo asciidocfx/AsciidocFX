@@ -1,5 +1,9 @@
 package com.kodcu.component;
 
+import com.kodcu.config.DocbookConfigBean;
+import com.kodcu.config.HtmlConfigBean;
+import com.kodcu.config.OdfConfigBean;
+import com.kodcu.config.PreviewConfigBean;
 import com.kodcu.controller.ApplicationController;
 import com.kodcu.other.ConverterResult;
 import com.kodcu.other.Current;
@@ -22,9 +26,18 @@ import java.util.stream.Stream;
 @Component
 public class HtmlPane extends ViewPanel {
 
+    private final PreviewConfigBean previewConfigBean;
+    private final OdfConfigBean odfConfigBean;
+    private final DocbookConfigBean docbookConfigBean;
+    private final HtmlConfigBean htmlConfigBean;
+
     @Autowired
-    public HtmlPane(ThreadService threadService, ApplicationController controller, Current current) {
+    public HtmlPane(ThreadService threadService, ApplicationController controller, Current current, PreviewConfigBean previewConfigBean, OdfConfigBean odfConfigBean, DocbookConfigBean docbookConfigBean, HtmlConfigBean htmlConfigBean) {
         super(threadService, controller, current);
+        this.previewConfigBean = previewConfigBean;
+        this.odfConfigBean = odfConfigBean;
+        this.docbookConfigBean = docbookConfigBean;
+        this.htmlConfigBean = htmlConfigBean;
     }
 
     public void refreshUI(String content) {
@@ -42,7 +55,8 @@ public class HtmlPane extends ViewPanel {
 
     public ConverterResult convertDocbook(String asciidoc) {
         this.setMember("editorValue", asciidoc);
-        JSObject result = (JSObject) webEngine().executeScript(String.format("convertDocbook(editorValue)"));
+        this.setMember("docbookOptions", docbookConfigBean.getJSON().toString());
+        JSObject result = (JSObject) webEngine().executeScript(String.format("convertDocbook(editorValue,docbookOptions)"));
         return new ConverterResult(result);
     }
 
@@ -82,15 +96,23 @@ public class HtmlPane extends ViewPanel {
 
     public ConverterResult convertAsciidoc(String asciidoc) {
         this.setMember("editorValue", asciidoc);
-        JSObject result = (JSObject) webEngine().executeScript("convertAsciidoc(editorValue)");
+        this.setMember("asciidocOptions", previewConfigBean.getJSON().toString());
+        JSObject result = (JSObject) webEngine().executeScript("convertAsciidoc(editorValue,asciidocOptions)");
 
         return new ConverterResult(result);
     }
 
     public ConverterResult convertHtml(String asciidoc) {
         this.setMember("editorValue", asciidoc);
-        JSObject result = (JSObject) webEngine().executeScript("convertHtml(editorValue)");
+        this.setMember("htmlOptions", htmlConfigBean.getJSON().toString());
+        JSObject result = (JSObject) webEngine().executeScript("convertHtml(editorValue,htmlOptions)");
 
         return new ConverterResult(result);
+    }
+
+    public void convertOdf(String asciidoc) {
+        this.setMember("editorValue", asciidoc);
+        this.setMember("odfOptions", odfConfigBean.getJSON().toString());
+        webEngine().executeScript("convertOdf(editorValue,odfOptions)");
     }
 }

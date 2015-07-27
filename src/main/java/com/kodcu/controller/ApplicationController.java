@@ -4,9 +4,9 @@ package com.kodcu.controller;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.install4j.api.launcher.ApplicationLauncher;
-import com.kodcu.bean.Config;
 import com.kodcu.bean.RecentFiles;
 import com.kodcu.component.*;
+import com.kodcu.config.*;
 import com.kodcu.logging.MyLog;
 import com.kodcu.logging.TableViewLogAppender;
 import com.kodcu.other.*;
@@ -37,10 +37,7 @@ import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import javafx.beans.property.*;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
@@ -60,6 +57,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTreeCell;
 import javafx.scene.input.*;
 import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebHistory;
@@ -123,6 +121,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     public ProgressBar progressBar;
     public Menu favoriteDirMenu;
     public MenuItem addToFavoriteDir;
+    public MenuItem afxVersionItem;
 
     private Logger logger = LoggerFactory.getLogger(ApplicationController.class);
 
@@ -182,8 +181,23 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     private static ObservableList<MyLog> logList = FXCollections.synchronizedObservableList(FXCollections.observableArrayList());
 
+
+    @Autowired
+    private EditorConfigBean editorConfigBean;
+    @Autowired
+    private PreviewConfigBean previewConfigBean;
+    @Autowired
+    private HtmlConfigBean htmlConfigBean;
+    @Autowired
+    private OdfConfigBean odfConfigBean;
+    @Autowired
+    private DocbookConfigBean docbookConfigBean;
+
     @Autowired
     private ApplicationContext applicationContext;
+
+    @Autowired
+    private ConfigurationService configurationService;
 
     @Autowired
     private AsciidocTableController asciidocTableController;
@@ -296,12 +310,9 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     private Stage asciidocTableStage;
     private final Clipboard clipboard = Clipboard.getSystemClipboard();
     private final ObservableList<String> recentFilesList = FXCollections.synchronizedObservableList(FXCollections.observableArrayList());
-    private AnchorPane configAnchor;
-    private Stage configStage;
     private int port = 8080;
     private HostServicesDelegate hostServices;
     private Path configPath;
-    private Config config;
     private BooleanProperty fileBrowserVisibility = new SimpleBooleanProperty(false);
     private BooleanProperty previewPanelVisibility = new SimpleBooleanProperty(false);
 
@@ -359,11 +370,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     public void createMarkdownTable() {
         markdownTableStage.showAndWait();
-    }
-
-    @FXML
-    private void openConfig(ActionEvent event) {
-        configStage.show();
     }
 
     @FXML
@@ -475,19 +481,20 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     private void convertMobi(boolean askPath) {
 
-        if (Objects.nonNull(config.getKindlegenDir())) {
-            if (!Files.exists(Paths.get(config.getKindlegenDir()))) {
-                config.setKindlegenDir(null);
+
+        if (Objects.nonNull(editorConfigBean.getKindlegen())) {
+            if (!Files.exists(editorConfigBean.getKindlegen())) {
+                editorConfigBean.setKindlegen(null);
             }
         }
 
-        if (Objects.isNull(config.getKindlegenDir())) {
+        if (Objects.isNull(editorConfigBean.getKindlegen())) {
             FileChooser fileChooser = directoryService.newFileChooser("Select 'kindlegen' executable");
             File kindlegenFile = fileChooser.showOpenDialog(null);
             if (Objects.isNull(kindlegenFile))
                 return;
 
-            config.setKindlegenDir(kindlegenFile.toPath().getParent().toString());
+            editorConfigBean.setKindlegen(kindlegenFile.toPath().getParent());
         }
 
         threadService.runTaskLater(() -> {
@@ -559,6 +566,11 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     @Override
     public void initialize(URL url, ResourceBundle rb) {
 
+        threadService.runActionLater(() -> {
+            configurationService.loadConfigurations();
+            this.bindConfigurations();
+        }, true);
+
         port = server.getEmbeddedServletContainer().getPort();
 
         progressBar.prefWidthProperty().bind(previewTabPane.widthProperty());
@@ -628,7 +640,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         AwesomeDude.setIcon(goHomeLabel, AwesomeIcon.HOME, "14.0");
 
         leftButton.setGraphic(AwesomeDude.createIconLabel(AwesomeIcon.ELLIPSIS_H, "14.0"));
-        leftButton.getItems().get(leftButton.getItems().size() - 1).setText(String.join(" ", "Version", version));
+        afxVersionItem.setText(String.join(" ", "Version", version));
 
         ContextMenu htmlProMenu = new ContextMenu();
         htmlProMenu.getStyleClass().add("build-menu");
@@ -1004,6 +1016,65 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     }
 
+    private void bindConfigurations() {
+
+        /*ObjectProperty<Color> colorProperty = editorConfigBean.backgroundColorProperty();
+        ObjectProperty<Color> innerColorProperty = editorConfigBean.innerBackgroundColorProperty();
+
+        colorProperty.addListener((observable, oldValue, newValue) -> {
+            if (Objects.nonNull(newValue)) {
+                String backgroundColor = Integer.toHexString(newValue.hashCode());
+                if (Objects.isNull(innerColorProperty.get())) {
+                    rootAnchor.setStyle(String.format("-fx-base: #%s;", backgroundColor));
+                } else {
+                    String innerBackgroundColor = Integer.toHexString(innerColorProperty.get().hashCode());
+                    rootAnchor.setStyle(String.format("-fx-base: #%s;-fx-control-inner-background: #%s", backgroundColor, innerBackgroundColor));
+                }
+            }
+        });
+
+        innerColorProperty.addListener((observable, oldValue, newValue) -> {
+            if (Objects.nonNull(newValue)) {
+                String innerBackgroundColor = Integer.toHexString(newValue.hashCode());
+                if (Objects.isNull(colorProperty.get())) {
+                    rootAnchor.setStyle(String.format("-fx-control-inner-background: #%s;", innerBackgroundColor));
+                } else {
+                    String backgroundColor = Integer.toHexString(colorProperty.get().hashCode());
+                    rootAnchor.setStyle(String.format("-fx-base: #%s;-fx-control-inner-background: #%s", backgroundColor, innerBackgroundColor));
+                }
+            }
+        });*/
+
+        editorConfigBean.directoryPanelProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue) {
+                showFileBrowser();
+            } else {
+                hideFileBrowser(null);
+            }
+        });
+
+        ListChangeListener<String> themeChangeListener = c -> {
+            c.next();
+            if (c.wasReplaced()) {
+                String theme = c.getList().get(0);
+                current.currentEditor().setTheme(theme);
+            }
+        };
+
+        editorConfigBean.editorThemeProperty().addListener((observable, oldValue, newValue) -> {
+            if (Objects.nonNull(newValue)) {
+                newValue.addListener(themeChangeListener);
+            }
+            if (Objects.nonNull(oldValue)) {
+                oldValue.removeListener(themeChangeListener);
+            }
+        });
+
+        editorConfigBean.fontSizeProperty().addListener((observable, oldValue, newValue) -> {
+            current.currentEditor().setFontSize(newValue.intValue());
+        });
+    }
+
     private void includeClearAllToFavoriteDir() {
         favoriteDirMenu.getItems().addAll(new SeparatorMenuItem(), MenuItemBuilt
                 .item("Clear List")
@@ -1065,7 +1136,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
         try {
             ObjectMapper mapper = new ObjectMapper();
-            Object readValue = mapper.readValue(configPath.resolve("doctypes.json").toFile(), new TypeReference<List<DocumentMode>>() {
+            Object readValue = mapper.readValue(configPath.resolve("ace_doctypes.json").toFile(), new TypeReference<List<DocumentMode>>() {
             });
             modeList.addAll((Collection) readValue);
 
@@ -1315,19 +1386,15 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     }
 
     private void loadConfigurations() {
-        try {
-            String yamlContent = IOHelper.readFile(configPath.resolve("config.yml"));
-            Yaml yaml = new Yaml();
-            config = yaml.loadAs(yamlContent, Config.class);
+//        try {
+//            String yamlContent = IOHelper.readFile(configPath.resolve("config.yml"));
+//            Yaml yaml = new Yaml();
+//            config = yaml.loadAs(yamlContent, Config.class);
+//
+//        } catch (Exception e) {
+//            logger.error("Problem occured while loading config.yml file", e);
+//        }
 
-        } catch (Exception e) {
-            logger.error("Problem occured while loading config.yml file", e);
-        }
-
-        if (!config.getDirectoryPanel())
-            threadService.runActionLater(() -> {
-                splitPane.setDividerPositions(0, 0.51);
-            });
 
     }
 
@@ -1493,6 +1560,10 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     @FXML
     public void closeApp(ActionEvent event) {
         try {
+            Map<String, ConfigurationBase> configurationBeansAsMap = applicationContext.getBeansOfType(ConfigurationBase.class);
+            for (ConfigurationBase configurationBean : configurationBeansAsMap.values()) {
+                configurationBean.save(event);
+            }
             yamlService.persist();
         } catch (Exception e) {
             logger.error("Error while closing app", e);
@@ -1881,22 +1952,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         return asciidocTableStage;
     }
 
-    public void setConfigAnchor(AnchorPane configAnchor) {
-        this.configAnchor = configAnchor;
-    }
-
-    public AnchorPane getConfigAnchor() {
-        return configAnchor;
-    }
-
-    public void setConfigStage(Stage configStage) {
-        this.configStage = configStage;
-    }
-
-    public Stage getConfigStage() {
-        return configStage;
-    }
-
     public SplitPane getSplitPane() {
         return splitPane;
     }
@@ -1911,10 +1966,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     public HostServicesDelegate getHostServices() {
         return hostServices;
-    }
-
-    public Config getConfig() {
-        return config;
     }
 
     public AsciidocTableController getAsciidocTableController() {
@@ -2285,5 +2336,13 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                 recentFiles.getFavoriteDirectories().add(selectedTabPath.toString());
             }
         }
+    }
+
+    public EditorConfigBean getEditorConfigBean() {
+        return editorConfigBean;
+    }
+
+    public void showSettings(ActionEvent actionEvent) {
+        configurationService.showConfig();
     }
 }

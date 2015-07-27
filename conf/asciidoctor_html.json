@@ -1,0 +1,18 @@
+
+{
+    "backend":"html5",
+    "safe":"safe",
+    "header_footer":true,
+    "attributes":{
+        "showtitle":"true",
+        "icons":"font@",
+        "source-highlighter":"highlight.js",
+        "platform":"opal",
+        "platform-opal":"true",
+        "env":"browser",
+        "env-browser":"true",
+        "idprefix":"true",
+        "idseparator":"-",
+        "sectanchors":"true"
+    }
+}

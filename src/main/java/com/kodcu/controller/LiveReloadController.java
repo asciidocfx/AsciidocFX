@@ -51,7 +51,7 @@ public class LiveReloadController {
             parent = directoryService.workingDirectory();
         }
 
-        if(Objects.nonNull(parent))
+        if(Objects.isNull(parent))
             logger.error("Workdir or current path is not resolved");
 
         requestURI = requestURI.replace("/livereload/", "");
