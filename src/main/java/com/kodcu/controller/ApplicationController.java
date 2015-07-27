@@ -147,7 +147,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     public SplitPane splitPaneVertical;
     public TreeView<Item> treeView;
     public Label workingDirButton;
-    public Label goUpLabel;
     public Label goHomeLabel;
     public Label refreshLabel;
     public AnchorPane rootAnchor;
@@ -533,11 +532,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     }
 
     @FXML
-    public void goUp() {
-        directoryService.goUp();
-    }
-
-    @FXML
     public void refreshWorkingDir() {
         current.currentPath().map(Path::getParent).ifPresent(directoryService::changeWorkigDir);
     }
@@ -637,7 +631,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         AwesomeDude.setIcon(workingDirButton, AwesomeIcon.FOLDER_ALT, "14.0");
         AwesomeDude.setIcon(panelShowHideMenuButton, AwesomeIcon.COLUMNS, "14.0");
         AwesomeDude.setIcon(refreshLabel, AwesomeIcon.REFRESH, "14.0");
-        AwesomeDude.setIcon(goUpLabel, AwesomeIcon.LEVEL_UP, "14.0");
         AwesomeDude.setIcon(goHomeLabel, AwesomeIcon.HOME, "14.0");
 
         leftButton.setGraphic(AwesomeDude.createIconLabel(AwesomeIcon.ELLIPSIS_H, "14.0"));

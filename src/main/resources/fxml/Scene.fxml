@@ -37,14 +37,6 @@
                             <Tooltip text="Change Workdir" />
                           </tooltip>
                         </Button>
-                        <Button id="goUp" minWidth="-Infinity" mnemonicParsing="false" onAction="#goUp" text="">
-                          <graphic>
-                            <Label fx:id="goUpLabel" text="" />
-                          </graphic>
-                          <tooltip>
-                            <Tooltip text="Go Up" />
-                          </tooltip>
-                        </Button>
                         <Button minWidth="-Infinity" mnemonicParsing="false" onAction="#refreshWorkingDir" text="">
                           <graphic>
                             <Label fx:id="refreshLabel" text="" />
