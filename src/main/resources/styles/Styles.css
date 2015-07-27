@@ -1,21 +1,14 @@
 .rootAnchor {
-    -fx-border-color: #ddd, transparent;
-    -fx-border-width: 1px, 1px;
-    -fx-border-insets: 0px, 1px;
-}
+    -fx-border-color: transparent;
+    -fx-border-width: 0px, 0px, 0px, 0px;
+    -fx-border-insets: 0px, 0px, 0px, 0px;
 
-.last-converted-file {
-    -fx-text-fill: #c6c6c6;
-    -fx-border-style: none;
-}
-
-.last-converted-file:hover {
-    -fx-text-fill: #cd0a0a;
+    -fx-base: #ececec;
 }
 
 .split-pane .split-pane-divider {
     -fx-padding: 0 1 0 1;
-    -fx-background-color: #DDD;
+    -fx-background-color: transparent;
 }
 
 .tab-pane {
@@ -55,48 +48,31 @@
 
 .scroll-bar:horizontal .track,
 .scroll-bar:vertical .track {
-    -fx-background-color: white;
-    -fx-border-color: transparent;
     -fx-background-radius: 0em;
 }
 
 .scroll-bar:vertical .track-background,
 .scroll-bar:horizontal .track-background {
-    -fx-background-color: white;
     -fx-background-insets: 0;
     -fx-background-radius: 0em;
 }
 
 .scroll-bar:horizontal .thumb {
-    -fx-background-color: rgb(205, 205, 205);
     -fx-background-insets: 2 0 2 0;
     -fx-background-radius: 0em;
 }
 
 .scroll-bar:vertical .thumb {
-    -fx-background-color: rgb(205, 205, 205);
     -fx-background-insets: 0 2 0 2;
     -fx-background-radius: 0em;
 }
 
-.scroll-bar:horizontal .thumb:hover,
-.scroll-bar:vertical .thumb:hover {
-    -fx-background-color: rgb(215, 215, 215);
-}
-
-.scroll-bar:horizontal .thumb:pressed,
-.scroll-bar:vertical .thumb:pressed {
-    -fx-background-color: rgb(96, 96, 96);
-}
-
 .scroll-bar:vertical .increment-button, .scroll-bar:vertical .decrement-button {
-    -fx-background-color: transparent;
     -fx-background-radius: 0em;
     -fx-padding: 3 3 3 3;
 }
 
 .scroll-bar:horizontal .increment-button, .scroll-bar:horizontal .decrement-button {
-    -fx-background-color: transparent;
     -fx-background-radius: 0em;
     -fx-padding: 3 3 3 3;
 }
@@ -122,11 +98,6 @@
 .scroll-bar:vertical .decrement-arrow {
     -fx-shape: "M4,17v-2.889l4.124-3.86l4.125,3.86V17l-4.125-3.375L4,17z";
     -fx-padding: 0.25em;
-}
-
-.scroll-bar:vertical:focused,
-.scroll-bar:horizontal:focused {
-    -fx-background-color: -fx-box-border, -fx-box-border, white;
 }
 
 /*******************************************************************************
@@ -521,21 +492,6 @@
     -fx-text-fill: black;
 }
 
-.about-popup {
-    -fx-background-color: rgb(255, 241, 162);
-    -fx-border-radius: 5px;
-    -fx-background-radius: 5px;
-    -fx-border-style: solid;
-    -fx-border-width: 1px;
-    -fx-border-color: rgb(175, 175, 175);
-
-    -fx-font: 14px "Monospace";
-}
-
-.about-popup .banner-label {
-    -fx-padding: 15px;
-}
-
 .build-menu .menu-item, .build-menu .menu-item * {
     -fx-cursor: hand;
 }
@@ -589,6 +545,6 @@
     -fx-background-insets: 0;
 }
 
-.progress-bar .track{
+.progress-bar .track {
     -fx-background-color: #ccc;
 }
