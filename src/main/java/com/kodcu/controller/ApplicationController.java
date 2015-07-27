@@ -39,6 +39,7 @@ import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.beans.property.*;
 import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -305,7 +306,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     private Stage stage;
     private StringProperty lastRendered = new SimpleStringProperty();
     private List<WebSocketSession> sessionList = new ArrayList<>();
-    private Scene scene;
+    private ObjectProperty<Scene> scene  = new SimpleObjectProperty<>();
     private AnchorPane asciidocTableAnchor;
     private Stage asciidocTableStage;
     private final Clipboard clipboard = Clipboard.getSystemClipboard();
@@ -1360,6 +1361,18 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                 editorSplitPane.setDividerPositions(0.5);
         });
 
+        scene.addListener((observableScene, oldScene, newScene) -> {
+            if(Objects.nonNull(newScene)){
+                newScene.heightProperty().addListener((observable, oldValue, newValue) -> {
+                    if (showHideLogs.getRotate() % 360 == 0){
+                        threadService.runActionLater(()->{
+                            editorSplitPane.setDividerPositions(1);
+                        },true);
+                    }
+                });
+            }
+        });
+
         logVBox.getChildren().addAll(logHBox, logViewer);
 
         VBox.setVgrow(logViewer, Priority.ALWAYS);
@@ -1928,12 +1941,16 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         return stage;
     }
 
-    public void setScene(Scene scene) {
-        this.scene = scene;
+    public Scene getScene() {
+        return scene.get();
     }
 
-    public Scene getScene() {
+    public ObjectProperty<Scene> sceneProperty() {
         return scene;
+    }
+
+    public void setScene(Scene scene) {
+        this.scene.set(scene);
     }
 
     public void setAsciidocTableAnchor(AnchorPane asciidocTableAnchor) {
