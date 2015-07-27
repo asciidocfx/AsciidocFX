@@ -7,6 +7,7 @@
     <logger name="de.tototec" level="ERROR"/>
     <logger name="org.hibernate" level="ERROR"/>
     <logger name="org.jboss" level="ERROR"/>
+    <logger name="com.dooapp" level="ERROR"/>
 
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
 
