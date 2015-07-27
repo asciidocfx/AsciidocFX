@@ -33,6 +33,16 @@
 
     <dependencies>
         <dependency>
+            <groupId>org.glassfish</groupId>
+            <artifactId>javax.json</artifactId>
+            <version>1.0.4</version>
+        </dependency>
+        <dependency>
+            <groupId>com.dooapp.fxform2</groupId>
+            <artifactId>core</artifactId>
+            <version>8.0.10</version>
+        </dependency>
+        <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
             <version>2.4</version>
@@ -145,14 +155,14 @@
         <finalName>AsciidocFX</finalName>
 
         <plugins>
-<!--            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-                <version>${spring-boot.version}</version>
-                <configuration>
-                    <mainClass>com.kodcu.boot.AppStarter</mainClass>
-                </configuration>
-            </plugin>-->
+            <!--            <plugin>
+                            <groupId>org.springframework.boot</groupId>
+                            <artifactId>spring-boot-maven-plugin</artifactId>
+                            <version>${spring-boot.version}</version>
+                            <configuration>
+                                <mainClass>com.kodcu.boot.AppStarter</mainClass>
+                            </configuration>
+                        </plugin>-->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>appassembler-maven-plugin</artifactId>
