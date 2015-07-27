@@ -159,9 +159,14 @@ function updateOptions() {
     });
     var themes = editorConfigBean.getEditorTheme();
     if (themes.size() > 0) {
-        editor.setTheme(themes.get(0));
+        changeTheme(themes.get(0));
     }
-    editor.setScrollSpeed(editorConfigBean.getScrollSpeed());
+
+    changeScrollSpeed(editorConfigBean.getScrollSpeed());
+    setShowGutter(editorConfigBean.getShowGutter());
+    setUseWrapMode(editorConfigBean.getShowGutter());
+    setWrapLimitRange(editorConfigBean.getWrapLimit());
+
     editor.focus();
 }
 
@@ -171,6 +176,22 @@ function changeTheme(theme) {
 
 function changeFontSize(fontSize) {
     editor.setFontSize(fontSize);
+}
+
+function changeScrollSpeed(value){
+    editor.setScrollSpeed(value);
+}
+
+function setShowGutter(showGutter) {
+    editor.renderer.setShowGutter(showGutter);
+}
+
+function setUseWrapMode(useWrapMode) {
+    editor.getSession().setUseWrapMode(useWrapMode);
+}
+
+function setWrapLimitRange(wrapLimitRange) {
+    editor.getSession().setWrapLimitRange(wrapLimitRange, wrapLimitRange);
 }
 
 function setEditorValue(content) {

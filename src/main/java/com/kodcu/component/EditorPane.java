@@ -200,4 +200,24 @@ public class EditorPane extends AnchorPane {
             this.call("changeFontSize", fontSize);
         });
     }
+
+    public void setShowGutter(Boolean showGutter) {
+        threadService.runActionLater(() -> {
+            this.call("setShowGutter", showGutter);
+        });
+    }
+
+    public void setUseWrapMode(Boolean useWrapMode) {
+        threadService.runActionLater(() -> {
+            this.call("setUseWrapMode", useWrapMode);
+        });
+    }
+
+    public void setWrapLimitRange(Integer wrapLimitRange) {
+        threadService.runActionLater(() -> {
+            this.call("setWrapLimitRange", wrapLimitRange);
+        });
+    }
+
+
 }

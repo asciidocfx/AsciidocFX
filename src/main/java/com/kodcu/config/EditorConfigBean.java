@@ -56,6 +56,9 @@ public class EditorConfigBean extends ConfigurationBase {
     private StringProperty fontFamily = new SimpleStringProperty("'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace");
     private ObjectProperty<Integer> fontSize = new SimpleObjectProperty(14);
     private DoubleProperty scrollSpeed = new SimpleDoubleProperty(0.1);
+    private BooleanProperty useWrapMode = new SimpleBooleanProperty(true);
+    private ObjectProperty<Integer> wrapLimit = new SimpleObjectProperty<>(0);
+    private BooleanProperty showGutter = new SimpleBooleanProperty(false);
     private ObjectProperty<ObservableList<String>> defaultLanguage = new SimpleObjectProperty<>(FXCollections.observableArrayList());
     private ObjectProperty<Path> kindlegen = new SimpleObjectProperty<>();
 
@@ -74,6 +77,43 @@ public class EditorConfigBean extends ConfigurationBase {
         super(controller, threadService);
         this.controller = controller;
         this.threadService = threadService;
+    }
+
+
+    public Integer getWrapLimit() {
+        return wrapLimit.get();
+    }
+
+    public ObjectProperty<Integer> wrapLimitProperty() {
+        return wrapLimit;
+    }
+
+    public void setWrapLimit(Integer wrapLimit) {
+        this.wrapLimit.set(wrapLimit);
+    }
+
+    public boolean getShowGutter() {
+        return showGutter.get();
+    }
+
+    public BooleanProperty showGutterProperty() {
+        return showGutter;
+    }
+
+    public void setShowGutter(boolean showGutter) {
+        this.showGutter.set(showGutter);
+    }
+
+    public boolean getUseWrapMode() {
+        return useWrapMode.get();
+    }
+
+    public BooleanProperty useWrapModeProperty() {
+        return useWrapMode;
+    }
+
+    public void setUseWrapMode(boolean useWrapMode) {
+        this.useWrapMode.set(useWrapMode);
     }
 
     public Path getKindlegen() {
@@ -165,7 +205,7 @@ public class EditorConfigBean extends ConfigurationBase {
 
         FXForm editorConfigForm = new FXFormBuilder<>()
                 .resourceBundle(ResourceBundle.getBundle("editorConfig"))
-                .includeAndReorder("editorTheme", "directoryPanel", "fontFamily", "fontSize", "scrollSpeed", "defaultLanguage", "kindlegen")
+                .includeAndReorder("editorTheme", "directoryPanel", "fontFamily", "fontSize", "scrollSpeed", "useWrapMode", "wrapLimit", "showGutter", "defaultLanguage", "kindlegen")
                 .build();
 
         DefaultFactoryProvider editorConfigFormProvider = new DefaultFactoryProvider();
@@ -174,6 +214,7 @@ public class EditorConfigBean extends ConfigurationBase {
         editorConfigFormProvider.addFactory(new NamedFieldHandler("defaultLanguage"), new ListChoiceBoxFactory(new ChoiceBox()));
         editorConfigFormProvider.addFactory(new NamedFieldHandler("scrollSpeed"), new SliderFactory(SliderBuilt.create(0.0, 1, 0.1).step(0.1)));
         editorConfigFormProvider.addFactory(new NamedFieldHandler("fontSize"), new SpinnerFactory(new Spinner(8, 32, 14)));
+        editorConfigFormProvider.addFactory(new NamedFieldHandler("wrapLimit"), new SpinnerFactory(new Spinner(0, 500, 0)));
         editorConfigFormProvider.addFactory(new NamedFieldHandler("kindlegen"), new FileChooserFactory());
         editorConfigForm.setEditorFactoryProvider(editorConfigFormProvider);
 
@@ -215,6 +256,9 @@ public class EditorConfigBean extends ConfigurationBase {
             String theme = jsonObject.getString("editorTheme", "xcode");
             String defaultLanguage = jsonObject.getString("defaultLanguage", "en");
             String kindlegen = jsonObject.getString("kindlegen", null);
+            boolean useWrapMode = jsonObject.getBoolean("useWrapMode", true);
+            boolean showGutter = jsonObject.getBoolean("showGutter", false);
+            int wrapLimit = jsonObject.getInt("wrapLimit", 0);
 
             IOHelper.close(jsonReader, fileReader);
 
@@ -224,6 +268,9 @@ public class EditorConfigBean extends ConfigurationBase {
                 this.setDirectoryPanel(directoryPanel);
                 this.setFontFamily(fontFamily);
                 this.setFontSize(fontSize);
+                this.setUseWrapMode(useWrapMode);
+                this.setShowGutter(showGutter);
+                this.setWrapLimit(wrapLimit);
 
                 if (Objects.nonNull(kindlegen)) {
                     this.setKindlegen(Paths.get(kindlegen));
@@ -292,6 +339,9 @@ public class EditorConfigBean extends ConfigurationBase {
                 .add("fontFamily", getFontFamily())
                 .add("fontSize", getFontSize())
                 .add("scrollSpeed", getScrollSpeed())
+                .add("useWrapMode", getUseWrapMode())
+                .add("wrapLimit", getWrapLimit())
+                .add("showGutter", getShowGutter())
                 .add("editorTheme", getEditorTheme().get(0))
                 .add("defaultLanguage", getDefaultLanguage().get(0));
 

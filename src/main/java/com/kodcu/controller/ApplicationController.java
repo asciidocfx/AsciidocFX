@@ -47,6 +47,7 @@ import javafx.collections.transformation.FilteredList;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
+import javafx.event.EventType;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
@@ -90,9 +91,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.CodeSource;
+import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import java.util.regex.Pattern;
@@ -305,7 +308,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     private Stage stage;
     private StringProperty lastRendered = new SimpleStringProperty();
     private List<WebSocketSession> sessionList = new ArrayList<>();
-    private ObjectProperty<Scene> scene  = new SimpleObjectProperty<>();
+    private ObjectProperty<Scene> scene = new SimpleObjectProperty<>();
     private AnchorPane asciidocTableAnchor;
     private Stage asciidocTableStage;
     private final Clipboard clipboard = Clipboard.getSystemClipboard();
@@ -1004,11 +1007,35 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 //            splitPane.setDividerPositions();
         });
 
-        threadService.runTaskLater(() -> {
-            checkNewVersion();
-        });
+        threadService.runTaskLater(this::checkNewVersion);
+//        threadService.runTaskLater(this::initializeAutoSaver);
 
     }
+
+   /* private void initializeAutoSaver() {
+        final AtomicReference<Instant> currentTime = new AtomicReference<>(Instant.now());
+
+        stage.addEventFilter(EventType.ROOT, event -> {
+            currentTime.set(Instant.now());
+        });
+
+        Timer timer = new Timer();
+        timer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                if (currentTime.get().plusSeconds(3).isBefore(Instant.now())) {
+                    currentTime.set(Instant.now());
+                    ObservableList<Tab> tabs = tabPane.getTabs();
+
+                    for (Tab tab : tabs) {
+                        MyTab myTab = (MyTab) tab;
+                        if(!myTab.isNew()){
+                        }
+                    }
+                }
+            }
+        }, 0, 500);
+    }*/
 
     private void bindConfigurations() {
 
@@ -1038,6 +1065,24 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                 }
             }
         });*/
+
+        editorConfigBean.showGutterProperty().addListener((observable, oldValue, newValue) -> {
+            if (Objects.nonNull(newValue)) {
+                current.currentEditor().setShowGutter(newValue);
+            }
+        });
+
+        editorConfigBean.useWrapModeProperty().addListener((observable, oldValue, newValue) -> {
+            if (Objects.nonNull(newValue)) {
+                current.currentEditor().setUseWrapMode(newValue);
+            }
+        });
+
+        editorConfigBean.wrapLimitProperty().addListener((observable, oldValue, newValue) -> {
+            if (Objects.nonNull(newValue)) {
+                current.currentEditor().setWrapLimitRange(newValue);
+            }
+        });
 
         editorConfigBean.directoryPanelProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue) {
@@ -1355,12 +1400,12 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         });
 
         scene.addListener((observableScene, oldScene, newScene) -> {
-            if(Objects.nonNull(newScene)){
+            if (Objects.nonNull(newScene)) {
                 newScene.heightProperty().addListener((observable, oldValue, newValue) -> {
-                    if (showHideLogs.getRotate() % 360 == 0){
-                        threadService.runActionLater(()->{
+                    if (showHideLogs.getRotate() % 360 == 0) {
+                        threadService.runActionLater(() -> {
                             editorSplitPane.setDividerPositions(1);
-                        },true);
+                        }, true);
                     }
                 });
             }
