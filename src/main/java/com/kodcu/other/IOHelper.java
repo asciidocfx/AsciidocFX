@@ -11,18 +11,19 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import javax.imageio.ImageIO;
+import javax.json.JsonReader;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.MalformedURLException;
 import java.nio.charset.Charset;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.BiPredicate;
@@ -176,7 +177,7 @@ public class IOHelper {
         } catch (SAXException | IOException e) {
             logger.error("Problem occured while selecting Match for {}", file, e);
         }
-        return null;
+        return JOOX.$();
     }
 
     public static void transform(Transformer transformer, StreamSource xmlSource, StreamResult streamResult) {
@@ -275,6 +276,35 @@ public class IOHelper {
             FileUtils.deleteDirectory(path.toFile());
         } catch (IOException e) {
             logger.error("Problem occured while deleting {} path", path, e);
+        }
+    }
+
+    public static List<String> readAllLines(Path path) {
+        try {
+            return Files.readAllLines(path);
+        } catch (IOException e) {
+            logger.error("Problem occured while reading {} path", path, e);
+        }
+        return new ArrayList<>();
+    }
+
+    public static FileReader fileReader(Path path) {
+        try {
+            return new FileReader(path.toFile());
+        } catch (FileNotFoundException e) {
+            logger.error("Problem occured while creating FileReader for {} path", path, e);
+        }
+        return null;
+    }
+
+    public static void close(Closeable... closeables) {
+
+        for (Closeable closeable : closeables) {
+            try {
+                closeable.close();
+            } catch (IOException e) {
+                logger.error("Problem occured while closing resource");
+            }
         }
     }
 }
