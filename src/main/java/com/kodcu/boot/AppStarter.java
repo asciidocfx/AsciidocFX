@@ -16,8 +16,7 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.Tab;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
@@ -90,6 +89,7 @@ public class AppStarter extends Application {
 
         InputStream sceneStream = getClass().getResourceAsStream("/fxml/Scene.fxml");
         Parent root = parentLoader.load(sceneStream);
+
         controller = parentLoader.getController();
         HostServicesDelegate hostServices = HostServicesFactory.getInstance(this);
         controller.setHostServices(hostServices);
@@ -116,10 +116,10 @@ public class AppStarter extends Application {
         markdownTableStage.initOwner(scene.getWindow());
         markdownTableStage.getIcons().add(new Image(logoStream));
 
-        IOUtils.closeQuietly(logoStream);
         IOUtils.closeQuietly(asciidocTableStream);
         IOUtils.closeQuietly(markdownTableStream);
         IOUtils.closeQuietly(sceneStream);
+        IOUtils.closeQuietly(logoStream);
 
         controller.setStage(stage);
         controller.setScene(scene);
