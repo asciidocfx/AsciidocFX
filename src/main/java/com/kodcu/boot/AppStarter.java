@@ -33,6 +33,8 @@ import java.io.File;
 import java.io.InputStream;
 import java.nio.file.Paths;
 
+import static javafx.scene.input.KeyCombination.ALT_DOWN;
+import static javafx.scene.input.KeyCombination.CONTROL_DOWN;
 import static javafx.scene.input.KeyCombination.SHORTCUT_DOWN;
 
 public class AppStarter extends Application {
@@ -133,9 +135,8 @@ public class AppStarter extends Application {
 
         scene.getAccelerators().put(new KeyCodeCombination(KeyCode.S, SHORTCUT_DOWN), controller::saveDoc);
         scene.getAccelerators().put(new KeyCodeCombination(KeyCode.M, SHORTCUT_DOWN), controller::adjustSplitPane);
-        scene.getAccelerators().put(new KeyCodeCombination(KeyCode.N, SHORTCUT_DOWN), () -> {
-            controller.newDoc(null);
-        });
+        scene.getAccelerators().put(new KeyCodeCombination(KeyCode.N, SHORTCUT_DOWN), controller::newDoc);
+        scene.getAccelerators().put(new KeyCodeCombination(KeyCode.F4), controller::showSettings);
 
         final ThreadService threadService = context.getBean(ThreadService.class);
         final TabService tabService = context.getBean(TabService.class);

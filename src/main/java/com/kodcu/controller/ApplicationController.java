@@ -1635,7 +1635,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     }
 
     @FXML
-    public void newDoc(Event event) {
+    public void newDoc(Event... event) {
         threadService.runActionLater(() -> {
             documentService.newDoc();
         }, true);
@@ -2405,7 +2405,8 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         return editorConfigBean;
     }
 
-    public void showSettings(ActionEvent actionEvent) {
+    @FXML
+    public void showSettings() {
         configurationService.showConfig();
     }
 }
