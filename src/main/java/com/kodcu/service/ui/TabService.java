@@ -66,7 +66,10 @@ public class TabService {
 
         final Consumer<Path> openFileConsumer = path -> {
             if (Files.isDirectory(path)) {
-                if (!path.equals(directoryService.workingDirectory())) {
+                if (path.equals(directoryService.workingDirectory())) {
+                    directoryService.changeWorkigDir(path.getParent());
+                }
+                else{
                     directoryService.changeWorkigDir(path);
                 }
             } else if (pathResolver.isImage(path)) {
