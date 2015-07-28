@@ -164,8 +164,8 @@ function updateOptions() {
 
     changeScrollSpeed(editorConfigBean.getScrollSpeed());
     setShowGutter(editorConfigBean.getShowGutter());
-    setUseWrapMode(editorConfigBean.getShowGutter());
     setWrapLimitRange(editorConfigBean.getWrapLimit());
+    setUseWrapMode(editorConfigBean.getUseWrapMode());
 
     editor.focus();
 }
