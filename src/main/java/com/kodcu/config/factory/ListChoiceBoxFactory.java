@@ -4,12 +4,15 @@ import com.dooapp.fxform.view.FXFormNode;
 import com.dooapp.fxform.view.FXFormNodeWrapper;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.scene.control.ChoiceBox;
 import javafx.util.Callback;
 
+import java.util.Comparator;
 import java.util.Objects;
+import java.util.function.Predicate;
 
 /**
  * Created by usta on 17.07.2015.
@@ -26,8 +29,11 @@ public class ListChoiceBoxFactory implements Callback<Void, FXFormNode> {
 
         choiceBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (Objects.nonNull(newValue)) {
-                if (!newValue.equals(choiceBox.getItems().get(0)))
-                    choiceBox.getItems().set(0, newValue);
+                if (!newValue.equals(choiceBox.getItems().get(0))) {
+                    choiceBox.getItems().removeAll(newValue);
+                    choiceBox.getItems().add(0, newValue);
+                }
+
             }
         });
 

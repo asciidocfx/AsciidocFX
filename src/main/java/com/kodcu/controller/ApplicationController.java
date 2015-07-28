@@ -1094,7 +1094,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
         ListChangeListener<String> themeChangeListener = c -> {
             c.next();
-            if (c.wasReplaced()) {
+            if (c.wasAdded()) {
                 String theme = c.getList().get(0);
                 current.currentEditor().setTheme(theme);
             }
