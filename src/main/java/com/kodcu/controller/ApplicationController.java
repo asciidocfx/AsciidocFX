@@ -1068,19 +1068,19 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
         editorConfigBean.showGutterProperty().addListener((observable, oldValue, newValue) -> {
             if (Objects.nonNull(newValue)) {
-                current.currentEditor().setShowGutter(newValue);
+                applyForAllEditorPanes(editorPane -> editorPane.setShowGutter(newValue));
             }
         });
 
         editorConfigBean.useWrapModeProperty().addListener((observable, oldValue, newValue) -> {
             if (Objects.nonNull(newValue)) {
-                current.currentEditor().setUseWrapMode(newValue);
+                applyForAllEditorPanes(editorPane -> editorPane.setUseWrapMode(newValue));
             }
         });
 
         editorConfigBean.wrapLimitProperty().addListener((observable, oldValue, newValue) -> {
             if (Objects.nonNull(newValue)) {
-                current.currentEditor().setWrapLimitRange(newValue);
+                applyForAllEditorPanes(editorPane -> editorPane.setWrapLimitRange(newValue));
             }
         });
 
@@ -1096,7 +1096,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             c.next();
             if (c.wasAdded()) {
                 String theme = c.getList().get(0);
-                current.currentEditor().setTheme(theme);
+                applyForAllEditorPanes(editorPane -> editorPane.setTheme(theme));
             }
         };
 
@@ -1110,8 +1110,16 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         });
 
         editorConfigBean.fontSizeProperty().addListener((observable, oldValue, newValue) -> {
-            current.currentEditor().setFontSize(newValue.intValue());
+            applyForAllEditorPanes(editorPane -> editorPane.setFontSize(newValue.intValue()));
         });
+    }
+
+    private void applyForAllEditorPanes(Consumer<EditorPane> editorPaneConsumer){
+        ObservableList<Tab> tabs = tabPane.getTabs();
+        for (Tab tab : tabs) {
+            MyTab myTab = (MyTab) tab;
+            editorPaneConsumer.accept(myTab.getEditorPane());
+        }
     }
 
     private void includeClearAllToFavoriteDir() {
