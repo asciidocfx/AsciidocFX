@@ -30,6 +30,7 @@ public class FileChooserFactory implements Callback<Void, FXFormNode> {
     public FXFormNode call(Void param) {
         String promptText = "Select kindlegen executable file";
         textField.setPromptText(promptText);
+        tooltip.setText(promptText);
         textField.setDisable(true);
 
         button.setText("Select");
