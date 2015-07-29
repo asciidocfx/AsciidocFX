@@ -1,5 +1,5 @@
-.sidebarblock(id=id,class=role)
+.sidebarblock(id=node.$id(),class=node.$role())
   .content
-    if title
-      .title !{title}
-    !{content}
+    if node['$title?']()
+      .title !{node.$title()}
+    !{node.$content()}

@@ -1,5 +1,5 @@
-div.literalblock(id=id,class=role)
-  if title
-    div.title !{title}
+div.literalblock(id=node.$id(),class=node.$role())
+  if node['$title?']()
+    div.title !{node.$title()}
   div.content
-    !{content}
+    !{node.$content()}

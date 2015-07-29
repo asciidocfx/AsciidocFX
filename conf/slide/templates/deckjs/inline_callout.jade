@@ -1,7 +1,7 @@
-if document.attr.icons["font"]
-  i.column(data-value=text)
-  b "(#{text})"
-else if document.attr.icons
-  img(src="callouts/#{text}",alt=text)
+if node.document.$attr("icons") == "font"
+    i.column(data-value=node.$text())
+    b "(#{node.$text()})"
+else if node.document.$attr("icons", false)
+    img(src="callouts/#{node.$text()}",alt=node.$text())
 else
-  b "(#{text})"
+    b "(#{node.$text()})"

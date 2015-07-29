@@ -1,12 +1,12 @@
-if role == "aside" || role == "speaker"
-    aside.notes !{content}
+if node['$has_role?']('aside') || node['$has_role?']('speaker')
+    aside.notes !{node.$content()}
 else
-    div.admonitionblock(id=id)
+    div.admonitionblock(id=node.$id())
         table
             tr
                 td.icon
-                    i(class="icon-#{attr.name}",title=caption)
+                    i(class="icon-#{node.$attr('name')}",title=node.$caption())
                 td.content
-                    if title
-                        div.title !{title}
-                    !{content}
+                    if node.$title() != false
+                        div.title !{node.$title()}
+                    !{node.$content()}

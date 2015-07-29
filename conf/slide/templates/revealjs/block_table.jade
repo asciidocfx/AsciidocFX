@@ -1,34 +1,35 @@
-table(id=id,class=["table-block", role])
-    if title
-        caption(title=captioned_title)
-    if attr.rowcount != 0
+table(id=node.$id(),class=["table-block","frame-#{ node.$attr('frame','all') }", "frame-#{ node.$attr('grid','all') }" , node.$role()])
+    if node['$title?']()
+        caption.title !{node.$captioned_title()}
+    if node.$attr("rowcount") != 0
         colgroup
-            if option.autowidth
-                each ccc in columns
+            if node['$option?']('autowidth')
+                each ccc in node.$columns()
                     col
             else
-                each col in columns
-                    col(style={width: col.$attributes()['$[]']("colpcwidth")})
+                each col in node.$columns()
+                    col(style={width: col.$attr("colpcwidth")})
             - tblsecs =["$head","$foot","$body"]
             each tblsec in tblsecs
-                if rows[tblsec]().length != 0
-                    #{"t#{tblsec}"}
-                        each row in rows[tblsec]()
+                if node.$rows()[tblsec]().length != 0
+                    - var tag = "t" + tblsec.substr(1);
+                    #{tag}
+                        each row in node.$rows()[tblsec]()
                             tr
                                 each cell in row
                                     if tblsec == "$head"
                                         - cell_content = cell.$text()
                                     else
-                                        if cell.style == "verse" || cell.style == "literal"
+                                        if cell.$style() == "verse" || cell.$style() == "literal"
                                             - cell_content = cell.$text()
                                         else
                                             - cell_content = cell.$content()
-                                    #{tblsec == "$head" ? "th" : "td"}(class=['tableblock', "halign-#{cell['$attributes']()['$[]']('halign')}", "valign-#{cell['$attributes']()['$[]']('valign')}"],
-                                    colspan=cell.colspan, rowspan=cell.rowspan,style=document.attr.cellbgcolor ? "background-color:#{document.attr.cellbgcolor}" : "")
+                                    #{tblsec == "$head" ? "th" : "td"}(class=['tableblock', "halign-#{cell.$attr('halign')}", "valign-#{cell.$attr('valign')}"],
+                                    colspan=cell.$colspan(), rowspan=cell.$rowspan(),style=node.document.$attr("cellbgcolor",false) ? "background-color:#{node.document.$attr('cellbgcolor')}" : "")
                                         if tblsec == "$head"
                                             !{cell_content}
                                         else
-                                            case cell.style
+                                            case cell.$style()
                                                 when "asciidoc"
                                                     div !{cell_content}
                                                 when "verse"

@@ -1,9 +1,9 @@
-case type
-  when xref
-    a(href=target) !{text}
-  when ref
-    a(id=target)
-  when bibref
-    a(id=target)
+case node.$type()
+  when "xref"
+    a(href=node.$target()) !{node.$text()}
+  when "ref"
+    a(id=node.$target())
+  when "bibref"
+    a(id=node.$target())
   default
-    a(href=target,class=role,target=attr.window) !{text}
+    a(href=node.$target(),class=node.$role(),target=node.$attr('window')) !{node.$text()}

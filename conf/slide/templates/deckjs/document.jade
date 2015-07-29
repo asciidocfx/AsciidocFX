@@ -1,60 +1,60 @@
-- deckjsdir = attr["deckjsdir"] || "deck.js"
-- deckjs_theme = attr["deckjs_theme"] || "swiss"
-- deckjs_transition = attr["deckjs_transition"] || "fade"
-- highlightjs_script = attr["highlightjs_script"] || "deck.js/extensions/highlightjs/highlight.pack.js"
-- highlightjs_style = attr["highlightjs_style"] || "deck.js/extensions/highlightjs/styles/default.css"
+- deckjsdir = node.$attr("deckjsdir", "deck.js")
+- deckjs_theme = node.$attr("deckjs_theme", "swiss")
+- deckjs_transition = node.$attr("deckjs_transition", "fade")
+- highlightjs_script = node.$attr("highlightjs_script", "deck.js/extensions/highlightjs/highlight.pack.js")
+- highlightjs_style = node.$attr("highlightjs_style", "deck.js/extensions/highlightjs/styles/default.css")
 doctype html
-html(lang=attr.lang)
+html(lang=node.$attr("lang",en))
     head
-        meta(charset=attr.encoding)
+        meta(charset=node.$attr("encoding"))
         each key in ["description","keywords","author","copyright"]
-            if attr[key]
-                meta(name=key,content=attr[key])
-        title=document.doctitle
+            if node.$attr(key, false)
+                meta(name=key,content=node.$attr(key))
+        title=node.document.$doctitle()
         meta(content="yes",name="apple-mobile-web-app-capable")
         meta(content="black-translucent",name="apple-mobile-web-app-status-bar-style")
         meta(content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui",name="viewport")
         link(href="deck.js/core/deck.core.css",rel="stylesheet",media="screen")
-        if exist(attr.goto)
+        if node.$attr("goto",false)
             link(href="#{deckjsdir}/extensions/goto/deck.goto.css",rel="stylesheet",media="screen")
-        if exist(attr.menu)
+        if node.$attr("menu",false)
             link(href="#{deckjsdir}/extensions/menu/deck.menu.css",rel="stylesheet",media="screen")
-        if exist(attr.navigation)
+        if node.$attr("navigation",false)
             link(href="#{deckjsdir}/extensions/navigation/deck.navigation.css",rel="stylesheet",media="screen")
-        if exist(attr.status)
+        if node.$attr("status",false)
             link(href="#{deckjsdir}/extensions/status/deck.status.css",rel="stylesheet",media="screen")
         link(href="#{deckjsdir}/extensions/scale/deck.scale.css",rel="stylesheet",media="screen")
         link(href="#{deckjsdir}/themes/style/#{deckjs_theme}.css",rel="stylesheet",media="screen")
         if deckjs_transition != "none"
             link(href="#{deckjsdir}/themes/transition/#{deckjs_transition}.css",rel="stylesheet",media="screen")
         link(href="#{deckjsdir}/core/print.css",rel="stylesheet",media="print")
-        if exist(attr.customcss)
-            link(href="#{attr.customcss}",rel="stylesheet")
+        if node.$attr("customcss",false)
+            link(href="#{node.$attr('customcss')}",rel="stylesheet")
         script(src="#{deckjsdir}/modernizr.custom.js")
         script(type='text/javascript').
             function replaceSlides(data) {
                 var div = document.createElement("div");
                 div.innerHTML = data;
-                document.querySelector(".deck-container").innerHTML = div.querySelector(".deck-container").innerHTML
+                document.querySelector(".deck-container").innerHTML = div.querySelector(".deck-container").innerHTML;
                 setTimeout(function () {
                     $.deck('.slide');
                 }, 50);
             }
     body
         div(class="deck-container")
-            !{content}
-            if exist(attr.navigation)
+            !{node.$content()}
+            if node.$attr("navigation",false)
                 div("aria-role"="navigation")
                     a(href="#",class="deck-prev-link",title="Previous")
                         | &#8592;
                     a(href="#",class="deck-next-link",title="Next")
                         | &#8594;
-            if exist(attr.status)
+            if node.$attr("status",false)
                 p(class="deck-status","aria-role"="status")
                     span(class="deck-status-current")
                     | /
                     span(class="deck-status-total")
-            if exist(attr.goto)
+            if node.$attr("goto",false)
                 form(action=".",method="get",class="goto-form")
                     label(for="goto-slide")
                         | "Go to slide:"
@@ -63,13 +63,13 @@ html(lang=attr.lang)
                     input(type="submit",value="Go")
         script(src = "#{deckjsdir}/jquery.min.js")
         script(src = "#{deckjsdir}/core/deck.core.js")
-        if exist(attr.menu)
+        if node.$attr("menu",false)
             script(src = "#{deckjsdir}/extensions/menu/deck.menu.js")
-        if exist(attr.goto)
+        if node.$attr("goto",false)
             script(src = "#{deckjsdir}/extensions/goto/deck.goto.js")
-        if exist(attr.status)
+        if node.$attr("status",false)
             script(src = "#{deckjsdir}/extensions/status/deck.status.js")
-        if exist(attr.navigation)
+        if node.$attr("navigation",false)
             script(src = "#{deckjsdir}/extensions/navigation/deck.navigation.js")
         script(src = "#{deckjsdir}/extensions/scale/deck.scale.js")
         link(href=highlightjs_style,rel="stylesheet",media="screen")
@@ -86,6 +86,6 @@ html(lang=attr.lang)
             $(function () {
                 $.deck('.slide');
             });
-        if exist(attr.customjs)
-            script(src=attr.customjs)
+        if node.$attr("customjs",false)
+            script(src=node.$attr('customjs'))
         script(src = "http://getfirebug.com/firebug-lite.js#startOpened=false")

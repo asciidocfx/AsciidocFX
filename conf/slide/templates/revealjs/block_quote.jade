@@ -1,11 +1,11 @@
-div.quoteblock(id=id,class=role)
-  if title
-    div.title !{title}
-  blockquote !{content}
-  if attr.attribution || attr.citetitle
+div.quoteblock(id=node.$id(),class=node.$role())
+  if node['$title?']()
+    div.title !{node.$title()}
+  blockquote !{node.$content()}
+  if node.$attr("attribution",false) || node.$attr("citetitle",false)
     div.attribution
-      if attr.citetitle
-        cite !{attr.citetitle}
-      if attr.attribution && attr.citetitle
+      if node.$attr("citetitle",false)
+        cite !{node.$attr("citetitle")}
+      if node.$attr("attribution",false) && node.$attr("citetitle",false)
         br
-      | &#8212; !{attr.attribution}
+      | &#8212; !{node.$attr("attribution","")}

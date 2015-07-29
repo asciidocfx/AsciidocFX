@@ -1,10 +1,10 @@
-div.colist(id=id,class=[style, role])
-    if title
-        div.title !{title}
-    if document.attr.icons
-        - font_icons = document.attr.icons || "font"
+div.colist(id=node.$id(),class=[node.$style(), node.$role()])
+    if node.$title() != false
+        div.title !{node.$title()}
+    if node.document.$attr("icons",false)
+        - font_icons = node.document.$attr("icons","font")
         table
-            each item,i in items
+            each item,i in node.$items()
                 - num = i + 1
                 tr
                     td
@@ -16,7 +16,7 @@ div.colist(id=id,class=[style, role])
                     td #{item.text}
     else
         ol
-            each item in items
+            each item in node.$items()
                 li
                     p
                         !{item.text}

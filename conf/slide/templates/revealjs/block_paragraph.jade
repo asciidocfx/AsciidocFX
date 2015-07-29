@@ -1,7 +1,7 @@
-div(id=id,class=role)
-  if title
-    div(class="title") !{title}
-  if role == "small"
-    small !{content}
+div.paragraph(id=node.$id(),class=node.$role())
+  if node.$title() != false
+    div(class="title") !{node.$title()}
+  if node['$has_role?']('small')
+    small !{node.$content()}
   else
-    p(class="paragraph") !{content}
+    p !{node.$content()}

@@ -1,10 +1,10 @@
-if attr["canvas-image"]
-  section(id=id,class=["slide","canvas-image","#{role}"],style="background-image: #{attr['canvas-image']}")
-    !{content}
+if node.$attr("canvas-image",false)
+  section(id=node.$id(),class=["slide","canvas-image",node.$role()],style="background-image: #{node.$attr('canvas-image','')}")
+    !{node.$content()}
 else
-  section.slide(id=id,class=["#{role}"])
-    if role.title
-      h1 !{title}
+  section.slide(id=node.$id(),class=["#{node.$role()}"])
+    if node['$has_role?']('title')
+      h1 !{node.$title()}
     else
-      h2 !{title}
-    !{content}
+      h2 !{node.$title()}
+    !{node.$content()}

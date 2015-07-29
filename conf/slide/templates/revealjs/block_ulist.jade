@@ -1,23 +1,25 @@
-if option.interactive
-  - marker_checked = '<input type="checkbox" data-item-complete="1" checked>'
-  - marker_unchecked = '<input type="checkbox" data-item-complete="0">'
-else
-  if document.attr["icons"] =="font"
-    - marker_checked = '<i class="icon-check"></i>'
-    - marker_unchecked = '<i class="icon-check-empty"></i>'
+- checklist = node['$option?']('checklist') ? "checklist": null;
+if checklist
+  if node['$option?']('interactive')
+    - marker_checked = '<input type="checkbox" data-item-complete="1" checked>'
+    - marker_unchecked = '<input type="checkbox" data-item-complete="0">'
   else
-    - marker_checked = '<input type="checkbox" data-item-complete="1" checked disabled>'
-    - marker_unchecked = '<input type="checkbox" data-item-complete="0" disabled>'
-div.ulist(id=id,class=[option.checklist,style,role])
-  if title
-    div.title !{title}
-  ul(class=[option.checklist || style])
-    each item in items
-      li(class=[option.step || role.step ? "fragment":""])
+    if node.document.$attr("icons") =="font"
+      - marker_checked = '<i class="icon-check"></i>'
+      - marker_unchecked = '<i class="icon-check-empty"></i>'
+    else
+      - marker_checked = '<input type="checkbox" data-item-complete="1" checked disabled>'
+      - marker_unchecked = '<input type="checkbox" data-item-complete="0" disabled>'
+div.ulist(id=id,class=[checklist,node.$style(),node.$role()])
+  if node['$title?']()
+    div.title !{node.$title()}
+  ul(class=[checklist || node.$style()])
+    each item in node.$items()
+      li(class=[(node['$option?']('step') || node['$has_role?']('step')) ? "fragment":""])
         p
-          if option.checklist && item.attr.checklist
-            !{item.attr.checked ? marker_checked : marker_unchecked}!{item.text}
+          if checklist && item.$attr('checkbox',false)
+            !{item.$attr('checked') ? marker_checked : marker_unchecked}!{item.$text()}
           else
-            !{item.text}
-        if item.$blocks
-          !{item.content}
+            !{item.$text()}
+        if item['$blocks?']()
+          !{item.$content()}

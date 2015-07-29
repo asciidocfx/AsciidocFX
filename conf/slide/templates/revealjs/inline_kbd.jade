@@ -1,0 +1,9 @@
+- var keys = node.$attr('keys')
+if keys.length == 1
+  kbd !{keys.$first()}
+else
+  kbd.keyseq
+    each key,idx in keys
+      if !idx['$zero?']()
+        | +
+      kbd !{key}

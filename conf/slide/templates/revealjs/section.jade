@@ -1,15 +1,15 @@
 - hide_title = false
-if level == 1
+if node.$level() == 1
   section
-    section(id=id,data-transition=attr["data-transition"],data-transition-speed=attr["data-transition-speed"],data-background=attr["data-background"],data-background-size=attr["data-background-size"],data-background-repeat=attr["data-background-repeat"],data-background-transition=attr["data-background-transition"])
+    section(id=node.$id(),data-transition=node.$attr("data-transition",""),data-transition-speed=node.$attr("data-transition-speed",""),data-background=node.$attr("data-background",""),data-background-size=node.$attr("data-background-size",""),data-background-repeat=node.$attr("data-background-repeat",""),data-background-transition=node.$attr("data-background-transition",""))
       if !hide_title
-        h2 !{title}
-        each block in disregard(blocks,sections)
+        h2 !{node.$title()}
+        each block in (node.$blocks()['$-'](node.$sections()))
           !{block["$convert"]()}
-      each subsection in sections
+      each subsection in node.$sections()
         !{subsection["$convert"]()}
 else
-  section(id=id,data-transition=(attr['data-transition']),data-transition-speed=(attr['data-transition-speed']),data-background=(attr['data-background']),data-background-size=(attr['data-background-size']),data-background-repeat=(attr['data-background-repeat']),data-background-transition=(attr['data-background-transition']))
+  section(id=node.$id(),data-transition=(node.$attr('data-transition',"")),data-transition-speed=(node.$attr('data-transition-speed',"")),data-background=(node.$attr('data-background',"")),data-background-size=(node.$attr('data-background-size',"")),data-background-repeat=(node.$attr('data-background-repeat',"")),data-background-transition=(node.$attr('data-background-transition',"")))
     if !hide_title
-      h2 !{title}
-    !{content}
+      h2 !{node.$title()}
+    !{node.$content()}

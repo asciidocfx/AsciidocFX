@@ -1,26 +1,26 @@
-case type
+case node.$type()
     when "emphasis"
-        em(class=role) !{text}
+        em(class=node.$role()) !{node.$text()}
     when "strong"
-        strong(class=role) !{text}
+        strong(class=node.$role()) !{node.$text()}
     when "monospaced"
-        code(class=role) !{text}
+        code(class=node.$role()) !{node.$text()}
     when "superscript"
-        sup(class=role) !{text}
+        sup(class=node.$role()) !{node.$text()}
     when "subscript"
-        sub (class=role) !{text}
+        sub(class=node.$role()) !{node.$text()}
     when "double"
-        if role
-            span(class=role) &#8220;!{text}&#8221;
+        if node.$role() != false
+            span(class=node.$role()) &#8220;!{node.$text()}&#8221;
         else
-            | &#8220;!{text}&#8221;
+            | &#8220;!{node.$text()}&#8221;
     when "single"
-        if role
-            span(class=role) &#8216;!{text}&#8217;
+        if node.$role() != false
+            span(class=node.$role()) &#8216;!{node.$text()}&#8217;
         else
-            | &#8216;!{text}&#8217;
+            | &#8216;!{node.$text()}&#8217;
     default
-        if role
-            span(class=role) !{text}
+        if node.$role() !=false
+            span(class=node.$role()) !{node.$text()}
         else
-            text
+            !{node.$text()}
