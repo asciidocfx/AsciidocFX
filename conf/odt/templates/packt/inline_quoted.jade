@@ -1,0 +1,13 @@
+case node.$type()
+  when 'strong'
+    text:span(text:style-name="Key_20_Word_20_5b_PACKT_5d_")
+      !{node.$text()}
+  when 'monospaced'
+    text:span(text:style-name="Code_20_In_20_Text_20_5b_PACKT_5d_")
+      !{node.$text()}
+  when 'emphasis'
+    text:span(text:style-name="Italics_20_5b_PACKT_5d_")
+      !{node.$text()}
+  default
+    text:span(text:style-name="Screen_20_Text_20_5b_PACKT_5d_")
+      !{node.$text()}

@@ -1,0 +1,6 @@
+if node.$target().indexOf("mailto:") == 0
+  text:a(xlink:href=node.$target(),text:style-name="Email_20_5b_PACKT_5d_")
+    !{node.$text()}
+else
+  text:a(xlink:href=node.$target(),text:style-name="URL_20_5b_PACKT_5d_")
+    !{node.$text()}

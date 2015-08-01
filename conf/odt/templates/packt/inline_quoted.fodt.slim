@@ -1,0 +1,13 @@
+- case @type
+- when :strong
+  text:span text:style-name="Key_20_Word_20_5b_PACKT_5d_"
+    =text
+- when :monospaced
+  text:span text:style-name="Code_20_In_20_Text_20_5b_PACKT_5d_"
+    =text
+- when :emphasis
+  text:span text:style-name="Italics_20_5b_PACKT_5d_"
+    =text
+- else
+  text:span text:style-name="Screen_20_Text_20_5b_PACKT_5d_"
+    =text

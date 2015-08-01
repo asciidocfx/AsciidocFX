@@ -1,0 +1,8 @@
+text:p(text:style-name="Quote_20_5b_PACKT_5d_")
+  !{node.$content()}
+  if node['$attr?']('attribution')
+     - attribution = '—' + node.$attr('attribution')
+     !{attribution}
+  if node['$attr?']('citetitle')
+     - citetitle = ', ' + node.$attr('citetitle')
+     !{citetitle}

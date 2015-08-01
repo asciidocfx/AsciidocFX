@@ -1,0 +1,16 @@
+*{:style=>(attr :style), :name=>(attr :name), :caption=>(attr :caption)}
+- case @style
+- when "NOTE"
+  text:p text:style-name="Information_20_Box_20_5b_PACKT_5d_"
+    =content
+- when "TIP"
+  text:p text:style-name="Tip_20_5b_PACKT_5d_"
+    =content
+- when "WARNING", "CAUTION"
+  text:p text:style-name="Information_20_Box_20_5b_PACKT_5d_"
+    text:span text:style-name="Italics_20_5b_PACKT_5d_"
+      =content
+- when "IMPORTANT"
+  text:p text:style-name="Tip_20_5b_PACKT_5d_"
+    text:span text:style-name="Italics_20_5b_PACKT_5d_"
+      =content

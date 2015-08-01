@@ -1,0 +1,17 @@
+table:table table:name="table" table:style-name="tableblock"
+  - @columns.each do |col|
+    table:table-column 
+  / I don't really know what the follow row does.
+  - [:head, :foot, :body].select {|tblsec| !@rows[tblsec].empty? }.each do |tblsec|
+    - @rows[tblsec].each do |row|
+      table:table-row
+        - row.each do |cell|
+          table:table-cell table:style-name="table-cell"
+            - if tblsec == :head
+              text:p text:style-name="Table_20_Column_20_Heading_20_5b_PACKT_5d_"
+                =cell.text
+            - else
+              text:p text:style-name="Table_20_Column_20_Content_20_5b_PACKT_5d_"
+                =cell.text
+              
+    

@@ -1,0 +1,27 @@
+- if attr?(:style, 'source')
+  - parts = content.split(/\n/)
+  - parts.each_with_index do |part, index|
+    - part = part.gsub(/\t/, '    ')
+    - part = part.gsub(/\s{8}/, '<text:s text:c="8"/>')
+    - part = part.gsub(/\s{4}/, '<text:s text:c="4"/>')
+    - part = part.gsub(/\s{2}/, '<text:s text:c="2"/>')
+    - if index < parts.size - 1
+      text:p text:style-name="Code_20_5b_PACKT_5d_"
+        =part
+    - else
+      text:p text:style-name="Code_20_End_20_5b_PACKT_5d_"
+        =part
+- else
+  - parts = content.split(/\n/)
+  - parts.each_with_index do |part, index|
+    - part = part.gsub(/\t/, '    ')
+    - part = part.gsub(/\s{8}/, '<text:s text:c="8"/>')
+    - part = part.gsub(/\s{4}/, '<text:s text:c="4"/>')
+    - part = part.gsub(/\s{2}/, '<text:s text:c="2"/>')
+    - if index < parts.size - 1
+      text:p text:style-name="Command_20_Line_20_5b_PACKT_5d_"
+        =part
+    - else
+      text:p text:style-name="Command_20_Line_20_End_20_5b_PACKT_5d_"
+        =part
+      

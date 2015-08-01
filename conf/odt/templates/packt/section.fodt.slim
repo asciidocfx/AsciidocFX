@@ -1,0 +1,25 @@
+- slevel = @level == 0 && @special ? 1 : @level
+- if slevel == 1
+  text:h text:style-name="Chapter_20_Number_20_5b_PACKT_5d_" text:outline-level="1" 
+    text:bookmark-start text:name="#{@id}" 
+    |#{title}
+    text:bookmark-end text:name="#{@id}"
+  =content
+- if slevel == 2
+  text:h text:style-name="Chapter_20_Title_20_5b_PACKT_5d_" text:outline-level="2" 
+    text:bookmark-start text:name="#{@id}" 
+    |#{title}
+    text:bookmark-end text:name="#{@id}"
+  =content
+- if slevel == 3
+  text:h text:style-name="Heading_20_1" text:outline-level="3" 
+    text:bookmark-start text:name="#{@id}" 
+    |#{title}
+    text:bookmark-end text:name="#{@id}"
+  =content
+- if slevel == 4
+  text:h text:style-name="Heading_20_2" text:outline-level="4" 
+    text:bookmark-start text:name="#{@id}" 
+    |#{title}
+    text:bookmark-end text:name="#{@id}"
+  =content

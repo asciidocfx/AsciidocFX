@@ -1,0 +1,19 @@
+case node.$style()
+  when "NOTE"
+     text:p(text:style-name="Information_20_Box_20_5b_PACKT_5d_")
+       !{node.$content()}
+  when "TIP"
+     text:p(text:style-name="Tip_20_5b_PACKT_5d_")
+       !{node.$content()}
+  when "WARNING"
+     text:p(text:style-name="Information_20_Box_20_5b_PACKT_5d_")
+        text:span(text:style-name="Italics_20_5b_PACKT_5d_")
+          !{node.$content()}
+  when "CAUTION"
+     text:p(text:style-name="Information_20_Box_20_5b_PACKT_5d_")
+        text:span(text:style-name="Italics_20_5b_PACKT_5d_")
+          !{node.$content()}
+  when "IMPORTANT"
+     text:p(text:style-name="Tip_20_5b_PACKT_5d_")
+       text:span(text:style-name="Italics_20_5b_PACKT_5d_")
+         !{node.$content()}

@@ -1,0 +1,13 @@
+text:list(text:style-name="LFO22")
+  each item,index in node.$items()
+    text:list-item
+      if index < node.$items().length -1
+        text:p(text:style-name="Bullet_20_5b_PACKT_5d_")
+          !{item.$text()}
+        if item['$blocks?']()
+          !{item.$content()}
+      else
+        text:p(text:style-name="Bullet_20_End_20_5b_PACKT_5d_")
+          !{item.$text()}
+        if item['$blocks?']()
+          !{item.$content()}

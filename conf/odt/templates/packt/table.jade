@@ -1,0 +1,16 @@
+- tblsecs =["$head","$foot","$body"]
+table:table(table:name="table",table:style-name="tableblock")
+  each col in node.$columns()
+    table:table-column
+  each tblsec in tblsecs
+    if node.$rows()[tblsec]().length != 0
+      each row in node.$rows()[tblsec]()
+        table:table-row
+          each cell in row
+            table:table-cell(table:style-name="table-cell")
+              if tblsec == "$head"
+                text:p(text:style-name="Table_20_Column_20_Heading_20_5b_PACKT_5d_")
+                  !{cell.$text()}
+              else
+                text:p(text:style-name="Table_20_Column_20_Content_20_5b_PACKT_5d_")
+                  !{cell.$text()}

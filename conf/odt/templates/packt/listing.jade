@@ -1,0 +1,25 @@
+- var parts = node.$content().$split(/\n/)
+if node.$attr('style') == 'source'
+  each part, index in parts
+    - parti = part.$gsub(/\t/, '    ')
+    - parti = parti.$gsub(/\s{8}/, '<text:s text:c="8"/>')
+    - parti = parti.$gsub(/\s{4}/, '<text:s text:c="4"/>')
+    - parti = parti.$gsub(/\s{2}/, '<text:s text:c="2"/>')
+      if index < parts.length - 1
+        text:p(text:style-name="Code_20_5b_PACKT_5d_")
+          !{parti}
+      else
+        text:p(text:style-name="Code_20_End_20_5b_PACKT_5d_")
+          !{parti}
+else
+  each part, index in parts
+    - partx = part.$gsub(/\t/, '    ')
+    - partx = partx.$gsub(/\s{8}/, '<text:s text:c="8"/>')
+    - partx = partx.$gsub(/\s{4}/, '<text:s text:c="4"/>')
+    - partx = partx.$gsub(/\s{2}/, '<text:s text:c="2"/>')
+      if index < parts.length - 1
+        text:p(text:style-name="Command_20_Line_20_5b_PACKT_5d_")
+          !{partx}
+      else
+        text:p(text:style-name="Command_20_Line_20_End_20_5b_PACKT_5d_")
+          !{partx}

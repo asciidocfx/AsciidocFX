@@ -1,0 +1,11 @@
+text:p text:style-name="imageblock" 
+  draw:frame draw:style-name="centeredimage" draw:name="image" text:anchor-type="paragraph" draw:z-index="1" svg:width=(attr :width) svg:height=(attr :height)
+    draw:image xlink:type="simple" xlink:show="embed" xlink:actuate="onLoad"
+      office:binary-data
+        - require 'base64'
+        - enc = Base64.encode64(open(attr :target) { |io| io.read })
+        =enc
+text:p text:style-name="Layout_20_Information_20_5b_PACKT_5d_"
+  - require 'pathname'
+  - basename = Pathname.new(attr :target).basename
+  |[[Insert image #{basename}]]

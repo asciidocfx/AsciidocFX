@@ -1,0 +1,13 @@
+text:list text:style-name="LFO3"
+  - items.each_with_index do |item, index|
+    text:list-item
+      - if index < items.size - 1
+        text:p text:style-name="Numbered_20_Bullet_20_5b_PACKT_5d_"
+          =item.text
+          - if item.blocks?
+            =item.content
+      - else
+        text:p text:style-name="Numbered_20_Bullet_20_End_20_5b_PACKT_5d_"
+          =item.text
+          - if item.blocks?
+            =item.content

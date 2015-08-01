@@ -1,0 +1,7 @@
+- hasParentStyle = node.$parent && node.$parent().$style
+- isAdmonition = hasParentStyle ? /NOTE|TIP|WARNING|CAUTION|IMPORTANT/.test(node.$parent().$style()) : false
+if isAdmonition
+  !{node.$content()}
+else
+  text:p(text:style-name="Normal_20_5b_PACKT_5d_")
+    !{node.$content()}

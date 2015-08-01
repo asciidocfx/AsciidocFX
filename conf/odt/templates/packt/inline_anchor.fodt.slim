@@ -1,0 +1,8 @@
+- if @target == @text
+  text:span text:style-name="URL_20_5b_PACKT_5d_"
+    =@text
+- else
+    ="#@text ("
+    text:span text:style-name="URL_20_5b_PACKT_5d_"
+      =@target
+    =")"
