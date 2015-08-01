@@ -22,6 +22,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.web.SpringBootServletInitializer;
+import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -30,6 +32,9 @@ import org.springframework.web.socket.config.annotation.EnableWebSocket;
 import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
 import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
 
+import javax.cache.CacheManager;
+import javax.cache.Caching;
+import javax.cache.spi.CachingProvider;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import java.util.Base64;
@@ -39,6 +44,7 @@ import java.util.Base64;
 @EnableAutoConfiguration
 @EnableWebSocket
 @ComponentScan(basePackages = "com.kodcu.**")
+@EnableCaching
 public class SpringAppConfig extends SpringBootServletInitializer implements WebSocketConfigurer {
 
     @Autowired
@@ -47,6 +53,11 @@ public class SpringAppConfig extends SpringBootServletInitializer implements Web
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
         registry.addHandler(applicationController, "/ws", "/ws**", "/ws/**").withSockJS();
+    }
+
+    @Bean
+    public ConcurrentMapCacheManager cacheManager() {
+        return new ConcurrentMapCacheManager();
     }
 
     @Override
