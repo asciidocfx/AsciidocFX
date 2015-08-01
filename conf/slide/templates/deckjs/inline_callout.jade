@@ -1,7 +1,9 @@
 if node.document.$attr("icons") == "font"
-    i.column(data-value=node.$text())
-    b "(#{node.$text()})"
+    - num = "(" + node.$text() + ")"
+    i.conum(data-value=node.$text())
+    b !{num}
 else if node.document.$attr("icons", false)
-    img(src="callouts/#{node.$text()}",alt=node.$text())
+    img(src=node.$icon_uri("callouts/#{node.$text()}"),alt=node.$text())
 else
-    b "(#{node.$text()})"
+    - num = "(" + node.$text() + ")"
+    b !{num}

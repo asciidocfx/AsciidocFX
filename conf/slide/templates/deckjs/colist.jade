@@ -12,7 +12,7 @@ div.colist(id=node.$id(),class=[node.$style(), node.$role()])
                             i.conum(data-value=num)
                             b !{num}
                         else
-                            img(src="callouts/#{num}",alt=num)
+                            img(src=node.$icon_uri("callouts/#{num}"),alt=num)
                     td #{item.$text()}
     else
         ol
