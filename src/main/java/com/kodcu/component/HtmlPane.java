@@ -8,6 +8,7 @@ import com.kodcu.controller.ApplicationController;
 import com.kodcu.other.ConverterResult;
 import com.kodcu.other.Current;
 import com.kodcu.other.IOHelper;
+import com.kodcu.service.PathFinderService;
 import com.kodcu.service.ThreadService;
 import javafx.scene.web.WebView;
 import netscape.javascript.JSObject;
@@ -17,7 +18,9 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
 
 /**
@@ -60,19 +63,29 @@ public class HtmlPane extends ViewPanel {
         return new ConverterResult(result);
     }
 
-    public String getTemplate(String templateName, String templateDir) throws IOException {
+    public String getTemplate(String templateDir, String backend, String nodeName) throws IOException {
 
-        Stream<Path> slide = Files.find(controller.getConfigPath().resolve("slide/templates").resolve(templateDir), Integer.MAX_VALUE, (path, basicFileAttributes) -> path.toString().contains(templateName));
+        final CompletableFuture<String> completableFuture = new CompletableFuture();
 
-        Optional<Path> first = slide.findFirst();
+        completableFuture.runAsync(() -> {
+            threadService.runTaskLater(() -> {
+                Path templatePath = Paths.get(templateDir);
+                Path configPath = controller.getConfigPath();
 
-        if (!first.isPresent())
-            return "";
+                String template = "";
 
-        Path path = first.get();
+                if (templatePath.isAbsolute()) {
+                    template = IOHelper.readFile(templatePath.resolve(backend).resolve(nodeName + ".jade"));
+                } else {
+                    template = IOHelper.readFile(configPath.resolve(templatePath).resolve(backend).resolve(nodeName + ".jade"));
+                }
 
-        String template = IOHelper.readFile(path);
-        return template;
+                completableFuture.complete(template);
+
+            });
+        });
+
+        return completableFuture.join();
     }
 
     public String findRenderedSelection(String content) {
@@ -114,5 +127,10 @@ public class HtmlPane extends ViewPanel {
         this.setMember("editorValue", asciidoc);
         this.setMember("odfOptions", odfConfigBean.getJSON().toString());
         webEngine().executeScript("convertOdf(editorValue,odfOptions)");
+    }
+
+    public String convertPackt(String asciidoc) {
+        this.setMember("editorValue", asciidoc);
+     return (String)  webEngine().executeScript("convertPackt(editorValue)");
     }
 }

@@ -1,7 +1,7 @@
 text:p(text:style-name="imageblock")
-  draw:frame(draw:style-name="centeredimage",draw:name="image",text:anchor-type="paragraph",draw:z-index="1",svg:width=node.$attr('width'),svg:height=node.$attr('height'))
-    draw:image(xlink:type="simple",xlink:show="embed",xlink:actuate="onLoad")
-      office:binary-data
-        !{node.encode64(node.$attr('target'))}
+    draw:frame(draw:style-name="centeredimage",draw:name="image",text:anchor-type="paragraph",draw:z-index="1",svg:width=(node.$attr('width', 0) / 2.645) + 'cm',svg:height=(node.$attr('height', 0) / 2.645) + 'cm')
+        draw:image(xlink:type="simple",xlink:show="embed",xlink:actuate="onLoad")
+            office:binary-data
+                !{node.encode64(node.$attr('target'))}
 text:p(text:style-name="Layout_20_Information_20_5b_PACKT_5d_")
-   |[[Insert image !{afx.pathname(node.$attr('target'))}]]
+    | [[Insert image !{afx.pathname(node.$attr('target'))}]]

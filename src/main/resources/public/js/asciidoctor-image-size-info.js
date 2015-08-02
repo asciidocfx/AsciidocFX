@@ -17,7 +17,7 @@
                 var self = this;
 
                 if (!document.$attr('omit-image-size')['$nil?']())
-                    return document;
+                    return nil;
 
                 try {
                     var imageNodes = document.$find_by(Opal.hash2(['context'], {"context": "image"}));

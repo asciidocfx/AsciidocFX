@@ -83,13 +83,17 @@ import org.yaml.snakeyaml.Yaml;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
+import javax.cache.annotation.CacheKey;
+import javax.cache.annotation.CacheResult;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.security.CodeSource;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -719,6 +723,12 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         odfProMenu.getItems().add(MenuItemBuilt.item("Save as").click(event -> {
             odfProMenu.hide();
             this.generateODFDocument(true);
+        }));
+
+        odfProMenu.getItems().add(MenuItemBuilt.item("Packt").click(event -> {
+            String result = htmlPane.convertPackt(current.currentEditorValue());
+            IOHelper.writeToFile(directoryService.workingDirectory().resolve("packt.fodt"), result, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+//            System.out.println(result);
         }));
 
         odfPro.setContextMenu(odfProMenu);
@@ -1861,8 +1871,10 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     }
 
     @WebkitCall
-    public String getTemplate(String templateName, String templateDir) throws IOException {
-        return htmlPane.getTemplate(templateName, templateDir);
+   @CacheResult(cacheName = "getTemplate")
+    public String getTemplate(String templateDir, String backend, String nodeName) throws IOException {
+        System.out.println("Nodename: " + nodeName);
+        return htmlPane.getTemplate(templateDir, backend, nodeName);
     }
 
     public void cutCopy(String data) {
@@ -2442,6 +2454,19 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                 recentFiles.getFavoriteDirectories().add(selectedTabPath.toString());
             }
         }
+    }
+
+    @WebkitCall(from = "image.jade")
+    public String pathname(String target){
+        return Paths.get(target).getFileName().toString();
+    }
+
+    @WebkitCall(from = "asciidoctor-packt")
+    public String encode64(String target){
+        Path imagePath = directoryService.workingDirectory().resolve(target);
+        byte[] imageAsByte = IOHelper.readAllBytes(imagePath);
+        String encodeToString = base64Encoder.encodeToString(imageAsByte);
+        return encodeToString;
     }
 
     public EditorConfigBean getEditorConfigBean() {

@@ -1,1 +1,4 @@
-{}
+!!com.kodcu.bean.RecentFiles
+favoriteDirectories: []
+files: ['C:\Users\usta\Dropbox\Gitworks\README.adoc', 'C:\Users\usta\Downloads\ddd.adoc']
+workingDirectory: C:\Users\usta\Dropbox\Gitworks

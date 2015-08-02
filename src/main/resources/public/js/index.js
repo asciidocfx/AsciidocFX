@@ -96,6 +96,22 @@ function convertOdf(content, options) {
     return doc.$convert();
 }
 
+function convertPackt(content) {
+
+    var options = Opal.hash2(['safe','backend', 'attributes', 'sourcemap'], {
+        safe: 'safe',
+        backend: 'packt',
+        attributes: 'showtitle icons=font@ source-highlighter=highlight.js platform=opal platform-opal env=browser env-browser idprefix idseparator=- ',
+        sourcemap: true
+    });
+
+    var doc = Opal.Asciidoctor.$load(content, options);
+
+    doc.attributes.keys["lang"] = doc.attributes.keys["lang"] || getDefaultLanguage();
+
+    return doc.$convert();
+}
+
 function convertHtml(content, options) {
 
     var doc = Opal.Asciidoctor.$load(content, getOption(options));

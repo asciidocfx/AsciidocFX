@@ -57,7 +57,7 @@ public class SpringAppConfig extends SpringBootServletInitializer implements Web
 
     @Bean
     public ConcurrentMapCacheManager cacheManager() {
-        return new ConcurrentMapCacheManager();
+        return new ConcurrentMapCacheManager("getTemplate");
     }
 
     @Override
