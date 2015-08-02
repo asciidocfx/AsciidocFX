@@ -39,7 +39,6 @@ import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.beans.property.*;
 import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -47,7 +46,6 @@ import javafx.collections.transformation.FilteredList;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
-import javafx.event.EventType;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
@@ -59,7 +57,6 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTreeCell;
 import javafx.scene.input.*;
 import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebHistory;
@@ -83,6 +80,9 @@ import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 import org.yaml.snakeyaml.Yaml;
 
+import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
+import javax.imageio.stream.ImageInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -91,11 +91,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.CodeSource;
-import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import java.util.regex.Pattern;
@@ -1114,7 +1112,52 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         });
     }
 
-    private void applyForAllEditorPanes(Consumer<EditorPane> editorPaneConsumer){
+    @WebkitCall(from = "asciidoctor-image-size-info")
+    public JSObject getImageInfo(String path, JSObject info) {
+
+        Path parent = null;
+
+        try {
+            if (current.currentPath().isPresent()) {
+                parent = current.currentPath().get().getParent();
+            } else {
+                parent = directoryService.workingDirectory();
+            }
+        } catch (Exception e) {
+            logger.error("Problem occured while getting image size info", e);
+        }
+
+        Path imagePath = parent.resolve(path);
+
+        if (Files.notExists(imagePath))
+            return info;
+
+        try (ImageInputStream in = ImageIO.createImageInputStream(imagePath.toFile())) {
+            final Iterator<ImageReader> readers = ImageIO.getImageReaders(in);
+            if (readers.hasNext()) {
+                ImageReader reader = readers.next();
+                try {
+                    reader.setInput(in);
+                    int width = reader.getWidth(0);
+                    int height = reader.getHeight(0);
+
+                    info.setMember("width", width);
+                    info.setMember("height", height);
+
+                    reader.dispose();
+
+                    return info;
+                } finally {
+                    reader.dispose();
+                }
+            }
+        } catch (Exception e) {
+            logger.error("Problem occured while getting image size info", e);
+        }
+        return info;
+    }
+
+    private void applyForAllEditorPanes(Consumer<EditorPane> editorPaneConsumer) {
         ObservableList<Tab> tabs = tabPane.getTabs();
         for (Tab tab : tabs) {
             MyTab myTab = (MyTab) tab;
