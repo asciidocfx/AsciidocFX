@@ -4,18 +4,18 @@ import com.dooapp.fxform.model.Element;
 import com.dooapp.fxform.reflection.ReflectionUtils;
 import com.dooapp.fxform.view.FXFormNode;
 import com.dooapp.fxform.view.FXFormNodeWrapper;
-import javafx.scene.control.Button;
-import javafx.scene.control.SelectionMode;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import com.kodcu.component.TextFieldTableCell;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.util.Callback;
+import javafx.util.converter.DefaultStringConverter;
+import org.apache.xmlgraphics.java2d.color.DefaultColorConverter;
 
 import java.lang.reflect.Field;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Created by usta on 17.07.2015.
@@ -36,7 +36,7 @@ public class TableFactory implements Callback<Void, FXFormNode> {
         tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         tableView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 
-        return new FXFormNodeWrapper(new VBox(3,tableView, new HBox(5,addButton, removeButton)), tableView.itemsProperty()) {
+        return new FXFormNodeWrapper(new VBox(3, tableView, new HBox(5, addButton, removeButton)), tableView.itemsProperty()) {
             @Override
             public void init(Element element) {
                 Class wrappedType = element.getWrappedType();
@@ -44,7 +44,8 @@ public class TableFactory implements Callback<Void, FXFormNode> {
                 for (Field field : fields) {
                     TableColumn col = new TableColumn(field.getName());
                     col.setCellValueFactory(new PropertyValueFactory(field.getName()));
-                    col.setCellFactory(TextFieldTableCell.forTableColumn());
+                    col.setCellFactory(list -> new TextFieldTableCell(new DefaultStringConverter()));
+
                     tableView.getColumns().add(col);
 
                 }
