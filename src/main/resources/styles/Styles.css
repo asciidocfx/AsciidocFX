@@ -548,3 +548,8 @@
 .progress-bar .track {
     -fx-background-color: #ccc;
 }
+
+.red-label, .red-label * {
+    -fx-text-fill: #ff452c !important;
+    -fx-fill: #ff452c !important;
+}

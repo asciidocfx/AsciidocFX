@@ -1,12 +1,16 @@
 package com.kodcu.logging;
 
+import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
 import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.classic.spi.IThrowableProxy;
+import ch.qos.logback.classic.spi.ThrowableProxyUtil;
 import ch.qos.logback.core.UnsynchronizedAppenderBase;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableView;
+import org.apache.avalon.framework.ExceptionUtil;
 
 import java.io.IOException;
 import java.util.*;
@@ -27,6 +31,7 @@ public class TableViewLogAppender extends UnsynchronizedAppenderBase<ILoggingEve
     private static AtomicBoolean scheduled = new AtomicBoolean(false);
     private static Label logShortMessage;
     PatternLayoutEncoder encoder;
+    private static Label logShowHider;
 
     public static void setLogViewer(TableView<MyLog> logViewer) {
         TableViewLogAppender.logViewer = logViewer;
@@ -36,8 +41,16 @@ public class TableViewLogAppender extends UnsynchronizedAppenderBase<ILoggingEve
         TableViewLogAppender.logList = logList;
     }
 
-    public static void setLogShortMessage(Label logShortMessage) {
+    public static void setStatusMessage(Label logShortMessage) {
         TableViewLogAppender.logShortMessage = logShortMessage;
+    }
+
+    public static void setShowHideLogs(Label logShowHider) {
+        TableViewLogAppender.logShowHider = logShowHider;
+    }
+
+    public static Label getLogShowHider() {
+        return logShowHider;
     }
 
     @Override
@@ -48,12 +61,24 @@ public class TableViewLogAppender extends UnsynchronizedAppenderBase<ILoggingEve
 
         String message = event.getFormattedMessage();
         String level = event.getLevel().toString();
+
+        if(event.getLevel() == Level.ERROR){
+            logShowHider.getStyleClass().add("red-label");
+        }
+
+        final String finalMessage = message;
+        Platform.runLater(() -> {
+            logShortMessage.setText(finalMessage);
+        });
+
+        IThrowableProxy tp = event.getThrowableProxy();
+        if (Objects.nonNull(tp)) {
+            String tpMessage = ThrowableProxyUtil.asString(tp);
+            message += "\n" + tpMessage;
+        }
+
         MyLog myLog = new MyLog(level, message);
         buffer.add(myLog);
-
-        Platform.runLater(() -> {
-            logShortMessage.setText(message);
-        });
 
         if (!scheduled.get()) {
             scheduled.set(true);

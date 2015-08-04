@@ -1341,8 +1341,13 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         logViewer.getColumns().addAll(levelColumn, messageColumn);
         logViewer.setEditable(true);
 
+        showHideLogs.setOnMouseClicked(event->{
+            showHideLogs.getStyleClass().removeAll("red-label");
+        });
+
         TableViewLogAppender.setLogList(logList);
-        TableViewLogAppender.setLogShortMessage(statusMessage);
+        TableViewLogAppender.setStatusMessage(statusMessage);
+        TableViewLogAppender.setShowHideLogs(showHideLogs);
         TableViewLogAppender.setLogViewer(logViewer);
 
         final EventHandler<ActionEvent> filterByLogLevel = event -> {
