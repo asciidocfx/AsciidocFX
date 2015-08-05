@@ -1127,6 +1127,9 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             logger.error("Problem occured while getting image size info", e);
         }
 
+        if (Objects.isNull(parent))
+            return info;
+
         Path imagePath = parent.resolve(path);
 
         if (Files.notExists(imagePath))
@@ -1341,7 +1344,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         logViewer.getColumns().addAll(levelColumn, messageColumn);
         logViewer.setEditable(true);
 
-        showHideLogs.setOnMouseClicked(event->{
+        showHideLogs.setOnMouseClicked(event -> {
             showHideLogs.getStyleClass().removeAll("red-label");
         });
 

@@ -16,6 +16,8 @@
         return (def.$process = function (document) {
                 var self = this;
 
+                console.log("imagesize");
+
                 if (!document.$attr('omit-image-size')['$nil?']())
                     return document;
 
@@ -28,12 +30,13 @@
                         var declaredHeight = node.$attributes()['$[]']('height') == false;
 
                         if (declaredWidth && declaredHeight) {
-                            var info = afx.getImageInfo(node.$attr('target'), {}) || {
-                                    width: declaredWidth,
-                                    height: declaredHeight
-                                };
-                            node.$attributes()['$[]=']("width", info.width);
-                            node.$attributes()['$[]=']("height", info.height);
+                            var info = afx.getImageInfo(node.$image_uri(node.$attr('target')), {});
+
+                            if(info.width && info.height){
+                                node.$attributes()['$[]=']("width", info.width);
+                                node.$attributes()['$[]=']("height", info.height);
+                            }
+
                         }
 
                     });
