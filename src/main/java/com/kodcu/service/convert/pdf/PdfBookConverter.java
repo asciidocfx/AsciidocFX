@@ -82,7 +82,7 @@ public class PdfBookConverter extends AbstractPdfConverter {
 
                 FopFactory fopFactory = FopFactory.newInstance();
 
-                IOHelper.setUserConfig(fopFactory, configPath.resolve("docbook-config/fop.xconf").toUri().toASCIIString());
+                IOHelper.setUserConfig(fopFactory, configPath.resolve("docbook-config/fop.xconf.xml").toUri().toASCIIString());
 
                 super.produce(askPath, handler, fopFactory, docbookTempfile);
             });

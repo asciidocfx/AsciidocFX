@@ -33,7 +33,7 @@ the location of this file.
     <renderer mime="application/pdf">
       <filterList>
         <!-- provides compression using zlib flate (default is on) -->
-        <value>flate</value>
+        <!--<value>flate</value>-->
   
         <!-- encodes binary data into printable ascii characters (default off)
              This provides about a 4:5 expansion of data size -->
