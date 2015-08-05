@@ -19,12 +19,7 @@
 
         return (def.$process = function (parent, target, attrs) {
 
-                console.log("$ChartBlockMacro");
-                console.log(target);
-                console.log(attrs);
-
-                var $a, self = this, content = nil, type = nil, title = nil, filename = nil, alt = nil, caption = nil, width = nil, height = nil, opt = nil, scale = nil, align = nil, cache = nil, csvFile = nil, chartType = nil;
-
+                var $a, self = this, target = nil, type = nil, title = nil, filename = nil, alt = nil, caption = nil, width = nil, height = nil, opt = nil, scale = nil, align = nil, cache = nil, csvFile = nil, chartType = nil, imagesdir = nil;
 
                 csvFile = "" + (attrs['$[]']("data-uri"));
                 chartType = "" + target;
@@ -39,38 +34,35 @@
                 filename = "" + (attrs['$[]']("file"));
                 cache = "" + (attrs['$[]']("cache"));
                 opt = "" + (attrs['$[]']("opt"));
+                imagesdir = parent.$document().$attr('imagesdir', '');
+
+                target = parent.$image_uri(filename);
 
                 if (cache != "enabled") {
-                    afx.chartBuildFromCsv(csvFile, filename, chartType, opt);
+                    afx.chartBuildFromCsv(csvFile, imagesdir, target, chartType, opt);
                 }
 
-                content = "images/" + filename;
+                var attributesHash = {
+                    "target": filename,
+                    "title": title,
+                    "alt": alt,
+                    "caption": caption,
+                    "width": width,
+                    "height": height,
+                    "scale": scale,
+                    "align": align,
+                    "opt": opt
+                };
 
-                if ((($a = (type['$==']("ascii"))) !== nil && (!$a._isBoolean || $a == true))) {
-                    return self.$create_literal_block(parent, content, attrs, $hash2(["subs"], {"subs": nil}))
-                } else {
-                    var attributesHash = {
-                        "target": content,
-                        "title": title,
-                        "alt": alt,
-                        "caption": caption,
-                        "width": width,
-                        "height": height,
-                        "scale": scale,
-                        "align": align,
-                        "opt": opt
-                    };
+                var keys = Object.keys(attributesHash);
 
-                    var keys = Object.keys(attributesHash);
+                keys.forEach(function (key) {
+                    if (attributesHash[key] == "")
+                        delete attributesHash[key];
+                });
 
-                    keys.forEach(function (key) {
-                        if (attributesHash[key] == "")
-                            delete attributesHash[key];
-                    });
-
-                    return self.$create_image_block(parent, $hash2(Object.keys(attributesHash), attributesHash))
-                }
-                ;
+                return self.$create_image_block(parent, $hash2(Object.keys(attributesHash), attributesHash))
+                    ;
             }, nil) && 'process';
     })(self, ($scope.Extensions)._scope.BlockMacroProcessor);
     return (function ($base, $super) {
@@ -90,7 +82,7 @@
 
         return (def.$process = function (parent, reader, attrs) {
                 console.log("ChartBlockProcessor");
-                var $a, self = this, content = nil, type = nil, title = nil, filename = nil, alt = nil, caption = nil, width = nil, height = nil, opt = nil, scale = nil, align = nil, cache = nil, chartType = nil;
+                var $a, self = this, target = nil, type = nil, title = nil, filename = nil, alt = nil, caption = nil, width = nil, height = nil, opt = nil, scale = nil, align = nil, cache = nil, chartType = nil, imagesdir = nil;
 
                 chartType = "" + (attrs['$[]']("2"));
                 title = "" + (attrs['$[]']("title"));
@@ -104,38 +96,35 @@
                 filename = "" + (attrs['$[]']("file"));
                 cache = "" + (attrs['$[]']("cache"));
                 opt = "" + (attrs['$[]']("opt"));
+                imagesdir = parent.$document().$attr('imagesdir', '');
+
+                target = parent.$image_uri(filename);
 
                 if (cache != "enabled") {
-                    afx.chartBuild(reader.$read(), filename, chartType, opt);
+                    afx.chartBuild(reader.$read(), imagesdir, target, chartType, opt);
                 }
 
-                content = "images/" + filename;
+                var attributesHash = {
+                    "target": filename,
+                    "title": title,
+                    "alt": alt,
+                    "caption": caption,
+                    "width": width,
+                    "height": height,
+                    "scale": scale,
+                    "align": align,
+                    "opt": opt
+                };
 
-                if ((($a = (type['$==']("ascii"))) !== nil && (!$a._isBoolean || $a == true))) {
-                    return self.$create_literal_block(parent, content, attrs, $hash2(["subs"], {"subs": nil}))
-                } else {
-                    var attributesHash = {
-                        "target": content,
-                        "title": title,
-                        "alt": alt,
-                        "caption": caption,
-                        "width": width,
-                        "height": height,
-                        "scale": scale,
-                        "align": align,
-                        "opt": opt
-                    };
+                var keys = Object.keys(attributesHash);
 
-                    var keys = Object.keys(attributesHash);
+                keys.forEach(function (key) {
+                    if (attributesHash[key] == "")
+                        delete attributesHash[key];
+                });
 
-                    keys.forEach(function (key) {
-                        if (attributesHash[key] == "")
-                            delete attributesHash[key];
-                    });
-
-                    return self.$create_image_block(parent, $hash2(Object.keys(attributesHash), attributesHash))
-                }
-                ;
+                return self.$create_image_block(parent, $hash2(Object.keys(attributesHash), attributesHash))
+                    ;
             }, nil) && 'process';
     })(self, ($scope.Extensions)._scope.BlockProcessor);
 })(Opal);
@@ -147,18 +136,18 @@
     }
     ;
     return ($a = ($b = $scope.Extensions).$register, $a
-    .
-    _p = (TMP_1 = function () {
-        var self = TMP_1._s || this, $a;
+            .
+            _p = (TMP_1 = function () {
+                var self = TMP_1._s || this, $a;
 
-        self.$block_macro($scope.ChartBlockMacro);
-        return self.$block($scope.ChartBlockProcessor);
+                self.$block_macro($scope.ChartBlockMacro);
+                return self.$block($scope.ChartBlockProcessor);
 
-    }, TMP_1
-    .
-    _s = self, TMP_1
-    ),
-    $a
+            }, TMP_1
+                .
+                _s = self, TMP_1
+        ),
+            $a
     ).
-    call($b);
+        call($b);
 })(Opal);

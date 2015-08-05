@@ -51,11 +51,11 @@ public class TreeService {
         this.awesomeService = awesomeService;
     }
 
-    public void createFileTree(String tree, String type, String fileName, String width, String height) {
+    public void createFileTree(String tree, String type, String imagesDir, String imageTarget, String width, String height) {
 
-        Objects.requireNonNull(fileName);
+        Objects.requireNonNull(imageTarget);
 
-        if (!fileName.endsWith(".png") && !"ascii".equalsIgnoreCase(type))
+        if (!imageTarget.endsWith(".png") && !"ascii".equalsIgnoreCase(type))
             return;
 
         if ("ascii".equalsIgnoreCase(type)) {
@@ -65,17 +65,17 @@ public class TreeService {
         else {
 
             Path path = current.currentPath().get().getParent();
-            Path treePath = path.resolve("images/").resolve(fileName);
+            Path treePath = path.resolve(imageTarget);
 
             if (!current.currentPath().isPresent())
                 controller.saveDoc();
 
-            Integer cacheHit = current.getCache().get(fileName);
+            Integer cacheHit = current.getCache().get(imageTarget);
 
-            int hashCode = (fileName + type + tree + width + height).hashCode();
+            int hashCode = (imageTarget + imagesDir + type + tree + width + height).hashCode();
             if (Objects.isNull(cacheHit) || hashCode != cacheHit) {
 
-                logger.debug("Tree extension is started for {}", fileName);
+                logger.debug("Tree extension is started for {}", imageTarget);
 
                 TreeView<Tuple<Integer, String>> fileView = new TreeView<>();
 
@@ -181,10 +181,10 @@ public class TreeService {
 
                         BufferedImage bufferedImage = SwingFXUtils.fromFXImage(writableImage, null);
 
-                        IOHelper.createDirectories(path.resolve("images"));
+                        IOHelper.createDirectories(path.resolve(imagesDir));
                         IOHelper.imageWrite(bufferedImage, "png", treePath.toFile());
 
-                        logger.debug("Tree extension is ended for {}", fileName);
+                        logger.debug("Tree extension is ended for {}", imageTarget);
 
                         controller.clearImageCache();
 
@@ -196,25 +196,25 @@ public class TreeService {
                 }
             }
 
-            current.getCache().put(fileName, hashCode);
+            current.getCache().put(imageTarget, hashCode);
         }
     }
 
-    public void createHighlightFileTree(String tree, String type, String fileName, String width, String height) {
-        Objects.requireNonNull(fileName);
+    public void createHighlightFileTree(String tree, String type, String imagesDir, String imageTarget, String width, String height) {
+        Objects.requireNonNull(imageTarget);
 
-        if (!fileName.endsWith(".png"))
+        if (!imageTarget.endsWith(".png"))
             return;
 
         Path path = current.currentPath().get().getParent();
-        Path treePath = path.resolve("images/").resolve(fileName);
+        Path treePath = path.resolve(imageTarget);
 
         if (!current.currentPath().isPresent())
             controller.saveDoc();
 
-        Integer cacheHit = current.getCache().get(fileName);
+        Integer cacheHit = current.getCache().get(imageTarget);
 
-        int hashCode = (fileName + type + tree + width + height).hashCode();
+        int hashCode = (imageTarget + imagesDir + type + tree + width + height).hashCode();
         if (Objects.isNull(cacheHit) || hashCode != cacheHit) {
 
             threadService.runActionLater(() -> {
@@ -263,7 +263,7 @@ public class TreeService {
                         threadService.runTaskLater(() -> {
                             TrimWhite trimWhite = new TrimWhite();
                             BufferedImage trimmed = trimWhite.trim(bufferedImage);
-                            IOHelper.createDirectories(path.resolve("images"));
+                            IOHelper.createDirectories(path.resolve(imagesDir));
                             IOHelper.imageWrite(trimmed, "png", treePath.toFile());
                             threadService.runActionLater(() -> {
                                 controller.clearImageCache();
@@ -277,6 +277,6 @@ public class TreeService {
 
         }
 
-        current.getCache().put(fileName, hashCode);
+        current.getCache().put(imageTarget, hashCode);
     }
 }

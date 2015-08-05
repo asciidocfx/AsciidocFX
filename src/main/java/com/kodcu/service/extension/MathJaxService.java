@@ -44,8 +44,8 @@ public class MathJaxService {
         this.threadService = threadService;
     }
 
-    public void appendFormula(String fileName, String formula) {
-        getWindow().call("appendFormula", new Object[]{fileName, formula});
+    public void appendFormula(String formula, String imagesDir, String imageTarget) {
+        getWindow().call("appendFormula", new Object[]{formula, imagesDir, imageTarget});
     }
 
     public JSObject getWindow() {
@@ -53,42 +53,42 @@ public class MathJaxService {
         return window;
     }
 
-    public void svgToPng(String fileName, String svg, String formula, float width, float height) {
+    public void svgToPng(String imagesDir, String imageTarget, String svg, String formula, float width, float height) {
 
         if (!svg.startsWith("<svg"))
             return;
 
-        if (!fileName.endsWith(".png") && !fileName.endsWith(".svg"))
+        if (!imageTarget.endsWith(".png") && !imageTarget.endsWith(".svg"))
             return;
 
-        Integer cacheHit = current.getCache().get(fileName);
-        int hashCode = fileName.concat(formula).hashCode();
+        Integer cacheHit = current.getCache().get(imageTarget);
+        int hashCode = (imagesDir + imageTarget + formula + width + height).hashCode();
         if (Objects.nonNull(cacheHit))
             if (hashCode == cacheHit)
                 return;
 
-        logger.debug("MatJax extension is started for {}", fileName);
+        logger.debug("MatJax extension is started for {}", imageTarget);
 
-        current.getCache().put(fileName, hashCode);
+        current.getCache().put(imageTarget, hashCode);
 
-        if (fileName.endsWith(".png"))
-            saveAsPng(fileName, svg, formula, width, height);
-        else if (fileName.endsWith(".svg"))
-            saveAsSvg(fileName, svg, formula, width, height);
+        if (imageTarget.endsWith(".png"))
+            saveAsPng(imagesDir, imageTarget, svg, formula, width, height);
+        else if (imageTarget.endsWith(".svg"))
+            saveAsSvg(imagesDir, imageTarget, svg, formula, width, height);
 
     }
 
-    private void saveAsSvg(String fileName, String svg, String formula, float width, float height) {
+    private void saveAsSvg(String imagesDir, String imageTarget, String svg, String formula, float width, float height) {
         try {
             if (!current.currentPath().isPresent())
                 controller.saveDoc();
 
             Path path = current.currentPath().get().getParent();
-            Files.createDirectories(path.resolve("images"));
+            Files.createDirectories(path.resolve(imagesDir));
 
-            Files.write(path.resolve("images/").resolve(fileName), svg.getBytes(Charset.forName("UTF-8")), CREATE, WRITE, TRUNCATE_EXISTING);
+            Files.write(path.resolve(imageTarget), svg.getBytes(Charset.forName("UTF-8")), CREATE, WRITE, TRUNCATE_EXISTING);
 
-            logger.debug("MathJax extension is ended for {}", fileName);
+            logger.debug("MathJax extension is ended for {}", imageTarget);
             threadService.runActionLater(() -> {
                 controller.clearImageCache();
             });
@@ -97,7 +97,7 @@ public class MathJaxService {
         }
     }
 
-    private void saveAsPng(String fileName, String svg, String formula, float width, float height) {
+    private void saveAsPng(String imagesDir, String imageTarget, String svg, String formula, float width, float height) {
         try (StringReader reader = new StringReader(svg);
              ByteArrayOutputStream ostream = new ByteArrayOutputStream();) {
 
@@ -117,11 +117,11 @@ public class MathJaxService {
                 controller.saveDoc();
 
             Path path = current.currentPath().get().getParent();
-            Files.createDirectories(path.resolve("images"));
+            Files.createDirectories(path.resolve(imagesDir));
 
-            Files.write(path.resolve("images/").resolve(fileName), ostream.toByteArray(), CREATE, WRITE, TRUNCATE_EXISTING);
+            Files.write(path.resolve(imageTarget), ostream.toByteArray(), CREATE, WRITE, TRUNCATE_EXISTING);
 
-            logger.debug("MathJax extension is ended for {}", fileName);
+            logger.debug("MathJax extension is ended for {}", imageTarget);
             threadService.runActionLater(() -> {
                 controller.clearImageCache();
             });

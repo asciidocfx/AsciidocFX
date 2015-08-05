@@ -18,14 +18,16 @@
             MathJax.Hub.Queue(["Typeset", MathJax.Hub], finishCallback);
     }
 
-    function appendFormula(fileName, formula) {
+    function appendFormula(formula, imagesDir, imageTarget) {
 
-        fileName = fileName.replace(".", "-----");
+        imageTarget = imageTarget.replace(/\./g,"--dot--");
+        imageTarget = imageTarget.replace(/\//g,"--fw--");
+        imageTarget = imageTarget.replace(/\\/g,"--bk--");
 
-        $("#formulas").find("#" + fileName).remove();
+        $("#formulas").find("#" + imageTarget).remove();
 
         var $div = $("<div class='formulaz'></div>");
-        $div.attr("id", fileName);
+        $div.attr("id", imageTarget);
         $div.append(formula);
 
         $("#formulas").append($div);
@@ -35,11 +37,12 @@
 
                 var svg = $(this).find(".MathJax_SVG svg");
 
-                try{
-                    svg.attr("width",svg[0].getBoundingClientRect().width);
-                    svg.attr("height",svg[0].getBoundingClientRect().height);
+                try {
+                    svg.attr("width", svg[0].getBoundingClientRect().width);
+                    svg.attr("height", svg[0].getBoundingClientRect().height);
                 }
-                catch (e){}
+                catch (e) {
+                }
 
                 if (svg.length) {
                     var fileName = $(this).attr("id");
@@ -54,7 +57,13 @@
 
                     var svgWidth = (bbox.width > 600) ? 600 : bbox.width;
                     var svgHeight = (bbox.height / (bbox.width / svgWidth));
-                    afx.svgToPng(fileName.replace("-----", "."), svgStrings, formula, svgWidth, svgHeight);
+
+
+                    fileName = fileName.replace("--dot--",".");
+                    fileName = fileName.replace("--bk--","\\");
+                    fileName = fileName.replace("--fw--","/");
+
+                    afx.svgToPng(imagesDir, fileName, svgStrings, formula, svgWidth, svgHeight);
 
                 }
 

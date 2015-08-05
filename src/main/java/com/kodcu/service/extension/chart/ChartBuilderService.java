@@ -26,26 +26,26 @@ public abstract class ChartBuilderService {
         this.controller = controller;
     }
 
-    public void chartBuild(String chartContent, String fileName, Map<String, String> optMap) throws Exception {
+    public void chartBuild(String chartContent, String imagesDir, String imageTarget, Map<String, String> optMap) throws Exception {
 
-        if (!fileName.endsWith(".png"))
+        if (!imageTarget.endsWith(".png"))
             throw new InterruptedException();
 
-        Integer cacheHit = current.getCache().get(fileName);
-        int hashCode = (fileName + chartContent).hashCode() + optMap.hashCode();
+        Integer cacheHit = current.getCache().get(imageTarget);
+        int hashCode = (imageTarget + imagesDir + chartContent).hashCode() + optMap.hashCode();
 
         if (Objects.nonNull(cacheHit))
             if (hashCode == cacheHit) {
                 throw new InterruptedException();
             }
 
-        current.getCache().put(fileName, hashCode);
+        current.getCache().put(imageTarget, hashCode);
 
         if (!current.currentPath().isPresent())
             controller.saveDoc();
 
         currentRoot = current.currentPath().get().getParent();
-        imagePath = currentRoot.resolve("images/").resolve(fileName);
+        imagePath = currentRoot.resolve(imageTarget);
 
     }
 

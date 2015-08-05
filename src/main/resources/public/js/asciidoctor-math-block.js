@@ -22,7 +22,7 @@
         self.$parse_content_as("simple");
 
         return (def.$process = function (parent, reader, attrs) {
-                var self = this, content = nil, title = nil, filename = nil, alt = nil, caption = nil, width = nil, height = nil, scale = nil, align = nil, cache = nil;
+                var self = this, target = nil, title = nil, filename = nil, alt = nil, caption = nil, width = nil, height = nil, scale = nil, align = nil, cache = nil, imagesdir = nil ;
 
                 title = "" + (attrs['$[]']("title"));
                 alt = "" + (attrs['$[]']("alt"));
@@ -33,14 +33,16 @@
                 align = "" + (attrs['$[]']("align"));
                 filename = "" + (attrs['$[]']("file"));
                 cache = "" + (attrs['$[]']("cache"));
+                imagesdir = parent.$document().$attr('imagesdir','');
+
+                target = parent.$image_uri(filename);
 
                 if (cache != "enabled") {
-                    afx.appendFormula(filename, reader.$read());
+                    afx.appendFormula(reader.$read(), imagesdir, target);
                 }
-                content = "images/" + filename;
 
                 var attributesHash = {
-                    "target": content,
+                    "target": filename,
                     "title": title,
                     "alt": alt,
                     "caption": caption,

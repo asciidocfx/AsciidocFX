@@ -39,10 +39,10 @@ public class PlantUmlService {
         this.threadService = threadService;
     }
 
-    public void plantUml(String uml, String type, String fileName) {
-        Objects.requireNonNull(fileName);
+    public void plantUml(String uml, String type, String imagesDir, String imageTarget) {
+        Objects.requireNonNull(imageTarget);
 
-        if (!fileName.endsWith(".png") && !fileName.endsWith(".svg"))
+        if (!imageTarget.endsWith(".png") && !imageTarget.endsWith(".svg"))
             return;
 
         String defaultScale = "\nskinparam dpi 300\n";
@@ -54,15 +54,15 @@ public class PlantUmlService {
             uml = uml.replaceFirst("@startuml", "@startuml" + defaultScale);
         }
 
-        Integer cacheHit = current.getCache().get(fileName);
+        Integer cacheHit = current.getCache().get(imageTarget);
 
-        int hashCode = (fileName + type + uml).hashCode();
+        int hashCode = (imageTarget + imagesDir + type + uml).hashCode();
 
         if (Objects.nonNull(cacheHit))
             if (hashCode == cacheHit)
                 return;
 
-        logger.debug("UML extension is started for {}", fileName);
+        logger.debug("UML extension is started for {}", imageTarget);
 
         SourceStringReader reader = new SourceStringReader(uml);
 
@@ -72,20 +72,20 @@ public class PlantUmlService {
                 controller.saveDoc();
 
             Path path = current.currentPath().get().getParent();
-            Path umlPath = path.resolve("images/").resolve(fileName);
+            Path umlPath = path.resolve(imageTarget);
 
-            FileFormat fileType = fileName.endsWith(".svg") ? FileFormat.SVG : FileFormat.PNG;
+            FileFormat fileType = imageTarget.endsWith(".svg") ? FileFormat.SVG : FileFormat.PNG;
 
             threadService.runTaskLater(() -> {
                 try {
 
                     reader.generateImage(os, new FileFormatOption(fileType));
 
-                    Files.createDirectories(path.resolve("images"));
+                    Files.createDirectories(path.resolve(imagesDir));
 
                     IOHelper.writeToFile(umlPath, os.toByteArray(), CREATE, WRITE, TRUNCATE_EXISTING);
 
-                    logger.debug("UML extension is ended for {}", fileName);
+                    logger.debug("UML extension is ended for {}", imageTarget);
 
                     threadService.runActionLater(() -> {
                         controller.clearImageCache();
@@ -96,7 +96,7 @@ public class PlantUmlService {
             });
 
 
-            current.getCache().put(fileName, hashCode);
+            current.getCache().put(imageTarget, hashCode);
 
         } catch (IOException e) {
             logger.error("Problem occured while generating UML diagram", e);

@@ -466,13 +466,15 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         epubConverter.produceEpub3(askPath);
     }
 
-    public void appendFormula(String fileName, String formula) {
-        mathJaxService.appendFormula(fileName, formula);
+    @WebkitCall(from = "asciidoctor-math")
+    public void appendFormula(String formula, String imagesDir, String imageTarget) {
+        mathJaxService.appendFormula(formula,imagesDir, imageTarget);
     }
 
-    public void svgToPng(String fileName, String svg, String formula, float width, float height) {
+    @WebkitCall(from = "mathjax.html")
+    public void svgToPng(String imagesDir, String imageTarget, String svg, String formula, float width, float height) {
         threadService.runTaskLater(() -> {
-            mathJaxService.svgToPng(fileName, svg, formula, width, height);
+            mathJaxService.svgToPng(imagesDir, imageTarget, svg, formula, width, height);
         });
     }
 
@@ -518,17 +520,17 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         });
     }
 
-    public void createFileTree(String tree, String type, String fileName, String width, String height) {
+    public void createFileTree(String tree, String type, String imagesDir, String imageTarget, String width, String height) {
 
         threadService.runTaskLater(() -> {
-            treeService.createFileTree(tree, type, fileName, width, height);
+            treeService.createFileTree(tree, type, imagesDir, imageTarget, width, height);
         });
     }
 
-    public void createHighlightFileTree(String tree, String type, String fileName, String width, String height) {
+    public void createHighlightFileTree(String tree, String type, String imagesDir, String imageTarget, String width, String height) {
 
         threadService.runTaskLater(() -> {
-            treeService.createHighlightFileTree(tree, type, fileName, width, height);
+            treeService.createHighlightFileTree(tree, type, imagesDir, imageTarget, width, height);
         });
     }
 
@@ -1724,17 +1726,17 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     }
 
-    public void plantUml(String uml, String type, String fileName) throws IOException {
+    public void plantUml(String uml, String type, String imagesDir, String imageTarget) throws IOException {
 
         threadService.runTaskLater(() -> {
-            plantUmlService.plantUml(uml, type, fileName);
+            plantUmlService.plantUml(uml, type, imagesDir, imageTarget);
         });
     }
 
+    @WebkitCall(from = "asciidoctor-chart")
+    public void chartBuildFromCsv(String csvFile, String imagesDir, String imageTarget, String chartType, String options) {
 
-    public void chartBuildFromCsv(String csvFile, String fileName, String chartType, String options) {
-
-        if (Objects.isNull(fileName) || Objects.isNull(chartType))
+        if (Objects.isNull(imageTarget) || Objects.isNull(chartType))
             return;
 
         getCurrent().currentPath().map(Path::getParent).ifPresent(root -> {
@@ -1745,7 +1747,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                     try {
                         Map<String, String> optMap = parseChartOptions(options);
                         optMap.put("csv-file", csvFile);
-                        chartProvider.getProvider(chartType).chartBuild(csvContent, fileName, optMap);
+                        chartProvider.getProvider(chartType).chartBuild(csvContent, imagesDir, imageTarget, optMap);
 
                     } catch (Exception e) {
                         logger.info(e.getMessage(), e);
@@ -1757,15 +1759,16 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         });
     }
 
-    public void chartBuild(String chartContent, String fileName, String chartType, String options) {
+    @WebkitCall(from = "asciidoctor-chart")
+    public void chartBuild(String chartContent, String imagesDir, String imageTarget, String chartType, String options) {
 
-        if (Objects.isNull(fileName) || Objects.isNull(chartType))
+        if (Objects.isNull(imageTarget) || Objects.isNull(chartType))
             return;
 
         threadService.runActionLater(() -> {
             try {
                 Map<String, String> optMap = parseChartOptions(options);
-                chartProvider.getProvider(chartType).chartBuild(chartContent, fileName, optMap);
+                chartProvider.getProvider(chartType).chartBuild(chartContent, imagesDir, imageTarget, optMap);
 
             } catch (Exception e) {
                 logger.info(e.getMessage(), e);

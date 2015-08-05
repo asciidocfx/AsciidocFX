@@ -22,7 +22,7 @@
         self.$parse_content_as("literal");
 
         return (def.$process = function (parent, reader, attrs) {
-                var $a, self = this, content = nil, type = nil, title = nil, filename = nil, alt = nil, caption = nil, width = nil, height = nil, scale = nil, align = nil, cache = nil;
+                var $a, self = this, target = nil, type = nil, title = nil, filename = nil, alt = nil, caption = nil, width = nil, height = nil, scale = nil, align = nil, cache = nil, imagesdir = nil;
 
                 type = "" + (attrs['$[]']("type"));
                 title = "" + (attrs['$[]']("title"));
@@ -34,22 +34,23 @@
                 scale = "" + (attrs['$[]']("scale"));
                 align = "" + (attrs['$[]']("align"));
                 cache = "" + (attrs['$[]']("cache"));
+                imagesdir = parent.$document().$attr('imagesdir', '');
+
+                target = parent.$image_uri(filename);
 
                 if (cache != "enabled") {
                     var readed = reader.$read();
-                    if ((readed.match(/#/g) || []).length>(readed.match(/(-|\|)/g) || []).length)
-                        afx.createFileTree(readed, type, filename, width, height);
+                    if ((readed.match(/#/g) || []).length > (readed.match(/(-|\|)/g) || []).length)
+                        afx.createFileTree(readed, type, imagesdir, target, width, height);
                     else
-                        afx.createHighlightFileTree(readed, type, filename, width, height);
+                        afx.createHighlightFileTree(readed, type, imagesdir, target, width, height);
                 }
 
-                content = "images/" + filename;
-
                 if ((($a = (type['$==']("ascii"))) !== nil && (!$a._isBoolean || $a == true))) {
-                    return self.$create_pass_block(parent, content, attrs, $hash2(["subs"], {"subs": nil}))
+                    return self.$create_pass_block(parent, target, attrs, $hash2(["subs"], {"subs": nil}))
                 } else {
                     var attributesHash = {
-                        "target": content,
+                        "target": filename,
                         "title": title,
                         "alt": alt,
                         "caption": caption,
@@ -77,16 +78,16 @@
     }
     ;
     return ($a = ($b = $scope.Extensions).$register, $a
-    .
-    _p = (TMP_1 = function () {
-        var self = TMP_1._s || this;
+            .
+            _p = (TMP_1 = function () {
+                var self = TMP_1._s || this;
 
-        return self.$block($scope.TreeBlock)
-    }, TMP_1
-    .
-    _s = self, TMP_1
-    ),
-    $a
+                return self.$block($scope.TreeBlock)
+            }, TMP_1
+                .
+                _s = self, TMP_1
+        ),
+            $a
     ).
-    call($b);
+        call($b);
 })(Opal);

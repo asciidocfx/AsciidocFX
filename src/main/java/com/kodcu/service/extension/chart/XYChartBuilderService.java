@@ -37,15 +37,15 @@ public abstract class XYChartBuilderService extends ChartBuilderService {
     }
 
     @Override
-    public void chartBuild(String chartContent, String fileName, Map<String, String> optMap) throws Exception {
+    public void chartBuild(String chartContent, String imagesDir, String imageTarget, Map<String, String> optMap) throws Exception {
 
         try {
-            super.chartBuild(chartContent, fileName, optMap);
+            super.chartBuild(chartContent, imagesDir, imageTarget, optMap);
         } catch (InterruptedException e) {
             throw e;
         }
 
-        logger.debug("Chart extension is started for {}", fileName);
+        logger.debug("Chart extension is started for {}", imageTarget);
 
         String[] split = chartContent.split("\\r?\\n");
         List<String> lines = Arrays.asList(split);
@@ -202,9 +202,9 @@ public abstract class XYChartBuilderService extends ChartBuilderService {
         WritableImage writableImage = xyChart.snapshot(new SnapshotParameters(), null);
         controller.removeChildElement(xyChart);
         BufferedImage bufferedImage = SwingFXUtils.fromFXImage(writableImage, null);
-        IOHelper.createDirectories(currentRoot.resolve("images"));
+        IOHelper.createDirectories(currentRoot.resolve(imagesDir));
         IOHelper.imageWrite(bufferedImage, "png", imagePath.toFile());
-        logger.debug("Chart extension is ended for {}", fileName);
+        logger.debug("Chart extension is ended for {}", imageTarget);
         controller.clearImageCache();
     }
 

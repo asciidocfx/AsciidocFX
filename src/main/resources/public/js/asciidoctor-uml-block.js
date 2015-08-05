@@ -22,7 +22,7 @@
         self.$parse_content_as("literal");
 
         return (def.$process = function (parent, reader, attrs) {
-                var $a, self = this, content = nil, type = nil, title = nil, filename = nil, alt = nil, caption = nil,width=nil,height=nil,scale=nil,align=nil,cache=nil;
+                var $a, self = this, target = nil, type = nil, title = nil, filename = nil, alt = nil, caption = nil, width = nil, height = nil, scale = nil, align = nil, cache = nil, imagesdir = nil;
 
                 title = "" + (attrs['$[]']("title"));
                 alt = "" + (attrs['$[]']("alt"));
@@ -34,38 +34,35 @@
                 type = "" + (attrs['$[]']("type"));
                 filename = "" + (attrs['$[]']("file"));
                 cache = "" + (attrs['$[]']("cache"));
+                imagesdir = parent.$document().$attr('imagesdir','');
 
-                if (cache != "enabled"){
-                    afx.plantUml(reader.$read(), type, filename);
+
+                target = parent.$image_uri(filename);
+
+                if (cache != "enabled") {
+                    afx.plantUml(reader.$read(), type, imagesdir, target);
                 }
 
+                var attributesHash = {
+                    "target": filename,
+                    "title": title,
+                    "alt": alt,
+                    "caption": caption,
+                    "width": width,
+                    "height": height,
+                    "scale": scale,
+                    "align": align
+                };
 
-                content = "images/" + filename;
+                var keys = Object.keys(attributesHash);
 
-                if ((($a = (type['$==']("ascii"))) !== nil && (!$a._isBoolean || $a == true))) {
-                    return self.$create_literal_block(parent, content, attrs, $hash2(["subs"], {"subs": nil}))
-                } else {
-                    var attributesHash = {
-                        "target": content,
-                        "title": title,
-                        "alt": alt,
-                        "caption": caption,
-                        "width": width,
-                        "height": height,
-                        "scale": scale,
-                        "align": align
-                    };
+                keys.forEach(function (key) {
+                    if (attributesHash[key] == "")
+                        delete attributesHash[key];
+                });
 
-                    var keys = Object.keys(attributesHash);
-
-                    keys.forEach(function(key){
-                        if(attributesHash[key]=="")
-                            delete attributesHash[key];
-                    });
-
-                    return self.$create_image_block(parent, $hash2(Object.keys(attributesHash), attributesHash))
-                }
-                ;
+                return self.$create_image_block(parent, $hash2(Object.keys(attributesHash), attributesHash))
+                    ;
             }, nil) && 'process';
     })(self, ($scope.Extensions)._scope.BlockProcessor);
 })(Opal);

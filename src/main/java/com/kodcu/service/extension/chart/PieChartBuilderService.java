@@ -37,10 +37,10 @@ public class PieChartBuilderService extends ChartBuilderService {
     }
 
     @Override
-    public void chartBuild(String chartContent, String fileName, Map<String, String> optMap) throws Exception {
+    public void chartBuild(String chartContent, String imagesDir, String imageTarget, Map<String, String> optMap) throws Exception {
 
         try {
-            super.chartBuild(chartContent, fileName, optMap);
+            super.chartBuild(chartContent, imagesDir, imageTarget, optMap);
         } catch (InterruptedException e) {
             throw e;
         }
@@ -120,7 +120,7 @@ public class PieChartBuilderService extends ChartBuilderService {
             WritableImage writableImage = pieChart.snapshot(new SnapshotParameters(), null);
             controller.removeChildElement(pieChart);
             BufferedImage bufferedImage = SwingFXUtils.fromFXImage(writableImage, null);
-            IOHelper.createDirectories(currentRoot.resolve("images"));
+            IOHelper.createDirectories(currentRoot.resolve(imagesDir));
             IOHelper.imageWrite(bufferedImage, "png", imagePath.toFile());
             controller.clearImageCache();
 
