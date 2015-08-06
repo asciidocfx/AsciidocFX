@@ -78,6 +78,8 @@ public abstract class AbstractPdfConverter implements DocumentConverter<String> 
                         public Source resolve(String href, String base) throws TransformerException {
                             if (Objects.nonNull(href)) {
                                 try {
+                                    if (href.charAt(0) == '/') href = "file:" + href;
+                                    //logger.debug("href = " + href);
                                     Path path = Paths.get(URI.create(href));
                                     if (!Files.exists(path)) {
 
