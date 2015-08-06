@@ -31,3 +31,18 @@ enum TimeUnit {
 annotation SuppressWarnings
 --
 
+.UML http://plantuml.sourceforge.net/ditaa.html
+[uml,file="ditaa-diagram.png"]
+--
+@startditaa
++--------+   +-------+    +-------+
+|        +---+ ditaa +--> |       |
+|  Text  |   +-------+    |diagram|
+|Document|   |!magic!|    |       |
+|     {d}|   |       |    |       |
++---+----+   +-------+    +-------+
+    :                         ^
+    |       Lots of work      |
+    +-------------------------+
+@endditaa
+--
