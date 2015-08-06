@@ -1,0 +1,5 @@
+<%#encoding:UTF-8%>
+<div<%= @id && %( id="#{@id}") %> data-type="example"<%= attr?('role') ? %( class="#{attr 'role'}") : nil %>>
+    <h5><%= title %></h5>
+    <%= content
+    %></div>

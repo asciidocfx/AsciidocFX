@@ -1,0 +1,20 @@
+dl.calloutlist(class=node.$attr('role',''))
+  each item,i in node.$content()
+    - var refnum = ''
+    - var num = i + 1
+    if node.$document().$callouts().$current_list()['$[]'](i) != false
+     - refnum = node.$document().$callouts().$current_list()['$[]'](i)['$[]']('id')
+
+    if node.$document().$doctitle()
+      - var chaptitle = node.$document().$doctitle()
+    else
+      - chaptitle = node.$parent()
+    - chaptitle = chaptitle.$to_s().$gsub(/[^\w]/, '_').$downcase()
+    dt
+      a.co(id='callout_' + chaptitle + '_' + refnum,href='co_' + chaptitle + '_' + refnum)
+        img(src='callouts/#{num}.png')
+    dd
+      p
+        !{item.$text()}
+      if item['$blocks?']()
+        !{item.$content()}

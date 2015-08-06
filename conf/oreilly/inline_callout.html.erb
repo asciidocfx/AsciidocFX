@@ -1,0 +1,8 @@
+<%#encoding:UTF-8%><%  
+if @document.doctitle
+	chaptitle = @document.doctitle
+else
+	chaptitle = parent.parent
+end
+chaptitle = chaptitle.to_s.gsub(/[^\w]/, '_').downcase
+%><a class="co" id="<%= %(co_#{chaptitle}_#{@id}) %>" href="<%= %(#callout_#{chaptitle}_#{@id}) %>"><img src="<%= %(callouts/#{@text}.png) %>" alt="<%= @text %>"/></a>

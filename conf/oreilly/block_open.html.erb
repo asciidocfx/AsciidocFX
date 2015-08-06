@@ -1,0 +1,24 @@
+<%#encoding:UTF-8%>
+<%
+   if @style == 'partintro'
+%>
+    <div<%= @id && %( id="#{@id}") %> class="<%= [(@style == 'open' ? nil : @style), role].compact * ' ' %>">
+        <%
+           if title? %>
+            <h2><%= title %></h2>
+        <%
+           end %><%=
+        content %>
+    </div>
+<%
+   else %>
+    <div<%= @id && %( id="#{@id}") %> class="<%= ['openblock', (@style == 'open' ? nil : @style), role].compact * ' ' %>">
+        <%
+           if title? %>
+            <h2><%= title %></h2>
+        <%
+           end %><%=
+        content %>
+    </div>
+<%
+   end %>

@@ -1,0 +1,11 @@
+<%#encoding:UTF-8%>
+<figure<%= @id && %( id="#{@id}") %><%= attr?('role') ? %( class="#{attr 'role'}") : nil %>>
+    <img src="<%= image_uri(attr 'target') %>"<%= attr?('alt') ? %( alt="#{attr 'alt'}") : nil %><%= attr?('width') ? %( width="#{attr 'width'}") : nil %>/>
+    <% if title? %>
+        <figcaption><%= title %></figcaption>
+    <%
+       else %>
+        <figcaption/>
+    <%
+       end %>
+</figure>

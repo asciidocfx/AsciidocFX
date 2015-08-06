@@ -1,0 +1,13 @@
+if node.$title() != false
+  if node.$attr('style') == 'bibliography'
+    p(class='references-title')
+      !{node.$title()}
+  else
+    !{node.$title()}
+ul(id=node.$id(),class=[node.$attr('style') == 'bibliography' ? node.$references() : '',node.$role()])
+  each item in node.$content()
+    li
+      p
+        !{item.$text()}
+      if item['$blocks?']()
+        !{node.$content()}

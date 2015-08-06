@@ -1,0 +1,27 @@
+- var level = node.$level()
+- var htag = 'h' + level
+- var htagminus1 = 'h' + level -1
+- var sect_type = 'sec' + level -1
+if level == 0
+    div(data-type='part',id=node.$id(),class=node.$attr('role',''))
+        h1 !{node.$title()}
+        !{node.$content()}
+else if level == 1
+    - var data_type = node.$sectname() == 'preface' && node.$title() == 'Foreword' ? 'foreword' : false
+    - data_type = !data_type && node.$sectname() == 'preface' && node.$title() != 'Foreword' ? 'preface' : false
+    - data_type = !data_type && node.$sectname() == 'introduction' ? 'introduction' : false
+    - data_type = !data_type && node.$sectname() == 'appendix' && node.$role() == 'bibliography' ? 'bibliography' : false
+    - data_type = !data_type && node.$sectname() == 'appendix' && node.$role() == 'afterword' ? 'afterword' : false
+    - data_type = !data_type && node.$sectname() == 'appendix' && node.$role() != 'bibliography' ? 'appendix' : false
+    - data_type = !data_type && node.$title() == 'Glossary' ? 'glossary' : false
+    - data_type = !data_type && node.$title() == 'Colophon' ? 'colophon' : false
+    - data_type = !data_type && node.$title() == 'Dedication' ? 'dedication' : false
+    - data_type = !data_type && node.$title() == 'Index' ? 'index' : false
+    - data_type = !data_type ? 'chapter' : false
+    section(data-type=data_type,id=node.$id(),class=node.$role())
+        #{htag} !{node.$title()}
+        !{node.$content()}
+else if level > 1
+    section(data-type=sect_type,id=node.$id(),class=node.$role())
+        #{htagminus1} !{node.$title()}
+        !{node.$content()}

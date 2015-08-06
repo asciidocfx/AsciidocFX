@@ -1,0 +1,5 @@
+div(id=node.$id(),class=[node.$style() == 'partintro' ? '' : 'openblock',node.$style() == 'open' ? '' : node.$style(),node.$role()])
+  if node.$attr('title') != false
+    h2
+      !{node.$title()}
+  !{node.$content()}

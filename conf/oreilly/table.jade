@@ -1,0 +1,25 @@
+table(id=node.$id(),class=node.$attr('role'),style="width" + node.$attr('width',''))
+  if node.$title() != false
+    caption(class=node.$attr('captionrole',''))
+      !{node.$title()}
+  if node.$attr('rowcount') >= 0
+    - tblsecs =["$head","$foot","$body"]
+    each tblsec in tblsecs
+      - var tag = "t" + tblsec.substr(1)
+      if node.$rows()[tblsec]().length != 0
+        #{tag}
+          each row in node.$rows()[tblsec]()
+            tr
+              each cell,index in row
+                - show_colpcwidth = (tblsec == '$head' && index == 0 && row[0].$attr('colpcwidth',false))
+                #{tblsec == "$head" ? "th" : "td"}(width= show_colpcwidth ? row[0].$attr('colpcwidth','') : '',colspan=cell.$colspan(),rowspan=cell.$rowspan())
+                  if tblsec == '$head'
+                    !{cell.$text()}
+                  else
+                    if cell.$attr('style') == 'asciidoc'
+                      div
+                        !{cell.$content()}
+                    else
+                      each text in cell.$content()
+                        p(class=node.$attr('entryrole',''))
+                          !{text}

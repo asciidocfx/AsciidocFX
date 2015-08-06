@@ -1,0 +1,7 @@
+figure(id=node.$id(),class=node.$attr('role',''))
+  img(src=node.$image_uri(node.$attr('target')),alt=node.$attr('alt',''),width=node.$attr('width',''))
+  if node.$title() != false
+    figcaption
+      !{node.$title()}
+  else
+    figcaption

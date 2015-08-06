@@ -62,7 +62,7 @@ public class HtmlPane extends ViewPanel {
 
     public String getTemplate(String templateName, String templateDir) throws IOException {
 
-        Stream<Path> slide = Files.find(controller.getConfigPath().resolve("slide/templates").resolve(templateDir), Integer.MAX_VALUE, (path, basicFileAttributes) -> path.toString().contains(templateName));
+        Stream<Path> slide = Files.find(controller.getConfigPath().resolve(templateDir), Integer.MAX_VALUE, (path, basicFileAttributes) -> path.toString().contains(templateName));
 
         Optional<Path> first = slide.findFirst();
 

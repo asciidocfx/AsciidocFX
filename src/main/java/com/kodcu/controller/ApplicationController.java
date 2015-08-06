@@ -1822,14 +1822,14 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
                         setIncludeAsciidocResource(false);
 
-                        if (result.isBackend("html5")) {
-                            lastRendered.setValue(result.getRendered());
-                            previewTab.setContent(htmlPane);
-                        }
+                            if (result.isBackend("html5") || result.isBackend("oreilly")) {
+                                lastRendered.setValue(result.getRendered());
+                                previewTab.setContent(htmlPane);
+                            }
 
-                        if (result.isBackend("revealjs") || result.isBackend("deckjs")) {
-                            slidePane.setBackend(result.getBackend());
-                            slideConverter.convert(result.getRendered());
+                            if (result.isBackend("revealjs") || result.isBackend("deckjs")) {
+                                slidePane.setBackend(result.getBackend());
+                                slideConverter.convert(result.getRendered());
                         }
 
                     } else if ("html".equalsIgnoreCase(mode)) {

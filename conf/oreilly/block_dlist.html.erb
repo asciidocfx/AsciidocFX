@@ -1,0 +1,52 @@
+<%#encoding:UTF-8%>
+<% if attr? 'style', 'glossary' %>
+    <dl data-type="glossary">
+        <%
+           items.each do |terms, dd|
+             [*terms].each do |dt| %>
+                <dt data-type="glossterm"<%= attr?('id') ? %( id="#{attr 'id'}") : nil %>><%= dt.text %></dt>
+            <%
+               end
+               unless dd.nil? %>
+                <dd data-type="glossdef">
+                    <%
+                       if dd.text? %>
+                        <p><%= dd.text %></p>
+                    <%
+                       end
+                       if dd.blocks? %>
+                        <%= dd.content %>
+                    <%
+                       end %>
+                </dd>
+            <%
+               end
+               end %>
+    </dl>
+<%
+   else %>
+    <dl<%= attr?('role') ? %( class="#{attr 'role'}") : nil %>>
+        <%
+           items.each do |terms, dd|
+             [*terms].each do |dt| %>
+                <dt<%= attr?('style') ? %( class="#{attr 'style'}") : nil %>><%= dt.text %></dt>
+            <%
+               end
+               unless dd.nil? %>
+                <dd>
+                    <%
+                       if dd.text? %>
+                        <p><%= dd.text %></p>
+                    <%
+                       end
+                       if dd.blocks? %>
+                        <%= dd.content %>
+                    <%
+                       end %>
+                </dd>
+            <%
+               end
+               end %>
+    </dl>
+<%
+   end %>

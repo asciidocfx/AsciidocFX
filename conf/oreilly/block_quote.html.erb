@@ -1,0 +1,10 @@
+<%#encoding:UTF-8%>
+<blockquote<%= attr?('role') ? %( class="#{attr 'role'}") : nil %>><%= content.chomp %>
+    <%
+       if attr?(:attribution) or attr?(:citetitle) %>
+        <p data-type="attribution">
+            <% if attr? :attribution %><%= "#{attr :attribution}" %>
+            <% end %>
+            <% if attr? :citetitle %>, <cite><%= attr :citetitle %></cite>
+            <% end %></p>
+    <% end %></blockquote>

@@ -1,0 +1,11 @@
+<%#encoding:UTF-8%>
+<ol<%= @id && %( id="#{@id}") %><%= attr?('role') ? %( class="#{attr 'role'}") : nil %><%= attr?('start') ? %( start="#{attr 'start'}") : nil %>>
+    <% content.each do |item| %>
+        <li>
+            <p><%= item.text %></p>
+            <% if item.blocks? %>
+                <%= item.content %>
+            <% end %>
+        </li>
+    <% end %>
+</ol>

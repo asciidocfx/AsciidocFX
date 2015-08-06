@@ -1,0 +1,5 @@
+<%#encoding:UTF-8%>
+<aside<%= @id && %( id="#{@id}") %> data-type="sidebar"<%= attr?('role') ? %( class="#{attr 'role'}") : nil %>>
+    <h5><%= title %></h5><%=
+    content %>
+</aside>

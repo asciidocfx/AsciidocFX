@@ -1,0 +1,33 @@
+<%#encoding:UTF-8%><% terms = attr :terms
+if terms
+  # From terms, Get only supported name attrs see, seealso, sortas, primary-sortas, secondary-sortas, tertiary-sortas, id, range, startref
+  named_attrs = terms.select {|t| t =~ /^(see(also)?|(primary-|secondary-|tertiary-)?sortas|id|range|startref)=/} 
+
+  # For easy access, map to hash
+  attr_map = Hash[named_attrs.map {|a| [a.split('=', 2)[0], a.split('=', 2)[1]]}] 
+
+  # Grab positional attrs (primary, secondary, tertiary), which we will assume all precede the first named attr
+  if terms.index(named_attrs[0]) == nil # No named attrs; use full terms list
+    positional_attrs = terms
+  elsif terms.index(named_attrs[0]) > 0 # Get all the positional attrs before first named attr index
+    positional_attrs = terms[0..terms.index(named_attrs[0]) - 1]
+  else # No positional attrs? Pass
+    positional_attrs = []
+  end
+  # Add positional attrs to attr_map; Values will be nil if terms not present
+  attr_map["primary"] = positional_attrs.shift
+  attr_map["secondary"] = positional_attrs.shift
+  attr_map["tertiary"] = positional_attrs.shift
+
+  # Preserve legacy Atlas v1 handling using plain "sortas" attribute, where sortas gets applied to
+  # deepest-level term that is present
+  if attr_map["sortas"] and not(attr_map["primary-sortas"] or attr_map["secondary-sortas"] or attr_map["tertiary-sortas"])
+    case
+    when attr_map["tertiary"]
+      attr_map["tertiary-sortas"] = attr_map["sortas"]
+    when attr_map["secondary"]
+      attr_map["secondary-sortas"] = attr_map["sortas"]
+    else
+      attr_map["primary-sortas"] = attr_map["sortas"]
+    end 
+  end %><a data-type="indexterm"<%= attr_map["id"] ? %( id="#{attr_map["id"]}") : nil %><%= attr_map["primary"] ? %( data-primary="#{attr_map["primary"]}") : nil %><%= attr_map["secondary"] ? %( data-secondary="#{attr_map["secondary"]}") : nil %><%= attr_map["tertiary"] ? %( data-tertiary="#{attr_map["tertiary"]}") : nil %><%= attr_map["see"] ? %( data-see="#{attr_map["see"]}") : nil %><%= attr_map["seealso"] ? %( data-seealso="#{attr_map["seealso"]}") : nil %><%= attr_map["primary-sortas"] ? %( data-primary-sortas="#{attr_map["primary-sortas"]}") : nil %><%= attr_map["secondary-sortas"] ? %( data-secondary-sortas="#{attr_map["secondary-sortas"]}") : nil %><%= attr_map["tertiary-sortas"] ? %( data-tertiary-sortas="#{attr_map["tertiary-sortas"]}") : nil %><%= attr_map["startref"] ? %( data-startref="#{attr_map["startref"]}") : nil %>/><% end %>

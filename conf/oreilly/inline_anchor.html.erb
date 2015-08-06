@@ -1,0 +1,26 @@
+<%#encoding:UTF-8%>
+<%
+   case @type
+     when :xref
+       refid = (attr :refid) || @target
+%>
+    <% if text.nil? %><%= %(<a data-type="xref" href="#{@target}"/>) %>
+    <%
+       else %><%= %(<a href="#{@target}">#{@text || @document.references[:ids].fetch(refid, %[[#{refid}]]).tr_s("\n", ' ')}</a>) %>
+    <% end %>
+<%
+   when :ref %><%= %(<a id="#{@target}"></a>) %>
+<%
+   when :bibref %><%= %(<a id="#{@target}">[#{@target}]</a>) %>
+<%
+   else %>
+    <%
+       if text != target %><%=
+    %(<a href="#{@target}"#{role? ? %[ class="#{role}"] : nil}#{(attr? :window) ? %[ target="#{attr :window}"] : nil}>#{@text}</a>) %>
+    <%
+       else %><%=
+    %(<a href="#{@target}"#{role? ? %[ class="#{role}"] : nil}#{(attr? :window) ? %[ target="#{attr :window}"] : nil}><em class="hyperlink">#{@text}</em></a>) %>
+    <%
+       end %>
+<%
+   end %>

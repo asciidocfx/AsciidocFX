@@ -1,0 +1,8 @@
+- var chaptitle = ''
+if node.$document().$doctitle() != false
+  - chaptitle = node.$document().$doctitle()
+else
+  - chaptitle = node.$parent().$parent()
+- chaptitle = chaptitle.$to_s().$gsub(/[^\w]/, '_').$downcase()
+a.co(id='co_' + chaptitle + '_' + node.$id(),href='callout_' + chaptitle + '_' + node.$id())
+  img(src='callouts/#{node.$text()}.png',alt=node.$text())

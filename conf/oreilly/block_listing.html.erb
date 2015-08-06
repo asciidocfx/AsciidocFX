@@ -1,0 +1,2 @@
+<%#encoding:UTF-8%>
+<pre<%= @id && %( id="#{@id}") %> data-type="programlisting"<%= attr?('language') ? %( data-code-language="#{attr 'language'}") : nil %><%= attr?('role') ? %( class="#{attr 'role'}") : nil %><%= attr?('data-executable') ? %( data-executable="#{attr 'data-executable'}") : nil %>><%= content %></pre>

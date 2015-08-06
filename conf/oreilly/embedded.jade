@@ -1,0 +1,4 @@
+if !node.$notitle() && node['$has_header?']()
+  h1(id=node.$id())
+    !{node.$header().$title()}
+  !{node.$content()}

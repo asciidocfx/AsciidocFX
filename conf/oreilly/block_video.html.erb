@@ -1,0 +1,5 @@
+<%#encoding:UTF-8%>
+<video<%= @id && %( id="#{@id}") %><%= attr?('role') ? %( class="#{attr 'role'}") : nil %><%= attr?('width') ? %( width="#{attr 'width'}") : nil %><%= attr?('height') ? %( height="#{attr 'height'}") : nil %><%= attr?('options') ? %( controls="#{attr 'options'}") : nil %><%= attr?('poster') ? %( poster="#{attr 'poster'}") : nil %>>
+    <source src="<%= media_uri(attr 'target') %>"/>
+    Sorry, the &lt;video&gt; element is not supported in your reading system.
+</video>

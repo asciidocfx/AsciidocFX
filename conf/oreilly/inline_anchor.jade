@@ -1,0 +1,20 @@
+if node.$type() == 'xref'
+  - refid = node.$attr('refid') || node.$target()
+  if node.$text()['$nil?']()
+    a(data-type='xref',href=node.$target())
+  else
+    a(href=node.$target())
+      !{node.$text() || node.$document().$references()['$[]']("ids").$fetch(self.$refid(), "[" + (self.$refid()) + "]").$tr_s("\n", " ")}
+else if node.$type() == 'ref'
+  a(id=node.$target())
+else if node.$type() == 'bibref'
+  a(id=node.$target())
+    - bibref_text = '['+ node.$target() + ']'
+    !{bibref_text}
+else
+ a(href=node.$target(),role=node.$role(),target=node.$attr('window',''))
+   if node.$text() != node.$target()
+     !{node.$text()}
+   else
+     em.hyperlink
+       !{node.$text()}

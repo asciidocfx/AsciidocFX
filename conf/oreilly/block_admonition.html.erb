@@ -1,0 +1,10 @@
+<%#encoding:UTF-8%>
+<div data-type="<%= attr 'name' %>"<%= attr?('role') ? %( class="#{attr 'role'}") : nil %><%= attr?('id') ? %( id="#{attr 'id'}") : nil %>>
+    <%= title? ? %(<h1>#{title}</h1>) : nil %>
+    <% if @content_model.to_s == 'compound' %><%=
+    content.chomp %>
+    <% else %>
+        <p><%= content %></p>
+    <%
+       end %>
+</div>

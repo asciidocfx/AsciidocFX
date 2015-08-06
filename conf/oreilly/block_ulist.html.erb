@@ -1,0 +1,26 @@
+<%#encoding:UTF-8%>
+<% if title?
+%>
+    <% if attr?('style', 'bibliography') %><p class="references-title"><%= title %></p>
+    <%
+       else %><p><%= title %></p>
+    <%
+       end %>
+<% end %>
+<ul<%= @id && %( id="#{@id}") %>
+<%
+   if attr?('style', 'bibliography') and role %> class="<%= attr?('style', 'bibliography') ? %(references) : nil %><%= attr?('role') ? %( #{role}) : nil %>"
+<%
+   elsif attr?('style', 'bibliography') %> class="<%= attr?('style', 'bibliography') ? %(references) : nil %>"
+<%
+   else %><%= attr?('role') ? %( class="#{attr 'role'}") : nil %>
+<% end %>>
+    <% content.each do |item| %>
+        <li>
+            <p><%= item.text %></p>
+            <% if item.blocks? %>
+                <%= item.content %>
+            <% end %>
+        </li>
+    <% end
+    %></ul>

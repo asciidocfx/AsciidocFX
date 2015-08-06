@@ -1,0 +1,8 @@
+blockquote(class=node.$attr('role',''))
+  !{node.$content().$chomp()}
+  if node.$attr('attribution',false) || node.$attr('citetitle',false)
+    p(data-type='attribution')
+      if node.$attr('attribution',false)
+        !{node.$attr('attribution')}
+      if node.$attr('citetitle',false)
+        !{node.$attr('citetitle')}

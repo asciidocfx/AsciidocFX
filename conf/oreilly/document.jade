@@ -1,0 +1,7 @@
+if node.$level() == 1 && node.$role() == 'dedication'
+    section(data-type='dedication',id=node.$id())
+      - htag = 'h' + node.$level()
+      #{htag}
+        !{node.$title()}
+      !{node.$content()}
+!{node.$content()}

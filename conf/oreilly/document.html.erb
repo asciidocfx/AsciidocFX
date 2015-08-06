@@ -1,0 +1,9 @@
+<%#encoding:UTF-8%>
+<% if @level == 1 && @role == 'dedication' %>
+    <section data-type="dedication"<%= @id && %( id="#{@id}") %>>
+        <%= %(<h#{@level}) %>><%= title %><%= %(</h#{@level}>) %>
+
+        <%= content %>
+    </section>
+<% end %>
+<%= content %>

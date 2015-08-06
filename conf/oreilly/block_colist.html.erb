@@ -1,0 +1,28 @@
+<%#encoding:UTF-8%>
+<dl class="calloutlist<%= attr?('role') ? %( #{attr 'role'}) : nil %>">
+    <% content.each_with_index do |item, i|
+      num = i + 1
+      if @document.callouts.current_list[i] != nil
+        refnum = @document.callouts.current_list[i][:id]
+      else
+        refnum = ""
+      end
+      if @document.doctitle
+        chaptitle = @document.doctitle
+      else
+        chaptitle = parent
+      end
+      chaptitle = chaptitle.to_s.gsub(/[^\w]/, '_').downcase
+    %>
+        <dt>
+            <a class="co" id="<%= %(callout_#{chaptitle}_#{refnum}) %>" href="<%= %(#co_#{chaptitle}_#{refnum}) %>">
+                <img src="<%= %(callouts/#{num}.png) %>" alt="<%= num %>"/>
+            </a>
+        </dt>
+        <dd>
+            <p><%= item.text %></p>
+            <% if item.blocks? %>
+                <%= item.content %>
+            <% end %>
+        </dd>
+    <% end %></dl>

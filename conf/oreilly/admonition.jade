@@ -1,0 +1,7 @@
+div(data-type=node.$attr('name'),class=node.$attr('role',''),id=node.$attr('id',''))
+    h1
+       !{node.$title()}
+    if node.$content_model().$to_s() == 'compound'
+        !{node.$content().$chomp()}
+    else
+        !{node.$content()}

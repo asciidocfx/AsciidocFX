@@ -1,0 +1,8 @@
+- idx = node.$attr('index')
+if node.$type() == 'xref'
+  a(data-type='footnoteref',href=node.$target())
+    sup
+      !{node.$document().$attr('footnote-number')}
+else
+  span(data-type='footnote',id=node.$id())
+    !{node.$text()}

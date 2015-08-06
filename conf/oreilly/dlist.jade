@@ -1,0 +1,24 @@
+if node.$attr('style') == 'glossary'
+    dl(data-type='glossary')
+      each terms,dd in node.$items()
+        each dt in [].$concat(terms)
+          dt(data-type='glossterm',id=node.$attr('id',''))
+            !{dt.$text()}
+        unless dd['$nil?']()
+          dd(data-type='glossdef')
+            if dd['$text?']()
+              !{dd.$text()}
+            if dd['$blocks?']()
+              !{node.$content()}
+else
+   dl(class=node.$attr('role',''))
+     each terms,dd in node.$items()
+         each dt in [].$concat(terms)
+           dt(class=node.$attr('style',''))
+            !{dt.$text()}
+         unless dd['$nil?']()
+           dd
+             if dd['$text?']()
+               !{dd.$text()}
+             if dd['$blocks?']()
+               !{dd.$content()}

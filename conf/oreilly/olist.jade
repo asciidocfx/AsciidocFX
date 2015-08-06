@@ -1,0 +1,7 @@
+ol(id=node.$id(),class=node.$attr('role',''),start=node.$attr('start',''))
+  each item in node.$content()
+    li
+      p
+        !{item.$text()}
+        if item['$blocks?']()
+          !{item.$content()}
