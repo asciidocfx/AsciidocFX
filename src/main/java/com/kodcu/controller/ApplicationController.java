@@ -1117,6 +1117,9 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     @WebkitCall(from = "asciidoctor-image-size-info")
     public JSObject getImageInfo(String path, JSObject info) {
 
+        if (path.startsWith("/"))
+            path = path.substring(1);
+
         Path parent = null;
 
         try {
