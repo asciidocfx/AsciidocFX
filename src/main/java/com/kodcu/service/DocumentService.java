@@ -2,6 +2,7 @@ package com.kodcu.service;
 
 import com.kodcu.component.EditorPane;
 import com.kodcu.component.MyTab;
+import com.kodcu.config.StoredConfigBean;
 import com.kodcu.controller.ApplicationController;
 import com.kodcu.other.Current;
 import com.kodcu.other.IOHelper;
@@ -37,17 +38,19 @@ public class DocumentService {
     private final EditorService editorService;
     private final TabService tabService;
     private final Current current;
+    private final StoredConfigBean storedConfigBean;
 
 
     @Autowired
     public DocumentService(DirectoryService directoryService, ApplicationController controller, WebviewService webviewService,
-                           EditorService editorService, TabService tabService, Current current) {
+                           EditorService editorService, TabService tabService, Current current, StoredConfigBean storedConfigBean) {
         this.directoryService = directoryService;
         this.controller = controller;
         this.webviewService = webviewService;
         this.editorService = editorService;
         this.tabService = tabService;
         this.current = current;
+        this.storedConfigBean = storedConfigBean;
 
         webviewService.setDocumentService(this);
     }
@@ -66,7 +69,7 @@ public class DocumentService {
             return;
 
         current.setCurrentTabText(currentPath.getFileName().toString());
-        ObservableList<String> recentFiles = controller.getRecentFilesList();
+        ObservableList<String> recentFiles = storedConfigBean.getRecentFiles();
         recentFiles.remove(currentPath.toString());
         recentFiles.add(0, currentPath.toString());
 
@@ -88,12 +91,6 @@ public class DocumentService {
                 JSObject window = editorPane.getWindow();
                 window.setMember("afx", controller);
                 window.call("updateOptions", new Object[]{});
-                Map<String, String> shortCuts = controller.getShortCuts();
-                Set<String> keySet = shortCuts.keySet();
-                for (String key : keySet) {
-                    window.call("addNewCommand", new Object[]{key, shortCuts.get(key)});
-                }
-
                 window.call("setInitialized");
 
                 String finalContent = content;
@@ -132,8 +129,8 @@ public class DocumentService {
         if (chosenFiles != null) {
             chosenFiles.stream().map(e -> e.toPath()).forEach(directoryService.getOpenFileConsumer()::accept);
             chosenFiles.stream()
-                    .map(File::toString).filter(file -> !controller.getRecentFilesList().contains(file))
-                    .forEach(controller.getRecentFilesList()::addAll);
+                    .map(File::toString).filter(file -> ! storedConfigBean.getRecentFiles().contains(file))
+                    .forEach(storedConfigBean.getRecentFiles()::addAll);
             directoryService.setInitialDirectory(Optional.ofNullable(chosenFiles.get(0)));
         }
     }

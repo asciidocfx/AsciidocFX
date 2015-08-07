@@ -20,17 +20,19 @@ public class ConfigurationService {
     private final OdfConfigBean odfConfigBean;
     private final DocbookConfigBean docbookConfigBean;
     private final ApplicationController controller;
+    private final StoredConfigBean storedConfigBean;
     private final Accordion configAccordion = new Accordion();
     private final Tab mockTab = new PreviewTab("Editor Settings");
 
     @Autowired
-    public ConfigurationService(EditorConfigBean editorConfigBean, PreviewConfigBean previewConfigBean, HtmlConfigBean htmlConfigBean, OdfConfigBean odfConfigBean, DocbookConfigBean docbookConfigBean, ApplicationController controller) {
+    public ConfigurationService(EditorConfigBean editorConfigBean, PreviewConfigBean previewConfigBean, HtmlConfigBean htmlConfigBean, OdfConfigBean odfConfigBean, DocbookConfigBean docbookConfigBean, ApplicationController controller, StoredConfigBean storedConfigBean) {
         this.editorConfigBean = editorConfigBean;
         this.previewConfigBean = previewConfigBean;
         this.htmlConfigBean = htmlConfigBean;
         this.odfConfigBean = odfConfigBean;
         this.docbookConfigBean = docbookConfigBean;
         this.controller = controller;
+        this.storedConfigBean = storedConfigBean;
     }
 
     public void loadConfigurations() {
@@ -41,6 +43,7 @@ public class ConfigurationService {
         VBox odfConfigForm = odfConfigBean.createForm();
         VBox docbookConfigForm = docbookConfigBean.createForm();
 
+        storedConfigBean.load();
         editorConfigBean.load();
         previewConfigBean.load();
         htmlConfigBean.load();

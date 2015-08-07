@@ -89,10 +89,7 @@ public class MobiConverter implements DocumentConverter<String> {
                         indikatorService.stopProgressBar();
                         logger.debug("Mobi conversion ended");
 
-                        threadService.runActionLater(() -> {
-                            asciiDocController.getRecentFilesList().remove(mobiPath.toString());
-                            asciiDocController.getRecentFilesList().add(0, mobiPath.toString());
-                        });
+                        asciiDocController.addRemoveRecentList(mobiPath);
 
                     } catch (Exception e) {
                         logger.error("Problem occured while converting to Mobi", e);

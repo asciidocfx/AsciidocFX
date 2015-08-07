@@ -113,10 +113,7 @@ public abstract class AbstractPdfConverter implements DocumentConverter<String> 
                     indikatorService.stopProgressBar();
                     logger.debug("PDF conversion ended");
 
-                    threadService.runActionLater(() -> {
-                        asciiDocController.getRecentFilesList().remove(pdfPath.toString());
-                        asciiDocController.getRecentFilesList().add(0, pdfPath.toString());
-                    });
+                    asciiDocController.addRemoveRecentList(pdfPath);
                 }
             });
         });

@@ -118,10 +118,7 @@ public class ODFConverter implements Traversable {
     private void saveOdtDocument() {
         try {
             odtDocument.save(odtFilePath.toString());
-            threadService.runActionLater(() -> {
-                controller.getRecentFilesList().remove(odtFilePath.toString());
-                controller.getRecentFilesList().add(0, odtFilePath.toString());
-            });
+            controller.addRemoveRecentList(odtFilePath);
         } catch (Exception e) {
             logger.error("Problem occured while saving OdtDocument", e);
         } finally {

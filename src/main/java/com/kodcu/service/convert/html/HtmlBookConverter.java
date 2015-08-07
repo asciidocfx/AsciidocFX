@@ -83,10 +83,7 @@ public class HtmlBookConverter implements Traversable,DocumentConverter<String> 
 
                     IOHelper.writeToFile(htmlBookPath, rendered, CREATE, TRUNCATE_EXISTING);
 
-                    threadService.runActionLater(() -> {
-                        controller.getRecentFilesList().remove(htmlBookPath.toString());
-                        controller.getRecentFilesList().add(0, htmlBookPath.toString());
-                    });
+                    controller.addRemoveRecentList(htmlBookPath);
 
                     indikatorService.stopProgressBar();
                     logger.debug("HTML conversion ended");

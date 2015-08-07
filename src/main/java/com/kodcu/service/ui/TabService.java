@@ -3,6 +3,7 @@ package com.kodcu.service.ui;
 import com.kodcu.component.EditorPane;
 import com.kodcu.component.ImageTab;
 import com.kodcu.component.MyTab;
+import com.kodcu.config.StoredConfigBean;
 import com.kodcu.controller.ApplicationController;
 import com.kodcu.other.Current;
 import com.kodcu.other.IOHelper;
@@ -48,6 +49,7 @@ public class TabService {
     private final ThreadService threadService;
     private final Current current;
     private final DirectoryService directoryService;
+    private final StoredConfigBean storedConfigBean;
 
     private ObservableList<Optional<Path>> closedPaths = FXCollections.observableArrayList();
 
@@ -55,7 +57,7 @@ public class TabService {
     @Autowired
     public TabService(final ApplicationController controller, final WebviewService webviewService, final EditorService editorService,
                       final PathResolverService pathResolver, final ThreadService threadService, final Current current,
-                      final DirectoryService directoryService) {
+                      final DirectoryService directoryService, StoredConfigBean storedConfigBean) {
         this.controller = controller;
         this.webviewService = webviewService;
         this.editorService = editorService;
@@ -63,13 +65,13 @@ public class TabService {
         this.threadService = threadService;
         this.current = current;
         this.directoryService = directoryService;
+        this.storedConfigBean = storedConfigBean;
 
         final Consumer<Path> openFileConsumer = path -> {
             if (Files.isDirectory(path)) {
                 if (path.equals(directoryService.workingDirectory())) {
                     directoryService.changeWorkigDir(path.getParent());
-                }
-                else{
+                } else {
                     directoryService.changeWorkigDir(path);
                 }
             } else if (pathResolver.isImage(path)) {
@@ -99,9 +101,10 @@ public class TabService {
 
     public void addTab(Path path, Runnable... runnables) {
 
-        ObservableList<String> recentFiles = controller.getRecentFilesList();
+        ObservableList<String> recentFiles = storedConfigBean.getRecentFiles();
         if (Files.notExists(path)) {
             recentFiles.remove(path.toString());
+            logger.debug("Path {} not found in the filesystem", path);
             return;
         }
 
@@ -128,11 +131,7 @@ public class TabService {
                 JSObject window = editorPane.getWindow();
                 window.setMember("afx", controller);
                 window.call("updateOptions", new Object[]{});
-                Map<String, String> shortCuts = controller.getShortCuts();
-                Set<String> keySet = shortCuts.keySet();
-                for (String key : keySet) {
-                    window.call("addNewCommand", new Object[]{key, shortCuts.get(key)});
-                }
+
                 if (Objects.isNull(path))
                     return true;
                 threadService.runTaskLater(() -> {

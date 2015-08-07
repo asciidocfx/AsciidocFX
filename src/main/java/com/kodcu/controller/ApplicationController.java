@@ -4,7 +4,6 @@ package com.kodcu.controller;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.install4j.api.launcher.ApplicationLauncher;
-import com.kodcu.bean.RecentFiles;
 import com.kodcu.component.*;
 import com.kodcu.config.*;
 import com.kodcu.logging.MyLog;
@@ -12,7 +11,6 @@ import com.kodcu.logging.TableViewLogAppender;
 import com.kodcu.other.*;
 import com.kodcu.outline.Section;
 import com.kodcu.service.*;
-import com.kodcu.service.config.YamlService;
 import com.kodcu.service.convert.GitbookToAsciibookService;
 import com.kodcu.service.convert.docbook.DocBookConverter;
 import com.kodcu.service.convert.ebook.EpubConverter;
@@ -39,6 +37,7 @@ import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.beans.property.*;
 import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -234,9 +233,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     private MathJaxService mathJaxService;
 
     @Autowired
-    private YamlService yamlService;
-
-    @Autowired
     private WebviewService webviewService;
 
     @Autowired
@@ -310,7 +306,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     private AnchorPane asciidocTableAnchor;
     private Stage asciidocTableStage;
     private final Clipboard clipboard = Clipboard.getSystemClipboard();
-    private final ObservableList<String> recentFilesList = FXCollections.synchronizedObservableList(FXCollections.observableArrayList());
     private int port = 8080;
     private HostServicesDelegate hostServices;
     private Path configPath;
@@ -318,9 +313,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     private BooleanProperty previewPanelVisibility = new SimpleBooleanProperty(false);
 
     private final List<String> bookNames = Arrays.asList("book.asc", "book.txt", "book.asciidoc", "book.adoc", "book.ad");
-
-    private Map<String, String> shortCuts;
-    private RecentFiles recentFiles;
 
     private final ChangeListener<String> lastRenderedChangeListener = (observableValue, old, nev) -> {
 
@@ -360,10 +352,12 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     private PreviewTab previewTab;
 
     private Timeline progressBarTimeline = null;
-    private ObservableList<String> favoriteDirectories = FXCollections.observableArrayList();
 
     @Autowired
     private FileWatchService watchService;
+
+    @Autowired
+    private StoredConfigBean storedConfigBean;
 
     public void createAsciidocTable() {
         asciidocTableStage.showAndWait();
@@ -445,8 +439,9 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                         IOHelper.writeToFile(docbookPath, finalDocbook, CREATE, TRUNCATE_EXISTING, WRITE);
                     });
                     threadService.runActionLater(() -> {
-                        getRecentFilesList().remove(docbookPath.toString());
-                        getRecentFilesList().add(0, docbookPath.toString());
+                        ObservableList<String> recentFiles = storedConfigBean.getRecentFiles();
+                        recentFiles.remove(docbookPath.toString());
+                        recentFiles.add(0, docbookPath.toString());
                     });
                 };
 
@@ -468,7 +463,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     @WebkitCall(from = "asciidoctor-math")
     public void appendFormula(String formula, String imagesDir, String imageTarget) {
-        mathJaxService.appendFormula(formula,imagesDir, imageTarget);
+        mathJaxService.appendFormula(formula, imagesDir, imageTarget);
     }
 
     @WebkitCall(from = "mathjax.html")
@@ -734,46 +729,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                 this.externalBrowse();
         });
 
-
-        loadConfigurations();
-        loadRecentFileList();
-        loadShortCuts();
-
-
-        recentListView.setItems(recentFilesList);
-        recentFilesList.addListener((ListChangeListener<String>) c -> {
-            recentListView.visibleProperty().setValue(c.getList().size() > 0);
-            recentListView.getSelectionModel().selectFirst();
-        });
-        recentListView.setOnMouseClicked(event -> {
-            if (event.getClickCount() > 1) {
-                openRecentListFile(event);
-            }
-        });
-
-        if (favoriteDirectories.size() == 0) {
-            favoriteDirMenu.setVisible(false);
-        } else {
-            int size = 0;
-            for (String favoriteDirectory : favoriteDirectories) {
-                this.addItemToFavoriteDir(size++, favoriteDirectory);
-            }
-            this.includeClearAllToFavoriteDir();
-        }
-
-        favoriteDirectories.addListener((ListChangeListener<String>) c -> {
-            c.next();
-            favoriteDirMenu.setVisible(true);
-            int size = favoriteDirMenu.getItems().size();
-            boolean empty = size == 0;
-            List<? extends String> addedSubList = c.getAddedSubList();
-            for (String path : addedSubList) {
-                if (size > 0) this.addItemToFavoriteDir(size++ - 2, path);
-                else this.addItemToFavoriteDir(size++, path);
-            }
-            if (empty) this.includeClearAllToFavoriteDir();
-        });
-
         treeView.setCellFactory(param -> {
             TreeCell<Item> cell = new TextFieldTreeCell<Item>();
             cell.setOnDragDetected(event -> {
@@ -803,18 +758,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         });
 
         htmlPane.load(String.format("http://localhost:%d/preview.html", port));
-
-        /// Treeview
-        if (Objects.nonNull(recentFiles.getWorkingDirectory())) {
-            Path path = Paths.get(recentFiles.getWorkingDirectory());
-            Optional<Path> optional = Files.notExists(path) ? Optional.empty() : Optional.of(path);
-            directoryService.setWorkingDirectory(optional);
-        }
-
-
-        Path workDir = directoryService.getWorkingDirectory().orElse(userHome);
-        fileBrowser.browse(workDir);
-        watchService.registerWatcher(workDir);
 
         openFileTreeItem.setOnAction(event -> {
 
@@ -924,6 +867,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                 } else {
                     addToFavSeparator.setVisible(true);
                 }
+                ObservableList<String> favoriteDirectories = storedConfigBean.getFavoriteDirectories();
                 if (favoriteDirectories.size() > 0) {
                     boolean has = favoriteDirectories.contains(path.toString());
                     if (has) addToFavoriteDir.setDisable(true);
@@ -1112,6 +1056,54 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         editorConfigBean.fontSizeProperty().addListener((observable, oldValue, newValue) -> {
             applyForAllEditorPanes(editorPane -> editorPane.setFontSize(newValue.intValue()));
         });
+
+        ObservableList<String> recentFilesList = storedConfigBean.getRecentFiles();
+        ObservableList<String> favoriteDirectories = storedConfigBean.getFavoriteDirectories();
+
+        recentListView.setItems(recentFilesList);
+
+        recentFilesList.addListener((ListChangeListener<String>) c -> {
+            recentListView.visibleProperty().setValue(c.getList().size() > 0);
+            recentListView.getSelectionModel().selectFirst();
+        });
+        recentListView.setOnMouseClicked(event -> {
+            if (event.getClickCount() > 1) {
+                openRecentListFile(event);
+            }
+        });
+
+        if (favoriteDirectories.size() == 0) {
+            favoriteDirMenu.setVisible(false);
+        } else {
+            int size = 0;
+            for (String favoriteDirectory : favoriteDirectories) {
+                this.addItemToFavoriteDir(size++, favoriteDirectory);
+            }
+            this.includeClearAllToFavoriteDir();
+        }
+
+        favoriteDirectories.addListener((ListChangeListener<String>) c -> {
+            c.next();
+            favoriteDirMenu.setVisible(true);
+            int size = favoriteDirMenu.getItems().size();
+            boolean empty = size == 0;
+            List<? extends String> addedSubList = c.getAddedSubList();
+            for (String path : addedSubList) {
+                if (size > 0) this.addItemToFavoriteDir(size++ - 2, path);
+                else this.addItemToFavoriteDir(size++, path);
+            }
+            if (empty) this.includeClearAllToFavoriteDir();
+        });
+
+        storedConfigBean.workingDirectoryProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+                if (Objects.nonNull(newValue)) {
+                    directoryService.changeWorkigDir(Paths.get(newValue));
+                }
+            }
+        });
+
     }
 
     @WebkitCall(from = "asciidoctor-image-size-info")
@@ -1183,9 +1175,8 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                         boolean isDirectory = Files.isDirectory(path);
                         addToFavSeparator.setVisible(isDirectory);
                     } else addToFavSeparator.setVisible(false);
-                    favoriteDirectories.clear();
+                    storedConfigBean.getFavoriteDirectories().clear();
                     favoriteDirMenu.getItems().clear();
-                    recentFiles.getFavoriteDirectories().clear();
                     favoriteDirMenu.setVisible(false);
                     addToFavoriteDir.setDisable(false);
                 }));
@@ -1481,50 +1472,11 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     }
 
-    private void loadShortCuts() {
-        try {
-            String yamlC = IOHelper.readFile(configPath.resolve("shortcuts.yml"));
-
-            Yaml yaml = new Yaml();
-            this.shortCuts = yaml.loadAs(yamlC, Map.class);
-
-        } catch (Exception e) {
-            logger.error("Problem occured while loading shortcuts.yml file", e);
-        }
-    }
-
     private void openRecentListFile(Event event) {
         Path path = Paths.get(recentListView.getSelectionModel().getSelectedItem());
 
         directoryService.getOpenFileConsumer().accept(path);
 
-    }
-
-    private void loadConfigurations() {
-//        try {
-//            String yamlContent = IOHelper.readFile(configPath.resolve("config.yml"));
-//            Yaml yaml = new Yaml();
-//            config = yaml.loadAs(yamlContent, Config.class);
-//
-//        } catch (Exception e) {
-//            logger.error("Problem occured while loading config.yml file", e);
-//        }
-
-
-    }
-
-    private void loadRecentFileList() {
-
-        try {
-            String yamlContent = IOHelper.readFile(configPath.resolve("recentFiles.yml"));
-            Yaml yaml = new Yaml();
-            recentFiles = yaml.loadAs(yamlContent, RecentFiles.class);
-
-            recentFilesList.addAll(recentFiles.getFiles());
-            favoriteDirectories.addAll(recentFiles.getFavoriteDirectories());
-        } catch (Exception e) {
-            logger.error("Problem occured while loading recent file list", e);
-        }
     }
 
     public void externalBrowse() {
@@ -1679,7 +1631,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             for (ConfigurationBase configurationBean : configurationBeansAsMap.values()) {
                 configurationBean.save(event);
             }
-            yamlService.persist();
         } catch (Exception e) {
             logger.error("Error while closing app", e);
         }
@@ -2096,10 +2047,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         return lastRendered;
     }
 
-    public ObservableList<String> getRecentFilesList() {
-        return recentFilesList;
-    }
-
     public TabPane getTabPane() {
         return tabPane;
     }
@@ -2126,12 +2073,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     public Current getCurrent() {
         return current;
-    }
-
-    public Map<String, String> getShortCuts() {
-        if (Objects.isNull(shortCuts))
-            shortCuts = new HashMap<>();
-        return shortCuts;
     }
 
     @FXML
@@ -2364,10 +2305,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         });
     }*/
 
-    public RecentFiles getRecentFiles() {
-        return recentFiles;
-    }
-
     public void clearImageCache() {
         htmlPane.webEngine().executeScript("clearImageCache()");
     }
@@ -2450,10 +2387,10 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     public void addToFavoriteDir(ActionEvent actionEvent) {
         Path selectedTabPath = tabService.getSelectedTabPath();
         if (Files.isDirectory(selectedTabPath)) {
+            ObservableList<String> favoriteDirectories = storedConfigBean.getFavoriteDirectories();
             boolean has = favoriteDirectories.contains(selectedTabPath.toString());
             if (!has) {
                 favoriteDirectories.add(selectedTabPath.toString());
-                recentFiles.getFavoriteDirectories().add(selectedTabPath.toString());
             }
         }
     }
@@ -2465,5 +2402,15 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     @FXML
     public void showSettings() {
         configurationService.showConfig();
+    }
+
+    public void addRemoveRecentList(Path path) {
+        if (Objects.isNull(path))
+            return;
+
+        threadService.runActionLater(() -> {
+            storedConfigBean.getRecentFiles().remove(path.toString());
+            storedConfigBean.getRecentFiles().add(0,path.toString());
+        });
     }
 }

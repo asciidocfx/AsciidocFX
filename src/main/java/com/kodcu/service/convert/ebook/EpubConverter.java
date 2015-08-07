@@ -181,10 +181,7 @@ public class EpubConverter {
                             if (!isTemp) {
                                 indikatorService.stopProgressBar();
                                 logger.debug("Epub conversion ended");
-                                threadService.runActionLater(() -> {
-                                    asciiDocController.getRecentFilesList().remove(epubPath.toString());
-                                    asciiDocController.getRecentFilesList().add(0, epubPath.toString());
-                                });
+                                asciiDocController.addRemoveRecentList(epubPath);
                             }
 
                             completableFuture.complete(epubPath);

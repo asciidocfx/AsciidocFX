@@ -1,5 +1,6 @@
 package com.kodcu.service;
 
+import com.kodcu.config.StoredConfigBean;
 import com.kodcu.controller.ApplicationController;
 import com.kodcu.other.Current;
 import com.kodcu.service.ui.FileBrowseService;
@@ -26,6 +27,7 @@ public class DirectoryService {
     private final ApplicationController controller;
     private final FileBrowseService fileBrowser;
     private final Current current;
+    private final StoredConfigBean storedConfigBean;
 
     private Optional<Path> workingDirectory = Optional.of(Paths.get(System.getProperty("user.home")));
     private Optional<File> initialDirectory = Optional.empty();
@@ -37,10 +39,11 @@ public class DirectoryService {
 
 
     @Autowired
-    public DirectoryService(final ApplicationController controller, final FileBrowseService fileBrowser, final Current current, FileWatchService fileWatchService) {
+    public DirectoryService(final ApplicationController controller, final FileBrowseService fileBrowser, final Current current, StoredConfigBean storedConfigBean, FileWatchService fileWatchService) {
         this.controller = controller;
         this.fileBrowser = fileBrowser;
         this.current = current;
+        this.storedConfigBean = storedConfigBean;
         this.fileWatchService = fileWatchService;
 
         workingDirectorySupplier = () -> {
@@ -156,7 +159,7 @@ public class DirectoryService {
         DirectoryChooser directoryChooser = this.newDirectoryChooser("Select Working Directory");
         File selectedDir = directoryChooser.showDialog(null);
         if (Objects.nonNull(selectedDir)) {
-            controller.getRecentFiles().setWorkingDirectory(selectedDir.toString());
+            storedConfigBean.setWorkingDirectory(selectedDir.toString());
             this.setWorkingDirectory(Optional.of(selectedDir.toPath()));
             fileBrowser.browse(selectedDir.toPath());
             fileWatchService.registerWatcher(selectedDir.toPath());
@@ -172,7 +175,7 @@ public class DirectoryService {
         // it needs to invalidate file watchservice
 //        fileWatchService.invalidate();
 //
-        controller.getRecentFiles().setWorkingDirectory(path.toString());
+        storedConfigBean.setWorkingDirectory(path.toString());
         this.setWorkingDirectory(Optional.of(path));
         fileBrowser.browse(path);
         fileWatchService.registerWatcher(path);
