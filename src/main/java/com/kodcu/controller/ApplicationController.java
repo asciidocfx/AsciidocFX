@@ -771,7 +771,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                             return true;
                         return !Files.isDirectory(path);
                     })
-                    .forEach(directoryService.getOpenFileConsumer()::accept);
+                    .forEach(tabService::previewDocument);
         });
 
         deletePathItem.setOnAction(event -> {
@@ -836,10 +836,12 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             TreeItem<Item> selectedItem = treeView.getSelectionModel().getSelectedItem();
             if (Objects.isNull(selectedItem))
                 return;
+
+            event.consume();
             Path selectedPath = selectedItem.getValue().getPath();
             if (event.getButton() == MouseButton.PRIMARY)
                 if (event.getClickCount() == 2)
-                    directoryService.getOpenFileConsumer().accept(selectedPath);
+                    tabService.previewDocument(selectedPath);
         });
 
         treeView.getSelectionModel().getSelectedIndices().addListener((ListChangeListener<? super Integer>) p -> {
@@ -1474,9 +1476,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     private void openRecentListFile(Event event) {
         Path path = Paths.get(recentListView.getSelectionModel().getSelectedItem());
-
-        directoryService.getOpenFileConsumer().accept(path);
-
+        tabService.previewDocument(path);
     }
 
     public void externalBrowse() {

@@ -67,35 +67,6 @@ public class TabService {
         this.directoryService = directoryService;
         this.storedConfigBean = storedConfigBean;
 
-        final Consumer<Path> openFileConsumer = path -> {
-            if (Files.isDirectory(path)) {
-                if (path.equals(directoryService.workingDirectory())) {
-                    directoryService.changeWorkigDir(path.getParent());
-                } else {
-                    directoryService.changeWorkigDir(path);
-                }
-            } else if (pathResolver.isImage(path)) {
-                addImageTab(path);
-            } else if (pathResolver.isHTML(path) || pathResolver.isAsciidoc(path) || pathResolver.isMarkdown(path)) {
-                addTab(path);
-            } else if (pathResolver.isEpub(path)) {
-                controller.getHostServices()
-                        .showDocument(String.format("http://localhost:%d/epub/viewer?path=%s", controller.getPort(), path.toString()));
-            } else {
-                List<String> supportedModes = controller.getSupportedModes();
-                String extension = FilenameUtils.getExtension(path.toString());
-
-                if ("".equals(extension) || supportedModes.contains(extension)) {
-                    addTab(path);
-                    controller.hidePreviewPanel();
-                } else {
-                    controller.getHostServices()
-                            .showDocument(path.toUri().toString());
-                }
-            }
-        };
-        directoryService.setOpenFileConsumer(openFileConsumer);
-
     }
 
 
@@ -322,6 +293,40 @@ public class TabService {
 
 
         return tab;
+    }
+
+    public void previewDocument(Path path) {
+        if (Objects.isNull(path)) {
+            logger.error("Null path cannot be viewed");
+            return;
+        }
+
+        if (Files.isDirectory(path)) {
+            if (path.equals(directoryService.workingDirectory())) {
+                directoryService.changeWorkigDir(path.getParent());
+            } else {
+                directoryService.changeWorkigDir(path);
+            }
+        } else if (pathResolver.isImage(path)) {
+            addImageTab(path);
+        } else if (pathResolver.isHTML(path) || pathResolver.isAsciidoc(path) || pathResolver.isMarkdown(path)) {
+            addTab(path);
+        } else if (pathResolver.isEpub(path)) {
+            controller.getHostServices()
+                    .showDocument(String.format("http://localhost:%d/epub/viewer?path=%s", controller.getPort(), path.toString()));
+        } else {
+            List<String> supportedModes = controller.getSupportedModes();
+            String extension = FilenameUtils.getExtension(path.toString());
+
+            if ("".equals(extension) || supportedModes.contains(extension)) {
+                addTab(path);
+                controller.hidePreviewPanel();
+            } else {
+                controller.getHostServices()
+                        .showDocument(path.toUri().toString());
+            }
+        }
+
     }
 
     public void addImageTab(Path imagePath) {

@@ -127,7 +127,7 @@ public class DocumentService {
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Markdown", "*.md", "*.markdown", "*.txt", "*.*"));
         List<File> chosenFiles = fileChooser.showOpenMultipleDialog(controller.getStage());
         if (chosenFiles != null) {
-            chosenFiles.stream().map(e -> e.toPath()).forEach(directoryService.getOpenFileConsumer()::accept);
+            chosenFiles.stream().map(e -> e.toPath()).forEach(tabService::previewDocument);
             chosenFiles.stream()
                     .map(File::toString).filter(file -> ! storedConfigBean.getRecentFiles().contains(file))
                     .forEach(storedConfigBean.getRecentFiles()::addAll);

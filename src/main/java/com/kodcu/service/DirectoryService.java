@@ -4,8 +4,12 @@ import com.kodcu.config.StoredConfigBean;
 import com.kodcu.controller.ApplicationController;
 import com.kodcu.other.Current;
 import com.kodcu.service.ui.FileBrowseService;
+import com.kodcu.service.ui.TabService;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
+import org.apache.commons.io.FilenameUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -13,6 +17,7 @@ import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -27,22 +32,25 @@ public class DirectoryService {
     private final ApplicationController controller;
     private final FileBrowseService fileBrowser;
     private final Current current;
+    private final PathResolverService pathResolver;
     private final StoredConfigBean storedConfigBean;
+
+    private final Logger logger = LoggerFactory.getLogger(DirectoryService.class);
 
     private Optional<Path> workingDirectory = Optional.of(Paths.get(System.getProperty("user.home")));
     private Optional<File> initialDirectory = Optional.empty();
 
     private Supplier<Path> workingDirectorySupplier;
-    private Consumer<Path> openFileConsumer;
     private Supplier<Path> pathSaveSupplier;
     private final FileWatchService fileWatchService;
 
 
     @Autowired
-    public DirectoryService(final ApplicationController controller, final FileBrowseService fileBrowser, final Current current, StoredConfigBean storedConfigBean, FileWatchService fileWatchService) {
+    public DirectoryService(final ApplicationController controller, final FileBrowseService fileBrowser, final Current current, PathResolverService pathResolver, StoredConfigBean storedConfigBean, FileWatchService fileWatchService) {
         this.controller = controller;
         this.fileBrowser = fileBrowser;
         this.current = current;
+        this.pathResolver = pathResolver;
         this.storedConfigBean = storedConfigBean;
         this.fileWatchService = fileWatchService;
 
@@ -56,21 +64,6 @@ public class DirectoryService {
 
             return Objects.nonNull(file) ? file.toPath() : null;
         };
-
-//        openFileConsumer = path -> {
-//            if (Files.isDirectory(path)) {
-//                changeWorkigDir(path.equals(workingDirectory()) ? path.getParent() : path);
-//            } else if (pathResolver.isAsciidoc(path) || pathResolver.isMarkdown(path))
-//                tabService.addTab(path);
-//            else if (pathResolver.isImage(path))
-//                tabService.addImageTab(path);
-//            else if (pathResolver.isEpub(path))
-//                controller.getHostServices()
-//                .showDocument(String.format("http://localhost:%d/epub/viewer?path=%s", controller.getPort(), path.toString()));
-//            else
-//                controller.getHostServices()
-//                .showDocument(path.toUri().toString());
-//        };
 
         pathSaveSupplier = () -> {
             final FileChooser chooser = newFileChooser("Save Document");
@@ -121,14 +114,6 @@ public class DirectoryService {
 
     public void setWorkingDirectorySupplier(Supplier<Path> workingDirectorySupplier) {
         this.workingDirectorySupplier = workingDirectorySupplier;
-    }
-
-    public Consumer<Path> getOpenFileConsumer() {
-        return openFileConsumer;
-    }
-
-    public void setOpenFileConsumer(Consumer<Path> openFileConsumer) {
-        this.openFileConsumer = openFileConsumer;
     }
 
     public Supplier<Path> getPathSaveSupplier() {
