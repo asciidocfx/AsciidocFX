@@ -31,3 +31,33 @@ enum TimeUnit {
 annotation SuppressWarnings
 --
 
+.UML http://plantuml.sourceforge.net/ditaa.html
+[uml,file="ditaa-diagram.png"]
+--
+@startditaa
++--------+   +-------+    +-------+
+|        +---+ ditaa +--> |       |
+|  Text  |   +-------+    |diagram|
+|Document|   |!magic!|    |       |
+|     {d}|   |       |    |       |
++---+----+   +-------+    +-------+
+    :                         ^
+    |       Lots of work      |
+    +-------------------------+
+@endditaa
+--
+
+.UML http://plantuml.sourceforge.net/ditaa.html
+[uml,file="dot-diagram.png"]
+--
+@startdot
+digraph foo {
+  node [style=rounded]
+  node1 [shape=box]
+  node2 [fillcolor=yellow, style="rounded,filled", shape=diamond]
+  node3 [shape=record, label="{ a | b | c }"]
+
+  node1 -> node2 -> node3
+}
+@enddot
+--
