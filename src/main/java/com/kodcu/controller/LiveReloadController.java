@@ -56,10 +56,10 @@ public class LiveReloadController {
 
         requestURI = requestURI.replace("/livereload/", "");
 
-        if (requestURI.startsWith("/"))
-            requestURI = requestURI.substring(1);
+//        if (requestURI.startsWith("/"))
+//            requestURI = requestURI.substring(1);
 
-        Path resolve = parent.resolve(requestURI);
+        Path resolve = parent.getRoot().resolve(requestURI);
 
         if (Files.exists(resolve))
             return ResponseEntity.ok(IOHelper.readAllBytes(resolve));

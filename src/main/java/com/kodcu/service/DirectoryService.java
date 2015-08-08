@@ -175,4 +175,17 @@ public class DirectoryService {
     public void refreshWorkingDir() {
         workingDirectory.ifPresent(this::changeWorkigDir);
     }
+
+    public String interPath() {
+
+       try{
+           Path workingDirectory = current.currentPath().map(Path::getParent).orElse(this.workingDirectory());
+           Path subpath = workingDirectory.subpath(0, workingDirectory.getNameCount());
+           return subpath.toString().replace('\\', '/');
+       }
+       catch (Exception e){
+           return ".";
+       }
+
+    }
 }

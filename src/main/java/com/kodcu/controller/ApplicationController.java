@@ -1793,7 +1793,9 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                                 liveReloadPane.setMember("afx", this);
                                 liveReloadPane.initializeDiffReplacer();
                             });
-                            liveReloadPane.load(String.format("http://localhost:%d/livereload/index.reload", port));
+
+                            String format = String.format("http://localhost:%d/livereload/%s/index.reload", port, directoryService.interPath());
+                            liveReloadPane.load(format);
                         } else {
                             liveReloadPane.updateDomdom();
                         }
@@ -2410,7 +2412,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
         threadService.runActionLater(() -> {
             storedConfigBean.getRecentFiles().remove(path.toString());
-            storedConfigBean.getRecentFiles().add(0,path.toString());
+            storedConfigBean.getRecentFiles().add(0, path.toString());
         });
     }
 }
