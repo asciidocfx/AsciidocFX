@@ -1,0 +1,17 @@
+== Using ditaa Diagrams
+
+You can use (((ditaa)))ditaa syntax to draw diagrams:
+
+.Ditaa http://ditaa.sourceforge.net/
+[ditaa,file="ditaa-example.png"]
+--
+    +--------+   +-------+    +-------+
+    |        | --+ ditaa +--> |       |
+    |  Text  |   +-------+    |diagram|
+    |Document|   |!magic!|    |       |
+    |     {d}|   |       |    |       |
+    +---+----+   +-------+    +-------+
+        :                         ^
+        |       Lots of work      |
+        +-------------------------+
+--

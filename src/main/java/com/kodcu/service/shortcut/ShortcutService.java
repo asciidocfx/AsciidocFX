@@ -37,6 +37,7 @@ public interface ShortcutService {
     void addArticleHeader();
     void addMathBlock();
     void addUmlBlock();
+    void addDitaaBlock();
     void addTreeBlock();
     void addPieChart();
     void addBarChart();

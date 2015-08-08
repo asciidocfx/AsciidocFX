@@ -1687,6 +1687,11 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         });
     }
 
+    public void ditaa(String ditaa, String type,String imagesDir, String imageTarget)throws IOException {    	
+    	String plantUmlString = "@startditaa\n" + ditaa  + "\n@endditaa\n";
+    	plantUml(plantUmlString, type, imagesDir, imageTarget);
+    }
+
     @WebkitCall(from = "asciidoctor-chart")
     public void chartBuildFromCsv(String csvFile, String imagesDir, String imageTarget, String chartType, String options) {
 
