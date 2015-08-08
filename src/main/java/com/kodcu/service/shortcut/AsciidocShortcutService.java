@@ -184,6 +184,11 @@ public class AsciidocShortcutService implements ShortcutService {
     }
 
     @Override
+    public void addDitaaBlock() {
+        current.currentEngine().executeScript("editorMenu.asciidoc.addDitaaBlock()");
+    }
+
+    @Override
     public void addTreeBlock() {
         current.currentEngine().executeScript("editorMenu.asciidoc.addTreeBlock()");
     }
