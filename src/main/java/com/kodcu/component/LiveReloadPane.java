@@ -28,7 +28,7 @@ import java.util.stream.Stream;
 
 /**
  * Created by usta on 09.04.2015.
- *
+ * <p>
  * NOTE : getWebEngine i diğaerlerinde de böyle yap
  * *********************************************************
  */
@@ -37,27 +37,29 @@ public class LiveReloadPane extends ViewPanel {
 
     @Autowired
     public LiveReloadPane(ThreadService threadService, ApplicationController controller, Current current) {
-        super(threadService,controller,current);
+        super(threadService, controller, current);
         this.webView.setContextMenuEnabled(true);
     }
 
     @Override
     public void browse() {
         controller.getHostServices()
-                .showDocument(String.format("http://localhost:%d/livereload/index.reload", controller.getPort()));
+                .showDocument(webEngine().getLocation());
     }
 
     public void initializeDiffReplacer() {
-        threadService.runActionLater(()->{
+        threadService.runTaskLater(() -> {
             String diffhtml = IOHelper.readFile(LiveReloadPane.class.getResourceAsStream("/public/diffhtml.js"));
             String extension = IOHelper.readFile(LiveReloadPane.class.getResourceAsStream("/public/diffhtml-extension.js"));
-            webEngine().executeScript(diffhtml);
-            webEngine().executeScript(extension);
+            threadService.runActionLater(() -> {
+                webEngine().executeScript(diffhtml);
+                webEngine().executeScript(extension);
+            });
         });
     }
 
     public void updateDomdom() {
-        threadService.runActionLater(()->{
+        threadService.runActionLater(() -> {
             getWindow().call("updateDomdom", current.currentEditorValue());
         });
     }
