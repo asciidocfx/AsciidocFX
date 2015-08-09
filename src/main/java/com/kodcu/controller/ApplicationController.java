@@ -565,6 +565,9 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     @Override
     public void initialize(URL url, ResourceBundle rb) {
 
+        initializePaths();
+        initializePosixPermissions();
+
         threadService.runActionLater(() -> {
             configurationService.loadConfigurations();
             this.bindConfigurations();
@@ -616,8 +619,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                     }
                 });
 
-        initializePaths();
-        initializePosixPermissions();
         initializeLogViewer();
         initializeDoctypes();
 
