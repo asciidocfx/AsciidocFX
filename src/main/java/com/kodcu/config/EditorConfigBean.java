@@ -7,13 +7,11 @@ import com.dooapp.fxform.builder.FXFormBuilder;
 import com.dooapp.fxform.handler.NamedFieldHandler;
 import com.dooapp.fxform.view.factory.DefaultFactoryProvider;
 import com.kodcu.component.SliderBuilt;
-import com.kodcu.config.factory.FileChooserFactory;
-import com.kodcu.config.factory.ListChoiceBoxFactory;
-import com.kodcu.config.factory.SliderFactory;
-import com.kodcu.config.factory.SpinnerFactory;
+import com.kodcu.config.factory.*;
 import com.kodcu.controller.ApplicationController;
 import com.kodcu.other.IOHelper;
 import com.kodcu.service.ThreadService;
+import com.kodcu.service.ui.TabService;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -39,6 +37,8 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.Objects;
 import java.util.ResourceBundle;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -49,6 +49,7 @@ import java.util.stream.Stream;
 public class EditorConfigBean extends ConfigurationBase {
 
     private ObjectProperty<ObservableList<String>> editorTheme = new SimpleObjectProperty<>(FXCollections.observableArrayList());
+    private ObjectProperty<Path> asciidoctorStyleSheet = new SimpleObjectProperty<>();
     private DoubleProperty firstSplitter = new SimpleDoubleProperty(0.17551963048498845);
     private DoubleProperty secondSplitter = new SimpleDoubleProperty(0.5996920708237106);
     private BooleanProperty directoryPanel = new SimpleBooleanProperty(true);
@@ -66,16 +67,18 @@ public class EditorConfigBean extends ConfigurationBase {
 
     private final ApplicationController controller;
     private final ThreadService threadService;
+    private final TabService tabService;
 
     private final Button saveButton = new Button("Save");
     private final Button loadButton = new Button("Load");
     private final Label infoLabel = new Label();
 
     @Autowired
-    public EditorConfigBean(ApplicationController controller, ThreadService threadService) {
+    public EditorConfigBean(ApplicationController controller, ThreadService threadService, TabService tabService) {
         super(controller, threadService);
         this.controller = controller;
         this.threadService = threadService;
+        this.tabService = tabService;
     }
 
 
@@ -223,12 +226,24 @@ public class EditorConfigBean extends ConfigurationBase {
         this.secondSplitter.set(secondSplitter);
     }
 
+    public Path getAsciidoctorStyleSheet() {
+        return asciidoctorStyleSheet.get();
+    }
+
+    public ObjectProperty<Path> asciidoctorStyleSheetProperty() {
+        return asciidoctorStyleSheet;
+    }
+
+    public void setAsciidoctorStyleSheet(Path asciidoctorStyleSheet) {
+        this.asciidoctorStyleSheet.set(asciidoctorStyleSheet);
+    }
+
     @Override
     public VBox createForm() {
 
         FXForm editorConfigForm = new FXFormBuilder<>()
                 .resourceBundle(ResourceBundle.getBundle("editorConfig"))
-                .includeAndReorder("editorTheme", "directoryPanel", "fontFamily", "fontSize", "scrollSpeed", "useWrapMode", "wrapLimit", "showGutter", "defaultLanguage", "kindlegen")
+                .includeAndReorder("editorTheme", "asciidoctorStyleSheet", "directoryPanel", "fontFamily", "fontSize", "scrollSpeed", "useWrapMode", "wrapLimit", "showGutter", "defaultLanguage", "kindlegen")
                 .build();
 
         DefaultFactoryProvider editorConfigFormProvider = new DefaultFactoryProvider();
@@ -239,7 +254,11 @@ public class EditorConfigBean extends ConfigurationBase {
         editorConfigFormProvider.addFactory(new NamedFieldHandler("fontSize"), new SpinnerFactory(new Spinner(8, 32, 14)));
         editorConfigFormProvider.addFactory(new NamedFieldHandler("wrapLimit"), new SpinnerFactory(new Spinner(0, 500, 0)));
         editorConfigFormProvider.addFactory(new NamedFieldHandler("kindlegen"), new FileChooserFactory());
+        FileChooserEditableFactory fileChooserEditableFactory = new FileChooserEditableFactory();
+        editorConfigFormProvider.addFactory(new NamedFieldHandler("asciidoctorStyleSheet"), fileChooserEditableFactory);
         editorConfigForm.setEditorFactoryProvider(editorConfigFormProvider);
+
+        fileChooserEditableFactory.setOnEdit(tabService::addTab);
 
         editorConfigForm.setSource(this);
 
@@ -265,6 +284,11 @@ public class EditorConfigBean extends ConfigurationBase {
         fadeOut(infoLabel, "Loading...");
 
         threadService.runTaskLater(() -> {
+
+            this.setAsciidoctorStyleSheet(controller
+                    .getConfigPath()
+                    .resolve("data/stylesheets/asciidoctor-default.css"));
+
             List<String> aceThemeList = IOHelper.readAllLines(getConfigDirectory().resolve("ace_themes.txt"));
             List<String> languageList = this.languageList();
 
@@ -282,6 +306,7 @@ public class EditorConfigBean extends ConfigurationBase {
             boolean useWrapMode = jsonObject.getBoolean("useWrapMode", true);
             boolean showGutter = jsonObject.getBoolean("showGutter", false);
             int wrapLimit = jsonObject.getInt("wrapLimit", 0);
+            String asciidoctorStyleSheet = jsonObject.getString("asciidoctorStyleSheet", null);
 
 
             IOHelper.close(jsonReader, fileReader);
@@ -300,16 +325,20 @@ public class EditorConfigBean extends ConfigurationBase {
                     this.setKindlegen(Paths.get(kindlegen));
                 }
 
+                if (Objects.nonNull(asciidoctorStyleSheet)) {
+                    this.setAsciidoctorStyleSheet(Paths.get(asciidoctorStyleSheet));
+                }
+
                 if (jsonObject.containsKey("scrollSpeed")) {
                     this.setScrollSpeed(jsonObject.getJsonNumber("scrollSpeed").doubleValue());
                 }
 
-                if(jsonObject.containsKey("firstSplitter")){
+                if (jsonObject.containsKey("firstSplitter")) {
                     JsonNumber firstSplitter = jsonObject.getJsonNumber("firstSplitter");
                     this.setFirstSplitter(firstSplitter.doubleValue());
                 }
 
-                if(jsonObject.containsKey("secondSplitter")){
+                if (jsonObject.containsKey("secondSplitter")) {
                     JsonNumber secondSplitter = jsonObject.getJsonNumber("secondSplitter");
                     this.setSecondSplitter(secondSplitter.doubleValue());
                 }
@@ -375,11 +404,15 @@ public class EditorConfigBean extends ConfigurationBase {
                 .add("showGutter", getShowGutter())
                 .add("editorTheme", getEditorTheme().get(0))
                 .add("defaultLanguage", getDefaultLanguage().get(0))
-                .add("firstSplitter",getFirstSplitter())
-                .add("secondSplitter",getSecondSplitter());
+                .add("firstSplitter", getFirstSplitter())
+                .add("secondSplitter", getSecondSplitter());
 
         if (Objects.nonNull(getKindlegen())) {
             objectBuilder.add("kindlegen", getKindlegen().toString());
+        }
+
+        if(Objects.nonNull(getAsciidoctorStyleSheet())){
+            objectBuilder.add("asciidoctorStyleSheet",getAsciidoctorStyleSheet().toString());
         }
 
         return objectBuilder.build();
