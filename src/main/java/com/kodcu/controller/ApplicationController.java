@@ -1696,11 +1696,18 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     }
 
+    @WebkitCall(from = "asciidoctor-uml")
     public void plantUml(String uml, String type, String imagesDir, String imageTarget) throws IOException {
 
         threadService.runTaskLater(() -> {
             plantUmlService.plantUml(uml, type, imagesDir, imageTarget);
         });
+    }
+
+    @WebkitCall(from = "asciidoctor-ditaa")
+    public void ditaa(String ditaa, String type,String imagesDir, String imageTarget)throws IOException {    	
+    	String plantUmlString = "@startditaa\n" + ditaa  + "\n@endditaa\n";
+    	this.plantUml(plantUmlString, type, imagesDir, imageTarget);
     }
 
     @WebkitCall(from = "asciidoctor-chart")

@@ -383,6 +383,12 @@ var editorMenu = {
             editor.insert("[uml,file=\"\"]\n--\n\n--");
             editor.gotoLine(range.end.row + 3, 0, true);
         },
+        addDitaaBlock: function () {
+            var range = editor.getSelectionRange();
+            editor.removeToLineStart();
+            editor.insert("[ditaa,file=\"\"]\n--\n\n--");
+            editor.gotoLine(range.end.row + 3, 0, true);
+        },        
         addTreeBlock: function () {
             var range = editor.getSelectionRange();
             editor.removeToLineStart();
@@ -613,9 +619,15 @@ editor.commands.addCommand({
             afx.getShortcutProvider().getProvider().addUmlBlock();
             return;
         }
+        
+        // ditaa tab
+        if (textRange == "ditaa") { // ditaa block generator
+            afx.getShortcutProvider().getProvider().addDitaaBlock();
+            return;
+        }
 
         // tree tab
-        if (textRange == "tree") { // uml block generator
+        if (textRange == "tree") { // tree block generator
             afx.getShortcutProvider().getProvider().addTreeBlock();
             return;
         }

@@ -47,10 +47,10 @@ public class PlantUmlService {
 
         String defaultScale = "\nskinparam dpi 300\n";
 
-        if (!uml.contains("@startuml") && !uml.contains("@enduml")) {
+        if (!uml.contains("@start") && !uml.contains("@end")) {
             uml = defaultScale + uml;
             uml = "@startuml\n" + uml + "\n@enduml";
-        } else {
+        } else if (uml.contains("@startuml")) {
             uml = uml.replaceFirst("@startuml", "@startuml" + defaultScale);
         }
 

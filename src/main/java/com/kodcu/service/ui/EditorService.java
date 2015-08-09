@@ -319,6 +319,9 @@ public class EditorService {
         extensions.getItems().add(MenuItemBuilt.item("PlantUML").click(event -> {
             shortcutProvider.getProvider().addUmlBlock();
         }));
+        extensions.getItems().add(MenuItemBuilt.item("Ditaa").click(event -> {
+            shortcutProvider.getProvider().addDitaaBlock();
+        }));
 
         extensions.getItems().add(MenuItemBuilt.item("Filesystem Tree").click(event -> {
             shortcutProvider.getProvider().addTreeBlock();

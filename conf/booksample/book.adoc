@@ -40,6 +40,8 @@ include::chapter-06.adoc[]
 
 include::chapter-07.adoc[]
 
+include::chapter-08.adoc[]
+
 include::bibliography.adoc[]
 
 include::index.adoc[]
