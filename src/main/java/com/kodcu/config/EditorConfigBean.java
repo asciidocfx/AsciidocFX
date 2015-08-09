@@ -49,8 +49,8 @@ import java.util.stream.Stream;
 public class EditorConfigBean extends ConfigurationBase {
 
     private ObjectProperty<ObservableList<String>> editorTheme = new SimpleObjectProperty<>(FXCollections.observableArrayList());
-    private DoubleProperty firstSplitter = new SimpleDoubleProperty(0.17);
-    private DoubleProperty secondSplitter = new SimpleDoubleProperty(0.60);
+    private DoubleProperty firstSplitter = new SimpleDoubleProperty(0.19476520400307928);
+    private DoubleProperty secondSplitter = new SimpleDoubleProperty(0.5996920708237106);
     private BooleanProperty directoryPanel = new SimpleBooleanProperty(true);
     private StringProperty fontFamily = new SimpleStringProperty("'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace");
     private ObjectProperty<Integer> fontSize = new SimpleObjectProperty(14);
