@@ -1,6 +1,7 @@
 package com.kodcu.service.convert.odf;
 
 import com.kodcu.component.HtmlPane;
+import com.kodcu.component.WorkerPane;
 import com.kodcu.controller.ApplicationController;
 import com.kodcu.other.Constants;
 import com.kodcu.other.Current;
@@ -56,6 +57,7 @@ public class ODFConverter implements Traversable {
     private final ApplicationController controller;
     private final Current current;
     private final HtmlPane htmlPane;
+    private final WorkerPane workerPane;
     private final ThreadService threadService;
     private final IndikatorService indikatorService;
     private final DirectoryService directoryService;
@@ -69,10 +71,11 @@ public class ODFConverter implements Traversable {
 
     @Autowired
     public ODFConverter(final ApplicationController controller, final Current current, final HtmlPane htmlPane,
-                        final ThreadService threadService, final IndikatorService indikatorService, DirectoryService directoryService) {
+                        WorkerPane workerPane, final ThreadService threadService, final IndikatorService indikatorService, DirectoryService directoryService) {
         this.controller = controller;
         this.current = current;
         this.htmlPane = htmlPane;
+        this.workerPane = workerPane;
         this.threadService = threadService;
         this.indikatorService = indikatorService;
         this.directoryService = directoryService;
@@ -94,7 +97,7 @@ public class ODFConverter implements Traversable {
         logger.debug("ODF conversion started");
         try {
             this.openOdtDocument();
-            htmlPane.convertOdf(current.currentEditorValue());
+            workerPane.convertOdf(current.currentEditorValue());
             this.saveOdtDocument();
         } catch (Exception e) {
             logger.error("Problem occured while converting to ODF", e);

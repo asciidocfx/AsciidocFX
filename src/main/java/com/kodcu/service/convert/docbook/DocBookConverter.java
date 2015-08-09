@@ -1,6 +1,7 @@
 package com.kodcu.service.convert.docbook;
 
 import com.kodcu.component.HtmlPane;
+import com.kodcu.component.WorkerPane;
 import com.kodcu.controller.ApplicationController;
 import com.kodcu.other.Current;
 import com.kodcu.other.IOHelper;
@@ -35,15 +36,17 @@ public class DocBookConverter implements DocbookTraversable, DocumentConverter<S
     private final ApplicationController controller;
     private final DocbookValidator docbookValidator;
     private final HtmlPane htmlPane;
+    private final WorkerPane workerPane;
 
     @Autowired
-    public DocBookConverter(final Current current, ThreadService threadService, MarkdownService markdownService, ApplicationController controller, DocbookValidator docbookValidator, HtmlPane htmlPane) {
+    public DocBookConverter(final Current current, ThreadService threadService, MarkdownService markdownService, ApplicationController controller, DocbookValidator docbookValidator, HtmlPane htmlPane, WorkerPane workerPane) {
         this.current = current;
         this.threadService = threadService;
         this.markdownService = markdownService;
         this.controller = controller;
         this.docbookValidator = docbookValidator;
         this.htmlPane = htmlPane;
+        this.workerPane = workerPane;
     }
 
 
@@ -59,7 +62,7 @@ public class DocBookConverter implements DocbookTraversable, DocumentConverter<S
 
         threadService.runActionLater(() -> {
 
-            String rendered = htmlPane.convertDocbook(asciidoc).getRendered();
+            String rendered = workerPane.convertDocbook(asciidoc).getRendered();
 
             boolean validated = docbookValidator.validateDocbook(rendered);
 

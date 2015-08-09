@@ -109,6 +109,10 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     @Autowired
     public HtmlPane htmlPane;
+
+    @Autowired
+    public WorkerPane workerPane;
+
     public Label odfPro;
     public VBox logVBox;
     public Label statusText;
@@ -581,7 +585,10 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         this.previewTab = new PreviewTab("Preview", htmlPane);
         this.previewTab.setClosable(false);
 
+//        PreviewTab workerTab = new PreviewTab("Worker", workerPane);
+
         threadService.runActionLater(() -> {
+//            previewTabPane.getTabs().add(workerTab);
             previewTabPane.getTabs().add(previewTab);
         }, true);
 
@@ -757,7 +764,31 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             mathjaxEngine.load(String.format("http://localhost:%d/mathjax.html", port));
         });
 
-        htmlPane.load(String.format("http://localhost:%d/preview.html", port));
+
+        htmlPane.webEngine().setOnAlert(event -> {
+            if ("PREVIEW_LOADED".equals(event.getData())) {
+
+                if (htmlPane.getMember("afx").equals("undefined")) {
+                    htmlPane.setMember("afx", this);
+                }
+
+                if (Objects.nonNull(lastRendered.getValue()))
+                    lastRenderedChangeListener.changed(null, null, lastRendered.getValue());
+            }
+        });
+
+        workerPane.webEngine().setOnAlert(event -> {
+            if ("WORKER_LOADED".equals(event.getData())) {
+
+                if (workerPane.getMember("afx").equals("undefined")) {
+                    workerPane.setMember("afx", this);
+                }
+
+                htmlPane.load(String.format("http://localhost:%d/preview.html", port));
+            }
+        });
+
+        workerPane.load(String.format("http://localhost:%d/worker.html", port));
 
         openFileTreeItem.setOnAction(event -> {
 
@@ -875,18 +906,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                     if (has) addToFavoriteDir.setDisable(true);
                     else addToFavoriteDir.setDisable(false);
                 }
-            }
-        });
-
-        htmlPane.webEngine().setOnAlert(event -> {
-            if ("PREVIEW_LOADED".equals(event.getData())) {
-
-                if (htmlPane.getMember("afx").equals("undefined")) {
-                    htmlPane.setMember("afx", this);
-                }
-
-                if (Objects.nonNull(lastRendered.getValue()))
-                    lastRenderedChangeListener.changed(null, null, lastRendered.getValue());
             }
         });
 
@@ -1494,7 +1513,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     public void fillOutlines(JSObject doc) {
         if (outlineTab.isSelected())
             threadService.runActionLater(() -> {
-                htmlPane.fillOutlines(doc);
+                workerPane.fillOutlines(doc);
             });
     }
 
@@ -1665,13 +1684,13 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     public void scrollToCurrentLine(String text) {
 
         if (previewTab.getContent() == slidePane) {
-            slidePane.flipThePage(htmlPane.findRenderedSelection(text)); // slide
+            slidePane.flipThePage(workerPane.findRenderedSelection(text)); // slide
         }
 
         if (previewTab.getContent() == htmlPane) {
             threadService.runActionLater(() -> {
                 try {
-                    htmlPane.call("runScroller", text);
+                    htmlPane.runScroller(workerPane.findRenderedSelection(text));
                 } catch (Exception e) {
                     logger.debug(e.getMessage(), e);
                 }
@@ -1772,7 +1791,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                         if (bookArticleHeader && !forceInclude)
                             setIncludeAsciidocResource(true);
 
-                        ConverterResult result = htmlPane.convertAsciidoc(text);
+                        ConverterResult result = workerPane.convertAsciidoc(text);
 
                         setIncludeAsciidocResource(false);
 
@@ -1805,7 +1824,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                     } else if ("markdown".equalsIgnoreCase(mode)) {
                         markdownService.convertToAsciidoc(text, asciidoc -> {
                             threadService.runActionLater(() -> {
-                                ConverterResult result = htmlPane.convertAsciidoc(asciidoc);
+                                ConverterResult result = workerPane.convertAsciidoc(asciidoc);
                                 result.afterRender(lastRendered::setValue);
                             });
                         });
@@ -1829,7 +1848,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     @WebkitCall
     public String getTemplate(String templateName, String templateDir) throws IOException {
-        return htmlPane.getTemplate(templateName, templateDir);
+        return workerPane.getTemplate(templateName, templateDir);
     }
 
     public void cutCopy(String data) {

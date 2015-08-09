@@ -53,33 +53,6 @@ public class HtmlPane extends ViewPanel {
         return webView;
     }
 
-    public ConverterResult convertDocbook(String asciidoc) {
-        this.setMember("editorValue", asciidoc);
-        this.setMember("docbookOptions", docbookConfigBean.getJSON().toString());
-        JSObject result = (JSObject) webEngine().executeScript(String.format("convertDocbook(editorValue,docbookOptions)"));
-        return new ConverterResult(result);
-    }
-
-    public String getTemplate(String templateName, String templateDir) throws IOException {
-
-        Stream<Path> slide = Files.find(controller.getConfigPath().resolve("slide/templates").resolve(templateDir), Integer.MAX_VALUE, (path, basicFileAttributes) -> path.toString().contains(templateName));
-
-        Optional<Path> first = slide.findFirst();
-
-        if (!first.isPresent())
-            return "";
-
-        Path path = first.get();
-
-        String template = IOHelper.readFile(path);
-        return template;
-    }
-
-    public String findRenderedSelection(String content) {
-        this.setMember("context", content);
-        return (String) webEngine().executeScript("findRenderedSelection(context)");
-    }
-
     public JSObject getWindow() {
         return (JSObject) webEngine().executeScript("window");
     }
@@ -90,29 +63,7 @@ public class HtmlPane extends ViewPanel {
                 .showDocument(String.format("http://localhost:%d/index.html", controller.getPort()));
     }
 
-    public void fillOutlines(JSObject doc) {
-        getWindow().call("fillOutlines", doc);
-    }
-
-    public ConverterResult convertAsciidoc(String asciidoc) {
-        this.setMember("editorValue", asciidoc);
-        this.setMember("asciidocOptions", previewConfigBean.getJSON().toString());
-        JSObject result = (JSObject) webEngine().executeScript("convertAsciidoc(editorValue,asciidocOptions)");
-
-        return new ConverterResult(result);
-    }
-
-    public ConverterResult convertHtml(String asciidoc) {
-        this.setMember("editorValue", asciidoc);
-        this.setMember("htmlOptions", htmlConfigBean.getJSON().toString());
-        JSObject result = (JSObject) webEngine().executeScript("convertHtml(editorValue,htmlOptions)");
-
-        return new ConverterResult(result);
-    }
-
-    public void convertOdf(String asciidoc) {
-        this.setMember("editorValue", asciidoc);
-        this.setMember("odfOptions", odfConfigBean.getJSON().toString());
-        webEngine().executeScript("convertOdf(editorValue,odfOptions)");
+    public void runScroller(String renderedSelection) {
+        getWindow().call("runScroller", renderedSelection);
     }
 }

@@ -1,6 +1,7 @@
 package com.kodcu.service.convert.html;
 
 import com.kodcu.component.HtmlPane;
+import com.kodcu.component.WorkerPane;
 import com.kodcu.controller.ApplicationController;
 import com.kodcu.other.Current;
 import com.kodcu.other.IOHelper;
@@ -40,13 +41,14 @@ public class HtmlBookConverter implements Traversable,DocumentConverter<String> 
     private final IndikatorService indikatorService;
     private final MarkdownService markdownService;
     private final HtmlPane htmlPane;
+    private final WorkerPane workerPane;
 
     private Path htmlBookPath;
 
     @Autowired
     public HtmlBookConverter(final ApplicationController controller, final ThreadService threadService,
                              final DirectoryService directoryService, final Current current,
-                             IndikatorService indikatorService, MarkdownService markdownService, HtmlPane htmlPane) {
+                             IndikatorService indikatorService, MarkdownService markdownService, HtmlPane htmlPane, WorkerPane workerPane) {
         this.controller = controller;
         this.threadService = threadService;
         this.directoryService = directoryService;
@@ -54,6 +56,7 @@ public class HtmlBookConverter implements Traversable,DocumentConverter<String> 
         this.indikatorService = indikatorService;
         this.markdownService = markdownService;
         this.htmlPane = htmlPane;
+        this.workerPane = workerPane;
     }
 
     @Override
@@ -69,7 +72,7 @@ public class HtmlBookConverter implements Traversable,DocumentConverter<String> 
 
                 threadService.runActionLater(() -> {
 
-                    String rendered = htmlPane.convertHtml(asciidoc).getRendered();
+                    String rendered = workerPane.convertHtml(asciidoc).getRendered();
 
                     if (askPath) {
                         final FileChooser fileChooser = directoryService.newFileChooser("Save HTML file");
