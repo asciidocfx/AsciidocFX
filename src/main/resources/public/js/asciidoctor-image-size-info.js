@@ -16,8 +16,6 @@
         return (def.$process = function (document) {
                 var self = this;
 
-                console.log("imagesize");
-
                 if (!document.$attr('omit-image-size')['$nil?']())
                     return document;
 
