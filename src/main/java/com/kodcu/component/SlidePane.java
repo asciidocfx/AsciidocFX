@@ -66,22 +66,6 @@ public class SlidePane extends ViewPanel {
         }
     }
 
-    @WebkitCall
-    public String getTemplate(String templateName, String templateDir) throws IOException {
-
-        Stream<Path> slide = Files.find(controller.getConfigPath().resolve("slide").resolve(templateDir), Integer.MAX_VALUE, (path, basicFileAttributes) -> path.toString().contains(templateName));
-
-        Optional<Path> first = slide.findFirst();
-
-        if (!first.isPresent())
-            return "";
-
-        Path path = first.get();
-
-        String template = IOHelper.readFile(path);
-        return template;
-    }
-
     public String findRenderedSelection(String content) {
         this.setMember("context", content);
         return (String) webEngine().executeScript("findRenderedSelection(context)");
