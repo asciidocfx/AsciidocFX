@@ -32,10 +32,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import javax.json.Json;
-import javax.json.JsonObject;
-import javax.json.JsonObjectBuilder;
-import javax.json.JsonReader;
+import javax.json.*;
 import java.io.FileReader;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -52,6 +49,8 @@ import java.util.stream.Stream;
 public class EditorConfigBean extends ConfigurationBase {
 
     private ObjectProperty<ObservableList<String>> editorTheme = new SimpleObjectProperty<>(FXCollections.observableArrayList());
+    private DoubleProperty firstSplitter = new SimpleDoubleProperty(0.17);
+    private DoubleProperty secondSplitter = new SimpleDoubleProperty(0.60);
     private BooleanProperty directoryPanel = new SimpleBooleanProperty(true);
     private StringProperty fontFamily = new SimpleStringProperty("'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace");
     private ObjectProperty<Integer> fontSize = new SimpleObjectProperty(14);
@@ -200,6 +199,30 @@ public class EditorConfigBean extends ConfigurationBase {
         this.defaultLanguage.set(defaultLanguage);
     }
 
+    public double getFirstSplitter() {
+        return firstSplitter.get();
+    }
+
+    public DoubleProperty firstSplitterProperty() {
+        return firstSplitter;
+    }
+
+    public void setFirstSplitter(double firstSplitter) {
+        this.firstSplitter.set(firstSplitter);
+    }
+
+    public double getSecondSplitter() {
+        return secondSplitter.get();
+    }
+
+    public DoubleProperty secondSplitterProperty() {
+        return secondSplitter;
+    }
+
+    public void setSecondSplitter(double secondSplitter) {
+        this.secondSplitter.set(secondSplitter);
+    }
+
     @Override
     public VBox createForm() {
 
@@ -260,6 +283,7 @@ public class EditorConfigBean extends ConfigurationBase {
             boolean showGutter = jsonObject.getBoolean("showGutter", false);
             int wrapLimit = jsonObject.getInt("wrapLimit", 0);
 
+
             IOHelper.close(jsonReader, fileReader);
 
             threadService.runActionLater(() -> {
@@ -276,11 +300,18 @@ public class EditorConfigBean extends ConfigurationBase {
                     this.setKindlegen(Paths.get(kindlegen));
                 }
 
-
                 if (jsonObject.containsKey("scrollSpeed")) {
                     this.setScrollSpeed(jsonObject.getJsonNumber("scrollSpeed").doubleValue());
-                } else {
-                    this.setScrollSpeed(0.1);
+                }
+
+                if(jsonObject.containsKey("firstSplitter")){
+                    JsonNumber firstSplitter = jsonObject.getJsonNumber("firstSplitter");
+                    this.setFirstSplitter(firstSplitter.doubleValue());
+                }
+
+                if(jsonObject.containsKey("secondSplitter")){
+                    JsonNumber secondSplitter = jsonObject.getJsonNumber("secondSplitter");
+                    this.setSecondSplitter(secondSplitter.doubleValue());
                 }
 
                 this.getEditorTheme().set(0, theme);
@@ -343,7 +374,9 @@ public class EditorConfigBean extends ConfigurationBase {
                 .add("wrapLimit", getWrapLimit())
                 .add("showGutter", getShowGutter())
                 .add("editorTheme", getEditorTheme().get(0))
-                .add("defaultLanguage", getDefaultLanguage().get(0));
+                .add("defaultLanguage", getDefaultLanguage().get(0))
+                .add("firstSplitter",getFirstSplitter())
+                .add("secondSplitter",getSecondSplitter());
 
         if (Objects.nonNull(getKindlegen())) {
             objectBuilder.add("kindlegen", getKindlegen().toString());

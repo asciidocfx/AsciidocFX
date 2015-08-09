@@ -585,10 +585,10 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         this.previewTab = new PreviewTab("Preview", htmlPane);
         this.previewTab.setClosable(false);
 
-//        PreviewTab workerTab = new PreviewTab("Worker", workerPane);
+        PreviewTab workerTab = new PreviewTab("Worker", workerPane);
 
         threadService.runActionLater(() -> {
-//            previewTabPane.getTabs().add(workerTab);
+            previewTabPane.getTabs().add(workerTab);
             previewTabPane.getTabs().add(previewTab);
         }, true);
 
@@ -1030,6 +1030,11 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                 }
             }
         });*/
+
+        ObservableList<SplitPane.Divider> dividers = splitPane.getDividers();
+
+        dividers.get(0).positionProperty().bindBidirectional(editorConfigBean.firstSplitterProperty());
+        dividers.get(1).positionProperty().bindBidirectional(editorConfigBean.secondSplitterProperty());
 
         editorConfigBean.showGutterProperty().addListener((observable, oldValue, newValue) -> {
             if (Objects.nonNull(newValue)) {
