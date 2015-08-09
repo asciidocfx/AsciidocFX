@@ -2296,7 +2296,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     }
 
     public void showFileBrowser() {
-        splitPane.setDividerPositions(0.195, splitPane.getDividerPositions()[1]);
+        splitPane.getDividers().get(0).setPosition(0.17551963048498845);
         fileBrowserVisibility.setValue(false);
 
     }
@@ -2316,7 +2316,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     }
 
     public void showPreviewPanel() {
-        splitPane.setDividerPosition(1, 0.6);
+        splitPane.getDividers().get(1).setPosition(0.5996920708237106);
         previewPanelVisibility.setValue(false);
         hidePreviewPanel.setSelected(false);
     }
