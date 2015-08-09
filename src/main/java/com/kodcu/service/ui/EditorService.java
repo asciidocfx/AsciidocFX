@@ -13,13 +13,12 @@ import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.*;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -43,7 +42,7 @@ public class EditorService {
     private ShortcutProvider shortcutProvider;
 
     public Node createEditorVBox(EditorPane editorPane, MyTab myTab) {
-        VBox vbox = new VBox();
+        FlowPane flowPane = new FlowPane();
         String iconSize = "14.0";
         double minSize = 14.01;
 
@@ -155,22 +154,26 @@ public class EditorService {
         placeholderPane.prefWidth(1);
         HBox.setHgrow(placeholderPane, Priority.ALWAYS);
 
+        List<Node> moreMenuButtons = new LinkedList<>();
+
         openMenuLabel.setOnMouseClicked(event -> {
-            int childSize = vbox.getChildren().size();
-            if (childSize == 2) {
-                openMenuLabel.setText(AwesomeIcon.CHEVRON_CIRCLE_DOWN.toString());
-                Tooltip.install(openMenuLabel, new Tooltip("More..."));
-                vbox.getChildren().remove(1);
+            if (moreMenuButtons.isEmpty()) {
+                moreMenuButtons.addAll(createMoreMenuButtons(iconSize, minSize));
+            }
+
+            openMenuLabel.setRotate(openMenuLabel.getRotate() + 180);
+            ObservableList<Node> children = flowPane.getChildren();
+            if (openMenuLabel.getRotate() % 360 == 0) {
+                children.removeAll(moreMenuButtons);
             } else {
-                openMenuLabel.setText(AwesomeIcon.CHEVRON_CIRCLE_UP.toString());
-                openMenuLabel.getProperties().clear();
-                vbox.getChildren().add(createSecondEditorVBox(iconSize, minSize));
+                children.addAll(children.indexOf(openMenuLabel) - 1, moreMenuButtons);
             }
         });
 
         ObservableList<DocumentMode> modeList = controller.getModeList();
 
         MenuButton menuButton = new MenuButton("Doctype");
+        menuButton.setMinWidth(70);
 
         Map<String, List<String>> modulus = modeList.stream()
                 .map(e -> e.getCaption())
@@ -195,8 +198,7 @@ public class EditorService {
             }
         }
 
-        final HBox topMenu = new HBox(
-                showFileBrowser,
+        flowPane.getChildren().addAll(showFileBrowser,
                 newLabel,
                 openLabel,
                 saveLabel,
@@ -217,28 +219,28 @@ public class EditorService {
                 menuButton,
                 openMenuLabel,
                 placeholderPane,
-                showPreviewPanel
-        );
+                showPreviewPanel);
 
-        topMenu.setAlignment(Pos.CENTER_LEFT);
+        flowPane.setHgap(7.5);
+        flowPane.setVgap(5);
+        flowPane.setAlignment(Pos.CENTER_LEFT);
 
-        topMenu.setOnMouseClicked(event -> {
+        flowPane.setOnMouseClicked(event -> {
             editorPane.focus();
         });
 
-        topMenu.setSpacing(9);
-        topMenu.getStyleClass().add("top-menu");
+        flowPane.setMinWidth(0); // fix
+        flowPane.getStyleClass().add("top-menu");
 
         final ScrollPane scrollPane = new ScrollPane();
         scrollPane.setContent(editorPane);
         scrollPane.setFitToHeight(true);
         scrollPane.setFitToWidth(true);
         VBox.setVgrow(scrollPane, Priority.ALWAYS);
-        vbox.getChildren().add(topMenu);
-        return new VBox(vbox, scrollPane);
+        return new VBox(flowPane, scrollPane);
     }
 
-    private Node createSecondEditorVBox(final String iconSize, final double minSize) {
+    private List<Node> createMoreMenuButtons(final String iconSize, final double minSize) {
 
         MenuButton admonitionButton = new MenuButton("Admonitions");
         admonitionButton.setFocusTraversable(false);
@@ -362,12 +364,6 @@ public class EditorService {
             shortcutProvider.getProvider().addStackedBarChart();
         }));
 
-        final HBox topMenu = new HBox(admonitionButton, blocks, documentHelpers, extensions, chartMenu);
-
-        topMenu.setSpacing(9);
-        topMenu.getStyleClass().add("top-menu");
-        topMenu.setStyle("-fx-padding:0 10px 5px 10px;");
-
-        return topMenu;
+        return Arrays.asList(blocks, admonitionButton, documentHelpers, extensions, chartMenu);
     }
 }
