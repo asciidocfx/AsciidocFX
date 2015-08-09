@@ -89,6 +89,8 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.attribute.PosixFileAttributeView;
+import java.nio.file.attribute.PosixFilePermission;
 import java.security.CodeSource;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -615,6 +617,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                 });
 
         initializePaths();
+        initializePosixPermissions();
         initializeLogViewer();
         initializeDoctypes();
 
@@ -975,6 +978,30 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         threadService.runTaskLater(this::checkNewVersion);
 //        threadService.runTaskLater(this::initializeAutoSaver);
 
+    }
+
+    private void initializePosixPermissions() {
+
+        try {
+            PosixFileAttributeView fileAttributeView = Files.getFileAttributeView(configPath, PosixFileAttributeView.class);
+            if (Objects.nonNull(fileAttributeView)) {
+                HashSet<PosixFilePermission> perms = new HashSet<>();
+                perms.add(PosixFilePermission.GROUP_WRITE);
+                perms.add(PosixFilePermission.OTHERS_WRITE);
+                perms.add(PosixFilePermission.OWNER_WRITE);
+                perms.add(PosixFilePermission.GROUP_READ);
+                perms.add(PosixFilePermission.OTHERS_READ);
+                perms.add(PosixFilePermission.OWNER_READ);
+                perms.add(PosixFilePermission.GROUP_EXECUTE);
+                perms.add(PosixFilePermission.OTHERS_EXECUTE);
+                perms.add(PosixFilePermission.OWNER_EXECUTE);
+
+                Files.setPosixFilePermissions(configPath, perms);
+                Files.setPosixFilePermissions(logPath, perms);
+            }
+        } catch (Exception e) {
+            logger.error("Problem occured while setting write permissions to {}", configPath, e);
+        }
     }
 
    /* private void initializeAutoSaver() {
@@ -1710,9 +1737,9 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     }
 
     @WebkitCall(from = "asciidoctor-ditaa")
-    public void ditaa(String ditaa, String type,String imagesDir, String imageTarget)throws IOException {    	
-    	String plantUmlString = "@startditaa\n" + ditaa  + "\n@endditaa\n";
-    	this.plantUml(plantUmlString, type, imagesDir, imageTarget);
+    public void ditaa(String ditaa, String type, String imagesDir, String imageTarget) throws IOException {
+        String plantUmlString = "@startditaa\n" + ditaa + "\n@endditaa\n";
+        this.plantUml(plantUmlString, type, imagesDir, imageTarget);
     }
 
     @WebkitCall(from = "asciidoctor-chart")
