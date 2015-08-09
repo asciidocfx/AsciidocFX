@@ -19,6 +19,11 @@
                 if (!document.$attr('omit-image-size')['$nil?']())
                     return document;
 
+                var backend = document.$backend();
+
+                if (backend == 'revealjs' || backend == 'deckjs')
+                    return document;
+
                 try {
                     var imageNodes = document.$find_by(Opal.hash2(['context'], {"context": "image"}));
 
@@ -30,7 +35,7 @@
                         if (declaredWidth && declaredHeight) {
                             var info = afx.getImageInfo(node.$image_uri(node.$attr('target')), {});
 
-                            if(info.width && info.height){
+                            if (info.width && info.height) {
                                 node.$attributes()['$[]=']("width", info.width);
                                 node.$attributes()['$[]=']("height", info.height);
                             }
