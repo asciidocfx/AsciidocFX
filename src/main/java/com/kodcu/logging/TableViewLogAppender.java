@@ -72,7 +72,7 @@ public class TableViewLogAppender extends UnsynchronizedAppenderBase<ILoggingEve
         });
 
         IThrowableProxy tp = event.getThrowableProxy();
-        if (Objects.nonNull(tp)) {
+        if (Objects.nonNull(tp) && event.getLevel() == Level.ERROR) {
             String tpMessage = ThrowableProxyUtil.asString(tp);
             message += "\n" + tpMessage;
         }
