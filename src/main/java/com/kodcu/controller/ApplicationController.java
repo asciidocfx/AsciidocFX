@@ -588,7 +588,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         PreviewTab workerTab = new PreviewTab("Worker", workerPane);
 
         threadService.runActionLater(() -> {
-            previewTabPane.getTabs().add(workerTab);
+//            previewTabPane.getTabs().add(workerTab);
             previewTabPane.getTabs().add(previewTab);
         }, true);
 
