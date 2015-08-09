@@ -1142,7 +1142,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                 parent = directoryService.workingDirectory();
             }
         } catch (Exception e) {
-            logger.error("Problem occured while getting image size info", e);
+            logger.debug("Problem occured while getting parent path", e);
         }
 
         if (Objects.isNull(parent))
@@ -1361,10 +1361,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         logViewer.getColumns().addAll(levelColumn, messageColumn);
         logViewer.setEditable(true);
 
-        showHideLogs.setOnMouseClicked(event -> {
-            showHideLogs.getStyleClass().removeAll("red-label");
-        });
-
         TableViewLogAppender.setLogList(logList);
         TableViewLogAppender.setStatusMessage(statusMessage);
         TableViewLogAppender.setShowHideLogs(showHideLogs);
@@ -1468,6 +1464,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         HBox.setMargin(statusText, new Insets(0, 3, 0, 0));
 
         showHideLogs.setOnMouseClicked(event -> {
+            showHideLogs.getStyleClass().removeAll("red-label");
             showHideLogs.setRotate(showHideLogs.getRotate() + 180);
             if (showHideLogs.getRotate() % 360 == 0)
                 editorSplitPane.setDividerPositions(1);
