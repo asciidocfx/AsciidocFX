@@ -129,6 +129,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     public Menu favoriteDirMenu;
     public MenuItem addToFavoriteDir;
     public MenuItem afxVersionItem;
+    public TabPane workDirTabPane;
 
     private Logger logger = LoggerFactory.getLogger(ApplicationController.class);
 
@@ -2315,6 +2316,14 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     public BooleanProperty previewPanelVisibilityProperty() {
         return previewPanelVisibility;
+    }
+
+    public TabPane getWorkDirTabPane() {
+        return workDirTabPane;
+    }
+
+    public void setWorkDirTabPane(TabPane workDirTabPane) {
+        this.workDirTabPane = workDirTabPane;
     }
 
     @FXML

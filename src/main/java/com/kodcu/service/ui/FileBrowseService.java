@@ -50,6 +50,8 @@ public class FileBrowseService {
 
     public void browse(final Path browserPath) {
 
+        controller.getWorkDirTabPane().getSelectionModel().selectFirst(); // fix
+
         TreeView<Item> treeView = controller.getTreeView();
 
         int selectedIndex = treeView.getSelectionModel().getSelectedIndex();
