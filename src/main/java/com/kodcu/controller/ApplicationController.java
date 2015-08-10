@@ -1948,46 +1948,45 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     @WebkitCall
     public void pasteRaw() {
 
-        JSObject editor = (JSObject) current.currentEngine().executeScript("editor");
+        EditorPane editorPane = current.currentEditor();
         if (clipboard.hasFiles()) {
             Optional<String> block = parserService.toImageBlock(clipboard.getFiles());
             if (block.isPresent()) {
-                editor.call("insert", block.get());
+                editorPane.insert(block.get());
                 return;
             }
         }
 
-        editor.call("execCommand", "paste-raw-1");
+        editorPane.execCommand("paste-raw-1");
     }
 
     @WebkitCall
     public void paste() {
 
-        JSObject window = (JSObject) htmlPane.webEngine().executeScript("window");
-        JSObject editor = (JSObject) current.currentEngine().executeScript("editor");
+        EditorPane editorPane = current.currentEditor();
 
         if (clipboard.hasFiles()) {
             Optional<String> block = parserService.toImageBlock(clipboard.getFiles());
             if (block.isPresent()) {
-                editor.call("insert", block.get());
+                editorPane.insert(block.get());
                 return;
             }
         }
 
         try {
 
-            if (clipboard.hasHtml() || (Boolean) window.call("isHtml", clipboard.getString())) {
+            if (clipboard.hasHtml() || workerPane.isHtml(clipboard.getString())) {
                 String content = Optional.ofNullable(clipboard.getHtml()).orElse(clipboard.getString());
                 if (current.currentTab().isAsciidoc() || current.currentTab().isMarkdown())
-                    content = (String) window.call(current.currentTab().htmlToMarkupFunction(), content);
-                editor.call("insert", content);
+                    content = (String) workerPane.call(current.currentTab().htmlToMarkupFunction(), content);
+                editorPane.insert(content);
                 return;
             }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
         }
 
-        editor.call("execCommand", "paste-raw-1");
+        editorPane.execCommand("paste-raw-1");
 
     }
 

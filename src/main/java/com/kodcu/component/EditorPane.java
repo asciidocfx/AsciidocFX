@@ -220,4 +220,17 @@ public class EditorPane extends AnchorPane {
     }
 
 
+    public void insert(String text) {
+        threadService.runActionLater(() -> {
+            JSObject editor = (JSObject) webEngine().executeScript("editor");
+            editor.call("insert", text);
+        });
+    }
+
+    public void execCommand(String command) {
+        threadService.runActionLater(() -> {
+            JSObject editor = (JSObject) webEngine().executeScript("editor");
+            editor.call("execCommand", command);
+        });
+    }
 }

@@ -111,8 +111,8 @@ public abstract class ViewPanel extends AnchorPane {
         getWindow().setMember(name, value);
     }
 
-    public void call(String methodName, Object... args) {
-        getWindow().call(methodName, args);
+    public Object call(String methodName, Object... args) {
+       return getWindow().call(methodName, args);
     }
 
     public Object getMember(String name) {

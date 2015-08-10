@@ -106,4 +106,15 @@ public class WorkerPane extends ViewPanel {
         this.setMember("odfOptions", odfConfigBean.getJSON().toString());
         webEngine().executeScript("convertOdf(editorValue,odfOptions)");
     }
+
+
+    public boolean isHtml(String text) {
+        Object isHtml = this.call("isHtml", text);
+
+        if (isHtml instanceof Boolean) {
+            return (boolean) isHtml;
+        }
+
+        return false;
+    }
 }
