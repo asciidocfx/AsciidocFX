@@ -4,6 +4,10 @@ jdk:
 - oraclejdk8
 os:
 - linux
+addons:
+  apt:
+    packages:
+      - oracle-java8-installer
 script: mvn install -Pinstall-runtime
 before_script:
 - wget http://download-aws.ej-technologies.com/install4j/install4j_unix_6_0_3.tar.gz
