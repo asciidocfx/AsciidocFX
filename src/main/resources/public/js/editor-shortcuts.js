@@ -643,6 +643,13 @@ editor.commands.addCommand({
             afx.getShortcutProvider().getProvider().addCode("");
             return;
         }
+
+
+        if(textRange == "show:worker") {
+            afx.showWorkerPane();
+            return;
+        }
+
         // src,ruby or src.ruby tab
         var srcMatch = textRange.match(/src(\.|,)(\w+)/);
         if (Array.isArray(srcMatch)) {

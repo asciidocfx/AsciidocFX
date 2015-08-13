@@ -591,10 +591,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         this.previewTab = new PreviewTab("Preview", htmlPane);
         this.previewTab.setClosable(false);
 
-        PreviewTab workerTab = new PreviewTab("Worker", workerPane);
-
         threadService.runActionLater(() -> {
-//            previewTabPane.getTabs().add(workerTab);
             previewTabPane.getTabs().add(previewTab);
         }, true);
 
@@ -2468,6 +2465,14 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     @FXML
     public void showSettings() {
         configurationService.showConfig();
+    }
+
+    @WebkitCall(from = "editor-shortcut")
+    public void showWorkerPane() {
+        threadService.runActionLater(() -> {
+            PreviewTab workerTab = new PreviewTab("Worker Pane", workerPane);
+            previewTabPane.getTabs().add(workerTab);
+        });
     }
 
     public void addRemoveRecentList(Path path) {
