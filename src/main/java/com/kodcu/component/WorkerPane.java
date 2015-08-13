@@ -11,6 +11,8 @@ import com.kodcu.other.IOHelper;
 import com.kodcu.service.ThreadService;
 import javafx.scene.web.WebView;
 import netscape.javascript.JSObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -30,6 +32,8 @@ public class WorkerPane extends ViewPanel {
     private final OdfConfigBean odfConfigBean;
     private final DocbookConfigBean docbookConfigBean;
     private final HtmlConfigBean htmlConfigBean;
+
+    private Logger logger = LoggerFactory.getLogger(WorkerPane.class);
 
     @Autowired
     public WorkerPane(ThreadService threadService, ApplicationController controller, Current current, PreviewConfigBean previewConfigBean, OdfConfigBean odfConfigBean, DocbookConfigBean docbookConfigBean, HtmlConfigBean htmlConfigBean) {
@@ -57,8 +61,10 @@ public class WorkerPane extends ViewPanel {
 
         Optional<Path> first = slide.findFirst();
 
-        if (!first.isPresent())
+        if (!first.isPresent()) {
+            logger.error("Template name : {} not found in {}", templateName, templateDir);
             return "";
+        }
 
         Path path = first.get();
 
