@@ -20,7 +20,7 @@ table(id=node.$id(),class=["table-block", node.$role()])
 									if tblsec == "$head"
 										- cell_content = cell.$text()
 									else
-										if cell.style == "verse" || cell.style == "literal"
+										if cell.$style() == "verse" || cell.$style() == "literal"
 											- cell_content = cell.$text()
 										else
 											- cell_content = cell.$content()
