@@ -1835,7 +1835,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                             previewTab.setContent(htmlPane);
                         }
 
-                        if (result.isBackend("revealjs") || result.isBackend("deckjs")) {
+                        if (result.isBackend("revealjs") || result.isBackend("deckjs") || result.isBackend("bespokejs")) {
                             slidePane.setBackend(result.getBackend());
                             slideConverter.convert(result.getRendered());
                         }

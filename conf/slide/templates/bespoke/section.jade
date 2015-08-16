@@ -1,0 +1,5 @@
+section.slide(id=node.$id(),class=["#{node.$role()}"])
+	- level = "h"+ (node.$level() +1)
+	#{level}
+		!{node.$title()}
+	!{node.$content()}

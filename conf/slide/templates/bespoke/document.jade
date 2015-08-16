@@ -1,0 +1,17 @@
+doctype html
+html(lang=node.document.$attr("lang", "tr"))
+	head
+		meta(charset='utf-8')
+		meta(name='viewport', content='width=device-width, initial-scale=1, maximum-scale=1')
+		each key in ["description","keywords","author","copyright"]
+			if node.$attr(key, false)
+				meta(name=key,content=node.$attr(key))
+		title= node.$doctitle()
+		link(rel='stylesheet', type='text/css', href='bespoke.js/build/build.css')
+		body
+			article
+				section
+					h1
+						!{node.$doctitle()}
+				!{node.$content()}
+			script(src='bespoke.js/build/build.js')

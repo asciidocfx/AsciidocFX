@@ -1,4 +1,6 @@
-include::_settings_reveal.adoc[]
+include::_settings_bespoke.adoc[]
+
+//include::_settings_reveal.adoc[]
 
 // include::_settings_deck.adoc[]
 
