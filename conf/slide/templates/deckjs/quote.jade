@@ -1,12 +1,12 @@
 div.quoteblock(id=node.$id(),class=[node.$role(), node['$option?']('step') ? "slide" : ""])
-	if node['$title?']()
-		div.title !{node.$title()}
-	blockquote
-		!{node.$content()}
-	if node['$attr?']('attribution')
-		div.attribution
-			cite
-				if node['$attr?']('citetitle')
-					!{node.$attr('attribution')}, !{node.$attr('citetitle')}
-				else
-					!{node.$attr('attribution')}
+  if node['$title?']()
+    div.title !{node.$title()}
+  blockquote
+    !{node.$content()}
+  if node['$attr?']('attribution')
+    div.attribution
+      cite
+        if node['$attr?']('citetitle')
+          !{node.$attr('attribution')}, !{node.$attr('citetitle')}
+        else
+          !{node.$attr('attribution')}

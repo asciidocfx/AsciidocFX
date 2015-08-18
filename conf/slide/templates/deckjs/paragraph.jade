@@ -1,6 +1,6 @@
 div.paragraph(id=node.$id(),class=[node.$role(), node['$option?']('step') ? "slide" : ""])
-	if node['$title?']()
-		div(class="title")
-			!{node.$title()}
-	p(class=node.$attr('position', ''))
-		!{node.$content()}
+  if node['$title?']()
+    div(class="title")
+      !{node.$title()}
+  p(class=node.$attr('position', ''))
+    !{node.$content()}

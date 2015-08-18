@@ -1,0 +1,11 @@
+unless node.$notitle() || !node['$has_header?']()
+  h1(id=node.$id()) !{node.$header().$title()}
+!{node.$content()}
+unless !node['$footnotes?']() || node['$attr?']('nofootnotes')
+  div(id='footnotes')
+    hr
+      each fn in node.$footnotes()
+        div.footnote(id='_footnote_' + fn.$index())
+          a(href='#_footnoteref_' + fn.$index())
+            !{fn.$index()}
+          !{fn.$text()}
