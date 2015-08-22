@@ -2470,6 +2470,26 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         configurationService.showConfig();
     }
 
+
+    @WebkitCall(from = "editor-shortcut")
+    public void showWorkerPane() {
+        threadService.runActionLater(() -> {
+            PreviewTab workerTab = new PreviewTab("Worker Pane", workerPane);
+            previewTabPane.getTabs().add(workerTab);
+        });
+    }
+
+    @WebkitCall
+    public void reloadLive(){
+        liveReloadPane.reload();
+        liveReloadPane.initializeDiffReplacer();
+    }
+
+    @WebkitCall
+    public void debug(Object param1,Object param2,Object param3){
+        System.out.println(param1);
+    }
+
     public void addRemoveRecentList(Path path) {
         if (Objects.isNull(path))
             return;

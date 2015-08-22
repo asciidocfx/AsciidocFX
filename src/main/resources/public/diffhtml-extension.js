@@ -1,9 +1,24 @@
-diff.enableProllyfill();
-document.DISABLE_WORKER = true;
+//diff.addTransitionState('attached', function (element) {
+//    // Fade in the main container after it's attached into the DOM.
+//    if (element.tagName == "style" || element.tagName == "STYLE") {
+//        afx.reloadLive()
+//    }
+//});
+
+diff.addTransitionState('textChanged', function (el, old, current) {
+    afx.debug(el, old, current);
+
+    //return;
+    //if(el){
+    //    if (el.tagName == "style" || el.tagName == "STYLE") {
+    //        afx.reloadLive()
+    //    }
+    //}
+});
 
 function createEmptyDom() {
     document.open();
-    document.write("<html></html>");
+    document.write("<html><head></head><body></body></html>");
     document.close();
     return document.querySelector('html');
 }
@@ -11,11 +26,13 @@ function createEmptyDom() {
 function updateDomdom(value) {
     var element = document.querySelector('html') || createEmptyDom();
 
-    element.diffOuterHTML = value;
+    if (value) {
+        if (value.length > 0) {
+            if (value[0] != "<") {
+                value = "<div>" + value + "</div>"
+            }
+        }
+    }
 
-    element.addTransitionState('added', function (newElement) {
-        document.querySelector("input").value = "newElement: " + newElement;
-    });
-
-
+    diff.outerHTML(element, value);
 }

@@ -54,6 +54,10 @@ public abstract class ViewPanel extends AnchorPane {
 
     public abstract void browse();
 
+    public void reload(){
+        webEngine().reload();
+    }
+
     public void onscroll(Object pos, Object max) {
 
         if (Platform.isFxApplicationThread()) {
