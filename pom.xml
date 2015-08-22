@@ -81,43 +81,20 @@
         </dependency>
         <!--PDF Generate with Apache FOP-->
         <dependency>
-            <groupId>org.apache.avalon.framework</groupId>
-            <artifactId>avalon-framework-api</artifactId>
-            <version>4.3.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.avalon.framework</groupId>
-            <artifactId>avalon-framework-impl</artifactId>
-            <version>4.3.1</version>
-        </dependency>
-        <dependency>
-            <groupId>net.sf.xslthl</groupId>
-            <artifactId>xslthl</artifactId>
-            <version>2.1.0</version>
-        </dependency>
-        <dependency>
             <groupId>org.apache.xmlgraphics</groupId>
             <artifactId>fop</artifactId>
-            <version>1.1</version>
+            <version>2.0</version>
             <exclusions>
                 <exclusion>
-                    <groupId>org.apache.avalon.framework</groupId>
-                    <artifactId>avalon-framework-api</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.apache.avalon.framework</groupId>
-                    <artifactId>avalon-framework-impl</artifactId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>batik-js</artifactId>
-                    <groupId>org.apache.xmlgraphics</groupId>
+                    <artifactId>xalan</artifactId>
+                    <groupId>xalan</groupId>
                 </exclusion>
             </exclusions>
         </dependency>
         <dependency>
-            <groupId>saxon</groupId>
-            <artifactId>saxon</artifactId>
-            <version>${saxon.version}</version>
+            <groupId>xalan</groupId>
+            <artifactId>xalan</artifactId>
+            <version>2.7.2</version>
         </dependency>
         <dependency>
             <groupId>org.zeroturnaround</groupId>
@@ -129,11 +106,11 @@
             <artifactId>plantuml</artifactId>
             <version>8027</version>
         </dependency>
-        <dependency>
-            <groupId>org.apache.xmlgraphics</groupId>
-            <artifactId>batik-codec</artifactId>
-            <version>1.7</version>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>org.apache.xmlgraphics</groupId>-->
+            <!--<artifactId>batik-codec</artifactId>-->
+            <!--<version>1.7</version>-->
+        <!--</dependency>-->
         <dependency>
             <groupId>de.tototec</groupId>
             <artifactId>de.tototec.cmdoption</artifactId>

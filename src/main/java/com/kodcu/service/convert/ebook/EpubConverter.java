@@ -1,6 +1,5 @@
 package com.kodcu.service.convert.ebook;
 
-import com.icl.saxon.TransformerFactoryImpl;
 import com.kodcu.controller.ApplicationController;
 import com.kodcu.other.Current;
 import com.kodcu.other.IOHelper;
@@ -17,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
@@ -106,23 +106,20 @@ public class EpubConverter {
 
                     Path epubTemp = Files.createTempDirectory("epub");
 
-                    TransformerFactory factory = new TransformerFactoryImpl();
-
-                    File xslFile = configPath.resolve("docbook/epub3/chunk.xsl").toFile();
-                    StreamSource xslSource = new StreamSource(xslFile);
-
-                    Transformer transformer = factory.newTransformer(xslSource);
+                    TransformerFactory factory = TransformerFactory.newInstance();
+                    Transformer transformer = factory.newTransformer(new StreamSource(configPath.resolve("docbook/epub3/chunk.xsl").toFile()));
 
                     docBookConverter.convert(false, docbook -> {
 
                         threadService.runTaskLater(() -> {
                             Path oebpsPath = epubTemp.resolve("OEBPS");
-                            Path mimePath = epubTemp.resolve("mimetype");
-                            Path metaPath = epubTemp.resolve("META-INF");
                             transformer.setParameter("base.dir", oebpsPath.toString());
                             try (StringReader reader = new StringReader(docbook);) {
-                                StreamSource xmlSource = new StreamSource(reader);
-                                IOHelper.transform(transformer, xmlSource, new StreamResult());
+                                StreamSource src = new StreamSource(reader);
+                                transformer.transform(src, new StreamResult(new StringWriter()));
+                            } catch (TransformerException e) {
+                                logger.error("Problem occured while converting to Epub", e);
+                                return;
                             }
 
                             Path containerXml = epubTemp.resolve("META-INF/container.xml");
