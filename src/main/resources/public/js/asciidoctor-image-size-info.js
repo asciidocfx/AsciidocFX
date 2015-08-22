@@ -16,7 +16,7 @@
         return (def.$process = function (document) {
                 var self = this;
 
-                if (!document.$attr('omit-image-size')['$nil?']())
+                if (document.$attr('apply-image-size')['$nil?']())
                     return document;
 
                 var backend = document.$backend();

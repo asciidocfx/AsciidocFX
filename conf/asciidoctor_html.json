@@ -13,6 +13,7 @@
         "env-browser":"true",
         "idprefix":"true",
         "idseparator":"-",
-        "sectanchors":"true"
+        "sectanchors":"true",
+        "apply-image-size":"true"
     }
 }
