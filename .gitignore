@@ -40,3 +40,5 @@ Desktop.ini
 *.log
 asciidocfx.install4j~
 log
+
+nashorn_code_cache
