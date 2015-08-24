@@ -1,5 +1,6 @@
-package com.kodcu.component;
+package com.kodcu.engine;
 
+import com.kodcu.component.ViewPanel;
 import com.kodcu.config.DocbookConfigBean;
 import com.kodcu.config.HtmlConfigBean;
 import com.kodcu.config.OdfConfigBean;
@@ -9,6 +10,7 @@ import com.kodcu.other.ConverterResult;
 import com.kodcu.other.Current;
 import com.kodcu.other.IOHelper;
 import com.kodcu.service.ThreadService;
+import javafx.application.Platform;
 import javafx.scene.web.WebView;
 import netscape.javascript.JSObject;
 import org.slf4j.Logger;
@@ -20,23 +22,24 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
 
 /**
  * Created by usta on 09.04.2015.
  */
-@Component
-public class WorkerPane extends ViewPanel {
+@Component("WebkitEngine")
+public class AsciidocWebkitConverter extends ViewPanel implements AsciidocConvertible {
 
     private final PreviewConfigBean previewConfigBean;
     private final OdfConfigBean odfConfigBean;
     private final DocbookConfigBean docbookConfigBean;
     private final HtmlConfigBean htmlConfigBean;
 
-    private Logger logger = LoggerFactory.getLogger(WorkerPane.class);
+    private Logger logger = LoggerFactory.getLogger(AsciidocWebkitConverter.class);
 
     @Autowired
-    public WorkerPane(ThreadService threadService, ApplicationController controller, Current current, PreviewConfigBean previewConfigBean, OdfConfigBean odfConfigBean, DocbookConfigBean docbookConfigBean, HtmlConfigBean htmlConfigBean) {
+    public AsciidocWebkitConverter(ThreadService threadService, ApplicationController controller, Current current, PreviewConfigBean previewConfigBean, OdfConfigBean odfConfigBean, DocbookConfigBean docbookConfigBean, HtmlConfigBean htmlConfigBean) {
         super(threadService, controller, current);
         this.previewConfigBean = previewConfigBean;
         this.odfConfigBean = odfConfigBean;
@@ -46,13 +49,6 @@ public class WorkerPane extends ViewPanel {
 
     public WebView getWebView() {
         return webView;
-    }
-
-    public ConverterResult convertDocbook(String asciidoc) {
-        this.setMember("editorValue", asciidoc);
-        this.setMember("docbookOptions", docbookConfigBean.getJSON().toString());
-        JSObject result = (JSObject) webEngine().executeScript(String.format("convertDocbook(editorValue,docbookOptions)"));
-        return new ConverterResult(result);
     }
 
     public String getTemplate(String templateName, String templateDir) throws IOException {
@@ -82,7 +78,8 @@ public class WorkerPane extends ViewPanel {
                 .showDocument(String.format("http://localhost:%d/index.html", controller.getPort()));
     }
 
-    public void fillOutlines(JSObject doc) {
+    @Override
+    public void fillOutlines(Object doc) {
         getWindow().call("fillOutlines", doc);
     }
 
@@ -91,28 +88,59 @@ public class WorkerPane extends ViewPanel {
         return (String) webEngine().executeScript("findRenderedSelection(context)");
     }
 
+    private ConverterResult convert(String functionName, String asciidoc, String config) {
+
+        if (!Platform.isFxApplicationThread()) {
+            final CompletableFuture<ConverterResult> completableFuture = new CompletableFuture<>();
+
+            completableFuture.runAsync(() -> {
+                threadService.runActionLater(() -> {
+                    try {
+                        ConverterResult result = convert(functionName, asciidoc, config);
+                        completableFuture.complete(result);
+                    } catch (Exception e) {
+                        completableFuture.completeExceptionally(e);
+                    }
+                });
+            }, threadService.executor());
+
+            return completableFuture.join();
+        }
+
+//        long start = System.currentTimeMillis();
+
+        this.setMember("editorValue", asciidoc);
+        this.setMember("editorOptions", config);
+        JSObject result = (JSObject) webEngine().executeScript(String.format("%s(editorValue,editorOptions)", functionName));
+        ConverterResult converterResult = new ConverterResult(result);
+//        logger.debug("Rendered in {}", (System.currentTimeMillis() - start));
+        return converterResult;
+
+    }
+
+    @Override
+    public ConverterResult convertDocbook(String asciidoc) {
+        String config = docbookConfigBean.getJSON().toString();
+        return convert("convertDocbook", asciidoc, config);
+    }
+
+    @Override
     public ConverterResult convertAsciidoc(String asciidoc) {
-        this.setMember("editorValue", asciidoc);
-        this.setMember("asciidocOptions", previewConfigBean.getJSON().toString());
-        JSObject result = (JSObject) webEngine().executeScript("convertAsciidoc(editorValue,asciidocOptions)");
-
-        return new ConverterResult(result);
+        String config = previewConfigBean.getJSON().toString();
+        return convert("convertAsciidoc", asciidoc, config);
     }
 
+    @Override
     public ConverterResult convertHtml(String asciidoc) {
-        this.setMember("editorValue", asciidoc);
-        this.setMember("htmlOptions", htmlConfigBean.getJSON().toString());
-        JSObject result = (JSObject) webEngine().executeScript("convertHtml(editorValue,htmlOptions)");
-
-        return new ConverterResult(result);
+        String config = htmlConfigBean.getJSON().toString();
+        return convert("convertHtml", asciidoc, config);
     }
 
+    @Override
     public void convertOdf(String asciidoc) {
-        this.setMember("editorValue", asciidoc);
-        this.setMember("odfOptions", odfConfigBean.getJSON().toString());
-        webEngine().executeScript("convertOdf(editorValue,odfOptions)");
+        String config = odfConfigBean.getJSON().toString();
+        convert("convertOdf", asciidoc, config);
     }
-
 
     public boolean isHtml(String text) {
         Object isHtml = this.call("isHtml", text);

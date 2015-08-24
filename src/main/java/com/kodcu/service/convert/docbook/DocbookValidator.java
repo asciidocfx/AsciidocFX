@@ -3,6 +3,7 @@ package com.kodcu.service.convert.docbook;
 import com.kodcu.controller.ApplicationController;
 import com.kodcu.other.Current;
 import com.kodcu.other.IOHelper;
+import com.kodcu.service.ui.IndikatorService;
 import com.kodcu.service.ui.TabService;
 import javafx.application.Platform;
 import org.slf4j.Logger;
@@ -28,14 +29,17 @@ public class DocbookValidator {
     private final ApplicationController controller;
     private final TabService tabService;
     private final Current current;
+    private final IndikatorService indikatorService;
 
     private Logger logger = LoggerFactory.getLogger(DocbookValidator.class);
 
+
     @Autowired
-    public DocbookValidator(ApplicationController controller, TabService tabService, Current current) {
+    public DocbookValidator(ApplicationController controller, TabService tabService, Current current, IndikatorService indikatorService) {
         this.controller = controller;
         this.tabService = tabService;
         this.current = current;
+        this.indikatorService = indikatorService;
     }
 
     public boolean validateDocbook(String rendered) {
@@ -72,7 +76,7 @@ public class DocbookValidator {
                 logger.error("Problem occured while validating Docbook content", e);
             }
 
-
+            indikatorService.stopProgressBar();
             return false;
         }
     }

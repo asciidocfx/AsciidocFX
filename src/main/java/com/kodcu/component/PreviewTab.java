@@ -1,6 +1,8 @@
 package com.kodcu.component;
 
+import javafx.application.Platform;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.control.Tab;
 
 import java.util.Objects;
@@ -19,6 +21,21 @@ public class PreviewTab extends Tab {
     }
 
     public PreviewTab() {
+    }
+
+    public void setChild(Node node) {
+
+        if (!Platform.isFxApplicationThread()) {
+            Platform.runLater(() -> {
+                setChild(node);
+            });
+            return;
+        }
+
+        if (super.getContent() == node)
+            return;
+
+        super.setContent(node);
     }
 
     @Override

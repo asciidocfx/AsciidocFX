@@ -6,6 +6,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.install4j.api.launcher.ApplicationLauncher;
 import com.kodcu.component.*;
 import com.kodcu.config.*;
+import com.kodcu.engine.AsciidocConverterProvider;
+import com.kodcu.engine.AsciidocWebkitConverter;
 import com.kodcu.logging.MyLog;
 import com.kodcu.logging.TableViewLogAppender;
 import com.kodcu.other.*;
@@ -37,7 +39,6 @@ import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.beans.property.*;
 import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -77,7 +78,6 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
-import org.yaml.snakeyaml.Yaml;
 
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
@@ -95,6 +95,7 @@ import java.security.CodeSource;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import java.util.regex.Pattern;
@@ -113,7 +114,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     public HtmlPane htmlPane;
 
     @Autowired
-    public WorkerPane workerPane;
+    public AsciidocWebkitConverter asciidocWebkitConverter;
 
     public Label odfPro;
     public VBox logVBox;
@@ -210,9 +211,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     private AsciidocTableController asciidocTableController;
 
     @Autowired
-    private GitbookToAsciibookService gitbookToAsciibook;
-
-    @Autowired
     private PathOrderService pathOrder;
 
     @Autowired
@@ -303,9 +301,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     @Autowired
     private ChartProvider chartProvider;
 
-    @Autowired
-    private MarkdownService markdownService;
-
     private Stage stage;
     private StringProperty lastRendered = new SimpleStringProperty();
     private List<WebSocketSession> sessionList = new ArrayList<>();
@@ -366,6 +361,9 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     @Autowired
     private StoredConfigBean storedConfigBean;
 
+    @Autowired
+    private AsciidocConverterProvider converterProvider;
+
     public void createAsciidocTable() {
         asciidocTableStage.showAndWait();
     }
@@ -421,40 +419,29 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     public void convertDocbook(boolean askPath) {
 
+        if (!current.currentPath().isPresent())
+            saveDoc();
+
         threadService.runTaskLater(() -> {
-            if (!current.currentPath().isPresent())
-                saveDoc();
 
-            threadService.runActionLater(() -> {
+            indikatorService.startProgressBar();
 
-                Path currentTabPath = current.currentPath().get();
-                Path currentTabPathDir = currentTabPath.getParent();
-                String tabText = current.getCurrentTabText().replace("*", "").trim();
+            Path docbookPath = directoryService.getSaveOutputPath(ExtensionFilters.DOCBOOK, askPath);
 
-                Path docbookPath;
+            Consumer<String> step = docbook -> {
+                final String finalDocbook = docbook;
+                threadService.runTaskLater(() -> {
+                    IOHelper.writeToFile(docbookPath, finalDocbook, CREATE, TRUNCATE_EXISTING, WRITE);
+                });
+                threadService.runActionLater(() -> {
+                    ObservableList<String> recentFiles = storedConfigBean.getRecentFiles();
+                    recentFiles.remove(docbookPath.toString());
+                    recentFiles.add(0, docbookPath.toString());
+                });
+                indikatorService.stopProgressBar();
+            };
 
-                if (askPath) {
-                    FileChooser fileChooser = directoryService.newFileChooser("Save Docbook file");
-                    fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Docbook", "*.xml"));
-                    docbookPath = fileChooser.showSaveDialog(null).toPath();
-                } else
-                    docbookPath = currentTabPathDir.resolve(tabText + ".xml");
-
-                Consumer<String> step = docbook -> {
-                    final String finalDocbook = docbook;
-                    threadService.runTaskLater(() -> {
-                        IOHelper.writeToFile(docbookPath, finalDocbook, CREATE, TRUNCATE_EXISTING, WRITE);
-                    });
-                    threadService.runActionLater(() -> {
-                        ObservableList<String> recentFiles = storedConfigBean.getRecentFiles();
-                        recentFiles.remove(docbookPath.toString());
-                        recentFiles.add(0, docbookPath.toString());
-                    });
-                };
-
-                docBookConverter.convert(false, step);
-
-            });
+            docBookConverter.convert(false, step);
 
         });
 
@@ -465,7 +452,9 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     }
 
     private void convertEpub(boolean askPath) {
-        epubConverter.produceEpub3(askPath);
+        threadService.runTaskLater(() -> {
+            epubConverter.produceEpub3(askPath);
+        });
     }
 
     @WebkitCall(from = "asciidoctor-math")
@@ -486,7 +475,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     private void convertMobi(boolean askPath) {
 
-
         if (Objects.nonNull(editorConfigBean.getKindlegen())) {
             if (!Files.exists(editorConfigBean.getKindlegen())) {
                 editorConfigBean.setKindlegen(null);
@@ -499,7 +487,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             if (Objects.isNull(kindlegenFile))
                 return;
 
-            editorConfigBean.setKindlegen(kindlegenFile.toPath().getParent());
+            editorConfigBean.setKindlegen(kindlegenFile.toPath());
         }
 
         threadService.runTaskLater(() -> {
@@ -565,6 +553,8 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+
+        threadService.scheduleWithFixedDelay(this::renderLoop, 150);
 
         initializePaths();
         initializePosixPermissions();
@@ -779,18 +769,18 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             }
         });
 
-        workerPane.webEngine().setOnAlert(event -> {
+        asciidocWebkitConverter.webEngine().setOnAlert(event -> {
             if ("WORKER_LOADED".equals(event.getData())) {
 
-                if (workerPane.getMember("afx").equals("undefined")) {
-                    workerPane.setMember("afx", this);
+                if (asciidocWebkitConverter.getMember("afx").equals("undefined")) {
+                    asciidocWebkitConverter.setMember("afx", this);
                 }
 
                 htmlPane.load(String.format("http://localhost:%d/preview.html", port));
             }
         });
 
-        workerPane.load(String.format("http://localhost:%d/worker.html", port));
+        asciidocWebkitConverter.load(String.format("http://localhost:%d/worker.html", port));
 
         openFileTreeItem.setOnAction(event -> {
 
@@ -1080,14 +1070,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             }
         });
 
-        editorConfigBean.directoryPanelProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue) {
-                showFileBrowser();
-            } else {
-                hideFileBrowser(null);
-            }
-        });
-
         ListChangeListener<String> themeChangeListener = c -> {
             c.next();
             if (c.wasAdded()) {
@@ -1147,12 +1129,9 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             if (empty) this.includeClearAllToFavoriteDir();
         });
 
-        storedConfigBean.workingDirectoryProperty().addListener(new ChangeListener<String>() {
-            @Override
-            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-                if (Objects.nonNull(newValue)) {
-                    directoryService.changeWorkigDir(Paths.get(newValue));
-                }
+        storedConfigBean.workingDirectoryProperty().addListener((observable, oldValue, newValue) -> {
+            if (Objects.nonNull(newValue)) {
+                directoryService.changeWorkigDir(Paths.get(newValue));
             }
         });
 
@@ -1265,7 +1244,9 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         if (!current.currentPath().isPresent())
             this.saveDoc();
 
-        odfConverter.generateODFDocument(askPath);
+        threadService.runTaskLater(() -> {
+            odfConverter.generateODFDocument(askPath);
+        });
 
     }
 
@@ -1538,10 +1519,10 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     }
 
     @WebkitCall(from = "index")
-    public void fillOutlines(JSObject doc) {
+    public void fillOutlines(Object doc) {
         if (outlineTab.isSelected())
             threadService.runActionLater(() -> {
-                workerPane.fillOutlines(doc);
+                converterProvider.get(previewConfigBean).fillOutlines(doc);
             });
     }
 
@@ -1712,13 +1693,13 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     public void scrollToCurrentLine(String text) {
 
         if (previewTab.getContent() == slidePane) {
-            slidePane.flipThePage(workerPane.findRenderedSelection(text)); // slide
+            slidePane.flipThePage(asciidocWebkitConverter.findRenderedSelection(text)); // slide
         }
 
         if (previewTab.getContent() == htmlPane) {
             threadService.runActionLater(() -> {
                 try {
-                    htmlPane.runScroller(workerPane.findRenderedSelection(text));
+                    htmlPane.runScroller(asciidocWebkitConverter.findRenderedSelection(text));
                 } catch (Exception e) {
                     logger.debug(e.getMessage(), e);
                 }
@@ -1806,73 +1787,91 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             current.setCurrentTabText(currentTabText + " *");
     }
 
-    @WebkitCall(from = "editor")
-    public void textListener(String text, String mode) {
+    private AtomicReference<Tuple<String, String>> lastTupleReference = new AtomicReference<>();
+    private AtomicReference<Tuple<String, String>> latestTupleReference = new AtomicReference<>();
+
+    private void renderLoop() {
 
         if (stopRendering.get()) {
             return;
         }
 
-        threadService.runTaskLater(() -> {
+        Tuple<String, String> tuple = latestTupleReference.get();
+
+        if (Objects.isNull(tuple))
+            return;
+
+        if (tuple.equals(lastTupleReference.get()))
+            return;
+
+        lastTupleReference.set(tuple);
+
+        String text = tuple.getKey();
+        String mode = tuple.getValue();
+
+        latestTupleReference.set(null);
+
+        try {
 
             boolean bookArticleHeader = this.bookArticleHeaderRegex.matcher(text).find();
             boolean forceInclude = this.forceIncludeRegex.matcher(text).find();
 
-            threadService.runActionLater(() -> {
+            if ("asciidoc".equalsIgnoreCase(mode)) {
 
-                try {
-                    if ("asciidoc".equalsIgnoreCase(mode)) {
+                if (bookArticleHeader && !forceInclude)
+                    setIncludeAsciidocResource(true);
 
-                        if (bookArticleHeader && !forceInclude)
-                            setIncludeAsciidocResource(true);
+                ConverterResult result = converterProvider.get(previewConfigBean).convertAsciidoc(text);
 
-                        ConverterResult result = workerPane.convertAsciidoc(text);
+                setIncludeAsciidocResource(false);
 
-                        setIncludeAsciidocResource(false);
-
-                        if (result.isBackend("html5")) {
-                            lastRendered.setValue(result.getRendered());
-                            previewTab.setContent(htmlPane);
-                        }
-
-                        if (result.isBackend("revealjs") || result.isBackend("deckjs")) {
-                            slidePane.setBackend(result.getBackend());
-                            slideConverter.convert(result.getRendered());
-                        }
-
-                    } else if ("html".equalsIgnoreCase(mode)) {
-
-                        if (previewTab.getContent() != liveReloadPane) {
-                            liveReloadPane.setOnSuccess(() -> {
-                                liveReloadPane.setMember("afx", this);
-                                liveReloadPane.initializeDiffReplacer();
-                            });
-
-                            String format = String.format("http://localhost:%d/livereload/%s/index.reload", port, directoryService.interPath());
-                            liveReloadPane.load(format);
-                        } else {
-                            liveReloadPane.updateDomdom();
-                        }
-
-                        previewTab.setContent(liveReloadPane);
-
-                    } else if ("markdown".equalsIgnoreCase(mode)) {
-                        markdownService.convertToAsciidoc(text, asciidoc -> {
-                            threadService.runActionLater(() -> {
-                                ConverterResult result = workerPane.convertAsciidoc(asciidoc);
-                                result.afterRender(lastRendered::setValue);
-                            });
-                        });
-                        previewTab.setContent(htmlPane);
-                    }
-                } catch (Exception e) {
-                    setIncludeAsciidocResource(false);
-                    logger.error("Problem occured while rendering content", e);
+                if (result.isBackend("html5")) {
+                    lastRendered.setValue(result.getRendered());
+                    previewTab.setChild(htmlPane);
                 }
 
-            });
+                if (result.isBackend("revealjs") || result.isBackend("deckjs")) {
+                    slidePane.setBackend(result.getBackend());
+                    slideConverter.convert(result.getRendered());
+                }
 
-        });
+            } else if ("html".equalsIgnoreCase(mode)) {
+
+                if (previewTab.getContent() != liveReloadPane) {
+                    liveReloadPane.setOnSuccess(() -> {
+                        liveReloadPane.setMember("afx", this);
+                        liveReloadPane.initializeDiffReplacer();
+                    });
+
+                    String format = String.format("http://localhost:%d/livereload/%s/index.reload", port, directoryService.interPath());
+                    liveReloadPane.load(format);
+                } else {
+                    liveReloadPane.updateDomdom();
+                }
+
+                previewTab.setChild(liveReloadPane);
+
+            } else if ("markdown".equalsIgnoreCase(mode)) {
+                MarkdownService markdownService = applicationContext.getBean(MarkdownService.class);
+                markdownService.convertToAsciidoc(text, asciidoc -> {
+                    threadService.runActionLater(() -> {
+                        ConverterResult result = converterProvider.get(previewConfigBean).convertAsciidoc(asciidoc);
+                        result.afterRender(lastRendered::setValue);
+                    });
+                });
+                previewTab.setChild(htmlPane);
+            }
+
+        } catch (Exception e) {
+            setIncludeAsciidocResource(false);
+            logger.error("Problem occured while rendering content", e);
+        }
+    }
+
+
+    @WebkitCall(from = "editor")
+    public void textListener(String text, String mode) {
+        latestTupleReference.set(new Tuple<>(text, mode));
     }
 
     @WebkitCall(from = "asciidoctor-odf.js")
@@ -1883,7 +1882,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     @WebkitCall
     public String getTemplate(String templateName, String templateDir) throws IOException {
-        return workerPane.getTemplate(templateName, templateDir);
+        return asciidocWebkitConverter.getTemplate(templateName, templateDir);
     }
 
     public void cutCopy(String data) {
@@ -1932,7 +1931,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                     completableFuture.complete(IOHelper.readFile(path));
                 }
             });
-        });
+        }, threadService.executor());
 
         return completableFuture.join();
     }
@@ -1972,10 +1971,10 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
         try {
 
-            if (clipboard.hasHtml() || workerPane.isHtml(clipboard.getString())) {
+            if (clipboard.hasHtml() || asciidocWebkitConverter.isHtml(clipboard.getString())) {
                 String content = Optional.ofNullable(clipboard.getHtml()).orElse(clipboard.getString());
                 if (current.currentTab().isAsciidoc() || current.currentTab().isMarkdown())
-                    content = (String) workerPane.call(current.currentTab().htmlToMarkupFunction(), content);
+                    content = (String) asciidocWebkitConverter.call(current.currentTab().htmlToMarkupFunction(), content);
                 editorPane.insert(content);
                 return;
             }
@@ -2291,7 +2290,8 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         threadService.runTaskLater(() -> {
             logger.debug("Gitbook to Asciibook conversion started");
             indikatorService.startProgressBar();
-            gitbookToAsciibook.gitbookToAsciibook(finalGitbookRoot.toPath(), finalAsciibookRoot.toPath());
+            GitbookToAsciibookService toAsciiBook = applicationContext.getBean(GitbookToAsciibookService.class);
+            toAsciiBook.gitbookToAsciibook(finalGitbookRoot.toPath(), finalAsciibookRoot.toPath());
             indikatorService.stopProgressBar();
             logger.debug("Gitbook to Asciibook conversion ended");
         });
@@ -2470,7 +2470,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     @WebkitCall(from = "editor-shortcut")
     public void showWorkerPane() {
         threadService.runActionLater(() -> {
-            PreviewTab workerTab = new PreviewTab("Worker Pane", workerPane);
+            PreviewTab workerTab = new PreviewTab("Worker Pane", asciidocWebkitConverter);
             previewTabPane.getTabs().add(workerTab);
         });
     }

@@ -83,16 +83,14 @@ public class Current {
 
         CompletableFuture.runAsync(() -> {
             threadService.runActionLater(() -> {
-                try{
+                try {
                     Object result = currentEngine().executeScript("editor.getValue()");
                     completableFuture.complete((String) result);
-                }
-                catch (Exception ex){
+                } catch (Exception ex) {
                     completableFuture.completeExceptionally(ex);
                 }
-
             });
-        });
+        }, threadService.executor());
 
         return completableFuture.join();
 

@@ -23,6 +23,12 @@ public class ConverterResult {
         setDoctype(doctype);
     }
 
+    public ConverterResult(jdk.nashorn.api.scripting.JSObject jsObject) {
+        setRendered((String) jsObject.getMember("rendered"));
+        setBackend((String) jsObject.getMember("backend"));
+        setDoctype((String) jsObject.getMember("doctype"));
+    }
+
     public void setRendered(String rendered) {
         this.rendered = rendered;
     }

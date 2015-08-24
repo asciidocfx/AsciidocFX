@@ -6,19 +6,25 @@ import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import javax.script.Invocable;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.nio.charset.Charset;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
 /**
  * Created by usta on 04.03.2015.
  */
+@Lazy
 @Component
 public class MarkdownService {
 
@@ -26,44 +32,48 @@ public class MarkdownService {
 
     private final Current current;
     private final ThreadService threadService;
-    private final ScriptEngineManager engineManager;
-    private final ScriptEngine js;
+    private final ScriptEngine scriptEngine;
+    private final CompletableFuture completableFuture = new CompletableFuture();
 
     @Autowired
-    public MarkdownService(Current current, ThreadService threadService) {
+    public MarkdownService(Current current, ThreadService threadService, ScriptEngine scriptEngine) {
         this.current = current;
         this.threadService = threadService;
-        engineManager = new ScriptEngineManager();
-        js = engineManager.getEngineByName("js");
+        this.scriptEngine = scriptEngine;
 
-        try {
-            InputStream markedStream = MarkdownService.class.getResourceAsStream("/public/js/marked.js");
-            InputStream markedExtensionStream = MarkdownService.class.getResourceAsStream("/public/js/marked-extension.js");
-            String marked = IOUtils.toString(markedStream, Charset.forName("UTF-8"));
-            String markedExtension = IOUtils.toString(markedExtensionStream, Charset.forName("UTF-8"));
-            IOUtils.closeQuietly(markedStream);
-            IOUtils.closeQuietly(markedExtensionStream);
+        completableFuture.runAsync(() -> {
+            try {
+                List<String> scripts = Arrays.asList("marked.js", "marked-extension.js");
 
-            js.eval(marked);
-            js.eval(markedExtension);
-
-        } catch (Exception e) {
-            logger.error("Could not evaluate initial javascript", e);
-        }
+                for (String script : scripts) {
+                    try (InputStream inputStream = MarkdownService.class.getResourceAsStream("/public/js/" + script);
+                         InputStreamReader inputStreamReader = new InputStreamReader(inputStream);) {
+                        scriptEngine.eval(inputStreamReader);
+                    }
+                }
+                completableFuture.complete(null);
+            } catch (Exception e) {
+                logger.error("Could not evaluate initial javascript", e);
+                completableFuture.complete(e);
+            }
+        }, threadService.executor());
     }
 
     public void convertToAsciidoc(String content, Consumer<String>... next) {
 
         threadService.runTaskLater(() -> {
+
             if (Objects.isNull(content))
                 return;
 
+            completableFuture.join();
+
             Object eval = "";
             try {
-                Invocable invocable = (Invocable) js;
+                Invocable invocable = (Invocable) scriptEngine;
                 eval = invocable.invokeFunction("markdownToAsciidoc", content);
             } catch (Exception e) {
-                logger.error("Problem occured while converting Asciidoc to Markdown",e);
+                logger.error("Problem occured while converting Asciidoc to Markdown", e);
             } finally {
                 for (Consumer<String> n : next) {
                     n.accept((String) eval);

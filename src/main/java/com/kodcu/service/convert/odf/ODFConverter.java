@@ -1,16 +1,17 @@
 package com.kodcu.service.convert.odf;
 
+import com.kodcu.engine.AsciidocConverterProvider;
 import com.kodcu.component.HtmlPane;
-import com.kodcu.component.WorkerPane;
+import com.kodcu.engine.AsciidocWebkitConverter;
+import com.kodcu.config.OdfConfigBean;
 import com.kodcu.controller.ApplicationController;
 import com.kodcu.other.Constants;
 import com.kodcu.other.Current;
+import com.kodcu.other.ExtensionFilters;
 import com.kodcu.service.DirectoryService;
 import com.kodcu.service.ThreadService;
 import com.kodcu.service.convert.Traversable;
-import com.kodcu.service.convert.pdf.AbstractPdfConverter;
 import com.kodcu.service.ui.IndikatorService;
-import javafx.stage.FileChooser;
 import netscape.javascript.JSObject;
 import org.odftoolkit.odfdom.dom.element.draw.DrawFrameElement;
 import org.odftoolkit.odfdom.dom.element.draw.DrawImageElement;
@@ -57,10 +58,11 @@ public class ODFConverter implements Traversable {
     private final ApplicationController controller;
     private final Current current;
     private final HtmlPane htmlPane;
-    private final WorkerPane workerPane;
+    private final AsciidocWebkitConverter asciidocWebkitConverter;
     private final ThreadService threadService;
     private final IndikatorService indikatorService;
     private final DirectoryService directoryService;
+    private final OdfConfigBean odfConfigBean;
 
     private TextDocument odtDocument;
     private List<JSObject> unstructuredDocument = new ArrayList<>();
@@ -68,17 +70,20 @@ public class ODFConverter implements Traversable {
             "page_break", "olist", "ulist", "admonition", "thematic_break", "sidebar", "pass", "example", "literal", "verse", "open", "dlist", "video").stream().anyMatch(s -> s.equals(name));
     private final Predicate<String> parentElement = (name) -> Arrays.asList("section", "quote", "admonition", "sidebar", "example", "verse", "open").stream().anyMatch(s -> s.equals(name));
     private Path odtFilePath;
+    private final AsciidocConverterProvider converterProvider;
 
     @Autowired
     public ODFConverter(final ApplicationController controller, final Current current, final HtmlPane htmlPane,
-                        WorkerPane workerPane, final ThreadService threadService, final IndikatorService indikatorService, DirectoryService directoryService) {
+                        AsciidocWebkitConverter asciidocWebkitConverter, final ThreadService threadService, final IndikatorService indikatorService, DirectoryService directoryService, OdfConfigBean odfConfigBean, AsciidocConverterProvider converterProvider) {
         this.controller = controller;
         this.current = current;
         this.htmlPane = htmlPane;
-        this.workerPane = workerPane;
+        this.asciidocWebkitConverter = asciidocWebkitConverter;
         this.threadService = threadService;
         this.indikatorService = indikatorService;
         this.directoryService = directoryService;
+        this.odfConfigBean = odfConfigBean;
+        this.converterProvider = converterProvider;
     }
 
     public void generateODFDocument(boolean askPath) {
@@ -87,17 +92,13 @@ public class ODFConverter implements Traversable {
         final Path currentTabPath = current.currentPath().get();
         final Path currentTabPathDir = currentTabPath.getParent();
 
-        if (askPath) {
-            final FileChooser fileChooser = directoryService.newFileChooser("Save ODt file");
-            fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("ODt", "*.odt"));
-            odtFilePath = fileChooser.showSaveDialog(null).toPath();
-        } else
-            odtFilePath = currentTabPathDir.resolve(String.format("%s.odt", currentTabPath.getFileName()));
+        odtFilePath = directoryService.getSaveOutputPath(ExtensionFilters.ODT, askPath);
+
         indikatorService.startProgressBar();
         logger.debug("ODF conversion started");
         try {
             this.openOdtDocument();
-            workerPane.convertOdf(current.currentEditorValue());
+            converterProvider.get(odfConfigBean).convertOdf(current.currentEditorValue());
             this.saveOdtDocument();
         } catch (Exception e) {
             logger.error("Problem occured while converting to ODF", e);

@@ -1,12 +1,13 @@
 package com.kodcu.service;
 
+import com.kodcu.other.ConverterResult;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.*;
 import java.util.function.Consumer;
 
 /**
@@ -16,14 +17,12 @@ import java.util.function.Consumer;
 public class ThreadService {
 
     private final ExecutorService threadPollWorker;
+    private final ScheduledExecutorService scheduledExecutorService;
 
     public ThreadService() {
         int nThreads = Runtime.getRuntime().availableProcessors() * 2;
         threadPollWorker = Executors.newFixedThreadPool((nThreads >= 4) ? nThreads : 4);
-    }
-
-    public ThreadService(int poolSize) {
-        threadPollWorker = Executors.newFixedThreadPool(poolSize);
+        scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
     }
 
     // Runs Task in background thread pool
@@ -64,5 +63,17 @@ public class ThreadService {
         } else {
             runActionLater(runnable);
         }
+    }
+
+    public Executor executor() {
+        return threadPollWorker;
+    }
+
+    public void scheduleWithFixedDelay(Runnable runnable, long ms) {
+        scheduledExecutorService.scheduleWithFixedDelay(runnable, 0, ms, TimeUnit.MILLISECONDS);
+    }
+
+    public void schedule(Runnable runnable, long ms) {
+        scheduledExecutorService.schedule(runnable, ms, TimeUnit.MILLISECONDS);
     }
 }

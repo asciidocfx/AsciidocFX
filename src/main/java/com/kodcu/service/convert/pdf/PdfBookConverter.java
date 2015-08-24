@@ -2,6 +2,7 @@ package com.kodcu.service.convert.pdf;
 
 import com.kodcu.controller.ApplicationController;
 import com.kodcu.other.Current;
+import com.kodcu.other.ExtensionFilters;
 import com.kodcu.other.IOHelper;
 import com.kodcu.service.DirectoryService;
 import com.kodcu.service.PathResolverService;
@@ -58,6 +59,11 @@ public class PdfBookConverter extends AbstractPdfConverter {
 
         try {
 
+            Path pdfPath = directoryService.getSaveOutputPath(ExtensionFilters.PDF, askPath);
+
+            indikatorService.startProgressBar();
+            logger.debug("PDF conversion started");
+
             final Path currentTabPath = current.currentPath().get();
             final Path currentTabPathDir = currentTabPath.getParent();
             final Path configPath = asciiDocController.getConfigPath();
@@ -84,7 +90,7 @@ public class PdfBookConverter extends AbstractPdfConverter {
 
                 IOHelper.setUserConfig(fopFactory, configPath.resolve("docbook-config/fop.xconf.xml").toUri().toASCIIString());
 
-                super.produce(askPath, handler, fopFactory, docbookTempfile);
+                super.produce(askPath, handler, fopFactory, docbookTempfile, pdfPath);
             });
 
         } catch (Exception e) {

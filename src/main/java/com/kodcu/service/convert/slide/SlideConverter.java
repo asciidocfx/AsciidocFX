@@ -25,23 +25,17 @@ public class SlideConverter {
 
     private final ApplicationController controller;
     private final ThreadService threadService;
-    private final MarkdownService markdownService;
     private final Current current;
-    private final ApplicationContext applicationContext;
-    private final HtmlPane htmlPane;
     private final SlidePane slidePane;
     private final Pattern pattern = Pattern.compile(":slide-type:.*(deckjs|revealjs)", Pattern.MULTILINE);
     private String rendered;
 
 
     @Autowired
-    public SlideConverter(final ApplicationController controller, final ThreadService threadService, final MarkdownService markdownService, final Current current, ApplicationContext applicationContext, HtmlPane htmlPane, SlidePane slidePane) {
+    public SlideConverter(final ApplicationController controller, final ThreadService threadService,  final Current current, SlidePane slidePane) {
         this.controller = controller;
         this.threadService = threadService;
-        this.markdownService = markdownService;
         this.current = current;
-        this.applicationContext = applicationContext;
-        this.htmlPane = htmlPane;
         this.slidePane = slidePane;
     }
 

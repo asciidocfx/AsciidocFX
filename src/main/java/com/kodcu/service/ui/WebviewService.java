@@ -32,22 +32,19 @@ public class WebviewService {
     private final PathResolverService pathResolver;
     private final ThreadService threadService;
     private final ParserService parserService;
-    private final MarkdownService markdownService;
     private final Current current;
     private final ApplicationContext applicationContext;
-
     private Optional<DocumentService> documentService = Optional.empty();
     private final AsciiTreeGenerator asciiTreeGenerator;
     private final ShortcutProvider shortcutProvider;
 
     @Autowired
     public WebviewService(final ApplicationController controller, final PathResolverService pathResolver, final ThreadService threadService,
-                          final ParserService parserService, final MarkdownService markdownService, final Current current, ApplicationContext applicationContext, AsciiTreeGenerator asciiTreeGenerator, ShortcutProvider shortcutProvider) {
+                          final ParserService parserService, final Current current, ApplicationContext applicationContext, AsciiTreeGenerator asciiTreeGenerator, ShortcutProvider shortcutProvider) {
         this.controller = controller;
         this.pathResolver = pathResolver;
         this.threadService = threadService;
         this.parserService = parserService;
-        this.markdownService = markdownService;
         this.current = current;
         this.applicationContext = applicationContext;
         this.asciiTreeGenerator = asciiTreeGenerator;
@@ -77,6 +74,7 @@ public class WebviewService {
             shortcutProvider.getProvider().addIndexSelection();
         });
         MenuItem markdownToAsciidoc = MenuItemBuilt.item("Markdown to Asciidoc").click(e -> {
+            MarkdownService markdownService = applicationContext.getBean(MarkdownService.class);
             markdownService.convertToAsciidoc(current.currentEditorValue(),
                     content -> {
                         threadService.runActionLater(() -> {

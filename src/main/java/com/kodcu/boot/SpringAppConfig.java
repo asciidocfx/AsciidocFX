@@ -22,9 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.web.SpringBootServletInitializer;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.*;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;
 import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
@@ -47,6 +45,23 @@ public class SpringAppConfig extends SpringBootServletInitializer implements Web
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
         registry.addHandler(applicationController, "/ws", "/ws**", "/ws/**").withSockJS();
+    }
+
+    @Bean
+    @Lazy
+    public NashornScriptEngineFactory nashornScriptEngineFactory() {
+        NashornScriptEngineFactory nashornScriptEngineFactory = new NashornScriptEngineFactory();
+        return nashornScriptEngineFactory;
+    }
+
+    @Bean
+    @Scope("prototype")
+    @Lazy
+    public ScriptEngine scriptEngine() {
+        ScriptEngine scriptEngine = nashornScriptEngineFactory()
+                .getScriptEngine();
+//                .getScriptEngine(new String[]{"--persistent-code-cache", "--class-cache-size=50"});
+        return scriptEngine;
     }
 
     @Override

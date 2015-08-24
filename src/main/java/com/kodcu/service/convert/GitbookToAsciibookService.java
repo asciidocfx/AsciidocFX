@@ -8,12 +8,14 @@ import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import javax.script.Invocable;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
@@ -22,6 +24,7 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -31,40 +34,41 @@ import static java.nio.file.StandardOpenOption.*;
 /**
  * Created by usta on 15.03.2015.
  */
+@Lazy
 @Component
 public class GitbookToAsciibookService {
 
     private final Logger logger = LoggerFactory.getLogger(GitbookToAsciibookService.class);
-
-    private final ScriptEngineManager engineManager;
-    private final ScriptEngine js;
-
+    private final ScriptEngine scriptEngine;
     private final DirectoryService directoryService;
     private final TabService tabService;
     private final ThreadService threadService;
+    private final CompletableFuture completableFuture = new CompletableFuture();
 
     @Autowired
-    public GitbookToAsciibookService(DirectoryService directoryService, TabService tabService, ThreadService threadService) {
+    public GitbookToAsciibookService(ScriptEngine scriptEngine, DirectoryService directoryService, TabService tabService, ThreadService threadService) {
+        this.scriptEngine = scriptEngine;
         this.directoryService = directoryService;
         this.tabService = tabService;
         this.threadService = threadService;
 
-        engineManager = new ScriptEngineManager();
-        js = engineManager.getEngineByName("js");
+        completableFuture.runAsync(() -> {
+            try {
+                List<String> scripts = Arrays.asList("marked.js", "marked-extension.js");
 
-        try {
-            InputStream markedStream = GitbookToAsciibookService.class.getResourceAsStream("/public/js/marked.js");
-            InputStream markedExtensionStream = GitbookToAsciibookService.class.getResourceAsStream("/public/js/marked-extension.js");
+                for (String script : scripts) {
+                    try (InputStream inputStream = GitbookToAsciibookService.class.getResourceAsStream("/public/js/" + script);
+                         InputStreamReader inputStreamReader = new InputStreamReader(inputStream);) {
+                        scriptEngine.eval(inputStreamReader);
+                    }
+                }
 
-            String marked = IOUtils.toString(markedStream, Charset.forName("UTF-8"));
-            String markedExtension = IOUtils.toString(markedExtensionStream, Charset.forName("UTF-8"));
-
-            js.eval(marked);
-            js.eval(markedExtension);
-
-        } catch (Exception e) {
-            logger.error("Problem occured while initializing marked.js", e);
-        }
+                completableFuture.complete(null);
+            } catch (Exception e) {
+                logger.error("Problem occured while initializing marked.js", e);
+                completableFuture.completeExceptionally(e);
+            }
+        }, threadService.executor());
     }
 
 
@@ -73,8 +77,10 @@ public class GitbookToAsciibookService {
         if (Objects.isNull(content))
             return;
 
+        completableFuture.join();
+
         Object eval = "";
-        Invocable invocable = (Invocable) js;
+        Invocable invocable = (Invocable) scriptEngine;
         try {
             eval = invocable.invokeFunction("markdownToAsciidoc", content);
         } catch (Exception e) {
