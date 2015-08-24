@@ -5,6 +5,7 @@ import com.kodcu.controller.ApplicationController;
 import com.kodcu.other.Current;
 import com.kodcu.service.ui.FileBrowseService;
 import com.kodcu.service.ui.TabService;
+import javafx.application.Platform;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import org.apache.commons.io.FilenameUtils;
@@ -20,6 +21,7 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -43,16 +45,18 @@ public class DirectoryService {
     private Supplier<Path> workingDirectorySupplier;
     private Supplier<Path> pathSaveSupplier;
     private final FileWatchService fileWatchService;
+    private final ThreadService threadService;
 
 
     @Autowired
-    public DirectoryService(final ApplicationController controller, final FileBrowseService fileBrowser, final Current current, PathResolverService pathResolver, StoredConfigBean storedConfigBean, FileWatchService fileWatchService) {
+    public DirectoryService(final ApplicationController controller, final FileBrowseService fileBrowser, final Current current, PathResolverService pathResolver, StoredConfigBean storedConfigBean, FileWatchService fileWatchService, ThreadService threadService) {
         this.controller = controller;
         this.fileBrowser = fileBrowser;
         this.current = current;
         this.pathResolver = pathResolver;
         this.storedConfigBean = storedConfigBean;
         this.fileWatchService = fileWatchService;
+        this.threadService = threadService;
 
         workingDirectorySupplier = () -> {
             final DirectoryChooser directoryChooser = newDirectoryChooser("Select working directory");
@@ -178,14 +182,52 @@ public class DirectoryService {
 
     public String interPath() {
 
-       try{
-           Path workingDirectory = current.currentPath().map(Path::getParent).orElse(this.workingDirectory());
-           Path subpath = workingDirectory.subpath(0, workingDirectory.getNameCount());
-           return subpath.toString().replace('\\', '/');
-       }
-       catch (Exception e){
-           return ".";
-       }
+        try {
+            Path workingDirectory = current.currentPath().map(Path::getParent).orElse(this.workingDirectory());
+            Path subpath = workingDirectory.subpath(0, workingDirectory.getNameCount());
+            return subpath.toString().replace('\\', '/');
+        } catch (Exception e) {
+            return ".";
+        }
 
+    }
+
+    public Path getSaveOutputPath(FileChooser.ExtensionFilter extensionFilter, boolean askPath) {
+
+        if (!Platform.isFxApplicationThread()) {
+            final CompletableFuture<Path> completableFuture = new CompletableFuture<>();
+
+            completableFuture.runAsync(() -> {
+                threadService.runActionLater(() -> {
+                    try {
+                        Path outputPath = getSaveOutputPath(extensionFilter, askPath);
+                        completableFuture.complete(outputPath);
+                    } catch (Exception e) {
+                        completableFuture.completeExceptionally(e);
+                    }
+                });
+            }, threadService.executor());
+
+            return completableFuture.join();
+        }
+
+        final Path currentTabPath = current.currentPath().get();
+        final Path currentTabPathDir = currentTabPath.getParent();
+        String tabText = current.getCurrentTabText().replace("*", "").trim();
+        tabText = tabText.contains(".") ? tabText.split("\\.")[0] : tabText;
+
+        if (!askPath) {
+            return currentTabPathDir.resolve(extensionFilter.getExtensions().get(0).replace("*", tabText));
+        }
+
+        final FileChooser fileChooser = this.newFileChooser(String.format("Save %s file", extensionFilter.getDescription()));
+        fileChooser.getExtensionFilters().addAll(extensionFilter);
+        File file = fileChooser.showSaveDialog(null);
+
+        if (Objects.isNull(file)) {
+            return currentTabPathDir.resolve(extensionFilter.getExtensions().get(0).replace("*", tabText));
+        }
+
+        return file.toPath();
     }
 }
