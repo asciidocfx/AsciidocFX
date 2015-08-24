@@ -24,6 +24,21 @@
     -fx-background-color: black;
 }
 
+.tab-pane.floating > .tab-header-area > .tab-header-background {
+    -fx-background-color: null;
+}
+
+.tab-pane.floating > .tab-header-area {
+    -fx-background-color: null;
+}
+
+.tab-pane.floating > .tab-content-area {
+    -fx-background-color: -fx-outer-border, -fx-background;
+    -fx-background-insets: 0.5;
+    -fx-background-radius: 2;
+    -fx-padding: 0;
+}
+
 .tree-view {
     -fx-border-color: transparent !important;
     -fx-background-color: transparent !important;
@@ -552,4 +567,23 @@
 .red-label, .red-label * {
     -fx-text-fill: #ff452c !important;
     -fx-fill: #ff452c !important;
+}
+
+/* ====   REMOVE ALL EFFECTS   ================================================= */
+.slider .thumb,
+.scroll-bar:horizontal > .decrement-button > .decrement-arrow,
+.scroll-bar:horizontal > .increment-button > .increment-arrow,
+.scroll-bar:vertical > .decrement-button > .decrement-arrow,
+.scroll-bar:vertical > .increment-button > .increment-arrow,
+.context-menu,
+.menu-up-arrow,
+.menu-down-arrow,
+.tab-pane > .tab-header-area > .headers-region > .tab > .tab-container > .tab-close-button,
+.combo-box-popup > .list-view,
+.titled-pane:focused > .title > .arrow-button > .arrow,
+.color-palette,
+.custom-color-dialog > .color-rect-pane #color-rect-indicator,
+.custom-color-dialog > .color-rect-pane > .color-bar > #color-bar-indicator,
+.tooltip {
+    -fx-effect: null !important;
 }
