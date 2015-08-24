@@ -22,8 +22,6 @@ var templateMap = {
 
                     var self = this;
 
-                    window.nodee = node;
-
                     var obj = {};
                     obj.node = node;
                     obj.name = node.$node_name ? node.$node_name() : "";
