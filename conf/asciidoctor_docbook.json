@@ -1,6 +1,7 @@
 
 {
     "backend":"docbook5",
+    "jsPlatform":"Nashorn",
     "safe":"safe",
     "header_footer":true,
     "attributes":{

@@ -1,12 +1,10 @@
 
 {
-    "directoryPanel":true,
     "fontFamily":"'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace",
     "fontSize":14,
     "scrollSpeed":0.1,
     "useWrapMode":true,
     "wrapLimit":0,
     "showGutter":false,
-    "editorTheme":"xcode",
-    "defaultLanguage":"en"
+    "editorTheme":"xcode"
 }
