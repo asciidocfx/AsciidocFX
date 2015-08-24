@@ -11,8 +11,6 @@ function convertAsciidoc(content, options) {
         throw e;
     }
 
-    window.docdoc = doc;
-
     rendered = doc.$convert();
 
     return {
