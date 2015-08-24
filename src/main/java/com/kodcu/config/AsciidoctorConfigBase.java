@@ -15,12 +15,14 @@ import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.shape.Rectangle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,6 +35,8 @@ import java.util.*;
  * Created by usta on 17.07.2015.
  */
 public abstract class AsciidoctorConfigBase extends ConfigurationBase {
+
+    public ObjectProperty<JSPlatform> jsPlatform = new SimpleObjectProperty<>(JSPlatform.Webkit);
 
     private ObjectProperty<ObservableList<String>> safe = new SimpleObjectProperty<>(FXCollections.observableArrayList());
 
@@ -122,11 +126,23 @@ public abstract class AsciidoctorConfigBase extends ConfigurationBase {
         this.header_footer.set(header_footer);
     }
 
+    public JSPlatform getJsPlatform() {
+        return jsPlatform.get();
+    }
+
+    public ObjectProperty<JSPlatform> jsPlatformProperty() {
+        return jsPlatform;
+    }
+
+    public void setJsPlatform(JSPlatform jsPlatform) {
+        this.jsPlatform.set(jsPlatform);
+    }
+
     @Override
     public VBox createForm() {
         FXForm previewConfigForm = new FXFormBuilder<>()
                 .resourceBundle(ResourceBundle.getBundle("asciidoctorConfig"))
-                .includeAndReorder("attributes").build();
+                .includeAndReorder("jsPlatform", "attributes").build();
 
         DefaultFactoryProvider previewConfigFormProvider = new DefaultFactoryProvider();
         previewConfigFormProvider.addFactory(new NamedFieldHandler("safe"), new ListChoiceBoxFactory(new ChoiceBox()));
@@ -142,7 +158,9 @@ public abstract class AsciidoctorConfigBase extends ConfigurationBase {
         saveButton.setOnAction(this::save);
 
         loadButton.setOnAction(this::load);
-        vBox.getChildren().add(new HBox(10, saveButton, loadButton, infoLabel));
+        HBox box = new HBox(5, saveButton, loadButton, infoLabel);
+        box.setPadding(new Insets(0, 0, 15, 5));
+        vBox.getChildren().add(box);
 
         return vBox;
     }
@@ -169,6 +187,7 @@ public abstract class AsciidoctorConfigBase extends ConfigurationBase {
             String backend = jsonObject.getString("backend", null);
             boolean header_footer = jsonObject.getBoolean("header_footer", false);
             JsonObject attributes = jsonObject.getJsonObject("attributes");
+            String jsPlatform = jsonObject.getString("jsPlatform", "Webkit");
 
             IOHelper.close(jsonReader, fileReader);
 
@@ -177,6 +196,7 @@ public abstract class AsciidoctorConfigBase extends ConfigurationBase {
                 this.sourcemap.set(sourcemap);
                 this.setBackend(backend);
                 this.setHeader_footer(header_footer);
+                this.setJsPlatform(JSPlatform.valueOf(JSPlatform.class, jsPlatform));
 
                 ObservableList<AttributesTable> attrList = FXCollections.observableArrayList();
 
@@ -212,6 +232,10 @@ public abstract class AsciidoctorConfigBase extends ConfigurationBase {
 
         if (Objects.nonNull(getBackend())) {
             objectBuilder.add("backend", getBackend());
+        }
+
+        if (Objects.nonNull(getJsPlatform())) {
+            objectBuilder.add("jsPlatform", getJsPlatform().name());
         }
 
         objectBuilder.add("safe", getSafe().get(0));

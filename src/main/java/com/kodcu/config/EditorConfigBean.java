@@ -6,6 +6,8 @@ import com.dooapp.fxform.FXForm;
 import com.dooapp.fxform.builder.FXFormBuilder;
 import com.dooapp.fxform.handler.NamedFieldHandler;
 import com.dooapp.fxform.view.factory.DefaultFactoryProvider;
+import com.dooapp.fxform.view.skin.DefaultSkin;
+import com.dooapp.fxform.view.skin.InlineSkin;
 import com.kodcu.component.SliderBuilt;
 import com.kodcu.config.factory.*;
 import com.kodcu.controller.ApplicationController;
@@ -16,6 +18,7 @@ import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
@@ -48,11 +51,11 @@ import java.util.stream.Stream;
 @Component
 public class EditorConfigBean extends ConfigurationBase {
 
+
     private ObjectProperty<ObservableList<String>> editorTheme = new SimpleObjectProperty<>(FXCollections.observableArrayList());
     private ObjectProperty<Path> asciidoctorStyleSheet = new SimpleObjectProperty<>();
     private DoubleProperty firstSplitter = new SimpleDoubleProperty(0.17551963048498845);
     private DoubleProperty secondSplitter = new SimpleDoubleProperty(0.5996920708237106);
-    private BooleanProperty directoryPanel = new SimpleBooleanProperty(true);
     private StringProperty fontFamily = new SimpleStringProperty("'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace");
     private ObjectProperty<Integer> fontSize = new SimpleObjectProperty(14);
     private DoubleProperty scrollSpeed = new SimpleDoubleProperty(0.1);
@@ -140,18 +143,6 @@ public class EditorConfigBean extends ConfigurationBase {
 
     public void setEditorTheme(ObservableList<String> editorTheme) {
         this.editorTheme.set(editorTheme);
-    }
-
-    public boolean getDirectoryPanel() {
-        return directoryPanel.get();
-    }
-
-    public BooleanProperty directoryPanelProperty() {
-        return directoryPanel;
-    }
-
-    public void setDirectoryPanel(boolean directoryPanel) {
-        this.directoryPanel.set(directoryPanel);
     }
 
     public String getFontFamily() {
@@ -243,7 +234,7 @@ public class EditorConfigBean extends ConfigurationBase {
 
         FXForm editorConfigForm = new FXFormBuilder<>()
                 .resourceBundle(ResourceBundle.getBundle("editorConfig"))
-                .includeAndReorder("editorTheme", "asciidoctorStyleSheet", "directoryPanel", "fontFamily", "fontSize", "scrollSpeed", "useWrapMode", "wrapLimit", "showGutter", "defaultLanguage", "kindlegen")
+                .includeAndReorder("editorTheme", "jsPlatform", "asciidoctorStyleSheet", "directoryPanel", "fontFamily", "fontSize", "scrollSpeed", "useWrapMode", "wrapLimit", "showGutter", "defaultLanguage", "kindlegen")
                 .build();
 
         DefaultFactoryProvider editorConfigFormProvider = new DefaultFactoryProvider();
@@ -265,10 +256,11 @@ public class EditorConfigBean extends ConfigurationBase {
         VBox vBox = new VBox();
         vBox.getChildren().add(editorConfigForm);
 
-
         saveButton.setOnAction(this::save);
         loadButton.setOnAction(this::load);
-        vBox.getChildren().add(new HBox(10, saveButton, loadButton, infoLabel));
+        HBox box = new HBox(5, saveButton, loadButton, infoLabel);
+        box.setPadding(new Insets(0, 0, 15, 5));
+        vBox.getChildren().add(box);
 
         return vBox;
     }
@@ -314,7 +306,6 @@ public class EditorConfigBean extends ConfigurationBase {
             threadService.runActionLater(() -> {
                 this.setEditorTheme(FXCollections.observableList(aceThemeList));
                 this.setDefaultLanguage(FXCollections.observableList(languageList));
-                this.setDirectoryPanel(directoryPanel);
                 this.setFontFamily(fontFamily);
                 this.setFontSize(fontSize);
                 this.setUseWrapMode(useWrapMode);
@@ -395,7 +386,6 @@ public class EditorConfigBean extends ConfigurationBase {
         JsonObjectBuilder objectBuilder = Json.createObjectBuilder();
 
         objectBuilder
-                .add("directoryPanel", getDirectoryPanel())
                 .add("fontFamily", getFontFamily())
                 .add("fontSize", getFontSize())
                 .add("scrollSpeed", getScrollSpeed())
@@ -411,8 +401,8 @@ public class EditorConfigBean extends ConfigurationBase {
             objectBuilder.add("kindlegen", getKindlegen().toString());
         }
 
-        if(Objects.nonNull(getAsciidoctorStyleSheet())){
-            objectBuilder.add("asciidoctorStyleSheet",getAsciidoctorStyleSheet().toString());
+        if (Objects.nonNull(getAsciidoctorStyleSheet())) {
+            objectBuilder.add("asciidoctorStyleSheet", getAsciidoctorStyleSheet().toString());
         }
 
         return objectBuilder.build();

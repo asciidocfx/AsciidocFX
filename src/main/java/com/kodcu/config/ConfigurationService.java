@@ -3,10 +3,15 @@ package com.kodcu.config;
 import com.kodcu.component.PreviewTab;
 import com.kodcu.controller.ApplicationController;
 import javafx.collections.ObservableList;
+import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Created by usta on 17.07.2015.
@@ -50,11 +55,12 @@ public class ConfigurationService {
         odfConfigBean.load();
         docbookConfigBean.load();
 
-        TitledPane editorConfigPane = new TitledPane("Editor Settings", editorConfigForm);
-        TitledPane previewConfigPane = new TitledPane("Asciidoctor Preview Attributes", previewConfigForm);
-        TitledPane htmlConfigPane = new TitledPane("Asciidoctor Html Attributes", htmlConfigForm);
-        TitledPane odfConfigPane = new TitledPane("Asciidoctor Odt Attributes", odfConfigForm);
-        TitledPane docbookConfigPane = new TitledPane("Asciidoctor Docbook Attributes", docbookConfigForm);
+
+        TitledPane editorConfigPane = new TitledPane("Editor Settings", new ScrollPane(editorConfigForm));
+        TitledPane previewConfigPane = new TitledPane("Asciidoctor Preview Attributes", new ScrollPane(previewConfigForm));
+        TitledPane htmlConfigPane = new TitledPane("Asciidoctor Html Attributes", new ScrollPane(htmlConfigForm));
+        TitledPane odfConfigPane = new TitledPane("Asciidoctor Odt Attributes", new ScrollPane(odfConfigForm));
+        TitledPane docbookConfigPane = new TitledPane("Asciidoctor Docbook Attributes", new ScrollPane(docbookConfigForm));
 
         configAccordion.setExpandedPane(editorConfigPane);
         configAccordion.getPanes().addAll(editorConfigPane, previewConfigPane, htmlConfigPane, odfConfigPane, docbookConfigPane);
