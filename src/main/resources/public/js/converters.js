@@ -1,15 +1,30 @@
+if ((typeof setTimeout) == "undefined") {
+    setTimeout = function () {
+        arguments[0]();
+    }
+
+    clearTimeout = function () {
+    };
+}
+
+var filloutTimeout;
 function convertAsciidoc(content, options) {
 
     var rendered = "";
 
     var doc = Opal.Asciidoctor.$load(content, getOption(options));
 
-    try {
-        afx.fillOutlines(doc);
-    }
-    catch (e) {
-        throw e;
-    }
+    if (filloutTimeout)
+        clearTimeout(filloutTimeout);
+
+    filloutTimeout = setTimeout(function () {
+        try {
+            afx.fillOutlines(doc);
+        }
+        catch (e) {
+            throw e;
+        }
+    }, 1000);
 
     rendered = doc.$convert();
 
