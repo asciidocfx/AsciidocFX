@@ -1,4 +1,5 @@
 var editor = ace.edit("editor");
+editor.renderer.setScrollMargin(10, 0, 10, 0);
 var modelist = ace.require("ace/ext/modelist");
 editor.renderer.setShowGutter(false);
 editor.setHighlightActiveLine(false);
@@ -16,6 +17,9 @@ editor.setTheme("ace/theme/xcode");
 
 var lastEditorRow = 0;
 var afterFirstChange = false;
+var renderTimeout;
+var refreshTimeout;
+var updateDelay = 100;
 
 //var maxTop = editor.renderer.layerConfig.maxHeight - editor.renderer.$size.scrollerHeight + editor.renderer.scrollMargin.bottom;
 //afx.onscroll(editor.getSession().getScrollTop(), maxTop);
@@ -80,15 +84,23 @@ editor.getSession().on('changeScrollTop', function (scroll) {
     }, 50);
 });
 
+var updateStatusTimeOut;
 function updateStatusBox() {
-    var cursorPosition = editor.getCursorPosition();
-    var row = cursorPosition.row;
-    var column = cursorPosition.column;
 
-    var lineCount = editor.session.getLength();
-    var wordCount = editor.session.getValue().length;
+    if (updateStatusTimeOut)
+        clearTimeout(updateStatusTimeOut);
 
-    afx.updateStatusBox(row, column, lineCount, wordCount);
+    updateStatusTimeOut = setTimeout(function () {
+        var cursorPosition = editor.getCursorPosition();
+        var row = cursorPosition.row;
+        var column = cursorPosition.column;
+
+        var lineCount = editor.session.getLength();
+        var wordCount = editor.session.getValue().length;
+
+        afx.updateStatusBox(row, column, lineCount, wordCount);
+    }, 500);
+
 }
 
 editor.getSession().selection.on('changeCursor', function (e) {
@@ -128,9 +140,19 @@ var editorChangeListener = function (obj) {
     if (afterFirstChange)
         afx.appendWildcard();
 
-    sketch.refreshConstructList();
+    if (renderTimeout)
+        clearTimeout(renderTimeout);
 
-    afx.textListener(editor.getValue(), editorMode());
+    if (refreshTimeout)
+        clearTimeout(refreshTimeout);
+
+    refreshTimeout = setTimeout(function () {
+        sketch.refreshConstructList();
+    }, 1000);
+
+    renderTimeout = setTimeout(function () {
+        afx.textListener(editor.getValue(), editorMode());
+    }, 100);
 
 };
 
@@ -234,7 +256,7 @@ function initializeEmmet(mode) {
 }
 
 function rerender() {
-    afx.textListener(editor.getValue(), editorMode());
+    afx.textListener(editor.getValue() + "\n", editorMode());
     updateStatusBox();
 }
 
@@ -245,6 +267,5 @@ function editorMode() {
 
 function setInitialized() {
     editor.getSession().on('change', editorChangeListener);
-    editor.renderer.setScrollMargin(10, 10, 10, 10);
     updateStatusBox();
 }
