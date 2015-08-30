@@ -88,8 +88,6 @@ public class AsciidocNashornConverter implements AsciidocConvertible {
 
     private ConverterResult convert(String functionName, String asciidoc, String config) {
 
-        long start = System.currentTimeMillis();
-
         try {
             completableFuture.join();
 
@@ -100,8 +98,6 @@ public class AsciidocNashornConverter implements AsciidocConvertible {
         } catch (Exception e) {
             logger.error("Problem occured while {}", functionName, e);
             throw new RuntimeException(e);
-        } finally {
-            logger.debug("Rendered in {}", (System.currentTimeMillis() - start));
         }
 
     }
