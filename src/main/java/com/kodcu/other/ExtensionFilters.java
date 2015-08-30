@@ -13,4 +13,7 @@ public class ExtensionFilters {
     public final static FileChooser.ExtensionFilter EPUB = new FileChooser.ExtensionFilter("EPUB", "*.epub");
     public final static FileChooser.ExtensionFilter MOBI = new FileChooser.ExtensionFilter("MOBI", "*.mobi");
     public final static FileChooser.ExtensionFilter ODT = new FileChooser.ExtensionFilter("ODT", "*.odt");
+    public final static FileChooser.ExtensionFilter ASCIIDOC = new FileChooser.ExtensionFilter("AsciiDoc", "*.adoc", "*.asciidoc", "*.asc", "*.ad", "*.txt", "*.*");
+    public final static FileChooser.ExtensionFilter MARKDOWN = new FileChooser.ExtensionFilter("Markdown", "*.md", "*.markdown", "*.txt", "*.*");
+
 }
