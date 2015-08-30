@@ -4,6 +4,8 @@ import com.kodcu.other.ConverterResult;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -17,12 +19,11 @@ import java.util.function.Consumer;
 public class ThreadService {
 
     private final ExecutorService threadPollWorker;
-    private final ScheduledExecutorService scheduledExecutorService;
+    private final Logger logger = LoggerFactory.getLogger(ThreadService.class);
 
     public ThreadService() {
         int nThreads = Runtime.getRuntime().availableProcessors() * 2;
         threadPollWorker = Executors.newFixedThreadPool((nThreads >= 4) ? nThreads : 4);
-        scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
     }
 
     // Runs Task in background thread pool
@@ -69,11 +70,11 @@ public class ThreadService {
         return threadPollWorker;
     }
 
-    public void scheduleWithFixedDelay(Runnable runnable, long ms) {
-        scheduledExecutorService.scheduleWithFixedDelay(runnable, 0, ms, TimeUnit.MILLISECONDS);
-    }
-
-    public void schedule(Runnable runnable, long ms) {
-        scheduledExecutorService.schedule(runnable, ms, TimeUnit.MILLISECONDS);
+    public void sleep(int ms) {
+        try {
+            Thread.sleep(ms);
+        } catch (InterruptedException e) {
+            logger.error("Error in Thread#sleep", e);
+        }
     }
 }
