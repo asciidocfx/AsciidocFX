@@ -1,13 +1,23 @@
 package com.kodcu.component;
 
 import com.kodcu.controller.ApplicationController;
+import com.kodcu.other.IOHelper;
+import com.kodcu.service.ParserService;
 import com.kodcu.service.ThreadService;
+import com.kodcu.service.convert.markdown.MarkdownService;
+import com.kodcu.service.extension.AsciiTreeGenerator;
+import com.kodcu.service.shortcut.ShortcutProvider;
+import com.kodcu.service.ui.TabService;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Worker;
 import javafx.event.EventHandler;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.MenuItem;
 import javafx.scene.input.DragEvent;
+import javafx.scene.input.Dragboard;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Priority;
@@ -20,11 +30,16 @@ import netscape.javascript.JSObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import java.io.File;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * Created by usta on 09.04.2015.
@@ -34,24 +49,59 @@ import java.util.Objects;
 public class EditorPane extends AnchorPane {
 
     private final WebView webView;
-    private EventHandler<WebEvent<String>> readyHandler;
     private final Logger logger = LoggerFactory.getLogger(EditorPane.class);
     private final ApplicationController controller;
     private final ThreadService threadService;
+    private final ShortcutProvider shortcutProvider;
+    private final ApplicationContext applicationContext;
+    private final TabService tabService;
+    private final AsciiTreeGenerator asciiTreeGenerator;
+    private final ParserService parserService;
     private String mode = "ace/mode/asciidoc";
+    private String initialEditorValue = "";
+    private Path path;
 
     @Autowired
-    public EditorPane(ApplicationController controller, ThreadService threadService) {
+    public EditorPane(ApplicationController controller, ThreadService threadService, ShortcutProvider shortcutProvider, ApplicationContext applicationContext, TabService tabService, AsciiTreeGenerator asciiTreeGenerator, ParserService parserService) {
         this.controller = controller;
         this.threadService = threadService;
+        this.shortcutProvider = shortcutProvider;
+        this.applicationContext = applicationContext;
+        this.tabService = tabService;
+        this.asciiTreeGenerator = asciiTreeGenerator;
+        this.parserService = parserService;
         this.webView = new WebView();
-        this.webView.setContextMenuEnabled(false);
-        this.getChildren().add(webView);
-        webEngine().setOnAlert(event -> {
-            if (Objects.nonNull(readyHandler))
-                readyHandler.handle(event);
-        });
+        webEngine().setConfirmHandler(this::handleConfirm);
         initializeMargins();
+        initializeEditorContextMenus();
+    }
+
+    private Boolean handleConfirm(String param) {
+        if ("command:ready".equals(param)) {
+            handleEditorReady();
+        }
+        return false;
+    }
+
+    private void handleEditorReady() {
+        getWindow().setMember("afx", controller);
+        getWindow().call("updateOptions");
+
+        if (Objects.nonNull(path)) {
+            threadService.runTaskLater(() -> {
+                final String content = IOHelper.readFile(path);
+                threadService.runActionLater(() -> {
+                    getWindow().call("changeEditorMode", path.toUri().toString());
+                    getWindow().call("setInitialized");
+                    getWindow().call("setEditorValue", content);
+                });
+            });
+        } else {
+            getWindow().call("setInitialized");
+            getWindow().call("setEditorValue", initialEditorValue);
+        }
+        this.getChildren().add(webView);
+        webView.requestFocus();
     }
 
     private void initializeMargins() {
@@ -76,36 +126,12 @@ public class EditorPane extends AnchorPane {
             logger.error("Url is not loaded. Reason: null reference");
     }
 
-    public void hide() {
-        super.setVisible(false);
-    }
-
-    public void show() {
-        super.setVisible(true);
-    }
-
-    public void setOnReady(EventHandler<WebEvent<String>> readyHandler) {
-        this.readyHandler = readyHandler;
-    }
-
     public String getLocation() {
         return webEngine().getLocation();
     }
 
-    public void setMember(String name, Object value) {
-        getWindow().setMember(name, value);
-    }
-
     public Object call(String methodName, Object... args) {
         return getWindow().call(methodName, args);
-    }
-
-    public void whenStateSucceed(ChangeListener<Worker.State> stateChangeListener) {
-        webEngine().getLoadWorker().stateProperty().addListener(stateChangeListener);
-    }
-
-    public Object getMember(String name) {
-        return getWindow().getMember(name);
     }
 
     public WebEngine webEngine() {
@@ -114,14 +140,6 @@ public class EditorPane extends AnchorPane {
 
     public WebView getWebView() {
         return webView;
-    }
-
-    public void onClicked(EventHandler<MouseEvent> eventHandler) {
-        webView.setOnMouseClicked(eventHandler);
-    }
-
-    public void dragDropped(EventHandler<DragEvent> eventHandler) {
-        webView.setOnDragDropped(eventHandler);
     }
 
     public void confirmHandler(Callback<String, Boolean> confirmHandler) {
@@ -137,8 +155,10 @@ public class EditorPane extends AnchorPane {
     }
 
     public void setEditorValue(String value) {
-        getWindow().setMember("editorValue", value);
-        webEngine().executeScript("editor.setValue(editorValue)");
+       threadService.runActionLater(()->{
+           getWindow().setMember("editorValue", value);
+           webEngine().executeScript("editor.setValue(editorValue)");
+       });
     }
 
     public void switchMode(Object... args) {
@@ -232,5 +252,131 @@ public class EditorPane extends AnchorPane {
             JSObject editor = (JSObject) webEngine().executeScript("editor");
             editor.call("execCommand", command);
         });
+    }
+
+    public String editorSelection() {
+        return (String) webEngine().executeScript("editor.session.getTextRange(editor.getSelectionRange())");
+    }
+
+    public void initializeEditorContextMenus() {
+
+        ContextMenu menu = new ContextMenu();
+
+        MenuItem copy = MenuItemBuilt.item("Copy").click(event1 -> {
+            controller.cutCopy(editorSelection());
+        });
+        MenuItem paste = MenuItemBuilt.item("Paste").click(e -> {
+            controller.paste();
+        });
+        MenuItem pasteRaw = MenuItemBuilt.item("Paste raw").click(e -> {
+            controller.pasteRaw();
+        });
+        MenuItem indexSelection = MenuItemBuilt.item("Index selection").click(e -> {
+            shortcutProvider.getProvider().addIndexSelection();
+        });
+        MenuItem markdownToAsciidoc = MenuItemBuilt.item("Markdown to Asciidoc").click(e -> {
+            MarkdownService markdownService = applicationContext.getBean(MarkdownService.class);
+            markdownService.convertToAsciidoc(getEditorValue(),
+                    content -> threadService.runActionLater(() -> {
+                        tabService.newDoc(content);
+                    }));
+        });
+
+        getWebView().setOnMouseClicked(event -> {
+
+            if (menu.getItems().size() == 0) {
+                menu.getItems().addAll(copy, paste, pasteRaw,
+                        markdownToAsciidoc,
+                        indexSelection
+                );
+            }
+
+            if (menu.isShowing()) {
+                menu.hide();
+            }
+            if (event.getButton() == MouseButton.SECONDARY) {
+                markdownToAsciidoc.setVisible(isMarkdown());
+                indexSelection.setVisible(isAsciidoc());
+                menu.show(getWebView(), event.getScreenX(), event.getScreenY());
+            }
+        });
+
+        getWebView().setOnDragDropped(event -> {
+            Dragboard dragboard = event.getDragboard();
+            boolean success = false;
+
+            if (dragboard.hasFiles() && !dragboard.hasString()) {
+
+                List<File> dragboardFiles = dragboard.getFiles();
+
+                if (dragboardFiles.size() == 1) {
+                    Path path = dragboardFiles.get(0).toPath();
+                    if (Files.isDirectory(path)) {
+
+                        threadService.runTaskLater(() -> {
+                            StringBuffer buffer = new StringBuffer();
+                            buffer.append("[tree,file=\"\"]");
+                            buffer.append("\n--\n");
+                            buffer.append(asciiTreeGenerator.generate(path));
+                            buffer.append("\n--");
+                            threadService.runActionLater(() -> {
+                                insert(buffer.toString());
+                            });
+                        });
+
+                        success = true;
+                    }
+                }
+
+                Optional<String> block = parserService.toImageBlock(dragboardFiles);
+                if (block.isPresent()) {
+                    insert(block.get());
+                    success = true;
+                } else {
+                    block = parserService.toIncludeBlock(dragboardFiles);
+                    if (block.isPresent()) {
+                        insert(block.get());
+                        success = true;
+                    }
+                }
+
+            }
+
+            if (dragboard.hasHtml() && !success) {
+                Optional<String> block = parserService.toWebImageBlock(dragboard.getHtml());
+                if (block.isPresent()) {
+                    insert(block.get());
+                    success = true;
+                }
+            }
+
+            if (dragboard.hasString() && !success) {
+                insert(dragboard.getString());
+                success = true;
+            }
+
+            event.setDropCompleted(success);
+            event.consume();
+        });
+    }
+
+    public void setInitialEditorValue(String initialEditorValue) {
+        this.initialEditorValue = initialEditorValue;
+    }
+
+    public boolean isMarkdown() {
+        return is("markdown");
+    }
+
+    public boolean isAsciidoc() {
+        return is("asciidoc");
+    }
+
+    public Path getPath() {
+        return path;
+    }
+
+    public void setPath(Path path) {
+        this.path = path;
     }
 }

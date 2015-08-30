@@ -25,15 +25,15 @@ public class PreviewTab extends Tab {
 
     public void setChild(Node node) {
 
+        if (super.getContent() == node)
+            return;
+
         if (!Platform.isFxApplicationThread()) {
             Platform.runLater(() -> {
                 setChild(node);
             });
             return;
         }
-
-        if (super.getContent() == node)
-            return;
 
         super.setContent(node);
     }

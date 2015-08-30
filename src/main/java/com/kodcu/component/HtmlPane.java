@@ -9,6 +9,7 @@ import com.kodcu.other.ConverterResult;
 import com.kodcu.other.Current;
 import com.kodcu.other.IOHelper;
 import com.kodcu.service.ThreadService;
+import javafx.application.Platform;
 import javafx.scene.web.WebView;
 import netscape.javascript.JSObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
 
 /**
@@ -30,6 +32,7 @@ public class HtmlPane extends ViewPanel {
     private final OdfConfigBean odfConfigBean;
     private final DocbookConfigBean docbookConfigBean;
     private final HtmlConfigBean htmlConfigBean;
+    private final ThreadService threadService;
 
     @Autowired
     public HtmlPane(ThreadService threadService, ApplicationController controller, Current current, PreviewConfigBean previewConfigBean, OdfConfigBean odfConfigBean, DocbookConfigBean docbookConfigBean, HtmlConfigBean htmlConfigBean) {
@@ -38,15 +41,20 @@ public class HtmlPane extends ViewPanel {
         this.odfConfigBean = odfConfigBean;
         this.docbookConfigBean = docbookConfigBean;
         this.htmlConfigBean = htmlConfigBean;
+        this.threadService = threadService;
     }
 
     public void refreshUI(String content) {
-        this.setMember("lastRenderedValue", content);
-        webEngine().executeScript("refreshUI(lastRenderedValue)");
+        threadService.runActionLater(()->{
+            this.setMember("lastRenderedValue", content);
+            webEngine().executeScript("refreshUI(lastRenderedValue)");
+        });
     }
 
     public void updateBase64Url(int index, String imageBase64) {
-        getWindow().call("updateBase64Url", index, imageBase64);
+        threadService.runActionLater(()->{
+            getWindow().call("updateBase64Url", index, imageBase64);
+        });
     }
 
     public WebView getWebView() {

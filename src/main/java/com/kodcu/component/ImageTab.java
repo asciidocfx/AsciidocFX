@@ -11,8 +11,14 @@ import java.util.Objects;
 public class ImageTab extends Tab {
     private Path path;
 
+    public ImageTab(Path path) {
+        this.path = path;
+        setText(path.getFileName().toString());
+    }
+
     public void setPath(Path path) {
         this.path = path;
+        setText(path.getFileName().toString());
     }
 
     public Path getPath() {

@@ -2,15 +2,21 @@ package com.kodcu.service.ui;
 
 import com.kodcu.component.EditorPane;
 import com.kodcu.component.ImageTab;
+import com.kodcu.component.MenuItemBuilt;
 import com.kodcu.component.MyTab;
 import com.kodcu.config.StoredConfigBean;
 import com.kodcu.controller.ApplicationController;
 import com.kodcu.other.Current;
+import com.kodcu.other.ExtensionFilters;
 import com.kodcu.other.IOHelper;
 import com.kodcu.other.Item;
 import com.kodcu.service.DirectoryService;
+import com.kodcu.service.ParserService;
 import com.kodcu.service.PathResolverService;
 import com.kodcu.service.ThreadService;
+import com.kodcu.service.convert.markdown.MarkdownService;
+import com.kodcu.service.extension.AsciiTreeGenerator;
+import com.kodcu.service.shortcut.ShortcutProvider;
 import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.collections.FXCollections;
@@ -19,20 +25,29 @@ import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.Dragboard;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.stage.FileChooser;
 import netscape.javascript.JSObject;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
+import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
+
+import static java.nio.file.StandardOpenOption.CREATE;
+import static java.nio.file.StandardOpenOption.TRUNCATE_EXISTING;
 
 /**
  * Created by usta on 25.12.2014.
@@ -43,30 +58,35 @@ public class TabService {
     private final Logger logger = LoggerFactory.getLogger(TabService.class);
 
     private final ApplicationController controller;
-    private final WebviewService webviewService;
     private final EditorService editorService;
     private final PathResolverService pathResolver;
     private final ThreadService threadService;
     private final Current current;
     private final DirectoryService directoryService;
     private final StoredConfigBean storedConfigBean;
+    private final ParserService parserService;
+    private final ApplicationContext applicationContext;
+    private final ShortcutProvider shortcutProvider;
+    private final AsciiTreeGenerator asciiTreeGenerator;
 
     private ObservableList<Optional<Path>> closedPaths = FXCollections.observableArrayList();
 
 
     @Autowired
-    public TabService(final ApplicationController controller, final WebviewService webviewService, final EditorService editorService,
+    public TabService(final ApplicationController controller, final EditorService editorService,
                       final PathResolverService pathResolver, final ThreadService threadService, final Current current,
-                      final DirectoryService directoryService, StoredConfigBean storedConfigBean) {
+                      final DirectoryService directoryService, StoredConfigBean storedConfigBean, ParserService parserService, ApplicationContext applicationContext, ShortcutProvider shortcutProvider, AsciiTreeGenerator asciiTreeGenerator) {
         this.controller = controller;
-        this.webviewService = webviewService;
         this.editorService = editorService;
         this.pathResolver = pathResolver;
         this.threadService = threadService;
         this.current = current;
         this.directoryService = directoryService;
         this.storedConfigBean = storedConfigBean;
-
+        this.parserService = parserService;
+        this.applicationContext = applicationContext;
+        this.shortcutProvider = shortcutProvider;
+        this.asciiTreeGenerator = asciiTreeGenerator;
     }
 
 
@@ -91,35 +111,10 @@ public class TabService {
         }
 
         AnchorPane anchorPane = new AnchorPane();
-        EditorPane editorPane = webviewService.createWebView();
 
         MyTab tab = createTab();
-        tab.setEditorPane(editorPane);
         tab.setTabText(path.getFileName().toString());
-
-        editorPane.confirmHandler(param -> {
-            if ("command:ready".equals(param)) {
-                JSObject window = editorPane.getWindow();
-                window.setMember("afx", controller);
-                window.call("updateOptions", new Object[]{});
-
-                if (Objects.isNull(path))
-                    return true;
-                threadService.runTaskLater(() -> {
-                    String content = IOHelper.readFile(path);
-                    threadService.runActionLater(() -> {
-                        window.call("changeEditorMode", path.toUri().toString());
-                        window.call("setInitialized");
-                        window.call("setEditorValue", new Object[]{content});
-                        for (Runnable runnable : runnables) {
-                            runnable.run();
-                        }
-                    });
-                });
-
-            }
-            return false;
-        });
+        EditorPane editorPane = tab.getEditorPane();
 
         threadService.runActionLater(() -> {
             TabPane tabPane = controller.getTabPane();
@@ -140,7 +135,48 @@ public class TabService {
         recentFiles.remove(path.toString());
         recentFiles.add(0, path.toString());
 
-        editorPane.focus();
+        editorPane.load(String.format("http://localhost:%d/editor.html", controller.getPort()));
+    }
+
+
+    public void newDoc() {
+        newDoc("");
+    }
+
+    public void newDoc(final String content) {
+
+        MyTab tab = this.createTab();
+        EditorPane editorPane = tab.getEditorPane();
+        editorPane.setInitialEditorValue(content);
+
+        AnchorPane anchorPane = new AnchorPane();
+
+        Node editorVBox = editorService.createEditorVBox(editorPane, tab);
+        controller.fitToParent(editorVBox);
+        anchorPane.getChildren().add(editorVBox);
+
+        tab.setContent(anchorPane);
+
+        tab.setTabText("new *");
+        TabPane tabPane = controller.getTabPane();
+        tabPane.getTabs().add(tab);
+        tab.select();
+
+        editorPane.load(String.format("http://localhost:%d/editor.html", controller.getPort()));
+    }
+
+    public void openDoc() {
+        FileChooser fileChooser = directoryService.newFileChooser("Open File");
+        fileChooser.getExtensionFilters().add(ExtensionFilters.ASCIIDOC);
+        fileChooser.getExtensionFilters().add(ExtensionFilters.MARKDOWN);
+        List<File> chosenFiles = fileChooser.showOpenMultipleDialog(controller.getStage());
+        if (chosenFiles != null) {
+            chosenFiles.stream().map(File::toPath).forEach(this::previewDocument);
+            chosenFiles.stream()
+                    .map(File::toString).filter(file -> !storedConfigBean.getRecentFiles().contains(file))
+                    .forEach(storedConfigBean.getRecentFiles()::addAll);
+            directoryService.setInitialDirectory(Optional.ofNullable(chosenFiles.get(0)));
+        }
     }
 
 
@@ -153,24 +189,7 @@ public class TabService {
 
     public MyTab createTab() {
 
-        MyTab tab = new MyTab() {
-            @Override
-            public ButtonType close() {
-                if (Objects.nonNull(this.getPath()))
-                    closedPaths.add(Optional.ofNullable(current.currentTab().getPath()));
-
-                ButtonType closeType = super.close();
-
-                Platform.runLater(() -> {
-                    ObservableList<Tab> tabs = controller.getTabPane().getTabs();
-                    if (tabs.isEmpty()) {
-                        controller.newDoc(null);
-                    }
-                });
-
-                return closeType;
-            }
-        };
+        final MyTab tab = applicationContext.getBean(MyTab.class);
 
         tab.setOnCloseRequest(event -> {
             event.consume();
@@ -184,7 +203,7 @@ public class TabService {
 
         MenuItem menuItem1 = new MenuItem("Close All");
         menuItem1.setOnAction(actionEvent -> {
-            ObservableList<Tab> tabs = controller.getTabPane().getTabs();
+            ObservableList<Tab> tabs = tab.getTabPane().getTabs();
             ObservableList<Tab> clonedTabs = FXCollections.observableArrayList(tabs);
             if (clonedTabs.size() > 0) {
                 clonedTabs.forEach((closedTab) -> {
@@ -198,7 +217,7 @@ public class TabService {
         menuItem2.setOnAction(actionEvent -> {
 
             ObservableList<Tab> blackList = FXCollections.observableArrayList();
-            blackList.addAll(controller.getTabPane().getTabs());
+            blackList.addAll(tab.getTabPane().getTabs());
 
             blackList.remove(tab);
 
@@ -226,7 +245,7 @@ public class TabService {
 
         MenuItem menuItem4 = new MenuItem("Select Next Tab");
         menuItem4.setOnAction(actionEvent -> {
-            TabPane tabPane = controller.getTabPane();
+            TabPane tabPane = tab.getTabPane();
             if (tabPane.getSelectionModel().isSelected(tabPane.getTabs().size() - 1))
                 tabPane.getSelectionModel().selectFirst();
             else
@@ -235,7 +254,7 @@ public class TabService {
 
         MenuItem menuItem5 = new MenuItem("Select Previous Tab");
         menuItem5.setOnAction(actionEvent -> {
-            SingleSelectionModel<Tab> selectionModel = controller.getTabPane().getSelectionModel();
+            SingleSelectionModel<Tab> selectionModel = tab.getTabPane().getSelectionModel();
             if (selectionModel.isSelected(0))
                 selectionModel.selectLast();
             else
@@ -333,9 +352,7 @@ public class TabService {
 
         TabPane previewTabPane = controller.getPreviewTabPane();
 
-        ImageTab tab = new ImageTab();
-        tab.setPath(imagePath);
-        tab.setText(imagePath.getFileName().toString());
+        ImageTab tab = new ImageTab(imagePath);
 
         if (previewTabPane.getTabs().contains(tab)) {
             previewTabPane.getSelectionModel().select(tab);
@@ -371,9 +388,8 @@ public class TabService {
 
         tab.setContent(scrollPane);
 
-        TabPane tabPane = previewTabPane;
-        tabPane.getTabs().add(tab);
-        tabPane.getSelectionModel().select(tab);
+        previewTabPane.getTabs().add(tab);
+        previewTabPane.getSelectionModel().select(tab);
     }
 
     public void initializeTabChangeListener(TabPane tabPane) {
@@ -393,5 +409,9 @@ public class TabService {
                 }
             });
         });
+    }
+
+    public ObservableList<Optional<Path>> getClosedPaths() {
+        return closedPaths;
     }
 }

@@ -1,30 +1,56 @@
 package com.kodcu.component;
 
+import com.kodcu.config.StoredConfigBean;
+import com.kodcu.controller.ApplicationController;
 import com.kodcu.other.IOHelper;
+import com.kodcu.service.DirectoryService;
 import com.kodcu.service.shortcut.AsciidocShortcutService;
 import com.kodcu.service.shortcut.MarkdownShortcutService;
 import com.kodcu.service.shortcut.NoneShortcutService;
+import com.kodcu.service.ui.TabService;
 import javafx.application.Platform;
+import javafx.collections.ObservableList;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Objects;
 import java.util.Optional;
+
+import static java.nio.file.StandardOpenOption.CREATE;
+import static java.nio.file.StandardOpenOption.TRUNCATE_EXISTING;
 
 /**
  * Created by usta on 17.12.2014.
  */
 
+@Component
+@Scope("prototype")
 public class MyTab extends Tab {
 
-    private EditorPane editorPane;
-    private Path path;
+    private final EditorPane editorPane;
+    private final StoredConfigBean storedConfigBean;
+    private final DirectoryService directoryService;
+    private final TabService tabService;
+    private final ApplicationController controller;
 
     private final Logger logger = LoggerFactory.getLogger(MyTab.class);
+
+    @Autowired
+    public MyTab(EditorPane editorPane, StoredConfigBean storedConfigBean, DirectoryService directoryService, TabService tabService, ApplicationController controller) {
+        this.editorPane = editorPane;
+        this.storedConfigBean = storedConfigBean;
+        this.directoryService = directoryService;
+        this.tabService = tabService;
+        this.controller = controller;
+    }
 
     public Label getLabel() {
         if (Objects.isNull(this.getGraphic()))
@@ -43,11 +69,18 @@ public class MyTab extends Tab {
     }
 
     public Path getPath() {
-        return path;
+
+        if (Objects.isNull(editorPane)) {
+            return null;
+        }
+
+        return editorPane.getPath();
     }
 
     public void setPath(Path path) {
-        this.path = path;
+        if (Objects.nonNull(editorPane)) {
+            editorPane.setPath(path);
+        }
     }
 
     public boolean isSaved() {
@@ -55,6 +88,10 @@ public class MyTab extends Tab {
     }
 
     public ButtonType close() {
+
+        if (Objects.nonNull(getPath()))
+            tabService.getClosedPaths().add(Optional.ofNullable(getPath()));
+
         this.select();
 
         if (isSaved() || !isDirty()) {
@@ -86,7 +123,36 @@ public class MyTab extends Tab {
         return true;
     }
 
-    public boolean isNew(){
+    public boolean isChanged() {
+        String tabText = getTabText();
+        return tabText.contains(" *");
+    }
+
+    public void saveDoc() {
+
+        if (Objects.isNull(getPath()))
+            return;
+
+        if (!isChanged())
+            return;
+
+        Optional<IOException> exception =
+                IOHelper.writeToFile(getPath(), editorPane.getEditorValue(), TRUNCATE_EXISTING, CREATE);
+
+        if (exception.isPresent())
+            return;
+
+        setTabText(getPath().getFileName().toString());
+
+        ObservableList<String> recentFiles = storedConfigBean.getRecentFiles();
+        recentFiles.remove(getPath().toString());
+        recentFiles.add(0, getPath().toString());
+
+        directoryService.setInitialDirectory(Optional.ofNullable(getPath().toFile()));
+    }
+
+
+    public boolean isNew() {
         return "new *".equals(this.getTabText());
     }
 
@@ -96,7 +162,12 @@ public class MyTab extends Tab {
 
     private void closeIt() {
         Platform.runLater(() -> {
+            tabService.getClosedPaths().add(Optional.ofNullable(getPath()));
             this.getTabPane().getTabs().remove(this); // keep it here
+            ObservableList<Tab> tabs = controller.getTabPane().getTabs();
+            if (tabs.isEmpty()) {
+                tabService.newDoc();
+            }
         });
     }
 
@@ -116,19 +187,12 @@ public class MyTab extends Tab {
     }
 
     public boolean isMarkdown() {
-        return editorPane.is("markdown");
+        return editorPane.isMarkdown();
     }
 
-    public void setEditorPane(EditorPane editorPane) {
-        this.editorPane = editorPane;
-    }
-
-    public EditorPane getEditorPane() {
-        return editorPane;
-    }
 
     public boolean isAsciidoc() {
-        return editorPane.is("asciidoc");
+        return editorPane.isAsciidoc();
     }
 
     public String htmlToMarkupFunction() {
@@ -137,17 +201,17 @@ public class MyTab extends Tab {
 
     public void reloadDocument(String alertMessage) {
 
-        if (Objects.nonNull(path)) {
-            String content = IOHelper.readFile(path);
+        if (Objects.nonNull(getPath())) {
+            String content = IOHelper.readFile(getPath());
 
-            if(!content.equals(getEditorPane().getEditorValue())){
+            if (!content.equals(editorPane.getEditorValue())) {
                 if (isSaved()) {
-                    getEditorPane().setEditorValue(content);
+                    editorPane.setEditorValue(content);
                 } else {
                     Optional<ButtonType> reloadAlert = AlertHelper.showAlert(alertMessage);
                     reloadAlert.ifPresent(buttonType -> {
                         if (ButtonType.YES == buttonType) {
-                            getEditorPane().setEditorValue(content);
+                            editorPane.setEditorValue(content);
                         }
                     });
                 }
@@ -161,14 +225,14 @@ public class MyTab extends Tab {
 
     public void askReloadDocument(String alertMessage) {
 
-        if (Objects.nonNull(path)) {
-            String content = IOHelper.readFile(path);
-            if(!content.equals(getEditorPane().getEditorValue())){
+        if (Objects.nonNull(getPath())) {
+            String content = IOHelper.readFile(getPath());
+            if (!content.equals(editorPane.getEditorValue())) {
                 this.select();
                 Optional<ButtonType> reloadAlert = AlertHelper.showAlert(alertMessage);
                 reloadAlert.ifPresent(buttonType -> {
                     if (ButtonType.YES == buttonType) {
-                        getEditorPane().setEditorValue(content);
+                        editorPane.setEditorValue(content);
                     }
                 });
             }
@@ -178,4 +242,7 @@ public class MyTab extends Tab {
 
     }
 
+    public EditorPane getEditorPane() {
+        return editorPane;
+    }
 }
