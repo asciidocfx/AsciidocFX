@@ -32,6 +32,7 @@ public class TableViewLogAppender extends UnsynchronizedAppenderBase<ILoggingEve
     private static Label logShortMessage;
     PatternLayoutEncoder encoder;
     private static Label logShowHider;
+    private final Timer timer = new Timer();
 
     public static void setLogViewer(TableView<MyLog> logViewer) {
         TableViewLogAppender.logViewer = logViewer;
@@ -82,7 +83,7 @@ public class TableViewLogAppender extends UnsynchronizedAppenderBase<ILoggingEve
 
         if (!scheduled.get()) {
             scheduled.set(true);
-            new Timer().schedule(new TimerTask() {
+            timer.schedule(new TimerTask() {
                 @Override
                 public void run() {
                     Platform.runLater(() -> {
