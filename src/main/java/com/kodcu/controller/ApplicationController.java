@@ -46,6 +46,7 @@ import javafx.collections.transformation.FilteredList;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
+import javafx.event.EventType;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
@@ -92,9 +93,11 @@ import java.nio.file.Paths;
 import java.nio.file.attribute.PosixFileAttributeView;
 import java.nio.file.attribute.PosixFilePermission;
 import java.security.CodeSource;
+import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
@@ -238,9 +241,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     private MathJaxService mathJaxService;
 
     @Autowired
-    private WebviewService webviewService;
-
-    @Autowired
     private DocBookConverter docBookConverter;
 
     @Autowired
@@ -284,9 +284,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     private ThreadService threadService;
 
     @Autowired
-    private DocumentService documentService;
-
-    @Autowired
     private EpubController epubController;
 
     @Autowired
@@ -321,16 +318,16 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         if (Objects.isNull(nev))
             return;
 
-        threadService.runActionLater(() -> {
-            htmlPane.refreshUI(nev);
-        });
+        htmlPane.refreshUI(nev);
 
-        sessionList.stream().filter(e -> e.isOpen()).forEach(e -> {
-            try {
-                e.sendMessage(new TextMessage(nev));
-            } catch (Exception ex) {
-                logger.error("Problem occured while sending content over WebSocket", ex);
-            }
+        threadService.runTaskLater(() -> {
+            sessionList.stream().filter(e -> e.isOpen()).forEach(e -> {
+                try {
+                    e.sendMessage(new TextMessage(nev));
+                } catch (Exception ex) {
+                    logger.error("Problem occured while sending content over WebSocket", ex);
+                }
+            });
         });
     };
 
@@ -541,10 +538,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             try {
                 byte[] imageBuffer = restTemplate.getForObject(url, byte[].class);
                 String imageBase64 = base64Encoder.encodeToString(imageBuffer);
-                threadService.runActionLater(() -> {
-                    htmlPane.updateBase64Url(index, imageBase64);
-
-                });
+                htmlPane.updateBase64Url(index, imageBase64);
             } catch (Exception e) {
                 logger.error("Problem occured while converting image to base64 for {}", url);
             }
@@ -554,7 +548,13 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     @Override
     public void initialize(URL url, ResourceBundle rb) {
 
-        threadService.scheduleWithFixedDelay(this::renderLoop, 150);
+//        threadService.scheduleWithFixedDelay(this::renderLoop, 100);
+        threadService.runTaskLater(() -> {
+            while (true) {
+                renderLoop();
+                threadService.sleep(100);
+            }
+        });
 
         initializePaths();
         initializePosixPermissions();
@@ -993,7 +993,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         }
     }
 
-   /* private void initializeAutoSaver() {
+    private void initializeAutoSaver() {
         final AtomicReference<Instant> currentTime = new AtomicReference<>(Instant.now());
 
         stage.addEventFilter(EventType.ROOT, event -> {
@@ -1010,13 +1010,14 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
                     for (Tab tab : tabs) {
                         MyTab myTab = (MyTab) tab;
-                        if(!myTab.isNew()){
+                        if (!myTab.isNew()) {
+                            myTab.saveDoc();
                         }
                     }
                 }
             }
         }, 0, 500);
-    }*/
+    }
 
     private void bindConfigurations() {
 
@@ -1291,10 +1292,8 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     @WebkitCall
     public void updateStatusBox(long row, long column, long linecount, long wordcount) {
-        threadService.runTaskLater(() -> {
-            threadService.runActionLater(() -> {
-                statusText.setText(String.format("(Characters: %d) (Lines: %d) (%d:%d)", wordcount, linecount, row, column));
-            });
+        threadService.runActionLater(() -> {
+            statusText.setText(String.format("(Characters: %d) (Lines: %d) (%d:%d)", wordcount, linecount, row, column));
         });
     }
 
@@ -1666,13 +1665,13 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     @FXML
     public void openDoc(Event event) {
-        documentService.openDoc();
+        tabService.openDoc();
     }
 
     @FXML
     public void newDoc(Event... event) {
         threadService.runActionLater(() -> {
-            documentService.newDoc();
+            tabService.newDoc();
         }, true);
     }
 
@@ -1808,6 +1807,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
         String text = tuple.getKey();
         String mode = tuple.getValue();
+
 
         latestTupleReference.set(null);
 
@@ -2017,12 +2017,12 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     }
 
     public void saveDoc() {
-        documentService.saveDoc();
+        current.currentTab().saveDoc();
     }
 
     @FXML
     public void saveDoc(Event actionEvent) {
-        documentService.saveDoc();
+        current.currentTab().saveDoc();
     }
 
     public void fitToParent(Node node) {
