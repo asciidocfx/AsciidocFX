@@ -71,7 +71,9 @@ function runScroller(renderedSelection) {
         if (!header) {
             var search = $("*:contains(" + $(renderedSelection).text().trim() + "):last");
             if (search) {
-                scrollTo60(search.offset().top);
+                var offset = search.offset();
+                if (offset)
+                    scrollTo60(offset.top);
             }
         }
     }
