@@ -2,6 +2,7 @@ package com.kodcu.component;
 
 import com.kodcu.config.StoredConfigBean;
 import com.kodcu.controller.ApplicationController;
+import com.kodcu.other.ExtensionFilters;
 import com.kodcu.other.IOHelper;
 import com.kodcu.service.DirectoryService;
 import com.kodcu.service.shortcut.AsciidocShortcutService;
@@ -13,12 +14,14 @@ import javafx.collections.ObservableList;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
+import javafx.stage.FileChooser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Objects;
@@ -130,11 +133,18 @@ public class MyTab extends Tab {
 
     public void saveDoc() {
 
-        if (Objects.isNull(getPath()))
-            return;
-
         if (!isChanged())
             return;
+
+        if(Objects.isNull(getPath())){
+            final FileChooser fileChooser = directoryService.newFileChooser(String.format("Save file"));
+            fileChooser.getExtensionFilters().addAll(ExtensionFilters.ASCIIDOC);
+            fileChooser.getExtensionFilters().addAll(ExtensionFilters.MARKDOWN);
+            fileChooser.getExtensionFilters().addAll(ExtensionFilters.ALL);
+            File file = fileChooser.showSaveDialog(null);
+            setPath(file.toPath());
+            setTabText(file.toPath().getFileName().toString());
+        }
 
         Optional<IOException> exception =
                 IOHelper.writeToFile(getPath(), editorPane.getEditorValue(), TRUNCATE_EXISTING, CREATE);

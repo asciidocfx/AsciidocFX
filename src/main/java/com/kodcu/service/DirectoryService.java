@@ -3,6 +3,7 @@ package com.kodcu.service;
 import com.kodcu.config.StoredConfigBean;
 import com.kodcu.controller.ApplicationController;
 import com.kodcu.other.Current;
+import com.kodcu.other.ExtensionFilters;
 import com.kodcu.service.ui.FileBrowseService;
 import com.kodcu.service.ui.TabService;
 import javafx.application.Platform;
@@ -209,6 +210,12 @@ public class DirectoryService {
             }, threadService.executor());
 
             return completableFuture.join();
+        }
+
+        boolean isNew = current.currentTab().isNew();
+
+        if (isNew) {
+            controller.saveDoc();
         }
 
         final Path currentTabPath = current.currentPath().get();
