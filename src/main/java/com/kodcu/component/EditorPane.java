@@ -10,6 +10,7 @@ import com.kodcu.service.shortcut.ShortcutProvider;
 import com.kodcu.service.ui.TabService;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Worker;
 import javafx.event.EventHandler;
@@ -57,6 +58,7 @@ public class EditorPane extends AnchorPane {
     private final TabService tabService;
     private final AsciiTreeGenerator asciiTreeGenerator;
     private final ParserService parserService;
+    private final ObservableList<Runnable> handleReadyTasks;
     private String mode = "ace/mode/asciidoc";
     private String initialEditorValue = "";
     private Path path;
@@ -69,6 +71,7 @@ public class EditorPane extends AnchorPane {
         this.applicationContext = applicationContext;
         this.tabService = tabService;
         this.asciiTreeGenerator = asciiTreeGenerator;
+        this.handleReadyTasks = FXCollections.observableArrayList();
         this.parserService = parserService;
         this.webView = new WebView();
         webEngine().setConfirmHandler(this::handleConfirm);
@@ -79,6 +82,10 @@ public class EditorPane extends AnchorPane {
     private Boolean handleConfirm(String param) {
         if ("command:ready".equals(param)) {
             handleEditorReady();
+            for (Runnable handleReadyTask : handleReadyTasks) {
+                handleReadyTask.run();
+            }
+            handleReadyTasks.clear();
         }
         return false;
     }
@@ -358,6 +365,10 @@ public class EditorPane extends AnchorPane {
             event.setDropCompleted(success);
             event.consume();
         });
+    }
+
+    public ObservableList<Runnable> getHandleReadyTasks() {
+        return handleReadyTasks;
     }
 
     public void setInitialEditorValue(String initialEditorValue) {
