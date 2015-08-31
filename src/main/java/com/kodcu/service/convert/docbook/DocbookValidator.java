@@ -68,7 +68,7 @@ public class DocbookValidator {
                 IOHelper.writeToFile(xmlPath, rendered);
                 Platform.runLater(() -> {
                     tabService.addTab(xmlPath, () -> {
-                        current.currentEditor().call("addAnnotation", lineNumber, columnNumber, pe.getMessage(), "error");
+                        current.currentEditor().call("addAnnotation", (lineNumber - 1), columnNumber, pe.getMessage(), "error");
                     });
                 });
                 logger.error("Please fix Docbook validation error. LineNumber: {}, Column: {}", lineNumber, columnNumber, pe);
