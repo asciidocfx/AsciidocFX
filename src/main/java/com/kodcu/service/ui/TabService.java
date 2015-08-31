@@ -135,6 +135,9 @@ public class TabService {
         recentFiles.remove(path.toString());
         recentFiles.add(0, path.toString());
 
+        editorPane.getHandleReadyTasks().clear();
+        editorPane.getHandleReadyTasks().addAll(runnables);
+
         editorPane.load(String.format("http://localhost:%d/editor.html", controller.getPort()));
     }
 
@@ -169,6 +172,7 @@ public class TabService {
         FileChooser fileChooser = directoryService.newFileChooser("Open File");
         fileChooser.getExtensionFilters().add(ExtensionFilters.ASCIIDOC);
         fileChooser.getExtensionFilters().add(ExtensionFilters.MARKDOWN);
+        fileChooser.getExtensionFilters().add(ExtensionFilters.ALL);
         List<File> chosenFiles = fileChooser.showOpenMultipleDialog(controller.getStage());
         if (chosenFiles != null) {
             chosenFiles.stream().map(File::toPath).forEach(this::previewDocument);
