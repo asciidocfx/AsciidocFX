@@ -40,8 +40,10 @@ function refreshUI(data) {
     });
 
     $("#placeholder").html($data.html());
-    $('pre code').each(function (i, e) {
-        hljs.highlightBlock(e)
-    });
 
+    $('pre code').on('mouseover', function () {
+        if (!$(this).hasClass("hljs")) {
+            hljs.highlightBlock(this);
+        }
+    });
 }
