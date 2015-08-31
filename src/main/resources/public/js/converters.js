@@ -7,6 +7,10 @@ if ((typeof setTimeout) == "undefined") {
     };
 }
 
+function getOption(options) {
+    return Opal.hash(JSON.parse(options));
+}
+
 var filloutTimeout;
 function convertAsciidoc(content, options) {
 
@@ -39,16 +43,12 @@ function convertOdf(content, options) {
 
     var doc = Opal.Asciidoctor.$load(content, getOption(options));
 
-    doc.attributes.keys["lang"] = doc.attributes.keys["lang"] || getDefaultLanguage();
-
     return doc.$convert();
 }
 
 function convertHtml(content, options) {
 
     var doc = Opal.Asciidoctor.$load(content, getOption(options));
-
-    doc.attributes.keys["lang"] = doc.attributes.keys["lang"] || getDefaultLanguage();
 
     return {
         rendered: doc.$render(),
@@ -60,8 +60,6 @@ function convertHtml(content, options) {
 function convertDocbook(content, options) {
 
     var doc = Opal.Asciidoctor.$load(content, getOption(options));
-
-    //doc.attributes.keys["lang"] = doc.attributes.keys["lang"] || getDefaultLanguage();
 
     return {
         rendered: doc.$render(),

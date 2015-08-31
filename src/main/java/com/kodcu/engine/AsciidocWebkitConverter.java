@@ -1,10 +1,7 @@
 package com.kodcu.engine;
 
 import com.kodcu.component.ViewPanel;
-import com.kodcu.config.DocbookConfigBean;
-import com.kodcu.config.HtmlConfigBean;
-import com.kodcu.config.OdfConfigBean;
-import com.kodcu.config.PreviewConfigBean;
+import com.kodcu.config.*;
 import com.kodcu.controller.ApplicationController;
 import com.kodcu.other.ConverterResult;
 import com.kodcu.other.Current;
@@ -18,10 +15,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.json.JsonObject;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
 
@@ -35,16 +33,18 @@ public class AsciidocWebkitConverter extends ViewPanel implements AsciidocConver
     private final OdfConfigBean odfConfigBean;
     private final DocbookConfigBean docbookConfigBean;
     private final HtmlConfigBean htmlConfigBean;
+    private final AsciidocConfigMerger configMerger;
 
     private Logger logger = LoggerFactory.getLogger(AsciidocWebkitConverter.class);
 
     @Autowired
-    public AsciidocWebkitConverter(ThreadService threadService, ApplicationController controller, Current current, PreviewConfigBean previewConfigBean, OdfConfigBean odfConfigBean, DocbookConfigBean docbookConfigBean, HtmlConfigBean htmlConfigBean) {
+    public AsciidocWebkitConverter(ThreadService threadService, ApplicationController controller, Current current, PreviewConfigBean previewConfigBean, OdfConfigBean odfConfigBean, DocbookConfigBean docbookConfigBean, HtmlConfigBean htmlConfigBean, AsciidocConfigMerger configMerger) {
         super(threadService, controller, current);
         this.previewConfigBean = previewConfigBean;
         this.odfConfigBean = odfConfigBean;
         this.docbookConfigBean = docbookConfigBean;
         this.htmlConfigBean = htmlConfigBean;
+        this.configMerger = configMerger;
     }
 
     public WebView getWebView() {
@@ -88,58 +88,52 @@ public class AsciidocWebkitConverter extends ViewPanel implements AsciidocConver
         return (String) webEngine().executeScript("findRenderedSelection(context)");
     }
 
-    private ConverterResult convert(String functionName, String asciidoc, String config) {
+    protected ConverterResult convert(String functionName, String asciidoc, JsonObject config) {
 
-        if (!Platform.isFxApplicationThread()) {
-            final CompletableFuture<ConverterResult> completableFuture = new CompletableFuture<>();
+        final CompletableFuture<ConverterResult> completableFuture = new CompletableFuture<>();
 
-            completableFuture.runAsync(() -> {
-                threadService.runActionLater(() -> {
-                    try {
-                        ConverterResult result = convert(functionName, asciidoc, config);
-                        completableFuture.complete(result);
-                    } catch (Exception e) {
-                        completableFuture.completeExceptionally(e);
-                    }
-                });
-            }, threadService.executor());
+        CompletableFuture.runAsync(() -> {
+            JsonObject finalConfig = updateConfig(asciidoc, config);
+            threadService.runActionLater(() -> {
+                try {
+                    this.setMember("editorValue", asciidoc);
+                    this.setMember("editorOptions", finalConfig.toString());
+                    JSObject result = (JSObject) webEngine().executeScript(String.format("%s(editorValue,editorOptions)", functionName));
+                    ConverterResult converterResult = new ConverterResult(result);
 
-            return completableFuture.join();
-        }
+                    completableFuture.complete(converterResult);
+                } catch (Exception e) {
+                    completableFuture.completeExceptionally(e);
+                }
+            });
+        }, threadService.executor());
 
-//        long start = System.currentTimeMillis();
+        return completableFuture.join();
 
-        this.setMember("editorValue", asciidoc);
-        this.setMember("editorOptions", config);
-        JSObject result = (JSObject) webEngine().executeScript(String.format("%s(editorValue,editorOptions)", functionName));
-        ConverterResult converterResult = new ConverterResult(result);
-//        logger.debug("Rendered in {}", (System.currentTimeMillis() - start));
-        return converterResult;
+    }
 
+    private JsonObject updateConfig(String asciidoc, JsonObject config) {
+        return configMerger.updateConfig(asciidoc, config);
     }
 
     @Override
     public ConverterResult convertDocbook(String asciidoc) {
-        String config = docbookConfigBean.getJSON().toString();
-        return convert("convertDocbook", asciidoc, config);
+        return convert("convertDocbook", asciidoc, docbookConfigBean.getJSON());
     }
 
     @Override
     public ConverterResult convertAsciidoc(String asciidoc) {
-        String config = previewConfigBean.getJSON().toString();
-        return convert("convertAsciidoc", asciidoc, config);
+        return convert("convertAsciidoc", asciidoc, previewConfigBean.getJSON());
     }
 
     @Override
     public ConverterResult convertHtml(String asciidoc) {
-        String config = htmlConfigBean.getJSON().toString();
-        return convert("convertHtml", asciidoc, config);
+        return convert("convertHtml", asciidoc, htmlConfigBean.getJSON());
     }
 
     @Override
     public void convertOdf(String asciidoc) {
-        String config = odfConfigBean.getJSON().toString();
-        convert("convertOdf", asciidoc, config);
+        convert("convertOdf", asciidoc, odfConfigBean.getJSON());
     }
 
     public boolean isHtml(String text) {
