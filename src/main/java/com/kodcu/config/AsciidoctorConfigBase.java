@@ -28,6 +28,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.json.*;
 import java.io.FileReader;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 
@@ -200,12 +201,15 @@ public abstract class AsciidoctorConfigBase extends ConfigurationBase {
 
                 ObservableList<AttributesTable> attrList = FXCollections.observableArrayList();
 
-                for (Map.Entry<String, JsonValue> attr : attributes.entrySet()) {
-                    AttributesTable attributesTable = new AttributesTable();
-                    attributesTable.setAttribute(attr.getKey());
-                    attributesTable.setValue(((JsonString) attr.getValue()).getString());
-                    attrList.add(attributesTable);
+                if (Objects.nonNull(attributes)){
+                    for (Map.Entry<String, JsonValue> attr : attributes.entrySet()) {
+                        AttributesTable attributesTable = new AttributesTable();
+                        attributesTable.setAttribute(attr.getKey());
+                        attributesTable.setValue(((JsonString) attr.getValue()).getString());
+                        attrList.add(attributesTable);
+                    }
                 }
+
                 setAttributes(attrList);
 
                 fadeOut(infoLabel, "Loaded...");

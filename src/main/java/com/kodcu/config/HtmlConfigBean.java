@@ -26,6 +26,6 @@ public class HtmlConfigBean extends AsciidoctorConfigBase {
 
     @Override
     public Path getConfigPath() {
-        return getConfigDirectory().resolve("asciidoctor_html.json");
+        return super.resolveConfigPath("asciidoctor_html.json");
     }
 }

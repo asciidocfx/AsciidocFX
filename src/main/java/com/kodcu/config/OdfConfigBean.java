@@ -26,6 +26,6 @@ public class OdfConfigBean extends AsciidoctorConfigBase {
 
     @Override
     public Path getConfigPath() {
-        return getConfigDirectory().resolve("asciidoctor_odf.json");
+        return super.resolveConfigPath("asciidoctor_odf.json");
     }
 }

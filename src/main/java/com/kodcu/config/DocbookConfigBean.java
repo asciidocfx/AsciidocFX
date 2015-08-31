@@ -26,6 +26,6 @@ public class DocbookConfigBean extends AsciidoctorConfigBase {
 
     @Override
     public Path getConfigPath() {
-        return getConfigDirectory().resolve("asciidoctor_docbook.json");
+        return super.resolveConfigPath("asciidoctor_docbook.json");
     }
 }

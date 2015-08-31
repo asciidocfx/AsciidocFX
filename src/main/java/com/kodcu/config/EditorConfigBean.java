@@ -84,7 +84,6 @@ public class EditorConfigBean extends ConfigurationBase {
         this.tabService = tabService;
     }
 
-
     public Integer getWrapLimit() {
         return wrapLimit.get();
     }
@@ -234,7 +233,7 @@ public class EditorConfigBean extends ConfigurationBase {
 
         FXForm editorConfigForm = new FXFormBuilder<>()
                 .resourceBundle(ResourceBundle.getBundle("editorConfig"))
-                .includeAndReorder("editorTheme", "jsPlatform", "asciidoctorStyleSheet", "directoryPanel", "fontFamily", "fontSize", "scrollSpeed", "useWrapMode", "wrapLimit", "showGutter", "defaultLanguage", "kindlegen")
+                .includeAndReorder("editorTheme", "asciidoctorStyleSheet", "directoryPanel", "fontFamily", "fontSize", "scrollSpeed", "useWrapMode", "wrapLimit", "showGutter", "defaultLanguage", "kindlegen")
                 .build();
 
         DefaultFactoryProvider editorConfigFormProvider = new DefaultFactoryProvider();
@@ -244,7 +243,7 @@ public class EditorConfigBean extends ConfigurationBase {
         editorConfigFormProvider.addFactory(new NamedFieldHandler("scrollSpeed"), new SliderFactory(SliderBuilt.create(0.0, 1, 0.1).step(0.1)));
         editorConfigFormProvider.addFactory(new NamedFieldHandler("fontSize"), new SpinnerFactory(new Spinner(8, 32, 14)));
         editorConfigFormProvider.addFactory(new NamedFieldHandler("wrapLimit"), new SpinnerFactory(new Spinner(0, 500, 0)));
-        editorConfigFormProvider.addFactory(new NamedFieldHandler("kindlegen"), new FileChooserFactory());
+        editorConfigFormProvider.addFactory(new NamedFieldHandler("kindlegen"), new FileChooserFactory("Select kindlegen executable file"));
         FileChooserEditableFactory fileChooserEditableFactory = new FileChooserEditableFactory();
         editorConfigFormProvider.addFactory(new NamedFieldHandler("asciidoctorStyleSheet"), fileChooserEditableFactory);
         editorConfigForm.setEditorFactoryProvider(editorConfigFormProvider);
@@ -267,7 +266,7 @@ public class EditorConfigBean extends ConfigurationBase {
 
     @Override
     public Path getConfigPath() {
-        return getConfigDirectory().resolve("editor_config.json");
+        return super.resolveConfigPath("editor_config.json");
     }
 
     @Override
@@ -289,7 +288,6 @@ public class EditorConfigBean extends ConfigurationBase {
 
             JsonObject jsonObject = jsonReader.readObject();
 
-            boolean directoryPanel = jsonObject.getBoolean("directoryPanel", true);
             String fontFamily = jsonObject.getString("fontFamily", "'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace");
             int fontSize = jsonObject.getInt("fontSize", 14);
             String theme = jsonObject.getString("editorTheme", "xcode");
@@ -299,7 +297,6 @@ public class EditorConfigBean extends ConfigurationBase {
             boolean showGutter = jsonObject.getBoolean("showGutter", false);
             int wrapLimit = jsonObject.getInt("wrapLimit", 0);
             String asciidoctorStyleSheet = jsonObject.getString("asciidoctorStyleSheet", null);
-
 
             IOHelper.close(jsonReader, fileReader);
 

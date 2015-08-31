@@ -76,7 +76,7 @@ public class StoredConfigBean extends ConfigurationBase {
 
     @Override
     public Path getConfigPath() {
-        return getConfigDirectory().resolve("stored_directories.json");
+        return super.resolveConfigPath("stored_directories.json");
     }
 
     @Override
