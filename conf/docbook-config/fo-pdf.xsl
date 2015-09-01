@@ -53,7 +53,7 @@
     </xsl:template>
 
     <xsl:template name="pickfont-serif">
-        <xsl:text>Georgia,serif,Arial,Arial Unicode MS,Lucida Sans Unicode</xsl:text>
+        <xsl:text>Arial,Arial Unicode MS,Lucida Sans Unicode,Georgia,serif</xsl:text>
     </xsl:template>
 
     <xsl:template name="pickfont-mono">
