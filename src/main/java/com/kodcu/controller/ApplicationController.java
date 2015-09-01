@@ -548,7 +548,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     @Override
     public void initialize(URL url, ResourceBundle rb) {
 
-//        threadService.scheduleWithFixedDelay(this::renderLoop, 100);
         threadService.runTaskLater(() -> {
             while (true) {
                 renderLoop();
@@ -597,15 +596,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             }
         });
         previewTabPane.setRotateGraphic(true);
-
-        outlineTab.getTabPane()
-                .getSelectionModel()
-                .selectedItemProperty()
-                .addListener((observable, oldValue, newValue) -> {
-                    if (newValue == outlineTab) {
-                        current.currentEditor().rerender();
-                    }
-                });
 
         initializeLogViewer();
         initializeDoctypes();
@@ -1517,12 +1507,28 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         }
     }
 
+    ChangeListener<Tab> outlineTabChangeListener;
+
     @WebkitCall(from = "index")
     public void fillOutlines(Object doc) {
-        if (outlineTab.isSelected())
-            threadService.runActionLater(() -> {
+
+        if (outlineTab.isSelected()) {
+            converterProvider.get(previewConfigBean).fillOutlines(doc);
+        }
+
+        ReadOnlyObjectProperty<Tab> itemProperty = workDirTabPane.getSelectionModel().selectedItemProperty();
+
+        if (Objects.nonNull(outlineTabChangeListener)) {
+            itemProperty.removeListener(outlineTabChangeListener);
+        }
+
+        outlineTabChangeListener = (observable, old, nev) -> {
+            if (outlineTab == nev) {
                 converterProvider.get(previewConfigBean).fillOutlines(doc);
-            });
+            }
+        };
+
+        itemProperty.addListener(outlineTabChangeListener);
     }
 
     @WebkitCall(from = "index")
@@ -1533,7 +1539,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     @WebkitCall(from = "index")
     public void finishOutline() {
 
-        threadService.runTaskLater(() -> {
+        threadService.runActionLater(() -> {
 
             if (Objects.isNull(sectionTreeView)) {
                 sectionTreeView = new TreeView<Section>();
@@ -1575,13 +1581,11 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                 }
             }
 
-            threadService.runActionLater(() -> {
-                if (outlineList.size() == 0) {
-                    outlineTab.setContent(new Label(" There is no Asciidoc header to generate outline."));
-                } else {
-                    outlineTab.setContent(sectionTreeView);
-                }
-            });
+            if (outlineList.size() == 0) {
+                outlineTab.setContent(new Label("Empty document level(s)"));
+            } else {
+                outlineTab.setContent(sectionTreeView);
+            }
         });
 
     }

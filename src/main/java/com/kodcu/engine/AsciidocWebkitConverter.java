@@ -80,7 +80,13 @@ public class AsciidocWebkitConverter extends ViewPanel implements AsciidocConver
 
     @Override
     public void fillOutlines(Object doc) {
-        getWindow().call("fillOutlines", doc);
+        threadService.runActionLater(() -> {
+            try {
+                getWindow().call("fillOutlines", doc);
+            } catch (Exception e) {
+                logger.debug("Problem occured while filling outlines", e);
+            }
+        });
     }
 
     public String findRenderedSelection(String content) {

@@ -1,34 +1,17 @@
-if ((typeof setTimeout) == "undefined") {
-    setTimeout = function () {
-        arguments[0]();
-    }
-
-    clearTimeout = function () {
-    };
-}
-
 function getOption(options) {
     return Opal.hash(JSON.parse(options));
 }
 
-var filloutTimeout;
+var fillOutAction = new BufferedAction();
 function convertAsciidoc(content, options) {
 
     var rendered = "";
 
     var doc = Opal.Asciidoctor.$load(content, getOption(options));
 
-    if (filloutTimeout)
-        clearTimeout(filloutTimeout);
-
-    filloutTimeout = setTimeout(function () {
-        try {
-            afx.fillOutlines(doc);
-        }
-        catch (e) {
-            throw e;
-        }
-    }, 1000);
+    fillOutAction.buff(function () {
+        afx.fillOutlines(doc);
+    }, 3000);
 
     rendered = doc.$convert();
 
