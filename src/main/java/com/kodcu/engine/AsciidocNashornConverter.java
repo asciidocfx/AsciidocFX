@@ -63,14 +63,12 @@ public class AsciidocNashornConverter implements AsciidocConvertible {
         completableFuture.runAsync(() -> {
             try {
 
-                scriptEngine.eval("var console = {  log : print, debug : print, warn : print }");
-                scriptEngine.eval("var navigator = {  appVersion : 'JavaFX' }");
                 scriptEngine.put("afx", this.controller);
 
-                List<String> scripts = Arrays.asList("jade.js", "asciidoctor-all.js", "asciidoctor-image-size-info.js",
+                List<String> scripts = Arrays.asList("nashorn-shim.js", "jade.js", "asciidoctor-all.js", "asciidoctor-image-size-info.js",
                         "asciidoctor-uml-block.js", "asciidoctor-ditaa-block.js", "asciidoctor-math-block.js",
                         "asciidoctor-tree-block.js", "asciidoctor-chart-block.js", "asciidoctor-docbook.js",
-                        "asciidoctor-reveal.js", "asciidoctor-deck.js", "asciidoctor-odf.js",
+                        "asciidoctor-reveal.js", "asciidoctor-deck.js", "asciidoctor-odf.js", "buffhelper.js",
                         "outliner.js", "converters.js");
 
 
@@ -146,6 +144,6 @@ public class AsciidocNashornConverter implements AsciidocConvertible {
     }
 
     private JsonObject updateConfig(String asciidoc, JsonObject config) {
-            return configMerger.updateConfig(asciidoc, config);
+        return configMerger.updateConfig(asciidoc, config);
     }
 }
