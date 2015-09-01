@@ -456,7 +456,9 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     @WebkitCall(from = "asciidoctor-math")
     public void appendFormula(String formula, String imagesDir, String imageTarget) {
-        mathJaxService.appendFormula(formula, imagesDir, imageTarget);
+        threadService.runActionLater(() -> {
+            mathJaxService.appendFormula(formula, imagesDir, imageTarget);
+        });
     }
 
     @WebkitCall(from = "mathjax.html")
@@ -1128,8 +1130,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     }
 
-    @WebkitCall(from = "asciidoctor-image-size-info")
-    public JSObject getImageInfo(String path, JSObject info) {
+    private void getImageSizeInfo(String path, Object info) {
 
         if (path.startsWith("/"))
             path = path.substring(1);
@@ -1147,12 +1148,12 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         }
 
         if (Objects.isNull(parent))
-            return info;
+            return;
 
         Path imagePath = parent.resolve(path);
 
         if (Files.notExists(imagePath))
-            return info;
+            return;
 
         try (ImageInputStream in = ImageIO.createImageInputStream(imagePath.toFile())) {
             final Iterator<ImageReader> readers = ImageIO.getImageReaders(in);
@@ -1163,12 +1164,19 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                     int width = reader.getWidth(0);
                     int height = reader.getHeight(0);
 
-                    info.setMember("width", width);
-                    info.setMember("height", height);
+                    if ((info instanceof JSObject)) {
+                        JSObject object = (JSObject) info;
+                        object.setMember("width", width);
+                        object.setMember("height", height);
+                    } else if (info instanceof jdk.nashorn.api.scripting.JSObject) {
+                        jdk.nashorn.api.scripting.JSObject object = (jdk.nashorn.api.scripting.JSObject) info;
+                        object.setMember("width", width);
+                        object.setMember("height", height);;
+                    }
 
                     reader.dispose();
 
-                    return info;
+                    return;
                 } finally {
                     reader.dispose();
                 }
@@ -1176,7 +1184,18 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         } catch (Exception e) {
             logger.error("Problem occured while getting image size info", e);
         }
-        return info;
+    }
+
+    @WebkitCall(from = "asciidoctor-image-size-info")
+    public void getImageInfo(final String path, Object info) {
+
+        if ((info instanceof JSObject)) {
+            threadService.runActionLater(() -> {
+                getImageSizeInfo(path, info);
+            });
+        } else if (info instanceof jdk.nashorn.api.scripting.JSObject) {
+            getImageSizeInfo(path, info);
+        }
     }
 
     private void applyForAllEditorPanes(Consumer<EditorPane> editorPaneConsumer) {
@@ -1728,26 +1747,26 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     @WebkitCall(from = "asciidoctor-chart")
     public void chartBuildFromCsv(String csvFile, String imagesDir, String imageTarget, String chartType, String options) {
 
-        if (Objects.isNull(imageTarget) || Objects.isNull(chartType))
-            return;
+        threadService.runActionLater(() -> {
+            if (Objects.isNull(imageTarget) || Objects.isNull(chartType))
+                return;
 
-        getCurrent().currentPath().map(Path::getParent).ifPresent(root -> {
-            threadService.runTaskLater(() -> {
-                String csvContent = IOHelper.readFile(root.resolve(csvFile));
+            current.currentPath().map(Path::getParent).ifPresent(root -> {
+                threadService.runTaskLater(() -> {
+                    String csvContent = IOHelper.readFile(root.resolve(csvFile));
 
-                threadService.runActionLater(() -> {
-                    try {
-                        Map<String, String> optMap = parseChartOptions(options);
-                        optMap.put("csv-file", csvFile);
-                        chartProvider.getProvider(chartType).chartBuild(csvContent, imagesDir, imageTarget, optMap);
+                    threadService.runActionLater(() -> {
+                        try {
+                            Map<String, String> optMap = parseChartOptions(options);
+                            optMap.put("csv-file", csvFile);
+                            chartProvider.getProvider(chartType).chartBuild(csvContent, imagesDir, imageTarget, optMap);
 
-                    } catch (Exception e) {
-                        logger.info(e.getMessage(), e);
-                    }
+                        } catch (Exception e) {
+                            logger.info(e.getMessage(), e);
+                        }
+                    });
                 });
-
             });
-
         });
     }
 

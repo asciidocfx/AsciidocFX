@@ -33,7 +33,8 @@
                         var declaredHeight = node.$attributes()['$[]']('height') == false;
 
                         if (declaredWidth && declaredHeight) {
-                            var info = afx.getImageInfo(node.$image_uri(node.$attr('target')), {});
+                            var info = {};
+                            afx.getImageInfo(node.$image_uri(node.$attr('target')), info);
 
                             if (info.width && info.height) {
                                 node.$attributes()['$[]=']("width", info.width);

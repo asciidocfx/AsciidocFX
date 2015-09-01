@@ -43,7 +43,6 @@ public class DirectoryService {
     private Optional<Path> workingDirectory = Optional.of(Paths.get(System.getProperty("user.home")));
     private Optional<File> initialDirectory = Optional.empty();
 
-    private Supplier<Path> workingDirectorySupplier;
     private Supplier<Path> pathSaveSupplier;
     private final FileWatchService fileWatchService;
     private final ThreadService threadService;
@@ -58,17 +57,6 @@ public class DirectoryService {
         this.storedConfigBean = storedConfigBean;
         this.fileWatchService = fileWatchService;
         this.threadService = threadService;
-
-        workingDirectorySupplier = () -> {
-            final DirectoryChooser directoryChooser = newDirectoryChooser("Select working directory");
-            final File file = directoryChooser.showDialog(null);
-
-            workingDirectory = Optional.ofNullable(file.toPath());
-
-            workingDirectory.ifPresent(fileBrowser::browse);
-
-            return Objects.nonNull(file) ? file.toPath() : null;
-        };
 
         pathSaveSupplier = () -> {
             final FileChooser chooser = newFileChooser("Save Document");
@@ -106,19 +94,38 @@ public class DirectoryService {
     }
 
     public Path workingDirectory() {
-        return workingDirectory.orElseGet(workingDirectorySupplier);
+        return workingDirectory.orElseGet(this::workingDirectorySupplier);
+    }
+
+    private Path workingDirectorySupplier() {
+
+        if (!Platform.isFxApplicationThread()) {
+            final CompletableFuture<Path> completableFuture = new CompletableFuture<>();
+            completableFuture.runAsync(() -> {
+                threadService.runActionLater(() -> {
+                    try {
+                        Path path = workingDirectorySupplier();
+                        completableFuture.complete(path);
+                    } catch (Exception e) {
+                        completableFuture.completeExceptionally(e);
+                    }
+                });
+            }, threadService.executor());
+            return completableFuture.join();
+        }
+
+        final DirectoryChooser directoryChooser = newDirectoryChooser("Select working directory");
+        final File file = directoryChooser.showDialog(null);
+
+        workingDirectory = Optional.ofNullable(file.toPath());
+
+        workingDirectory.ifPresent(fileBrowser::browse);
+
+        return Objects.nonNull(file) ? file.toPath() : null;
     }
 
     public Path currentPath() {
         return current.currentPath().orElseGet(pathSaveSupplier);
-    }
-
-    public Supplier<Path> getWorkingDirectorySupplier() {
-        return workingDirectorySupplier;
-    }
-
-    public void setWorkingDirectorySupplier(Supplier<Path> workingDirectorySupplier) {
-        this.workingDirectorySupplier = workingDirectorySupplier;
     }
 
     public Supplier<Path> getPathSaveSupplier() {
