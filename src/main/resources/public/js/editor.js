@@ -84,13 +84,10 @@ editor.getSession().on('changeScrollTop', function (scroll) {
     }, 50);
 });
 
-var updateStatusTimeOut;
+var updateStatusAction = new BufferedAction();
 function updateStatusBox() {
 
-    if (updateStatusTimeOut)
-        clearTimeout(updateStatusTimeOut);
-
-    updateStatusTimeOut = setTimeout(function () {
+    updateStatusAction.buff(function () {
         var cursorPosition = editor.getCursorPosition();
         var row = cursorPosition.row;
         var column = cursorPosition.column;
@@ -99,7 +96,7 @@ function updateStatusBox() {
         var wordCount = editor.session.getValue().length;
 
         afx.updateStatusBox(row, column, lineCount, wordCount);
-    }, 500);
+    }, 1000);
 
 }
 
@@ -135,25 +132,20 @@ editor.getSession().selection.on('changeCursor', function (e) {
     }
 });
 
+var constructListAction = new BufferedAction();
+var renderAction = new BufferedAction();
 var editorChangeListener = function (obj) {
 
     if (afterFirstChange)
         afx.appendWildcard();
 
-    if (renderTimeout)
-        clearTimeout(renderTimeout);
-
-    if (refreshTimeout)
-        clearTimeout(refreshTimeout);
-
-    refreshTimeout = setTimeout(function () {
-        sketch.refreshConstructList();
-    }, 1000);
-
-    renderTimeout = setTimeout(function () {
+    renderAction.buff(function () {
         afx.textListener(editor.getValue(), editorMode());
     }, 100);
 
+    constructListAction.buff(function () {
+        sketch.refreshConstructList();
+    }, 1000);
 };
 
 function updateOptions() {
@@ -255,9 +247,12 @@ function initializeEmmet(mode) {
 
 }
 
+var rerenderAction = new BufferedAction();
 function rerender() {
-    afx.textListener(editor.getValue() + "\n", editorMode());
-    updateStatusBox();
+    rerenderAction.buff(function () {
+        afx.textListener(editor.getValue(), editorMode());
+        updateStatusBox();
+    }, 100);
 }
 
 function editorMode() {
