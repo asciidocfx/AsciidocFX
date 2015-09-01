@@ -69,10 +69,10 @@ public class PdfBookConverter extends AbstractPdfConverter {
             final Path configPath = asciiDocController.getConfigPath();
 
             final Vector<String> params = new Vector<>();
-            params.add("body.font.family");
-            params.add("Arial");
-            params.add("title.font.family");
-            params.add("Arial");
+//            params.add("body.font.family");
+//            params.add("Arial Unicode MS");
+//            params.add("title.font.family");
+//            params.add("Arial Unicode MS");
             params.add("highlight.xslthl.config");
             params.add(configPath.resolve("docbook-config/xslthl-config.xml").toUri().toASCIIString());
             params.add("admon.graphics.path");

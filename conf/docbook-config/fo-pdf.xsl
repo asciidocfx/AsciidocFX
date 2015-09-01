@@ -49,15 +49,15 @@
     -->
 
     <xsl:template name="pickfont-sans">
-        <xsl:text>Arial,sans-serif</xsl:text>
+        <xsl:text>Arial,Arial Unicode MS,Lucida Sans Unicode,Helvetica,sans-serif</xsl:text>
     </xsl:template>
 
     <xsl:template name="pickfont-serif">
-        <xsl:text>Georgia,serif</xsl:text>
+        <xsl:text>Georgia,serif,Arial,Arial Unicode MS,Lucida Sans Unicode</xsl:text>
     </xsl:template>
 
     <xsl:template name="pickfont-mono">
-        <xsl:text>Liberation Mono,Courier New,Courier,monospace</xsl:text>
+        <xsl:text>Liberation Mono,Lucida Console,Monaco,Consolas,Courier New,Courier,monospace,Arial Unicode MS,Lucida Sans Unicode</xsl:text>
     </xsl:template>
 
     <xsl:template name="pickfont-dingbat">
@@ -261,28 +261,28 @@
 
     <xsl:template match="del">
         <fo:inline text-decoration="line-through">
-          <xsl:call-template name="inline.charseq"/>
+            <xsl:call-template name="inline.charseq"/>
         </fo:inline>
     </xsl:template>
 
     <xsl:template match="u">
         <fo:inline text-decoration="underline">
-          <xsl:call-template name="inline.charseq"/>
+            <xsl:call-template name="inline.charseq"/>
         </fo:inline>
     </xsl:template>
 
     <xsl:template match="phrase">
         <xsl:choose>
-        <xsl:when test="@role='underline'">
-            <fo:inline text-decoration="underline">
-                <xsl:call-template name="inline.charseq"/>
-            </fo:inline>
-        </xsl:when>
-        <xsl:when test="@role='line-through'">
-            <fo:inline text-decoration="line-through">
-                <xsl:call-template name="inline.charseq"/>
-            </fo:inline>
-        </xsl:when>
+            <xsl:when test="@role='underline'">
+                <fo:inline text-decoration="underline">
+                    <xsl:call-template name="inline.charseq"/>
+                </fo:inline>
+            </xsl:when>
+            <xsl:when test="@role='line-through'">
+                <fo:inline text-decoration="line-through">
+                    <xsl:call-template name="inline.charseq"/>
+                </fo:inline>
+            </xsl:when>
         </xsl:choose>
     </xsl:template>
 
