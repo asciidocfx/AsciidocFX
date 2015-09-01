@@ -34,14 +34,15 @@ function refreshUI(data) {
 
     var $data = $("<div></div>").append(data);
     $data.find("img").each(function () {
-        var attr = $(this).attr("src");
+        var $image = $(this);
+        var attr = $image.attr("src");
         if (attr)
-            $(this).attr("src", attr + "?cache=" + imageCacheNumber + "&parent=" + (attr.match(/\.\./g) || []).length);
+            $image.attr("src", attr + "?cache=" + imageCacheNumber + "&parent=" + (attr.match(/\.\./g) || []).length);
     });
 
     $("#placeholder").html($data.html());
 
-    $('pre code').on('mouseover', function () {
+    $('pre').children("code").on('mouseover', function () {
         if (!$(this).hasClass("hljs")) {
             hljs.highlightBlock(this);
         }
