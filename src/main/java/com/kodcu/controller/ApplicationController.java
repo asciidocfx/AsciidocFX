@@ -553,7 +553,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         threadService.runTaskLater(() -> {
             while (true) {
                 renderLoop();
-                threadService.sleep(100);
+                waiterLoop();
             }
         });
 
@@ -959,6 +959,18 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         threadService.runTaskLater(this::checkNewVersion);
 //        threadService.runTaskLater(this::initializeAutoSaver);
 
+    }
+
+    private void waiterLoop() {
+
+        Integer integer = Optional.ofNullable(lastTupleReference.get())
+                .map(Tuple::getKey)
+                .map(String::length)
+                .map(e -> (e / 8))
+                .filter(e -> (e > 100))
+                .orElse(100);
+
+        threadService.sleep(integer);
     }
 
     private void initializePosixPermissions() {
