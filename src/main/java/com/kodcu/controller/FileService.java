@@ -2,8 +2,10 @@ package com.kodcu.controller;
 
 import com.kodcu.other.Current;
 import com.kodcu.service.DirectoryService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -14,6 +16,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.net.URLDecoder;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -24,31 +27,22 @@ import java.util.zip.GZIPOutputStream;
 /**
  * Created by usta on 10.04.2015.
  */
-@Controller
-public class FileController {
+@Component
+public class FileService {
 
-    private static final int DEFAULT_BUFFER_SIZE = 10240; // ..bytes = 10KB.
-    private static final long DEFAULT_EXPIRE_TIME = 604800000L; // ..ms = 1 week.
-    private static final String MULTIPART_BOUNDARY = "MULTIPART_BYTERANGES";
+    private static int DEFAULT_BUFFER_SIZE = 10240; // ..bytes = 10KB.
+    private static long DEFAULT_EXPIRE_TIME = 604800000L; // ..ms = 1 week.
+    private static String MULTIPART_BOUNDARY = "MULTIPART_BYTERANGES";
 
-    private String basePath;
+    private Logger logger = LoggerFactory.getLogger(FileService.class);
 
-    @Autowired
-    private DirectoryService directoryService;
-
-    @Autowired
-    private Current current;
-
-    @RequestMapping(value = {"/**/{extension:(?:\\w|\\W)+\\.(?:jpg|bmp|gif|jpeg|png|webp|svg|avi|mpeg|mp4|ogg|mov|wmv|flv)$}"}, method = RequestMethod.GET)
-    public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-        processRequest(request, response, true);
+    public void processFile(HttpServletRequest request, HttpServletResponse response, Path path) {
+        try {
+            processRequest(request, response, path, "GET".equalsIgnoreCase(request.getMethod()));
+        } catch (Exception e) {
+            logger.debug(e.getMessage(), e);
+        }
     }
-
-    @RequestMapping(value = {"/**/{extension:(?:\\w|\\W)+\\.(?:jpg|bmp|gif|jpeg|png|webp|svg|avi|mpeg|mp4|ogg|mov|wmv|flv)$}"}, method = RequestMethod.HEAD)
-    public void doHead(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-        processRequest(request, response, false);
-    }
-
 
     /**
      * Process the actual request.
@@ -58,45 +52,20 @@ public class FileController {
      * @param content  Whether the request body should be written (GET) or not (HEAD).
      * @throws IOException If something fails at I/O level.
      */
-    private void processRequest
-    (HttpServletRequest request, HttpServletResponse response, boolean content)
-            throws IOException, ServletException {
+    private void processRequest(HttpServletRequest request, HttpServletResponse response, Path path, boolean content) throws IOException, ServletException {
         // Validate the requested file ------------------------------------------------------------
-
-        try {
-            if (current.currentPath().map(Path::getParent).isPresent()) {
-                this.basePath = current.currentPath().map(Path::getParent).get().toString();
-            } else if (Objects.nonNull(directoryService.workingDirectory())) {
-                this.basePath = directoryService.workingDirectory().toString();
-            }
-        } catch (Exception e) {
-
-        }
-
         // Get requested file by path info.
-        String requestedFile = request.getRequestURI();
-
         // Check if file is actually supplied to the request URL.
-        if (requestedFile == null) {
+
+
+        if (Objects.isNull(path) || !Files.exists(path)) {
             // Do your thing if the file is not supplied to the request URL.
             // Throw an exception, or send 404, or show default/warning page, or just ignore it.
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
             return;
         }
 
-        // URL-decode the file name (might contain spaces and on) and prepare file object.
-        File file = new File(basePath, URLDecoder.decode(requestedFile, "UTF-8"));
-
-        // Check if file actually exists in filesystem.
-        if (!file.exists()) {
-            // Do your thing if the file appears to be non-existing.
-            // Throw an exception, or send 404, or show default/warning page, or just ignore it.
-            response.sendError(HttpServletResponse.SC_NOT_FOUND);
-
-//            RequestDispatcher rd= request.getRequestDispatcher("DispatcherServlet");
-//            rd.forward(request,response);
-            return;
-        }
+        File file = path.toFile();
 
         // Prepare some variables. The ETag is an unique identifier of the file.
         String fileName = file.getName();

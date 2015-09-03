@@ -18,6 +18,7 @@ import netscape.javascript.JSObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -41,6 +42,9 @@ public class TreeService {
     private ApplicationController controller;
     private ThreadService threadService;
     private AwesomeService awesomeService;
+
+    @Value("${application.treeview.url}")
+    private String treeviewUrl;
 
     @Autowired
     public TreeService(final Current current, final ApplicationController controller, final ThreadService threadService,
@@ -246,7 +250,7 @@ public class TreeService {
                 } catch (Exception e) {}
 
                 threadService.runActionLater(() -> {
-                    treeview.getEngine().load(String.format("http://localhost:%d/treeview.html", controller.getPort()));
+                    treeview.getEngine().load(String.format(treeviewUrl, controller.getPort()));
                 });
                 controller.getRootAnchor().getChildren().add(treeview);
 

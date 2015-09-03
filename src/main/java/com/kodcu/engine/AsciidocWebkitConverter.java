@@ -7,12 +7,12 @@ import com.kodcu.other.ConverterResult;
 import com.kodcu.other.Current;
 import com.kodcu.other.IOHelper;
 import com.kodcu.service.ThreadService;
-import javafx.application.Platform;
 import javafx.scene.web.WebView;
 import netscape.javascript.JSObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.json.JsonObject;
@@ -34,6 +34,9 @@ public class AsciidocWebkitConverter extends ViewPanel implements AsciidocConver
     private final DocbookConfigBean docbookConfigBean;
     private final HtmlConfigBean htmlConfigBean;
     private final AsciidocConfigMerger configMerger;
+
+    @Value("${application.index.url}")
+    private String indexUrl;
 
     private Logger logger = LoggerFactory.getLogger(AsciidocWebkitConverter.class);
 
@@ -75,7 +78,7 @@ public class AsciidocWebkitConverter extends ViewPanel implements AsciidocConver
     @Override
     public void browse() {
         controller.getHostServices()
-                .showDocument(String.format("http://localhost:%d/index.html", controller.getPort()));
+                .showDocument(String.format(indexUrl, controller.getPort()));
     }
 
     @Override

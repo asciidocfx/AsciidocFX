@@ -9,6 +9,8 @@
     <logger name="org.jboss" level="ERROR"/>
     <logger name="com.dooapp" level="ERROR"/>
 
+    <property resource="application.properties" />
+
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
 
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
@@ -30,7 +32,7 @@
     </appender>
 
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>log/asciidocfx.log</file>
+        <file>${application.log.path}</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <!-- daily rollover -->
             <fileNamePattern>asciidocfx.%d{yyyy-MM-dd}.log</fileNamePattern>

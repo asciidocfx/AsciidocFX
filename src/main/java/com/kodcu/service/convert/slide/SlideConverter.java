@@ -9,6 +9,7 @@ import com.kodcu.service.ThreadService;
 import com.kodcu.service.convert.markdown.MarkdownService;
 import javafx.scene.Node;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
@@ -29,6 +30,9 @@ public class SlideConverter {
     private final SlidePane slidePane;
     private final Pattern pattern = Pattern.compile(":slide-type:.*(deckjs|revealjs)", Pattern.MULTILINE);
     private String rendered;
+
+    @Value("${application.slide.url}")
+    private String slideUrl;
 
 
     @Autowired
@@ -59,7 +63,7 @@ public class SlideConverter {
             PreviewTab previewTab = controller.getPreviewTab();
 
             if (previewTab.getContent() != slidePane) {
-                slidePane.load(String.format("http://localhost:%d/slide/index.slide", controller.getPort()));
+                slidePane.load(String.format(slideUrl, controller.getPort()));
                 slidePane.injectExtensions();
             } else {
                 threadService.runActionLater(() -> {

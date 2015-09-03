@@ -25,6 +25,7 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 /**
  * Created by usta on 25.12.2014.
@@ -243,5 +244,65 @@ public class DirectoryService {
         }
 
         return file.toPath();
+    }
+
+    public Path findPathInCurrentOrWorkDir(String uri) {
+
+        Optional<Path> inCurrentParent = Optional.empty();
+
+        try {
+            inCurrentParent = Optional.ofNullable(current.currentTab().getPath().getParent());
+        } catch (Exception e) {
+            //no-op
+        }
+
+        return Stream.<Optional<Path>>of(inCurrentParent, workingDirectory)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .map(path -> path.resolve(uri))
+                .filter(Files::exists)
+                .findFirst()
+                .orElseGet(() -> null);
+
+    }
+
+    public Path findPathInConfigOrCurrentOrWorkDir(String uri) {
+
+        Path configPath = controller.getConfigPath();
+
+        Optional<Path> inConfig = Optional.empty();
+        Optional<Path> inCurrentParent = Optional.empty();
+
+        try {
+            inConfig = Optional.ofNullable(configPath.resolve("public"));
+        } catch (Exception e) {
+            //no-op
+        }
+
+        try {
+            inCurrentParent = Optional.ofNullable(current.currentTab().getPath().getParent());
+        } catch (Exception e) {
+            //no-op
+        }
+
+        return Stream.<Optional<Path>>of(inConfig, inCurrentParent, workingDirectory)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .map(path -> path.resolve(uri))
+                .filter(Files::exists)
+                .findFirst()
+                .orElseGet(() -> null);
+
+    }
+
+    public Path findPathInRoot(String uri) {
+
+        return Stream.<Optional<Path>>of(current.currentPath(), workingDirectory)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .map(Path::getRoot)
+                .map(path -> path.resolve(uri))
+                .findFirst()
+                .orElseGet(() -> null);
     }
 }

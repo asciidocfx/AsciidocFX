@@ -7,6 +7,7 @@ import com.install4j.api.launcher.ApplicationLauncher;
 import com.kodcu.component.*;
 import com.kodcu.config.*;
 import com.kodcu.engine.AsciidocConverterProvider;
+import com.kodcu.engine.AsciidocNashornConverter;
 import com.kodcu.engine.AsciidocWebkitConverter;
 import com.kodcu.logging.MyLog;
 import com.kodcu.logging.TableViewLogAppender;
@@ -109,7 +110,6 @@ import static java.nio.file.StandardOpenOption.*;
 
 @Component
 public class ApplicationController extends TextWebSocketHandler implements Initializable {
-
 
     public TabPane previewTabPane;
 
@@ -284,9 +284,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     private ThreadService threadService;
 
     @Autowired
-    private EpubController epubController;
-
-    @Autowired
     private ShortcutProvider shortcutProvider;
 
     @Autowired
@@ -340,7 +337,9 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     @Autowired
     private SlidePane slidePane;
     private Path installationPath;
-    private Path logPath;
+
+    @Value("${application.log.root}")
+    private String logPath;
 
     @Autowired
     private LiveReloadPane liveReloadPane;
@@ -360,6 +359,21 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     @Autowired
     private AsciidocConverterProvider converterProvider;
+
+    @Value("${application.worker.url}")
+    private String workerUrl;
+
+    @Value("${application.preview.url}")
+    private String previewUrl;
+
+    @Value("${application.mathjax.url}")
+    private String mathjaxUrl;
+
+    @Autowired
+    private AsciidocNashornConverter nashornEngineConverter;
+
+    @Value("${application.live.url}")
+    private String liveUrl;
 
     public void createAsciidocTable() {
         asciidocTableStage.showAndWait();
@@ -550,15 +564,20 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     @Override
     public void initialize(URL url, ResourceBundle rb) {
 
-        threadService.runTaskLater(() -> {
-            while (true) {
-                renderLoop();
-                waiterLoop();
-            }
-        });
-
         initializePaths();
         initializePosixPermissions();
+        initializeNashornConverter();
+
+        threadService.runTaskLater(() -> {
+            while (true) {
+                try {
+                    renderLoop();
+                    waiterLoop();
+                } catch (Exception e) {
+                    logger.error(e.getMessage(), e);
+                }
+            }
+        });
 
         threadService.runActionLater(() -> {
             configurationService.loadConfigurations();
@@ -745,7 +764,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         });
 
         threadService.runActionLater(() -> {
-            mathjaxEngine.load(String.format("http://localhost:%d/mathjax.html", port));
+            mathjaxEngine.load(String.format(mathjaxUrl, port));
         });
 
 
@@ -768,11 +787,11 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                     asciidocWebkitConverter.setMember("afx", this);
                 }
 
-                htmlPane.load(String.format("http://localhost:%d/preview.html", port));
+                htmlPane.load(String.format(previewUrl, port));
             }
         });
 
-        asciidocWebkitConverter.load(String.format("http://localhost:%d/worker.html", port));
+        asciidocWebkitConverter.load(String.format(workerUrl, port));
 
         openFileTreeItem.setOnAction(event -> {
 
@@ -961,6 +980,10 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     }
 
+    private void initializeNashornConverter() {
+        nashornEngineConverter.initialize();
+    }
+
     private void waiterLoop() {
 
         Integer integer = Optional.ofNullable(lastTupleReference.get())
@@ -990,7 +1013,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                 perms.add(PosixFilePermission.OWNER_EXECUTE);
 
                 Files.setPosixFilePermissions(configPath, perms);
-                Files.setPosixFilePermissions(logPath, perms);
             }
         } catch (Exception e) {
             logger.error("Problem occured while setting write permissions to {}", configPath, e);
@@ -1183,7 +1205,8 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                     } else if (info instanceof jdk.nashorn.api.scripting.JSObject) {
                         jdk.nashorn.api.scripting.JSObject object = (jdk.nashorn.api.scripting.JSObject) info;
                         object.setMember("width", width);
-                        object.setMember("height", height);;
+                        object.setMember("height", height);
+                        ;
                     }
 
                     reader.dispose();
@@ -1304,7 +1327,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             File jarFile = new File(codeSource.getLocation().toURI().getPath());
             installationPath = jarFile.toPath().getParent().getParent();
             configPath = installationPath.resolve("conf");
-            logPath = installationPath.resolve("log");
         } catch (URISyntaxException e) {
             logger.error("Problem occured while resolving conf and log paths", e);
         }
@@ -1433,7 +1455,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
         Button browseLogsButton = new Button("Browse");
         browseLogsButton.setOnAction(e -> {
-            getHostServices().showDocument(logPath.toUri().toString());
+            getHostServices().showDocument(Paths.get(logPath).toUri().toString());
         });
 
         TextField searchLogField = new TextField();
@@ -1843,7 +1865,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         String text = tuple.getKey();
         String mode = tuple.getValue();
 
-
         latestTupleReference.set(null);
 
         try {
@@ -1878,7 +1899,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                         liveReloadPane.initializeDiffReplacer();
                     });
 
-                    String format = String.format("http://localhost:%d/livereload/%s/index.reload", port, directoryService.interPath());
+                    String format = String.format(liveUrl, port, directoryService.interPath());
                     liveReloadPane.load(format);
                 } else {
                     liveReloadPane.updateDomdom();
@@ -1889,10 +1910,8 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             } else if ("markdown".equalsIgnoreCase(mode)) {
                 MarkdownService markdownService = applicationContext.getBean(MarkdownService.class);
                 markdownService.convertToAsciidoc(text, asciidoc -> {
-                    threadService.runActionLater(() -> {
-                        ConverterResult result = converterProvider.get(previewConfigBean).convertAsciidoc(asciidoc);
-                        result.afterRender(lastRendered::setValue);
-                    });
+                    ConverterResult result = converterProvider.get(previewConfigBean).convertAsciidoc(asciidoc);
+                    result.afterRender(lastRendered::setValue);
                 });
                 previewTab.setChild(htmlPane);
             }

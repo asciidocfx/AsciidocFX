@@ -1,5 +1,6 @@
 package com.kodcu.service.convert.markdown;
 
+import com.kodcu.controller.ApplicationController;
 import com.kodcu.other.Current;
 import com.kodcu.service.ThreadService;
 import org.apache.commons.io.IOUtils;
@@ -12,9 +13,11 @@ import org.springframework.stereotype.Component;
 import javax.script.Invocable;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
+import java.io.FileReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -34,23 +37,28 @@ public class MarkdownService {
     private final ThreadService threadService;
     private final ScriptEngine scriptEngine;
     private final CompletableFuture completableFuture = new CompletableFuture();
+    private final ApplicationController controller;
 
     @Autowired
-    public MarkdownService(Current current, ThreadService threadService, ScriptEngine scriptEngine) {
+    public MarkdownService(Current current, ThreadService threadService, ScriptEngine scriptEngine, ApplicationController controller) {
         this.current = current;
         this.threadService = threadService;
         this.scriptEngine = scriptEngine;
+        this.controller = controller;
 
         completableFuture.runAsync(() -> {
             try {
                 List<String> scripts = Arrays.asList("marked.js", "marked-extension.js");
 
+                Path configPath = controller.getConfigPath();
+
                 for (String script : scripts) {
-                    try (InputStream inputStream = MarkdownService.class.getResourceAsStream("/public/js/" + script);
-                         InputStreamReader inputStreamReader = new InputStreamReader(inputStream);) {
-                        scriptEngine.eval(inputStreamReader);
+                    Path resolve = configPath.resolve("public/js").resolve(script);
+                    try (FileReader fileReader = new FileReader(resolve.toFile());) {
+                        scriptEngine.eval(fileReader);
                     }
                 }
+
                 completableFuture.complete(null);
             } catch (Exception e) {
                 logger.error("Could not evaluate initial javascript", e);

@@ -30,6 +30,7 @@ public class Current {
     private final ThreadService threadService;
 
     private Map<String, Integer> cache;
+    private Path currentEpubPath;
 
     @Autowired
     public Current(final ApplicationController controller, final ThreadService threadService) {
@@ -112,5 +113,13 @@ public class Current {
 
     public String currentEditorMode() {
         return currentEditor().editorMode();
+    }
+
+    public void setCurrentEpubPath(Path currentEpubPath) {
+        this.currentEpubPath = currentEpubPath;
+    }
+
+    public Path getCurrentEpubPath() {
+        return currentEpubPath;
     }
 }

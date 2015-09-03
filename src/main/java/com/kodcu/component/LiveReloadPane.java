@@ -7,6 +7,8 @@ import com.kodcu.service.ThreadService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.nio.file.Path;
+
 /**
  * Created by usta on 09.04.2015.
  * <p>
@@ -30,10 +32,11 @@ public class LiveReloadPane extends ViewPanel {
 
     public void initializeDiffReplacer() {
         threadService.runTaskLater(() -> {
-            String diffhtml = IOHelper.readFile(LiveReloadPane.class.getResourceAsStream("/public/js/diffhtml.js"));
-            String extension = IOHelper.readFile(LiveReloadPane.class.getResourceAsStream("/public/js/diffhtml-extension.js"));
+            Path configPath = controller.getConfigPath();
+            String diffHtml = IOHelper.readFile(configPath.resolve("public/js/diffhtml.js"));
+            String extension = IOHelper.readFile(configPath.resolve("public/js/diffhtml-extension.js"));
             threadService.runActionLater(() -> {
-                webEngine().executeScript(diffhtml);
+                webEngine().executeScript(diffHtml);
                 webEngine().executeScript(extension);
             });
         });

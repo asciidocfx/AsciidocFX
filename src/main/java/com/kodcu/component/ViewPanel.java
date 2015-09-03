@@ -14,6 +14,7 @@ import javafx.scene.web.WebView;
 import netscape.javascript.JSObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.util.Objects;
 
@@ -28,6 +29,9 @@ public abstract class ViewPanel extends AnchorPane {
     protected final ApplicationController controller;
     protected final Current current;
     protected final WebView webView;
+
+    @Value("${application.generic.url}")
+    private String genericUrl;
 
     protected ViewPanel(ThreadService threadService, ApplicationController controller, Current current) {
         this.threadService = threadService;
@@ -112,7 +116,7 @@ public abstract class ViewPanel extends AnchorPane {
     }
 
     public Object call(String methodName, Object... args) {
-       return getWindow().call(methodName, args);
+        return getWindow().call(methodName, args);
     }
 
     public Object getMember(String name) {
@@ -129,7 +133,7 @@ public abstract class ViewPanel extends AnchorPane {
                 for (String jsPath : jsPaths) {
                     threadService.runActionLater(() -> {
                         String format = String.format("var scriptEl = document.createElement('script');\n" +
-                                "scriptEl.setAttribute('src','http://localhost:%d/%s');\n" +
+                                "scriptEl.setAttribute('src','" + genericUrl + "');\n" +
                                 "document.querySelector('body').appendChild(scriptEl);", controller.getPort(), jsPath);
                         webEngine().executeScript(format);
                     });

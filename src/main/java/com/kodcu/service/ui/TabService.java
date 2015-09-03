@@ -2,7 +2,6 @@ package com.kodcu.service.ui;
 
 import com.kodcu.component.EditorPane;
 import com.kodcu.component.ImageTab;
-import com.kodcu.component.MenuItemBuilt;
 import com.kodcu.component.MyTab;
 import com.kodcu.config.StoredConfigBean;
 import com.kodcu.controller.ApplicationController;
@@ -14,10 +13,8 @@ import com.kodcu.service.DirectoryService;
 import com.kodcu.service.ParserService;
 import com.kodcu.service.PathResolverService;
 import com.kodcu.service.ThreadService;
-import com.kodcu.service.convert.markdown.MarkdownService;
 import com.kodcu.service.extension.AsciiTreeGenerator;
 import com.kodcu.service.shortcut.ShortcutProvider;
-import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -25,29 +22,22 @@ import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.Dragboard;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.FileChooser;
-import netscape.javascript.JSObject;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Consumer;
-
-import static java.nio.file.StandardOpenOption.CREATE;
-import static java.nio.file.StandardOpenOption.TRUNCATE_EXISTING;
 
 /**
  * Created by usta on 25.12.2014.
@@ -68,6 +58,12 @@ public class TabService {
     private final ApplicationContext applicationContext;
     private final ShortcutProvider shortcutProvider;
     private final AsciiTreeGenerator asciiTreeGenerator;
+
+    @Value("${application.editor.url}")
+    private String editorUrl;
+
+    @Value("${application.epub.url}")
+    private String epubUrl;
 
     private ObservableList<Optional<Path>> closedPaths = FXCollections.observableArrayList();
 
@@ -138,7 +134,7 @@ public class TabService {
         editorPane.getHandleReadyTasks().clear();
         editorPane.getHandleReadyTasks().addAll(runnables);
 
-        editorPane.load(String.format("http://localhost:%d/editor.html", controller.getPort()));
+        editorPane.load(String.format(editorUrl, controller.getPort()));
     }
 
 
@@ -165,7 +161,7 @@ public class TabService {
         tabPane.getTabs().add(tab);
         tab.select();
 
-        editorPane.load(String.format("http://localhost:%d/editor.html", controller.getPort()));
+        editorPane.load(String.format(editorUrl, controller.getPort()));
     }
 
     public void openDoc() {
@@ -335,8 +331,10 @@ public class TabService {
         } else if (pathResolver.isHTML(path) || pathResolver.isAsciidoc(path) || pathResolver.isMarkdown(path)) {
             addTab(path);
         } else if (pathResolver.isEpub(path)) {
+
+            current.setCurrentEpubPath(path);
             controller.getHostServices()
-                    .showDocument(String.format("http://localhost:%d/epub/viewer?path=%s", controller.getPort(), path.toString()));
+                    .showDocument(String.format(epubUrl, controller.getPort()));
         } else {
             List<String> supportedModes = controller.getSupportedModes();
             String extension = FilenameUtils.getExtension(path.toString());

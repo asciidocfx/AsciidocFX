@@ -13,6 +13,7 @@ import javafx.application.Platform;
 import javafx.scene.web.WebView;
 import netscape.javascript.JSObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -34,6 +35,9 @@ public class HtmlPane extends ViewPanel {
     private final HtmlConfigBean htmlConfigBean;
     private final ThreadService threadService;
 
+    @Value("${application.index.url}")
+    private String browseUrl;
+
     @Autowired
     public HtmlPane(ThreadService threadService, ApplicationController controller, Current current, PreviewConfigBean previewConfigBean, OdfConfigBean odfConfigBean, DocbookConfigBean docbookConfigBean, HtmlConfigBean htmlConfigBean) {
         super(threadService, controller, current);
@@ -45,14 +49,14 @@ public class HtmlPane extends ViewPanel {
     }
 
     public void refreshUI(String content) {
-        threadService.runActionLater(()->{
+        threadService.runActionLater(() -> {
             this.setMember("lastRenderedValue", content);
             webEngine().executeScript("refreshUI(lastRenderedValue)");
         });
     }
 
     public void updateBase64Url(int index, String imageBase64) {
-        threadService.runActionLater(()->{
+        threadService.runActionLater(() -> {
             getWindow().call("updateBase64Url", index, imageBase64);
         });
     }
@@ -68,7 +72,7 @@ public class HtmlPane extends ViewPanel {
     @Override
     public void browse() {
         controller.getHostServices()
-                .showDocument(String.format("http://localhost:%d/index.html", controller.getPort()));
+                .showDocument(String.format(browseUrl, controller.getPort()));
     }
 
     public void runScroller(String renderedSelection) {

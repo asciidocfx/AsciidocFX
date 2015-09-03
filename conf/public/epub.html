@@ -3,7 +3,7 @@
 <head lang="en">
     <meta charset="UTF-8">
     <title>AsciidocFX</title>
-    <link rel="stylesheet" href="css/epub.css"/>
+    <link rel="stylesheet" href="/afx/epub/css/epub.css"/>
 </head>
 <body>
 
@@ -13,10 +13,10 @@
     <div id="next" onclick="Book.nextPage();" class="arrow">›</div>
 </div>
 
-<script src="js/epub.min.js"></script>
-<script src="js/zip.min.js"></script>
+<script src="/afx/epub/js/epub.min.js"></script>
+<script src="/afx/epub/js/zip.min.js"></script>
 <script>
-    var Book = ePub("/book.epub");
+    var Book = ePub("booki.epub");
     Book.renderTo("area");
 
     document.onkeydown = function(e) {

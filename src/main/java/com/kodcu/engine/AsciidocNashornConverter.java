@@ -9,6 +9,7 @@ import jdk.nashorn.api.scripting.JSObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import javax.json.Json;
@@ -16,8 +17,10 @@ import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 import javax.json.JsonValue;
 import javax.script.*;
+import java.io.FileReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -30,6 +33,7 @@ import java.util.regex.Matcher;
  */
 //@Lazy
 @Component("NashornEngine")
+@Order(1)
 public class AsciidocNashornConverter implements AsciidocConvertible {
 
     private final ScriptEngine scriptEngine;
@@ -59,37 +63,6 @@ public class AsciidocNashornConverter implements AsciidocConvertible {
         this.htmlConfigBean = htmlConfigBean;
         this.odfConfigBean = odfConfigBean;
         this.configMerger = configMerger;
-
-        completableFuture.runAsync(() -> {
-            try {
-
-                scriptEngine.put("afx", this.controller);
-
-                List<String> scripts = Arrays.asList("nashorn-shim.js", "jade.js", "asciidoctor-all.js", "asciidoctor-image-size-info.js",
-                        "asciidoctor-uml-block.js", "asciidoctor-ditaa-block.js", "asciidoctor-math-block.js",
-                        "asciidoctor-tree-block.js", "asciidoctor-chart-block.js", "asciidoctor-docbook.js",
-                        "asciidoctor-reveal.js", "asciidoctor-deck.js", "asciidoctor-odf.js", "buffhelper.js",
-                        "outliner.js", "converters.js");
-
-
-                for (String script : scripts) {
-
-                    try (InputStream inputStream = AsciidocNashornConverter.class.getResourceAsStream("/public/js/" + script);
-                         InputStreamReader reader = new InputStreamReader(inputStream);) {
-                        scriptEngine.eval(reader);
-
-                    }
-                }
-
-                this.invocable = (Invocable) scriptEngine;
-
-                completableFuture.complete(null);
-
-            } catch (Exception e) {
-                logger.error(e.getMessage(), e);
-                completableFuture.completeExceptionally(e);
-            }
-        }, threadService.executor());
 
     }
 
@@ -145,5 +118,39 @@ public class AsciidocNashornConverter implements AsciidocConvertible {
 
     private JsonObject updateConfig(String asciidoc, JsonObject config) {
         return configMerger.updateConfig(asciidoc, config);
+    }
+
+    public void initialize() {
+        completableFuture.runAsync(() -> {
+            try {
+
+                scriptEngine.put("afx", this.controller);
+
+                List<String> scripts = Arrays.asList("nashorn-shim.js", "jade.js", "asciidoctor-all.js", "asciidoctor-image-size-info.js",
+                        "asciidoctor-uml-block.js", "asciidoctor-ditaa-block.js", "asciidoctor-math-block.js",
+                        "asciidoctor-tree-block.js", "asciidoctor-chart-block.js", "asciidoctor-docbook.js",
+                        "asciidoctor-reveal.js", "asciidoctor-deck.js", "asciidoctor-odf.js", "buffhelper.js",
+                        "outliner.js", "converters.js");
+
+                Path configPath = controller.getConfigPath();
+
+                for (String script : scripts) {
+
+                    Path resolve = configPath.resolve("public/js").resolve(script);
+                    try(FileReader fileReader = new FileReader(resolve.toFile());){
+                        scriptEngine.eval(fileReader);
+                    }
+
+                }
+
+                this.invocable = (Invocable) scriptEngine;
+
+                completableFuture.complete(null);
+
+            } catch (Exception e) {
+                logger.error(e.getMessage(), e);
+                completableFuture.completeExceptionally(e);
+            }
+        }, threadService.executor());
     }
 }
