@@ -7,6 +7,7 @@ import com.kodcu.other.ConverterResult;
 import com.kodcu.other.Current;
 import com.kodcu.other.IOHelper;
 import com.kodcu.service.ThreadService;
+import javafx.application.Platform;
 import javafx.scene.web.WebView;
 import netscape.javascript.JSObject;
 import org.slf4j.Logger;
@@ -99,26 +100,28 @@ public class AsciidocWebkitConverter extends ViewPanel implements AsciidocConver
 
     protected ConverterResult convert(String functionName, String asciidoc, JsonObject config) {
 
-        final CompletableFuture<ConverterResult> completableFuture = new CompletableFuture<>();
+        if (!Platform.isFxApplicationThread()) {
+            final CompletableFuture<ConverterResult> completableFuture = new CompletableFuture<>();
+            completableFuture.runAsync(() -> {
+                threadService.runActionLater(() -> {
+                    try {
+                        ConverterResult converterResult = convert(functionName, asciidoc, config);
+                        completableFuture.complete(converterResult);
+                    } catch (Exception e) {
+                        completableFuture.completeExceptionally(e);
+                    }
+                });
+            }, threadService.executor());
 
-        CompletableFuture.runAsync(() -> {
-            JsonObject finalConfig = updateConfig(asciidoc, config);
-            threadService.runActionLater(() -> {
-                try {
-                    this.setMember("editorValue", asciidoc);
-                    this.setMember("editorOptions", finalConfig.toString());
-                    JSObject result = (JSObject) webEngine().executeScript(String.format("%s(editorValue,editorOptions)", functionName));
-                    ConverterResult converterResult = new ConverterResult(result);
+            return completableFuture.join();
+        }
 
-                    completableFuture.complete(converterResult);
-                } catch (Exception e) {
-                    completableFuture.completeExceptionally(e);
-                }
-            });
-        }, threadService.executor());
+        this.setMember("editorValue", asciidoc);
+        this.setMember("editorOptions", config.toString());
+        JSObject result = (JSObject) webEngine().executeScript(String.format("%s(editorValue,editorOptions)", functionName));
+        ConverterResult converterResult = new ConverterResult(result);
 
-        return completableFuture.join();
-
+        return converterResult;
     }
 
     private JsonObject updateConfig(String asciidoc, JsonObject config) {
@@ -127,22 +130,22 @@ public class AsciidocWebkitConverter extends ViewPanel implements AsciidocConver
 
     @Override
     public ConverterResult convertDocbook(String asciidoc) {
-        return convert("convertDocbook", asciidoc, docbookConfigBean.getJSON());
+        return convert("convertDocbook", asciidoc, updateConfig(asciidoc, docbookConfigBean.getJSON()));
     }
 
     @Override
     public ConverterResult convertAsciidoc(String asciidoc) {
-        return convert("convertAsciidoc", asciidoc, previewConfigBean.getJSON());
+        return convert("convertAsciidoc", asciidoc, updateConfig(asciidoc, previewConfigBean.getJSON()));
     }
 
     @Override
     public ConverterResult convertHtml(String asciidoc) {
-        return convert("convertHtml", asciidoc, htmlConfigBean.getJSON());
+        return convert("convertHtml", asciidoc, updateConfig(asciidoc, htmlConfigBean.getJSON()));
     }
 
     @Override
     public void convertOdf(String asciidoc) {
-        convert("convertOdf", asciidoc, odfConfigBean.getJSON());
+        convert("convertOdf", asciidoc, updateConfig(asciidoc, odfConfigBean.getJSON()));
     }
 
     public boolean isHtml(String text) {
