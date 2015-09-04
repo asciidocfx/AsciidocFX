@@ -36,6 +36,10 @@
                 cache = "" + (attrs['$[]']("cache"));
                 imagesdir = parent.$document().$attr('imagesdir', '');
 
+                if(filename == ""){
+                    return nil;
+                }
+
                 target = parent.$image_uri(filename);
 
                 if (cache != "enabled") {

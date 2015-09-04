@@ -36,7 +36,11 @@
                 cache = "" + (attrs['$[]']("cache"));
                 imagesdir = parent.$document().$attr('imagesdir','');
 
-		target = parent.$image_uri(filename);
+                if(filename == ""){
+                    return nil;
+                }
+
+		        target = parent.$image_uri(filename);
 
                 if (cache != "enabled"){
                     afx.ditaa(reader.$read(), type, imagesdir, target);

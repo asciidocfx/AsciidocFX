@@ -36,6 +36,10 @@
                 opt = "" + (attrs['$[]']("opt"));
                 imagesdir = parent.$document().$attr('imagesdir', '');
 
+                if(filename == ""){
+                    return nil;
+                }
+
                 target = parent.$image_uri(filename);
 
                 if (cache != "enabled") {
@@ -81,7 +85,7 @@
         self.$parse_content_as("literal");
 
         return (def.$process = function (parent, reader, attrs) {
-                console.log("ChartBlockProcessor");
+
                 var $a, self = this, target = nil, type = nil, title = nil, filename = nil, alt = nil, caption = nil, width = nil, height = nil, opt = nil, scale = nil, align = nil, cache = nil, chartType = nil, imagesdir = nil;
 
                 chartType = "" + (attrs['$[]']("2"));
@@ -97,6 +101,10 @@
                 cache = "" + (attrs['$[]']("cache"));
                 opt = "" + (attrs['$[]']("opt"));
                 imagesdir = parent.$document().$attr('imagesdir', '');
+
+                if(filename == ""){
+                    return nil;
+                }
 
                 target = parent.$image_uri(filename);
 
