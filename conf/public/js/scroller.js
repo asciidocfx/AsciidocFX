@@ -17,7 +17,9 @@ function runScroller(renderedSelection) {
     }
     else if ($(renderedSelection).is(".imageblock")) {
         var src = $(renderedSelection).find("img").attr("src");
-        scrollTo60($("img[src^='" + src + "']").offset().top);
+        var offset = $("img[src^='" + src + "']").offset();
+        if (offset)
+            scrollTo60(offset.top);
         return;
     }
 
