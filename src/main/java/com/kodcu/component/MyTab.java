@@ -5,6 +5,7 @@ import com.kodcu.controller.ApplicationController;
 import com.kodcu.other.ExtensionFilters;
 import com.kodcu.other.IOHelper;
 import com.kodcu.service.DirectoryService;
+import com.kodcu.service.ThreadService;
 import com.kodcu.service.shortcut.AsciidocShortcutService;
 import com.kodcu.service.shortcut.MarkdownShortcutService;
 import com.kodcu.service.shortcut.NoneShortcutService;
@@ -26,6 +27,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 import static java.nio.file.StandardOpenOption.CREATE;
 import static java.nio.file.StandardOpenOption.TRUNCATE_EXISTING;
@@ -43,16 +45,18 @@ public class MyTab extends Tab {
     private final DirectoryService directoryService;
     private final TabService tabService;
     private final ApplicationController controller;
+    private final ThreadService threadService;
 
     private final Logger logger = LoggerFactory.getLogger(MyTab.class);
 
     @Autowired
-    public MyTab(EditorPane editorPane, StoredConfigBean storedConfigBean, DirectoryService directoryService, TabService tabService, ApplicationController controller) {
+    public MyTab(EditorPane editorPane, StoredConfigBean storedConfigBean, DirectoryService directoryService, TabService tabService, ApplicationController controller, ThreadService threadService) {
         this.editorPane = editorPane;
         this.storedConfigBean = storedConfigBean;
         this.directoryService = directoryService;
         this.tabService = tabService;
         this.controller = controller;
+        this.threadService = threadService;
     }
 
     public Label getLabel() {
@@ -133,10 +137,24 @@ public class MyTab extends Tab {
 
     public void saveDoc() {
 
-        if (!isChanged())
-            return;
+        if (!Platform.isFxApplicationThread()) {
+            CompletableFuture completableFuture = new CompletableFuture();
 
-        if(Objects.isNull(getPath())){
+            completableFuture.runAsync(() -> {
+                Platform.runLater(() -> {
+                    try {
+                        saveDoc();
+                        completableFuture.complete(null);
+                    } catch (Exception e) {
+                        completableFuture.completeExceptionally(e);
+                    }
+                });
+            }, threadService.executor());
+
+            completableFuture.join();
+        }
+
+        if (Objects.isNull(getPath())) {
             final FileChooser fileChooser = directoryService.newFileChooser(String.format("Save file"));
             fileChooser.getExtensionFilters().addAll(ExtensionFilters.ASCIIDOC);
             fileChooser.getExtensionFilters().addAll(ExtensionFilters.MARKDOWN);
