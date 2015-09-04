@@ -1,5 +1,6 @@
 package com.kodcu.service.convert;
 
+import com.kodcu.controller.ApplicationController;
 import com.kodcu.other.IOHelper;
 import com.kodcu.service.DirectoryService;
 import com.kodcu.service.ThreadService;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Component;
 import javax.script.Invocable;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
+import java.io.FileReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
@@ -44,23 +46,29 @@ public class GitbookToAsciibookService {
     private final TabService tabService;
     private final ThreadService threadService;
     private final CompletableFuture completableFuture = new CompletableFuture();
+    private final ApplicationController controller;
 
     @Autowired
-    public GitbookToAsciibookService(ScriptEngine scriptEngine, DirectoryService directoryService, TabService tabService, ThreadService threadService) {
+    public GitbookToAsciibookService(ScriptEngine scriptEngine, DirectoryService directoryService, TabService tabService, ThreadService threadService, ApplicationController controller) {
         this.scriptEngine = scriptEngine;
         this.directoryService = directoryService;
         this.tabService = tabService;
         this.threadService = threadService;
+        this.controller = controller;
 
         completableFuture.runAsync(() -> {
             try {
                 List<String> scripts = Arrays.asList("marked.js", "marked-extension.js");
 
+                Path configPath = this.controller.getConfigPath();
+
                 for (String script : scripts) {
-                    try (InputStream inputStream = GitbookToAsciibookService.class.getResourceAsStream("/public/js/" + script);
-                         InputStreamReader inputStreamReader = new InputStreamReader(inputStream);) {
-                        scriptEngine.eval(inputStreamReader);
+
+                    Path resolve = configPath.resolve("public/js").resolve(script);
+                    try(FileReader fileReader = new FileReader(resolve.toFile());){
+                        scriptEngine.eval(fileReader);
                     }
+
                 }
 
                 completableFuture.complete(null);
