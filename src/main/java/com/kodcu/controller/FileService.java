@@ -61,7 +61,8 @@ public class FileService {
         if (Objects.isNull(path) || !Files.exists(path)) {
             // Do your thing if the file is not supplied to the request URL.
             // Throw an exception, or send 404, or show default/warning page, or just ignore it.
-            response.sendError(HttpServletResponse.SC_NOT_FOUND);
+            response.setStatus(HttpServletResponse.SC_NO_CONTENT);
+            response.getWriter().close();
             return;
         }
 
