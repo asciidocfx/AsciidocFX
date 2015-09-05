@@ -166,9 +166,9 @@ public class NoneShortcutService implements ShortcutService {
     public void addUmlBlock() {
 
     }
-    
+
     @Override
-    public void addDitaaBlock() {    	
+    public void addDitaaBlock() {
     }
 
     @Override

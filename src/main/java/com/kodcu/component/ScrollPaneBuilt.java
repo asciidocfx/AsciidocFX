@@ -2,7 +2,6 @@ package com.kodcu.component;
 
 import javafx.scene.Node;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.layout.VBox;
 
 /**
  * Created by usta on 05.09.2015.

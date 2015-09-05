@@ -29,7 +29,7 @@ public class LineChartBuilderService extends XYChartBuilderService {
     }
 
     @Override
-      protected XYChart<String, Number> createXYChart() {
+    protected XYChart<String, Number> createXYChart() {
         final CategoryAxis xAxis = new CategoryAxis();
         final NumberAxis yAxis = new NumberAxis();
         final XYChart<String, Number> lineChart = new LineChart<String, Number>(xAxis, yAxis);

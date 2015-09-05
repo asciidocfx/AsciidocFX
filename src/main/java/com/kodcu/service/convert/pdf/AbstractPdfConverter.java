@@ -2,7 +2,6 @@ package com.kodcu.service.convert.pdf;
 
 import com.kodcu.controller.ApplicationController;
 import com.kodcu.other.Current;
-import com.kodcu.other.ExtensionFilters;
 import com.kodcu.other.IOHelper;
 import com.kodcu.service.DirectoryService;
 import com.kodcu.service.PathResolverService;

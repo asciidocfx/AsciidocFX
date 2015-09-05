@@ -18,9 +18,9 @@ public class TooltipTimeFixService {
 
     private final Logger logger = LoggerFactory.getLogger(TooltipTimeFixService.class);
 
-    public void fix(){
+    public void fix() {
 
-        Tooltip tooltip=new Tooltip();
+        Tooltip tooltip = new Tooltip();
         try {
 
             Field fieldBehavior = tooltip.getClass().getDeclaredField("BEHAVIOR");
@@ -34,7 +34,7 @@ public class TooltipTimeFixService {
             objTimer.getKeyFrames().clear();
             objTimer.getKeyFrames().add(new KeyFrame(new Duration(600)));
         } catch (Exception e) {
-            logger.debug("Problem occured while fixing tooltip time, but dont worry",e);
+            logger.debug("Problem occured while fixing tooltip time, but dont worry", e);
         }
     }
 }

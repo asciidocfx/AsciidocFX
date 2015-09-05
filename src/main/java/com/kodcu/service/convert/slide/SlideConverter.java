@@ -1,19 +1,14 @@
 package com.kodcu.service.convert.slide;
 
-import com.kodcu.component.HtmlPane;
 import com.kodcu.component.PreviewTab;
 import com.kodcu.component.SlidePane;
 import com.kodcu.controller.ApplicationController;
 import com.kodcu.other.Current;
 import com.kodcu.service.ThreadService;
-import com.kodcu.service.convert.markdown.MarkdownService;
-import javafx.scene.Node;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
-import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -36,7 +31,7 @@ public class SlideConverter {
 
 
     @Autowired
-    public SlideConverter(final ApplicationController controller, final ThreadService threadService,  final Current current, SlidePane slidePane) {
+    public SlideConverter(final ApplicationController controller, final ThreadService threadService, final Current current, SlidePane slidePane) {
         this.controller = controller;
         this.threadService = threadService;
         this.current = current;

@@ -12,7 +12,6 @@ import org.springframework.web.context.request.async.DeferredResult;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.HEAD;

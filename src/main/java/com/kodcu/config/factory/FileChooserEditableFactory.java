@@ -50,7 +50,7 @@ public class FileChooserEditableFactory implements Callback<Void, FXFormNode> {
     }
 
     public void setOnBrowse(Consumer<Path> onBrowseConsumer) {
-        browseButton.setOnAction(event->{
+        browseButton.setOnAction(event -> {
             Optional<Path> optional = Optional.ofNullable(property.get())
                     .map(Paths::get)
                     .filter(Files::exists);

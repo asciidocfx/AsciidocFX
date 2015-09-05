@@ -11,7 +11,6 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import javax.imageio.ImageIO;
-import javax.json.JsonReader;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.stream.StreamResult;

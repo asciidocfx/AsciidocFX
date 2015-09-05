@@ -10,12 +10,8 @@ import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableView;
-import org.apache.avalon.framework.ExceptionUtil;
 
-import java.io.IOException;
 import java.util.*;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 
@@ -63,7 +59,7 @@ public class TableViewLogAppender extends UnsynchronizedAppenderBase<ILoggingEve
         String message = event.getFormattedMessage();
         String level = event.getLevel().toString();
 
-        if(event.getLevel() == Level.ERROR){
+        if (event.getLevel() == Level.ERROR) {
             logShowHider.getStyleClass().add("red-label");
         }
 

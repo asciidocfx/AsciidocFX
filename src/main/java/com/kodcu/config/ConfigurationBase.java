@@ -4,8 +4,8 @@ import com.kodcu.controller.ApplicationController;
 import com.kodcu.other.IOHelper;
 import com.kodcu.service.ThreadService;
 import javafx.animation.FadeTransition;
-import javafx.beans.property.*;
-import javafx.collections.ObservableList;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.event.ActionEvent;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
@@ -14,16 +14,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 
-import javax.json.*;
+import javax.json.Json;
+import javax.json.JsonObject;
+import javax.json.JsonStructure;
+import javax.json.JsonWriter;
 import javax.json.stream.JsonGenerator;
 import java.io.FileWriter;
-import java.lang.reflect.Field;
-import java.nio.file.*;
-import java.util.*;
-
-import static java.nio.file.StandardOpenOption.CREATE;
-import static java.nio.file.StandardOpenOption.TRUNCATE_EXISTING;
-import static java.nio.file.StandardOpenOption.WRITE;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by usta on 19.07.2015.

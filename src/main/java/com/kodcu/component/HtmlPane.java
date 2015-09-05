@@ -5,23 +5,13 @@ import com.kodcu.config.HtmlConfigBean;
 import com.kodcu.config.OdfConfigBean;
 import com.kodcu.config.PreviewConfigBean;
 import com.kodcu.controller.ApplicationController;
-import com.kodcu.other.ConverterResult;
 import com.kodcu.other.Current;
-import com.kodcu.other.IOHelper;
 import com.kodcu.service.ThreadService;
-import javafx.application.Platform;
 import javafx.scene.web.WebView;
 import netscape.javascript.JSObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
-import java.util.stream.Stream;
 
 /**
  * Created by usta on 09.04.2015.

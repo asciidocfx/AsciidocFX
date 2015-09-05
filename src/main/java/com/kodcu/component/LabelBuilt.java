@@ -11,13 +11,13 @@ import javafx.scene.control.Tooltip;
  */
 public class LabelBuilt {
 
-    private  Label label;
+    private Label label;
 
     public LabelBuilt(Label label) {
         this.label = label;
     }
 
-    public static LabelBuilt icon(AwesomeIcon awesomeIcon, String iconSize,double minSize) {
+    public static LabelBuilt icon(AwesomeIcon awesomeIcon, String iconSize, double minSize) {
         Label iconLabel = AwesomeDude.createIconLabel(awesomeIcon, iconSize);
         iconLabel.setMinWidth(minSize);
         return new LabelBuilt(iconLabel);
@@ -25,7 +25,7 @@ public class LabelBuilt {
 
     public LabelBuilt tip(String text) {
         Tooltip tooltip = new Tooltip(text);
-        Tooltip.install(label,tooltip);
+        Tooltip.install(label, tooltip);
         return this;
     }
 

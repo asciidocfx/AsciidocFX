@@ -5,7 +5,6 @@ import com.kodcu.other.IOHelper;
 import com.kodcu.service.DirectoryService;
 import com.kodcu.service.ThreadService;
 import com.kodcu.service.ui.TabService;
-import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,11 +13,7 @@ import org.springframework.stereotype.Component;
 
 import javax.script.Invocable;
 import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
 import java.io.FileReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.Charset;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.nio.file.PathMatcher;
@@ -65,7 +60,7 @@ public class GitbookToAsciibookService {
                 for (String script : scripts) {
 
                     Path resolve = configPath.resolve("public/js").resolve(script);
-                    try(FileReader fileReader = new FileReader(resolve.toFile());){
+                    try (FileReader fileReader = new FileReader(resolve.toFile());) {
                         scriptEngine.eval(fileReader);
                     }
 

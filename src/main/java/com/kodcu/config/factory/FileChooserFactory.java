@@ -1,17 +1,7 @@
 package com.kodcu.config.factory;
 
-import com.dooapp.fxform.view.FXFormNode;
-import com.dooapp.fxform.view.FXFormNodeWrapper;
-import javafx.application.Platform;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.event.ActionEvent;
-import javafx.scene.control.Button;
-import javafx.scene.control.TextField;
-import javafx.scene.control.Tooltip;
-import javafx.scene.layout.HBox;
 import javafx.stage.FileChooser;
-import javafx.util.Callback;
 
 import java.io.File;
 import java.nio.file.Path;

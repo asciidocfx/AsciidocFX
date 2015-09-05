@@ -2,7 +2,6 @@ package com.kodcu.component;
 
 import com.kodcu.controller.ApplicationController;
 import com.kodcu.other.Current;
-import com.kodcu.other.IOHelper;
 import com.kodcu.service.ThreadService;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.input.MouseButton;
@@ -11,12 +10,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.Optional;
-import java.util.stream.Stream;
 
 /**
  * Created by usta on 09.04.2015.
@@ -49,10 +42,10 @@ public class SlidePane extends ViewPanel {
 
     public void replaceSlides(String rendered) {
         String backendExt = backend + "Ext";
-        try{
+        try {
             ((JSObject) getWindow().eval(backendExt)).call("replaceSlides", rendered);
-        }catch (Exception e){
-            logger.debug("{} is not found while replacing slide, but don't worry.",backendExt, e);
+        } catch (Exception e) {
+            logger.debug("{} is not found while replacing slide, but don't worry.", backendExt, e);
         }
 
     }
@@ -62,7 +55,7 @@ public class SlidePane extends ViewPanel {
         try {
             ((JSObject) getWindow().eval(backendExt)).call("flipCurrentPage", rendered);
         } catch (Exception e) {
-            logger.debug("{} is not found while flipping page, but don't worry.",backendExt, e);
+            logger.debug("{} is not found while flipping page, but don't worry.", backendExt, e);
         }
     }
 

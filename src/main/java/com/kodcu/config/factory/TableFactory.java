@@ -5,17 +5,18 @@ import com.dooapp.fxform.reflection.ReflectionUtils;
 import com.dooapp.fxform.view.FXFormNode;
 import com.dooapp.fxform.view.FXFormNodeWrapper;
 import com.kodcu.component.TextFieldTableCell;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.SelectionMode;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.util.Callback;
 import javafx.util.converter.DefaultStringConverter;
-import org.apache.xmlgraphics.java2d.color.DefaultColorConverter;
 
 import java.lang.reflect.Field;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * Created by usta on 17.07.2015.

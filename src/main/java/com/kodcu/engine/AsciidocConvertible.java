@@ -8,8 +8,12 @@ import com.kodcu.other.ConverterResult;
 public interface AsciidocConvertible {
 
     public ConverterResult convertDocbook(String asciidoc);
+
     public ConverterResult convertAsciidoc(String asciidoc);
+
     public ConverterResult convertHtml(String asciidoc);
+
     public void convertOdf(String asciidoc);
+
     public void fillOutlines(Object doc);
 }

@@ -168,7 +168,8 @@ public class TreeService {
                             fileView.setPrefWidth(fileView.getPrefWidth() + value);
                         else
                             fileView.setPrefWidth(value);
-                    } catch (Exception e) {}
+                    } catch (Exception e) {
+                    }
 
                     try {
                         Double value = Double.valueOf(height);
@@ -177,7 +178,8 @@ public class TreeService {
                             fileView.setPrefHeight(fileView.getPrefHeight() + value);
                         else
                             fileView.setPrefHeight(value);
-                    } catch (Exception e) {}
+                    } catch (Exception e) {
+                    }
 
                     threadService.runActionLater(() -> {
                         controller.getRootAnchor().getChildren().add(fileView);
@@ -238,7 +240,8 @@ public class TreeService {
                         treeview.setPrefWidth(treeview.getPrefWidth() + value);
                     else
                         treeview.setPrefWidth(value);
-                } catch (Exception e) {}
+                } catch (Exception e) {
+                }
 
                 try {
                     Double value = Double.valueOf(height);
@@ -247,7 +250,8 @@ public class TreeService {
                         treeview.setPrefHeight(treeview.getPrefHeight() + value);
                     else
                         treeview.setPrefHeight(value);
-                } catch (Exception e) {}
+                } catch (Exception e) {
+                }
 
                 threadService.runActionLater(() -> {
                     treeview.getEngine().load(String.format(treeviewUrl, controller.getPort()));

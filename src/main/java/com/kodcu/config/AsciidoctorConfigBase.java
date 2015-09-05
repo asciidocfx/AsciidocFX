@@ -22,13 +22,11 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TableView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.scene.shape.Rectangle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.json.*;
 import java.io.FileReader;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 

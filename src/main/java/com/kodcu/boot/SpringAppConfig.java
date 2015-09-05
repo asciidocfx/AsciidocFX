@@ -29,7 +29,6 @@ import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
 import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
 
 import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
 import java.util.Base64;
 
 

@@ -84,11 +84,9 @@ public class FileWatchService {
                                 }
                                 watckKey.reset();
                             });
-                        }
-                        else  if(kind == ENTRY_MODIFY && event.count() > 1){
+                        } else if (kind == ENTRY_MODIFY && event.count() > 1) {
                             watckKey.reset();
-                        }
-                        else {
+                        } else {
                             updateFsView = true;
                             watckKey.reset();
                         }

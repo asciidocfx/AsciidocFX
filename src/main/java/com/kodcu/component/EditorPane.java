@@ -9,22 +9,16 @@ import com.kodcu.service.extension.AsciiTreeGenerator;
 import com.kodcu.service.shortcut.ShortcutProvider;
 import com.kodcu.service.ui.TabService;
 import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.concurrent.Worker;
-import javafx.event.EventHandler;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
-import javafx.scene.input.DragEvent;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.MouseButton;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.web.WebEngine;
-import javafx.scene.web.WebEvent;
 import javafx.scene.web.WebView;
 import javafx.util.Callback;
 import netscape.javascript.JSObject;
@@ -162,10 +156,10 @@ public class EditorPane extends AnchorPane {
     }
 
     public void setEditorValue(String value) {
-       threadService.runActionLater(()->{
-           getWindow().setMember("editorValue", value);
-           webEngine().executeScript("editor.setValue(editorValue)");
-       });
+        threadService.runActionLater(() -> {
+            getWindow().setMember("editorValue", value);
+            webEngine().executeScript("editor.setValue(editorValue)");
+        });
     }
 
     public void switchMode(Object... args) {

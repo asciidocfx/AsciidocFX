@@ -16,7 +16,8 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.Tab;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
@@ -33,8 +34,6 @@ import java.io.File;
 import java.io.InputStream;
 import java.nio.file.Paths;
 
-import static javafx.scene.input.KeyCombination.ALT_DOWN;
-import static javafx.scene.input.KeyCombination.CONTROL_DOWN;
 import static javafx.scene.input.KeyCombination.SHORTCUT_DOWN;
 
 public class AppStarter extends Application {

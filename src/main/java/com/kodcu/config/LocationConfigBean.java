@@ -6,36 +6,34 @@ import com.dooapp.fxform.FXForm;
 import com.dooapp.fxform.builder.FXFormBuilder;
 import com.dooapp.fxform.handler.NamedFieldHandler;
 import com.dooapp.fxform.view.factory.DefaultFactoryProvider;
-import com.kodcu.config.factory.*;
+import com.kodcu.config.factory.FileChooserEditableFactory;
+import com.kodcu.config.factory.FileChooserFactory;
 import com.kodcu.controller.ApplicationController;
 import com.kodcu.other.IOHelper;
 import com.kodcu.service.ThreadService;
 import com.kodcu.service.ui.TabService;
-import javafx.beans.property.*;
-import javafx.collections.FXCollections;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import org.joox.JOOX;
-import org.joox.Match;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import javax.json.*;
+import javax.json.Json;
+import javax.json.JsonObject;
+import javax.json.JsonObjectBuilder;
+import javax.json.JsonReader;
 import java.io.FileReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.List;
 import java.util.Objects;
 import java.util.ResourceBundle;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * Created by usta on 17.07.2015.

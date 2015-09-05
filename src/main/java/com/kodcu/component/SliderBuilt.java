@@ -16,7 +16,7 @@ public class SliderBuilt {
     }
 
     public static SliderBuilt create(double min, int max, double value) {
-        return new SliderBuilt(min,max,value);
+        return new SliderBuilt(min, max, value);
     }
 
     public Slider step(double step) {

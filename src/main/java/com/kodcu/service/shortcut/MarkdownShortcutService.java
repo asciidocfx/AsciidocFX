@@ -194,7 +194,7 @@ public class MarkdownShortcutService implements ShortcutService {
     public void addDitaaBlock() {
         AlertHelper.notImplementedDialog();
     }
-    
+
     @Override
     public void addTreeBlock() {
         AlertHelper.notImplementedDialog();

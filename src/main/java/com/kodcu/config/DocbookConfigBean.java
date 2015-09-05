@@ -1,6 +1,5 @@
 package com.kodcu.config;
 
-import com.dooapp.fxform.annotation.NonVisual;
 import com.kodcu.controller.ApplicationController;
 import com.kodcu.service.ThreadService;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -40,7 +40,6 @@ import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.beans.property.*;
 import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -61,9 +60,7 @@ import javafx.scene.control.cell.TextFieldTreeCell;
 import javafx.scene.input.*;
 import javafx.scene.layout.*;
 import javafx.scene.text.Text;
-import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebHistory;
-import javafx.scene.web.WebView;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -97,9 +94,7 @@ import java.nio.file.attribute.PosixFilePermission;
 import java.security.CodeSource;
 import java.time.Instant;
 import java.util.*;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
@@ -112,14 +107,9 @@ import static java.nio.file.StandardOpenOption.*;
 @Component
 public class ApplicationController extends TextWebSocketHandler implements Initializable {
 
+    private Logger logger = LoggerFactory.getLogger(ApplicationController.class);
+
     public TabPane previewTabPane;
-
-    @Autowired
-    public HtmlPane htmlPane;
-
-    @Autowired
-    public AsciidocWebkitConverter asciidocWebkitConverter;
-
     public Label odfPro;
     public VBox logVBox;
     public Label statusText;
@@ -135,20 +125,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     public MenuItem addToFavoriteDir;
     public MenuItem afxVersionItem;
     public TabPane workDirTabPane;
-
-    private Logger logger = LoggerFactory.getLogger(ApplicationController.class);
-
-    private Path userHome = Paths.get(System.getProperty("user.home"));
-
-    private TreeSet<Section> outlineList = new TreeSet<>();
-    private ObservableList<DocumentMode> modeList = FXCollections.observableArrayList();
-
-    private final Pattern bookArticleHeaderRegex =
-            Pattern.compile("^:doctype:.*(book|article)", Pattern.MULTILINE);
-
-    private final Pattern forceIncludeRegex =
-            Pattern.compile("^:forceinclude:", Pattern.MULTILINE);
-
     public CheckMenuItem hidePreviewPanel;
     public MenuItem hideFileBrowser;
     public MenuButton panelShowHideMenuButton;
@@ -183,8 +159,18 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     public SeparatorMenuItem addToFavSeparator;
     private AnchorPane markdownTableAnchor;
     private Stage markdownTableStage;
-
     private TreeView<Section> sectionTreeView;
+
+    private Path userHome = Paths.get(System.getProperty("user.home"));
+
+    private TreeSet<Section> outlineList = new TreeSet<>();
+    private ObservableList<DocumentMode> modeList = FXCollections.observableArrayList();
+
+    private final Pattern bookArticleHeaderRegex =
+            Pattern.compile("^:doctype:.*(book|article)", Pattern.MULTILINE);
+
+    private final Pattern forceIncludeRegex =
+            Pattern.compile("^:forceinclude:", Pattern.MULTILINE);
 
     private BooleanProperty stopRendering = new SimpleBooleanProperty(false);
 
@@ -192,20 +178,20 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     private static ObservableList<MyLog> logList = FXCollections.synchronizedObservableList(FXCollections.observableArrayList());
 
+    @Autowired
+    public HtmlPane htmlPane;
+
+    @Autowired
+    public AsciidocWebkitConverter asciidocWebkitConverter;
 
     @Autowired
     private EditorConfigBean editorConfigBean;
 
     @Autowired
     private LocationConfigBean locationConfigBean;
+
     @Autowired
     private PreviewConfigBean previewConfigBean;
-    @Autowired
-    private HtmlConfigBean htmlConfigBean;
-    @Autowired
-    private OdfConfigBean odfConfigBean;
-    @Autowired
-    private DocbookConfigBean docbookConfigBean;
 
     @Autowired
     private ApplicationContext applicationContext;
@@ -215,9 +201,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     @Autowired
     private AsciidocTableController asciidocTableController;
-
-    @Autowired
-    private PathOrderService pathOrder;
 
     @Autowired
     private TreeService treeService;
@@ -232,13 +215,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     private ODFConverter odfConverter;
 
     @Autowired
-    private PathResolverService pathResolver;
-
-    @Autowired
     private PlantUmlService plantUmlService;
-
-    @Autowired
-    private EditorService editorService;
 
     @Autowired
     private MathJaxService mathJaxService;
@@ -278,9 +255,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     private ParserService parserService;
 
     @Autowired
-    private AwesomeService awesomeService;
-
-    @Autowired
     private DirectoryService directoryService;
 
     @Autowired
@@ -310,8 +284,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     private Path configPath;
     private BooleanProperty fileBrowserVisibility = new SimpleBooleanProperty(false);
     private BooleanProperty previewPanelVisibility = new SimpleBooleanProperty(false);
-
-    private final List<String> bookNames = Arrays.asList("book.asc", "book.txt", "book.asciidoc", "book.adoc", "book.ad");
 
     private final ChangeListener<String> lastRenderedChangeListener = (observableValue, old, nev) -> {
 
@@ -353,9 +325,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     private PreviewTab previewTab;
 
     private Timeline progressBarTimeline = null;
-
-    @Autowired
-    private FileWatchService watchService;
 
     @Autowired
     private StoredConfigBean storedConfigBean;

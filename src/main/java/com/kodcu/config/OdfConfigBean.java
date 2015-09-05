@@ -1,7 +1,6 @@
 package com.kodcu.config;
 
 import com.dooapp.fxform.FXForm;
-import com.dooapp.fxform.annotation.NonVisual;
 import com.dooapp.fxform.builder.FXFormBuilder;
 import com.kodcu.controller.ApplicationController;
 import com.kodcu.service.ThreadService;

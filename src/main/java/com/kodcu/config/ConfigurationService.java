@@ -4,16 +4,13 @@ import com.kodcu.component.PreviewTab;
 import com.kodcu.component.ScrollPaneBuilt;
 import com.kodcu.controller.ApplicationController;
 import javafx.collections.ObservableList;
-import javafx.scene.Node;
-import javafx.scene.control.*;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.Priority;
+import javafx.scene.control.Accordion;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
+import javafx.scene.control.TitledPane;
 import javafx.scene.layout.VBox;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * Created by usta on 17.07.2015.

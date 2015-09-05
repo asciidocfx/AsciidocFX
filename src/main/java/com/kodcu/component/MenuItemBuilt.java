@@ -3,7 +3,6 @@ package com.kodcu.component;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.Tooltip;
@@ -31,8 +30,8 @@ public class MenuItemBuilt {
     }
 
     public MenuItemBuilt tip(String tipText) {
-        Tooltip tooltip=new Tooltip(tipText);
-        Tooltip.install(menuItem.getGraphic(),tooltip);
+        Tooltip tooltip = new Tooltip(tipText);
+        Tooltip.install(menuItem.getGraphic(), tooltip);
         return this;
     }
 }

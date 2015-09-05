@@ -21,7 +21,7 @@ import java.util.ResourceBundle;
 public class AsciidocTableController implements Initializable {
 
     private final Logger logger = LoggerFactory.getLogger(AsciidocTableController.class);
-    
+
     private final Current current;
 
     public TextField initialValue;
@@ -87,7 +87,8 @@ public class AsciidocTableController implements Initializable {
         try {
             row = Integer.valueOf(tablePopupRows.textProperty().getValue());
             column = Integer.valueOf(tablePopupColumns.textProperty().getValue());
-        } catch (RuntimeException e) {}
+        } catch (RuntimeException e) {
+        }
 
         stringBuffer.append("|====================\n");
 

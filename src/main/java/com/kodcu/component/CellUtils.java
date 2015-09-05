@@ -1,18 +1,12 @@
 package com.kodcu.component;
 
 import javafx.beans.property.ObjectProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.HBox;
 import javafx.util.StringConverter;
-
-import java.util.Objects;
 
 public class CellUtils {
 
@@ -246,8 +240,7 @@ public class CellUtils {
             if (t.getCode() == KeyCode.ESCAPE) {
                 cell.cancelEdit();
                 t.consume();
-            }
-            else if ((t.getCode() == KeyCode.UP) || (t.getCode() == KeyCode.DOWN) || (t.getCode() == KeyCode.LEFT) || (t.getCode() == KeyCode.RIGHT)){
+            } else if ((t.getCode() == KeyCode.UP) || (t.getCode() == KeyCode.DOWN) || (t.getCode() == KeyCode.LEFT) || (t.getCode() == KeyCode.RIGHT)) {
                 if (converter == null) {
                     throw new IllegalStateException(
                             "Attempting to convert text input into Object, but provided "

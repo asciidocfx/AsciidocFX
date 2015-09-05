@@ -4,7 +4,6 @@ import com.kodcu.config.*;
 import com.kodcu.controller.ApplicationController;
 import com.kodcu.other.ConverterResult;
 import com.kodcu.service.ThreadService;
-import javafx.collections.ObservableList;
 import jdk.nashorn.api.scripting.JSObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,21 +11,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
-import javax.json.Json;
 import javax.json.JsonObject;
-import javax.json.JsonObjectBuilder;
-import javax.json.JsonValue;
-import javax.script.*;
+import javax.script.Invocable;
+import javax.script.ScriptEngine;
 import java.io.FileReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.nio.file.Path;
 import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-import java.util.regex.Matcher;
 
 /**
  * Created by usta on 22.08.2015.
@@ -137,7 +129,7 @@ public class AsciidocNashornConverter implements AsciidocConvertible {
                 for (String script : scripts) {
 
                     Path resolve = configPath.resolve("public/js").resolve(script);
-                    try(FileReader fileReader = new FileReader(resolve.toFile());){
+                    try (FileReader fileReader = new FileReader(resolve.toFile());) {
                         scriptEngine.eval(fileReader);
                     }
 

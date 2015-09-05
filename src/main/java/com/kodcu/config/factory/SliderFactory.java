@@ -1,12 +1,7 @@
 package com.kodcu.config.factory;
 
-import com.dooapp.fxform.model.Element;
 import com.dooapp.fxform.view.FXFormNode;
 import com.dooapp.fxform.view.FXFormNodeWrapper;
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.layout.HBox;
@@ -33,9 +28,9 @@ public class SliderFactory implements Callback<Void, FXFormNode> {
 
 
         slider.valueProperty().addListener((observable, oldValue, newValue) -> {
-            label.setText(String.format("%1.1f",newValue));
+            label.setText(String.format("%1.1f", newValue));
         });
-        return new FXFormNodeWrapper(hBox, slider.valueProperty()){
+        return new FXFormNodeWrapper(hBox, slider.valueProperty()) {
 
         };
     }
