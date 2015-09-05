@@ -1,7 +1,7 @@
 
 {
     "backend":"odf",
-    "jsPlatform":"Nashorn",
+    "jsPlatform":"Webkit",
     "safe":"safe",
     "attributes":{
         "showtitle":"true",
