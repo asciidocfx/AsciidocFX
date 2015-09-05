@@ -5,7 +5,9 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 /**
  * Created by usta on 26.07.2015.
@@ -13,8 +15,8 @@ import java.util.Objects;
 public class FolderChooserFactory extends ChooserFactory {
 
 
-    public FolderChooserFactory(String promptText) {
-        super(promptText);
+    public FolderChooserFactory(String promptText, Consumer<Path> browseConsumer) {
+        super(promptText, browseConsumer);
     }
 
     @Override
@@ -23,7 +25,7 @@ public class FolderChooserFactory extends ChooserFactory {
         directoryChooser.setTitle(promptText);
         File openDialog = directoryChooser.showDialog(null);
         if (Objects.nonNull(openDialog)) {
-            property.setValue(openDialog.toPath());
+            property.setValue(openDialog.toPath().toString());
         }
     }
 }

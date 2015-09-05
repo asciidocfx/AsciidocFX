@@ -1,10 +1,12 @@
 package com.kodcu.config;
 
 import com.kodcu.component.PreviewTab;
+import com.kodcu.component.ScrollPaneBuilt;
 import com.kodcu.controller.ApplicationController;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +21,7 @@ import java.util.List;
 @Component
 public class ConfigurationService {
 
+    private final LocationConfigBean locationConfigBean;
     private final EditorConfigBean editorConfigBean;
     private final PreviewConfigBean previewConfigBean;
     private final HtmlConfigBean htmlConfigBean;
@@ -30,7 +33,8 @@ public class ConfigurationService {
     private final Tab mockTab = new PreviewTab("Editor Settings");
 
     @Autowired
-    public ConfigurationService(EditorConfigBean editorConfigBean, PreviewConfigBean previewConfigBean, HtmlConfigBean htmlConfigBean, OdfConfigBean odfConfigBean, DocbookConfigBean docbookConfigBean, ApplicationController controller, StoredConfigBean storedConfigBean) {
+    public ConfigurationService(LocationConfigBean locationConfigBean, EditorConfigBean editorConfigBean, PreviewConfigBean previewConfigBean, HtmlConfigBean htmlConfigBean, OdfConfigBean odfConfigBean, DocbookConfigBean docbookConfigBean, ApplicationController controller, StoredConfigBean storedConfigBean) {
+        this.locationConfigBean = locationConfigBean;
         this.editorConfigBean = editorConfigBean;
         this.previewConfigBean = previewConfigBean;
         this.htmlConfigBean = htmlConfigBean;
@@ -42,12 +46,14 @@ public class ConfigurationService {
 
     public void loadConfigurations() {
 
+        VBox locationConfigForm = locationConfigBean.createForm();
         VBox editorConfigForm = editorConfigBean.createForm();
         VBox previewConfigForm = previewConfigBean.createForm();
         VBox htmlConfigForm = htmlConfigBean.createForm();
         VBox odfConfigForm = odfConfigBean.createForm();
         VBox docbookConfigForm = docbookConfigBean.createForm();
 
+        locationConfigBean.load();
         storedConfigBean.load();
         editorConfigBean.load();
         previewConfigBean.load();
@@ -55,15 +61,15 @@ public class ConfigurationService {
         odfConfigBean.load();
         docbookConfigBean.load();
 
-
-        TitledPane editorConfigPane = new TitledPane("Editor Settings", new ScrollPane(editorConfigForm));
-        TitledPane previewConfigPane = new TitledPane("Asciidoctor Preview Attributes", new ScrollPane(previewConfigForm));
-        TitledPane htmlConfigPane = new TitledPane("Asciidoctor Html Attributes", new ScrollPane(htmlConfigForm));
-        TitledPane odfConfigPane = new TitledPane("Asciidoctor Odt Attributes", new ScrollPane(odfConfigForm));
-        TitledPane docbookConfigPane = new TitledPane("Asciidoctor Docbook Attributes", new ScrollPane(docbookConfigForm));
+        TitledPane editorConfigPane = new TitledPane("Editor Settings", ScrollPaneBuilt.content(editorConfigForm).full());
+        TitledPane locationConfigPane = new TitledPane("Location Settings", ScrollPaneBuilt.content(locationConfigForm).full());
+        TitledPane previewConfigPane = new TitledPane("Preview Settings", ScrollPaneBuilt.content(previewConfigForm).full());
+        TitledPane htmlConfigPane = new TitledPane("Html Settings", ScrollPaneBuilt.content(htmlConfigForm).full());
+        TitledPane odfConfigPane = new TitledPane("Odt Settings", ScrollPaneBuilt.content(odfConfigForm).full());
+        TitledPane docbookConfigPane = new TitledPane("Docbook Settings", ScrollPaneBuilt.content(docbookConfigForm).full());
 
         configAccordion.setExpandedPane(editorConfigPane);
-        configAccordion.getPanes().addAll(editorConfigPane, previewConfigPane, htmlConfigPane, odfConfigPane, docbookConfigPane);
+        configAccordion.getPanes().addAll(editorConfigPane, locationConfigPane, previewConfigPane, htmlConfigPane, odfConfigPane, docbookConfigPane);
 
     }
 

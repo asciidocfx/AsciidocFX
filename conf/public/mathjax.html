@@ -10,7 +10,13 @@
 
 </div>
 <script src="/afx/resource/js/jquery.js" type="text/javascript"></script>
-<script src="/afx/resource/mathjax/MathJax.js?config=TeX-AMS-MML_SVG.js"></script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+  extensions: ["tex2jax.js","mml2jax.js","MathEvents.js","MathZoom.js","MathMenu.js","toMathML.js","TeX/noErrors.js","TeX/noUndefined.js","TeX/AMSmath.js","TeX/AMSsymbols.js","CHTML-preview.js"],
+  jax: ["input/TeX","input/MathML","output/SVG","output/CommonHTML"]
+});
+</script>
+<script src="/afx/resource/mathjax/MathJax.js"></script>
 <script type="text/javascript">
 
     function afterRender(finishCallback) {

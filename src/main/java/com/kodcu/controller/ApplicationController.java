@@ -195,6 +195,9 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     @Autowired
     private EditorConfigBean editorConfigBean;
+
+    @Autowired
+    private LocationConfigBean locationConfigBean;
     @Autowired
     private PreviewConfigBean previewConfigBean;
     @Autowired
@@ -488,19 +491,19 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     private void convertMobi(boolean askPath) {
 
-        if (Objects.nonNull(editorConfigBean.getKindlegen())) {
-            if (!Files.exists(editorConfigBean.getKindlegen())) {
-                editorConfigBean.setKindlegen(null);
+        if (Objects.nonNull(locationConfigBean.getKindlegen())) {
+            if (!Files.exists(Paths.get(locationConfigBean.getKindlegen()))) {
+                locationConfigBean.setKindlegen(null);
             }
         }
 
-        if (Objects.isNull(editorConfigBean.getKindlegen())) {
+        if (Objects.isNull(locationConfigBean.getKindlegen())) {
             FileChooser fileChooser = directoryService.newFileChooser("Select 'kindlegen' executable");
             File kindlegenFile = fileChooser.showOpenDialog(null);
             if (Objects.isNull(kindlegenFile))
                 return;
 
-            editorConfigBean.setKindlegen(kindlegenFile.toPath());
+            locationConfigBean.setKindlegen(kindlegenFile.toPath().toString());
         }
 
         threadService.runTaskLater(() -> {
@@ -2181,6 +2184,10 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     public Current getCurrent() {
         return current;
+    }
+
+    public void browse(Path path) {
+        hostServices.showDocument(path.toUri().toString());
     }
 
     @FXML

@@ -53,7 +53,6 @@ public class EditorConfigBean extends ConfigurationBase {
 
 
     private ObjectProperty<ObservableList<String>> editorTheme = new SimpleObjectProperty<>(FXCollections.observableArrayList());
-    private ObjectProperty<Path> asciidoctorStyleSheet = new SimpleObjectProperty<>();
     private DoubleProperty firstSplitter = new SimpleDoubleProperty(0.17551963048498845);
     private DoubleProperty secondSplitter = new SimpleDoubleProperty(0.5996920708237106);
     private StringProperty fontFamily = new SimpleStringProperty("'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace");
@@ -63,8 +62,6 @@ public class EditorConfigBean extends ConfigurationBase {
     private ObjectProperty<Integer> wrapLimit = new SimpleObjectProperty<>(0);
     private BooleanProperty showGutter = new SimpleBooleanProperty(false);
     private ObjectProperty<ObservableList<String>> defaultLanguage = new SimpleObjectProperty<>(FXCollections.observableArrayList());
-    private ObjectProperty<Path> kindlegen = new SimpleObjectProperty<>();
-
 
     private Logger logger = LoggerFactory.getLogger(EditorConfigBean.class);
 
@@ -118,18 +115,6 @@ public class EditorConfigBean extends ConfigurationBase {
 
     public void setUseWrapMode(boolean useWrapMode) {
         this.useWrapMode.set(useWrapMode);
-    }
-
-    public Path getKindlegen() {
-        return kindlegen.get();
-    }
-
-    public ObjectProperty<Path> kindlegenProperty() {
-        return kindlegen;
-    }
-
-    public void setKindlegen(Path kindlegen) {
-        this.kindlegen.set(kindlegen);
     }
 
     public ObservableList<String> getEditorTheme() {
@@ -216,18 +201,6 @@ public class EditorConfigBean extends ConfigurationBase {
         this.secondSplitter.set(secondSplitter);
     }
 
-    public Path getAsciidoctorStyleSheet() {
-        return asciidoctorStyleSheet.get();
-    }
-
-    public ObjectProperty<Path> asciidoctorStyleSheetProperty() {
-        return asciidoctorStyleSheet;
-    }
-
-    public void setAsciidoctorStyleSheet(Path asciidoctorStyleSheet) {
-        this.asciidoctorStyleSheet.set(asciidoctorStyleSheet);
-    }
-
     @Override
     public VBox createForm() {
 
@@ -243,9 +216,7 @@ public class EditorConfigBean extends ConfigurationBase {
         editorConfigFormProvider.addFactory(new NamedFieldHandler("scrollSpeed"), new SliderFactory(SliderBuilt.create(0.0, 1, 0.1).step(0.1)));
         editorConfigFormProvider.addFactory(new NamedFieldHandler("fontSize"), new SpinnerFactory(new Spinner(8, 32, 14)));
         editorConfigFormProvider.addFactory(new NamedFieldHandler("wrapLimit"), new SpinnerFactory(new Spinner(0, 500, 0)));
-        editorConfigFormProvider.addFactory(new NamedFieldHandler("kindlegen"), new FileChooserFactory("Select kindlegen executable file"));
         FileChooserEditableFactory fileChooserEditableFactory = new FileChooserEditableFactory();
-        editorConfigFormProvider.addFactory(new NamedFieldHandler("asciidoctorStyleSheet"), fileChooserEditableFactory);
         editorConfigForm.setEditorFactoryProvider(editorConfigFormProvider);
 
         fileChooserEditableFactory.setOnEdit(tabService::addTab);
@@ -276,10 +247,6 @@ public class EditorConfigBean extends ConfigurationBase {
 
         threadService.runTaskLater(() -> {
 
-            this.setAsciidoctorStyleSheet(controller
-                    .getConfigPath()
-                    .resolve("data/stylesheets/asciidoctor-default.css"));
-
             List<String> aceThemeList = IOHelper.readAllLines(getConfigDirectory().resolve("ace_themes.txt"));
             List<String> languageList = this.languageList();
 
@@ -292,11 +259,9 @@ public class EditorConfigBean extends ConfigurationBase {
             int fontSize = jsonObject.getInt("fontSize", 14);
             String theme = jsonObject.getString("editorTheme", "xcode");
             String defaultLanguage = jsonObject.getString("defaultLanguage", "en");
-            String kindlegen = jsonObject.getString("kindlegen", null);
             boolean useWrapMode = jsonObject.getBoolean("useWrapMode", true);
             boolean showGutter = jsonObject.getBoolean("showGutter", false);
             int wrapLimit = jsonObject.getInt("wrapLimit", 0);
-            String asciidoctorStyleSheet = jsonObject.getString("asciidoctorStyleSheet", null);
 
             IOHelper.close(jsonReader, fileReader);
 
@@ -308,14 +273,6 @@ public class EditorConfigBean extends ConfigurationBase {
                 this.setUseWrapMode(useWrapMode);
                 this.setShowGutter(showGutter);
                 this.setWrapLimit(wrapLimit);
-
-                if (Objects.nonNull(kindlegen)) {
-                    this.setKindlegen(Paths.get(kindlegen));
-                }
-
-                if (Objects.nonNull(asciidoctorStyleSheet)) {
-                    this.setAsciidoctorStyleSheet(Paths.get(asciidoctorStyleSheet));
-                }
 
                 if (jsonObject.containsKey("scrollSpeed")) {
                     this.setScrollSpeed(jsonObject.getJsonNumber("scrollSpeed").doubleValue());
@@ -393,14 +350,6 @@ public class EditorConfigBean extends ConfigurationBase {
                 .add("defaultLanguage", getDefaultLanguage().get(0))
                 .add("firstSplitter", getFirstSplitter())
                 .add("secondSplitter", getSecondSplitter());
-
-        if (Objects.nonNull(getKindlegen())) {
-            objectBuilder.add("kindlegen", getKindlegen().toString());
-        }
-
-        if (Objects.nonNull(getAsciidoctorStyleSheet())) {
-            objectBuilder.add("asciidoctorStyleSheet", getAsciidoctorStyleSheet().toString());
-        }
 
         return objectBuilder.build();
     }

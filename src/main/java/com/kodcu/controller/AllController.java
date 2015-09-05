@@ -1,13 +1,8 @@
 package com.kodcu.controller;
 
-import com.kodcu.other.Current;
-import com.kodcu.service.DirectoryService;
-import com.kodcu.service.ThreadService;
-import com.kodcu.service.convert.slide.SlideConverter;
-import com.kodcu.service.ui.TabService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,15 +11,8 @@ import org.springframework.web.context.request.async.DeferredResult;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.function.Supplier;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.HEAD;
@@ -33,150 +21,132 @@ import static org.springframework.web.bind.annotation.RequestMethod.HEAD;
  * Created by usta on 02.09.2015.
  */
 @Controller
-@Scope("request")
 public class AllController {
 
-    private final FileService fileService;
-    private final HttpServletRequest request;
-    private final HttpServletResponse response;
-    private final SlideConverter slideConverter;
-    private final Current current;
-    private final ThreadService threadService;
-    private final TabService tabService;
-    private final DirectoryService directoryService;
+    private final DynamicResource dynamicResource;
+    private final EpubResource epubResource;
+    private final GeneralResource generalResource;
+    private final LiveResource liveResource;
+    private final SlideResource slideResource;
 
-    private DeferredResult<String> result;
 
+    private Logger logger = LoggerFactory.getLogger(AllController.class);
 
     @Autowired
-    public AllController(FileService fileService, HttpServletRequest request, HttpServletResponse response, SlideConverter slideConverter, Current current, ThreadService threadService, TabService tabService, DirectoryService directoryService) {
-        this.fileService = fileService;
-        this.request = request;
-        this.response = response;
-        this.slideConverter = slideConverter;
-        this.current = current;
-        this.threadService = threadService;
-        this.tabService = tabService;
-        this.directoryService = directoryService;
+    public AllController(DynamicResource dynamicResource, EpubResource epubResource, GeneralResource generalResource, LiveResource liveResource, SlideResource slideResource) {
+        this.dynamicResource = dynamicResource;
+        this.epubResource = epubResource;
+        this.generalResource = generalResource;
+        this.liveResource = liveResource;
+        this.slideResource = slideResource;
     }
+
 
     @RequestMapping(value = {"/**/*.*", "*.*"}, method = {GET, HEAD}, produces = "*/*")
     @ResponseBody
-    public DeferredResult all(DeferredResult result) {
+    public DeferredResult all(DeferredResult defenderResult, HttpServletRequest request, HttpServletResponse response) {
 
-        this.result = result;
+        Payload payload = new Payload();
+        payload.setDeferredResult(defenderResult);
+        payload.setRequest(request);
+        payload.setResponse(response);
+        payload.setRequestURI(request.getRequestURI());
 
-        List<Supplier<Boolean>> chaines = Arrays
-                .asList(this::executeAfxResource,
-                        this::executeLiveResource,
-                        this::executeSlideResource,
-                        this::executeEpubResource);
+        Router router = new Router(payload)
+                .executeIf("/afx/resource/", generalResource::executeAfxResource)
+                .executeIf("/afx/dynamic/", dynamicResource::executeDynamicResource)
+                .executeIf("/afx/live/", liveResource::executeLiveResource)
+                .executeIf("/afx/slide/", slideResource::executeSlideResource)
+                .executeIf("/afx/epub/", epubResource::executeEpubResource);
 
-        Optional<Boolean> executionResult = chaines
-                .stream()
-                .map(Supplier<Boolean>::get)
-                .filter(Boolean::booleanValue)
-                .findFirst();
 
-        if (!executionResult.isPresent()) {
-            ResponseEntity<String> responseEntity = new ResponseEntity<>(HttpStatus.NO_CONTENT);
-            result.setResult(responseEntity);
+        if (!defenderResult.isSetOrExpired() && !response.isCommitted()) {
+            defenderResult.setResult(ResponseEntity.notFound());
         }
-        return result;
+
+        return defenderResult;
     }
 
-    private boolean executeEpubResource() {
-        String requestURI = request.getRequestURI();
-        String resourcePrefix = "/afx/epub/";
+    class Payload {
+        private String pattern;
+        private String requestURI;
+        private String finalURI;
+        private DeferredResult deferredResult;
+        private HttpServletRequest request;
+        private HttpServletResponse response;
 
-        if (requestURI.contains(resourcePrefix)) {
+        public String getPattern() {
+            return pattern;
+        }
 
-            if (requestURI.contains("booki.epub")) {
-                fileService.processFile(request, response, current.getCurrentEpubPath());
-            } else {
-                String finalUri = requestURI.replace(resourcePrefix, "");
-                Path path = directoryService.findPathInConfigOrCurrentOrWorkDir(finalUri);
-                fileService.processFile(request, response, path);
+        public void setPattern(String pattern) {
+            this.pattern = pattern;
+        }
+
+        public String getRequestURI() {
+            return requestURI;
+        }
+
+        public void setRequestURI(String requestURI) {
+            this.requestURI = requestURI;
+        }
+
+        public String getFinalURI() {
+            return finalURI;
+        }
+
+        public void setFinalURI(String finalURI) {
+            this.finalURI = finalURI;
+        }
+
+        public DeferredResult getDeferredResult() {
+            return deferredResult;
+        }
+
+        public void setDeferredResult(DeferredResult deferredResult) {
+            this.deferredResult = deferredResult;
+        }
+
+        public HttpServletRequest getRequest() {
+            return request;
+        }
+
+        public void setRequest(HttpServletRequest request) {
+            this.request = request;
+        }
+
+        public HttpServletResponse getResponse() {
+            return response;
+        }
+
+        public void setResponse(HttpServletResponse response) {
+            this.response = response;
+        }
+    }
+
+
+    class Router {
+
+        private final Payload payload;
+
+        public Router(Payload payload) {
+            this.payload = payload;
+        }
+
+        public Router executeIf(String pattern, Consumer<Payload> consumer) {
+
+            payload.setPattern(pattern);
+            payload.setFinalURI(payload.getRequestURI().replace(pattern, ""));
+
+            if (payload.getRequestURI().contains(pattern)) {
+                try {
+                    consumer.accept(payload);
+                } catch (Exception e) {
+                    logger.debug(e.getMessage(), e);
+                }
             }
-
-            return true;
+            return this;
         }
-
-        return false;
     }
 
-    private boolean executeSlideResource() {
-        String requestURI = request.getRequestURI();
-        String resourcePrefix = "/afx/slide/";
-
-        if (requestURI.contains(resourcePrefix)) {
-
-            if (requestURI.endsWith("slide.html")) {
-                result.setResult(slideConverter.getRendered());
-            } else {
-                requestURI = requestURI.replace(resourcePrefix, "");
-                Path path = directoryService.findPathInCurrentOrWorkDir(requestURI);
-                fileService.processFile(request, response, path);
-            }
-
-            return true;
-        }
-
-        return false;
-    }
-
-    private boolean executeLiveResource() {
-        String requestURI = request.getRequestURI();
-        String resourcePrefix = "/afx/live/";
-
-        if (requestURI.contains(resourcePrefix)) {
-
-            if (requestURI.endsWith("live.html")) {
-                result.setResult(current.currentEditorValue());
-            } else {
-                requestURI = requestURI.replace(resourcePrefix, "");
-
-                Path path = directoryService.findPathInRoot(requestURI);
-                fileService.processFile(request, response, path);
-            }
-
-            return true;
-        }
-
-        return false;
-    }
-
-    public boolean executeAfxResource() {
-
-        String requestURI = request.getRequestURI();
-        String resourcePrefix = "/afx/resource/";
-
-        if (requestURI.contains(resourcePrefix)) {
-
-            String finalUri = requestURI.replace(resourcePrefix, "");
-
-            if (finalUri.matches(".*\\.(asc|asciidoc|ad|adoc|md|markdown)$")) {
-
-                current.currentPath().ifPresent(path -> {
-
-                    Path ascFile = path.getParent().resolve(finalUri);
-
-                    threadService.runActionLater(() -> {
-                        tabService.addTab(ascFile);
-                    });
-
-                });
-            } else if (finalUri.endsWith("epub.html")) {
-
-            } else {
-                Path path = directoryService.findPathInConfigOrCurrentOrWorkDir(finalUri);
-                fileService.processFile(request, response, path);
-            }
-
-            return true;
-        }
-
-        return false;
-
-    }
 }

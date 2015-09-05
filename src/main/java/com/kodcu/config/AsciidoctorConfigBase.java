@@ -139,21 +139,30 @@ public abstract class AsciidoctorConfigBase extends ConfigurationBase {
         this.jsPlatform.set(jsPlatform);
     }
 
-    @Override
-    public VBox createForm() {
-        FXForm previewConfigForm = new FXFormBuilder<>()
+
+    public FXForm getConfigForm() {
+        FXForm configForm = new FXFormBuilder<>()
                 .resourceBundle(ResourceBundle.getBundle("asciidoctorConfig"))
                 .includeAndReorder("jsPlatform", "attributes").build();
+
+        return configForm;
+    }
+
+
+    @Override
+    public VBox createForm() {
+
+        FXForm configForm = getConfigForm();
 
         DefaultFactoryProvider previewConfigFormProvider = new DefaultFactoryProvider();
         previewConfigFormProvider.addFactory(new NamedFieldHandler("safe"), new ListChoiceBoxFactory(new ChoiceBox()));
         previewConfigFormProvider.addFactory(new NamedFieldHandler("attributes"), new TableFactory(new TableView()));
-        previewConfigForm.setEditorFactoryProvider(previewConfigFormProvider);
+        configForm.setEditorFactoryProvider(previewConfigFormProvider);
 
-        previewConfigForm.setSource(this);
+        configForm.setSource(this);
 
         VBox vBox = new VBox();
-        vBox.getChildren().add(previewConfigForm);
+        vBox.getChildren().add(configForm);
 
 
         saveButton.setOnAction(this::save);
@@ -201,7 +210,7 @@ public abstract class AsciidoctorConfigBase extends ConfigurationBase {
 
                 ObservableList<AttributesTable> attrList = FXCollections.observableArrayList();
 
-                if (Objects.nonNull(attributes)){
+                if (Objects.nonNull(attributes)) {
                     for (Map.Entry<String, JsonValue> attr : attributes.entrySet()) {
                         AttributesTable attributesTable = new AttributesTable();
                         attributesTable.setAttribute(attr.getKey());

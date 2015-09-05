@@ -1,12 +1,15 @@
 package com.kodcu.config;
 
+import com.dooapp.fxform.FXForm;
 import com.dooapp.fxform.annotation.NonVisual;
+import com.dooapp.fxform.builder.FXFormBuilder;
 import com.kodcu.controller.ApplicationController;
 import com.kodcu.service.ThreadService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.nio.file.Path;
+import java.util.ResourceBundle;
 
 /**
  * Created by usta on 19.07.2015.
@@ -22,6 +25,15 @@ public class OdfConfigBean extends AsciidoctorConfigBase {
         super(controller, threadService);
         this.controller = controller;
         this.threadService = threadService;
+    }
+
+    @Override
+    public FXForm getConfigForm() {
+        FXForm configForm = new FXFormBuilder<>()
+                .resourceBundle(ResourceBundle.getBundle("asciidoctorConfig"))
+                .includeAndReorder("attributes").build();
+
+        return configForm;
     }
 
     @Override

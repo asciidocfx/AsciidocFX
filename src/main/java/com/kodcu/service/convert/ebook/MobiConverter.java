@@ -1,6 +1,7 @@
 package com.kodcu.service.convert.ebook;
 
 import com.kodcu.config.EditorConfigBean;
+import com.kodcu.config.LocationConfigBean;
 import com.kodcu.controller.ApplicationController;
 import com.kodcu.other.Current;
 import com.kodcu.other.ExtensionFilters;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Component;
 import org.zeroturnaround.exec.ProcessExecutor;
 
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.function.Consumer;
 
@@ -34,10 +36,11 @@ public class MobiConverter implements DocumentConverter<String> {
     private final DirectoryService directoryService;
     private final IndikatorService indikatorService;
     private final EditorConfigBean editorConfigBean;
+    private final LocationConfigBean locationConfigBean;
 
     @Autowired
     public MobiConverter(final ApplicationController controller, final ThreadService threadService, final EpubConverter epubConverter,
-                         final Current current, final DirectoryService directoryService, final IndikatorService indikatorService, EditorConfigBean editorConfigBean) {
+                         final Current current, final DirectoryService directoryService, final IndikatorService indikatorService, EditorConfigBean editorConfigBean, LocationConfigBean locationConfigBean) {
         this.controller = controller;
         this.threadService = threadService;
         this.epubConverter = epubConverter;
@@ -45,6 +48,7 @@ public class MobiConverter implements DocumentConverter<String> {
         this.directoryService = directoryService;
         this.indikatorService = indikatorService;
         this.editorConfigBean = editorConfigBean;
+        this.locationConfigBean = locationConfigBean;
     }
 
     @Override
@@ -64,7 +68,7 @@ public class MobiConverter implements DocumentConverter<String> {
 
             final ProcessExecutor processExecutor = new ProcessExecutor();
             processExecutor.readOutput(true);
-            Path kindleGenPath = editorConfigBean.getKindlegen();
+            Path kindleGenPath = Paths.get(locationConfigBean.getKindlegen());
 
             try {
                 final String message = processExecutor

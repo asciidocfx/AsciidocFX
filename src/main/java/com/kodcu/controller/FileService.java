@@ -44,6 +44,17 @@ public class FileService {
         }
     }
 
+    public void processFile(AllController.Payload payload, Path path) {
+
+        HttpServletRequest request = payload.getRequest();
+        HttpServletResponse response = payload.getResponse();
+        try {
+            processRequest(request, response, path, "GET".equalsIgnoreCase(request.getMethod()));
+        } catch (Exception e) {
+            logger.debug(e.getMessage(), e);
+        }
+    }
+
     /**
      * Process the actual request.
      *
