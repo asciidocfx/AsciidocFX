@@ -6,7 +6,6 @@
     "header_footer":true,
     "attributes":{
         "env":"browser",
-        "env-browser":"true",
-        "apply-image-size":"true"
+        "env-browser":"true"
     }
 }

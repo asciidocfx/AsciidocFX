@@ -12,7 +12,6 @@
         "env":"browser",
         "env-browser":"true",
         "idprefix":"true",
-        "idseparator":"-",
-        "apply-image-size":"true"
+        "idseparator":"-"
     }
 }
