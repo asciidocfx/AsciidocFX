@@ -2,6 +2,9 @@ package com.kodcu.controller;
 
 import com.kodcu.config.LocationConfigBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.async.DeferredResult;
 
@@ -53,16 +56,21 @@ public class DynamicResource {
 
         Optional<String> httpOptional = resourceOptional
                 .map(String::trim)
-                .filter(e -> e.startsWith("httpOptional"));
+                .filter(e -> e.startsWith("http"));
 
         Optional<Path> pathOptional = resourceOptional
+                .filter(e -> !e.isEmpty())
+                .filter(e -> !e.contains(":"))
                 .map(String::trim)
                 .map(Paths::get)
                 .filter(Files::exists)
                 .filter(e -> !Files.isDirectory(e));
 
         if (httpOptional.isPresent()) {
-            payload.getDeferredResult().setResult("redirect:" + httpOptional.get());
+            payload.getDeferredResult().setResult(ResponseEntity
+                    .status(HttpStatus.FOUND)
+                    .header("Location", httpOptional.get())
+                    .body("Redirecting.."));
         } else if (pathOptional.isPresent()) {
             Path path = pathOptional.get();
             fileService.processFile(payload, path);

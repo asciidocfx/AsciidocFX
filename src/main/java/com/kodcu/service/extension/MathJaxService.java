@@ -3,6 +3,9 @@ package com.kodcu.service.extension;
 import com.kodcu.controller.ApplicationController;
 import com.kodcu.other.Current;
 import com.kodcu.service.ThreadService;
+import javafx.concurrent.Worker;
+import javafx.scene.web.WebEngine;
+import javafx.scene.web.WebView;
 import netscape.javascript.JSObject;
 import org.apache.batik.dom.svg.SAXSVGDocumentFactory;
 import org.apache.batik.transcoder.TranscoderInput;
@@ -12,6 +15,7 @@ import org.apache.batik.util.XMLResourceDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.w3c.dom.svg.SVGDocument;
 
@@ -36,6 +40,11 @@ public class MathJaxService {
     private final ApplicationController controller;
     private final Current current;
     private final ThreadService threadService;
+    private WebView webView;
+    private boolean initialized;
+
+    @Value("${application.mathjax.url}")
+    private String mathjaxUrl;
 
     @Autowired
     public MathJaxService(final ApplicationController controller, final Current current, ThreadService threadService) {
@@ -44,13 +53,57 @@ public class MathJaxService {
         this.threadService = threadService;
     }
 
+    private void initialize(Runnable... runnable) {
+
+        webEngine().getLoadWorker().stateProperty().addListener((observableValue1, state, state2) -> {
+            if (state2 == Worker.State.SUCCEEDED) {
+                JSObject window = getWindow();
+                if (window.getMember("afx").equals("undefined"))
+                    window.setMember("afx", controller);
+
+                if (!initialized) {
+                    for (Runnable run : runnable) {
+                        run.run();
+                    }
+                }
+
+                initialized = true;
+            }
+        });
+
+        this.load();
+    }
+
+    private void load() {
+        threadService.runActionLater(() -> {
+            webEngine().load(String.format(mathjaxUrl, controller.getPort()));
+        });
+    }
+
+    public void reload() {
+        this.load();
+    }
+
+    private WebEngine webEngine() {
+        return getWebView().getEngine();
+    }
+
     public void appendFormula(String formula, String imagesDir, String imageTarget) {
-        getWindow().call("appendFormula", new Object[]{formula, imagesDir, imageTarget});
+        threadService.runActionLater(() -> {
+
+            if (initialized) {
+                getWindow().call("appendFormula", formula, imagesDir, imageTarget);
+            } else {
+                initialize(() -> {
+                    getWindow().call("appendFormula", formula, imagesDir, imageTarget);
+                });
+            }
+
+        });
     }
 
     public JSObject getWindow() {
-        JSObject window = (JSObject) controller.getMathjaxView().getEngine().executeScript("window");
-        return window;
+        return (JSObject) webEngine().executeScript("window");
     }
 
     public void svgToPng(String imagesDir, String imageTarget, String svg, String formula, float width, float height) {
@@ -129,5 +182,13 @@ public class MathJaxService {
         } catch (Exception e) {
             logger.error("Problem occured while generating MathJax png", e);
         }
+    }
+
+    public WebView getWebView() {
+        if (Objects.isNull(webView)) {
+            webView = new WebView();
+            webView.setVisible(false);
+        }
+        return webView;
     }
 }

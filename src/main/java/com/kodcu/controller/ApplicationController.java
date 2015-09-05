@@ -40,6 +40,7 @@ import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.beans.property.*;
 import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -173,7 +174,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     public MenuItem copyTreeItem;
     public MenuItem copyListItem;
     public MenuButton leftButton;
-    private WebView mathjaxView;
     public Label htmlPro;
     public Label pdfPro;
     public Label ebookPro;
@@ -473,9 +473,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     @WebkitCall(from = "asciidoctor-math")
     public void appendFormula(String formula, String imagesDir, String imageTarget) {
-        threadService.runActionLater(() -> {
-            mathJaxService.appendFormula(formula, imagesDir, imageTarget);
-        });
+        mathJaxService.appendFormula(formula, imagesDir, imageTarget);
     }
 
     @WebkitCall(from = "mathjax.html")
@@ -754,22 +752,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         });
 
         lastRendered.addListener(lastRenderedChangeListener);
-
-        // MathJax
-        mathjaxView = new WebView();
-        mathjaxView.setVisible(false);
-        rootAnchor.getChildren().add(mathjaxView);
-        WebEngine mathjaxEngine = mathjaxView.getEngine();
-        mathjaxEngine.getLoadWorker().stateProperty().addListener((observableValue1, state, state2) -> {
-            JSObject window = (JSObject) mathjaxEngine.executeScript("window");
-            if (window.getMember("afx").equals("undefined"))
-                window.setMember("afx", this);
-        });
-
-        threadService.runActionLater(() -> {
-            mathjaxEngine.load(String.format(mathjaxUrl, port));
-        });
-
 
         htmlPane.webEngine().setOnAlert(event -> {
             if ("PREVIEW_LOADED".equals(event.getData())) {
@@ -1076,6 +1058,14 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                 }
             }
         });*/
+
+        locationConfigBean.mathjaxProperty().addListener((observable, oldValue, newValue) -> {
+            if (Objects.nonNull(newValue)) {
+                if (!newValue.equals(oldValue)) {
+                    mathJaxService.reload();
+                }
+            }
+        });
 
         ObservableList<SplitPane.Divider> dividers = splitPane.getDividers();
 
@@ -1956,17 +1946,15 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     @WebkitCall(from = "asciidoctor")
     public String readDefaultStylesheet() {
-        final CompletableFuture<String> completableFuture = new CompletableFuture();
 
-        completableFuture.runAsync(() -> {
-            threadService.runTaskLater(() -> {
-                Path defaultCssPath = configPath.resolve("data/stylesheets/asciidoctor-default.css");
-                String defaultCss = IOHelper.readFile(defaultCssPath);
-                completableFuture.complete(defaultCss);
-            });
-        });
+        Optional<Path> optional = Optional.ofNullable(locationConfigBean.getStylesheetDefault())
+                .filter((s) -> !s.isEmpty())
+                .map(Paths::get)
+                .filter(Files::exists);
 
-        return completableFuture.join();
+        Path path = optional.orElse(configPath.resolve("public/css/asciidoctor-default.css"));
+
+        return IOHelper.readFile(path);
     }
 
     @WebkitCall(from = "asciidoctor")
@@ -1975,22 +1963,14 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         if (uri.matches(".*?\\.(asc|adoc|ad|asciidoc|md|markdown)") && getIncludeAsciidocResource())
             return String.format("link:%s[]", uri);
 
-        final CompletableFuture<String> completableFuture = new CompletableFuture();
+        PathFinderService fileReader = applicationContext.getBean("pathFinder", PathFinderService.class);
+        Path path = fileReader.findPath(uri, parent);
 
-        completableFuture.runAsync(() -> {
-            threadService.runTaskLater(() -> {
-                PathFinderService fileReader = applicationContext.getBean("pathFinder", PathFinderService.class);
-                Path path = fileReader.findPath(uri, parent);
-
-                if (!Files.exists(path)) {
-                    completableFuture.complete("404");
-                } else {
-                    completableFuture.complete(IOHelper.readFile(path));
-                }
-            });
-        }, threadService.executor());
-
-        return completableFuture.join();
+        if (!Files.exists(path)) {
+            return "404";
+        } else {
+            return IOHelper.readFile(path);
+        }
     }
 
     @WebkitCall
@@ -2160,10 +2140,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     public TabPane getTabPane() {
         return tabPane;
-    }
-
-    public WebView getMathjaxView() {
-        return mathjaxView;
     }
 
     public ChangeListener<String> getLastRenderedChangeListener() {
