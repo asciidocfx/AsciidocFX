@@ -24,7 +24,7 @@ public class EpubResource {
         this.directoryService = directoryService;
     }
 
-    public boolean executeEpubResource(AllController.Payload payload) {
+    public void executeEpubResource(AllController.Payload payload) {
 
         if (payload.getRequestURI().contains("booki.epub")) {
             fileService.processFile(payload, current.getCurrentEpubPath());
@@ -32,7 +32,5 @@ public class EpubResource {
             Path path = directoryService.findPathInConfigOrCurrentOrWorkDir(payload.getFinalURI());
             fileService.processFile(payload, path);
         }
-
-        return true;
     }
 }

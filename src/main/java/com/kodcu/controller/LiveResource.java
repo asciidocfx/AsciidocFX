@@ -25,15 +25,13 @@ public class LiveResource {
     }
 
 
-    public boolean executeLiveResource(AllController.Payload payload) {
+    public void executeLiveResource(AllController.Payload payload) {
 
         if (payload.getRequestURI().endsWith("live.html")) {
-            payload.getDeferredResult().setResult(current.currentEditorValue());
+            payload.write(current.currentEditorValue());
         } else {
             Path path = directoryService.findPathInRoot(payload.getFinalURI());
             fileService.processFile(payload, path);
         }
-
-        return true;
     }
 }

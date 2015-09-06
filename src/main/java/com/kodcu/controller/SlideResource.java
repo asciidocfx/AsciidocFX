@@ -25,15 +25,13 @@ public class SlideResource {
     }
 
 
-    public boolean executeSlideResource(AllController.Payload payload) {
+    public void executeSlideResource(AllController.Payload payload) {
 
         if (payload.getRequestURI().endsWith("slide.html")) {
-            payload.getDeferredResult().setResult(slideConverter.getRendered());
+            payload.write(slideConverter.getRendered());
         } else {
             Path path = directoryService.findPathInCurrentOrWorkDir(payload.getFinalURI());
             fileService.processFile(payload, path);
         }
-
-        return true;
     }
 }

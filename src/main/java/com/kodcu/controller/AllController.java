@@ -3,14 +3,15 @@ package com.kodcu.controller;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.context.request.async.DeferredResult;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.function.Consumer;
 
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
@@ -43,10 +44,9 @@ public class AllController {
 
     @RequestMapping(value = {"/**/*.*", "*.*"}, method = {GET, HEAD}, produces = "*/*")
     @ResponseBody
-    public DeferredResult all(DeferredResult defenderResult, HttpServletRequest request, HttpServletResponse response) {
+    public void all(HttpServletRequest request, HttpServletResponse response) {
 
         Payload payload = new Payload();
-        payload.setDeferredResult(defenderResult);
         payload.setRequest(request);
         payload.setResponse(response);
         payload.setRequestURI(request.getRequestURI());
@@ -58,19 +58,12 @@ public class AllController {
                 .executeIf("/afx/slide/", slideResource::executeSlideResource)
                 .executeIf("/afx/epub/", epubResource::executeEpubResource);
 
-
-        if (!defenderResult.isSetOrExpired() && !response.isCommitted()) {
-            defenderResult.setResult(ResponseEntity.notFound());
-        }
-
-        return defenderResult;
     }
 
     class Payload {
         private String pattern;
         private String requestURI;
         private String finalURI;
-        private DeferredResult deferredResult;
         private HttpServletRequest request;
         private HttpServletResponse response;
 
@@ -98,14 +91,6 @@ public class AllController {
             this.finalURI = finalURI;
         }
 
-        public DeferredResult getDeferredResult() {
-            return deferredResult;
-        }
-
-        public void setDeferredResult(DeferredResult deferredResult) {
-            this.deferredResult = deferredResult;
-        }
-
         public HttpServletRequest getRequest() {
             return request;
         }
@@ -121,6 +106,27 @@ public class AllController {
         public void setResponse(HttpServletResponse response) {
             this.response = response;
         }
+
+        public void sendRedirect(String url) {
+            try {
+                response.sendRedirect(url);
+            } catch (IOException e) {
+                logger.error(e.getMessage(), e);
+            }
+        }
+
+        public Payload write(String content) {
+            try (PrintWriter writer = response.getWriter();) {
+                writer.write(content);
+            } catch (Exception e) {
+                logger.error(e.getMessage(), e);
+            }
+            return this;
+        }
+
+        public void setStatus(HttpStatus status) {
+            response.setStatus(status.value());
+        }
     }
 
 
@@ -134,10 +140,11 @@ public class AllController {
 
         public Router executeIf(String pattern, Consumer<Payload> consumer) {
 
-            payload.setPattern(pattern);
-            payload.setFinalURI(payload.getRequestURI().replace(pattern, ""));
-
             if (payload.getRequestURI().contains(pattern)) {
+
+                payload.setPattern(pattern);
+                payload.setFinalURI(payload.getRequestURI().replace(pattern, ""));
+
                 try {
                     consumer.accept(payload);
                 } catch (Exception e) {

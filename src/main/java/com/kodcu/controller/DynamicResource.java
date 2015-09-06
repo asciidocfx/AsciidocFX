@@ -2,8 +2,6 @@ package com.kodcu.controller;
 
 import com.kodcu.config.LocationConfigBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 import java.nio.file.Files;
@@ -30,7 +28,7 @@ public class DynamicResource {
         this.controller = controller;
     }
 
-    public boolean executeDynamicResource(AllController.Payload payload) {
+    public void executeDynamicResource(AllController.Payload payload) {
 
         if (payload.getRequestURI().contains("asciidoctor-default.css")) {
             Optional<String> stylesheetDefault = Optional.ofNullable(locationConfigBean.getStylesheetDefault());
@@ -44,8 +42,6 @@ public class DynamicResource {
         } else {
             generalResource.executeAfxResource(payload);
         }
-
-        return true;
     }
 
     private void processResource(AllController.Payload payload, Optional<String> resourceOptional) {
@@ -56,17 +52,14 @@ public class DynamicResource {
 
         Optional<Path> pathOptional = resourceOptional
                 .filter(e -> !e.isEmpty())
-                .filter(e -> !e.contains(":"))
+                .filter(e -> !e.startsWith("http"))
                 .map(String::trim)
                 .map(Paths::get)
                 .filter(Files::exists)
                 .filter(e -> !Files.isDirectory(e));
 
         if (httpOptional.isPresent()) {
-            payload.getDeferredResult().setResult(ResponseEntity
-                    .status(HttpStatus.FOUND)
-                    .header("Location", httpOptional.get())
-                    .body("Redirecting.."));
+            payload.sendRedirect(httpOptional.get());
         } else if (pathOptional.isPresent()) {
             Path path = pathOptional.get();
             fileService.processFile(payload, path);

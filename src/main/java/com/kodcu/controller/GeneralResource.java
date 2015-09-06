@@ -6,9 +6,9 @@ import com.kodcu.service.ui.TabService;
 import javafx.application.Platform;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
+import javax.servlet.http.HttpServletResponse;
 import java.nio.file.Path;
 
 /**
@@ -31,7 +31,7 @@ public class GeneralResource {
     }
 
 
-    public boolean executeAfxResource(AllController.Payload payload) {
+    public void executeAfxResource(AllController.Payload payload) {
 
         String finalURI = payload.getFinalURI();
         if (finalURI.matches(".*\\.(asc|asciidoc|ad|adoc|md|markdown)$")) {
@@ -45,12 +45,10 @@ public class GeneralResource {
                 });
 
             });
-            payload.getDeferredResult().setResult(ResponseEntity.status(HttpStatus.NO_CONTENT).body("No content"));
+            payload.setStatus(HttpStatus.NO_CONTENT);
         } else {
             Path path = directoryService.findPathInConfigOrCurrentOrWorkDir(finalURI);
             fileService.processFile(payload, path);
         }
-
-        return true;
     }
 }
