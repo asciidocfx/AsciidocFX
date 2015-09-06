@@ -14882,6 +14882,7 @@
         <xs:element ref="docbook:subscript"/>
         <xs:element ref="docbook:xref"/>
         <xs:element ref="docbook:link"/>
+        <xs:element ref="docbook:emphasis"/>
         <xs:element ref="docbook:olink"/>
         <xs:element ref="docbook:anchor"/>
         <xs:element ref="docbook:biblioref"/>
@@ -14927,6 +14928,7 @@
         <xs:element ref="docbook:indexterm"/>
         <xs:element ref="docbook:phrase"/>
         <xs:element ref="docbook:replaceable"/>
+        <xs:element ref="docbook:emphasis"/>
       </xs:choice>
       <xs:attribute name="role"/>
       <xs:attributeGroup ref="docbook:db.common.attributes"/>
