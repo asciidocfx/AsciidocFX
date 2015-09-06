@@ -101,6 +101,7 @@ import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.nio.file.StandardOpenOption.*;
 
@@ -314,8 +315,10 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     private SlidePane slidePane;
     private Path installationPath;
 
-    @Value("${application.log.root}")
     private String logPath;
+
+    @Value("${application.config.folder}")
+    private String configDirName;
 
     @Autowired
     private LiveReloadPane liveReloadPane;
@@ -1248,6 +1251,17 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             File jarFile = new File(codeSource.getLocation().toURI().getPath());
             installationPath = jarFile.toPath().getParent().getParent();
             configPath = installationPath.resolve("conf");
+
+            Optional<String> linuxHome = Optional.ofNullable(System.getenv("HOME"));
+            Optional<String> windowsHome = Optional.ofNullable(System.getenv("USERPROFILE"));
+
+            Stream.<Optional<String>>of(linuxHome, windowsHome)
+                    .filter(Optional::isPresent)
+                    .map(Optional::get)
+                    .map(Paths::get)
+                    .findFirst()
+                    .ifPresent(path -> logPath = path.resolve(configDirName).resolve("log").toString());
+
         } catch (URISyntaxException e) {
             logger.error("Problem occured while resolving conf and log paths", e);
         }
