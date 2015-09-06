@@ -2,9 +2,6 @@ var imageCacheNumber = Math.floor(Math.random() * (999999999999 - 2)) + 1;
 
 function clearImageCache() {
     imageCacheNumber = Math.floor(Math.random() * (999999999999 - 2)) + 1;
-    function getPathFromUrl(url) {
-        return url.split("?")[0];
-    }
 
     var content = $("#placeholder");
     content.find("img").each(function () {
@@ -48,3 +45,5 @@ function refreshUI(data) {
         }
     });
 }
+
+alert("PREVIEW_LOADED");
