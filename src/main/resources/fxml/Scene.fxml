@@ -80,7 +80,7 @@
                     <TabPane fx:id="workDirTabPane" side="BOTTOM" tabClosingPolicy="UNAVAILABLE" VBox.vgrow="ALWAYS">
                       <tabs>
                         <Tab text="Directory" >
-                          <TreeView fx:id="treeView" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minWidth="0.0" prefHeight="-1.0" prefWidth="-1.0" showRoot="true" VBox.vgrow="ALWAYS">
+                          <TreeView fx:id="fileSystemView" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minWidth="0.0" prefHeight="-1.0" prefWidth="-1.0" showRoot="true" VBox.vgrow="ALWAYS">
                             <contextMenu>
                               <ContextMenu>
                                 <items>
