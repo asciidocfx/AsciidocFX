@@ -52,7 +52,7 @@ public class FileBrowseService {
 
         controller.getWorkDirTabPane().getSelectionModel().selectFirst(); // fix
 
-        TreeView<Item> treeView = controller.getTreeView();
+        TreeView<Item> treeView = controller.getFileSystemView();
 
         int selectedIndex = treeView.getSelectionModel().getSelectedIndex();
         if (selectedIndex != -1)

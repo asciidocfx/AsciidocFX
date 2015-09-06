@@ -3,8 +3,6 @@ package com.kodcu.component;
 import com.kodcu.controller.ApplicationController;
 import com.kodcu.other.Current;
 import com.kodcu.service.ThreadService;
-import javafx.scene.control.ContextMenu;
-import javafx.scene.input.MouseButton;
 import netscape.javascript.JSObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,21 +21,6 @@ public class SlidePane extends ViewPanel {
     @Autowired
     public SlidePane(ThreadService threadService, ApplicationController controller, Current current) {
         super(threadService, controller, current);
-
-        ContextMenu contextMenu = new ContextMenu(MenuItemBuilt.item("Reload page").click(event -> {
-            super.webEngine().reload();
-            this.injectExtensions();
-        }));
-
-        contextMenu.setAutoHide(true);
-
-        this.getWebView().setOnMouseClicked(event -> {
-            if (event.getButton() == MouseButton.SECONDARY) {
-                contextMenu.show(this.getWebView(), event.getScreenX(), event.getScreenY());
-            } else {
-                contextMenu.hide();
-            }
-        });
     }
 
     public void replaceSlides(String rendered) {
@@ -50,13 +33,30 @@ public class SlidePane extends ViewPanel {
 
     }
 
-    public void flipThePage(String rendered) {
+    @Override
+    public void runScroller(String text) {
         String backendExt = backend + "Ext";
         try {
-            ((JSObject) getWindow().eval(backendExt)).call("flipCurrentPage", rendered);
+            ((JSObject) getWindow().eval(backendExt)).call("flipCurrentPage", text);
         } catch (Exception e) {
             logger.debug("{} is not found while flipping page, but don't worry.", backendExt, e);
         }
+    }
+
+    @Override
+    public void scrollByPosition(String text) {
+        if (stopScrolling.get())
+            return;
+
+        runScroller(text);
+    }
+
+    @Override
+    public void scrollByLine(String text) {
+        if (stopJumping.get())
+            return;
+
+        runScroller(text);
     }
 
     public String findRenderedSelection(String content) {

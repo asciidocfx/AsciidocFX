@@ -65,7 +65,6 @@ public class SlideConverter {
                     slidePane.replaceSlides(rendered);
                 });
             }
-            previewTab.setContent(slidePane);
 
             for (Consumer<String> step : nextStep) {
                 step.accept(rendered);

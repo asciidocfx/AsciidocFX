@@ -3,20 +3,34 @@ package com.kodcu.component;
 import com.kodcu.controller.ApplicationController;
 import com.kodcu.other.Current;
 import com.kodcu.service.ThreadService;
+import com.sun.javafx.scene.control.skin.ContextMenuContent;
 import javafx.application.Platform;
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.collections.ObservableList;
 import javafx.concurrent.Worker;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.CheckMenuItem;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.Separator;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
+import javafx.stage.Window;
 import netscape.javascript.JSObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 
+import java.util.Iterator;
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * Created by usta on 15.06.2015.
@@ -30,6 +44,9 @@ public abstract class ViewPanel extends AnchorPane {
     protected final Current current;
     protected final WebView webView;
 
+    protected final BooleanProperty stopScrolling = new SimpleBooleanProperty(false);
+    protected final BooleanProperty stopJumping = new SimpleBooleanProperty(false);
+
     @Value("${application.generic.url}")
     private String genericUrl;
 
@@ -38,9 +55,65 @@ public abstract class ViewPanel extends AnchorPane {
         this.controller = controller;
         this.current = current;
         this.webView = new WebView();
-        this.webView.setContextMenuEnabled(false);
         this.getChildren().add(webView);
         initializeMargins();
+        initializePreviewContextMenus();
+    }
+
+    private void initializePreviewContextMenus() {
+
+        CheckMenuItem stopRenderingItem = new CheckMenuItem("Stop rendering");
+        CheckMenuItem stopScrollingItem = new CheckMenuItem("Stop scrolling");
+        CheckMenuItem stopJumpingItem = new CheckMenuItem("Stop jumping");
+
+        stopRenderingItem.selectedProperty().addListener((observable, oldValue, newValue) -> {
+            controller.stopRenderingProperty().setValue(newValue);
+        });
+
+        stopScrollingItem.selectedProperty().addListener((observable, oldValue, newValue) -> {
+            stopScrolling.setValue(newValue);
+        });
+
+        stopJumpingItem.selectedProperty().addListener((observable, oldValue, newValue) -> {
+            stopJumping.setValue(newValue);
+        });
+
+        MenuItem refresh = MenuItemBuilt.item("Clear image cache").click(e -> {
+            webEngine().executeScript("clearImageCache()");
+        });
+
+        getWebView().setOnContextMenuRequested(event -> {
+
+            @SuppressWarnings("deprecation")
+            final Iterator<Window> windows = Window.impl_getWindows();
+
+            while (windows.hasNext()) {
+                final Window window = windows.next();
+
+                if (window instanceof ContextMenu) {
+
+                    Optional<Node> nodeOptional = Optional.ofNullable(window)
+                            .map(Window::getScene)
+                            .map(Scene::getRoot)
+                            .map(Parent::getChildrenUnmodifiable)
+                            .filter((nodes) -> !nodes.isEmpty())
+                            .map(e -> e.get(0))
+                            .map(e -> e.lookup(".context-menu"));
+
+                    if (nodeOptional.isPresent()) {
+                        ObservableList<Node> childrenUnmodifiable = ((Parent) nodeOptional.get())
+                                .getChildrenUnmodifiable();
+                        ContextMenuContent cmc = (ContextMenuContent) childrenUnmodifiable.get(0);
+
+                        // add new item:
+                        cmc.getItemsContainer().getChildren().add(new Separator());
+                        cmc.getItemsContainer().getChildren().add(cmc.new MenuItemContainer(stopRenderingItem));
+                        cmc.getItemsContainer().getChildren().add(cmc.new MenuItemContainer(stopScrollingItem));
+                        cmc.getItemsContainer().getChildren().add(cmc.new MenuItemContainer(stopJumpingItem));
+                    }
+                }
+            }
+        });
     }
 
     protected void initializeMargins() {
@@ -60,6 +133,9 @@ public abstract class ViewPanel extends AnchorPane {
 
     public void onscroll(Object pos, Object max) {
 
+        if (stopScrolling.get())
+            return;
+
         if (Platform.isFxApplicationThread()) {
             runScrolling(pos, max);
         } else {
@@ -69,6 +145,8 @@ public abstract class ViewPanel extends AnchorPane {
         }
 
     }
+
+    public abstract void runScroller(String text);
 
     private void runScrolling(Object pos, Object max) {
         if (Objects.isNull(pos) || Objects.isNull(max))
@@ -158,4 +236,7 @@ public abstract class ViewPanel extends AnchorPane {
         return (JSObject) webEngine().executeScript("window");
     }
 
+    public abstract void scrollByPosition(String text);
+
+    public abstract void scrollByLine(String text);
 }

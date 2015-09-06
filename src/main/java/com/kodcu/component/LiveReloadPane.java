@@ -21,13 +21,27 @@ public class LiveReloadPane extends ViewPanel {
     @Autowired
     public LiveReloadPane(ThreadService threadService, ApplicationController controller, Current current) {
         super(threadService, controller, current);
-        this.webView.setContextMenuEnabled(true);
     }
 
     @Override
     public void browse() {
         controller.getHostServices()
                 .showDocument(webEngine().getLocation());
+    }
+
+    @Override
+    public void runScroller(String text) {
+        // no-op
+    }
+
+    @Override
+    public void scrollByPosition(String text) {
+        // no-op
+    }
+
+    @Override
+    public void scrollByLine(String text) {
+        // no-op
     }
 
     public void initializeDiffReplacer() {
@@ -47,4 +61,6 @@ public class LiveReloadPane extends ViewPanel {
             getWindow().call("updateDomdom", current.currentEditorValue());
         });
     }
+
+
 }

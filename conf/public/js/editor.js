@@ -49,7 +49,7 @@ var updateScrollPosition = function (scroll) {
         lastEditorRow = range.start.row;
 
         var blockText = editor.session.getTextRange(range);
-        afx.scrollToCurrentLine(blockText);
+        afx.scrollByPosition(blockText);
     }
     else {
         lastEditorRow = row;
@@ -59,7 +59,7 @@ var updateScrollPosition = function (scroll) {
         if (lineText.trim() == "")
             return;
 
-        afx.scrollToCurrentLine(lineText);
+        afx.scrollByPosition(lineText);
     }
 };
 
@@ -118,7 +118,7 @@ editor.getSession().selection.on('changeCursor', function (e) {
         lastEditorRow = range.start.row;
 
         var blockText = editor.session.getTextRange(range);
-        afx.scrollToCurrentLine(blockText);
+        afx.scrollByLine(blockText);
     }
     else {
         lastEditorRow = row;
@@ -128,7 +128,7 @@ editor.getSession().selection.on('changeCursor', function (e) {
         if (lineText.trim() == "")
             return;
 
-        afx.scrollToCurrentLine(lineText);
+        afx.scrollByLine(lineText);
     }
 });
 

@@ -7,8 +7,8 @@ import com.kodcu.config.PreviewConfigBean;
 import com.kodcu.controller.ApplicationController;
 import com.kodcu.other.Current;
 import com.kodcu.service.ThreadService;
-import javafx.scene.web.WebView;
-import netscape.javascript.JSObject;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -38,6 +38,7 @@ public class HtmlPane extends ViewPanel {
         this.threadService = threadService;
     }
 
+
     public void refreshUI(String content) {
         threadService.runActionLater(() -> {
             this.setMember("lastRenderedValue", content);
@@ -51,21 +52,31 @@ public class HtmlPane extends ViewPanel {
         });
     }
 
-    public WebView getWebView() {
-        return webView;
-    }
-
-    public JSObject getWindow() {
-        return (JSObject) webEngine().executeScript("window");
-    }
-
     @Override
     public void browse() {
         controller.getHostServices()
                 .showDocument(String.format(browseUrl, controller.getPort()));
     }
 
-    public void runScroller(String renderedSelection) {
-        getWindow().call("runScroller", renderedSelection);
+    @Override
+    public void runScroller(String text) {
+        getWindow().call("runScroller", text);
+    }
+
+    @Override
+    public void scrollByPosition(String text) {
+        if (stopScrolling.get())
+            return;
+
+        runScroller(text);
+    }
+
+    @Override
+    public void scrollByLine(String text) {
+
+        if (stopJumping.get())
+            return;
+
+        runScroller(text);
     }
 }

@@ -77,6 +77,21 @@ public class AsciidocWebkitConverter extends ViewPanel implements AsciidocConver
     }
 
     @Override
+    public void runScroller(String text) {
+        // no-op
+    }
+
+    @Override
+    public void scrollByPosition(String text) {
+        // no-op
+    }
+
+    @Override
+    public void scrollByLine(String text) {
+        // no-op
+    }
+
+    @Override
     public void browse() {
         controller.getHostServices()
                 .showDocument(String.format(indexUrl, controller.getPort()));

@@ -261,9 +261,15 @@ public class EditorPane extends AnchorPane {
 
     public void initializeEditorContextMenus() {
 
+        webView.setContextMenuEnabled(false);
+
         ContextMenu menu = new ContextMenu();
 
-        MenuItem copy = MenuItemBuilt.item("Copy").click(event1 -> {
+        MenuItem cut = MenuItemBuilt.item("Cut").click(e -> {
+            controller.cutCopy(editorSelection());
+            execCommand("cut");
+        });
+        MenuItem copy = MenuItemBuilt.item("Copy").click(e -> {
             controller.cutCopy(editorSelection());
         });
         MenuItem paste = MenuItemBuilt.item("Paste").click(e -> {
@@ -286,7 +292,7 @@ public class EditorPane extends AnchorPane {
         getWebView().setOnMouseClicked(event -> {
 
             if (menu.getItems().size() == 0) {
-                menu.getItems().addAll(copy, paste, pasteRaw,
+                menu.getItems().addAll(cut,copy, paste, pasteRaw,
                         markdownToAsciidoc,
                         indexSelection
                 );

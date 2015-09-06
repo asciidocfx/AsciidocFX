@@ -20,7 +20,7 @@ public class MenuItemBuilt {
 
     public static MenuItemBuilt item(String name) {
         MenuItem item = new MenuItem();
-        item.setGraphic(new Label(name));
+        item.setText(name);
         return new MenuItemBuilt(item);
     }
 

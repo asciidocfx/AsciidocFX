@@ -29,9 +29,11 @@ import com.kodcu.service.extension.TreeService;
 import com.kodcu.service.extension.chart.ChartProvider;
 import com.kodcu.service.shortcut.ShortcutProvider;
 import com.kodcu.service.table.AsciidocTableController;
-import com.kodcu.service.ui.*;
+import com.kodcu.service.ui.FileBrowseService;
+import com.kodcu.service.ui.IndikatorService;
+import com.kodcu.service.ui.TabService;
+import com.kodcu.service.ui.TooltipTimeFixService;
 import com.sun.javafx.application.HostServicesDelegate;
-import com.sun.webkit.dom.DocumentFragmentImpl;
 import de.jensd.fx.fontawesome.AwesomeDude;
 import de.jensd.fx.fontawesome.AwesomeIcon;
 import javafx.animation.KeyFrame;
@@ -60,7 +62,6 @@ import javafx.scene.control.cell.TextFieldTreeCell;
 import javafx.scene.input.*;
 import javafx.scene.layout.*;
 import javafx.scene.text.Text;
-import javafx.scene.web.WebHistory;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -133,7 +134,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     public TabPane tabPane;
     public SplitPane splitPane;
     public SplitPane splitPaneVertical;
-    public TreeView<Item> treeView;
+    public TreeView<Item> fileSystemView;
     public Label workingDirButton;
     public Label goHomeLabel;
     public Label refreshLabel;
@@ -709,7 +710,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                 this.externalBrowse();
         });
 
-        treeView.setCellFactory(param -> {
+        fileSystemView.setCellFactory(param -> {
             TreeCell<Item> cell = new TextFieldTreeCell<Item>();
             cell.setOnDragDetected(event -> {
                 Dragboard db = cell.startDragAndDrop(TransferMode.ANY);
@@ -749,7 +750,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
         openFileTreeItem.setOnAction(event -> {
 
-            ObservableList<TreeItem<Item>> selectedItems = treeView.getSelectionModel().getSelectedItems();
+            ObservableList<TreeItem<Item>> selectedItems = fileSystemView.getSelectionModel().getSelectedItems();
 
             selectedItems.stream()
                     .map(e -> e.getValue())
@@ -764,7 +765,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
         deletePathItem.setOnAction(event -> {
 
-            ObservableList<TreeItem<Item>> selectedItems = treeView.getSelectionModel().getSelectedItems();
+            ObservableList<TreeItem<Item>> selectedItems = fileSystemView.getSelectionModel().getSelectedItems();
 
             AlertHelper.deleteAlert().ifPresent(btn -> {
                 if (btn == ButtonType.YES)
@@ -818,10 +819,10 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             this.copyFile(path);
         });
 
-        treeView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+        fileSystemView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 
-        treeView.setOnMouseClicked(event -> {
-            TreeItem<Item> selectedItem = treeView.getSelectionModel().getSelectedItem();
+        fileSystemView.setOnMouseClicked(event -> {
+            TreeItem<Item> selectedItem = fileSystemView.getSelectionModel().getSelectedItem();
             if (Objects.isNull(selectedItem))
                 return;
 
@@ -832,9 +833,13 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                     tabService.previewDocument(selectedPath);
         });
 
-        treeView.getSelectionModel().getSelectedIndices().addListener((ListChangeListener<? super Integer>) p -> {
+        fileSystemView.getSelectionModel().getSelectedIndices().addListener((ListChangeListener<? super Integer>) p -> {
 
-            ObservableList<TreeItem<Item>> selectedItems = treeView.getSelectionModel().getSelectedItems();
+            ObservableList<TreeItem<Item>> selectedItems = fileSystemView.getSelectionModel().getSelectedItems();
+
+            if (Objects.isNull(selectedItems))
+                return;
+
             if (selectedItems.size() > 1) {
                 renameFile.setVisible(false);
                 newMenu.setVisible(false);
@@ -866,60 +871,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             }
         });
 
-        CheckMenuItem renderingCheckbox = new CheckMenuItem();
-        renderingCheckbox.setGraphic(new Label("Stop rendering"));
-        stopRendering.bind(renderingCheckbox.selectedProperty());
-
-        ContextMenu previewContextMenu = new ContextMenu(
-                MenuItemBuilt.item("Go back").click(event -> {
-                    WebHistory history = htmlPane.webEngine().getHistory();
-                    if (history.getCurrentIndex() != 0)
-                        history.go(-1);
-
-                }),
-                MenuItemBuilt.item("Go forward").click(event -> {
-                    WebHistory history = htmlPane.webEngine().getHistory();
-                    if (history.getCurrentIndex() + 1 != history.getEntries().size())
-                        history.go(+1);
-                }),
-                new SeparatorMenuItem(),
-                renderingCheckbox,
-                new SeparatorMenuItem(),
-                MenuItemBuilt.item("Copy Html").click(event -> {
-                    DocumentFragmentImpl selectionDom = (DocumentFragmentImpl) htmlPane.webEngine().executeScript("window.getSelection().getRangeAt(0).cloneContents()");
-                    ClipboardContent content = new ClipboardContent();
-                    content.putHtml(XMLHelper.nodeToString(selectionDom, true));
-                    clipboard.setContent(content);
-                }),
-                MenuItemBuilt.item("Copy Text").click(event -> {
-                    String selection = (String) htmlPane.webEngine().executeScript("window.getSelection().toString()");
-                    ClipboardContent content = new ClipboardContent();
-                    content.putString(selection);
-                    clipboard.setContent(content);
-                }),
-                MenuItemBuilt.item("Copy Source").click(event -> {
-                    DocumentFragmentImpl selectionDom = (DocumentFragmentImpl) htmlPane.webEngine().executeScript("window.getSelection().getRangeAt(0).cloneContents()");
-                    ClipboardContent content = new ClipboardContent();
-                    content.putString(XMLHelper.nodeToString(selectionDom, true));
-                    clipboard.setContent(content);
-                }),
-                new SeparatorMenuItem(),
-                MenuItemBuilt.item("Refresh").click(event -> {
-                    htmlPane.webEngine().executeScript("clearImageCache()");
-                }),
-                MenuItemBuilt.item("Reload").click(event -> {
-                    htmlPane.webEngine().reload();
-                })
-        );
-        previewContextMenu.setAutoHide(true);
-        htmlPane.getWebView().setOnMouseClicked(event -> {
-            if (event.getButton() == MouseButton.SECONDARY) {
-                previewContextMenu.show(htmlPane.getWebView(), event.getScreenX(), event.getScreenY());
-            } else {
-                previewContextMenu.hide();
-            }
-        });
-
         tabService.initializeTabChangeListener(tabPane);
 
         newDoc(null);
@@ -936,6 +887,14 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     private void initializeNashornConverter() {
         nashornEngineConverter.initialize();
+    }
+
+    public boolean getStopRendering() {
+        return stopRendering.get();
+    }
+
+    public BooleanProperty stopRenderingProperty() {
+        return stopRendering;
     }
 
     private void waiterLoop() {
@@ -1207,7 +1166,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         favoriteDirMenu.getItems().addAll(new SeparatorMenuItem(), MenuItemBuilt
                 .item("Clear List")
                 .click(event -> {
-                    ObservableList<TreeItem<Item>> selectedItems = treeView.getSelectionModel().getSelectedItems();
+                    ObservableList<TreeItem<Item>> selectedItems = fileSystemView.getSelectionModel().getSelectedItems();
                     if (selectedItems.size() == 1) {
                         Path path = selectedItems.get(0).getValue().getPath();
                         boolean isDirectory = Files.isDirectory(path);
@@ -1708,22 +1667,33 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     }
 
     @WebkitCall(from = "editor")
-    public void scrollToCurrentLine(String text) {
-
-        if (previewTab.getContent() == slidePane) {
-            slidePane.flipThePage(asciidocWebkitConverter.findRenderedSelection(text)); // slide
-        }
-
-        if (previewTab.getContent() == htmlPane) {
-            threadService.runActionLater(() -> {
-                try {
-                    htmlPane.runScroller(asciidocWebkitConverter.findRenderedSelection(text));
-                } catch (Exception e) {
-                    logger.debug(e.getMessage(), e);
+    public void scrollByLine(String text) {
+        threadService.runActionLater(() -> {
+            try {
+                Node content = previewTab.getContent();
+                if (content instanceof ViewPanel) {
+                    String selection = asciidocWebkitConverter.findRenderedSelection(text);
+                    ((ViewPanel) content).scrollByLine(selection);
                 }
-            });
-        }
+            } catch (Exception e) {
+                logger.debug(e.getMessage(), e);
+            }
+        });
+    }
 
+    @WebkitCall(from = "editor")
+    public void scrollByPosition(String text) {
+        threadService.runActionLater(() -> {
+            try {
+                Node content = previewTab.getContent();
+                if (content instanceof ViewPanel) {
+                    String selection = asciidocWebkitConverter.findRenderedSelection(text);
+                    ((ViewPanel) content).scrollByPosition(selection);
+                }
+            } catch (Exception e) {
+                logger.debug(e.getMessage(), e);
+            }
+        });
     }
 
     @WebkitCall(from = "asciidoctor-uml")
@@ -1851,6 +1821,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                 if (result.isBackend("revealjs") || result.isBackend("deckjs")) {
                     slidePane.setBackend(result.getBackend());
                     slideConverter.convert(result.getRendered());
+                    previewTab.setChild(slidePane);
                 }
 
             } else if ("html".equalsIgnoreCase(mode)) {
@@ -2087,8 +2058,8 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         return splitPane;
     }
 
-    public TreeView<Item> getTreeView() {
-        return treeView;
+    public TreeView<Item> getFileSystemView() {
+        return fileSystemView;
     }
 
     public void setHostServices(HostServicesDelegate hostServices) {
@@ -2192,7 +2163,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
             if (result.matches(DialogBuilder.FOLDER_NAME_REGEX)) {
 
-                Path path = treeView.getSelectionModel().getSelectedItem()
+                Path path = fileSystemView.getSelectionModel().getSelectedItem()
                         .getValue().getPath();
 
                 Path folderPath = path.resolve(result);
@@ -2223,7 +2194,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
             if (result.matches(DialogBuilder.FILE_NAME_REGEX)) {
 
-                Path path = treeView.getSelectionModel().getSelectedItem()
+                Path path = fileSystemView.getSelectionModel().getSelectedItem()
                         .getValue().getPath();
 
                 IOHelper.writeToFile(path.resolve(result), "");
@@ -2247,7 +2218,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
         RenameDialog dialog = RenameDialog.create();
 
-        Path path = treeView.getSelectionModel().getSelectedItem()
+        Path path = fileSystemView.getSelectionModel().getSelectedItem()
                 .getValue().getPath();
 
         dialog.getEditor().setText(path.getFileName().toString());
@@ -2431,7 +2402,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
             if (folderName.matches(DialogBuilder.FOLDER_NAME_REGEX)) {
 
-                Path path = treeView.getSelectionModel().getSelectedItem()
+                Path path = fileSystemView.getSelectionModel().getSelectedItem()
                         .getValue().getPath();
 
                 Path folderPath = path.resolve(folderName);

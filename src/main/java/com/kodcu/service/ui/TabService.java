@@ -183,7 +183,7 @@ public class TabService {
 
 
     public Path getSelectedTabPath() {
-        TreeItem<Item> selectedItem = controller.getTreeView().getSelectionModel().getSelectedItem();
+        TreeItem<Item> selectedItem = controller.getFileSystemView().getSelectionModel().getSelectedItem();
         Item value = selectedItem.getValue();
         Path path = value.getPath();
         return path;
