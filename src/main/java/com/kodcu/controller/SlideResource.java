@@ -28,6 +28,7 @@ public class SlideResource {
     public void executeSlideResource(AllController.Payload payload) {
 
         if (payload.getRequestURI().endsWith("slide.html")) {
+            payload.getResponse().setContentType("text/html;charset=UTF-8");
             payload.write(slideConverter.getRendered());
         } else {
             Path path = directoryService.findPathInCurrentOrWorkDir(payload.getFinalURI());

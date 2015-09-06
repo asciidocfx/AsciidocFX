@@ -28,6 +28,7 @@ public class LiveResource {
     public void executeLiveResource(AllController.Payload payload) {
 
         if (payload.getRequestURI().endsWith("live.html")) {
+            payload.getResponse().setContentType("text/html;charset=UTF-8");
             payload.write(current.currentEditorValue());
         } else {
             Path path = directoryService.findPathInRoot(payload.getFinalURI());
