@@ -192,13 +192,14 @@ function setWrapLimitRange(wrapLimitRange) {
 }
 
 function setEditorValue(content) {
-
-    editor.setValue(content);
-    editor.clearSelection();
-    editor.session.setScrollTop(-100);
+    var pos;
+    if (afterFirstChange)
+        pos = editor.session.selection.toJSON();
+    editor.setValue(content, 1);
+    if (afterFirstChange)
+        editor.session.selection.fromJSON(pos);
     editor.focus();
     afterFirstChange = true;
-
 }
 
 var emmetRegex = /^ace\/mode\/(css|less|scss|sass|stylus|html|php|twig|ejs|handlebars)$/;
@@ -256,7 +257,7 @@ function rerender() {
 }
 
 function editorMode() {
-    var mode = editor.getSession().getMode().$id;
+    var mode = editor.session.$modeId;
     return mode.replace("ace/mode/", "");
 }
 
