@@ -520,10 +520,10 @@ editor.commands.addCommand({
 });
 
 editor.commands.addCommand({
-    name: 'highlight-selected',
+    name: 'add-heading',
     bindKey: {win: 'Ctrl-H', mac: 'Command-H'},
     exec: function () {
-        afx.getShortcutProvider().getProvider().addHighlight();
+        afx.getShortcutProvider().getProvider().addHeading();
     },
     readOnly: true
 });
