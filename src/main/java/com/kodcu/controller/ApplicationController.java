@@ -34,6 +34,7 @@ import com.kodcu.service.ui.IndikatorService;
 import com.kodcu.service.ui.TabService;
 import com.kodcu.service.ui.TooltipTimeFixService;
 import com.sun.javafx.application.HostServicesDelegate;
+import com.sun.javafx.stage.StageHelper;
 import de.jensd.fx.fontawesome.AwesomeDude;
 import de.jensd.fx.fontawesome.AwesomeIcon;
 import javafx.animation.KeyFrame;
@@ -49,7 +50,6 @@ import javafx.collections.transformation.FilteredList;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
-import javafx.event.EventType;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
@@ -93,8 +93,8 @@ import java.nio.file.Paths;
 import java.nio.file.attribute.PosixFileAttributeView;
 import java.nio.file.attribute.PosixFilePermission;
 import java.security.CodeSource;
-import java.time.Instant;
 import java.util.*;
+import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiPredicate;
@@ -542,7 +542,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         initializePosixPermissions();
         initializeNashornConverter();
 
-        threadService.runTaskLater(() -> {
+        Future<?> runTaskLater = threadService.runTaskLater(() -> {
             while (true) {
                 try {
                     renderLoop();
@@ -905,9 +905,9 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         Integer integer = Optional.ofNullable(lastTupleReference.get())
                 .map(Tuple::getKey)
                 .map(String::length)
-                .map(e -> (e / 8))
-                .filter(e -> (e > 100))
-                .orElse(100);
+                .map(e -> (e / 10))
+                .filter(e -> (e < 2000))
+                .orElse(2000);
 
         threadService.sleep(integer);
     }
@@ -935,7 +935,42 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         }
     }
 
-    private void initializeAutoSaver() {
+    public void saveAllTabs() {
+        ObservableList<Tab> tabs = tabPane.getTabs();
+        for (Tab tab : tabs) {
+            MyTab myTab = (MyTab) tab;
+            if (!myTab.isNew()) {
+                myTab.saveDoc();
+            }
+        }
+    }
+
+    public void loadAllTabs() {
+        ObservableList<Tab> tabs = tabPane.getTabs();
+        for (Tab tab : tabs) {
+            MyTab myTab = (MyTab) tab;
+            if (!myTab.isNew()) {
+                myTab.reload();
+            }
+        }
+    }
+
+    public void initializeSaveOnBlur() {
+
+        stage.focusedProperty().addListener((observable, oldValue, newValue) -> {
+            if (StageHelper.getStages().size() == 1) {
+                if (!newValue) {
+                    saveAllTabs();
+                } else {
+                    loadAllTabs();
+                }
+            }
+        });
+
+    }
+
+/*    public void initializeAutoSaver() {
+
         final AtomicReference<Instant> currentTime = new AtomicReference<>(Instant.now());
 
         stage.addEventFilter(EventType.ROOT, event -> {
@@ -948,18 +983,16 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             public void run() {
                 if (currentTime.get().plusSeconds(3).isBefore(Instant.now())) {
                     currentTime.set(Instant.now());
-                    ObservableList<Tab> tabs = tabPane.getTabs();
 
-                    for (Tab tab : tabs) {
-                        MyTab myTab = (MyTab) tab;
-                        if (!myTab.isNew()) {
-                            myTab.saveDoc();
-                        }
+                    if (!stage.isFocused()) {
+                        return;
                     }
+
+                    saveAllTabs();
                 }
             }
         }, 0, 500);
-    }
+    }*/
 
     private void bindConfigurations() {
 

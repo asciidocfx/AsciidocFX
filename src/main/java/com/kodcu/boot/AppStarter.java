@@ -131,6 +131,9 @@ public class AppStarter extends Application {
         controller.setAsciidocTableStage(asciidocTableStage);
         controller.setMarkdownTableStage(markdownTableStage);
 
+//        controller.initializeAutoSaver();
+        controller.initializeSaveOnBlur();
+
         stage.setScene(scene);
         stage.show();
 
@@ -172,12 +175,20 @@ public class AppStarter extends Application {
 
         scene.getWindow().setOnCloseRequest(event -> {
             ObservableList<Tab> tabs = FXCollections.observableArrayList(controller.getTabPane().getTabs());
-            for (Tab tab : tabs) {
-                MyTab myTab = (MyTab) tab;
+
+            tabs.stream().map(t -> (MyTab) t).sorted((mo1, mo2) -> {
+                if (mo1.isNew() && !mo2.isNew())
+                    return -1;
+                else if (mo2.isNew() && !mo1.isNew()) {
+                    return 1;
+                }
+                return 0;
+            }).forEach(myTab -> {
                 ButtonType close = myTab.close();
                 if (close == ButtonType.CANCEL)
                     event.consume();
-            }
+            });
+
         });
     }
 

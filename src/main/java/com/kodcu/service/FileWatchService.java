@@ -73,17 +73,15 @@ public class FileWatchService {
                         if (kind == ENTRY_MODIFY && event.count() == 1) {
                             WatchEvent<Path> ev = (WatchEvent<Path>) event;
                             Path modifiedPath = path.resolve(ev.context());
-                            threadService.runActionLater(() -> {
-                                ObservableList<Tab> tabs = controller.getTabPane().getTabs();
-                                for (Tab tab : tabs) {
-                                    MyTab myTab = (MyTab) tab;
-                                    if (modifiedPath.equals(myTab.getPath())) {
-                                        myTab.askReloadDocument("This document is changed externally. Do you want to reload it?");
-                                        break;
-                                    }
+                            ObservableList<Tab> tabs = controller.getTabPane().getTabs();
+                            for (Tab tab : tabs) {
+                                MyTab myTab = (MyTab) tab;
+                                if (modifiedPath.equals(myTab.getPath())) {
+                                    myTab.reload();
+                                    break;
                                 }
-                                watckKey.reset();
-                            });
+                            }
+                            watckKey.reset();
                         } else if (kind == ENTRY_MODIFY && event.count() > 1) {
                             watckKey.reset();
                         } else {

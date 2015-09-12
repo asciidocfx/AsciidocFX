@@ -24,13 +24,14 @@ import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.attribute.FileTime;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
-import static java.nio.file.StandardOpenOption.CREATE;
-import static java.nio.file.StandardOpenOption.TRUNCATE_EXISTING;
+import static java.nio.file.StandardOpenOption.*;
 
 /**
  * Created by usta on 17.12.2014.
@@ -106,13 +107,23 @@ public class MyTab extends Tab {
             return ButtonType.YES;
         }
 
-        Optional<ButtonType> alert = AlertHelper.saveAlert();
-        ButtonType type = alert.orElse(ButtonType.CANCEL);
+        if (isNew()) {
+            Optional<ButtonType> alert = AlertHelper.saveAlert();
+            ButtonType type = alert.orElse(ButtonType.CANCEL);
 
-        if (type == ButtonType.YES) {
-            closeIt();
+            if (type == ButtonType.YES) {
+                closeIt();
+            }
+            return type;
+        } else {
+            saveDoc();
+            if (isSaved()) {
+                closeIt();
+                return ButtonType.YES;
+            }
         }
-        return type;
+
+        return ButtonType.CANCEL;
     }
 
     private boolean isDirty() {
@@ -135,7 +146,49 @@ public class MyTab extends Tab {
         return tabText.contains(" *");
     }
 
-    public void saveDoc() {
+    public synchronized void reload() {
+
+        Optional.ofNullable(getPath())
+                .filter(Files::exists)
+                .ifPresent(path -> {
+                    FileTime latestModifiedTime = IOHelper.getLastModifiedTime(path);
+                    if (Objects.nonNull(latestModifiedTime) && Objects.nonNull(getLastModifiedTime())) {
+                        if (latestModifiedTime.compareTo(getLastModifiedTime()) > 0) {
+
+                            if (isChanged()) {
+                                this.select();
+                                ButtonType buttonType = AlertHelper.conflictAlert(getPath()).orElse(ButtonType.CANCEL);
+
+                                if (buttonType != AlertHelper.LOAD_FILE_SYSTEM_CHANGES) {
+                                    return;
+                                }
+
+                            }
+
+                            load();
+                        }
+                    } else {
+                        logger.warn("Will not reload");
+                    }
+                });
+    }
+
+    private void load() {
+        FileTime latestModifiedTime = IOHelper.getLastModifiedTime(getPath());
+        setLastModifiedTime(latestModifiedTime);
+        String content = IOHelper.readFile(getPath());
+        threadService.runActionLater(() -> {
+            editorPane.setEditorValue(content);
+            this.select();
+            setTabText(getPath().getFileName().toString());
+        });
+    }
+
+    public synchronized void saveDoc() {
+
+        if (!isNew() && !isChanged()) {
+            return;
+        }
 
         if (!Platform.isFxApplicationThread()) {
             CompletableFuture completableFuture = new CompletableFuture();
@@ -152,6 +205,27 @@ public class MyTab extends Tab {
             }, threadService.executor());
 
             completableFuture.join();
+            return;
+        }
+
+        logger.warn("Entered Save");
+
+        FileTime latestModifiedTime = IOHelper.getLastModifiedTime(getPath());
+
+        if (Objects.nonNull(latestModifiedTime) && Objects.nonNull(getLastModifiedTime())) {
+            if (latestModifiedTime.compareTo(getLastModifiedTime()) > 0) {
+
+                this.select();
+                ButtonType buttonType = AlertHelper.conflictAlert(getPath()).orElse(ButtonType.CANCEL);
+
+                if (buttonType == ButtonType.CANCEL) {
+                    return;
+                }
+
+                if (buttonType == AlertHelper.LOAD_FILE_SYSTEM_CHANGES) {
+                    load();
+                }
+            }
         }
 
         if (Objects.isNull(getPath())) {
@@ -164,11 +238,15 @@ public class MyTab extends Tab {
             setTabText(file.toPath().getFileName().toString());
         }
 
-        Optional<IOException> exception =
-                IOHelper.writeToFile(getPath(), editorPane.getEditorValue(), TRUNCATE_EXISTING, CREATE);
+        String editorValue = editorPane.getEditorValue();
+        Optional<Exception> exception =
+                IOHelper.writeToFile(getPath(), editorValue, TRUNCATE_EXISTING, CREATE, SYNC);
 
-        if (exception.isPresent())
+        setLastModifiedTime(IOHelper.getLastModifiedTime(getPath()));
+
+        if (exception.isPresent()) {
             return;
+        }
 
         setTabText(getPath().getFileName().toString());
 
@@ -227,50 +305,22 @@ public class MyTab extends Tab {
         return isAsciidoc() ? "toAsciidoc" : "toMarkdown";
     }
 
-    public void reloadDocument(String alertMessage) {
-
-        if (Objects.nonNull(getPath())) {
-            String content = IOHelper.readFile(getPath());
-
-            if (!content.equals(editorPane.getEditorValue())) {
-                if (isSaved()) {
-                    editorPane.setEditorValue(content);
-                } else {
-                    Optional<ButtonType> reloadAlert = AlertHelper.showAlert(alertMessage);
-                    reloadAlert.ifPresent(buttonType -> {
-                        if (ButtonType.YES == buttonType) {
-                            editorPane.setEditorValue(content);
-                        }
-                    });
-                }
-            }
-
-        } else {
-            logger.error("There is not path for this tab to reload");
-        }
-
-    }
-
-    public void askReloadDocument(String alertMessage) {
-
-        if (Objects.nonNull(getPath())) {
-            String content = IOHelper.readFile(getPath());
-            if (!content.equals(editorPane.getEditorValue())) {
-                this.select();
-                Optional<ButtonType> reloadAlert = AlertHelper.showAlert(alertMessage);
-                reloadAlert.ifPresent(buttonType -> {
-                    if (ButtonType.YES == buttonType) {
-                        editorPane.setEditorValue(content);
-                    }
-                });
-            }
-        } else {
-            logger.error("There is not path for this tab to reload");
-        }
-
-    }
-
     public EditorPane getEditorPane() {
         return editorPane;
+    }
+
+    public FileTime getLastModifiedTime() {
+
+        if (Objects.isNull(editorPane))
+            return null;
+
+        return editorPane.getLastModifiedTime();
+    }
+
+    public void setLastModifiedTime(FileTime lastModifiedTime) {
+
+        if(Objects.nonNull(editorPane)){
+            this.editorPane.setLastModifiedTime(lastModifiedTime);
+        }
     }
 }

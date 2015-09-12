@@ -16,6 +16,7 @@ import com.kodcu.service.ThreadService;
 import com.kodcu.service.extension.AsciiTreeGenerator;
 import com.kodcu.service.shortcut.ShortcutProvider;
 import javafx.beans.property.ReadOnlyObjectProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
@@ -287,7 +288,7 @@ public class TabService {
 
         MenuItem reloadMenuItem = new MenuItem("Reload");
         reloadMenuItem.setOnAction(event -> {
-            tab.reloadDocument("Do you want reload this unsaved document?");
+            tab.reload();
         });
 
         MenuItem gotoWorkdir = new MenuItem("Go to Workdir");
@@ -397,7 +398,13 @@ public class TabService {
     }
 
     public void initializeTabChangeListener(TabPane tabPane) {
+
         ReadOnlyObjectProperty<Tab> itemProperty = tabPane.getSelectionModel().selectedItemProperty();
+
+        tabPane.setOnMouseReleased(event -> {
+            ((MyTab) itemProperty.get()).getEditorPane().focus();
+        });
+
         itemProperty.addListener((observable, oldValue, selectedTab) -> {
             if (Objects.isNull(selectedTab))
                 return;
@@ -406,7 +413,6 @@ public class TabService {
                 if (Objects.nonNull(editorPane)) {
                     try {
                         editorPane.rerender();
-                        editorPane.focus();
                     } catch (Exception e) {
                         logger.error("Problem occured after changing tab {}", selectedTab, e);
                     }

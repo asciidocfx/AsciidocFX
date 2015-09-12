@@ -32,6 +32,7 @@ import org.springframework.stereotype.Component;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.attribute.FileTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -56,6 +57,7 @@ public class EditorPane extends AnchorPane {
     private String mode = "ace/mode/asciidoc";
     private String initialEditorValue = "";
     private Path path;
+    private FileTime lastModifiedTime;
 
     @Autowired
     public EditorPane(ApplicationController controller, ThreadService threadService, ShortcutProvider shortcutProvider, ApplicationContext applicationContext, TabService tabService, AsciiTreeGenerator asciiTreeGenerator, ParserService parserService) {
@@ -86,23 +88,33 @@ public class EditorPane extends AnchorPane {
 
     private void handleEditorReady() {
         getWindow().setMember("afx", controller);
-        getWindow().call("updateOptions");
+        updateOptions();
 
         if (Objects.nonNull(path)) {
             threadService.runTaskLater(() -> {
                 final String content = IOHelper.readFile(path);
+                setLastModifiedTime(IOHelper.getLastModifiedTime(path));
                 threadService.runActionLater(() -> {
-                    getWindow().call("changeEditorMode", path.toUri().toString());
-                    getWindow().call("setInitialized");
-                    getWindow().call("setEditorValue", content);
+                    changeEditorMode();
+                    setInitialized();
+                    setEditorValue(content);
                 });
             });
         } else {
-            getWindow().call("setInitialized");
-            getWindow().call("setEditorValue", initialEditorValue);
+            setInitialized();
+            setEditorValue(initialEditorValue);
         }
+
         this.getChildren().add(webView);
         webView.requestFocus();
+    }
+
+    private void updateOptions() {
+        webEngine().executeScript("updateOptions()");
+    }
+
+    private void setInitialized() {
+        webEngine().executeScript("setInitialized()");
     }
 
     private void initializeMargins() {
@@ -158,7 +170,8 @@ public class EditorPane extends AnchorPane {
     public void setEditorValue(String value) {
         threadService.runActionLater(() -> {
             getWindow().setMember("editorValue", value);
-            webEngine().executeScript("editor.setValue(editorValue)");
+            webEngine().executeScript("setEditorValue(editorValue)");
+            getWebView().requestFocus();
         });
     }
 
@@ -181,7 +194,7 @@ public class EditorPane extends AnchorPane {
         }
     }
 
-    public void changeEditorMode(Path path) {
+    public void changeEditorMode() {
         if (Objects.nonNull(path)) {
             String mode = (String) webEngine().executeScript(String.format("changeEditorMode('%s')", path.toUri().toString()));
             setMode(mode);
@@ -292,7 +305,7 @@ public class EditorPane extends AnchorPane {
         getWebView().setOnMouseClicked(event -> {
 
             if (menu.getItems().size() == 0) {
-                menu.getItems().addAll(cut,copy, paste, pasteRaw,
+                menu.getItems().addAll(cut, copy, paste, pasteRaw,
                         markdownToAsciidoc,
                         indexSelection
                 );
@@ -389,5 +402,13 @@ public class EditorPane extends AnchorPane {
 
     public void setPath(Path path) {
         this.path = path;
+    }
+
+    public FileTime getLastModifiedTime() {
+        return lastModifiedTime;
+    }
+
+    public void setLastModifiedTime(FileTime lastModifiedTime) {
+        this.lastModifiedTime = lastModifiedTime;
     }
 }
