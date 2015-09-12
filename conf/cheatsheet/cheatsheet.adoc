@@ -1,48 +1,51 @@
+:imagesdir: images
+
 = Asciidoc Cheatsheet
 
 <<<
 
-Asciidoc is a rich text based markup language. Document that written with Asciidoc can easly convert to *HTML*, *_PDF_*, *Docbook*, *_Mobi_*, *Epub* formats. This cheatsheet shows you common features of Asciidoc Markup language
+Asciidoc is a rich text based markup language. A document written with Asciidoc can easily be converted to *HTML*, *_PDF_*, *Docbook*, *_Mobi_*, *Epub*, and *Odt* formats. This cheatsheet shows you the common features of Asciidoc Markup language.
 
+'''
+ 
+== [underline]#Basic formats#
+
+*Bold* , _İtalic_ , [underline]#Underscore# , To^p^ , Dow~n~
 
 '''
 
-= [underline]#Basic formats#
+== [underline]#Title levels#
 
-*Bold* , _İtalic_ , +++<u>Underscore</u>+++, To^p^ , Dow~n~
+There are 6 Level titles as HTML. First one is for document title.
 
-'''
-= [underline]#Title levels#
-
-There is 6 Level titles as HTML. First one is for document title.
-
-= Title
-
-== Level 1
+[source,adoc]
+----
+= Level 1
 
 Content ...
 
-=== Level 2
+== Level 2
 
 Content ...
 
-==== Level 3
+=== Level 3
 
 Content ...
 
-===== Level 4
+==== Level 4
 
 Content ...
 
-====== Level 5
+===== Level 5
 
 Content ...
+----
 
 '''
 
-= [underline]#Lists#
+== [underline]#Lists#
 
-There is ordered, unordered, checked and labeled list elements.
+There are ordered, unordered, checked and labeled list elements.
 
 .Unordered list
 * deep 1
@@ -72,9 +75,9 @@ Armut:: Gülgiller (Rosaceae) familyasının Maloideae alt familyasında sınıf
 
 '''
 
-= [underline]#Links#
+== [underline]#Links#
 
-You can use links
+You can use links:
 
 http://asciidocfx.org - AsciidocFX
 
@@ -82,7 +85,7 @@ http://asciidocfx.org[AsciidocFX]
 
 '''
 
-= [underline]#Images#
+== [underline]#Images#
 
 You can declare images with `image::` prefix and `[]` suffix. Path may be _relative_ or _absolute_ .
 
@@ -96,7 +99,7 @@ image::http://kodcu.com/wp/wp-content/uploads/2014/11/logo-kodcu-com5.png[captio
 
 '''
 
-= [underline]#Code higlighting#
+== [underline]#Code higlighting#
 
 You can declare inline or block based codes with Asciidoc syntax.
 
@@ -130,7 +133,7 @@ end
 
 '''
 
-= [underline]#Blocks#
+== [underline]#Blocks#
 
 Sınırlandırılmış bloklar 4'er özel karakter ile sınırlandırılmış alanlardır.
 
@@ -148,6 +151,7 @@ Bu blok türünün adı *Sidebar* bloktur.
 Bu blok türünün adı *Example* bloktur.
 ====
 
+ifdef::backend-html5[]
 === Passthrough block
 
 ++++
@@ -162,6 +166,7 @@ Bu blok türünün adı <b>Passthrough</b> bloktur. Bu blok içerinde HTML elema
     <li>Selami</li>
 </ul>
 ++++
+endif::[]
 
 === BlockquoteS block
 
@@ -177,7 +182,7 @@ ____
 
 '''
 
-= [underline]#Uyarı blokları#
+== [underline]#Uyarı blokları#
 
 Asciidoc işaretleme dilinde 5 tip uyarı (admonition) bloğu bulunmaktadır. Bu blokların kendine has ikonları bulunmaktadır.
 
@@ -225,7 +230,7 @@ icon:twitter[] ruby, asciidoctor
 ////
 
 '''
-= [underline]#Tablolar#
+== [underline]#Tablolar#
 
 Asciidoc ile hemen hemen tüm kompleks tablo yapılarını kurabilirsiniz.
 
@@ -246,20 +251,16 @@ Asciidoc ile hemen hemen tüm kompleks tablo yapılarını kurabilirsiniz.
 .Başlık (opsiyonel)
 |====
 |Date |Duration |Avg HR |Notes
-
 |22-Aug-08 .2+^.^|10:24 | 157 |
 Worked out MSHR (max sustainable
 heart rate) by going hard
 for this interval.
-
 |22-Aug-08 | 152 |
 Back-to-back with previous interval.
-
 |24-Aug-08 3+^|none
-
 |====
 
-= [underline]#AsciidocFX eklentileri#
+== [underline]#AsciidocFX eklentileri#
 
 AsciidocFX metin editörü, *UML* diagramları, *matematiksel kompleks formüller* ve *JavaFX Chart* için üç özel eklentiye sahiptir.
 
