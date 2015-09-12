@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.function.Consumer;
 
 /**
@@ -74,7 +75,7 @@ public class ThreadService {
         try {
             Thread.sleep(ms);
         } catch (InterruptedException e) {
-            logger.error("Error in Thread#sleep", e);
+//            logger.error("Error in Thread#sleep", e);
         }
     }
 }
