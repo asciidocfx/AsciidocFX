@@ -21,6 +21,7 @@ import java.net.MalformedURLException;
 import java.nio.charset.Charset;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.nio.file.attribute.FileTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -39,10 +40,10 @@ public class IOHelper {
         writeToFile(file.toPath(), content, openOption);
     }
 
-    public static Optional<IOException> writeToFile(Path path, String content, StandardOpenOption... openOption) {
+    public static Optional<Exception> writeToFile(Path path, String content, StandardOpenOption... openOption) {
         try {
             Files.write(path, content.getBytes(Charset.forName("UTF-8")), openOption);
-        } catch (IOException e) {
+        } catch (Exception e) {
             logger.error("Problem occured while writing to {}", path, e);
             return Optional.of(e);
         }
@@ -52,7 +53,7 @@ public class IOHelper {
     public static void writeToFile(Path path, byte[] content, StandardOpenOption... openOption) {
         try {
             Files.write(path, content, openOption);
-        } catch (IOException e) {
+        } catch (Exception e) {
             logger.error("Problem occured while writing {}", path, e);
         }
     }
@@ -62,7 +63,7 @@ public class IOHelper {
         try {
             content = IOUtils.toString(inputStream, "UTF-8");
             IOUtils.closeQuietly(inputStream);
-        } catch (IOException e) {
+        } catch (Exception e) {
             logger.error("Problem occured while reading inputstream", e);
         }
         return content;
@@ -70,9 +71,9 @@ public class IOHelper {
 
     public static String readFile(Path path) {
         String content = "";
-        try (InputStream is = Files.newInputStream(path, StandardOpenOption.READ)) {
+        try (InputStream is = Files.newInputStream(path, StandardOpenOption.READ, StandardOpenOption.SYNC)) {
             content = IOUtils.toString(is, "UTF-8");
-        } catch (IOException e) {
+        } catch (Exception e) {
             logger.error("Problem occured while reading file {}", path, e);
         }
         return content;
@@ -81,7 +82,7 @@ public class IOHelper {
     public static void createDirectories(Path path) {
         try {
             Files.createDirectories(path);
-        } catch (IOException e) {
+        } catch (Exception e) {
             logger.error("Problem occured while creating directories {}", path, e);
         }
 
@@ -90,7 +91,7 @@ public class IOHelper {
     public static Path createTempFile(String suffix) {
         try {
             return Files.createTempFile("asciidoc-temp", suffix);
-        } catch (IOException e) {
+        } catch (Exception e) {
             logger.error("Problem occured while creating temp file", e);
         }
 
@@ -103,7 +104,7 @@ public class IOHelper {
         }
         try {
             return Files.createTempFile(path, "asciidoc-temp", suffix);
-        } catch (IOException e) {
+        } catch (Exception e) {
             logger.error("Problem occured while creating temp file {}", path, e);
         }
 
@@ -113,7 +114,7 @@ public class IOHelper {
     public static void copy(Path source, Path target, CopyOption... copyOptions) {
         try {
             Files.copy(source, target, copyOptions);
-        } catch (IOException e) {
+        } catch (Exception e) {
             logger.error("Problem occured while copying {} to {}", source, target, e);
         }
     }
@@ -121,7 +122,7 @@ public class IOHelper {
     public static String pathToUrl(Path path) {
         try {
             return path.toUri().toURL().toString();
-        } catch (MalformedURLException e) {
+        } catch (Exception e) {
             logger.error("Problem occured while getting URL of {}", path, e);
         }
         return null;
@@ -130,7 +131,7 @@ public class IOHelper {
     public static Stream<Path> list(Path path) {
         try {
             return Files.list(path);
-        } catch (IOException e) {
+        } catch (Exception e) {
             logger.error("Problem occured while listing {}", path, e);
         }
         return Stream.empty();
@@ -139,7 +140,7 @@ public class IOHelper {
     public static void imageWrite(BufferedImage bufferedImage, String format, File output) {
         try {
             ImageIO.write(bufferedImage, format, output);
-        } catch (IOException e) {
+        } catch (Exception e) {
             logger.error("Problem occured while writing buff image to {}", output, e);
         }
     }
@@ -147,7 +148,7 @@ public class IOHelper {
     public static byte[] readAllBytes(Path path) {
         try {
             return Files.readAllBytes(path);
-        } catch (IOException e) {
+        } catch (Exception e) {
             logger.error("Problem occured while reading {}", path, e);
         }
         return new byte[]{};
@@ -156,7 +157,7 @@ public class IOHelper {
     public static void move(Path source, Path target, StandardCopyOption... option) {
         try {
             Files.move(source, target, option);
-        } catch (IOException e) {
+        } catch (Exception e) {
             logger.error("Problem occured while moving {} to {}", source, target, e);
         }
     }
@@ -191,7 +192,7 @@ public class IOHelper {
     public static void matchWrite(Match root, File file) {
         try {
             root.write(file);
-        } catch (IOException e) {
+        } catch (Exception e) {
             logger.error("Problem occured while writing XML Match to {}", file, e);
         }
     }
@@ -199,7 +200,7 @@ public class IOHelper {
     public static void copyDirectoryToDirectory(File source, File target) {
         try {
             FileUtils.copyDirectoryToDirectory(source, target);
-        } catch (IOException e) {
+        } catch (Exception e) {
             logger.error("Problem occured while copying {} to {}", source, target, e);
         }
     }
@@ -215,7 +216,7 @@ public class IOHelper {
     public static void deleteIfExists(Path path) {
         try {
             Files.deleteIfExists(path);
-        } catch (IOException e) {
+        } catch (Exception e) {
             logger.error("Problem occured while deleting {}", path, e);
         }
     }
@@ -223,7 +224,7 @@ public class IOHelper {
     public static void copyDirectory(Path sourceDir, Path targetDir) {
         try {
             FileUtils.copyDirectory(sourceDir.toFile(), targetDir.toFile());
-        } catch (IOException e) {
+        } catch (Exception e) {
             logger.error("Problem occured while copying {} to {}", sourceDir, targetDir, e);
         }
     }
@@ -231,7 +232,7 @@ public class IOHelper {
     public static Stream<Path> find(Path start, int maxDepth, BiPredicate<Path, BasicFileAttributes> matcher, FileVisitOption... options) {
         try {
             return Files.find(start, Integer.MAX_VALUE, matcher, options);
-        } catch (IOException e) {
+        } catch (Exception e) {
             logger.error("Problem occured while finding in path {}", start, e);
         }
         return Stream.empty();
@@ -239,8 +240,8 @@ public class IOHelper {
 
     public static boolean isHidden(Path path) {
         try {
-            return Files.isHidden(path) || path.getFileName().toString().startsWith(".");
-        } catch (IOException e) {
+            return Files.exists(path) && (Files.isHidden(path) || path.getFileName().toString().startsWith("."));
+        } catch (Exception e) {
             logger.error("Problem occured while detecting hidden path {}", path, e);
         }
         return false;
@@ -249,7 +250,7 @@ public class IOHelper {
     public static void copyFileToDirectory(File file, File directory) {
         try {
             FileUtils.copyFileToDirectory(file, directory);
-        } catch (IOException e) {
+        } catch (Exception e) {
             logger.error("Problem occured while copying {} to {}", file, directory, e);
         }
     }
@@ -257,7 +258,7 @@ public class IOHelper {
     public static void copyFile(File file, File dest) {
         try {
             FileUtils.copyFile(file, dest);
-        } catch (IOException e) {
+        } catch (Exception e) {
             logger.error("Problem occured while copying {} to {}", file, dest, e);
         }
     }
@@ -265,7 +266,7 @@ public class IOHelper {
     public static void createDirectory(Path path) {
         try {
             Files.createDirectory(path);
-        } catch (IOException e) {
+        } catch (Exception e) {
             logger.error("Problem occured while creating {} path", path, e);
         }
     }
@@ -273,7 +274,7 @@ public class IOHelper {
     public static void deleteDirectory(Path path) {
         try {
             FileUtils.deleteDirectory(path.toFile());
-        } catch (IOException e) {
+        } catch (Exception e) {
             logger.error("Problem occured while deleting {} path", path, e);
         }
     }
@@ -281,7 +282,7 @@ public class IOHelper {
     public static List<String> readAllLines(Path path) {
         try {
             return Files.readAllLines(path);
-        } catch (IOException e) {
+        } catch (Exception e) {
             logger.error("Problem occured while reading {} path", path, e);
         }
         return new ArrayList<>();
@@ -290,7 +291,7 @@ public class IOHelper {
     public static FileReader fileReader(Path path) {
         try {
             return new FileReader(path.toFile());
-        } catch (FileNotFoundException e) {
+        } catch (Exception e) {
             logger.error("Problem occured while creating FileReader for {} path", path, e);
         }
         return null;
@@ -301,9 +302,18 @@ public class IOHelper {
         for (Closeable closeable : closeables) {
             try {
                 closeable.close();
-            } catch (IOException e) {
+            } catch (Exception e) {
                 logger.error("Problem occured while closing resource");
             }
         }
+    }
+
+    public static FileTime getLastModifiedTime(Path path) {
+        try {
+            return Files.getLastModifiedTime(path);
+        } catch (Exception e) {
+//            e.printStackTrace();
+        }
+        return null;
     }
 }
