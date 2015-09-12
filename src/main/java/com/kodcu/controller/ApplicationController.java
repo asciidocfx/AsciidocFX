@@ -542,7 +542,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         initializePosixPermissions();
         initializeNashornConverter();
 
-        Future<?> runTaskLater = threadService.runTaskLater(() -> {
+        threadService.runTaskLater(() -> {
             while (true) {
                 try {
                     renderLoop();
@@ -1817,9 +1817,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     @WebkitCall(from = "editor")
     public void appendWildcard() {
-        String currentTabText = current.getCurrentTabText();
-        if (!currentTabText.contains(" *"))
-            current.setCurrentTabText(currentTabText + " *");
+        current.currentTab().setChangedProperty(true);
     }
 
     private AtomicReference<Tuple<String, String>> lastTupleReference = new AtomicReference<>();
