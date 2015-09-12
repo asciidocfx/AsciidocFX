@@ -569,6 +569,11 @@
     -fx-fill: #ff452c !important;
 }
 
+
+.mytab-changed * {
+    -fx-font-weight: bold;
+}
+
 /* ====   REMOVE ALL EFFECTS   ================================================= */
 .slider .thumb,
 .scroll-bar:horizontal > .decrement-button > .decrement-arrow,

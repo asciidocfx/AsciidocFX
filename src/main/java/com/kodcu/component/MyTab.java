@@ -11,6 +11,8 @@ import com.kodcu.service.shortcut.MarkdownShortcutService;
 import com.kodcu.service.shortcut.NoneShortcutService;
 import com.kodcu.service.ui.TabService;
 import javafx.application.Platform;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.ObservableList;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
@@ -23,7 +25,6 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.FileTime;
@@ -47,6 +48,7 @@ public class MyTab extends Tab {
     private final TabService tabService;
     private final ApplicationController controller;
     private final ThreadService threadService;
+    private final BooleanProperty changedProperty = new SimpleBooleanProperty(false);
 
     private final Logger logger = LoggerFactory.getLogger(MyTab.class);
 
@@ -58,6 +60,14 @@ public class MyTab extends Tab {
         this.tabService = tabService;
         this.controller = controller;
         this.threadService = threadService;
+        this.changedProperty.addListener((observable, oldValue, newValue) -> {
+            if (newValue) {
+                if (!getStyleClass().contains("mytab-changed"))
+                    getStyleClass().add("mytab-changed");
+            } else {
+                getStyleClass().remove("mytab-changed");
+            }
+        });
     }
 
     public Label getLabel() {
@@ -92,7 +102,8 @@ public class MyTab extends Tab {
     }
 
     public boolean isSaved() {
-        return !this.getTabText().contains(" *");
+//        return !this.getTabText().contains(" *");
+        return !changedProperty.get();
     }
 
     public ButtonType close() {
@@ -142,8 +153,9 @@ public class MyTab extends Tab {
     }
 
     public boolean isChanged() {
-        String tabText = getTabText();
-        return tabText.contains(" *");
+//        String tabText = getTabText();
+//        return tabText.contains(" *");
+        return changedProperty.get();
     }
 
     public synchronized void reload() {
@@ -208,8 +220,6 @@ public class MyTab extends Tab {
             return;
         }
 
-        logger.warn("Entered Save");
-
         FileTime latestModifiedTime = IOHelper.getLastModifiedTime(getPath());
 
         if (Objects.nonNull(latestModifiedTime) && Objects.nonNull(getLastModifiedTime())) {
@@ -242,13 +252,13 @@ public class MyTab extends Tab {
         Optional<Exception> exception =
                 IOHelper.writeToFile(getPath(), editorValue, TRUNCATE_EXISTING, CREATE, SYNC);
 
-        setLastModifiedTime(IOHelper.getLastModifiedTime(getPath()));
-
         if (exception.isPresent()) {
             return;
         }
 
-        setTabText(getPath().getFileName().toString());
+        setLastModifiedTime(IOHelper.getLastModifiedTime(getPath()));
+
+        changedProperty.set(false);
 
         ObservableList<String> recentFiles = storedConfigBean.getRecentFiles();
         recentFiles.remove(getPath().toString());
@@ -318,9 +328,20 @@ public class MyTab extends Tab {
     }
 
     public void setLastModifiedTime(FileTime lastModifiedTime) {
-
-        if(Objects.nonNull(editorPane)){
+        if (Objects.nonNull(editorPane)) {
             this.editorPane.setLastModifiedTime(lastModifiedTime);
         }
+    }
+
+    public boolean getChangedProperty() {
+        return changedProperty.get();
+    }
+
+    public BooleanProperty changedPropertyProperty() {
+        return changedProperty;
+    }
+
+    public void setChangedProperty(boolean changedProperty) {
+        this.changedProperty.set(changedProperty);
     }
 }
