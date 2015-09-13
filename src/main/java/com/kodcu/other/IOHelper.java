@@ -242,7 +242,7 @@ public class IOHelper {
         try {
             return Files.exists(path) && (Files.isHidden(path) || path.getFileName().toString().startsWith("."));
         } catch (Exception e) {
-            logger.error("Problem occured while detecting hidden path {}", path, e);
+//            logger.error("Problem occured while detecting hidden path {}", path, e);
         }
         return false;
     }
