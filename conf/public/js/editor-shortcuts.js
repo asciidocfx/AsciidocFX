@@ -374,20 +374,20 @@ var editorMenu = {
         addMathBlock: function () {
             var range = editor.getSelectionRange();
             editor.removeToLineStart();
-            editor.insert("[math,file=\"\"]\n--\n\n--");
-            editor.gotoLine(range.end.row + 3, 0, true);
+            editor.insert("[math,,png]\n--\n\n--");
+            editor.gotoLine(range.end.row + 1, 6, true);
         },
         addUmlBlock: function () {
             var range = editor.getSelectionRange();
             editor.removeToLineStart();
-            editor.insert("[uml,file=\"\"]\n--\n\n--");
-            editor.gotoLine(range.end.row + 3, 0, true);
+            editor.insert("[plantuml,,png]\n--\n\n--");
+            editor.gotoLine(range.end.row + 1, 10, true);
         },
         addDitaaBlock: function () {
             var range = editor.getSelectionRange();
             editor.removeToLineStart();
-            editor.insert("[ditaa,file=\"\"]\n--\n\n--");
-            editor.gotoLine(range.end.row + 3, 0, true);
+            editor.insert("[ditaa,,png]\n--\n\n--");
+            editor.gotoLine(range.end.row +1, 7, true);
         },        
         addTreeBlock: function () {
             var range = editor.getSelectionRange();

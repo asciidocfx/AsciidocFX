@@ -442,7 +442,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     }
 
     @WebkitCall(from = "asciidoctor-math")
-    public void appendFormula(String formula, String imagesDir, String imageTarget) {
+    public void math(String formula, String type, String imagesDir, String imageTarget) {
         mathJaxService.appendFormula(formula, imagesDir, imageTarget);
     }
 
@@ -1733,7 +1733,12 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     }
 
     @WebkitCall(from = "asciidoctor-uml")
-    public void plantUml(String uml, String type, String imagesDir, String imageTarget) throws IOException {
+    public void uml(String uml, String type, String imagesDir, String imageTarget) throws IOException {
+        plantuml(uml, type, imagesDir, imageTarget);
+    }
+
+    @WebkitCall(from = "asciidoctor-uml")
+    public void plantuml(String uml, String type, String imagesDir, String imageTarget) throws IOException {
 
         threadService.runTaskLater(() -> {
             plantUmlService.plantUml(uml, type, imagesDir, imageTarget);
@@ -1743,7 +1748,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     @WebkitCall(from = "asciidoctor-ditaa")
     public void ditaa(String ditaa, String type, String imagesDir, String imageTarget) throws IOException {
         String plantUmlString = "@startditaa\n" + ditaa + "\n@endditaa\n";
-        this.plantUml(plantUmlString, type, imagesDir, imageTarget);
+        this.plantuml(plantUmlString, type, imagesDir, imageTarget);
     }
 
     @WebkitCall(from = "asciidoctor-chart")
