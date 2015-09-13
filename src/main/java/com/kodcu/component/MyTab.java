@@ -113,12 +113,10 @@ public class MyTab extends Tab {
 
         this.select();
 
-        if (isSaved() || !isDirty()) {
+        if (isNew() && !isChanged()) { // if tab is not dirty
             closeIt();
             return ButtonType.YES;
-        }
-
-        if (isNew()) {
+        } else if (isNew()) { // else if is new
             Optional<ButtonType> alert = AlertHelper.saveAlert();
             ButtonType type = alert.orElse(ButtonType.CANCEL);
 
@@ -126,7 +124,7 @@ public class MyTab extends Tab {
                 closeIt();
             }
             return type;
-        } else {
+        } else { // others should be save and close
             saveDoc();
             if (isSaved()) {
                 closeIt();
@@ -198,10 +196,6 @@ public class MyTab extends Tab {
 
     public synchronized void saveDoc() {
 
-        if (!isNew() && !isChanged()) {
-            return;
-        }
-
         if (!Platform.isFxApplicationThread()) {
             CompletableFuture completableFuture = new CompletableFuture();
 
@@ -234,6 +228,10 @@ public class MyTab extends Tab {
 
                 if (buttonType == AlertHelper.LOAD_FILE_SYSTEM_CHANGES) {
                     load();
+                }
+            } else {
+                if (!isNew() && !isChanged()) {
+                    return;
                 }
             }
         }
