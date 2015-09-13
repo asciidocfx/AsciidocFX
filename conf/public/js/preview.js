@@ -27,6 +27,7 @@ function updateBase64Url(index, base64) {
     afx.cutCopy(clonedContent.html());
 }
 
+var hljsAction = new BufferedAction();
 function refreshUI(data) {
 
     var $data = $("<div></div>").append(data);
@@ -39,11 +40,14 @@ function refreshUI(data) {
 
     $("#placeholder").html($data.html());
 
-    $('pre').children("code").on('mouseover', function () {
-        if (!$(this).hasClass("hljs")) {
-            hljs.highlightBlock(this);
-        }
-    });
+    hljsAction.buff(function () {
+        $('pre').children("code").each(function () {
+            if (!$(this).hasClass("hljs")) {
+                hljs.highlightBlock(this);
+            }
+        });
+    }, 1000);
+
 }
 
 alert("PREVIEW_LOADED");
