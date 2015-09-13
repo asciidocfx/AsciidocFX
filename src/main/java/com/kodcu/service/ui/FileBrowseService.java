@@ -61,7 +61,10 @@ public class FileBrowseService {
 
         rootItem = new TreeItem<>(new Item(browserPath, String.format("Loading... (%s)", browserPath)), awesomeService.getIcon(browserPath));
         rootItem.setExpanded(true);
-        treeView.setRoot(rootItem);
+
+        threadService.runActionLater(() -> {
+            treeView.setRoot(rootItem);
+        }, true);
 
         threadService.runTaskLater(() -> {
 
