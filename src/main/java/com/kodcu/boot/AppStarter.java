@@ -184,6 +184,10 @@ public class AppStarter extends Application {
                 }
                 return 0;
             }).forEach(myTab -> {
+
+                if (event.isConsumed())
+                    return;
+
                 ButtonType close = myTab.close();
                 if (close == ButtonType.CANCEL)
                     event.consume();
