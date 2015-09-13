@@ -96,7 +96,7 @@
                                     </items>
                                   </Menu>
                                   <SeparatorMenuItem />
-                                  <MenuItem mnemonicParsing="false" text="Copy Path" fx:id="copyPathTreeItem" />
+                                  <MenuItem mnemonicParsing="false" text="Copy Path" onAction="#copyPath"/>
                                   <MenuItem mnemonicParsing="false" text="Copy" fx:id="copyTreeItem" />
                                   <SeparatorMenuItem fx:id="addToFavSeparator"/>
                                   <MenuItem fx:id="addToFavoriteDir" onAction="#addToFavoriteDir" text="Add to Fav. Dirs"/>

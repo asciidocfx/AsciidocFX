@@ -2,6 +2,7 @@ package com.kodcu.service.ui;
 
 import com.kodcu.component.EditorPane;
 import com.kodcu.component.ImageTab;
+import com.kodcu.component.MenuItemBuilt;
 import com.kodcu.component.MyTab;
 import com.kodcu.config.StoredConfigBean;
 import com.kodcu.controller.ApplicationController;
@@ -16,7 +17,6 @@ import com.kodcu.service.ThreadService;
 import com.kodcu.service.extension.AsciiTreeGenerator;
 import com.kodcu.service.shortcut.ShortcutProvider;
 import javafx.beans.property.ReadOnlyObjectProperty;
-import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
@@ -275,7 +275,7 @@ public class TabService {
             }
         });
 
-        MenuItem menuItem7 = new MenuItem("Open File Location");
+        MenuItem menuItem7 = new MenuItem("Browse");
 
         menuItem7.setOnAction(event -> {
             current.currentPath().ifPresent(path -> {
@@ -283,12 +283,23 @@ public class TabService {
             });
         });
 
+        MenuItem copyItem = MenuItemBuilt.item("Copy").click(event -> {
+            Optional.ofNullable(tab.getPath())
+                    .ifPresent(controller::copyFile);
+        });
+
+        MenuItem copyPathItem = MenuItemBuilt.item("Copy Path").click(event -> {
+            Optional.ofNullable(tab.getPath())
+                    .map(Path::toString)
+                    .ifPresent(controller::cutCopy);
+        });
+
         MenuItem menuItem8 = new MenuItem("New File");
         menuItem8.setOnAction(controller::newDoc);
 
         MenuItem reloadMenuItem = new MenuItem("Reload");
         reloadMenuItem.setOnAction(event -> {
-            tab.reload();
+            tab.load();
         });
 
         MenuItem gotoWorkdir = new MenuItem("Go to Workdir");
@@ -300,7 +311,7 @@ public class TabService {
         contextMenu.getItems().addAll(menuItem0, menuItem1, menuItem2, new SeparatorMenuItem(),
                 menuItem4, menuItem5, menuItem6, new SeparatorMenuItem(), reloadMenuItem,
                 new SeparatorMenuItem(), gotoWorkdir, new SeparatorMenuItem(),
-                menuItem7, menuItem8);
+                menuItem7, copyItem, copyPathItem, menuItem8);
 
         tab.contextMenuProperty().setValue(contextMenu);
         Label label = tab.getLabel();

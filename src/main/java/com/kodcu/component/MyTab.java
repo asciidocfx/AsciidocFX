@@ -177,13 +177,11 @@ public class MyTab extends Tab {
 
                             load();
                         }
-                    } else {
-                        logger.warn("Will not reload");
                     }
                 });
     }
 
-    private void load() {
+    public void load() {
         FileTime latestModifiedTime = IOHelper.getLastModifiedTime(getPath());
         setLastModifiedTime(latestModifiedTime);
         String content = IOHelper.readFile(getPath());

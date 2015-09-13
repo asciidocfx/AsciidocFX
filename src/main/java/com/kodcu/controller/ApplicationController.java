@@ -145,7 +145,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     public MenuItem openFolderTreeItem;
     public MenuItem openFileListItem;
     public MenuItem openFolderListItem;
-    public MenuItem copyPathTreeItem;
     public MenuItem copyPathListItem;
     public MenuItem copyTreeItem;
     public MenuItem copyListItem;
@@ -800,11 +799,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         });
 
         openFileListItem.setOnAction(this::openRecentListFile);
-
-        copyPathTreeItem.setOnAction(event -> {
-            Path path = tabService.getSelectedTabPath();
-            this.cutCopy(path.toString());
-        });
 
         copyPathListItem.setOnAction(event -> {
             this.cutCopy(recentListView.getSelectionModel().getSelectedItem());
@@ -2504,5 +2498,11 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     public void goUp(ActionEvent actionEvent) {
         directoryService.goUp();
+    }
+
+    @FXML
+    public void copyPath(ActionEvent actionEvent) {
+        Path path = tabService.getSelectedTabPath();
+        this.cutCopy(path.toString());
     }
 }
