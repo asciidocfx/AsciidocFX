@@ -173,27 +173,7 @@ public class AppStarter extends Application {
             });
         }
 
-        scene.getWindow().setOnCloseRequest(event -> {
-            ObservableList<Tab> tabs = FXCollections.observableArrayList(controller.getTabPane().getTabs());
-
-            tabs.stream().map(t -> (MyTab) t).sorted((mo1, mo2) -> {
-                if (mo1.isNew() && !mo2.isNew())
-                    return -1;
-                else if (mo2.isNew() && !mo1.isNew()) {
-                    return 1;
-                }
-                return 0;
-            }).forEach(myTab -> {
-
-                if (event.isConsumed())
-                    return;
-
-                ButtonType close = myTab.close();
-                if (close == ButtonType.CANCEL)
-                    event.consume();
-            });
-
-        });
+        scene.getWindow().setOnCloseRequest(controller::closeAllTabs);
     }
 
     @Override

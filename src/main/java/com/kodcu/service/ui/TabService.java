@@ -205,28 +205,30 @@ public class TabService {
         });
 
         MenuItem menuItem1 = new MenuItem("Close All");
-        menuItem1.setOnAction(actionEvent -> {
-            ObservableList<Tab> tabs = tab.getTabPane().getTabs();
-            ObservableList<Tab> clonedTabs = FXCollections.observableArrayList(tabs);
-            if (clonedTabs.size() > 0) {
-                clonedTabs.forEach((closedTab) -> {
-                    MyTab myTab = (MyTab) closedTab;
-                    myTab.close();
-                });
-            }
-        });
+        menuItem1.setOnAction(controller::closeAllTabs);
 
         MenuItem menuItem2 = new MenuItem("Close Others");
-        menuItem2.setOnAction(actionEvent -> {
+        menuItem2.setOnAction(event -> {
 
             ObservableList<Tab> blackList = FXCollections.observableArrayList();
             blackList.addAll(tab.getTabPane().getTabs());
-
             blackList.remove(tab);
 
-            blackList.forEach(t -> {
-                MyTab closeTab = (MyTab) t;
-                closeTab.close();
+            blackList.stream().map(t -> (MyTab) t).sorted((mo1, mo2) -> {
+                if (mo1.isNew() && !mo2.isNew())
+                    return -1;
+                else if (mo2.isNew() && !mo1.isNew()) {
+                    return 1;
+                }
+                return 0;
+            }).forEach(myTab -> {
+
+                if (event.isConsumed())
+                    return;
+
+                ButtonType close = myTab.close();
+                if (close == ButtonType.CANCEL)
+                    event.consume();
             });
         });
 //

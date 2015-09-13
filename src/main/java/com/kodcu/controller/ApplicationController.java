@@ -64,6 +64,7 @@ import javafx.scene.text.Text;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import javafx.util.Duration;
 import netscape.javascript.JSObject;
 import org.slf4j.Logger;
@@ -2509,5 +2510,26 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     public void copyPath(ActionEvent actionEvent) {
         Path path = tabService.getSelectedTabPath();
         this.cutCopy(path.toString());
+    }
+
+    public void closeAllTabs(Event event) {
+        ObservableList<Tab> tabs = FXCollections.observableArrayList(tabPane.getTabs());
+
+        tabs.stream().map(t -> (MyTab) t).sorted((mo1, mo2) -> {
+            if (mo1.isNew() && !mo2.isNew())
+                return -1;
+            else if (mo2.isNew() && !mo1.isNew()) {
+                return 1;
+            }
+            return 0;
+        }).forEach(myTab -> {
+
+            if (event.isConsumed())
+                return;
+
+            ButtonType close = myTab.close();
+            if (close == ButtonType.CANCEL)
+                event.consume();
+        });
     }
 }
