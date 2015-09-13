@@ -570,7 +570,7 @@
 }
 
 
-.mytab-changed * {
+.mytab-changed .tab-label {
     -fx-font-weight: bold;
 }
 
