@@ -1,4 +1,4 @@
-.row.connection-closed{
+.row.connection-closed {
     display: none;
 }
 
@@ -56,6 +56,10 @@ pre.highlight > code {
 
 div#placeholder > :nth-child(1):not(h1) {
     margin-top: 27px;
+}
+
+div#placeholder {
+    word-wrap: break-word;
 }
 
 pre code {
