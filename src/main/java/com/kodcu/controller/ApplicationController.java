@@ -107,6 +107,7 @@ import static java.nio.file.StandardOpenOption.*;
 @Component
 public class ApplicationController extends TextWebSocketHandler implements Initializable {
 
+    public Label goUpLabel;
     private Logger logger = LoggerFactory.getLogger(ApplicationController.class);
 
     public TabPane previewTabPane;
@@ -135,7 +136,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     public SplitPane splitPaneVertical;
     public TreeView<Item> fileSystemView;
     public Label workingDirButton;
-    public Label goHomeLabel;
     public Label refreshLabel;
     public AnchorPane rootAnchor;
     public ProgressIndicator indikator;
@@ -611,7 +611,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         AwesomeDude.setIcon(workingDirButton, AwesomeIcon.FOLDER_ALT, "14.0");
         AwesomeDude.setIcon(panelShowHideMenuButton, AwesomeIcon.COLUMNS, "14.0");
         AwesomeDude.setIcon(refreshLabel, AwesomeIcon.REFRESH, "14.0");
-        AwesomeDude.setIcon(goHomeLabel, AwesomeIcon.HOME, "14.0");
+        AwesomeDude.setIcon(goUpLabel, AwesomeIcon.LEVEL_UP, "14.0");
 
         leftButton.setGraphic(AwesomeDude.createIconLabel(AwesomeIcon.ELLIPSIS_H, "14.0"));
         afxVersionItem.setText(String.join(" ", "Version", version));
@@ -2500,5 +2500,9 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             storedConfigBean.getRecentFiles().remove(path.toString());
             storedConfigBean.getRecentFiles().add(0, path.toString());
         });
+    }
+
+    public void goUp(ActionEvent actionEvent) {
+        directoryService.goUp();
     }
 }

@@ -37,20 +37,20 @@
                             <Tooltip text="Change Workdir" />
                           </tooltip>
                         </Button>
+                        <Button minWidth="-Infinity" mnemonicParsing="false" onAction="#goUp" text="">
+                          <graphic>
+                            <Label fx:id="goUpLabel" text="" />
+                          </graphic>
+                          <tooltip>
+                            <Tooltip text="Go Up" />
+                          </tooltip>
+                        </Button>
                         <Button minWidth="-Infinity" mnemonicParsing="false" onAction="#refreshWorkingDir" text="">
                           <graphic>
                             <Label fx:id="refreshLabel" text="" />
                           </graphic>
                           <tooltip>
                             <Tooltip text="Refresh" />
-                          </tooltip>
-                        </Button>
-                        <Button minWidth="-Infinity" mnemonicParsing="false" onAction="#goHome" text="">
-                          <graphic>
-                            <Label fx:id="goHomeLabel" text="" />
-                          </graphic>
-                          <tooltip>
-                            <Tooltip text="Go Home" />
                           </tooltip>
                         </Button>
                         <MenuButton fx:id="leftButton" minWidth="-Infinity" mnemonicParsing="false" text="" HBox.hgrow="NEVER">
