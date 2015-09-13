@@ -79,32 +79,29 @@ public class StoredConfigBean extends ConfigurationBase {
     @Override
     public void load(ActionEvent... actionEvent) {
 
-        threadService.runTaskLater(() -> {
+        FileReader fileReader = IOHelper.fileReader(getConfigPath());
+        JsonReader jsonReader = Json.createReader(fileReader);
 
-            FileReader fileReader = IOHelper.fileReader(getConfigPath());
-            JsonReader jsonReader = Json.createReader(fileReader);
+        JsonObject jsonObject = jsonReader.readObject();
 
-            JsonObject jsonObject = jsonReader.readObject();
+        JsonArray recentFiles = jsonObject.getJsonArray("recentFiles");
+        JsonArray favoriteDirectories = jsonObject.getJsonArray("favoriteDirectories");
+        String workingDirectory = jsonObject.getString("workingDirectory", System.getProperty("user.home"));
 
-            JsonArray recentFiles = jsonObject.getJsonArray("recentFiles");
-            JsonArray favoriteDirectories = jsonObject.getJsonArray("favoriteDirectories");
-            String workingDirectory = jsonObject.getString("workingDirectory", System.getProperty("user.home"));
+        IOHelper.close(jsonReader, fileReader);
 
-            IOHelper.close(jsonReader, fileReader);
+        threadService.runActionLater(() -> {
 
-            threadService.runActionLater(() -> {
+            if (Objects.nonNull(workingDirectory)) {
+                this.workingDirectory.setValue(workingDirectory);
+            }
 
-                if (Objects.nonNull(workingDirectory)) {
-                    this.workingDirectory.setValue(workingDirectory);
-                }
-
-                if (Objects.nonNull(recentFiles)) {
-                    recentFiles.stream().map(e -> (JsonString) e).map(e -> e.getString()).forEach(this.recentFiles::add);
-                }
-                if (Objects.nonNull(favoriteDirectories)) {
-                    favoriteDirectories.stream().map(e -> (JsonString) e).map(e -> e.getString()).forEach(this.favoriteDirectories::add);
-                }
-            });
+            if (Objects.nonNull(recentFiles)) {
+                recentFiles.stream().map(e -> (JsonString) e).map(e -> e.getString()).forEach(this.recentFiles::add);
+            }
+            if (Objects.nonNull(favoriteDirectories)) {
+                favoriteDirectories.stream().map(e -> (JsonString) e).map(e -> e.getString()).forEach(this.favoriteDirectories::add);
+            }
         });
     }
 

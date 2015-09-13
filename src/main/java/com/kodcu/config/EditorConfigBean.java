@@ -59,6 +59,7 @@ public class EditorConfigBean extends ConfigurationBase {
     private ObjectProperty<Integer> wrapLimit = new SimpleObjectProperty<>(0);
     private BooleanProperty showGutter = new SimpleBooleanProperty(false);
     private ObjectProperty<ObservableList<String>> defaultLanguage = new SimpleObjectProperty<>(FXCollections.observableArrayList());
+    private BooleanProperty autoUpdate = new SimpleBooleanProperty(true);
 
     private Logger logger = LoggerFactory.getLogger(EditorConfigBean.class);
 
@@ -198,12 +199,24 @@ public class EditorConfigBean extends ConfigurationBase {
         this.secondSplitter.set(secondSplitter);
     }
 
+    public boolean getAutoUpdate() {
+        return autoUpdate.get();
+    }
+
+    public BooleanProperty autoUpdateProperty() {
+        return autoUpdate;
+    }
+
+    public void setAutoUpdate(boolean autoUpdate) {
+        this.autoUpdate.set(autoUpdate);
+    }
+
     @Override
     public VBox createForm() {
 
         FXForm editorConfigForm = new FXFormBuilder<>()
                 .resourceBundle(ResourceBundle.getBundle("editorConfig"))
-                .includeAndReorder("editorTheme", "asciidoctorStyleSheet", "directoryPanel", "fontFamily", "fontSize", "scrollSpeed", "useWrapMode", "wrapLimit", "showGutter", "defaultLanguage", "kindlegen")
+                .includeAndReorder("editorTheme", "fontFamily", "fontSize", "scrollSpeed", "useWrapMode", "wrapLimit", "showGutter", "defaultLanguage", "autoUpdate")
                 .build();
 
         DefaultFactoryProvider editorConfigFormProvider = new DefaultFactoryProvider();
@@ -242,58 +255,55 @@ public class EditorConfigBean extends ConfigurationBase {
 
         fadeOut(infoLabel, "Loading...");
 
-        threadService.runTaskLater(() -> {
+        List<String> aceThemeList = IOHelper.readAllLines(getConfigDirectory().resolve("ace_themes.txt"));
+        List<String> languageList = this.languageList();
 
-            List<String> aceThemeList = IOHelper.readAllLines(getConfigDirectory().resolve("ace_themes.txt"));
-            List<String> languageList = this.languageList();
+        FileReader fileReader = IOHelper.fileReader(getConfigPath());
+        JsonReader jsonReader = Json.createReader(fileReader);
 
-            FileReader fileReader = IOHelper.fileReader(getConfigPath());
-            JsonReader jsonReader = Json.createReader(fileReader);
+        JsonObject jsonObject = jsonReader.readObject();
 
-            JsonObject jsonObject = jsonReader.readObject();
+        String fontFamily = jsonObject.getString("fontFamily", "'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace");
+        int fontSize = jsonObject.getInt("fontSize", 14);
+        String theme = jsonObject.getString("editorTheme", "xcode");
+        String defaultLanguage = jsonObject.getString("defaultLanguage", "en");
+        boolean useWrapMode = jsonObject.getBoolean("useWrapMode", true);
+        boolean showGutter = jsonObject.getBoolean("showGutter", false);
+        int wrapLimit = jsonObject.getInt("wrapLimit", 0);
+        boolean autoUpdate = jsonObject.getBoolean("autoUpdate", true);
 
-            String fontFamily = jsonObject.getString("fontFamily", "'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace");
-            int fontSize = jsonObject.getInt("fontSize", 14);
-            String theme = jsonObject.getString("editorTheme", "xcode");
-            String defaultLanguage = jsonObject.getString("defaultLanguage", "en");
-            boolean useWrapMode = jsonObject.getBoolean("useWrapMode", true);
-            boolean showGutter = jsonObject.getBoolean("showGutter", false);
-            int wrapLimit = jsonObject.getInt("wrapLimit", 0);
+        IOHelper.close(jsonReader, fileReader);
 
-            IOHelper.close(jsonReader, fileReader);
+        threadService.runActionLater(() -> {
+            this.setEditorTheme(FXCollections.observableList(aceThemeList));
+            this.setDefaultLanguage(FXCollections.observableList(languageList));
+            this.setFontFamily(fontFamily);
+            this.setFontSize(fontSize);
+            this.setUseWrapMode(useWrapMode);
+            this.setShowGutter(showGutter);
+            this.setWrapLimit(wrapLimit);
+            this.setAutoUpdate(autoUpdate);
 
-            threadService.runActionLater(() -> {
-                this.setEditorTheme(FXCollections.observableList(aceThemeList));
-                this.setDefaultLanguage(FXCollections.observableList(languageList));
-                this.setFontFamily(fontFamily);
-                this.setFontSize(fontSize);
-                this.setUseWrapMode(useWrapMode);
-                this.setShowGutter(showGutter);
-                this.setWrapLimit(wrapLimit);
+            if (jsonObject.containsKey("scrollSpeed")) {
+                this.setScrollSpeed(jsonObject.getJsonNumber("scrollSpeed").doubleValue());
+            }
 
-                if (jsonObject.containsKey("scrollSpeed")) {
-                    this.setScrollSpeed(jsonObject.getJsonNumber("scrollSpeed").doubleValue());
-                }
+            if (jsonObject.containsKey("firstSplitter")) {
+                JsonNumber firstSplitter = jsonObject.getJsonNumber("firstSplitter");
+                this.setFirstSplitter(firstSplitter.doubleValue());
+            }
 
-                if (jsonObject.containsKey("firstSplitter")) {
-                    JsonNumber firstSplitter = jsonObject.getJsonNumber("firstSplitter");
-                    this.setFirstSplitter(firstSplitter.doubleValue());
-                }
+            if (jsonObject.containsKey("secondSplitter")) {
+                JsonNumber secondSplitter = jsonObject.getJsonNumber("secondSplitter");
+                this.setSecondSplitter(secondSplitter.doubleValue());
+            }
 
-                if (jsonObject.containsKey("secondSplitter")) {
-                    JsonNumber secondSplitter = jsonObject.getJsonNumber("secondSplitter");
-                    this.setSecondSplitter(secondSplitter.doubleValue());
-                }
+            this.getEditorTheme().set(0, theme);
+            this.getDefaultLanguage().set(0, defaultLanguage);
 
-                this.getEditorTheme().set(0, theme);
-                this.getDefaultLanguage().set(0, defaultLanguage);
+            fadeOut(infoLabel, "Loaded...");
 
-                fadeOut(infoLabel, "Loaded...");
-
-            });
         });
-
-
     }
 
     private List<String> languageList() {
@@ -346,7 +356,8 @@ public class EditorConfigBean extends ConfigurationBase {
                 .add("editorTheme", getEditorTheme().get(0))
                 .add("defaultLanguage", getDefaultLanguage().get(0))
                 .add("firstSplitter", getFirstSplitter())
-                .add("secondSplitter", getSecondSplitter());
+                .add("secondSplitter", getSecondSplitter())
+                .add("autoUpdate", getAutoUpdate());
 
         return objectBuilder.build();
     }

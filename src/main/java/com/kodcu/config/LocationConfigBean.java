@@ -154,8 +154,6 @@ public class LocationConfigBean extends ConfigurationBase {
 
         fadeOut(infoLabel, "Loading...");
 
-        threadService.runTaskLater(() -> {
-
             loadPathDefaults();
 
             FileReader fileReader = IOHelper.fileReader(getConfigPath());
@@ -191,8 +189,6 @@ public class LocationConfigBean extends ConfigurationBase {
                 fadeOut(infoLabel, "Loaded...");
 
             });
-        });
-
 
     }
 

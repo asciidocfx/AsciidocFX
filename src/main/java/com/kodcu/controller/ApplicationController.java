@@ -40,7 +40,6 @@ import de.jensd.fx.fontawesome.AwesomeIcon;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
-import javafx.application.Platform;
 import javafx.beans.property.*;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
@@ -94,7 +93,6 @@ import java.nio.file.attribute.PosixFileAttributeView;
 import java.nio.file.attribute.PosixFilePermission;
 import java.security.CodeSource;
 import java.util.*;
-import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiPredicate;
@@ -553,10 +551,10 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             }
         });
 
-        threadService.runActionLater(() -> {
-            configurationService.loadConfigurations();
-            this.bindConfigurations();
-        }, true);
+        threadService.runTaskLater(() -> {
+            bindConfigurations();
+            configurationService.loadConfigurations(this::checkNewVersion);
+        });
 
         port = server.getEmbeddedServletContainer().getPort();
 
@@ -878,14 +876,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
         newDoc(null);
 
-        Platform.runLater(() -> {
-//            editorSplitPane.setDividerPositions(1);
-//            splitPane.setDividerPositions();
-        });
-
-        threadService.runTaskLater(this::checkNewVersion);
-//        threadService.runTaskLater(this::initializeAutoSaver);
-
     }
 
     private void initializeNashornConverter() {
@@ -1114,7 +1104,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         });
 
         storedConfigBean.workingDirectoryProperty().addListener((observable, oldValue, newValue) -> {
-            if (Objects.nonNull(newValue)) {
+            if (Objects.nonNull(newValue) && Objects.isNull(oldValue)) {
                 directoryService.changeWorkigDir(Paths.get(newValue));
             }
         });
@@ -1225,20 +1215,25 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     }
 
     private void checkNewVersion() {
-        try {
-            ApplicationLauncher.launchApplication("504", null, false, new ApplicationLauncher.Callback() {
-                        public void exited(int exitValue) {
-                            //TODO add your code here (not invoked on event dispatch thread)
-                        }
+        if (!editorConfigBean.getAutoUpdate())
+            return;
 
-                        public void prepareShutdown() {
-                            //TODO add your code here (not invoked on event dispatch thread)
+        threadService.runTaskLater(() -> {
+            try {
+                ApplicationLauncher.launchApplication("504", null, false, new ApplicationLauncher.Callback() {
+                            public void exited(int exitValue) {
+                                //TODO add your code here (not invoked on event dispatch thread)
+                            }
+
+                            public void prepareShutdown() {
+                                //TODO add your code here (not invoked on event dispatch thread)
+                            }
                         }
-                    }
-            );
-        } catch (IOException e) {
-            // logger.error("Problem occured while checking new version", e);
-        }
+                );
+            } catch (IOException e) {
+                // logger.error("Problem occured while checking new version", e);
+            }
+        });
     }
 
     private void generateODFDocument(boolean askPath) {
@@ -1665,7 +1660,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     @FXML
     public void changeWorkingDir(Event actionEvent) {
-        directoryService.changeWorkigDir();
+        directoryService.askWorkingDir();
     }
 
     @Override

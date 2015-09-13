@@ -148,16 +148,11 @@ public class DirectoryService {
         this.initialDirectory = initialDirectory;
     }
 
-    public void changeWorkigDir() {
+    public void askWorkingDir() {
         DirectoryChooser directoryChooser = this.newDirectoryChooser("Select Working Directory");
         File selectedDir = directoryChooser.showDialog(null);
         if (Objects.nonNull(selectedDir)) {
-            storedConfigBean.setWorkingDirectory(selectedDir.toString());
-            this.setWorkingDirectory(Optional.of(selectedDir.toPath()));
-            fileBrowser.browse(selectedDir.toPath());
-            fileWatchService.registerWatcher(selectedDir.toPath());
-            this.setInitialDirectory(Optional.ofNullable(selectedDir));
-
+            changeWorkigDir(selectedDir.toPath());
         }
     }
 
@@ -165,10 +160,8 @@ public class DirectoryService {
         if (Objects.isNull(path))
             return;
 
-        // it needs to invalidate file watchservice
-//        fileWatchService.invalidate();
-//
         storedConfigBean.setWorkingDirectory(path.toString());
+
         this.setWorkingDirectory(Optional.of(path));
         fileBrowser.browse(path);
         fileWatchService.registerWatcher(path);

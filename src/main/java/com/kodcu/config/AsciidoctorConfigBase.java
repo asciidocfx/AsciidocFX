@@ -183,47 +183,42 @@ public abstract class AsciidoctorConfigBase extends ConfigurationBase {
 
         setSafe(FXCollections.observableArrayList("safe", "secure", "server"));
 
-        threadService.runTaskLater(() -> {
+        FileReader fileReader = IOHelper.fileReader(getConfigPath());
+        JsonReader jsonReader = Json.createReader(fileReader);
 
-            FileReader fileReader = IOHelper.fileReader(getConfigPath());
-            JsonReader jsonReader = Json.createReader(fileReader);
+        JsonObject jsonObject = jsonReader.readObject();
 
-            JsonObject jsonObject = jsonReader.readObject();
+        String safe = jsonObject.getString("safe", "safe");
+        boolean sourcemap = jsonObject.getBoolean("sourcemap", false);
+        String backend = jsonObject.getString("backend", null);
+        boolean header_footer = jsonObject.getBoolean("header_footer", false);
+        JsonObject attributes = jsonObject.getJsonObject("attributes");
+        String jsPlatform = jsonObject.getString("jsPlatform", "Webkit");
 
-            String safe = jsonObject.getString("safe", "safe");
-            boolean sourcemap = jsonObject.getBoolean("sourcemap", false);
-            String backend = jsonObject.getString("backend", null);
-            boolean header_footer = jsonObject.getBoolean("header_footer", false);
-            JsonObject attributes = jsonObject.getJsonObject("attributes");
-            String jsPlatform = jsonObject.getString("jsPlatform", "Webkit");
+        IOHelper.close(jsonReader, fileReader);
 
-            IOHelper.close(jsonReader, fileReader);
+        threadService.runActionLater(() -> {
+            this.getSafe().set(0, safe);
+            this.sourcemap.set(sourcemap);
+            this.setBackend(backend);
+            this.setHeader_footer(header_footer);
+            this.setJsPlatform(JSPlatform.valueOf(JSPlatform.class, jsPlatform));
 
-            threadService.runActionLater(() -> {
-                this.getSafe().set(0, safe);
-                this.sourcemap.set(sourcemap);
-                this.setBackend(backend);
-                this.setHeader_footer(header_footer);
-                this.setJsPlatform(JSPlatform.valueOf(JSPlatform.class, jsPlatform));
+            ObservableList<AttributesTable> attrList = FXCollections.observableArrayList();
 
-                ObservableList<AttributesTable> attrList = FXCollections.observableArrayList();
-
-                if (Objects.nonNull(attributes)) {
-                    for (Map.Entry<String, JsonValue> attr : attributes.entrySet()) {
-                        AttributesTable attributesTable = new AttributesTable();
-                        attributesTable.setAttribute(attr.getKey());
-                        attributesTable.setValue(((JsonString) attr.getValue()).getString());
-                        attrList.add(attributesTable);
-                    }
+            if (Objects.nonNull(attributes)) {
+                for (Map.Entry<String, JsonValue> attr : attributes.entrySet()) {
+                    AttributesTable attributesTable = new AttributesTable();
+                    attributesTable.setAttribute(attr.getKey());
+                    attributesTable.setValue(((JsonString) attr.getValue()).getString());
+                    attrList.add(attributesTable);
                 }
+            }
 
-                setAttributes(attrList);
+            setAttributes(attrList);
 
-                fadeOut(infoLabel, "Loaded...");
-            });
+            fadeOut(infoLabel, "Loaded...");
         });
-
-
     }
 
     @Override

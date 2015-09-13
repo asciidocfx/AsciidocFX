@@ -3,6 +3,7 @@ package com.kodcu.config;
 import com.kodcu.component.PreviewTab;
 import com.kodcu.component.ScrollPaneBuilt;
 import com.kodcu.controller.ApplicationController;
+import com.kodcu.service.ThreadService;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Accordion;
 import javafx.scene.control.Tab;
@@ -26,11 +27,12 @@ public class ConfigurationService {
     private final DocbookConfigBean docbookConfigBean;
     private final ApplicationController controller;
     private final StoredConfigBean storedConfigBean;
+    private final ThreadService threadService;
     private final Accordion configAccordion = new Accordion();
     private final Tab mockTab = new PreviewTab("Editor Settings");
 
     @Autowired
-    public ConfigurationService(LocationConfigBean locationConfigBean, EditorConfigBean editorConfigBean, PreviewConfigBean previewConfigBean, HtmlConfigBean htmlConfigBean, OdfConfigBean odfConfigBean, DocbookConfigBean docbookConfigBean, ApplicationController controller, StoredConfigBean storedConfigBean) {
+    public ConfigurationService(LocationConfigBean locationConfigBean, EditorConfigBean editorConfigBean, PreviewConfigBean previewConfigBean, HtmlConfigBean htmlConfigBean, OdfConfigBean odfConfigBean, DocbookConfigBean docbookConfigBean, ApplicationController controller, StoredConfigBean storedConfigBean, ThreadService threadService) {
         this.locationConfigBean = locationConfigBean;
         this.editorConfigBean = editorConfigBean;
         this.previewConfigBean = previewConfigBean;
@@ -39,9 +41,10 @@ public class ConfigurationService {
         this.docbookConfigBean = docbookConfigBean;
         this.controller = controller;
         this.storedConfigBean = storedConfigBean;
+        this.threadService = threadService;
     }
 
-    public void loadConfigurations() {
+    public void loadConfigurations(Runnable... runnables) {
 
         VBox locationConfigForm = locationConfigBean.createForm();
         VBox editorConfigForm = editorConfigBean.createForm();
@@ -58,16 +61,23 @@ public class ConfigurationService {
         odfConfigBean.load();
         docbookConfigBean.load();
 
-        TitledPane editorConfigPane = new TitledPane("Editor Settings", ScrollPaneBuilt.content(editorConfigForm).full());
-        TitledPane locationConfigPane = new TitledPane("Location Settings", ScrollPaneBuilt.content(locationConfigForm).full());
-        TitledPane previewConfigPane = new TitledPane("Preview Settings", ScrollPaneBuilt.content(previewConfigForm).full());
-        TitledPane htmlConfigPane = new TitledPane("Html Settings", ScrollPaneBuilt.content(htmlConfigForm).full());
-        TitledPane odfConfigPane = new TitledPane("Odt Settings", ScrollPaneBuilt.content(odfConfigForm).full());
-        TitledPane docbookConfigPane = new TitledPane("Docbook Settings", ScrollPaneBuilt.content(docbookConfigForm).full());
 
-        configAccordion.setExpandedPane(editorConfigPane);
-        configAccordion.getPanes().addAll(editorConfigPane, locationConfigPane, previewConfigPane, htmlConfigPane, odfConfigPane, docbookConfigPane);
+        threadService.runActionLater(() -> {
+            TitledPane editorConfigPane = new TitledPane("Editor Settings", ScrollPaneBuilt.content(editorConfigForm).full());
+            TitledPane locationConfigPane = new TitledPane("Location Settings", ScrollPaneBuilt.content(locationConfigForm).full());
+            TitledPane previewConfigPane = new TitledPane("Preview Settings", ScrollPaneBuilt.content(previewConfigForm).full());
+            TitledPane htmlConfigPane = new TitledPane("Html Settings", ScrollPaneBuilt.content(htmlConfigForm).full());
+            TitledPane odfConfigPane = new TitledPane("Odt Settings", ScrollPaneBuilt.content(odfConfigForm).full());
+            TitledPane docbookConfigPane = new TitledPane("Docbook Settings", ScrollPaneBuilt.content(docbookConfigForm).full());
 
+            configAccordion.setExpandedPane(editorConfigPane);
+            configAccordion.getPanes().addAll(editorConfigPane, locationConfigPane, previewConfigPane, htmlConfigPane, odfConfigPane, docbookConfigPane);
+
+
+            for (Runnable runnable : runnables) {
+                runnable.run();
+            }
+        });
     }
 
     public void showConfig() {
