@@ -1,7 +1,6 @@
 package com.kodcu.boot;
 
 import com.install4j.api.launcher.StartupNotification;
-import com.kodcu.component.MyTab;
 import com.kodcu.controller.ApplicationController;
 import com.kodcu.service.ThreadService;
 import com.kodcu.service.ui.TabService;
@@ -11,13 +10,9 @@ import de.tototec.cmdoption.CmdlineParser;
 import de.tototec.cmdoption.CmdlineParserException;
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.Tab;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
@@ -174,6 +169,9 @@ public class AppStarter extends Application {
         }
 
         scene.getWindow().setOnCloseRequest(controller::closeAllTabs);
+
+        if (controller.getTabPane().getTabs().isEmpty())
+            controller.newDoc();
     }
 
     @Override
