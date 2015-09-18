@@ -102,6 +102,8 @@
                                   <MenuItem fx:id="addToFavoriteDir" onAction="#addToFavoriteDir" text="Add to Fav. Dirs"/>
                                   <Menu fx:id="favoriteDirMenu" text="Favorite Dirs"/>
                                   <SeparatorMenuItem />
+                                  <MenuItem  onAction="#openTerminalItem" text="Open in Terminal"/>
+                                  <SeparatorMenuItem />
                                   <MenuItem mnemonicParsing="false" text="Delete" fx:id="deletePathItem" />
                                 </items>
                               </ContextMenu>
@@ -155,9 +157,24 @@
                 </children>
               </HBox>
             </VBox>
-            <VBox minHeight="0" minWidth="0" fx:id="logVBox">
+            <TabPane fx:id="bottomTabPane" styleClass="" tabClosingPolicy="UNAVAILABLE" side="BOTTOM" >
+               <tabs>
+                 <Tab text="Log">
+                   <VBox minHeight="0" minWidth="0" fx:id="logVBox">
 
-            </VBox>
+                   </VBox>
+                 </Tab>
+                 <Tab fx:id="terminalTab" text="Terminal">
+                   <HBox>
+                     <children>
+                       <VBox fx:id="terminalLeftBox" spacing="5"/>
+                       <TabPane HBox.hgrow="ALWAYS" fx:id="terminalTabPane" focusTraversable="false"
+                                tabClosingPolicy="UNAVAILABLE" styleClass="floating"/>
+                     </children>
+                   </HBox>
+                 </Tab>
+               </tabs>
+            </TabPane>
           </items>
         </SplitPane>
         <AnchorPane minWidth="0"  style="">

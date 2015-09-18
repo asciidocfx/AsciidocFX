@@ -574,6 +574,37 @@
     -fx-font-weight: bold;
 }
 
+#terminalTabPane .text-field, #terminalTabPane .text-area {
+    -fx-font-family: 'Courier New', monospace, 'Monospaced';
+    -fx-background-color: white;
+    -fx-background-insets: null;
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+    -fx-border-radius: 0;
+    -fx-background-radius: 0;
+}
+
+#terminalTabPane .tab {
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+}
+
+#terminalTabPane .tab-content-area {
+    -fx-background-color: transparent;
+    -fx-padding: 0; /* 0 */
+}
+
+
+#terminalLeftBox {
+    -fx-padding: 5px;
+}
+
+#terminalTabPane {
+    -fx-padding: 5px;
+    -fx-open-tab-animation: NONE;
+    -fx-close-tab-animation: NONE;
+}
+
 /* ====   REMOVE ALL EFFECTS   ================================================= */
 .slider .thumb,
 .scroll-bar:horizontal > .decrement-button > .decrement-arrow,

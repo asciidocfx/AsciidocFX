@@ -33,6 +33,7 @@ import com.kodcu.service.ui.FileBrowseService;
 import com.kodcu.service.ui.IndikatorService;
 import com.kodcu.service.ui.TabService;
 import com.kodcu.service.ui.TooltipTimeFixService;
+import com.kodcu.shell.ShellTab;
 import com.sun.javafx.application.HostServicesDelegate;
 import com.sun.javafx.stage.StageHelper;
 import de.jensd.fx.fontawesome.AwesomeDude;
@@ -64,7 +65,6 @@ import javafx.scene.text.Text;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
 import javafx.util.Duration;
 import netscape.javascript.JSObject;
 import org.slf4j.Logger;
@@ -95,6 +95,7 @@ import java.nio.file.attribute.PosixFilePermission;
 import java.security.CodeSource;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
@@ -109,6 +110,10 @@ import static java.nio.file.StandardOpenOption.*;
 public class ApplicationController extends TextWebSocketHandler implements Initializable {
 
     public Label goUpLabel;
+    public VBox terminalLeftBox;
+    public TabPane terminalTabPane;
+    public TabPane bottomTabPane;
+    public Tab terminalTab;
     private Logger logger = LoggerFactory.getLogger(ApplicationController.class);
 
     public TabPane previewTabPane;
@@ -539,6 +544,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         initializePaths();
         initializePosixPermissions();
         initializeNashornConverter();
+        initializeTerminal();
 
         threadService.runTaskLater(() -> {
             while (true) {
@@ -868,6 +874,81 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         });
 
         tabService.initializeTabChangeListener(tabPane);
+    }
+
+    private void initializeTerminal() {
+        Button newTerminalButton = AwesomeDude.createIconButton(AwesomeIcon.PLUS);
+        Button closeTerminalButton = AwesomeDude.createIconButton(AwesomeIcon.CLOSE);
+
+        terminalLeftBox.getChildren().add(newTerminalButton);
+        terminalLeftBox.getChildren().add(closeTerminalButton);
+
+        newTerminalButton.setOnAction(this::newTerminal);
+        closeTerminalButton.setOnAction(this::closeTerminal);
+
+        closeTerminalButton.setFocusTraversable(false);
+        newTerminalButton.setFocusTraversable(false);
+
+        bottomTabPane.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if ("Terminal".equals(newValue.getText())) {
+                if (terminalTabPane.getTabs().isEmpty()) {
+                    newTerminal(null);
+                } else {
+                    ((ShellTab) terminalTabPane.getSelectionModel().getSelectedItem()).focusCommandInput();
+                }
+            }
+        });
+
+    }
+
+    private AtomicInteger terminalNumber = new AtomicInteger();
+
+    @FXML
+    public void newTerminal(ActionEvent actionEvent, Path... path) {
+
+        if (terminalTabPane.getTabs().isEmpty()) {
+            terminalNumber.set(0);
+        }
+
+        if (showHideLogs.getRotate() % 360 == 0){
+            showHideLogs.setRotate(showHideLogs.getRotate() + 180);
+            editorSplitPane.setDividerPositions(0.5);
+        }
+
+        ShellTab shellTab = applicationContext.getBean(ShellTab.class);
+        shellTab.setText(String.format("Terminal#%d", terminalNumber.incrementAndGet()));
+        terminalTabPane.getTabs().add(shellTab);
+        terminalTabPane.getSelectionModel().select(shellTab);
+        shellTab.focusCommandInput();
+
+        bottomTabPane.getSelectionModel().select(terminalTab);
+
+        Path terminalPath = Optional.ofNullable(path).filter(e -> e.length > 0).map(e -> e[0]).orElse(null);
+
+        shellTab.initialize(terminalPath);
+    }
+
+    @FXML
+    public void closeTerminal(ActionEvent actionEvent) {
+        ShellTab shellTab = (ShellTab) terminalTabPane.getSelectionModel().getSelectedItem();
+        Optional.ofNullable(shellTab).ifPresent(ShellTab::destroy);
+    }
+
+    public void closeAllTerminal(ActionEvent actionEvent) {
+        ObservableList<Tab> tabs = FXCollections.observableArrayList(terminalTabPane.getTabs());
+
+        for (Tab tab : tabs) {
+            ((ShellTab) tab).destroy();
+        }
+    }
+
+    public void closeOtherTerminals(ActionEvent actionEvent) {
+        ObservableList<Tab> tabs = FXCollections.observableArrayList(terminalTabPane.getTabs());
+        tabs.remove(terminalTabPane.getSelectionModel().getSelectedItem());
+
+        for (Tab tab : tabs) {
+            ((ShellTab) tab).destroy();
+        }
     }
 
     private void initializeNashornConverter() {
@@ -2528,5 +2609,17 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             if (close == ButtonType.CANCEL)
                 event.consume();
         });
+    }
+
+    public void openTerminalItem(ActionEvent actionEvent) {
+        Path selectedTabPath = tabService.getSelectedTabPath();
+
+        if (Objects.nonNull(selectedTabPath)) {
+            if (!Files.isDirectory(selectedTabPath)) {
+                selectedTabPath = selectedTabPath.getParent();
+            }
+        }
+
+        newTerminal(actionEvent, selectedTabPath);
     }
 }

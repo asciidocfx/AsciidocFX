@@ -28,7 +28,7 @@ public class ThreadService {
     }
 
     // Runs Task in background thread pool
-    public <T> void runTaskLater(Runnable runnable) {
+    public <T> Future<?> runTaskLater(Runnable runnable) {
 
         Task<T> task = new Task<T>() {
             @Override
@@ -38,7 +38,7 @@ public class ThreadService {
             }
         };
 
-        threadPollWorker.submit(task);
+        return threadPollWorker.submit(task);
     }
 
     // Runs task in JavaFX Thread
@@ -65,6 +65,11 @@ public class ThreadService {
         } else {
             runActionLater(runnable);
         }
+    }
+
+    public void start(Runnable runnable) {
+        Thread thread = new Thread(runnable);
+        thread.start();
     }
 
     public Executor executor() {
