@@ -1,6 +1,7 @@
 package com.kodcu.component;
 
 import com.kodcu.controller.ApplicationController;
+import com.kodcu.engine.AsciidocWebkitConverter;
 import com.kodcu.other.Current;
 import com.kodcu.service.ThreadService;
 import netscape.javascript.JSObject;
@@ -17,10 +18,12 @@ public class SlidePane extends ViewPanel {
 
     private String backend = "revealjs";
     private Logger logger = LoggerFactory.getLogger(SlidePane.class);
+    private final AsciidocWebkitConverter asciidocWebkitConverter;
 
     @Autowired
-    public SlidePane(ThreadService threadService, ApplicationController controller, Current current) {
+    public SlidePane(ThreadService threadService, ApplicationController controller, Current current, AsciidocWebkitConverter asciidocWebkitConverter) {
         super(threadService, controller, current);
+        this.asciidocWebkitConverter = asciidocWebkitConverter;
     }
 
     public void replaceSlides(String rendered) {
@@ -56,7 +59,9 @@ public class SlidePane extends ViewPanel {
         if (stopJumping.get())
             return;
 
-        runScroller(text);
+        String selection = asciidocWebkitConverter.findRenderedSelection(text);
+
+        runScroller(selection);
     }
 
     public String findRenderedSelection(String content) {

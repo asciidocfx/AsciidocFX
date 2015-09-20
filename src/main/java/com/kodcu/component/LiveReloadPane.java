@@ -3,11 +3,17 @@ package com.kodcu.component;
 import com.kodcu.controller.ApplicationController;
 import com.kodcu.other.Current;
 import com.kodcu.other.IOHelper;
+import com.kodcu.other.PositionalXMLReader;
 import com.kodcu.service.ThreadService;
+import org.joox.JOOX;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 import java.nio.file.Path;
+import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created by usta on 09.04.2015.
@@ -18,9 +24,34 @@ import java.nio.file.Path;
 @Component
 public class LiveReloadPane extends ViewPanel {
 
+    private ConcurrentHashMap<String, String> lineXPathMap = new ConcurrentHashMap<>();
+
     @Autowired
     public LiveReloadPane(ThreadService threadService, ApplicationController controller, Current current) {
         super(threadService, controller, current);
+
+        webEngine().documentProperty().addListener((observable, oldDom, dom) -> {
+
+            if (Objects.nonNull(dom)) {
+
+                threadService.runTaskLater(() -> {
+                    try {
+                        Document document = PositionalXMLReader.readXML(dom);
+
+                        JOOX.$(document).find("*").each(context -> {
+                            Element element = context.element();
+
+                            String lineNumber = (String) element.getUserData("lineNumber");
+
+                            lineXPathMap.put((Long.valueOf(lineNumber) + 2) + "", JOOX.$(context).xpath());
+                        });
+
+                    } catch (Exception e) {
+                    }
+                });
+
+            }
+        });
     }
 
     @Override
@@ -40,8 +71,13 @@ public class LiveReloadPane extends ViewPanel {
     }
 
     @Override
-    public void scrollByLine(String text) {
-        // no-op
+    public void scrollByLine(String lineNumber) {
+
+        String xPath = lineXPathMap.get(lineNumber);
+
+        if (Objects.nonNull(xPath)) {
+            webEngine().executeScript(String.format("scrollByXPath('%s')", xPath));
+        }
     }
 
     public void initializeDiffReplacer() {
@@ -49,7 +85,9 @@ public class LiveReloadPane extends ViewPanel {
             Path configPath = controller.getConfigPath();
             String diffHtml = IOHelper.readFile(configPath.resolve("public/js/diffhtml.js"));
             String extension = IOHelper.readFile(configPath.resolve("public/js/diffhtml-extension.js"));
+            String live = IOHelper.readFile(configPath.resolve("public/js/live-extension.js"));
             threadService.runActionLater(() -> {
+                webEngine().executeScript(live);
                 webEngine().executeScript(diffHtml);
                 webEngine().executeScript(extension);
             });

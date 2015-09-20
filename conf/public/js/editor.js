@@ -24,7 +24,13 @@ var updateDelay = 100;
 //var maxTop = editor.renderer.layerConfig.maxHeight - editor.renderer.$size.scrollerHeight + editor.renderer.scrollMargin.bottom;
 //afx.onscroll(editor.getSession().getScrollTop(), maxTop);
 
-var updateScrollPosition = function (scroll) {
+
+function updateHtmlScroll(){
+    var row = editor.renderer.getFirstFullyVisibleRow();
+    afx.scrollByLine(row + "");
+}
+
+function updateMarkupScroll() {
 
     var row = editor.renderer.getFirstFullyVisibleRow();
 
@@ -68,11 +74,12 @@ editor.getSession().on('changeScrollTop', function (scroll) {
     var maxTop = editor.renderer.layerConfig.maxHeight - editor.renderer.$size.scrollerHeight + editor.renderer.scrollMargin.bottom;
     var scrollTop = editor.getSession().getScrollTop();
 
-
-    if (Math.abs(maxTop - scrollTop) < 10 || scrollTop < 10 || afx.isLiveReloadPane()) {
+    if (Math.abs(maxTop - scrollTop) < 10 || scrollTop < 10) {
         afx.onscroll(scrollTop, maxTop);
         return;
     }
+
+    var mode = editorMode();
 
     var firstly = editor.getFirstVisibleRow();
 
@@ -80,7 +87,13 @@ editor.getSession().on('changeScrollTop', function (scroll) {
         if (firstly == editor.getFirstVisibleRow())
             return;
         clearInterval(interval);
-        updateScrollPosition(scroll)
+
+        if (mode == "asciidoc" || mode == "markdown") {
+            updateMarkupScroll();
+        }
+        else if (mode == "html") {
+            updateHtmlScroll();
+        }
     }, 50);
 });
 

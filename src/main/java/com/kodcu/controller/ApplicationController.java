@@ -1783,8 +1783,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             try {
                 Node content = previewTab.getContent();
                 if (content instanceof ViewPanel) {
-                    String selection = asciidocWebkitConverter.findRenderedSelection(text);
-                    ((ViewPanel) content).scrollByLine(selection);
+                    ((ViewPanel) content).scrollByLine(text);
                 }
             } catch (Exception e) {
                 logger.debug(e.getMessage(), e);

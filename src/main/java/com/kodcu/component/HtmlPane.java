@@ -5,6 +5,7 @@ import com.kodcu.config.HtmlConfigBean;
 import com.kodcu.config.OdfConfigBean;
 import com.kodcu.config.PreviewConfigBean;
 import com.kodcu.controller.ApplicationController;
+import com.kodcu.engine.AsciidocWebkitConverter;
 import com.kodcu.other.Current;
 import com.kodcu.service.ThreadService;
 import javafx.beans.property.BooleanProperty;
@@ -27,15 +28,17 @@ public class HtmlPane extends ViewPanel {
 
     @Value("${application.index.url}")
     private String browseUrl;
+    private final AsciidocWebkitConverter asciidocWebkitConverter;
 
     @Autowired
-    public HtmlPane(ThreadService threadService, ApplicationController controller, Current current, PreviewConfigBean previewConfigBean, OdfConfigBean odfConfigBean, DocbookConfigBean docbookConfigBean, HtmlConfigBean htmlConfigBean) {
+    public HtmlPane(ThreadService threadService, ApplicationController controller, Current current, PreviewConfigBean previewConfigBean, OdfConfigBean odfConfigBean, DocbookConfigBean docbookConfigBean, HtmlConfigBean htmlConfigBean, AsciidocWebkitConverter asciidocWebkitConverter) {
         super(threadService, controller, current);
         this.previewConfigBean = previewConfigBean;
         this.odfConfigBean = odfConfigBean;
         this.docbookConfigBean = docbookConfigBean;
         this.htmlConfigBean = htmlConfigBean;
         this.threadService = threadService;
+        this.asciidocWebkitConverter = asciidocWebkitConverter;
     }
 
 
@@ -77,6 +80,8 @@ public class HtmlPane extends ViewPanel {
         if (stopJumping.get())
             return;
 
-        runScroller(text);
+        String selection = asciidocWebkitConverter.findRenderedSelection(text);
+
+        runScroller(selection);
     }
 }

@@ -149,8 +149,6 @@ public abstract class ViewPanel extends AnchorPane {
     public abstract void runScroller(String text);
 
     private void runScrolling(Object pos, Object max) {
-        if (Objects.isNull(pos) || Objects.isNull(max))
-            return;
 
         Number position = (Number) pos; // current scroll position for editor
         Number maximum = (Number) max; // max scroll position for editor
