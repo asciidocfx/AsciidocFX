@@ -114,6 +114,11 @@ public class LocationConfigBean extends ConfigurationBase {
 
 
     @Override
+    public String formName() {
+        return "Location Settings";
+    }
+
+    @Override
     public VBox createForm() {
 
         FXForm locationConfigForm = new FXFormBuilder<>()

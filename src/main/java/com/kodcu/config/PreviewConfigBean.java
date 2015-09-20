@@ -16,6 +16,11 @@ public class PreviewConfigBean extends AsciidoctorConfigBase {
     private final ApplicationController controller;
     private final ThreadService threadService;
 
+    @Override
+    public String formName() {
+        return "Preview Settings";
+    }
+
     @Autowired
     public PreviewConfigBean(ApplicationController controller, ThreadService threadService) {
         super(controller, threadService);

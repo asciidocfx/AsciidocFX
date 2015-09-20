@@ -19,6 +19,11 @@ public class OdfConfigBean extends AsciidoctorConfigBase {
     private final ApplicationController controller;
     private final ThreadService threadService;
 
+    @Override
+    public String formName() {
+        return "Odt Settings";
+    }
+
     @Autowired
     public OdfConfigBean(ApplicationController controller, ThreadService threadService) {
         super(controller, threadService);

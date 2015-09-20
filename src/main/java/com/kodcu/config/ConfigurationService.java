@@ -1,17 +1,21 @@
 package com.kodcu.config;
 
 import com.kodcu.component.PreviewTab;
-import com.kodcu.component.ScrollPaneBuilt;
+import com.kodcu.component.ToggleButtonBuilt;
 import com.kodcu.controller.ApplicationController;
 import com.kodcu.service.ThreadService;
 import javafx.collections.ObservableList;
-import javafx.scene.control.Accordion;
-import javafx.scene.control.Tab;
-import javafx.scene.control.TabPane;
-import javafx.scene.control.TitledPane;
+import javafx.scene.control.*;
+import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * Created by usta on 17.07.2015.
@@ -29,6 +33,7 @@ public class ConfigurationService {
     private final StoredConfigBean storedConfigBean;
     private final ThreadService threadService;
     private final Accordion configAccordion = new Accordion();
+    private final VBox configBox = new VBox(5);
     private final Tab mockTab = new PreviewTab("Editor Settings");
 
     @Autowired
@@ -46,13 +51,6 @@ public class ConfigurationService {
 
     public void loadConfigurations(Runnable... runnables) {
 
-        VBox locationConfigForm = locationConfigBean.createForm();
-        VBox editorConfigForm = editorConfigBean.createForm();
-        VBox previewConfigForm = previewConfigBean.createForm();
-        VBox htmlConfigForm = htmlConfigBean.createForm();
-        VBox odfConfigForm = odfConfigBean.createForm();
-        VBox docbookConfigForm = docbookConfigBean.createForm();
-
         locationConfigBean.load();
         storedConfigBean.load();
         editorConfigBean.load();
@@ -61,18 +59,46 @@ public class ConfigurationService {
         odfConfigBean.load();
         docbookConfigBean.load();
 
+        List<ConfigurationBase> configBeanList = Arrays.asList(editorConfigBean,
+                locationConfigBean,
+                previewConfigBean,
+                htmlConfigBean,
+                docbookConfigBean,
+                odfConfigBean);
 
+        ScrollPane formsPane = new ScrollPane();
+
+        ToggleGroup toggleGroup = new ToggleGroup();
+        FlowPane flowPane = new FlowPane(5, 5);
+
+        List<ToggleButton> toggleButtons = new ArrayList<>();
+        VBox editorConfigForm = null;
+
+        for (ConfigurationBase configBean : configBeanList) {
+            VBox form = configBean.createForm();
+            ToggleButton toggleButton = ToggleButtonBuilt.item(configBean.formName()).click(event -> {
+                formsPane.setContent(form);
+            });
+            toggleButtons.add(toggleButton);
+
+            if (Objects.isNull(editorConfigForm))
+                editorConfigForm = form;
+        }
+
+        final VBox finalEditorConfigForm = editorConfigForm;
         threadService.runActionLater(() -> {
-            TitledPane editorConfigPane = new TitledPane("Editor Settings", ScrollPaneBuilt.content(editorConfigForm).full());
-            TitledPane locationConfigPane = new TitledPane("Location Settings", ScrollPaneBuilt.content(locationConfigForm).full());
-            TitledPane previewConfigPane = new TitledPane("Preview Settings", ScrollPaneBuilt.content(previewConfigForm).full());
-            TitledPane htmlConfigPane = new TitledPane("Html Settings", ScrollPaneBuilt.content(htmlConfigForm).full());
-            TitledPane odfConfigPane = new TitledPane("Odt Settings", ScrollPaneBuilt.content(odfConfigForm).full());
-            TitledPane docbookConfigPane = new TitledPane("Docbook Settings", ScrollPaneBuilt.content(docbookConfigForm).full());
 
-            configAccordion.setExpandedPane(editorConfigPane);
-            configAccordion.getPanes().addAll(editorConfigPane, locationConfigPane, previewConfigPane, htmlConfigPane, odfConfigPane, docbookConfigPane);
+            formsPane.setContent(finalEditorConfigForm);
 
+            for (ToggleButton toggleButton : toggleButtons) {
+                toggleGroup.getToggles().add(toggleButton);
+                flowPane.getChildren().add(toggleButton);
+            }
+
+            configBox.getChildren().add(flowPane);
+            configBox.getChildren().add(formsPane);
+
+            VBox.setVgrow(formsPane, Priority.ALWAYS);
 
             for (Runnable runnable : runnables) {
                 runnable.run();
@@ -86,7 +112,7 @@ public class ConfigurationService {
         ObservableList<Tab> tabs = previewTabPane.getTabs();
 
         if (!tabs.contains(mockTab)) {
-            Tab configurationTab = new PreviewTab("Editor Settings", configAccordion);
+            Tab configurationTab = new PreviewTab("Editor Settings", configBox);
             tabs.add(configurationTab);
         }
 

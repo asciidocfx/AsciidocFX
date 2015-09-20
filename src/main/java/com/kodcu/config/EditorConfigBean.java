@@ -251,6 +251,11 @@ public class EditorConfigBean extends ConfigurationBase {
     }
 
     @Override
+    public String formName() {
+        return "Editor Settings";
+    }
+
+    @Override
     public VBox createForm() {
 
         FXForm editorConfigForm = new FXFormBuilder<>()

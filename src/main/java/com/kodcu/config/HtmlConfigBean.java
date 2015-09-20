@@ -16,6 +16,11 @@ public class HtmlConfigBean extends AsciidoctorConfigBase {
     private final ApplicationController controller;
     private final ThreadService threadService;
 
+    @Override
+    public String formName() {
+        return "HTML Config";
+    }
+
     @Autowired
     public HtmlConfigBean(ApplicationController controller, ThreadService threadService) {
         super(controller, threadService);

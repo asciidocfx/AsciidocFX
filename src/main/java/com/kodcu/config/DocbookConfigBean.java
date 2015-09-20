@@ -16,6 +16,11 @@ public class DocbookConfigBean extends AsciidoctorConfigBase {
     private final ApplicationController controller;
     private final ThreadService threadService;
 
+    @Override
+    public String formName() {
+        return "Docbook Settings";
+    }
+
     @Autowired
     public DocbookConfigBean(ApplicationController controller, ThreadService threadService) {
         super(controller, threadService);

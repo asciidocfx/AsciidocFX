@@ -34,6 +34,8 @@ public abstract class ConfigurationBase {
     private final ApplicationController controller;
     private final ThreadService threadService;
 
+    public abstract String formName();
+
     @Value("${application.config.folder}")
     private String userHomeConfigFolder;
 

@@ -31,6 +31,11 @@ public class StoredConfigBean extends ConfigurationBase {
     private ObservableList<String> favoriteDirectories = FXCollections.observableArrayList();
 
 
+    @Override
+    public String formName() {
+        return "Stored Settings";
+    }
+
     @Autowired
     public StoredConfigBean(ApplicationController controller, ThreadService threadService) {
         super(controller, threadService);
