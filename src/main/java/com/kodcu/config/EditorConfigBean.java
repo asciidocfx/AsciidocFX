@@ -60,6 +60,9 @@ public class EditorConfigBean extends ConfigurationBase {
     private BooleanProperty showGutter = new SimpleBooleanProperty(false);
     private ObjectProperty<ObservableList<String>> defaultLanguage = new SimpleObjectProperty<>(FXCollections.observableArrayList());
     private BooleanProperty autoUpdate = new SimpleBooleanProperty(true);
+    private StringProperty terminalCharset = new SimpleStringProperty("UTF-8");
+    private StringProperty terminalWinCommand = new SimpleStringProperty("cmd.exe");
+    private StringProperty terminalNixCommand = new SimpleStringProperty("/bin/bash");
 
     private Logger logger = LoggerFactory.getLogger(EditorConfigBean.class);
 
@@ -211,12 +214,48 @@ public class EditorConfigBean extends ConfigurationBase {
         this.autoUpdate.set(autoUpdate);
     }
 
+    public String getTerminalCharset() {
+        return terminalCharset.get();
+    }
+
+    public StringProperty terminalCharsetProperty() {
+        return terminalCharset;
+    }
+
+    public void setTerminalCharset(String terminalCharset) {
+        this.terminalCharset.set(terminalCharset);
+    }
+
+    public String getTerminalNixCommand() {
+        return terminalNixCommand.get();
+    }
+
+    public StringProperty terminalNixCommandProperty() {
+        return terminalNixCommand;
+    }
+
+    public void setTerminalNixCommand(String terminalNixCommand) {
+        this.terminalNixCommand.set(terminalNixCommand);
+    }
+
+    public String getTerminalWinCommand() {
+        return terminalWinCommand.get();
+    }
+
+    public StringProperty terminalWinCommandProperty() {
+        return terminalWinCommand;
+    }
+
+    public void setTerminalWinCommand(String terminalWinCommand) {
+        this.terminalWinCommand.set(terminalWinCommand);
+    }
+
     @Override
     public VBox createForm() {
 
         FXForm editorConfigForm = new FXFormBuilder<>()
                 .resourceBundle(ResourceBundle.getBundle("editorConfig"))
-                .includeAndReorder("editorTheme", "fontFamily", "fontSize", "scrollSpeed", "useWrapMode", "wrapLimit", "showGutter", "defaultLanguage", "autoUpdate")
+                .includeAndReorder("editorTheme", "fontFamily", "fontSize", "scrollSpeed", "useWrapMode", "wrapLimit", "showGutter", "defaultLanguage", "autoUpdate","terminalWinCommand","terminalNixCommand","terminalCharset")
                 .build();
 
         DefaultFactoryProvider editorConfigFormProvider = new DefaultFactoryProvider();
@@ -271,6 +310,9 @@ public class EditorConfigBean extends ConfigurationBase {
         boolean showGutter = jsonObject.getBoolean("showGutter", false);
         int wrapLimit = jsonObject.getInt("wrapLimit", 0);
         boolean autoUpdate = jsonObject.getBoolean("autoUpdate", true);
+        String terminalWinCommand = jsonObject.getString("terminalWinCommand", "cmd.exe");
+        String terminalNixCommand = jsonObject.getString("terminalNixCommand", "/bin/bash");
+        String terminalCharset = jsonObject.getString("terminalCharset", "UTF-8");
 
         IOHelper.close(jsonReader, fileReader);
 
@@ -283,6 +325,9 @@ public class EditorConfigBean extends ConfigurationBase {
             this.setShowGutter(showGutter);
             this.setWrapLimit(wrapLimit);
             this.setAutoUpdate(autoUpdate);
+            this.setTerminalWinCommand(terminalWinCommand);
+            this.setTerminalNixCommand(terminalNixCommand);
+            this.setTerminalCharset(terminalCharset);
 
             if (jsonObject.containsKey("scrollSpeed")) {
                 this.setScrollSpeed(jsonObject.getJsonNumber("scrollSpeed").doubleValue());
@@ -357,7 +402,10 @@ public class EditorConfigBean extends ConfigurationBase {
                 .add("defaultLanguage", getDefaultLanguage().get(0))
                 .add("firstSplitter", getFirstSplitter())
                 .add("secondSplitter", getSecondSplitter())
-                .add("autoUpdate", getAutoUpdate());
+                .add("autoUpdate", getAutoUpdate())
+                .add("terminalCharset", getTerminalCharset())
+                .add("terminalWinCommand", getTerminalWinCommand())
+                .add("terminalNixCommand", getTerminalNixCommand());
 
         return objectBuilder.build();
     }

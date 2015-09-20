@@ -1,5 +1,6 @@
 package com.kodcu.shell;
 
+import com.kodcu.config.EditorConfigBean;
 import com.kodcu.controller.ApplicationController;
 import com.kodcu.service.DirectoryService;
 import com.kodcu.service.ThreadService;
@@ -19,6 +20,7 @@ import java.io.*;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.LinkedList;
 import java.util.Optional;
 
@@ -45,12 +47,14 @@ public class ShellTab extends Tab {
     private final ApplicationController controller;
     private final ThreadService threadService;
     private final DirectoryService directoryService;
+    private final EditorConfigBean editorConfigBean;
 
     @Autowired
-    public ShellTab(ApplicationController controller, ThreadService threadService, DirectoryService directoryService) {
+    public ShellTab(ApplicationController controller, ThreadService threadService, DirectoryService directoryService, EditorConfigBean editorConfigBean) {
         this.controller = controller;
         this.threadService = threadService;
         this.directoryService = directoryService;
+        this.editorConfigBean = editorConfigBean;
 
         VBox.setVgrow(textArea, Priority.ALWAYS);
         vertical.getChildren().add(textArea);
@@ -148,14 +152,32 @@ public class ShellTab extends Tab {
     public void print(String text) {
 
         threadService.runActionLater(() -> {
-            if (text.contains(">") || text.contains("$")) {
-                String[] split = text.split(">|\\$", 2);
-                directoryField.setText(split[0]);
-            } else {
-                textArea.appendText(text + "\n");
-            }
-        });
+                    if (text.contains(">") || text.contains("$")) {
+                        String[] split = text.split(">|\\$", 2);
 
+                        if (split.length > 1) {
+                            Optional<Path> optional = Optional.empty();
+                            try {
+                                optional = Optional.ofNullable(split[0])
+                                        .map(Paths::get)
+                                        .filter(Files::isDirectory)
+                                        .filter(Files::exists);
+
+                                if (optional.isPresent()) {
+                                    directoryField.setText(split[0]);
+                                }
+                            } catch (Exception e) {
+                            }
+
+                            if (!optional.isPresent()) {
+                                textArea.appendText(text + "\n");
+                            }
+                        }
+                    } else {
+                        textArea.appendText(text + "\n");
+                    }
+                }
+        );
     }
 
     private void clearHistory() {
@@ -182,6 +204,7 @@ public class ShellTab extends Tab {
 
             return this;
         }
+
     }
 
     public void command(String command) {
@@ -203,9 +226,9 @@ public class ShellTab extends Tab {
 
         String[] commands;
         if (os.contains("win")) {
-            commands = new String[]{"cmd.exe"};
+            commands = editorConfigBean.getTerminalWinCommand().split("\\|");
         } else {
-            commands = new String[]{"/usr/bin/bash", "-c"};
+            commands = editorConfigBean.getTerminalNixCommand().split("\\|");
         }
 
         ProcessBuilder processBuilder = new ProcessBuilder(commands);
@@ -222,7 +245,7 @@ public class ShellTab extends Tab {
 
         this.process = processBuilder.start();
 
-        Charset charset = Charset.forName("UTF-8");
+        Charset charset = Charset.forName(editorConfigBean.getTerminalCharset());
         this.inputReader = new BufferedReader(new InputStreamReader(process.getInputStream(), charset));
         this.errorReader = new BufferedReader(new InputStreamReader(process.getErrorStream(), charset));
         this.outputWriter = new BufferedWriter(new OutputStreamWriter(process.getOutputStream(), charset));
