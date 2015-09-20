@@ -181,20 +181,24 @@
           <children>
             <VBox styleClass="preview-box" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
               <children>
-                <HBox prefHeight="33.0" prefWidth="-1.0" spacing="15.0" styleClass="menu-hbox, convert-box">
+                <HBox styleClass="menu-hbox, convert-box">
                   <children>
-                    <ProgressIndicator fx:id="indikator" managed="false" maxHeight="20.0" maxWidth="20.0" minHeight="20.0" minWidth="20.0" prefHeight="20.0" prefWidth="20.0" progress="-1.0" visible="false" />
-                    <Label fx:id="htmlPro" minWidth="-Infinity" styleClass="html" text="HTML" />
-                    <Label fx:id="pdfPro" minWidth="-Infinity" styleClass="pdf" text="PDF" />
-                    <Label fx:id="ebookPro" minWidth="-Infinity" styleClass="ebook" text="Ebook" />
-                    <Label fx:id="docbookPro" minWidth="-Infinity" styleClass="docbook" text="Docbook" />
-                    <Label fx:id="odfPro" minWidth="-Infinity" styleClass="docbook" text="Odt" />
+                    <FlowPane prefHeight="33.0" prefWidth="-1.0" hgap="15" vgap="5">
+                      <children>
+                        <ProgressIndicator fx:id="indikator" managed="false" maxHeight="20.0" maxWidth="20.0" minHeight="20.0" minWidth="20.0" prefHeight="20.0" prefWidth="20.0" progress="-1.0" visible="false" />
+                        <Label fx:id="htmlPro" minWidth="-Infinity" styleClass="html" text="HTML" />
+                        <Label fx:id="pdfPro" minWidth="-Infinity" styleClass="pdf" text="PDF" />
+                        <Label fx:id="ebookPro" minWidth="-Infinity" styleClass="ebook" text="Ebook" />
+                        <Label fx:id="docbookPro" minWidth="-Infinity" styleClass="docbook" text="Docbook" />
+                        <Label fx:id="odfPro" minWidth="-Infinity" styleClass="docbook" text="Odt" />
+                      </children>
+                    </FlowPane>
                     <Pane maxWidth="1.7976931348623157E308" prefHeight="1.0" prefWidth="1.0" HBox.hgrow="ALWAYS">
                       <HBox.margin>
                         <Insets />
                       </HBox.margin>
                     </Pane>
-                    <Label fx:id="browserPro" minWidth="-Infinity" styleClass="browser" text="Browser" textAlignment="LEFT" />
+                    <Label alignment="TOP_RIGHT" fx:id="browserPro" minWidth="-Infinity" styleClass="browser" text="Browser" textAlignment="LEFT" />
                   </children>
                   <padding>
                     <Insets bottom="5.0" left="15.0" right="15.0" top="5.0" />
