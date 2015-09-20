@@ -1540,18 +1540,14 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                 errorToggle, warnToggle, infoToggle, debugToggle,
                 searchLogField, clearLogsButton, browseLogsButton);
 
-        HBox logHBox = new HBox();
+        FlowPane logFlowPane =new FlowPane(5,5);
 
         for (Control control : controls) {
-            logHBox.getChildren().add(control);
-            HBox.setMargin(control, new Insets(3));
+            logFlowPane.getChildren().add(control);
             control.prefHeightProperty().bind(searchLogField.heightProperty());
         }
 
         AwesomeDude.setIcon(showHideLogs, AwesomeIcon.CHEVRON_CIRCLE_UP, "14.0");
-
-        HBox.setMargin(showHideLogs, new Insets(0, 0, 0, 3));
-        HBox.setMargin(statusText, new Insets(0, 3, 0, 0));
 
         showHideLogs.setOnMouseClicked(event -> {
             showHideLogs.getStyleClass().removeAll("red-label");
@@ -1574,7 +1570,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             }
         });
 
-        logVBox.getChildren().addAll(logHBox, logViewer);
+        logVBox.getChildren().addAll(logFlowPane, logViewer);
 
         VBox.setVgrow(logViewer, Priority.ALWAYS);
 

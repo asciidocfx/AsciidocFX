@@ -160,7 +160,7 @@
             <TabPane fx:id="bottomTabPane" styleClass="" tabClosingPolicy="UNAVAILABLE" side="BOTTOM" >
                <tabs>
                  <Tab text="Log">
-                   <VBox minHeight="0" minWidth="0" fx:id="logVBox">
+                   <VBox minHeight="0" minWidth="0" spacing="3" fx:id="logVBox">
 
                    </VBox>
                  </Tab>
