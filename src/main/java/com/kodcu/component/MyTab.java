@@ -117,8 +117,7 @@ public class MyTab extends Tab {
             closeIt();
             return ButtonType.YES;
         } else if (isNew()) { // else if is new
-            Optional<ButtonType> alert = AlertHelper.saveAlert();
-            ButtonType type = alert.orElse(ButtonType.CANCEL);
+            ButtonType type = AlertHelper.saveAlert().orElse(ButtonType.CANCEL);
 
             if (type == ButtonType.YES) {
                 closeIt();
@@ -129,10 +128,15 @@ public class MyTab extends Tab {
             if (isSaved()) {
                 closeIt();
                 return ButtonType.YES;
+            } else {
+                ButtonType type = AlertHelper.saveAlert().orElse(ButtonType.CANCEL);
+
+                if (type == ButtonType.YES) {
+                    closeIt();
+                }
+                return type;
             }
         }
-
-        return ButtonType.CANCEL;
     }
 
     private boolean isDirty() {
@@ -245,6 +249,9 @@ public class MyTab extends Tab {
         }
 
         String editorValue = editorPane.getEditorValue();
+
+        IOHelper.createDirectories(getPath().getParent());
+
         Optional<Exception> exception =
                 IOHelper.writeToFile(getPath(), editorValue, TRUNCATE_EXISTING, CREATE, SYNC);
 
