@@ -19,6 +19,7 @@ import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.StreamSupport;
 
 /**
@@ -49,7 +50,7 @@ public class FileBrowseService {
         this.controller = controller;
     }
 
-    public void browse(final Path browserPath) {
+    public void browse(final Path path) {
 
         controller.getWorkDirTabPane().getSelectionModel().selectFirst(); // fix
 
@@ -59,7 +60,7 @@ public class FileBrowseService {
         if (selectedIndex != -1)
             lastSelectedItem = selectedIndex;
 
-        rootItem = new TreeItem<>(new Item(browserPath, String.format("Loading... (%s)", browserPath)), awesomeService.getIcon(browserPath));
+        rootItem = new TreeItem<>(new Item(path, String.format("Loading... (%s)", Optional.of(path).map(Path::getFileName).orElse(path))), awesomeService.getIcon(path));
         rootItem.setExpanded(true);
 
         threadService.runActionLater(() -> {
@@ -68,12 +69,12 @@ public class FileBrowseService {
 
         threadService.runTaskLater(() -> {
 
-            this.addPathToTree(browserPath);
+            this.addPathToTree(path);
 
             if (Objects.nonNull(lastSelectedItem))
                 treeView.getSelectionModel().select(lastSelectedItem);
 
-            logger.debug("Filesystem Tree relisted for {}", browserPath);
+            logger.debug("Filesystem Tree relisted for {}", path);
         });
 
     }
@@ -100,7 +101,7 @@ public class FileBrowseService {
         }
 
         threadService.runActionLater(() -> {
-            rootItem = new TreeItem<>(new Item(path, String.format("Workdir (%s)", path)), awesomeService.getIcon(path));
+            rootItem = new TreeItem<>(new Item(path, String.format("%s", Optional.of(path).map(Path::getFileName).orElse(path))), awesomeService.getIcon(path));
             rootItem.setExpanded(true);
             rootItem.getChildren().addAll(subItemList);
             controller.getFileSystemView().setRoot(rootItem);

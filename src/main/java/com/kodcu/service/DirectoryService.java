@@ -166,6 +166,7 @@ public class DirectoryService {
         fileBrowser.browse(path);
         fileWatchService.registerWatcher(path);
         this.setInitialDirectory(Optional.ofNullable(path.toFile()));
+        controller.getStage().setTitle(String.format("AsciidocFX - %s", path));
 
     }
 
