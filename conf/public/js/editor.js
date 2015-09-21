@@ -209,6 +209,7 @@ function setEditorValue(content) {
     if (afterFirstChange)
         pos = editor.session.selection.toJSON();
     editor.setValue(content, 1);
+    editor.session.setScrollTop(-100);
     if (afterFirstChange)
         editor.session.selection.fromJSON(pos);
     editor.focus();
