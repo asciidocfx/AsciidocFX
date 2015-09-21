@@ -17,7 +17,7 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 import java.awt.image.BufferedImage;
 import java.io.*;
-import java.net.MalformedURLException;
+import java.net.URLDecoder;
 import java.nio.charset.Charset;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
@@ -315,5 +315,14 @@ public class IOHelper {
 //            e.printStackTrace();
         }
         return null;
+    }
+
+    public static String decode(String uri, String encoding) {
+        try {
+            return URLDecoder.decode(uri, encoding);
+        } catch (UnsupportedEncodingException e) {
+//            e.printStackTrace();
+        }
+        return uri;
     }
 }
