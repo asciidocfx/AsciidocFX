@@ -208,7 +208,7 @@ function setEditorValue(content) {
     var pos;
     if (afterFirstChange)
         pos = editor.session.selection.toJSON();
-    editor.setValue(content, 1);
+    editor.session.setValue(content, 1);
     editor.session.setScrollTop(-100);
     if (afterFirstChange)
         editor.session.selection.fromJSON(pos);
