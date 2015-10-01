@@ -59,7 +59,6 @@ public class SlideConverter {
 
             if (previewTab.getContent() != slidePane) {
                 slidePane.load(String.format(slideUrl, controller.getPort()));
-                slidePane.injectExtensions();
             } else {
                 threadService.runActionLater(() -> {
                     slidePane.replaceSlides(rendered);

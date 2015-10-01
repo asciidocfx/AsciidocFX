@@ -60,6 +60,16 @@ public abstract class ViewPanel extends AnchorPane {
         initializePreviewContextMenus();
     }
 
+    public void enableScrollingAndJumping() {
+        stopScrolling.setValue(true);
+        stopJumping.setValue(true);
+    }
+
+    public void disableScrollingAndJumping() {
+        stopScrolling.setValue(false);
+        stopJumping.setValue(false);
+    }
+
     private void initializePreviewContextMenus() {
 
         CheckMenuItem stopRenderingItem = new CheckMenuItem("Stop rendering");
@@ -204,27 +214,25 @@ public abstract class ViewPanel extends AnchorPane {
     }
 
     public void loadJs(String... jsPaths) {
-        threadService.runTaskLater(() -> {
-            threadService.runActionLater(() -> {
-                for (String jsPath : jsPaths) {
-                    threadService.runActionLater(() -> {
-                        String format = String.format("var scriptEl = document.createElement('script');\n" +
-                                "scriptEl.setAttribute('src','" + genericUrl + "');\n" +
-                                "document.querySelector('body').appendChild(scriptEl);", controller.getPort(), jsPath);
-                        webEngine().executeScript(format);
-                    });
-                }
-            });
+        threadService.runActionLater(() -> {
+            for (String jsPath : jsPaths) {
+                String format = String.format("var scriptEl = document.createElement('script');\n" +
+                        "scriptEl.setAttribute('src','" + genericUrl + "');\n" +
+                        "document.querySelector('body').appendChild(scriptEl);", controller.getPort(), jsPath);
+                webEngine().executeScript(format);
+            }
         });
     }
 
     public void setOnSuccess(Runnable runnable) {
         threadService.runActionLater(() -> {
+            getWindow().setMember("afx", controller);
             Worker<Void> loadWorker = webEngine().getLoadWorker();
             ReadOnlyObjectProperty<Worker.State> stateProperty = loadWorker.stateProperty();
             stateProperty.addListener((observable, oldValue, newValue) -> {
-                if (newValue == Worker.State.SUCCEEDED)
+                if (newValue == Worker.State.SUCCEEDED) {
                     threadService.runActionLater(runnable);
+                }
             });
         });
     }

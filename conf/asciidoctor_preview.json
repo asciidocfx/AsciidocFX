@@ -11,6 +11,7 @@
         "platform-opal":"true",
         "env":"browser",
         "env-browser":"true",
-        "idprefix":"true"
+        "idprefix":"true",
+        "apply-data-line": "true"
     }
 }

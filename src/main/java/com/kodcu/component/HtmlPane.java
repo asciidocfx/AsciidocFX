@@ -80,8 +80,6 @@ public class HtmlPane extends ViewPanel {
         if (stopJumping.get())
             return;
 
-        String selection = asciidocWebkitConverter.findRenderedSelection(text);
-
-        runScroller(selection);
+        runScroller(text);
     }
 }

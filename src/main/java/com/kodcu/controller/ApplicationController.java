@@ -52,7 +52,6 @@ import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.geometry.Insets;
 import javafx.geometry.Side;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -910,7 +909,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             terminalNumber.set(0);
         }
 
-        if (showHideLogs.getRotate() % 360 == 0){
+        if (showHideLogs.getRotate() % 360 == 0) {
             showHideLogs.setRotate(showHideLogs.getRotate() + 180);
             editorSplitPane.setDividerPositions(0.5);
         }
@@ -1540,7 +1539,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                 errorToggle, warnToggle, infoToggle, debugToggle,
                 searchLogField, clearLogsButton, browseLogsButton);
 
-        FlowPane logFlowPane =new FlowPane(5,5);
+        FlowPane logFlowPane = new FlowPane(5, 5);
 
         for (Control control : controls) {
             logFlowPane.getChildren().add(control);
@@ -1789,6 +1788,11 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                 logger.debug(e.getMessage(), e);
             }
         });
+    }
+
+    @WebkitCall(from = "click-binder")
+    public void moveCursorTo(int line) {
+        current.currentEditor().moveCursorTo(line);
     }
 
     @WebkitCall(from = "editor")

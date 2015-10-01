@@ -188,9 +188,20 @@ public class EditorPane extends AnchorPane {
     }
 
     public void moveCursorTo(Integer lineno) {
+
         if (Objects.nonNull(lineno)) {
-            webEngine().executeScript(String.format("editor.gotoLine(%d,3,false)", (lineno)));
-            webEngine().executeScript(String.format("editor.scrollToLine(%d,false,false,function(){})", (lineno - 1)));
+
+            ViewPanel node = (ViewPanel) controller.getPreviewTab().getContent();
+            node.disableScrollingAndJumping();
+
+            try {
+                webEngine().executeScript(String.format("editor.gotoLine(%d,3,false)", (lineno)));
+                webEngine().executeScript(String.format("editor.scrollToLine(%d,false,false,function(){})", (lineno - 1)));
+            } catch (Exception e) {
+                logger.error("Error occured while moving cursor to line {}", lineno);
+            }
+
+            node.enableScrollingAndJumping();
         }
     }
 

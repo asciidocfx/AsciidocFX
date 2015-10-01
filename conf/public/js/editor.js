@@ -25,48 +25,19 @@ var updateDelay = 100;
 //afx.onscroll(editor.getSession().getScrollTop(), maxTop);
 
 
-function updateHtmlScroll(){
+function updateHtmlScroll() {
     var row = editor.renderer.getFirstFullyVisibleRow();
     afx.scrollByLine(row + "");
 }
 
-function updateMarkupScroll() {
-
-    var row = editor.renderer.getFirstFullyVisibleRow();
+function updateMarkupScroll(row) {
 
     if (lastEditorRow == row)
         return;
 
-    for (var i = 0; i < 10; i++) { // try ten times
-        var trimmed = editor.session.getLine(row).trim();
-        if ((trimmed == "") || (trimmed.match(/\(\(\(.*?\)\)\)/)) || (trimmed.match(/'''/)) || (trimmed.match(/\[\[.*?\]\]/))) {
-            row++;
-        }
-        else {
-            break;
-        }
-    }
+    afx.scrollByLine(row + "");
 
-    var range = sketch.searchBlockPosition(row);
-    if (range) {
-
-        if (lastEditorRow == range.start.row)
-            return;
-        lastEditorRow = range.start.row;
-
-        var blockText = editor.session.getTextRange(range);
-        afx.scrollByPosition(blockText);
-    }
-    else {
-        lastEditorRow = row;
-
-        var lineText = editor.session.getLine(row);
-
-        if (lineText.trim() == "")
-            return;
-
-        afx.scrollByPosition(lineText);
-    }
+    lastEditorRow = row;
 };
 
 editor.getSession().on('changeScrollTop', function (scroll) {
@@ -89,7 +60,8 @@ editor.getSession().on('changeScrollTop', function (scroll) {
         clearInterval(interval);
 
         if (mode == "asciidoc" || mode == "markdown") {
-            updateMarkupScroll();
+            var row = editor.renderer.getFirstFullyVisibleRow();
+            updateMarkupScroll(row);
         }
         else if (mode == "html") {
             updateHtmlScroll();
@@ -120,29 +92,8 @@ editor.getSession().selection.on('changeCursor', function (e) {
 
     updateStatusBox();
 
-    if (lastEditorRow == row)
-        return;
+    updateMarkupScroll(row);
 
-    var range = sketch.searchBlockPosition(row);
-    if (range) {
-
-        if (lastEditorRow == range.start.row)
-            return;
-        lastEditorRow = range.start.row;
-
-        var blockText = editor.session.getTextRange(range);
-        afx.scrollByLine(blockText);
-    }
-    else {
-        lastEditorRow = row;
-
-        var lineText = editor.session.getLine(row);
-
-        if (lineText.trim() == "")
-            return;
-
-        afx.scrollByLine(lineText);
-    }
 });
 
 var constructListAction = new BufferedAction();
@@ -156,9 +107,6 @@ var editorChangeListener = function (obj) {
         afx.textListener(editor.getValue(), editorMode());
     }, 100);
 
-    constructListAction.buff(function () {
-        sketch.refreshConstructList();
-    }, 1000);
 };
 
 function updateOptions() {
