@@ -22,53 +22,56 @@
         self.$parse_content_as("literal");
 
         return (def.$process = function (parent, reader, attrs) {
-                var $a, self = this, target = nil, type = nil, title = nil, filename = nil, alt = nil, caption = nil, width = nil, height = nil, scale = nil, align = nil, cache = nil, imagesdir = nil;
+                var $a, self = this;
 
-                type = "" + (attrs['$[]']("type"));
-                title = "" + (attrs['$[]']("title"));
-                filename = "" + (attrs['$[]']("file"));
-                alt = "" + (attrs['$[]']("alt"));
-                caption = "" + (attrs['$[]']("caption"));
-                width = "" + (attrs['$[]']("width"));
-                height = "" + (attrs['$[]']("height"));
-                scale = "" + (attrs['$[]']("scale"));
-                align = "" + (attrs['$[]']("align"));
-                cache = "" + (attrs['$[]']("cache"));
-                imagesdir = parent.$document().$attr('imagesdir', '');
+                var type = (attrs['$[]']("type")),
+                    title = (attrs['$[]']("title")),
+                    filename = (attrs['$[]']("file")),
+                    alt = (attrs['$[]']("alt")),
+                    caption = (attrs['$[]']("caption")),
+                    width = (attrs['$[]']("width")),
+                    role = (attrs['$[]']("role")),
+                    link = (attrs['$[]']("link")),
+                    float = (attrs['$[]']("float")),
+                    height = (attrs['$[]']("height")),
+                    scale = (attrs['$[]']("scale")),
+                    align = (attrs['$[]']("align")),
+                    cache = (attrs['$[]']("cache")),
+                    imagesdir = parent.$document().$attr('imagesdir', '');
 
-                if(filename == ""){
+                if (filename == "") {
                     return nil;
                 }
 
-                target = parent.$image_uri(filename);
+                var targetUri = parent.$image_uri(filename);
 
                 if (cache != "enabled") {
                     var readed = reader.$read();
                     if ((readed.match(/#/g) || []).length > (readed.match(/(-|\|)/g) || []).length)
-                        afx.createFileTree(readed, type, imagesdir, target, width, height);
+                        afx.createFileTree(readed, type, imagesdir, targetUri, width, height);
                     else
-                        afx.createHighlightFileTree(readed, type, imagesdir, target, width, height);
+                        afx.createHighlightFileTree(readed, type, imagesdir, targetUri, width, height);
                 }
 
                 if ((($a = (type['$==']("ascii"))) !== nil && (!$a._isBoolean || $a == true))) {
-                    return self.$create_pass_block(parent, target, attrs, $hash2(["subs"], {"subs": nil}))
+                    return self.$create_pass_block(parent, targetUri, attrs, $hash2(["subs"], {"subs": nil}))
                 } else {
-                    var attributesHash = {
+
+                    var attributes = {
                         "target": filename,
                         "title": title,
                         "alt": alt,
                         "caption": caption,
-                        "align": align
+                        "width": width,
+                        "height": height,
+                        "scale": scale,
+                        "align": align,
+                        "role": role,
+                        "link": link,
+                        "float": float
                     };
 
-                    var keys = Object.keys(attributesHash);
-
-                    keys.forEach(function (key) {
-                        if (attributesHash[key] == "")
-                            delete attributesHash[key];
-                    });
-
-                    return self.$create_image_block(parent, $hash2(Object.keys(attributesHash), attributesHash))
+                    return self.$create_image_block(parent, Opal.hash(attributes))
                 }
                 ;
             }, nil) && 'process';

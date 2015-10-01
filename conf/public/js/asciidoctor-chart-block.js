@@ -19,34 +19,35 @@
 
         return (def.$process = function (parent, target, attrs) {
 
-                var $a, self = this, target = nil, type = nil, title = nil, filename = nil, alt = nil, caption = nil, width = nil, height = nil, opt = nil, scale = nil, align = nil, cache = nil, csvFile = nil, chartType = nil, imagesdir = nil;
+                var $a, self = this;
 
-                csvFile = "" + (attrs['$[]']("data-uri"));
-                chartType = "" + target;
-                title = "" + (attrs['$[]']("title"));
-                alt = "" + (attrs['$[]']("alt"));
-                caption = "" + (attrs['$[]']("caption"));
-                width = "" + (attrs['$[]']("width"));
-                height = "" + (attrs['$[]']("height"));
-                scale = "" + (attrs['$[]']("scale"));
-                align = "" + (attrs['$[]']("align"));
-                type = "" + (attrs['$[]']("type"));
-                filename = "" + (attrs['$[]']("file"));
-                cache = "" + (attrs['$[]']("cache"));
-                opt = "" + (attrs['$[]']("opt"));
-                imagesdir = parent.$document().$attr('imagesdir', '');
+                var csvFile = (attrs['$[]']("data-uri")),
+                    chartType = target,
+                    title = (attrs['$[]']("title")),
+                    alt = (attrs['$[]']("alt")),
+                    caption = (attrs['$[]']("caption")),
+                    width = (attrs['$[]']("width")),
+                    height = (attrs['$[]']("height")),
+                    scale = (attrs['$[]']("scale")),
+                    align = (attrs['$[]']("align")),
+                    type = (attrs['$[]']("type")),
+                    role = (attrs['$[]']("role")),
+                    link = (attrs['$[]']("link")),
+                    float = (attrs['$[]']("float")),
+                    filename = (attrs['$[]']("file")),
+                    cache = (attrs['$[]']("cache")),
+                    opt = (attrs['$[]']("opt")),
+                    imagesdir = parent.$document().$attr('imagesdir', '');
 
-                if(filename == ""){
+                if (filename == "") {
                     return nil;
                 }
 
-                target = parent.$image_uri(filename);
-
                 if (cache != "enabled") {
-                    afx.chartBuildFromCsv(csvFile, imagesdir, target, chartType, opt);
+                    afx.chartBuildFromCsv(csvFile, imagesdir, parent.$image_uri(filename), chartType, opt);
                 }
 
-                var attributesHash = {
+                var attributes = {
                     "target": filename,
                     "title": title,
                     "alt": alt,
@@ -55,17 +56,13 @@
                     "height": height,
                     "scale": scale,
                     "align": align,
+                    "role": role,
+                    "link": link,
+                    "float": float,
                     "opt": opt
                 };
 
-                var keys = Object.keys(attributesHash);
-
-                keys.forEach(function (key) {
-                    if (attributesHash[key] == "")
-                        delete attributesHash[key];
-                });
-
-                return self.$create_image_block(parent, $hash2(Object.keys(attributesHash), attributesHash))
+                return self.$create_image_block(parent, Opal.hash(attributes))
                     ;
             }, nil) && 'process';
     })(self, ($scope.Extensions)._scope.BlockMacroProcessor);
@@ -86,33 +83,34 @@
 
         return (def.$process = function (parent, reader, attrs) {
 
-                var $a, self = this, target = nil, type = nil, title = nil, filename = nil, alt = nil, caption = nil, width = nil, height = nil, opt = nil, scale = nil, align = nil, cache = nil, chartType = nil, imagesdir = nil;
+                var $a, self = this;
 
-                chartType = "" + (attrs['$[]']("2"));
-                title = "" + (attrs['$[]']("title"));
-                alt = "" + (attrs['$[]']("alt"));
-                caption = "" + (attrs['$[]']("caption"));
-                width = "" + (attrs['$[]']("width"));
-                height = "" + (attrs['$[]']("height"));
-                scale = "" + (attrs['$[]']("scale"));
-                align = "" + (attrs['$[]']("align"));
-                type = "" + (attrs['$[]']("type"));
-                filename = "" + (attrs['$[]']("file"));
-                cache = "" + (attrs['$[]']("cache"));
-                opt = "" + (attrs['$[]']("opt"));
-                imagesdir = parent.$document().$attr('imagesdir', '');
+                var chartType = (attrs['$[]']("2")),
+                    title = (attrs['$[]']("title")),
+                    alt = (attrs['$[]']("alt")),
+                    caption = (attrs['$[]']("caption")),
+                    width = (attrs['$[]']("width")),
+                    height = (attrs['$[]']("height")),
+                    scale = (attrs['$[]']("scale")),
+                    align = (attrs['$[]']("align")),
+                    type = (attrs['$[]']("type")),
+                    role = (attrs['$[]']("role")),
+                    link = (attrs['$[]']("link")),
+                    float = (attrs['$[]']("float")),
+                    filename = (attrs['$[]']("file")),
+                    cache = (attrs['$[]']("cache")),
+                    opt = (attrs['$[]']("opt")),
+                    imagesdir = parent.$document().$attr('imagesdir', '');
 
-                if(filename == ""){
+                if (filename == "") {
                     return nil;
                 }
 
-                target = parent.$image_uri(filename);
-
                 if (cache != "enabled") {
-                    afx.chartBuild(reader.$read(), imagesdir, target, chartType, opt);
+                    afx.chartBuild(reader.$read(), imagesdir, parent.$image_uri(filename), chartType, opt);
                 }
 
-                var attributesHash = {
+                var attributes = {
                     "target": filename,
                     "title": title,
                     "alt": alt,
@@ -121,17 +119,13 @@
                     "height": height,
                     "scale": scale,
                     "align": align,
+                    "role": role,
+                    "link": link,
+                    "float": float,
                     "opt": opt
                 };
 
-                var keys = Object.keys(attributesHash);
-
-                keys.forEach(function (key) {
-                    if (attributesHash[key] == "")
-                        delete attributesHash[key];
-                });
-
-                return self.$create_image_block(parent, $hash2(Object.keys(attributesHash), attributesHash))
+                return self.$create_image_block(parent, Opal.hash(attributes))
                     ;
             }, nil) && 'process';
     })(self, ($scope.Extensions)._scope.BlockProcessor);

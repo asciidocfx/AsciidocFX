@@ -8,18 +8,18 @@ function process_uml_block(obj) {
     var nil = obj["nil"];
     var name = obj["name"];
 
-    var title = "" + (attrs['$[]']("title")),
-        alt = "" + (attrs['$[]']("alt")),
-        caption = "" + (attrs['$[]']("caption")),
-        width = "" + (attrs['$[]']("width")),
-        height = "" + (attrs['$[]']("height")),
-        scale = "" + (attrs['$[]']("scale")),
-        align = "" + (attrs['$[]']("align")),
-        type = "" + (attrs['$[]']("type")),
-        cache = "" + (attrs['$[]']("cache")),
-        role = "" + (attrs['$[]']("role")),
-        link = "" + (attrs['$[]']("link")),
-        float = "" + (attrs['$[]']("float")),
+    var title = (attrs['$[]']("title")),
+        alt = (attrs['$[]']("alt")),
+        caption = (attrs['$[]']("caption")),
+        width = (attrs['$[]']("width")),
+        height = (attrs['$[]']("height")),
+        scale = (attrs['$[]']("scale")),
+        align = (attrs['$[]']("align")),
+        type = (attrs['$[]']("type")),
+        cache = (attrs['$[]']("cache")),
+        role = (attrs['$[]']("role")),
+        link = (attrs['$[]']("link")),
+        float = (attrs['$[]']("float")),
         imagesdir = parent.$document().$attr('imagesdir', '');
 
     var filename = "";
