@@ -388,7 +388,7 @@ var editorMenu = {
             editor.removeToLineStart();
             editor.insert("[ditaa,,png]\n--\n\n--");
             editor.gotoLine(range.end.row +1, 7, true);
-        },        
+        },
         addTreeBlock: function () {
             var range = editor.getSelectionRange();
             editor.removeToLineStart();
@@ -487,6 +487,53 @@ var editorMenu = {
             cursorPosition.column = 0;
             var session = editor.getSession();
             session.insert(cursorPosition, "* ");
+        }
+    },
+    html: {
+        boldText: function () {
+            formatText(editor, matchBoldText, "<b>", "</b>");
+        },
+        italicizeText: function () {
+            formatText(editor, matchItalicizedText, "<em>", "</em>");
+        },
+        superScript: function () {
+            formatText(editor, matchSuperScriptText, "<sup>", "</sup>");
+        },
+        subScript: function () {
+            formatText(editor, matchSubScriptText, "<sub>", "</sub>");
+        },
+        underlinedText: function () {
+            formatText(editor, matchUnderlineText, "<u>", "</u>");
+        },
+        addStrikeThroughText: function () {
+            formatText(editor, matchLineThroughText, "<s>", "</s>");
+        },
+        addHyperLink: function () {
+            formatText(editor, falseMatcher, "<a href=\"", "\"></a>");
+        },
+        addSourceCode: function (lang) {
+            formatText(editor, falseMatcher, "<pre><code>", "</code></pre>");
+        },
+        addQuote: function () {
+            formatText(editor, falseMatcher, "<blockquote>", "</blockquote>");
+        },
+        addImageSection: function () {
+            formatText(editor, falseMatcher, "<img src=\"", "\">");
+        },
+        addHeading: function () {
+            formatText(editor, falseMatcher, "<h", "");
+        },
+        addOlList: function () {
+            var cursorPosition = editor.getCursorPosition();
+            editor.getSession().insert(cursorPosition, "<ol>\n\t<li></li>\n</ol>");
+            var range = editor.getSelectionRange();
+            editor.gotoLine(range.end.row, 5, true);
+        },
+        addUlList: function () {
+            var cursorPosition = editor.getCursorPosition();
+            editor.getSession().insert(cursorPosition, "<ul>\n\t<li></li>\n</ul>");
+            var range = editor.getSelectionRange();
+            editor.gotoLine(range.end.row, 5, true);
         }
     }
 }
@@ -619,7 +666,7 @@ editor.commands.addCommand({
             afx.getShortcutProvider().getProvider().addUmlBlock();
             return;
         }
-        
+
         // ditaa tab
         if (textRange == "ditaa") { // ditaa block generator
             afx.getShortcutProvider().getProvider().addDitaaBlock();
@@ -645,7 +692,7 @@ editor.commands.addCommand({
         }
 
 
-        if(textRange == "show:worker") {
+        if (textRange == "show:worker") {
             afx.showWorkerPane();
             return;
         }
@@ -748,6 +795,10 @@ function matchMarkdownSuperScriptText(text) {
 
 function matchMarkdownSubScriptText(text) {
     return text.match(/^(\<(?:sub)\>)(.*?)(\<\/(?:sub)\>)$/);
+}
+
+function falseMatcher(text) {
+    return false;
 }
 
 confirm("command:ready")

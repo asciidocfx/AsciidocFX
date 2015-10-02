@@ -152,11 +152,23 @@ function setWrapLimitRange(wrapLimitRange) {
     editor.getSession().setWrapLimitRange(wrapLimitRange, wrapLimitRange);
 }
 
+function getSelectionOrAll() {
+    var min = arguments.length > 0 ? arguments[0] : 0;
+    var selection = editor.session.getTextRange(editor.getSelectionRange());
+
+    if (selection.length > min) {
+        return selection;
+    }
+    else {
+        return editor.session.getValue();
+    }
+}
+
 function setEditorValue(content) {
     var pos;
     if (afterFirstChange)
         pos = editor.session.selection.toJSON();
-    editor.session.setValue(content, 1);
+    editor.setValue(content, 1);
     editor.session.setScrollTop(-100);
     if (afterFirstChange)
         editor.session.selection.fromJSON(pos);
@@ -226,4 +238,8 @@ function editorMode() {
 function setInitialized() {
     editor.getSession().on('change', editorChangeListener);
     updateStatusBox();
+}
+
+function resetUndoManager() {
+    editor.getSession().setUndoManager(new ace.UndoManager());
 }

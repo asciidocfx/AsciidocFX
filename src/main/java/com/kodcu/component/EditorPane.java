@@ -11,6 +11,7 @@ import com.kodcu.service.ui.TabService;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.Event;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.input.Dragboard;
@@ -33,9 +34,7 @@ import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.FileTime;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * Created by usta on 09.04.2015.
@@ -58,6 +57,8 @@ public class EditorPane extends AnchorPane {
     private String initialEditorValue = "";
     private Path path;
     private FileTime lastModifiedTime;
+    private final String escapeBackSlash = "(?<!\\\\)"; // ignores if word started with \
+    private final String ignoreSuffix = "(?<!\\\\)"; // ignores if word started with \
 
     @Autowired
     public EditorPane(ApplicationController controller, ThreadService threadService, ShortcutProvider shortcutProvider, ApplicationContext applicationContext, TabService tabService, AsciiTreeGenerator asciiTreeGenerator, ParserService parserService) {
@@ -98,11 +99,13 @@ public class EditorPane extends AnchorPane {
                     changeEditorMode();
                     setInitialized();
                     setEditorValue(content);
+                    resetUndoManager();
                 });
             });
         } else {
             setInitialized();
             setEditorValue(initialEditorValue);
+            resetUndoManager();
         }
 
         this.getChildren().add(webView);
@@ -115,6 +118,10 @@ public class EditorPane extends AnchorPane {
 
     private void setInitialized() {
         webEngine().executeScript("setInitialized()");
+    }
+
+    private void resetUndoManager() {
+        webEngine().executeScript("resetUndoManager()");
     }
 
     private void initializeMargins() {
@@ -305,6 +312,7 @@ public class EditorPane extends AnchorPane {
         MenuItem indexSelection = MenuItemBuilt.item("Index selection").click(e -> {
             shortcutProvider.getProvider().addIndexSelection();
         });
+        MenuItem replacements = MenuItemBuilt.item("Replacements").click(this::replaceSubs);
         MenuItem markdownToAsciidoc = MenuItemBuilt.item("Markdown to Asciidoc").click(e -> {
             MarkdownService markdownService = applicationContext.getBean(MarkdownService.class);
             markdownService.convertToAsciidoc(getEditorValue(),
@@ -391,6 +399,52 @@ public class EditorPane extends AnchorPane {
         });
     }
 
+    private String getSelectionOrAll() {
+        return (String) webEngine().executeScript("getSelectionOrAll()");
+    }
+
+    private void replaceSubs(Event event) {
+
+      /*  String selection = getSelectionOrAll();
+        String copiedSelection = new String(selection);
+
+        Map<String, String> reps = new HashMap<>();
+        reps.put("\\(C\\)", "©");
+        reps.put("&#169;", "©");
+        reps.put("\\(R\\)", "®");
+        reps.put("&#174;", "®");
+        reps.put("\\(TM\\)", "™");
+        reps.put("&#8482;", "™");
+
+        reps.put("(?<!-)" + "--" + "(?>!-)", "—");
+        reps.put("&#8212;", "—");
+
+        reps.put("\\.\\.\\.", "…");
+        reps.put("&#8230;", "…");
+
+        reps.put("->", "→");
+        reps.put("&#8594;", "→");
+        reps.put("=>", "⇒");
+        reps.put("&#8658;", "⇒");
+        reps.put("<-", "←");
+        reps.put("&#8592;", "←");
+        reps.put("<=", "⇐");
+        reps.put("&#8656;", "⇐");
+        reps.put("'", "’");
+        reps.put("&#8217;", "’");
+
+        for (Map.Entry<String, String> entry : reps.entrySet()) {
+            String regex = escapeBackSlash + entry.getKey();
+            String replacement = entry.getValue();
+            copiedSelection = copiedSelection.replaceAll(regex, replacement);
+        }
+
+        if (Objects.equals(selection, copiedSelection))
+            return;
+
+        setEditorValue(getEditorValue().replace(selection, copiedSelection));*/
+    }
+
     public ObservableList<Runnable> getHandleReadyTasks() {
         return handleReadyTasks;
     }
@@ -421,5 +475,9 @@ public class EditorPane extends AnchorPane {
 
     public void setLastModifiedTime(FileTime lastModifiedTime) {
         this.lastModifiedTime = lastModifiedTime;
+    }
+
+    public boolean isHTML() {
+        return is("html");
     }
 }

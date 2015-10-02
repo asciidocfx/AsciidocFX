@@ -7,6 +7,7 @@ import com.kodcu.other.IOHelper;
 import com.kodcu.service.DirectoryService;
 import com.kodcu.service.ThreadService;
 import com.kodcu.service.shortcut.AsciidocShortcutService;
+import com.kodcu.service.shortcut.HtmlShortcutService;
 import com.kodcu.service.shortcut.MarkdownShortcutService;
 import com.kodcu.service.shortcut.NoneShortcutService;
 import com.kodcu.service.ui.TabService;
@@ -300,6 +301,8 @@ public class MyTab extends Tab {
             return AsciidocShortcutService.class;
         } else if (isMarkdown()) {
             return MarkdownShortcutService.class;
+        } else if (isHTML()) {
+            return HtmlShortcutService.class;
         }
 
         return NoneShortcutService.class;
@@ -307,6 +310,10 @@ public class MyTab extends Tab {
 
     public boolean isMarkdown() {
         return editorPane.isMarkdown();
+    }
+
+    public boolean isHTML() {
+        return editorPane.isHTML();
     }
 
 
