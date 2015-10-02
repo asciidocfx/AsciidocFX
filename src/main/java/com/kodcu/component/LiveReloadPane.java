@@ -76,7 +76,7 @@ public class LiveReloadPane extends ViewPanel {
         String xPath = lineXPathMap.get(lineno);
 
         if (Objects.nonNull(xPath)) {
-            webEngine().executeScript(String.format("scrollByXPath('%s',%d)", xPath, lineno));
+            webEngine().executeScript(String.format("scrollByXPath('%s',%s)", xPath, lineno));
         }
     }
 
