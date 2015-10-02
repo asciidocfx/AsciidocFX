@@ -55,12 +55,10 @@ public class HtmlShortcutService implements ShortcutService {
 
     @Override
     public void addTable() {
-        controller.createAsciidocTable();
     }
 
     @Override
     public void addBasicTable(String row, String column) {
-        tableController.createBasicTable(row, column);
     }
 
     @Override
