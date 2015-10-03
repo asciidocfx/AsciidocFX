@@ -3,18 +3,20 @@
                 xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 
     <!-- Asciidoctor theme -->
-    <xsl:param name="text.color">#222222</xsl:param>
+    <xsl:param name="text.color">black</xsl:param>
     <xsl:param name="link.color">#005498</xsl:param>
     <xsl:param name="border.color">#DDDDDD</xsl:param>
     <xsl:param name="header.font-weight">normal</xsl:param>
-    <xsl:param name="header.column.widths">1 2 1</xsl:param>
-    <xsl:param name="title.color">#BA3925</xsl:param>
+    <xsl:param name="header.column.widths">0 0 1</xsl:param>
+    <xsl:param name="title.color">black</xsl:param>
     <xsl:param name="chapter.title.color" select="$title.color"/>
     <xsl:param name="section.title.color" select="$title.color"/>
-    <xsl:param name="caption.color">#7A2518</xsl:param>
+    <xsl:param name="caption.color">black</xsl:param>
     <xsl:param name="code.color" select="$text.color"/>
     <xsl:param name="code.font-weight">normal</xsl:param>
     <xsl:param name="code.background-color">#EEEEEE</xsl:param>
+
+
 
 
     <!-- Foundation theme -->
