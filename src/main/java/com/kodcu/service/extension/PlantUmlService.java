@@ -68,10 +68,7 @@ public class PlantUmlService {
 
         try (ByteArrayOutputStream os = new ByteArrayOutputStream()) {
 
-            if (!current.currentPath().isPresent())
-                controller.saveDoc();
-
-            Path path = current.currentPath().get().getParent();
+            Path path = current.currentTab().getParentOrWorkdir();
             Path umlPath = path.resolve(imageTarget);
 
             FileFormat fileType = imageTarget.endsWith(".svg") ? FileFormat.SVG : FileFormat.PNG;

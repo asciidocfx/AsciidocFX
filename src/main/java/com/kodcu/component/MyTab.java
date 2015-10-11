@@ -31,7 +31,6 @@ import java.nio.file.Path;
 import java.nio.file.attribute.FileTime;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
 
 import static java.nio.file.StandardOpenOption.*;
 
@@ -197,25 +196,7 @@ public class MyTab extends Tab {
         });
     }
 
-    public synchronized void saveDoc() {
-
-        if (!Platform.isFxApplicationThread()) {
-            CompletableFuture completableFuture = new CompletableFuture();
-
-            completableFuture.runAsync(() -> {
-                Platform.runLater(() -> {
-                    try {
-                        saveDoc();
-                        completableFuture.complete(null);
-                    } catch (Exception e) {
-                        completableFuture.completeExceptionally(e);
-                    }
-                });
-            }, threadService.executor());
-
-            completableFuture.join();
-            return;
-        }
+    private synchronized void save() {
 
         FileTime latestModifiedTime = IOHelper.getLastModifiedTime(getPath());
 
@@ -269,6 +250,10 @@ public class MyTab extends Tab {
         recentFiles.add(0, getPath().toString());
 
         directoryService.setInitialDirectory(Optional.ofNullable(getPath().toFile()));
+    }
+
+    public void saveDoc() {
+        threadService.runActionLater(this::save);
     }
 
 
@@ -353,5 +338,9 @@ public class MyTab extends Tab {
 
     public void setChangedProperty(boolean changedProperty) {
         this.changedProperty.set(changedProperty);
+    }
+
+    public Path getParentOrWorkdir() {
+        return Optional.ofNullable(getPath()).map(Path::getParent).orElse(directoryService.workingDirectory());
     }
 }

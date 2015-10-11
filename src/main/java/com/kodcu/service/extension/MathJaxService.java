@@ -133,10 +133,8 @@ public class MathJaxService {
 
     private void saveAsSvg(String imagesDir, String imageTarget, String svg, String formula, float width, float height) {
         try {
-            if (!current.currentPath().isPresent())
-                controller.saveDoc();
 
-            Path path = current.currentPath().get().getParent();
+            Path path = current.currentTab().getParentOrWorkdir();
             Files.createDirectories(path.resolve(imagesDir));
 
             Files.write(path.resolve(imageTarget), svg.getBytes(Charset.forName("UTF-8")), CREATE, WRITE, TRUNCATE_EXISTING);
@@ -166,10 +164,7 @@ public class MathJaxService {
             transcoder.addTranscodingHint(PNGTranscoder.KEY_HEIGHT, height);
             transcoder.transcode(transcoderInput, transcoderOutput);
 
-            if (!current.currentPath().isPresent())
-                controller.saveDoc();
-
-            Path path = current.currentPath().get().getParent();
+            Path path = current.currentTab().getParentOrWorkdir();
             Files.createDirectories(path.resolve(imagesDir));
 
             Files.write(path.resolve(imageTarget), ostream.toByteArray(), CREATE, WRITE, TRUNCATE_EXISTING);

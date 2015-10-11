@@ -68,11 +68,8 @@ public class TreeService {
         // default: png
         else {
 
-            Path path = current.currentPath().get().getParent();
+            Path path = current.currentTab().getParentOrWorkdir();
             Path treePath = path.resolve(imageTarget);
-
-            if (!current.currentPath().isPresent())
-                controller.saveDoc();
 
             Integer cacheHit = current.getCache().get(imageTarget);
 
@@ -212,11 +209,8 @@ public class TreeService {
         if (!imageTarget.endsWith(".png"))
             return;
 
-        Path path = current.currentPath().get().getParent();
+        Path path = current.currentTab().getParentOrWorkdir();
         Path treePath = path.resolve(imageTarget);
-
-        if (!current.currentPath().isPresent())
-            controller.saveDoc();
 
         Integer cacheHit = current.getCache().get(imageTarget);
 
