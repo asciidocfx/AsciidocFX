@@ -2,6 +2,7 @@ package com.kodcu.component;
 
 import com.kodcu.controller.ApplicationController;
 import com.kodcu.other.IOHelper;
+import com.kodcu.service.DirectoryService;
 import com.kodcu.service.ParserService;
 import com.kodcu.service.ThreadService;
 import com.kodcu.service.convert.markdown.MarkdownService;
@@ -9,6 +10,8 @@ import com.kodcu.service.extension.AsciiTreeGenerator;
 import com.kodcu.service.shortcut.ShortcutProvider;
 import com.kodcu.service.ui.TabService;
 import javafx.application.Platform;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.Event;
@@ -26,6 +29,7 @@ import netscape.javascript.JSObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -34,7 +38,9 @@ import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.FileTime;
-import java.util.*;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 /**
  * Created by usta on 09.04.2015.
@@ -59,15 +65,25 @@ public class EditorPane extends AnchorPane {
     private FileTime lastModifiedTime;
     private final String escapeBackSlash = "(?<!\\\\)"; // ignores if word started with \
     private final String ignoreSuffix = "(?<!\\\\)"; // ignores if word started with \
+    private final BooleanProperty ready = new SimpleBooleanProperty(false);
+
+    @Value("${application.live.url}")
+    private String liveUrl;
+
+    @Value("${application.preview.url}")
+    private String previewUrl;
+
+    private final DirectoryService directoryService;
 
     @Autowired
-    public EditorPane(ApplicationController controller, ThreadService threadService, ShortcutProvider shortcutProvider, ApplicationContext applicationContext, TabService tabService, AsciiTreeGenerator asciiTreeGenerator, ParserService parserService) {
+    public EditorPane(ApplicationController controller, ThreadService threadService, ShortcutProvider shortcutProvider, ApplicationContext applicationContext, TabService tabService, AsciiTreeGenerator asciiTreeGenerator, ParserService parserService, DirectoryService directoryService) {
         this.controller = controller;
         this.threadService = threadService;
         this.shortcutProvider = shortcutProvider;
         this.applicationContext = applicationContext;
         this.tabService = tabService;
         this.asciiTreeGenerator = asciiTreeGenerator;
+        this.directoryService = directoryService;
         this.handleReadyTasks = FXCollections.observableArrayList();
         this.parserService = parserService;
         this.webView = new WebView();
@@ -79,10 +95,13 @@ public class EditorPane extends AnchorPane {
     private Boolean handleConfirm(String param) {
         if ("command:ready".equals(param)) {
             handleEditorReady();
-            for (Runnable handleReadyTask : handleReadyTasks) {
-                handleReadyTask.run();
-            }
+            ObservableList<Runnable> runnables = FXCollections.observableArrayList(handleReadyTasks);
             handleReadyTasks.clear();
+            for (Runnable runnable : runnables) {
+                runnable.run();
+            }
+            ready.setValue(true);
+            updatePreviewUrl();
         }
         return false;
     }
@@ -110,6 +129,18 @@ public class EditorPane extends AnchorPane {
 
         this.getChildren().add(webView);
         webView.requestFocus();
+    }
+
+    public void updatePreviewUrl() {
+        threadService.runActionLater(() -> {
+            if (is("asciidoc") || is("markdown")) {
+                applicationContext.getBean(HtmlPane.class)
+                        .load(String.format(previewUrl, controller.getPort(), directoryService.interPath(path)));
+            } else if (is("html")) {
+                applicationContext.getBean(LiveReloadPane.class)
+                        .load(String.format(liveUrl, controller.getPort(), directoryService.interPath(path)));
+            }
+        }, true);
     }
 
     private void updateOptions() {
@@ -187,7 +218,11 @@ public class EditorPane extends AnchorPane {
     }
 
     public void rerender(Object... args) {
-        this.call("rerender", args);
+        try {
+            webEngine().executeScript("rerender()");
+        } catch (Exception e) {
+            // no-op
+        }
     }
 
     public void focus() {
@@ -480,4 +515,14 @@ public class EditorPane extends AnchorPane {
     public boolean isHTML() {
         return is("html");
     }
+
+    public boolean getReady() {
+        return ready.get();
+    }
+
+    public BooleanProperty readyProperty() {
+        return ready;
+    }
+
+
 }

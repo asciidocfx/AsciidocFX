@@ -178,7 +178,6 @@ public abstract class ViewPanel extends AnchorPane {
     public void load(String url) {
         if (Objects.nonNull(url))
             Platform.runLater(() -> {
-                webEngine().getLoadWorker().cancel();
                 webEngine().load(url);
             });
         else

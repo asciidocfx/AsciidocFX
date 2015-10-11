@@ -17,6 +17,7 @@ import com.kodcu.service.ThreadService;
 import com.kodcu.service.extension.AsciiTreeGenerator;
 import com.kodcu.service.shortcut.ShortcutProvider;
 import javafx.beans.property.ReadOnlyObjectProperty;
+import javafx.beans.value.ObservableObjectValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
@@ -415,22 +416,19 @@ public class TabService {
         ReadOnlyObjectProperty<Tab> itemProperty = tabPane.getSelectionModel().selectedItemProperty();
 
         tabPane.setOnMouseReleased(event -> {
-            ((MyTab) itemProperty.get()).getEditorPane().focus();
+            Optional.ofNullable(itemProperty)
+                    .map(ObservableObjectValue::get)
+                    .map(e -> (MyTab) e)
+                    .map(MyTab::getEditorPane)
+                    .ifPresent(EditorPane::focus);
         });
 
         itemProperty.addListener((observable, oldValue, selectedTab) -> {
-            if (Objects.isNull(selectedTab))
-                return;
-            threadService.runActionLater(() -> {
-                EditorPane editorPane = ((MyTab) selectedTab).getEditorPane();
-                if (Objects.nonNull(editorPane)) {
-                    try {
-                        editorPane.rerender();
-                    } catch (Exception e) {
-                        logger.error("Problem occured after changing tab {}", selectedTab, e);
-                    }
-                }
-            });
+            Optional.ofNullable(selectedTab)
+                    .map(e -> (MyTab) e)
+                    .map(MyTab::getEditorPane)
+                    .filter(EditorPane::getReady)
+                    .ifPresent(EditorPane::updatePreviewUrl);
         });
     }
 

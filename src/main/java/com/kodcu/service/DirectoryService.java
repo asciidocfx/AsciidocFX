@@ -190,6 +190,18 @@ public class DirectoryService {
 
     }
 
+    public String interPath(Path path) {
+
+        try {
+            Path workingDirectory = Optional.ofNullable(path)
+                    .map(Path::getParent).orElse(this.workingDirectory());
+            Path subpath = workingDirectory.subpath(0, workingDirectory.getNameCount());
+            return subpath.toString().replace('\\', '/');
+        } catch (Exception e) {
+            return ".";
+        }
+    }
+
     public Path getSaveOutputPath(FileChooser.ExtensionFilter extensionFilter, boolean askPath) {
 
         if (!Platform.isFxApplicationThread()) {
@@ -238,6 +250,7 @@ public class DirectoryService {
     public Path findPathInCurrentOrWorkDir(String uri) {
 
         Optional<Path> inCurrentParent = Optional.empty();
+        Optional<Path> inRoot = Optional.empty();
 
         try {
             inCurrentParent = Optional.ofNullable(current.currentTab().getPath().getParent());
@@ -245,7 +258,17 @@ public class DirectoryService {
             //no-op
         }
 
-        return Stream.<Optional<Path>>of(inCurrentParent, workingDirectory)
+        try {
+            if (inCurrentParent.isPresent()) {
+                inRoot = inCurrentParent.map(Path::getRoot);
+            } else {
+                inRoot = workingDirectory.map(Path::getRoot);
+            }
+        } catch (Exception e) {
+            //no-op
+        }
+
+        return Stream.<Optional<Path>>of(inCurrentParent, workingDirectory, inRoot)
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .map(path -> path.resolve(uri))
@@ -261,6 +284,7 @@ public class DirectoryService {
 
         Optional<Path> inConfig = Optional.empty();
         Optional<Path> inCurrentParent = Optional.empty();
+        Optional<Path> inRoot = Optional.empty();
 
         try {
             inConfig = Optional.ofNullable(configPath.resolve("public"));
@@ -274,7 +298,17 @@ public class DirectoryService {
             //no-op
         }
 
-        return Stream.<Optional<Path>>of(inConfig, inCurrentParent, workingDirectory)
+        try {
+            if (inCurrentParent.isPresent()) {
+                inRoot = inCurrentParent.map(Path::getRoot);
+            } else {
+                inRoot = workingDirectory.map(Path::getRoot);
+            }
+        } catch (Exception e) {
+            //no-op
+        }
+
+        return Stream.<Optional<Path>>of(inConfig, inCurrentParent, workingDirectory, inRoot)
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .map(path -> path.resolve(uri))

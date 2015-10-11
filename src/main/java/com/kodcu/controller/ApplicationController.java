@@ -277,7 +277,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     private ChartProvider chartProvider;
 
     private Stage stage;
-    private StringProperty lastRendered = new SimpleStringProperty();
     private List<WebSocketSession> sessionList = new ArrayList<>();
     private ObjectProperty<Scene> scene = new SimpleObjectProperty<>();
     private AnchorPane asciidocTableAnchor;
@@ -288,24 +287,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     private Path configPath;
     private BooleanProperty fileBrowserVisibility = new SimpleBooleanProperty(false);
     private BooleanProperty previewPanelVisibility = new SimpleBooleanProperty(false);
-
-    private final ChangeListener<String> lastRenderedChangeListener = (observableValue, old, nev) -> {
-
-        if (Objects.isNull(nev))
-            return;
-
-        htmlPane.refreshUI(nev);
-
-        threadService.runTaskLater(() -> {
-            sessionList.stream().filter(e -> e.isOpen()).forEach(e -> {
-                try {
-                    e.sendMessage(new TextMessage(nev));
-                } catch (Exception ex) {
-                    logger.error("Problem occured while sending content over WebSocket", ex);
-                }
-            });
-        });
-    };
 
     @Value("${application.version}")
     private String version;
@@ -352,6 +333,8 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     @Value("${application.live.url}")
     private String liveUrl;
+
+    private ConverterResult lastConverterResult;
 
     public void createAsciidocTable() {
         asciidocTableStage.showAndWait();
@@ -634,7 +617,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             this.generateHtml(true);
         }));
         htmlProMenu.getItems().add(MenuItemBuilt.item("Copy source").tip("Copy HTML source").click(event -> {
-            this.cutCopy(lastRendered.getValue());
+            this.cutCopy(lastConverterResult.getRendered());
         }));
         htmlProMenu.getItems().add(MenuItemBuilt.item("Clone source").tip("Copy HTML source (Embedded images)").click(event -> {
             htmlPane.call("imageToBase64Url", new Object[]{});
@@ -727,28 +710,24 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             return cell;
         });
 
-        lastRendered.addListener(lastRenderedChangeListener);
+        liveReloadPane.webEngine().setOnAlert(event -> {
+            if ("LIVE_LOADED".equals(event.getData())) {
+                liveReloadPane.setMember("afx", this);
+                current.currentEditor().rerender();
+            }
+        });
 
         htmlPane.webEngine().setOnAlert(event -> {
             if ("PREVIEW_LOADED".equals(event.getData())) {
-
-                if (htmlPane.getMember("afx").equals("undefined")) {
-                    htmlPane.setMember("afx", this);
-                }
-
-                if (Objects.nonNull(lastRendered.getValue()))
-                    lastRenderedChangeListener.changed(null, null, lastRendered.getValue());
+                htmlPane.setMember("afx", this);
+                current.currentEditor().rerender();
             }
         });
 
         asciidocWebkitConverter.webEngine().setOnAlert(event -> {
             if ("WORKER_LOADED".equals(event.getData())) {
-
-                if (asciidocWebkitConverter.getMember("afx").equals("undefined")) {
-                    asciidocWebkitConverter.setMember("afx", this);
-                }
-
-                htmlPane.load(String.format(previewUrl, port));
+                asciidocWebkitConverter.setMember("afx", this);
+                htmlPane.load(String.format(previewUrl, port, directoryService.interPath()));
             }
         });
 
@@ -1734,9 +1713,11 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
         sessionList.add(session);
-        String value = lastRendered.getValue();
-        if (Objects.nonNull(value))
-            session.sendMessage(new TextMessage(value));
+
+        Optional
+                .ofNullable(lastConverterResult)
+                .map(ConverterResult::getRendered)
+                .ifPresent(this::sendOverWebSocket);
     }
 
     @FXML
@@ -1926,33 +1907,26 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                 if (bookArticleHeader && !forceInclude)
                     setIncludeAsciidocResource(true);
 
-                ConverterResult result = converterProvider.get(previewConfigBean).convertAsciidoc(text);
+                this.lastConverterResult = converterProvider.get(previewConfigBean).convertAsciidoc(text);
 
                 setIncludeAsciidocResource(false);
 
-                if (result.isBackend("html5")) {
-                    lastRendered.setValue(result.getRendered());
+                if (lastConverterResult.isBackend("html5")) {
+                    updateRendered(lastConverterResult.getRendered());
                     previewTab.setChild(htmlPane);
                 }
 
-                if (result.isBackend("revealjs") || result.isBackend("deckjs")) {
-                    slidePane.setBackend(result.getBackend());
-                    slideConverter.convert(result.getRendered());
+                if (lastConverterResult.isBackend("revealjs") || lastConverterResult.isBackend("deckjs")) {
+                    slidePane.setBackend(lastConverterResult.getBackend());
+                    slideConverter.convert(lastConverterResult.getRendered());
                     previewTab.setChild(slidePane);
                 }
 
             } else if ("html".equalsIgnoreCase(mode)) {
-
-                if (previewTab.getContent() != liveReloadPane) {
-                    liveReloadPane.setOnSuccess(() -> {
-                        liveReloadPane.setMember("afx", this);
-                        liveReloadPane.initializeDiffReplacer();
-                    });
-
-                    String format = String.format(liveUrl, port, directoryService.interPath());
-                    liveReloadPane.load(format);
-                } else {
+                if (liveReloadPane.getReady()) {
                     liveReloadPane.updateDomdom();
+                } else {
+                    liveReloadPane.load(String.format(liveUrl, port, directoryService.interPath()));
                 }
 
                 previewTab.setChild(liveReloadPane);
@@ -1961,7 +1935,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                 MarkdownService markdownService = applicationContext.getBean(MarkdownService.class);
                 markdownService.convertToAsciidoc(text, asciidoc -> {
                     ConverterResult result = converterProvider.get(previewConfigBean).convertAsciidoc(asciidoc);
-                    result.afterRender(lastRendered::setValue);
+                    result.afterRender(this::updateRendered);
                 });
                 previewTab.setChild(htmlPane);
             }
@@ -1969,6 +1943,30 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         } catch (Exception e) {
             setIncludeAsciidocResource(false);
             logger.error("Problem occured while rendering content", e);
+        }
+    }
+
+    private void updateRendered(String rendered) {
+
+        Optional.ofNullable(rendered)
+                .ifPresent(html -> {
+                    htmlPane.refreshUI(html);
+                    sendOverWebSocket(html);
+                });
+
+    }
+
+    private void sendOverWebSocket(String html) {
+        if (sessionList.size() > 0) {
+            threadService.runTaskLater(() -> {
+                sessionList.stream().filter(WebSocketSession::isOpen).forEach(e -> {
+                    try {
+                        e.sendMessage(new TextMessage(html));
+                    } catch (Exception ex) {
+                        logger.error("Problem occured while sending content over WebSocket", ex);
+                    }
+                });
+            });
         }
     }
 
@@ -2191,16 +2189,8 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         return asciidocTableController;
     }
 
-    public StringProperty getLastRendered() {
-        return lastRendered;
-    }
-
     public TabPane getTabPane() {
         return tabPane;
-    }
-
-    public ChangeListener<String> getLastRenderedChangeListener() {
-        return lastRenderedChangeListener;
     }
 
     public AnchorPane getRootAnchor() {

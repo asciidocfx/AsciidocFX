@@ -4,6 +4,7 @@ import com.kodcu.component.PreviewTab;
 import com.kodcu.component.SlidePane;
 import com.kodcu.controller.ApplicationController;
 import com.kodcu.other.Current;
+import com.kodcu.service.DirectoryService;
 import com.kodcu.service.ThreadService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -28,14 +29,16 @@ public class SlideConverter {
 
     @Value("${application.slide.url}")
     private String slideUrl;
+    private final DirectoryService directoryService;
 
 
     @Autowired
-    public SlideConverter(final ApplicationController controller, final ThreadService threadService, final Current current, SlidePane slidePane) {
+    public SlideConverter(final ApplicationController controller, final ThreadService threadService, final Current current, SlidePane slidePane, DirectoryService directoryService) {
         this.controller = controller;
         this.threadService = threadService;
         this.current = current;
         this.slidePane = slidePane;
+        this.directoryService = directoryService;
     }
 
     public String currentType() {
@@ -57,8 +60,10 @@ public class SlideConverter {
 
             PreviewTab previewTab = controller.getPreviewTab();
 
-            if (previewTab.getContent() != slidePane) {
-                slidePane.load(String.format(slideUrl, controller.getPort()));
+            String url = String.format(slideUrl, controller.getPort(), directoryService.interPath());
+
+            if (previewTab.getContent() != slidePane || !url.equals(slidePane.getLocation())) {
+                slidePane.load(url);
             } else {
                 threadService.runActionLater(() -> {
                     slidePane.replaceSlides(rendered);

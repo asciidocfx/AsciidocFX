@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
-import javax.servlet.http.HttpServletResponse;
 import java.nio.file.Path;
 
 /**
@@ -46,6 +45,13 @@ public class GeneralResource {
 
             });
             payload.setStatus(HttpStatus.NO_CONTENT);
+        }
+        if (payload.getRequestURI().endsWith("preview.html")) {
+            Path path = directoryService.findPathInConfigOrCurrentOrWorkDir("preview.html");
+            fileService.processFile(payload, path);
+        } else if (payload.getRequestURI().endsWith("index.html")) {
+            Path path = directoryService.findPathInConfigOrCurrentOrWorkDir("index.html");
+            fileService.processFile(payload, path);
         } else {
             Path path = directoryService.findPathInConfigOrCurrentOrWorkDir(finalURI);
             fileService.processFile(payload, path);
