@@ -524,7 +524,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     public void initialize(URL url, ResourceBundle rb) {
 
         initializePaths();
-        initializePosixPermissions();
+//        initializePosixPermissions();
         initializeNashornConverter();
         initializeTerminal();
 
