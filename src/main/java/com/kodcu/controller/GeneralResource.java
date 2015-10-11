@@ -37,7 +37,7 @@ public class GeneralResource {
 
             current.currentPath().ifPresent(path -> {
 
-                Path ascFile = path.getParent().resolve(finalURI);
+                Path ascFile = path.getRoot().resolve(finalURI);
 
                 Platform.runLater(() -> {
                     tabService.addTab(ascFile);
