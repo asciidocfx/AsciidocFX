@@ -3,9 +3,6 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.web.WebView?>
-<?import javafx.scene.text.Text?>
-<?import javafx.scene.shape.Rectangle?>
 <AnchorPane id="AnchorPane" fx:id="rootAnchor" styleClass="rootAnchor" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="com.kodcu.controller.ApplicationController">
   <children>
     <SplitPane fx:id="splitPane" id="splitPane" dividerPositions="0.17551963048498845, 0.5996920708237106" focusTraversable="true" AnchorPane.bottomAnchor="1.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="-1.0">
