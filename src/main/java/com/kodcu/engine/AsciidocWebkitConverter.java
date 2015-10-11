@@ -6,6 +6,7 @@ import com.kodcu.controller.ApplicationController;
 import com.kodcu.other.ConverterResult;
 import com.kodcu.other.Current;
 import com.kodcu.other.IOHelper;
+import com.kodcu.service.DirectoryService;
 import com.kodcu.service.ThreadService;
 import javafx.application.Platform;
 import javafx.scene.web.WebView;
@@ -40,15 +41,17 @@ public class AsciidocWebkitConverter extends ViewPanel implements AsciidocConver
     private String indexUrl;
 
     private Logger logger = LoggerFactory.getLogger(AsciidocWebkitConverter.class);
+    private final DirectoryService directoryService;
 
     @Autowired
-    public AsciidocWebkitConverter(ThreadService threadService, ApplicationController controller, Current current, PreviewConfigBean previewConfigBean, OdfConfigBean odfConfigBean, DocbookConfigBean docbookConfigBean, HtmlConfigBean htmlConfigBean, AsciidocConfigMerger configMerger) {
+    public AsciidocWebkitConverter(ThreadService threadService, ApplicationController controller, Current current, PreviewConfigBean previewConfigBean, OdfConfigBean odfConfigBean, DocbookConfigBean docbookConfigBean, HtmlConfigBean htmlConfigBean, AsciidocConfigMerger configMerger, DirectoryService directoryService) {
         super(threadService, controller, current);
         this.previewConfigBean = previewConfigBean;
         this.odfConfigBean = odfConfigBean;
         this.docbookConfigBean = docbookConfigBean;
         this.htmlConfigBean = htmlConfigBean;
         this.configMerger = configMerger;
+        this.directoryService = directoryService;
     }
 
     public WebView getWebView() {
@@ -94,7 +97,7 @@ public class AsciidocWebkitConverter extends ViewPanel implements AsciidocConver
     @Override
     public void browse() {
         controller.getHostServices()
-                .showDocument(String.format(indexUrl, controller.getPort()));
+                .showDocument(String.format(indexUrl, controller.getPort(), directoryService.interPath()));
     }
 
     @Override
