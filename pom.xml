@@ -40,7 +40,7 @@
         <dependency>
             <groupId>com.dooapp.fxform2</groupId>
             <artifactId>core</artifactId>
-            <version>8.0.10</version>
+            <version>8.0.12</version>
         </dependency>
         <dependency>
             <groupId>commons-io</groupId>
