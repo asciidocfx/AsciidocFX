@@ -215,4 +215,9 @@ public class NoneShortcutService implements ShortcutService {
     public void addStackedBarChart() {
 
     }
+
+    @Override
+    public void includeAsSubdocument() {
+
+    }
 }

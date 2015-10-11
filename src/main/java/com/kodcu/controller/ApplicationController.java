@@ -2304,12 +2304,12 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                 Path path = fileSystemView.getSelectionModel().getSelectedItem()
                         .getValue().getPath();
 
-                IOHelper.writeToFile(path.resolve(result), "");
-                tabService.addTab(path.resolve(result));
-// dikkat
-//                threadService.runActionLater(() -> {
-//                    directoryService.changeWorkigDir(path);
-//                });
+                IOHelper.createDirectories(path);
+                Optional<Exception> exception = IOHelper.writeToFile(path.resolve(result), "", CREATE_NEW, WRITE);
+
+                if (!exception.isPresent()) {
+                    tabService.addTab(path.resolve(result));
+                }
             }
         };
 
@@ -2556,6 +2556,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         threadService.runActionLater(() -> {
             PreviewTab workerTab = new PreviewTab("Worker Pane", asciidocWebkitConverter);
             previewTabPane.getTabs().add(workerTab);
+            previewTabPane.getSelectionModel().select(workerTab);
         });
     }
 
@@ -2610,5 +2611,27 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         }
 
         newTerminal(actionEvent, selectedTabPath);
+    }
+
+    public void includeAsSubdocument() {
+        String selection = current.currentEditor().editorSelection();
+
+        DialogBuilder fileDialog = DialogBuilder.newFileDialog();
+        Optional<String> filenameOptional = fileDialog.showAndWait();
+
+        if (filenameOptional.isPresent()) {
+            String filename = filenameOptional.get();
+            Path parent = current.currentTab().getParentOrWorkdir();
+            Path path = parent.resolve(filename);
+
+            IOHelper.createDirectories(path.getParent());
+            Optional<Exception> exception = IOHelper.writeToFile(path, selection, CREATE_NEW, WRITE);
+
+            if (!exception.isPresent()) {
+                current.currentEditor().removeToLineStart();
+                current.currentEditor().insert(String.format("\ninclude::%s[]\n", filename));
+                tabService.addTab(path);
+            }
+        }
     }
 }

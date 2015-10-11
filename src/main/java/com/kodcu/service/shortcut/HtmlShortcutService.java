@@ -204,5 +204,10 @@ public class HtmlShortcutService implements ShortcutService {
     public void addStackedBarChart() {
     }
 
-   
+    @Override
+    public void includeAsSubdocument() {
+
+    }
+
+
 }

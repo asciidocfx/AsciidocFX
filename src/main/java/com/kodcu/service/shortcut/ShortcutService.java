@@ -88,4 +88,6 @@ public interface ShortcutService {
     void addStackedAreaChart();
 
     void addStackedBarChart();
+
+    void includeAsSubdocument();
 }

@@ -232,4 +232,9 @@ public class AsciidocShortcutService implements ShortcutService {
     public void addStackedBarChart() {
         current.currentEngine().executeScript("editorMenu.asciidoc.addStackedBarChart()");
     }
+
+    @Override
+    public void includeAsSubdocument() {
+        controller.includeAsSubdocument();
+    }
 }

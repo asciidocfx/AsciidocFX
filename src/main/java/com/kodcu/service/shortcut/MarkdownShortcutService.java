@@ -239,4 +239,9 @@ public class MarkdownShortcutService implements ShortcutService {
     public void addStackedBarChart() {
         AlertHelper.notImplementedDialog();
     }
+
+    @Override
+    public void includeAsSubdocument() {
+
+    }
 }

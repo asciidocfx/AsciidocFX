@@ -347,6 +347,9 @@ public class EditorPane extends AnchorPane {
         MenuItem indexSelection = MenuItemBuilt.item("Index selection").click(e -> {
             shortcutProvider.getProvider().addIndexSelection();
         });
+        MenuItem includeAsSubDocument = MenuItemBuilt.item("Include selection").click(e -> {
+            shortcutProvider.getProvider().includeAsSubdocument();
+        });
         MenuItem replacements = MenuItemBuilt.item("Replacements").click(this::replaceSubs);
         MenuItem markdownToAsciidoc = MenuItemBuilt.item("Markdown to Asciidoc").click(e -> {
             MarkdownService markdownService = applicationContext.getBean(MarkdownService.class);
@@ -361,7 +364,8 @@ public class EditorPane extends AnchorPane {
             if (menu.getItems().size() == 0) {
                 menu.getItems().addAll(cut, copy, paste, pasteRaw,
                         markdownToAsciidoc,
-                        indexSelection
+                        indexSelection,
+                        includeAsSubDocument
                 );
             }
 
@@ -525,4 +529,7 @@ public class EditorPane extends AnchorPane {
     }
 
 
+    public void removeToLineStart() {
+        webEngine().executeScript("editor.removeToLineStart()");
+    }
 }
