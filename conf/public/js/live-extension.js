@@ -10,3 +10,5 @@ function scrollByXPath(xPath) {
     }
 
 }
+
+alert("LIVE_LOADED");
