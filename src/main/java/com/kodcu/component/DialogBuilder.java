@@ -5,7 +5,7 @@ package com.kodcu.component;
  */
 public final class DialogBuilder extends TextDialog {
 
-    public final static String FILE_NAME_REGEX = "^[\\w\\-]*\\.[\\w\\-]+$";
+    public final static String FILE_NAME_REGEX = "^[\\w\\-\\\\/]*\\.[\\w\\-]+$";
     public final static String FOLDER_NAME_REGEX = "^[\\w\\-]*\\.*[\\w\\-]+$";
 
     public DialogBuilder(String content, String title) {
