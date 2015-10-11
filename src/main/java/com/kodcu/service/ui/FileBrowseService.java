@@ -71,8 +71,11 @@ public class FileBrowseService {
 
             this.addPathToTree(path);
 
-            if (Objects.nonNull(lastSelectedItem))
-                treeView.getSelectionModel().select(lastSelectedItem);
+            if (Objects.nonNull(lastSelectedItem)) {
+                threadService.runActionLater(() -> {
+                    treeView.getSelectionModel().select(lastSelectedItem);
+                });
+            }
 
             logger.debug("Filesystem Tree relisted for {}", path);
         });
