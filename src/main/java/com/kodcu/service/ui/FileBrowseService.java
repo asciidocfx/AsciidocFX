@@ -5,7 +5,6 @@ import com.kodcu.other.Item;
 import com.kodcu.service.PathOrderService;
 import com.kodcu.service.PathResolverService;
 import com.kodcu.service.ThreadService;
-import javafx.collections.FXCollections;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import org.slf4j.Logger;
@@ -16,10 +15,10 @@ import org.springframework.stereotype.Component;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 /**
@@ -52,63 +51,61 @@ public class FileBrowseService {
 
     public void browse(final Path path) {
 
-        controller.getWorkDirTabPane().getSelectionModel().selectFirst(); // fix
-
-        TreeView<Item> treeView = controller.getFileSystemView();
-
-        int selectedIndex = treeView.getSelectionModel().getSelectedIndex();
-        if (selectedIndex != -1)
-            lastSelectedItem = selectedIndex;
-
-        rootItem = new TreeItem<>(new Item(path, String.format("Loading... (%s)", Optional.of(path).map(Path::getFileName).orElse(path))), awesomeService.getIcon(path));
-        rootItem.setExpanded(true);
-
         threadService.runActionLater(() -> {
+
+            controller.getWorkDirTabPane().getSelectionModel().selectFirst(); // fix
+
+            TreeView<Item> treeView = controller.getFileSystemView();
+
+            int selectedIndex = treeView.getSelectionModel().getSelectedIndex();
+            if (selectedIndex != -1)
+                lastSelectedItem = selectedIndex;
+
+            rootItem = new TreeItem<>(new Item(path, String.format("Loading... (%s)", Optional.of(path).map(Path::getFileName).orElse(path))), awesomeService.getIcon(path));
+            rootItem.setExpanded(true);
+
             treeView.setRoot(rootItem);
+
+            threadService.runTaskLater(() -> {
+
+                this.addPathToTree(path);
+
+                if (Objects.nonNull(lastSelectedItem)) {
+                    threadService.runActionLater(() -> {
+                        treeView.getSelectionModel().select(lastSelectedItem);
+                    });
+                }
+
+                logger.debug("Filesystem Tree relisted for {}", path);
+            });
+
         }, true);
-
-        threadService.runTaskLater(() -> {
-
-            this.addPathToTree(path);
-
-            if (Objects.nonNull(lastSelectedItem)) {
-                threadService.runActionLater(() -> {
-                    treeView.getSelectionModel().select(lastSelectedItem);
-                });
-            }
-
-            logger.debug("Filesystem Tree relisted for {}", path);
-        });
-
     }
 
 
     public void addPathToTree(Path path) {
 
-        List<TreeItem<Item>> subItemList = Collections.synchronizedList(FXCollections.observableArrayList());
-
         try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(path);) {
 
-            StreamSupport
+            List<TreeItem<Item>> subItemList = StreamSupport
                     .stream(directoryStream.spliterator(), false)
                     .filter(p -> !pathResolver.isHidden(p))
                     .filter(pathResolver::isViewable)
                     .sorted(pathOrder::comparePaths)
-                    .forEach(p -> {
-                        TreeItem<Item> treeItem = new TreeItem<>(new Item(p), awesomeService.getIcon(p));
-                        subItemList.add(treeItem);
-                    });
+                    .map(p -> new TreeItem<>(new Item(p), awesomeService.getIcon(p)))
+                    .collect(Collectors.toList());
+
+            threadService.runActionLater(() -> {
+                rootItem = new TreeItem<>(new Item(path, String.format("%s", Optional.of(path).map(Path::getFileName).orElse(path))), awesomeService.getIcon(path));
+                rootItem.setExpanded(true);
+                rootItem.getChildren().addAll(subItemList);
+                controller.getFileSystemView().setRoot(rootItem);
+            }, true);
 
         } catch (Exception e) {
             logger.error("Problem occured while updating WorkDir panel", e);
         }
 
-        threadService.runActionLater(() -> {
-            rootItem = new TreeItem<>(new Item(path, String.format("%s", Optional.of(path).map(Path::getFileName).orElse(path))), awesomeService.getIcon(path));
-            rootItem.setExpanded(true);
-            rootItem.getChildren().addAll(subItemList);
-            controller.getFileSystemView().setRoot(rootItem);
-        }, true);
 
     }
 
