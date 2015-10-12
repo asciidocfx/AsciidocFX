@@ -359,7 +359,7 @@ public class TabService {
 
             if ("".equals(extension) || supportedModes.contains(extension)) {
                 addTab(path);
-                controller.hidePreviewPanel();
+//                controller.hidePreviewPanel();
             } else {
                 controller.getHostServices()
                         .showDocument(path.toUri().toString());
