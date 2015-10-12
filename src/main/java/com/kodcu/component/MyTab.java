@@ -227,6 +227,10 @@ public class MyTab extends Tab {
             fileChooser.getExtensionFilters().addAll(ExtensionFilters.MARKDOWN);
             fileChooser.getExtensionFilters().addAll(ExtensionFilters.ALL);
             File file = fileChooser.showSaveDialog(null);
+
+            if (Objects.isNull(file))
+                return;
+
             setPath(file.toPath());
             setTabText(file.toPath().getFileName().toString());
         }
