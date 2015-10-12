@@ -4,6 +4,7 @@ import com.kodcu.config.StoredConfigBean;
 import com.kodcu.controller.ApplicationController;
 import com.kodcu.other.ExtensionFilters;
 import com.kodcu.other.IOHelper;
+import com.kodcu.other.Item;
 import com.kodcu.service.DirectoryService;
 import com.kodcu.service.ThreadService;
 import com.kodcu.service.shortcut.AsciidocShortcutService;
@@ -245,9 +246,9 @@ public class MyTab extends Tab {
 
         changedProperty.set(false);
 
-        ObservableList<String> recentFiles = storedConfigBean.getRecentFiles();
-        recentFiles.remove(getPath().toString());
-        recentFiles.add(0, getPath().toString());
+        ObservableList<Item> recentFiles = storedConfigBean.getRecentFiles();
+        recentFiles.remove(new Item(getPath()));
+        recentFiles.add(0, new Item(getPath()));
 
         directoryService.setInitialDirectory(Optional.ofNullable(getPath().toFile()));
     }

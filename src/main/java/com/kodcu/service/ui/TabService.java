@@ -92,7 +92,7 @@ public class TabService {
 
     public void addTab(Path path, Runnable... runnables) {
 
-        ObservableList<String> recentFiles = storedConfigBean.getRecentFiles();
+        ObservableList<Item> recentFiles = storedConfigBean.getRecentFiles();
         if (Files.notExists(path)) {
             recentFiles.remove(path.toString());
             logger.debug("Path {} not found in the filesystem", path);
@@ -132,8 +132,8 @@ public class TabService {
         Tooltip tip = new Tooltip(path.toString());
         Tooltip.install(tab.getGraphic(), tip);
 
-        recentFiles.remove(path.toString());
-        recentFiles.add(0, path.toString());
+        recentFiles.remove(new Item(path));
+        recentFiles.add(0, new Item(path));
 
         editorPane.getHandleReadyTasks().clear();
         editorPane.getHandleReadyTasks().addAll(runnables);
@@ -176,9 +176,10 @@ public class TabService {
         List<File> chosenFiles = fileChooser.showOpenMultipleDialog(controller.getStage());
         if (chosenFiles != null) {
             chosenFiles.stream().map(File::toPath).forEach(this::previewDocument);
+            ObservableList<Item> recentFiles = storedConfigBean.getRecentFiles();
             chosenFiles.stream()
-                    .map(File::toString).filter(file -> !storedConfigBean.getRecentFiles().contains(file))
-                    .forEach(storedConfigBean.getRecentFiles()::addAll);
+                    .map(e -> new Item(e.toPath()))
+                    .filter(file -> !recentFiles.contains(file)).forEach(recentFiles::addAll);
             directoryService.setInitialDirectory(Optional.ofNullable(chosenFiles.get(0)));
         }
     }

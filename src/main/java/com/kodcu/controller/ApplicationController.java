@@ -144,7 +144,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     public Label refreshLabel;
     public AnchorPane rootAnchor;
     public ProgressIndicator indikator;
-    public ListView<String> recentListView;
+    public ListView<Item> recentListView;
     public MenuItem openFileTreeItem;
     public MenuItem deletePathItem;
     public MenuItem openFolderTreeItem;
@@ -406,9 +406,9 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                     IOHelper.writeToFile(docbookPath, finalDocbook, CREATE, TRUNCATE_EXISTING, WRITE);
                 });
                 threadService.runActionLater(() -> {
-                    ObservableList<String> recentFiles = storedConfigBean.getRecentFiles();
-                    recentFiles.remove(docbookPath.toString());
-                    recentFiles.add(0, docbookPath.toString());
+                    ObservableList<Item> recentFiles = storedConfigBean.getRecentFiles();
+                    recentFiles.remove(new Item(docbookPath));
+                    recentFiles.add(0, new Item(docbookPath));
                 });
                 indikatorService.stopProgressBar();
             };
@@ -777,7 +777,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         });
 
         openFolderListItem.setOnAction(event -> {
-            Path path = Paths.get(recentListView.getSelectionModel().getSelectedItem());
+            Path path = recentListView.getSelectionModel().getSelectedItem().getPath();
             path = Files.isDirectory(path) ? path : path.getParent();
             if (Objects.nonNull(path))
                 getHostServices().showDocument(path.toString());
@@ -786,7 +786,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         openFileListItem.setOnAction(this::openRecentListFile);
 
         copyPathListItem.setOnAction(event -> {
-            this.cutCopy(recentListView.getSelectionModel().getSelectedItem());
+            this.cutCopy(recentListView.getSelectionModel().getSelectedItem().getPath().toString());
         });
 
         copyTreeItem.setOnAction(event -> {
@@ -795,8 +795,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         });
 
         copyListItem.setOnAction(event -> {
-            Path path = Paths.get(recentListView.getSelectionModel().getSelectedItem());
-            this.copyFile(path);
+            this.copyFile(recentListView.getSelectionModel().getSelectedItem().getPath());
         });
 
         fileSystemView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
@@ -1116,12 +1115,12 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             applyForAllEditorPanes(editorPane -> editorPane.setFontSize(newValue.intValue()));
         });
 
-        ObservableList<String> recentFilesList = storedConfigBean.getRecentFiles();
+        ObservableList<Item> recentFilesList = storedConfigBean.getRecentFiles();
         ObservableList<String> favoriteDirectories = storedConfigBean.getFavoriteDirectories();
 
         recentListView.setItems(recentFilesList);
 
-        recentFilesList.addListener((ListChangeListener<String>) c -> {
+        recentFilesList.addListener((ListChangeListener<Item>) c -> {
             recentListView.visibleProperty().setValue(c.getList().size() > 0);
             recentListView.getSelectionModel().selectFirst();
         });
@@ -1555,8 +1554,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     }
 
     private void openRecentListFile(Event event) {
-        Path path = Paths.get(recentListView.getSelectionModel().getSelectedItem());
-        tabService.previewDocument(path);
+        tabService.previewDocument(recentListView.getSelectionModel().getSelectedItem().getPath());
     }
 
     public void externalBrowse() {
@@ -2565,8 +2563,8 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             return;
 
         threadService.runActionLater(() -> {
-            storedConfigBean.getRecentFiles().remove(path.toString());
-            storedConfigBean.getRecentFiles().add(0, path.toString());
+            storedConfigBean.getRecentFiles().remove(new Item(path));
+            storedConfigBean.getRecentFiles().add(0, new Item(path));
         });
     }
 
