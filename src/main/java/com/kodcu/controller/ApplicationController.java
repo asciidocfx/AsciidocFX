@@ -2656,4 +2656,10 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             }
         }
     }
+
+    @WebkitCall(from = "asciidoctor-image-cache")
+    public Integer readImageCache(String target) {
+        return current.getCache().get(target);
+    }
+
 }

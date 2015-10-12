@@ -12,6 +12,7 @@
         "env":"browser",
         "env-browser":"true",
         "idprefix":"true",
-        "apply-data-line": "true"
+        "apply-data-line": "true",
+        "apply-image-cacher": "true"
     }
 }

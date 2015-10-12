@@ -119,9 +119,9 @@ public class AsciidocNashornConverter implements AsciidocConvertible {
                 scriptEngine.put("afx", this.controller);
 
                 List<String> scripts = Arrays.asList("nashorn-shim.js", "jade.js", "asciidoctor-all.js", "asciidoctor-image-size-info.js",
-                        "asciidoctor-data-line.js", "asciidoctor-uml-block.js", "asciidoctor-tree-block.js", "asciidoctor-chart-block.js",
-                        "asciidoctor-docbook.js", "asciidoctor-reveal.js", "asciidoctor-deck.js", "asciidoctor-odf.js", "buffhelper.js",
-                        "outliner.js", "converters.js");
+                        "asciidoctor-image-cache.js", "asciidoctor-data-line.js", "asciidoctor-uml-block.js", "asciidoctor-tree-block.js",
+                        "asciidoctor-chart-block.js", "asciidoctor-docbook.js", "asciidoctor-reveal.js", "asciidoctor-deck.js",
+                        "asciidoctor-odf.js", "buffhelper.js", "outliner.js", "converters.js");
 
                 Path configPath = controller.getConfigPath();
 
