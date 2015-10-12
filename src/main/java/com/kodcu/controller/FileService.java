@@ -66,6 +66,7 @@ public class FileService {
             // Do your thing if the file is not supplied to the request URL.
             // Throw an exception, or send 404, or show default/warning page, or just ignore it.
             response.setStatus(HttpServletResponse.SC_NO_CONTENT);
+            response.setDateHeader("Expires", 0);
             response.getWriter().close();
             return;
         }

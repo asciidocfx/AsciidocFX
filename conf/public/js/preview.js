@@ -1,3 +1,4 @@
+var imageCacheNumber = Math.floor(Math.random() * (999999999999 - 2)) + 1;
 var $placeholder = $("#placeholder");
 
 function clearImageCache(imageName) {
@@ -6,8 +7,8 @@ function clearImageCache(imageName) {
         var srcAttr = image.attr("src");
         if (srcAttr) {
             if (srcAttr.indexOf(imageName) != -1) {
-                var imageCacheNumber = Math.floor(Math.random() * (999999999999 - 2)) + 1;
-                image.attr("src", srcAttr.split("?")[0] + "?cache=" + imageCacheNumber);
+                var cache = Math.floor(Math.random() * (999999999999 - 2)) + 1;
+                image.attr("src", srcAttr.split("?")[0] + "?cache=" + cache);
             }
         }
     });
@@ -31,7 +32,15 @@ function updateBase64Url(index, base64) {
 var hljsAction = new BufferedAction();
 function refreshUI(data) {
 
-    $placeholder.html(data);
+    var $data = $("<div></div>").append(data);
+    $data.find("img").each(function () {
+        var $image = $(this);
+        var attr = $image.attr("src");
+        if (attr)
+            $image.attr("src", attr + "?cache=" + imageCacheNumber);
+    });
+
+    $placeholder.html($data.html());
 
     hljsAction.buff(function () {
         $('pre').children("code").each(function () {
