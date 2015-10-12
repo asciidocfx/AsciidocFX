@@ -85,7 +85,7 @@ public class PlantUmlService {
                     logger.debug("UML extension is ended for {}", imageTarget);
 
                     threadService.runActionLater(() -> {
-                        controller.clearImageCache();
+                        controller.clearImageCache(umlPath);
                     });
                 } catch (Exception e) {
                     logger.error("Problem occured while generating UML diagram", e);

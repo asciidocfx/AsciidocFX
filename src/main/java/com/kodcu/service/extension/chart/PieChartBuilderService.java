@@ -122,7 +122,7 @@ public class PieChartBuilderService extends ChartBuilderService {
             BufferedImage bufferedImage = SwingFXUtils.fromFXImage(writableImage, null);
             IOHelper.createDirectories(currentRoot.resolve(imagesDir));
             IOHelper.imageWrite(bufferedImage, "png", imagePath.toFile());
-            controller.clearImageCache();
+            controller.clearImageCache(imagePath);
 
         });
     }

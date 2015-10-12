@@ -2471,8 +2471,13 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         });
     }*/
 
-    public void clearImageCache() {
-        htmlPane.webEngine().executeScript("clearImageCache()");
+    public void clearImageCache(Path imagePath) {
+        Optional.ofNullable(imagePath)
+                .map(Path::getFileName)
+                .map(Path::toString)
+                .ifPresent(imageName -> {
+                    htmlPane.webEngine().executeScript(String.format("clearImageCache('%s')", imageName));
+                });
     }
 
     public ObservableList<DocumentMode> getModeList() {

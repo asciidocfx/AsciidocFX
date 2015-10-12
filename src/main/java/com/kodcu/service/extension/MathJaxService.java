@@ -137,11 +137,12 @@ public class MathJaxService {
             Path path = current.currentTab().getParentOrWorkdir();
             Files.createDirectories(path.resolve(imagesDir));
 
-            Files.write(path.resolve(imageTarget), svg.getBytes(Charset.forName("UTF-8")), CREATE, WRITE, TRUNCATE_EXISTING);
+            Path imagePath = path.resolve(imageTarget);
+            Files.write(imagePath, svg.getBytes(Charset.forName("UTF-8")), CREATE, WRITE, TRUNCATE_EXISTING);
 
             logger.debug("MathJax extension is ended for {}", imageTarget);
             threadService.runActionLater(() -> {
-                controller.clearImageCache();
+                controller.clearImageCache(imagePath);
             });
         } catch (IOException e) {
             logger.error("Problem occured while generating MathJax svg", e);
@@ -167,11 +168,12 @@ public class MathJaxService {
             Path path = current.currentTab().getParentOrWorkdir();
             Files.createDirectories(path.resolve(imagesDir));
 
-            Files.write(path.resolve(imageTarget), ostream.toByteArray(), CREATE, WRITE, TRUNCATE_EXISTING);
+            Path imagePath = path.resolve(imageTarget);
+            Files.write(imagePath, ostream.toByteArray(), CREATE, WRITE, TRUNCATE_EXISTING);
 
             logger.debug("MathJax extension is ended for {}", imageTarget);
             threadService.runActionLater(() -> {
-                controller.clearImageCache();
+                controller.clearImageCache(imagePath);
             });
 
         } catch (Exception e) {

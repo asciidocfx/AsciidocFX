@@ -205,7 +205,7 @@ public abstract class XYChartBuilderService extends ChartBuilderService {
         IOHelper.createDirectories(currentRoot.resolve(imagesDir));
         IOHelper.imageWrite(bufferedImage, "png", imagePath.toFile());
         logger.debug("Chart extension is ended for {}", imageTarget);
-        controller.clearImageCache();
+        controller.clearImageCache(imagePath);
     }
 
     protected abstract XYChart createXYChart();

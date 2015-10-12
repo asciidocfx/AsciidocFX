@@ -189,7 +189,7 @@ public class TreeService {
 
                         logger.debug("Tree extension is ended for {}", imageTarget);
 
-                        controller.clearImageCache();
+                        controller.clearImageCache(treePath);
 
                         controller.getRootAnchor().getChildren().remove(fileView);
                     });
@@ -268,7 +268,7 @@ public class TreeService {
                             IOHelper.createDirectories(path.resolve(imagesDir));
                             IOHelper.imageWrite(trimmed, "png", treePath.toFile());
                             threadService.runActionLater(() -> {
-                                controller.clearImageCache();
+                                controller.clearImageCache(treePath);
                                 controller.getRootAnchor().getChildren().remove(treeview);
                             });
                         });
