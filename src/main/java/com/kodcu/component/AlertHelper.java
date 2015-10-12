@@ -1,9 +1,13 @@
 package com.kodcu.component;
 
+import javafx.collections.ObservableList;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.DialogPane;
+import javafx.scene.control.ListView;
 
 import java.nio.file.Path;
+import java.util.List;
 import java.util.Optional;
 
 import static javafx.scene.control.Alert.AlertType;
@@ -16,10 +20,24 @@ public final class AlertHelper {
     public static final ButtonType LOAD_FILE_SYSTEM_CHANGES = new ButtonType("Load File System Changes");
     public static final ButtonType KEEP_MEMORY_CHANGES = new ButtonType("Keep Memory Changes");
 
-    public static Optional<ButtonType> deleteAlert(String contentText) {
-        AlertDialog deleteAlert = new AlertDialog(AlertType.WARNING, null, ButtonType.YES, ButtonType.CANCEL);
+    public static Optional<ButtonType> deleteAlert(List<Path> pathsLabel) {
+        Alert deleteAlert = new Alert(Alert.AlertType.WARNING, null, ButtonType.YES, ButtonType.CANCEL);
         deleteAlert.setHeaderText("Do you want to delete selected path(s)?");
-        deleteAlert.setContentText(contentText);
+        DialogPane dialogPane = deleteAlert.getDialogPane();
+
+        ListView listView = new ListView();
+        listView.getStyleClass().clear();
+        ObservableList items = listView.getItems();
+        items.addAll(pathsLabel);
+        listView.setEditable(false);
+        dialogPane.setContent(listView);
+
+        listView.setPrefHeight(Optional.ofNullable(pathsLabel)
+                .map(List::size)
+                .map(e -> e * 40)
+                .filter(e -> e <= 300 && e >= 40)
+                .orElse(300));
+
         return deleteAlert.showAndWait();
     }
 

@@ -757,9 +757,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                     .map(e -> e.getPath())
                     .collect(Collectors.toList());
 
-            String candidates = pathList.stream().map(e -> "* " + e).collect(Collectors.joining("\n"));
-
-            AlertHelper.deleteAlert(candidates).ifPresent(btn -> {
+            AlertHelper.deleteAlert(pathList).ifPresent(btn -> {
                 if (btn == ButtonType.YES) {
                     pathList
                             .forEach(path -> threadService.runTaskLater(() -> {
