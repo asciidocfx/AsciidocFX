@@ -77,7 +77,7 @@
 
         self.$named("chart");
 
-        self.$on_context("open");
+        self.$on_context(["open", "literal", "listing"]);
 
         self.$parse_content_as("literal");
 
