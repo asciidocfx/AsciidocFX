@@ -752,11 +752,16 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
             ObservableList<TreeItem<Item>> selectedItems = fileSystemView.getSelectionModel().getSelectedItems();
 
-            AlertHelper.deleteAlert().ifPresent(btn -> {
-                if (btn == ButtonType.YES)
-                    selectedItems.stream()
-                            .map(e -> e.getValue())
-                            .map(e -> e.getPath())
+            List<Path> pathList = selectedItems.stream()
+                    .map(e -> e.getValue())
+                    .map(e -> e.getPath())
+                    .collect(Collectors.toList());
+
+            String candidates = pathList.stream().map(e -> "* " + e).collect(Collectors.joining("\n"));
+
+            AlertHelper.deleteAlert(candidates).ifPresent(btn -> {
+                if (btn == ButtonType.YES) {
+                    pathList
                             .forEach(path -> threadService.runTaskLater(() -> {
                                 if (Files.isDirectory(path)) {
                                     IOHelper.deleteDirectory(path);
@@ -764,6 +769,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                                     IOHelper.deleteIfExists(path);
                                 }
                             }));
+                }
 
             });
 

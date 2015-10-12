@@ -16,9 +16,10 @@ public final class AlertHelper {
     public static final ButtonType LOAD_FILE_SYSTEM_CHANGES = new ButtonType("Load File System Changes");
     public static final ButtonType KEEP_MEMORY_CHANGES = new ButtonType("Keep Memory Changes");
 
-    public static Optional<ButtonType> deleteAlert() {
+    public static Optional<ButtonType> deleteAlert(String contentText) {
         AlertDialog deleteAlert = new AlertDialog(AlertType.WARNING, null, ButtonType.YES, ButtonType.CANCEL);
         deleteAlert.setHeaderText("Do you want to delete selected path(s)?");
+        deleteAlert.setContentText(contentText);
         return deleteAlert.showAndWait();
     }
 
