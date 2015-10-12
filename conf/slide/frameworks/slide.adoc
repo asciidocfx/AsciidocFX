@@ -2,7 +2,7 @@ include::_settings_reveal.adoc[]
 
 // include::_settings_deck.adoc[]
 
-= Slide Titlex
+= Slide Title
 
 == Slide 1
 
