@@ -21,6 +21,7 @@ import java.net.URLDecoder;
 import java.nio.charset.Charset;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.nio.file.attribute.FileAttribute;
 import java.nio.file.attribute.FileTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -324,5 +325,15 @@ public class IOHelper {
 //            e.printStackTrace();
         }
         return uri;
+    }
+
+    public static Path createTempDirectory(Path path, String prefix, FileAttribute<?>... attrs) {
+        try {
+            return Files.createTempDirectory(path, prefix, attrs);
+        } catch (Exception e) {
+            logger.error("Problem occured while creating temp directory");
+        }
+
+        return null;
     }
 }

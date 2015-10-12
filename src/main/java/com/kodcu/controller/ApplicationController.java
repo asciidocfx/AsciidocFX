@@ -2234,7 +2234,13 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     @FXML
     public void generateCheatSheet(ActionEvent actionEvent) {
         Path cheatsheetPath = configPath.resolve("cheatsheet/cheatsheet.adoc");
-        tabService.addTab(cheatsheetPath);
+
+        Path tempSheetPath = IOHelper.createTempDirectory(directoryService.workingDirectory(), "cheatsheet")
+                .resolve("cheatsheet.adoc");
+
+        IOHelper.copy(cheatsheetPath, tempSheetPath);
+
+        tabService.addTab(tempSheetPath);
     }
 
     public void setMarkdownTableAnchor(AnchorPane markdownTableAnchor) {
