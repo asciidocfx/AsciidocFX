@@ -790,12 +790,13 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         });
 
         copyTreeItem.setOnAction(event -> {
-            Path path = tabService.getSelectedTabPath();
-            this.copyFile(path);
+            this.copyFiles(tabService.getSelectedTabPaths());
         });
 
         copyListItem.setOnAction(event -> {
-            this.copyFile(recentListView.getSelectionModel().getSelectedItem().getPath());
+            this.copyFiles(recentListView.getSelectionModel()
+                    .getSelectedItems().stream()
+                    .map(e -> e.getPath()).collect(Collectors.toList()));
         });
 
         fileSystemView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
@@ -1991,10 +1992,18 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         clipboard.setContent(clipboardContent);
     }
 
-    public void copyFile(Path path) {
-        ClipboardContent clipboardContent = new ClipboardContent();
-        clipboardContent.putFiles(Arrays.asList(path.toFile()));
-        clipboard.setContent(clipboardContent);
+    public void copyFiles(List<Path> paths) {
+
+        Optional.ofNullable(paths)
+                .filter((ps) -> !ps.isEmpty())
+                .ifPresent(ps -> {
+                    ClipboardContent clipboardContent = new ClipboardContent();
+                    clipboardContent.putFiles(ps
+                            .stream()
+                            .map(Path::toFile)
+                            .collect(Collectors.toList()));
+                    clipboard.setContent(clipboardContent);
+                });
     }
 
     @WebkitCall(from = "asciidoctor")

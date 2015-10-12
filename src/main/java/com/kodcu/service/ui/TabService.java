@@ -39,9 +39,11 @@ import org.springframework.stereotype.Component;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Created by usta on 25.12.2014.
@@ -192,6 +194,14 @@ public class TabService {
         return path;
     }
 
+    public List<Path> getSelectedTabPaths() {
+        ObservableList<TreeItem<Item>> treeItems = controller.getFileSystemView().getSelectionModel().getSelectedItems();
+        return treeItems.stream()
+                .map(TreeItem::getValue)
+                .map(Item::getPath)
+                .collect(Collectors.toList());
+    }
+
     public MyTab createTab() {
 
         final MyTab tab = applicationContext.getBean(MyTab.class);
@@ -289,7 +299,7 @@ public class TabService {
 
         MenuItem copyItem = MenuItemBuilt.item("Copy").click(event -> {
             Optional.ofNullable(tab.getPath())
-                    .ifPresent(controller::copyFile);
+                    .ifPresent(path -> controller.copyFiles(Arrays.asList(path)));
         });
 
         MenuItem copyPathItem = MenuItemBuilt.item("Copy Path").click(event -> {
