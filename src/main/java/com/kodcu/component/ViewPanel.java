@@ -61,13 +61,13 @@ public abstract class ViewPanel extends AnchorPane {
     }
 
     public void enableScrollingAndJumping() {
-        stopScrolling.setValue(true);
-        stopJumping.setValue(true);
+        stopScrolling.setValue(false);
+        stopJumping.setValue(false);
     }
 
     public void disableScrollingAndJumping() {
-        stopScrolling.setValue(false);
-        stopJumping.setValue(false);
+        stopScrolling.setValue(true);
+        stopJumping.setValue(true);
     }
 
     private void initializePreviewContextMenus() {
