@@ -10,18 +10,31 @@ function runScroller(lineno) {
         if (latestNode.length > 0) {
             var nextNode = latestNode.next();
             if (nextNode.length > 0) {
-                var min = latestNode.attr('class').match(/data-line-(\d+)/)[1];
-                var max = nextNode.attr('class').match(/data-line-(\d+)/)[1];
 
-                var div = (Math.abs(lineno - min) * 100) / Math.abs(max - min);
+                var latestClass = latestNode.attr('class');
+                var nextClass = nextNode.attr('class');
 
-                var minTop = latestNode.offset().top;
-                var maxTop = nextNode.offset().top;
+                if (latestClass && nextClass) {
 
-                var result = ((Math.abs(maxTop - minTop) * div) / 150) + Math.abs(minTop);
+                    var minMatch = latestClass.match(/data-line-(\d+)/);
+                    var maxMatch = nextClass.match(/data-line-(\d+)/);
 
-                if (result != Infinity && result > 0)
-                    window.scrollTo(0, result);
+                    if (minMatch.length && maxMatch.length) {
+
+                        var min = minMatch[1];
+                        var max = maxMatch[1];
+
+                        var div = (Math.abs(lineno - min) * 100) / Math.abs(max - min);
+
+                        var minTop = latestNode.offset().top;
+                        var maxTop = nextNode.offset().top;
+
+                        var result = ((Math.abs(maxTop - minTop) * div) / 150) + Math.abs(minTop);
+
+                        if (result != Infinity && result > 0)
+                            window.scrollTo(0, result);
+                    }
+                }
             }
         }
     }
