@@ -2294,8 +2294,10 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
 
                 threadService.runTaskLater(() -> {
-                    IOHelper.createDirectory(folderPath);
-                    directoryService.changeWorkigDir(folderPath);
+                    IOHelper.createDirectories(folderPath);
+                    threadService.runActionLater(() -> {
+                        directoryService.changeWorkigDir(folderPath);
+                    });
                 });
             }
         };
@@ -2537,7 +2539,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                 Path folderPath = path.resolve(folderName);
 
                 threadService.runTaskLater(() -> {
-                    IOHelper.createDirectory(folderPath);
+                    IOHelper.createDirectories(folderPath);
                     indikatorService.startProgressBar();
                     IOHelper.copyDirectory(configPath.resolve("slide/frameworks"), folderPath);
                     indikatorService.stopProgressBar();
