@@ -1273,7 +1273,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         if (!editorConfigBean.getAutoUpdate())
             return;
 
-        threadService.runTaskLater(() -> {
+        threadService.start(() -> {
             try {
                 ApplicationLauncher.launchApplication("504", null, false, new ApplicationLauncher.Callback() {
                             public void exited(int exitValue) {

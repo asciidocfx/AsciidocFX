@@ -138,6 +138,25 @@ public class AppStarter extends Application {
         scene.getAccelerators().put(new KeyCodeCombination(KeyCode.F4, SHORTCUT_DOWN), controller::showSettings);
 
         final ThreadService threadService = context.getBean(ThreadService.class);
+//        final TabService tabService = context.getBean(TabService.class);
+
+        threadService.start(() -> {
+            try {
+                registerStartupListener(config);
+            } catch (Exception e) {
+                logger.error("Problem occured in startup listener", e);
+            }
+        });
+
+        scene.getWindow().setOnCloseRequest(controller::closeAllTabs);
+
+        if (controller.getTabPane().getTabs().isEmpty())
+            controller.newDoc();
+    }
+
+    private void registerStartupListener(CmdlineConfig config) {
+
+        final ThreadService threadService = context.getBean(ThreadService.class);
         final TabService tabService = context.getBean(TabService.class);
 
         StartupNotification.registerStartupListener(parameters -> {
@@ -167,11 +186,6 @@ public class AppStarter extends Application {
                 });
             });
         }
-
-        scene.getWindow().setOnCloseRequest(controller::closeAllTabs);
-
-        if (controller.getTabPane().getTabs().isEmpty())
-            controller.newDoc();
     }
 
     @Override
