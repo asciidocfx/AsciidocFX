@@ -736,5 +736,11 @@
     "caption": "Django",
     "mode": "ace/mode/django",
     "extensions": "html"
+  },
+  {
+    "name": "swift",
+    "caption": "Swift",
+    "mode": "ace/mode/swift",
+    "extensions": "swift"
   }
 ]
