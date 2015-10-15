@@ -6,12 +6,17 @@ import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.classic.spi.IThrowableProxy;
 import ch.qos.logback.classic.spi.ThrowableProxyUtil;
 import ch.qos.logback.core.UnsynchronizedAppenderBase;
+import com.kodcu.service.ThreadService;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableView;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 
@@ -26,9 +31,9 @@ public class TableViewLogAppender extends UnsynchronizedAppenderBase<ILoggingEve
     private static List<MyLog> buffer = Collections.synchronizedList(new LinkedList<MyLog>());
     private static AtomicBoolean scheduled = new AtomicBoolean(false);
     private static Label logShortMessage;
+    private static ThreadService threadService;
     PatternLayoutEncoder encoder;
     private static Label logShowHider;
-    private final Timer timer = new Timer();
 
     public static void setLogViewer(TableView<MyLog> logViewer) {
         TableViewLogAppender.logViewer = logViewer;
@@ -79,17 +84,14 @@ public class TableViewLogAppender extends UnsynchronizedAppenderBase<ILoggingEve
 
         if (!scheduled.get()) {
             scheduled.set(true);
-            timer.schedule(new TimerTask() {
-                @Override
-                public void run() {
-                    Platform.runLater(() -> {
-                        List<MyLog> clone = new LinkedList<>(buffer);
-                        buffer.clear();
-                        logList.addAll(clone);
-                        scheduled.set(false);
-                    });
-                }
-            }, 3000);
+            threadService.schedule(() -> {
+                Platform.runLater(() -> {
+                    List<MyLog> clone = new LinkedList<>(buffer);
+                    buffer.clear();
+                    logList.addAll(clone);
+                    scheduled.set(false);
+                });
+            }, 3, TimeUnit.SECONDS);
         }
     }
 
@@ -99,5 +101,9 @@ public class TableViewLogAppender extends UnsynchronizedAppenderBase<ILoggingEve
 
     public void setEncoder(PatternLayoutEncoder encoder) {
         this.encoder = encoder;
+    }
+
+    public static void setThreadService(ThreadService threadService) {
+        TableViewLogAppender.threadService = threadService;
     }
 }

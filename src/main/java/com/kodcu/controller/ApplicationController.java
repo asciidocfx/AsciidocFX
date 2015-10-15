@@ -1433,6 +1433,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         logViewer.getColumns().addAll(levelColumn, messageColumn);
         logViewer.setEditable(true);
 
+        TableViewLogAppender.setThreadService(threadService);
         TableViewLogAppender.setLogList(logList);
         TableViewLogAppender.setStatusMessage(statusMessage);
         TableViewLogAppender.setShowHideLogs(showHideLogs);
