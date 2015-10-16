@@ -71,6 +71,14 @@
                         "float": float
                     };
 
+                    var keys = Object.keys(attributes);
+
+                    keys.forEach(function (key) {
+                        if (attributes[key]["$nil?"]()) {
+                            delete attributes[key];
+                        }
+                    });
+
                     return self.$create_image_block(parent, Opal.hash(attributes))
                 }
                 ;
