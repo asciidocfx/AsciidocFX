@@ -2665,4 +2665,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         return current.getCache().get(target);
     }
 
+    public String applyReplacements(String text) {
+        return converterProvider.get(previewConfigBean).applyReplacements(text);
+    }
 }

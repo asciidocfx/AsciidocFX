@@ -16,4 +16,6 @@ public interface AsciidocConvertible {
     public void convertOdf(String asciidoc);
 
     public void fillOutlines(Object doc);
+
+    public String applyReplacements(String asciidoc);
 }

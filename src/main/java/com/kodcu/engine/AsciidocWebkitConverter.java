@@ -111,6 +111,34 @@ public class AsciidocWebkitConverter extends ViewPanel implements AsciidocConver
         });
     }
 
+    @Override
+    public String applyReplacements(String asciidoc) {
+
+        if (!Platform.isFxApplicationThread()) {
+            CompletableFuture<String> completableFuture = new CompletableFuture<>();
+            completableFuture.runAsync(() -> {
+                threadService.runActionLater(() -> {
+                    try {
+                        String replacements = applyReplacements(asciidoc);
+                        completableFuture.complete(replacements);
+                    } catch (Exception e) {
+                        completableFuture.completeExceptionally(e);
+                    }
+                });
+            });
+            return completableFuture.join();
+        }
+
+        try {
+            return (String) getWindow().call("apply_replacements", asciidoc);
+        } catch (Exception e) {
+            logger.debug("Problem occured while applying replacements", e);
+        }
+
+        return asciidoc;
+
+    }
+
     public String findRenderedSelection(String content) {
         this.setMember("context", content);
         return (String) webEngine().executeScript("findRenderedSelection(context)");

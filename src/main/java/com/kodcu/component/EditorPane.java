@@ -350,7 +350,7 @@ public class EditorPane extends AnchorPane {
         MenuItem includeAsSubDocument = MenuItemBuilt.item("Include selection").click(e -> {
             shortcutProvider.getProvider().includeAsSubdocument();
         });
-        MenuItem replacements = MenuItemBuilt.item("Replacements").click(this::replaceSubs);
+        MenuItem replacements = MenuItemBuilt.item("Apply Replacements").click(this::replaceSubs);
         MenuItem markdownToAsciidoc = MenuItemBuilt.item("Markdown to Asciidoc").click(e -> {
             MarkdownService markdownService = applicationContext.getBean(MarkdownService.class);
             markdownService.convertToAsciidoc(getEditorValue(),
@@ -364,6 +364,7 @@ public class EditorPane extends AnchorPane {
             if (menu.getItems().size() == 0) {
                 menu.getItems().addAll(cut, copy, paste, pasteRaw,
                         markdownToAsciidoc,
+                        replacements,
                         indexSelection,
                         includeAsSubDocument
                 );
@@ -444,44 +445,19 @@ public class EditorPane extends AnchorPane {
 
     private void replaceSubs(Event event) {
 
-      /*  String selection = getSelectionOrAll();
-        String copiedSelection = new String(selection);
+        String selection = getSelectionOrAll();
 
-        Map<String, String> reps = new HashMap<>();
-        reps.put("\\(C\\)", "©");
-        reps.put("&#169;", "©");
-        reps.put("\\(R\\)", "®");
-        reps.put("&#174;", "®");
-        reps.put("\\(TM\\)", "™");
-        reps.put("&#8482;", "™");
+        threadService.runTaskLater(() -> {
+            String result = controller.applyReplacements(selection);
 
-        reps.put("(?<!-)" + "--" + "(?>!-)", "—");
-        reps.put("&#8212;", "—");
+            if (Objects.equals(selection, result))
+                return;
 
-        reps.put("\\.\\.\\.", "…");
-        reps.put("&#8230;", "…");
+            threadService.runActionLater(() -> {
+                setEditorValue(getEditorValue().replace(selection, result));
+            });
+        });
 
-        reps.put("->", "→");
-        reps.put("&#8594;", "→");
-        reps.put("=>", "⇒");
-        reps.put("&#8658;", "⇒");
-        reps.put("<-", "←");
-        reps.put("&#8592;", "←");
-        reps.put("<=", "⇐");
-        reps.put("&#8656;", "⇐");
-        reps.put("'", "’");
-        reps.put("&#8217;", "’");
-
-        for (Map.Entry<String, String> entry : reps.entrySet()) {
-            String regex = escapeBackSlash + entry.getKey();
-            String replacement = entry.getValue();
-            copiedSelection = copiedSelection.replaceAll(regex, replacement);
-        }
-
-        if (Objects.equals(selection, copiedSelection))
-            return;
-
-        setEditorValue(getEditorValue().replace(selection, copiedSelection));*/
     }
 
     public ObservableList<Runnable> getHandleReadyTasks() {
