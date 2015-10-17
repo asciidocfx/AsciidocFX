@@ -30,6 +30,7 @@ import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 import javax.json.JsonReader;
 import java.io.FileReader;
+import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Objects;
@@ -161,7 +162,7 @@ public class LocationConfigBean extends ConfigurationBase {
 
             loadPathDefaults();
 
-            FileReader fileReader = IOHelper.fileReader(getConfigPath());
+            Reader fileReader = IOHelper.fileReader(getConfigPath());
             JsonReader jsonReader = Json.createReader(fileReader);
 
             JsonObject jsonObject = jsonReader.readObject();

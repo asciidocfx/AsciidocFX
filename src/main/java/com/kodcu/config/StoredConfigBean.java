@@ -14,7 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.json.*;
-import java.io.FileReader;
+import java.io.Reader;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Objects;
@@ -86,7 +86,7 @@ public class StoredConfigBean extends ConfigurationBase {
     @Override
     public void load(ActionEvent... actionEvent) {
 
-        FileReader fileReader = IOHelper.fileReader(getConfigPath());
+        Reader fileReader = IOHelper.fileReader(getConfigPath());
         JsonReader jsonReader = Json.createReader(fileReader);
 
         JsonObject jsonObject = jsonReader.readObject();

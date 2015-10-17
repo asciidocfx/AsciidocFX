@@ -289,9 +289,10 @@ public class IOHelper {
         return new ArrayList<>();
     }
 
-    public static FileReader fileReader(Path path) {
+    public static Reader fileReader(Path path) {
         try {
-            return new FileReader(path.toFile());
+            FileInputStream fileInputStream = new FileInputStream(path.toFile());
+            return new InputStreamReader(fileInputStream, "UTF-8");
         } catch (Exception e) {
             logger.error("Problem occured while creating FileReader for {} path", path, e);
         }

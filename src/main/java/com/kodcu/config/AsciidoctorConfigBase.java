@@ -26,7 +26,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.json.*;
+import java.io.FileInputStream;
 import java.io.FileReader;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.nio.file.Path;
 import java.util.*;
 
@@ -183,7 +186,7 @@ public abstract class AsciidoctorConfigBase extends ConfigurationBase {
 
         setSafe(FXCollections.observableArrayList("safe", "secure", "server"));
 
-        FileReader fileReader = IOHelper.fileReader(getConfigPath());
+        Reader fileReader = IOHelper.fileReader(getConfigPath());
         JsonReader jsonReader = Json.createReader(fileReader);
 
         JsonObject jsonObject = jsonReader.readObject();

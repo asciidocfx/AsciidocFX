@@ -35,6 +35,7 @@ import org.springframework.stereotype.Component;
 
 import javax.json.*;
 import java.io.FileReader;
+import java.io.Reader;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Objects;
@@ -302,7 +303,7 @@ public class EditorConfigBean extends ConfigurationBase {
         List<String> aceThemeList = IOHelper.readAllLines(getConfigDirectory().resolve("ace_themes.txt"));
         List<String> languageList = this.languageList();
 
-        FileReader fileReader = IOHelper.fileReader(getConfigPath());
+        Reader fileReader = IOHelper.fileReader(getConfigPath());
         JsonReader jsonReader = Json.createReader(fileReader);
 
         JsonObject jsonObject = jsonReader.readObject();
