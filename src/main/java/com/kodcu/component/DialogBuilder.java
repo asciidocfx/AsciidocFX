@@ -5,8 +5,8 @@ package com.kodcu.component;
  */
 public final class DialogBuilder extends TextDialog {
 
-    public final static String FILE_NAME_REGEX = "^[\\w\\-\\\\/]*\\.[\\w\\-]+$";
-    public final static String FOLDER_NAME_REGEX = "^[\\w\\-\\\\/]*\\.*[\\w\\-]+$";
+    public final static String FILE_NAME_REGEX = ".*\\S.*";
+    public final static String FOLDER_NAME_REGEX = ".*\\S.*";
 
     public DialogBuilder(String content, String title) {
         super(content, title);
@@ -21,8 +21,8 @@ public final class DialogBuilder extends TextDialog {
     }
 
     public static DialogBuilder newFolderDialog() {
-        DialogBuilder dialog = new DialogBuilder("Enter new folder name ", "Create new folder ");
-        dialog.setToolTip("Enter new folder name");
+        DialogBuilder dialog = new DialogBuilder("Enter new directory name ", "Create new directory ");
+        dialog.setToolTip("Enter new directory name");
         dialog.setKeyReleaseEvent(FOLDER_NAME_REGEX);
         return dialog;
     }
