@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 
 import javax.json.*;
 import java.io.Reader;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Objects;
@@ -126,11 +127,14 @@ public class StoredConfigBean extends ConfigurationBase {
         JsonArrayBuilder recentFilesArrayBuilder = Json.createArrayBuilder();
         JsonArrayBuilder favoriteDirectoriesArrayBuilder = Json.createArrayBuilder();
 
-        recentFiles.stream().map(Item::getPath)
+        recentFiles.stream()
+                .map(Item::getPath)
+                .filter(Files::exists)
                 .map(e -> e.toString())
                 .forEach(recentFilesArrayBuilder::add);
 
-        favoriteDirectories.stream().forEach(favoriteDirectoriesArrayBuilder::add);
+        favoriteDirectories.stream()
+                .forEach(favoriteDirectoriesArrayBuilder::add);
 
         objectBuilder
                 .add("workingDirectory", getWorkingDirectory())
