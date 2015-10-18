@@ -130,10 +130,10 @@ public class LocationConfigBean extends ConfigurationBase {
         DefaultFactoryProvider locationConfigFormProvider = new DefaultFactoryProvider();
 
 
-        locationConfigFormProvider.addFactory(new NamedFieldHandler("kindlegen"), new FileChooserFactory("Enter kindlegen path", controller::browse));
-        locationConfigFormProvider.addFactory(new NamedFieldHandler("mathjax"), new FileChooserFactory(controller::browse));
-        locationConfigFormProvider.addFactory(new NamedFieldHandler("stylesheetDefault"), new FileChooserEditableFactory(tabService::addTab, controller::browse));
-        locationConfigFormProvider.addFactory(new NamedFieldHandler("stylesheetOverrides"), new FileChooserEditableFactory(tabService::addTab, controller::browse));
+        locationConfigFormProvider.addFactory(new NamedFieldHandler("kindlegen"), new FileChooserFactory("Enter kindlegen path", controller::openInDesktop));
+        locationConfigFormProvider.addFactory(new NamedFieldHandler("mathjax"), new FileChooserFactory(controller::openInDesktop));
+        locationConfigFormProvider.addFactory(new NamedFieldHandler("stylesheetDefault"), new FileChooserEditableFactory(tabService::addTab, controller::openInDesktop));
+        locationConfigFormProvider.addFactory(new NamedFieldHandler("stylesheetOverrides"), new FileChooserEditableFactory(tabService::addTab, controller::openInDesktop));
         locationConfigForm.setEditorFactoryProvider(locationConfigFormProvider);
 
         locationConfigForm.setSource(this);

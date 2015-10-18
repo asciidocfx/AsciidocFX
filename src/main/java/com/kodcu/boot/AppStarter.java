@@ -89,8 +89,6 @@ public class AppStarter extends Application {
         Parent root = parentLoader.load(sceneStream);
 
         controller = parentLoader.getController();
-        HostServicesDelegate hostServices = HostServicesFactory.getInstance(this);
-        controller.setHostServices(hostServices);
 
         Scene scene = new Scene(root);
 

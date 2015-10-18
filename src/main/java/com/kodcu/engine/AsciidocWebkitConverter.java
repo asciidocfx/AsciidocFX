@@ -96,8 +96,7 @@ public class AsciidocWebkitConverter extends ViewPanel implements AsciidocConver
 
     @Override
     public void browse() {
-        controller.getHostServices()
-                .showDocument(String.format(indexUrl, controller.getPort(), directoryService.interPath()));
+        controller.browseInDesktop(String.format(indexUrl, controller.getPort(), directoryService.interPath()));
     }
 
     @Override

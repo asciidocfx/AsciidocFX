@@ -34,7 +34,6 @@ import com.kodcu.service.ui.IndikatorService;
 import com.kodcu.service.ui.TabService;
 import com.kodcu.service.ui.TooltipTimeFixService;
 import com.kodcu.shell.ShellTab;
-import com.sun.javafx.application.HostServicesDelegate;
 import com.sun.javafx.stage.StageHelper;
 import de.jensd.fx.fontawesome.AwesomeDude;
 import de.jensd.fx.fontawesome.AwesomeIcon;
@@ -55,7 +54,12 @@ import javafx.fxml.Initializable;
 import javafx.geometry.Side;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.*;
+import javafx.scene.control.Label;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTreeCell;
 import javafx.scene.input.*;
@@ -82,8 +86,11 @@ import org.springframework.web.socket.handler.TextWebSocketHandler;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
+import javax.swing.*;
+import java.awt.*;
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
@@ -93,6 +100,7 @@ import java.nio.file.attribute.PosixFileAttributeView;
 import java.nio.file.attribute.PosixFilePermission;
 import java.security.CodeSource;
 import java.util.*;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
@@ -283,7 +291,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     private Stage asciidocTableStage;
     private final Clipboard clipboard = Clipboard.getSystemClipboard();
     private int port = 8080;
-    private HostServicesDelegate hostServices;
     private Path configPath;
     private BooleanProperty fileBrowserVisibility = new SimpleBooleanProperty(false);
     private BooleanProperty previewPanelVisibility = new SimpleBooleanProperty(false);
@@ -776,15 +783,16 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         openFolderTreeItem.setOnAction(event -> {
             Path path = tabService.getSelectedTabPath();
             path = Files.isDirectory(path) ? path : path.getParent();
-            if (Objects.nonNull(path))
-                getHostServices().showDocument(path.toString());
+            if (Objects.nonNull(path)) {
+                openInDesktop(path);
+            }
         });
 
         openFolderListItem.setOnAction(event -> {
             Path path = recentListView.getSelectionModel().getSelectedItem().getPath();
             path = Files.isDirectory(path) ? path : path.getParent();
             if (Objects.nonNull(path))
-                getHostServices().showDocument(path.toString());
+                openInDesktop(path);
         });
 
         openFileListItem.setOnAction(this::openRecentListFile);
@@ -856,6 +864,28 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         });
 
         tabService.initializeTabChangeListener(tabPane);
+    }
+
+    public void openInDesktop(Path path) {
+        SwingUtilities.invokeLater(() -> {
+            try {
+                Desktop desktop = Desktop.getDesktop();
+                desktop.open(path.toFile());
+            } catch (Exception e) {
+                logger.error(e.getMessage(), e);
+            }
+        });
+    }
+
+    public void browseInDesktop(String uri) {
+        SwingUtilities.invokeLater(() -> {
+            try {
+                Desktop desktop = Desktop.getDesktop();
+                desktop.browse(URI.create(uri));
+            } catch (Exception e) {
+                logger.error(e.getMessage(), e);
+            }
+        });
     }
 
     private void initializeTerminal() {
@@ -1474,7 +1504,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
         Button browseLogsButton = new Button("Browse");
         browseLogsButton.setOnAction(e -> {
-            getHostServices().showDocument(Paths.get(logPath).toUri().toString());
+            openInDesktop(Paths.get(logPath));
         });
 
         TextField searchLogField = new TextField();
@@ -2189,14 +2219,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         return fileSystemView;
     }
 
-    public void setHostServices(HostServicesDelegate hostServices) {
-        this.hostServices = hostServices;
-    }
-
-    public HostServicesDelegate getHostServices() {
-        return hostServices;
-    }
-
     public AsciidocTableController getAsciidocTableController() {
         return asciidocTableController;
     }
@@ -2221,28 +2243,24 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         return current;
     }
 
-    public void browse(Path path) {
-        hostServices.showDocument(path.toUri().toString());
-    }
-
     @FXML
     private void bugReport(ActionEvent actionEvent) {
-        getHostServices().showDocument("https://github.com/asciidocfx/AsciidocFX/issues");
+        browseInDesktop("https://github.com/asciidocfx/AsciidocFX/issues");
     }
 
     @FXML
     private void openCommunityForum(ActionEvent actionEvent) {
-        getHostServices().showDocument("https://groups.google.com/d/forum/asciidocfx-discuss");
+        browseInDesktop("https://groups.google.com/d/forum/asciidocfx-discuss");
     }
 
     @FXML
     private void openGitterChat(ActionEvent actionEvent) {
-        getHostServices().showDocument("https://gitter.im/asciidocfx/AsciidocFX");
+        browseInDesktop("https://gitter.im/asciidocfx/AsciidocFX");
     }
 
     @FXML
     private void openGithubPage(ActionEvent actionEvent) {
-        getHostServices().showDocument("https://github.com/asciidocfx/AsciidocFX");
+        browseInDesktop("https://github.com/asciidocfx/AsciidocFX");
     }
 
     @FXML
@@ -2304,10 +2322,10 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         };
 
         dialog.getEditor().setOnAction(event -> {
-            consumer.accept(dialog.getEditor().getText());
+            consumer.accept(dialog.getEditor().getText().trim());
         });
 
-        dialog.showAndWait().ifPresent(consumer);
+        dialog.showAndWait().map(String::trim).ifPresent(consumer);
     }
 
     @FXML
@@ -2334,7 +2352,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         };
 
         dialog.getEditor().setOnAction(event -> {
-            consumer.accept(dialog.getEditor().getText());
+            consumer.accept(dialog.getEditor().getText().trim());
         });
 
         dialog.showAndWait().ifPresent(consumer);
@@ -2528,7 +2546,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
         DialogBuilder dialog = DialogBuilder.newFolderDialog();
 
-        dialog.showAndWait().ifPresent(folderName -> {
+        dialog.showAndWait().map(String::trim).ifPresent(folderName -> {
             if (dialog.isShowing())
                 dialog.hide();
 
@@ -2642,7 +2660,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         String selection = current.currentEditor().editorSelection();
 
         DialogBuilder fileDialog = DialogBuilder.newFileDialog();
-        Optional<String> filenameOptional = fileDialog.showAndWait();
+        Optional<String> filenameOptional = fileDialog.showAndWait().map(String::trim);
 
         if (filenameOptional.isPresent()) {
             String filename = filenameOptional.get();

@@ -67,8 +67,7 @@ public class HtmlPane extends ViewPanel {
 
     @Override
     public void browse() {
-        controller.getHostServices()
-                .showDocument(String.format(indexUrl, controller.getPort(), directoryService.interPath()));
+        controller.browseInDesktop(String.format(indexUrl, controller.getPort(), directoryService.interPath()));
     }
 
     @Override

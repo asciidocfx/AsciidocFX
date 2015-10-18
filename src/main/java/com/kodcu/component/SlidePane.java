@@ -87,7 +87,7 @@ public class SlidePane extends ViewPanel {
 
     @Override
     public void browse() {
-        controller.getHostServices().showDocument(webEngine().getLocation());
+        controller.browseInDesktop(webEngine().getLocation());
     }
 
     public void setBackend(String backend) {

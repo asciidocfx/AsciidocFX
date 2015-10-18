@@ -65,8 +65,7 @@ public class LiveReloadPane extends ViewPanel {
 
     @Override
     public void browse() {
-        controller.getHostServices()
-                .showDocument(webEngine().getLocation());
+        controller.browseInDesktop(webEngine().getLocation());
     }
 
     @Override

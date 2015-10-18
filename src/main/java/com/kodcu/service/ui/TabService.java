@@ -292,9 +292,9 @@ public class TabService {
         MenuItem menuItem7 = new MenuItem("Browse");
 
         menuItem7.setOnAction(event -> {
-            current.currentPath().ifPresent(path -> {
-                controller.getHostServices().showDocument(path.getParent().toUri().toASCIIString());
-            });
+            current.currentPath()
+                    .map(Path::getParent)
+                    .ifPresent(controller::openInDesktop);
         });
 
         MenuItem copyItem = MenuItemBuilt.item("Copy").click(event -> {
@@ -359,10 +359,8 @@ public class TabService {
         } else if (pathResolver.isHTML(path) || pathResolver.isAsciidoc(path) || pathResolver.isMarkdown(path)) {
             addTab(path);
         } else if (pathResolver.isEpub(path)) {
-
             current.setCurrentEpubPath(path);
-            controller.getHostServices()
-                    .showDocument(String.format(epubUrl, controller.getPort()));
+            controller.browseInDesktop(String.format(epubUrl, controller.getPort()));
         } else {
             List<String> supportedModes = controller.getSupportedModes();
             String extension = FilenameUtils.getExtension(path.toString());
@@ -371,8 +369,7 @@ public class TabService {
                 addTab(path);
 //                controller.hidePreviewPanel();
             } else {
-                controller.getHostServices()
-                        .showDocument(path.toUri().toString());
+                controller.openInDesktop(path);
             }
         }
 
