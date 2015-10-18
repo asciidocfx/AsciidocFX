@@ -79,10 +79,6 @@
                     <artifactId>aopalliance</artifactId>
                     <groupId>aopalliance</groupId>
                 </exclusion>
-                <exclusion>
-                    <artifactId>hibernate-validator</artifactId>
-                    <groupId>org.hibernate</groupId>
-                </exclusion>
             </exclusions>
         </dependency>
         <dependency>
