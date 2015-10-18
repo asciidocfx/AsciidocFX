@@ -1153,6 +1153,20 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         ObservableList<Item> recentFilesList = storedConfigBean.getRecentFiles();
         ObservableList<String> favoriteDirectories = storedConfigBean.getFavoriteDirectories();
 
+        recentListView.setCellFactory(param -> {
+            ListCell<Item> cell = new ListCell<Item>() {
+                @Override
+                protected void updateItem(Item item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (Objects.nonNull(item)) {
+                        setTooltip(new Tooltip(item.getPath().toString()));
+                        setText(item.toString());
+                    }
+                }
+            };
+            return cell;
+        });
+
         recentListView.setItems(recentFilesList);
 
         recentFilesList.addListener((ListChangeListener<Item>) c -> {
