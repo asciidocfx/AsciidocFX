@@ -12,7 +12,6 @@ import org.springframework.stereotype.Component;
 import javax.script.Invocable;
 import javax.script.ScriptEngine;
 import java.io.FileInputStream;
-import java.io.FileReader;
 import java.io.InputStreamReader;
 import java.nio.file.Path;
 import java.util.Arrays;

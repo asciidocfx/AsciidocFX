@@ -4,8 +4,6 @@ import com.install4j.api.launcher.StartupNotification;
 import com.kodcu.controller.ApplicationController;
 import com.kodcu.service.ThreadService;
 import com.kodcu.service.ui.TabService;
-import com.sun.deploy.uitoolkit.impl.fx.HostServicesFactory;
-import com.sun.javafx.application.HostServicesDelegate;
 import de.tototec.cmdoption.CmdlineParser;
 import de.tototec.cmdoption.CmdlineParserException;
 import javafx.application.Application;
