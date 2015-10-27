@@ -1,12 +1,22 @@
 = Asciidoc Book Editor based on JavaFX 8
 :experimental:
 :toc:
-:toc-placement: preamble
+:toc-placement: left
 :asciifocfx-version: 1.4.0
 :download-root: https://github.com/asciidocfx/AsciidocFX/releases/download/v{asciifocfx-version}/
 
 image:https://api.travis-ci.org/asciidocfx/AsciidocFX.svg?branch=master[Build Status,link="https://travis-ci.org/asciidocfx/AsciidocFX"]
 image:https://badges.gitter.im/Join%20Chat.svg["Gitter", link="https://gitter.im/asciidocfx/AsciidocFX"]
+
+++++
+<div style="width:100%;text-align: right;margin-bottom:20px;">
+<a class="github-button" href="https://github.com/asciidocfx/asciidocfx" data-icon="octicon-star" data-style="mega" data-count-href="/asciidocfx/asciidocfx/stargazers" data-count-api="/repos/asciidocfx/asciidocfx#stargazers_count" data-count-aria-label="# stargazers on GitHub" aria-label="Star asciidocfx/asciidocfx on GitHub">Star</a>
+
+<a class="github-button" href="https://github.com/asciidocfx/asciidocfx/fork" data-icon="octicon-git-branch" data-style="mega" data-count-href="/asciidocfx/asciidocfx/network" data-count-api="/repos/asciidocfx/asciidocfx#forks_count" data-count-aria-label="# forks on GitHub" aria-label="Fork asciidocfx/asciidocfx on GitHub">Fork</a>
+</div>
+
+<script async defer id="github-bjs" src="https://buttons.github.io/buttons.js"></script>
+++++
 
 Asciidoc FX is a book / document editor to build PDF, Epub, Mobi and HTML books, documents and slides.
 
@@ -542,4 +552,17 @@ To see what has changed in recent versions of AsciidocFX, see the https://github
 
 == Support
 
-Support AsciidocFX with pull requests or open an issue for bug & feature requests. You can make discussions in https://groups.google.com/d/forum/asciidocfx-discuss[mail group] or in the chat room at https://gitter.im/asciidocfx/AsciidocFX[Gitter.im].
+Support AsciidocFX with pull requests or https://github.com/asciidocfx/AsciidocFX/issues[open an issue] for bug & feature requests. You can make discussions in https://groups.google.com/d/forum/asciidocfx-discuss[mail group] or in the chat room at https://gitter.im/asciidocfx/AsciidocFX[Gitter.im].
+
+++++
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-55641163-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+++++
