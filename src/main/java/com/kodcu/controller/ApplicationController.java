@@ -101,6 +101,7 @@ import java.nio.file.attribute.PosixFilePermission;
 import java.security.CodeSource;
 import java.util.*;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
@@ -1314,11 +1315,11 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     }
 
     private void checkNewVersion() {
-        if (!editorConfigBean.getAutoUpdate())
-            return;
-
-        threadService.start(() -> {
+        threadService.schedule(() -> {
             try {
+                if (!editorConfigBean.getAutoUpdate())
+                    return;
+
                 ApplicationLauncher.launchApplication("504", null, false, new ApplicationLauncher.Callback() {
                             public void exited(int exitValue) {
                                 //TODO add your code here (not invoked on event dispatch thread)
@@ -1329,10 +1330,10 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                             }
                         }
                 );
-            } catch (IOException e) {
+            } catch (Exception e) {
                 // logger.error("Problem occured while checking new version", e);
             }
-        });
+        }, 10, TimeUnit.SECONDS);
     }
 
     private void generateODFDocument(boolean askPath) {
