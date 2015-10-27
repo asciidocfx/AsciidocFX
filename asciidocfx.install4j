@@ -1445,7 +1445,7 @@ return true;</string>
       </autoUpdate>
       <topLevelFiles />
     </macos>
-    <windowsArchive name="Windows Archive" id="223" customizedId="" mediaFileName="AsciidocFX_Windows" installDir="${compiler:sys.shortName}" overridePrincipalLanguage="false" jreBitType="64" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" downloadURL="" includeAllDownloadableComponents="true" includedJRE="windows-amd64-1.8.0_60" manualJREEntry="false">
+    <windowsArchive name="Windows Archive" id="223" customizedId="" mediaFileName="AsciidocFX_Windows" installDir="${compiler:sys.shortName}" overridePrincipalLanguage="false" jreBitType="64" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" downloadURL="" includeAllDownloadableComponents="true" includedJRE="windows-amd64-1.8.0_66" manualJREEntry="false">
       <excludedComponents />
       <includedDownloadableComponents />
       <excludedLaunchers />
