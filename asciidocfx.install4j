@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <install4j version="6.0.4" transformSequenceNumber="5">
   <directoryPresets config="outputs" />
-  <application name="AsciidocFX" distributionSourceDir="" applicationId="7853-9376-5862-1224" mediaDir="target" mediaFilePattern="${compiler:sys.shortName}_${compiler:sys.platform}_${compiler:sys.version}" compression="6" lzmaCompression="true" pack200Compression="true" excludeSignedFromPacking="false" commonExternalFiles="false" createMd5Sums="true" shrinkRuntime="true" shortName="AsciidocFX" publisher="AsciidocFX" publisherWeb="http://asciidocfx.com" version="1.3.9" allPathsRelative="false" backupOnSave="false" autoSave="false" convertDotsToUnderscores="true" macSignature="????" macVolumeId="b98c377570068f5e" javaMinVersion="1.8" javaMaxVersion="" allowBetaVM="true" jdkMode="runtimeJre" jdkName="">
+  <application name="AsciidocFX" distributionSourceDir="" applicationId="7853-9376-5862-1224" mediaDir="target" mediaFilePattern="${compiler:sys.shortName}_${compiler:sys.platform}_${compiler:sys.version}" compression="6" lzmaCompression="true" pack200Compression="true" excludeSignedFromPacking="false" commonExternalFiles="false" createMd5Sums="true" shrinkRuntime="true" shortName="AsciidocFX" publisher="AsciidocFX" publisherWeb="http://asciidocfx.com" version="1.4.0" allPathsRelative="false" backupOnSave="false" autoSave="false" convertDotsToUnderscores="true" macSignature="????" macVolumeId="b98c377570068f5e" javaMinVersion="1.8" javaMaxVersion="" allowBetaVM="true" jdkMode="runtimeJre" jdkName="">
     <languages skipLanguageSelection="false" languageSelectionInPrincipalLanguage="false">
       <principalLanguage id="en" customLocalizationFile="" />
       <additionalLanguages />
@@ -47,13 +47,14 @@
       </java>
       <includedFiles />
       <unextractableFiles />
-      <vmOptionsFile mode="content" overwriteMode="0" fileMode="755">
+      <vmOptionsFile mode="content" overwriteMode="1" fileMode="755">
         <content># Enter one VM parameter per line
 
 -Duser.language=en
 -Duser.country=US
 -Xmx1024M
--XX:+UseG1GC</content>
+-XX:+UseG1GC
+-Djava.awt.headless=false</content>
       </vmOptionsFile>
       <customScript mode="1" file="">
         <content />
@@ -276,7 +277,7 @@
                   </java>
                 </serializedBean>
                 <beans>
-                  <action name="" id="225" customizedId="" beanClass="com.install4j.runtime.beans.actions.desktop.CreateFileAssociationAction" enabled="true" commentSet="false" comment="" actionElevationType="elevated" rollbackBarrier="false" multiExec="false" failureStrategy="1" errorMessage="">
+                  <action name="" id="229" customizedId="" beanClass="com.install4j.runtime.beans.actions.desktop.CreateFileAssociationAction" enabled="true" commentSet="false" comment="" actionElevationType="elevated" rollbackBarrier="false" multiExec="false" failureStrategy="1" errorMessage="">
                     <serializedBean>
                       <java class="java.beans.XMLDecoder">
                         <object class="com.install4j.runtime.beans.actions.desktop.CreateFileAssociationAction">
@@ -284,7 +285,7 @@
                             <string>Asciidoc File</string>
                           </void>
                           <void property="extension">
-                            <string>asc</string>
+                            <string>adoc</string>
                           </void>
                           <void property="launcherId">
                             <string>24</string>
@@ -324,7 +325,7 @@
                     </serializedBean>
                     <condition />
                   </action>
-                  <action name="" id="229" customizedId="" beanClass="com.install4j.runtime.beans.actions.desktop.CreateFileAssociationAction" enabled="true" commentSet="false" comment="" actionElevationType="elevated" rollbackBarrier="false" multiExec="false" failureStrategy="1" errorMessage="">
+                  <action name="" id="230" customizedId="" beanClass="com.install4j.runtime.beans.actions.desktop.CreateFileAssociationAction" enabled="true" commentSet="false" comment="" actionElevationType="elevated" rollbackBarrier="false" multiExec="false" failureStrategy="1" errorMessage="">
                     <serializedBean>
                       <java class="java.beans.XMLDecoder">
                         <object class="com.install4j.runtime.beans.actions.desktop.CreateFileAssociationAction">
@@ -332,7 +333,7 @@
                             <string>Asciidoc File</string>
                           </void>
                           <void property="extension">
-                            <string>adoc</string>
+                            <string>ad</string>
                           </void>
                           <void property="launcherId">
                             <string>24</string>
@@ -348,7 +349,7 @@
                     </serializedBean>
                     <condition />
                   </action>
-                  <action name="" id="230" customizedId="" beanClass="com.install4j.runtime.beans.actions.desktop.CreateFileAssociationAction" enabled="true" commentSet="false" comment="" actionElevationType="elevated" rollbackBarrier="false" multiExec="false" failureStrategy="1" errorMessage="">
+                  <action name="" id="225" customizedId="" beanClass="com.install4j.runtime.beans.actions.desktop.CreateFileAssociationAction" enabled="true" commentSet="false" comment="" actionElevationType="elevated" rollbackBarrier="false" multiExec="false" failureStrategy="1" errorMessage="">
                     <serializedBean>
                       <java class="java.beans.XMLDecoder">
                         <object class="com.install4j.runtime.beans.actions.desktop.CreateFileAssociationAction">
@@ -356,7 +357,7 @@
                             <string>Asciidoc File</string>
                           </void>
                           <void property="extension">
-                            <string>ad</string>
+                            <string>asc</string>
                           </void>
                           <void property="launcherId">
                             <string>24</string>
@@ -405,78 +406,6 @@
                           </void>
                           <void property="extension">
                             <string>markdown</string>
-                          </void>
-                          <void property="launcherId">
-                            <string>24</string>
-                          </void>
-                          <void property="macRole">
-                            <object class="java.lang.Enum" method="valueOf">
-                              <class>com.install4j.runtime.beans.actions.desktop.MacAssociationRole</class>
-                              <string>EDITOR</string>
-                            </object>
-                          </void>
-                        </object>
-                      </java>
-                    </serializedBean>
-                    <condition />
-                  </action>
-                  <action name="" id="615" customizedId="" beanClass="com.install4j.runtime.beans.actions.desktop.CreateFileAssociationAction" enabled="true" commentSet="false" comment="" actionElevationType="elevated" rollbackBarrier="false" multiExec="false" failureStrategy="1" errorMessage="">
-                    <serializedBean>
-                      <java class="java.beans.XMLDecoder">
-                        <object class="com.install4j.runtime.beans.actions.desktop.CreateFileAssociationAction">
-                          <void property="description">
-                            <string>HTML File</string>
-                          </void>
-                          <void property="extension">
-                            <string>html</string>
-                          </void>
-                          <void property="launcherId">
-                            <string>24</string>
-                          </void>
-                          <void property="macRole">
-                            <object class="java.lang.Enum" method="valueOf">
-                              <class>com.install4j.runtime.beans.actions.desktop.MacAssociationRole</class>
-                              <string>EDITOR</string>
-                            </object>
-                          </void>
-                        </object>
-                      </java>
-                    </serializedBean>
-                    <condition />
-                  </action>
-                  <action name="" id="616" customizedId="" beanClass="com.install4j.runtime.beans.actions.desktop.CreateFileAssociationAction" enabled="true" commentSet="false" comment="" actionElevationType="elevated" rollbackBarrier="false" multiExec="false" failureStrategy="1" errorMessage="">
-                    <serializedBean>
-                      <java class="java.beans.XMLDecoder">
-                        <object class="com.install4j.runtime.beans.actions.desktop.CreateFileAssociationAction">
-                          <void property="description">
-                            <string>JavaScript File</string>
-                          </void>
-                          <void property="extension">
-                            <string>js</string>
-                          </void>
-                          <void property="launcherId">
-                            <string>24</string>
-                          </void>
-                          <void property="macRole">
-                            <object class="java.lang.Enum" method="valueOf">
-                              <class>com.install4j.runtime.beans.actions.desktop.MacAssociationRole</class>
-                              <string>EDITOR</string>
-                            </object>
-                          </void>
-                        </object>
-                      </java>
-                    </serializedBean>
-                    <condition />
-                  </action>
-                  <action name="" id="617" customizedId="" beanClass="com.install4j.runtime.beans.actions.desktop.CreateFileAssociationAction" enabled="true" commentSet="false" comment="" actionElevationType="elevated" rollbackBarrier="false" multiExec="false" failureStrategy="1" errorMessage="">
-                    <serializedBean>
-                      <java class="java.beans.XMLDecoder">
-                        <object class="com.install4j.runtime.beans.actions.desktop.CreateFileAssociationAction">
-                          <void property="description">
-                            <string>Css File</string>
-                          </void>
-                          <void property="extension">
-                            <string>css</string>
                           </void>
                           <void property="launcherId">
                             <string>24</string>
@@ -1490,7 +1419,7 @@ return true;</string>
     </applications>
   </installerGui>
   <mediaSets>
-    <windows name="Windows Installer" id="86" customizedId="" mediaFileName="AsciidocFX_Windows" installDir="${compiler:sys.shortName}" overridePrincipalLanguage="false" jreBitType="64" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" downloadURL="" includeAllDownloadableComponents="false" includedJRE="windows-amd64-1.8.0_60" manualJREEntry="false" bundleType="1" jreURL="" jreShared="false" directDownload="false" installOnlyIfNecessary="false" customInstallBaseDir="" contentFilesType="1" verifyIntegrity="true">
+    <windows name="Windows Installer" id="86" customizedId="" mediaFileName="AsciidocFX_Windows" installDir="${compiler:sys.shortName}" overridePrincipalLanguage="false" jreBitType="64" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" downloadURL="" includeAllDownloadableComponents="false" includedJRE="windows-amd64-1.8.0_66" manualJREEntry="false" bundleType="1" jreURL="" jreShared="false" directDownload="false" installOnlyIfNecessary="false" customInstallBaseDir="" contentFilesType="1" verifyIntegrity="true">
       <excludedComponents />
       <includedDownloadableComponents />
       <excludedLaunchers />
@@ -1503,7 +1432,7 @@ return true;</string>
         <customAttributes />
       </autoUpdate>
     </windows>
-    <macos name="Mac OS X Single Bundle" id="108" customizedId="" mediaFileName="AsciidocFX_Mac" installDir="${compiler:sys.fullName}" overridePrincipalLanguage="false" jreBitType="all" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" downloadURL="" includeAllDownloadableComponents="false" includedJRE="macosx-amd64-1.8.0_60" manualJREEntry="false" bundleType="1" jreURL="" jreShared="false" directDownload="false" installOnlyIfNecessary="false" appleJre="false" requiredVmIdPrefix="" customInstallBaseDir="" contentFilesType="1" installerName="${i18n:InstallerName(${compiler:sys.fullName})}" volumeName="${compiler:sys.shortName}" compressDmg="false" launcherId="24">
+    <macos name="Mac OS X Single Bundle" id="108" customizedId="" mediaFileName="AsciidocFX_Mac" installDir="${compiler:sys.fullName}" overridePrincipalLanguage="false" jreBitType="all" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" downloadURL="" includeAllDownloadableComponents="false" includedJRE="macosx-amd64-1.8.0_66" manualJREEntry="false" bundleType="1" jreURL="" jreShared="false" directDownload="false" installOnlyIfNecessary="false" appleJre="false" requiredVmIdPrefix="" customInstallBaseDir="" contentFilesType="1" installerName="${i18n:InstallerName(${compiler:sys.fullName})}" volumeName="${compiler:sys.shortName}" compressDmg="false" launcherId="24">
       <excludedComponents />
       <includedDownloadableComponents />
       <excludedBeans />
