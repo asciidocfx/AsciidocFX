@@ -12,9 +12,9 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <java.version>1.8</java.version>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
+        <java.version>1.9</java.version>
+        <maven.compiler.source>1.9</maven.compiler.source>
+        <maven.compiler.target>1.9</maven.compiler.target>
         <mainClass>com.kodcu.boot.AppStarter</mainClass>
         <saxon.version>6.5.3</saxon.version>
         <install4j.home>/home/travis/build/asciidocfx/AsciidocFX/install4j6</install4j.home>
@@ -175,14 +175,24 @@
         <finalName>AsciidocFX</finalName>
 
         <plugins>
-            <!--            <plugin>
-                            <groupId>org.springframework.boot</groupId>
-                            <artifactId>spring-boot-maven-plugin</artifactId>
-                            <version>${spring-boot.version}</version>
-                            <configuration>
-                                <mainClass>com.kodcu.boot.AppStarter</mainClass>
-                            </configuration>
-                        </plugin>-->
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>${spring-boot.version}</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <jvmArguments>-Djava.awt.headless=false
+                        -XaddExports:javafx.graphics/com.sun.javafx.stage=ALL-UNNAMED,javafx.base/com.sun.javafx.collections=ALL-UNNAMED
+                    </jvmArguments>
+                    <mainClass>com.kodcu.boot.AppStarter</mainClass>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>appassembler-maven-plugin</artifactId>

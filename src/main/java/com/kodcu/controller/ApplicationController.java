@@ -34,7 +34,7 @@ import com.kodcu.service.ui.IndikatorService;
 import com.kodcu.service.ui.TabService;
 import com.kodcu.service.ui.TooltipTimeFixService;
 import com.kodcu.shell.ShellTab;
-import com.sun.javafx.stage.StageHelper;
+//import com.sun.javafx.stage.StageHelper;
 import de.jensd.fx.fontawesome.AwesomeDude;
 import de.jensd.fx.fontawesome.AwesomeIcon;
 import javafx.animation.KeyFrame;
@@ -1034,13 +1034,13 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     public void initializeSaveOnBlur() {
 
         stage.focusedProperty().addListener((observable, oldValue, newValue) -> {
-            if (StageHelper.getStages().size() == 1) {
-                if (!newValue) {
-                    saveAllTabs();
-                } else {
-                    loadAllTabs();
-                }
-            }
+//            if (StageHelper.getStages().size() == 1) {
+//                if (!newValue) {
+//                    saveAllTabs();
+//                } else {
+//                    loadAllTabs();
+//                }
+//            }
         });
 
     }

@@ -3,7 +3,7 @@ package com.kodcu.component;
 import com.kodcu.controller.ApplicationController;
 import com.kodcu.other.Current;
 import com.kodcu.service.ThreadService;
-import com.sun.javafx.scene.control.skin.ContextMenuContent;
+import com.sun.javafx.robot.impl.FXRobotHelper;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
@@ -22,6 +22,7 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
+import javafx.stage.Stage;
 import javafx.stage.Window;
 import netscape.javascript.JSObject;
 import org.slf4j.Logger;
@@ -113,13 +114,15 @@ public abstract class ViewPanel extends AnchorPane {
                     if (nodeOptional.isPresent()) {
                         ObservableList<Node> childrenUnmodifiable = ((Parent) nodeOptional.get())
                                 .getChildrenUnmodifiable();
-                        ContextMenuContent cmc = (ContextMenuContent) childrenUnmodifiable.get(0);
 
-                        // add new item:
-                        cmc.getItemsContainer().getChildren().add(new Separator());
-                        cmc.getItemsContainer().getChildren().add(cmc.new MenuItemContainer(stopRenderingItem));
-                        cmc.getItemsContainer().getChildren().add(cmc.new MenuItemContainer(stopScrollingItem));
-                        cmc.getItemsContainer().getChildren().add(cmc.new MenuItemContainer(stopJumpingItem));
+                        System.out.println();
+//                        ContextMenuContent cmc = (ContextMenuContent) childrenUnmodifiable.get(0);
+//
+//                        // add new item:
+//                        cmc.getItemsContainer().getChildren().add(new Separator());
+//                        cmc.getItemsContainer().getChildren().add(cmc.new MenuItemContainer(stopRenderingItem));
+//                        cmc.getItemsContainer().getChildren().add(cmc.new MenuItemContainer(stopScrollingItem));
+//                        cmc.getItemsContainer().getChildren().add(cmc.new MenuItemContainer(stopJumpingItem));
                     }
                 }
             }
