@@ -11,6 +11,9 @@ import com.kodcu.service.convert.docbook.DocBookConverter;
 import com.kodcu.service.ui.IndikatorService;
 import org.apache.fop.apps.FopFactory;
 import org.apache.fop.cli.InputHandler;
+import org.asciidoctor.Asciidoctor;
+import org.asciidoctor.Options;
+import org.asciidoctor.SafeMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +42,9 @@ public class PdfBookConverter extends AbstractPdfConverter {
     private final PathResolverService pathResolverService;
 
     @Autowired
+    private Asciidoctor asciidoctor;
+
+    @Autowired
     public PdfBookConverter(final ApplicationController asciiDocController, final DocBookConverter docBookConverter,
                             final IndikatorService indikatorService,
                             final ThreadService threadService, final DirectoryService directoryService, final Current current, PathResolverService pathResolverService) {
@@ -60,6 +66,18 @@ public class PdfBookConverter extends AbstractPdfConverter {
         try {
 
             Path pdfPath = directoryService.getSaveOutputPath(ExtensionFilters.PDF, askPath);
+
+            final Path path = current.currentPath().get();
+
+            Options options = new Options();
+            options.setBackend("pdf");
+            options.setBaseDir(path.getParent().toString());
+            options.setSafe(SafeMode.SAFE);
+
+            asciidoctor.convertFile(path.toFile(), options);
+
+            if (true)
+                return;
 
             indikatorService.startProgressBar();
             logger.debug("PDF conversion started");

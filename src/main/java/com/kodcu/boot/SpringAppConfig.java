@@ -18,6 +18,7 @@ package com.kodcu.boot;
 
 import com.kodcu.controller.ApplicationController;
 import jdk.nashorn.api.scripting.NashornScriptEngineFactory;
+import org.asciidoctor.Asciidoctor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
@@ -51,6 +52,13 @@ public class SpringAppConfig extends SpringBootServletInitializer implements Web
     public NashornScriptEngineFactory nashornScriptEngineFactory() {
         NashornScriptEngineFactory nashornScriptEngineFactory = new NashornScriptEngineFactory();
         return nashornScriptEngineFactory;
+    }
+
+    @Bean
+    @Lazy
+    public Asciidoctor asciidoctor(){
+        final Asciidoctor asciidoctor = Asciidoctor.Factory.create();
+        return asciidoctor;
     }
 
     @Bean

@@ -11,6 +11,8 @@ import com.kodcu.service.ThreadService;
 import javafx.application.Platform;
 import javafx.scene.web.WebView;
 import netscape.javascript.JSObject;
+import org.asciidoctor.Asciidoctor;
+import org.asciidoctor.OptionsBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +23,7 @@ import javax.json.JsonObject;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.HashMap;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
@@ -42,6 +45,9 @@ public class AsciidocWebkitConverter extends ViewPanel implements AsciidocConver
 
     private Logger logger = LoggerFactory.getLogger(AsciidocWebkitConverter.class);
     private final DirectoryService directoryService;
+
+    @Autowired
+    private Asciidoctor asciidoctor;
 
     @Autowired
     public AsciidocWebkitConverter(ThreadService threadService, ApplicationController controller, Current current, PreviewConfigBean previewConfigBean, OdfConfigBean odfConfigBean, DocbookConfigBean docbookConfigBean, HtmlConfigBean htmlConfigBean, AsciidocConfigMerger configMerger, DirectoryService directoryService) {
@@ -180,7 +186,20 @@ public class AsciidocWebkitConverter extends ViewPanel implements AsciidocConver
 
     @Override
     public ConverterResult convertAsciidoc(String asciidoc) {
-        return convert("convertAsciidoc", asciidoc, updateConfig(asciidoc, previewConfigBean.getJSON()));
+
+        final OptionsBuilder builder = OptionsBuilder.options().backend("html5")
+                .inPlace(true);
+
+        final String convert = asciidoctor.convert(asciidoc, builder);
+
+        final ConverterResult result = new ConverterResult();
+
+        result.setBackend("html5");
+        result.setDoctype("article");
+        result.setRendered(convert);
+        return result;
+
+//        return convert("convertAsciidoc", asciidoc, updateConfig(asciidoc, previewConfigBean.getJSON()));
     }
 
     @Override

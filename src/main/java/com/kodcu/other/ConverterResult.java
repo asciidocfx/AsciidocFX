@@ -29,6 +29,10 @@ public class ConverterResult {
         setDoctype((String) jsObject.getMember("doctype"));
     }
 
+    public ConverterResult() {
+
+    }
+
     public void setRendered(String rendered) {
         this.rendered = rendered;
     }

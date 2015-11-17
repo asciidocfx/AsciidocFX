@@ -169,6 +169,17 @@
             <artifactId>simple-odf</artifactId>
             <version>0.7-incubating</version>
         </dependency>
+            <dependency>
+                <groupId>org.asciidoctor</groupId>
+                <artifactId>asciidoctorj</artifactId>
+                <version>1.5.3.2</version>
+            </dependency>
+
+        <dependency>
+            <groupId>org.asciidoctor</groupId>
+            <artifactId>asciidoctorj-pdf</artifactId>
+            <version>1.5.0-alpha.10.1</version>
+        </dependency>
     </dependencies>
 
     <build>
