@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 /**
@@ -91,7 +92,7 @@ public class FileBrowseService {
                     .stream(directoryStream.spliterator(), false)
                     .filter(p -> !pathResolver.isHidden(p))
                     .filter(pathResolver::isViewable)
-                    .sorted(pathOrder::comparePaths)
+//                    .sorted(pathOrder::comparePaths)
                     .map(p -> new TreeItem<>(new Item(p), awesomeService.getIcon(p)))
                     .collect(Collectors.toList());
 
