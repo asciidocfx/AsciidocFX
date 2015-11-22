@@ -21,8 +21,12 @@ import javax.json.JsonObject;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
 /**
@@ -36,6 +40,8 @@ public class AsciidocWebkitConverter extends ViewPanel implements AsciidocConver
     private final DocbookConfigBean docbookConfigBean;
     private final HtmlConfigBean htmlConfigBean;
     private final AsciidocConfigMerger configMerger;
+
+    private final Map<String, CompletableFuture<ConverterResult>> webWorkerTasks = new ConcurrentHashMap();
 
     @Value("${application.index.url}")
     private String indexUrl;
@@ -145,28 +151,32 @@ public class AsciidocWebkitConverter extends ViewPanel implements AsciidocConver
 
     protected ConverterResult convert(String functionName, String asciidoc, JsonObject config) {
 
-        if (!Platform.isFxApplicationThread()) {
-            final CompletableFuture<ConverterResult> completableFuture = new CompletableFuture<>();
-            completableFuture.runAsync(() -> {
-                threadService.runActionLater(() -> {
-                    try {
-                        ConverterResult converterResult = convert(functionName, asciidoc, config);
-                        completableFuture.complete(converterResult);
-                    } catch (Exception e) {
-                        completableFuture.completeExceptionally(e);
-                    }
-                });
-            }, threadService.executor());
+        final CompletableFuture<ConverterResult> completableFuture = new CompletableFuture();
+        final String taskId = UUID.randomUUID().toString();
 
-            return completableFuture.join();
+        webWorkerTasks.put(taskId, completableFuture);
+
+        completableFuture.runAsync(() -> {
+            threadService.runActionLater(() -> {
+                this.setMember("taskId", taskId);
+                this.setMember("editorValue", asciidoc);
+                this.setMember("editorOptions", config.toString());
+                try {
+                    webEngine().executeScript(String.format("%s(taskId,editorValue,editorOptions)", functionName));
+                } catch (Exception e) {
+                    completableFuture.completeExceptionally(e);
+                }
+            });
+        }, threadService.executor());
+
+        ConverterResult converterResult = null;
+        try {
+            converterResult = completableFuture.get(1, TimeUnit.MINUTES);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-
-        this.setMember("editorValue", asciidoc);
-        this.setMember("editorOptions", config.toString());
-        JSObject result = (JSObject) webEngine().executeScript(String.format("%s(editorValue,editorOptions)", functionName));
-        ConverterResult converterResult = new ConverterResult(result);
-
         return converterResult;
+
     }
 
     private JsonObject updateConfig(String asciidoc, JsonObject config) {
@@ -191,6 +201,10 @@ public class AsciidocWebkitConverter extends ViewPanel implements AsciidocConver
     @Override
     public void convertOdf(String asciidoc) {
         convert("convertOdf", asciidoc, updateConfig(asciidoc, odfConfigBean.getJSON()));
+    }
+
+    public Map<String, CompletableFuture<ConverterResult>> getWebWorkerTasks() {
+        return webWorkerTasks;
     }
 
     public boolean isHtml(String text) {

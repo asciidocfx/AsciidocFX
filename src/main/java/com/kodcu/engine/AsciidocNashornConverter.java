@@ -14,8 +14,6 @@ import org.springframework.stereotype.Component;
 import javax.json.JsonObject;
 import javax.script.Invocable;
 import javax.script.ScriptEngine;
-import java.io.FileInputStream;
-import java.io.InputStreamReader;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
@@ -125,6 +123,9 @@ public class AsciidocNashornConverter implements AsciidocConvertible {
 
     public void initialize() {
 
+        if(true)
+            return;;
+
         completableFuture.runAsync(() -> {
             try {
 
@@ -140,10 +141,11 @@ public class AsciidocNashornConverter implements AsciidocConvertible {
                 for (String script : scripts) {
 
                     Path resolve = configPath.resolve("public/js").resolve(script);
-                    try (FileInputStream fileInputStream = new FileInputStream(resolve.toFile());
-                         InputStreamReader is = new InputStreamReader(fileInputStream, "UTF-8");) {
-                        scriptEngine.eval(is);
-                    }
+                    scriptEngine.eval(String.format("load('%s')", "conf/public/js/"+ script));
+//                    try (FileInputStream fileInputStream = new FileInputStream(resolve.toFile());
+//                         InputStreamReader is = new InputStreamReader(fileInputStream, "UTF-8");) {
+//                        scriptEngine.eval(is);
+//                    }
 
                 }
 

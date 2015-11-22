@@ -101,6 +101,7 @@ import java.nio.file.attribute.PosixFilePermission;
 import java.security.CodeSource;
 import java.util.*;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -1917,6 +1918,16 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         return optMap;
     }
 
+
+    public void completeWebWorker(JSObject object) {
+        threadService.runTaskLater(() -> {
+            final ConverterResult converterResult = new ConverterResult(object);
+            final Map<String, CompletableFuture<ConverterResult>> workerTasks = asciidocWebkitConverter.getWebWorkerTasks();
+            final CompletableFuture<ConverterResult> completableFuture = workerTasks.get(converterResult.getTaskId());
+            completableFuture.complete(converterResult);
+        });
+    }
+
     @WebkitCall(from = "editor")
     public void appendWildcard() {
         current.currentTab().setChangedProperty(true);
@@ -2308,6 +2319,10 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     public ShortcutProvider getShortcutProvider() {
         return shortcutProvider;
+    }
+
+    public void log(Object o){
+        System.out.println(o);
     }
 
     @FXML

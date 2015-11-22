@@ -1,22 +1,3 @@
-var myWorker = new Worker("/afx/resource/js/webworker.js");
-myWorker.onmessage = function (e) {
-
-    var data = e.data;
-
-    if (data.type == "log") {
-        afx.log(data.message);
-    } else {
-        afx.completeWebWorker(data);
-    }
-
-};
-
-myWorker.onerror = function (e) {
-    afx.log(e);
-};
-
-myWorker.postMessage();
-
 function getOption(options) {
     return Opal.hash(JSON.parse(options));
 }
@@ -24,15 +5,24 @@ function getOption(options) {
 var fillOutAction = new BufferedAction();
 function convertAsciidoc(taskId, content, options) {
 
-    var message = {
-        func: arguments.callee.name,
+    var rendered = "";
+
+    var doc = Opal.Asciidoctor.$load(content, getOption(options));
+
+    fillOutAction.buff(function () {
+        //afx.fillOutlines(doc);
+    }, 3000);
+
+    rendered = doc.$convert();
+
+    var result = {
         taskId: taskId,
-        content: content,
-        options: options
+        rendered: rendered,
+        doctype: doc.doctype,
+        backend: doc.$backend()
     };
 
-    console.log("Gitti ", message);
-    myWorker.postMessage(message);
+    self.postMessage(result);
 }
 
 function convertOdf(content, options) {
