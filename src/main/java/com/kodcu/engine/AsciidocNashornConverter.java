@@ -123,7 +123,7 @@ public class AsciidocNashornConverter implements AsciidocConvertible {
 
     public void initialize() {
 
-        if(true)
+        if(true) // Don't use nashorn until bugfix
             return;;
 
         completableFuture.runAsync(() -> {

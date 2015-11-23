@@ -44,7 +44,12 @@ Opal.modules["chart-block-macro/extension"] = function (Opal) {
                 }
 
                 if (cache != "enabled") {
-                    afx.chartBuildFromCsv(csvFile, imagesdir, parent.$image_uri(filename), chartType, opt);
+                    var parameters = [csvFile, imagesdir, parent.$image_uri(filename), chartType, opt];
+                    postMessage(JSON.stringify({
+                        type: "afx",
+                        func: "chartBuildFromCsv",
+                        parameters: parameters
+                    }));
                 }
 
                 var attributes = {
@@ -112,7 +117,13 @@ Opal.modules["chart-block-macro/extension"] = function (Opal) {
                 }
 
                 if (cache != "enabled") {
-                    afx.chartBuild(reader.$read(), imagesdir, parent.$image_uri(filename), chartType, opt);
+                    var parameters = [reader.$read(), imagesdir, parent.$image_uri(filename), chartType, opt];
+                    postMessage(JSON.stringify({
+                        type: "afx",
+                        func: "chartBuild",
+                        parameters: parameters
+                    }));
+                    //afx.chartBuild();
                 }
 
                 var attributes = {

@@ -42,7 +42,13 @@ function process_uml_block(obj) {
         var parameters = [reader.$read(), type, imagesdir, target];
         var command = name;
 
-        afx[command].apply(afx,parameters);
+        //afx[command].apply(afx,parameters);
+
+        postMessage(JSON.stringify({
+            type:"afx",
+            func:command,
+            parameters:parameters
+        }));
 
     }
 

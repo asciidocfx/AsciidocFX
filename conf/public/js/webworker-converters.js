@@ -2,18 +2,10 @@ function getOption(options) {
     return Opal.hash(JSON.parse(options));
 }
 
-var fillOutAction = new BufferedAction();
-function convertAsciidoc(taskId, content, options) {
-
-    var rendered = "";
+function convertBackend(taskId, content, options) {
 
     var doc = Opal.Asciidoctor.$load(content, getOption(options));
-
-    fillOutAction.buff(function () {
-        //afx.fillOutlines(doc);
-    }, 3000);
-
-    rendered = doc.$convert();
+    var rendered = doc.$convert();
 
     var result = {
         taskId: taskId,
@@ -22,36 +14,33 @@ function convertAsciidoc(taskId, content, options) {
         backend: doc.$backend()
     };
 
-    self.postMessage(result);
+    self.postMessage(JSON.stringify(result));
+
+    fillOutAction.buff(function () {
+        fillOutlines(doc);
+    }, 1000);
 }
 
-function convertOdf(content, options) {
+var fillOutAction = new BufferedAction();
+function convertAsciidoc(taskId, content, options) {
 
-    var doc = Opal.Asciidoctor.$load(content, getOption(options));
+    convertBackend(taskId, content, options);
 
-    return doc.$convert();
 }
 
-function convertHtml(content, options) {
+function convertOdf(taskId, content, options) {
 
-    var doc = Opal.Asciidoctor.$load(content, getOption(options));
-
-    return {
-        rendered: doc.$render(),
-        doctype: doc.doctype,
-        backend: doc.$backend()
-    };
+    convertBackend(taskId, content, options);
 }
 
-function convertDocbook(content, options) {
+function convertHtml(taskId, content, options) {
 
-    var doc = Opal.Asciidoctor.$load(content, getOption(options));
+    convertBackend(taskId, content, options);
+}
 
-    return {
-        rendered: doc.$render(),
-        doctype: doc.doctype,
-        backend: doc.$backend()
-    };
+function convertDocbook(taskId, content, options) {
+
+    convertBackend(taskId, content, options);
 }
 
 function findRenderedSelection(content) {

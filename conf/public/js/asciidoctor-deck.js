@@ -40,7 +40,7 @@ Opal.modules["asciidoctor/converter/deckjs"] = function (Opal) {
                         return "";
 
                     if (!map[obj.name]) {
-                        var template = afx.getTemplate(obj.name + ".jade", "deckjs");
+                        var template = Opal.File.$read("/afx/jade/deckjs/"+obj.name+".jade");
                         var fn = jade.compile(template, {pretty: true});
                         map[obj.name] = fn;
                     }

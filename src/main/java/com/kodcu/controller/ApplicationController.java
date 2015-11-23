@@ -979,14 +979,14 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     private void waiterLoop() {
 
-        Integer integer = Optional.ofNullable(lastTupleReference.get())
-                .map(Tuple::getKey)
-                .map(String::length)
-                .map(e -> (e / 10))
-                .filter(e -> (e < 2000))
-                .orElse(2000);
-
-        threadService.sleep(integer);
+//        Integer integer = Optional.ofNullable(lastTupleReference.get())
+//                .map(Tuple::getKey)
+//                .map(String::length)
+//                .map(e -> (e / 10))
+//                .filter(e -> (e < 2000))
+//                .orElse(2000);
+//
+//        threadService.sleep(integer);
     }
 
     private void initializePosixPermissions() {
@@ -1918,7 +1918,19 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         return optMap;
     }
 
+    @WebkitCall(from = "converter.js")
+    public void completeWebWorkerExceptionally(Object message, Object taskId) {
+        threadService.runTaskLater(() -> {
+            final Map<String, CompletableFuture<ConverterResult>> workerTasks = asciidocWebkitConverter.getWebWorkerTasks();
+            final CompletableFuture<ConverterResult> completableFuture = workerTasks.get(taskId);
+            if (!completableFuture.isDone()) {
+                completableFuture.completeExceptionally(new RuntimeException(String.format("Task: %s is not completed - %s", taskId, message)));
+            }
+        });
+    }
 
+
+    @WebkitCall(from = "converter.js")
     public void completeWebWorker(JSObject object) {
         threadService.runTaskLater(() -> {
             final ConverterResult converterResult = new ConverterResult(object);
@@ -2037,14 +2049,14 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     }
 
     @WebkitCall(from = "asciidoctor-odf.js")
-    public void convertToOdf(String name, Object obj) throws Exception {
+    public synchronized void convertToOdf(String name, Object obj) throws Exception {
         JSObject jObj = (JSObject) obj;
         odfConverter.buildDocument(name, jObj);
     }
 
     @WebkitCall
-    public String getTemplate(String templateName, String templateDir) throws IOException {
-        return asciidocWebkitConverter.getTemplate(templateName, templateDir);
+    public String getTemplate(String templateDir) {
+        return asciidocWebkitConverter.getTemplate(templateDir);
     }
 
     public void cutCopy(String data) {
@@ -2321,8 +2333,10 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         return shortcutProvider;
     }
 
-    public void log(Object o){
-        System.out.println(o);
+    public void log(Object... objects) {
+        for (Object object : objects) {
+            logger.error(object + "");
+        }
     }
 
     @FXML

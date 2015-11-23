@@ -15,11 +15,8 @@ Opal.modules["tree-block/extension"] = function (Opal) {
         var def = __self.$$proto, $scope = __self.$$scope;
 
         __self.$use_dsl();
-
         __self.$named("tree");
-
         __self.$on_context(["open", "literal", "listing"]);
-
         __self.$parse_content_as("literal");
 
         return (def.$process = function (parent, reader, attrs) {
@@ -55,7 +52,13 @@ Opal.modules["tree-block/extension"] = function (Opal) {
                     var command = oldStyle ? "createFileTree" : "createHighlightFileTree";
                     var parameters = [readed, type, imagesdir, targetUri, width, height];
 
-                    afx[command].apply(afx,parameters);
+                    postMessage(JSON.stringify({
+                        type: "afx",
+                        func: command,
+                        parameters: parameters
+                    }));
+
+                    //afx[command].apply(afx, parameters);
                 }
 
                 var attributes = {
