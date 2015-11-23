@@ -19,7 +19,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 /**
@@ -39,6 +38,7 @@ public class FileBrowseService {
     private TreeItem<Item> rootItem;
 
     private Integer lastSelectedItem;
+    private TreeView<Item> treeView;
 
     @Autowired
     public FileBrowseService(final PathOrderService pathOrder, final ThreadService threadService, final PathResolverService pathResolver,
@@ -56,7 +56,7 @@ public class FileBrowseService {
 
             controller.getWorkDirTabPane().getSelectionModel().selectFirst(); // fix
 
-            TreeView<Item> treeView = controller.getFileSystemView();
+            this.treeView = controller.getFileSystemView();
 
             int selectedIndex = treeView.getSelectionModel().getSelectedIndex();
             if (selectedIndex != -1)
@@ -88,11 +88,14 @@ public class FileBrowseService {
 
         try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(path);) {
 
-            List<TreeItem<Item>> subItemList = StreamSupport
+            final List<Path> pathList = StreamSupport
                     .stream(directoryStream.spliterator(), false)
+                    .collect(Collectors.toList());
+
+            List<TreeItem<Item>> subItemList = pathList.stream()
                     .filter(p -> !pathResolver.isHidden(p))
                     .filter(pathResolver::isViewable)
-//                    .sorted(pathOrder::comparePaths)
+                    .sorted(pathOrder::comparePaths)
                     .map(p -> new TreeItem<>(new Item(p), awesomeService.getIcon(p)))
                     .collect(Collectors.toList());
 
