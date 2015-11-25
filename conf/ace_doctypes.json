@@ -742,5 +742,17 @@
     "caption": "Swift",
     "mode": "ace/mode/swift",
     "extensions": "swift"
+  },
+  {
+    "name": "elixir",
+    "caption": "Elixir",
+    "mode": "ace/mode/html_elixir",
+    "extensions": "ex|exs"
+  },
+  {
+    "name": "log",
+    "caption": "Log",
+    "mode": "ace/mode/text",
+    "extensions": "log"
   }
 ]
