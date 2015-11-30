@@ -131,23 +131,6 @@ public class EditorService {
         final Label openMenuLabel = LabelBuilt.icon(AwesomeIcon.CHEVRON_CIRCLE_DOWN, iconSize, minSize)
                 .clazz("top-label").tip("More...").build();
 
-        final Label showFileBrowser = LabelBuilt.icon(AwesomeIcon.CHEVRON_CIRCLE_RIGHT, iconSize, minSize)
-                .click(event -> {
-                    controller.showFileBrowser();
-                })
-                .clazz("top-label").tip("Show File Browser...").build();
-
-        final Label showPreviewPanel = LabelBuilt.icon(AwesomeIcon.CHEVRON_CIRCLE_LEFT, iconSize, minSize)
-                .click(event -> {
-                    controller.showPreviewPanel();
-                })
-                .clazz("top-label").tip("Show Preview Panel...").build();
-
-        showFileBrowser.visibleProperty().bindBidirectional(controller.fileBrowserVisibilityProperty());
-        showFileBrowser.managedProperty().bindBidirectional(controller.fileBrowserVisibilityProperty());
-        showPreviewPanel.visibleProperty().bindBidirectional(controller.previewPanelVisibilityProperty());
-        showPreviewPanel.managedProperty().bindBidirectional(controller.previewPanelVisibilityProperty());
-
         Pane placeholderPane = new Pane();
         placeholderPane.maxWidth(Integer.MAX_VALUE);
         placeholderPane.prefHeight(1);
@@ -198,7 +181,7 @@ public class EditorService {
             }
         }
 
-        flowPane.getChildren().addAll(showFileBrowser,
+        flowPane.getChildren().addAll(
                 newLabel,
                 openLabel,
                 saveLabel,
@@ -218,8 +201,7 @@ public class EditorService {
                 superScriptLabel,
                 menuButton,
                 openMenuLabel,
-                placeholderPane,
-                showPreviewPanel);
+                placeholderPane);
 
         flowPane.setHgap(7.5);
         flowPane.setVgap(5);

@@ -54,7 +54,7 @@ public class FileBrowseService {
 
         threadService.runActionLater(() -> {
 
-            controller.getWorkDirTabPane().getSelectionModel().selectFirst(); // fix
+//            controller.getWorkDirTabPane().getSelectionModel().selectFirst(); // fix
 
             this.treeView = controller.getFileSystemView();
 

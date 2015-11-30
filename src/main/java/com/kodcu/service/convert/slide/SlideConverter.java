@@ -6,6 +6,7 @@ import com.kodcu.controller.ApplicationController;
 import com.kodcu.other.Current;
 import com.kodcu.service.DirectoryService;
 import com.kodcu.service.ThreadService;
+import javafx.scene.layout.VBox;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -58,11 +59,9 @@ public class SlideConverter {
 
             this.rendered = rendered;
 
-            PreviewTab previewTab = controller.getPreviewTab();
-
             String url = String.format(slideUrl, controller.getPort(), directoryService.interPath());
 
-            if (previewTab.getContent() != slidePane || !url.equals(slidePane.getLocation())) {
+            if (slidePane.isVisible() || !url.equals(slidePane.getLocation())) {
                 slidePane.load(url);
             } else {
                 threadService.runActionLater(() -> {

@@ -15,6 +15,7 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.Event;
+import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.input.Dragboard;
@@ -233,8 +234,8 @@ public class EditorPane extends AnchorPane {
 
         if (Objects.nonNull(lineno)) {
 
-            ViewPanel node = (ViewPanel) controller.getPreviewTab().getContent();
-            node.disableScrollingAndJumping();
+            ViewPanel viewPanel = controller.getRightShowerHider().getShowing();
+            viewPanel.disableScrollingAndJumping();
 
             try {
                 webEngine().executeScript(String.format("editor.gotoLine(%d,3,false)", (lineno)));
@@ -243,7 +244,8 @@ public class EditorPane extends AnchorPane {
                 logger.error("Error occured while moving cursor to line {}", lineno);
             }
 
-            node.enableScrollingAndJumping();
+            viewPanel.enableScrollingAndJumping();
+
         }
     }
 

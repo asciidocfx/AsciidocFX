@@ -209,7 +209,7 @@
  *                                                                             *
  ******************************************************************************/
 .table-cell {
-    -fx-padding: 0.8em 0em 0.5em 0.3em;
+    -fx-padding: 0.2em;
     -fx-border-color: transparent -fx-box-border transparent transparent;
     -fx-font: 12px "Segoe UI";
     -fx-text-fill: #212121;
@@ -569,7 +569,6 @@
     -fx-fill: #ff452c !important;
 }
 
-
 .mytab-changed .tab-label {
     -fx-font-weight: bold;
 }
@@ -593,7 +592,6 @@
     -fx-background-color: transparent;
     -fx-padding: 0; /* 0 */
 }
-
 
 #terminalLeftBox {
     -fx-padding: 5px;
@@ -622,4 +620,57 @@
 .custom-color-dialog > .color-rect-pane > .color-bar > #color-bar-indicator,
 .tooltip {
     -fx-effect: null !important;
+}
+
+
+.button, .menu-button , .toggle-button,.choice-box{
+    -fx-background-color: linear-gradient(#eeeeee, #d2d2d2);;
+    -fx-text-fill: black;
+    -fx-border-radius: 3;
+    -fx-background-radius: 3;
+    -fx-border-color: #d2d2d2;
+    -fx-border-width: 0;
+    -fx-border-style: solid;
+
+}
+.button:hover, .menu-button:hover, .toggle-button:hover,.choice-box:hover {
+    -fx-background-color: #cccccc;
+    -fx-text-fill: black;
+}
+
+.corner-toggle-button {
+    -fx-background-color: #eeeeee;
+    -fx-text-fill: black;
+    -fx-border-radius: 0;
+    -fx-background-radius: 0;
+}
+
+.corner-bottom-half {
+    -fx-border-color: #b2b2b2;
+    -fx-border-width: 0 0 0.5 0;
+    -fx-border-style: solid;
+}
+
+.corner-right-half {
+    -fx-border-color: #b2b2b2;
+    -fx-border-width: 0 0.5 0 0;
+    -fx-border-style: solid;
+}
+
+.corner-toggle-button:hover,
+.corner-toggle-button:selected,
+.corner-toggle-button:selected:focused {
+    -fx-background-color: #cccccc;
+    -fx-text-fill: black;
+}
+
+#mainVerticalSplitPane {
+    -fx-padding: 0;
+    -fx-background-color: transparent;
+}
+
+.tree-view,.list-view{
+    -fx-background-insets: 0;
+    -fx-padding: 0;
+    -fx-border-width: 0;
 }

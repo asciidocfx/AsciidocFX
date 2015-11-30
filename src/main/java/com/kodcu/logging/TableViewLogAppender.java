@@ -11,6 +11,7 @@ import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableView;
+import javafx.scene.control.ToggleButton;
 
 import java.util.Collections;
 import java.util.LinkedList;
@@ -33,7 +34,7 @@ public class TableViewLogAppender extends UnsynchronizedAppenderBase<ILoggingEve
     private static Label logShortMessage;
     private static ThreadService threadService;
     PatternLayoutEncoder encoder;
-    private static Label logShowHider;
+    private static ToggleButton logShowHider;
 
     public static void setLogViewer(TableView<MyLog> logViewer) {
         TableViewLogAppender.logViewer = logViewer;
@@ -47,11 +48,11 @@ public class TableViewLogAppender extends UnsynchronizedAppenderBase<ILoggingEve
         TableViewLogAppender.logShortMessage = logShortMessage;
     }
 
-    public static void setShowHideLogs(Label logShowHider) {
+    public static void setShowHideLogs(ToggleButton logShowHider) {
         TableViewLogAppender.logShowHider = logShowHider;
     }
 
-    public static Label getLogShowHider() {
+    public static ToggleButton getLogShowHider() {
         return logShowHider;
     }
 
