@@ -553,7 +553,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             while (true) {
                 try {
                     renderLoop();
-                    waiterLoop();
                 } catch (Exception e) {
                     logger.error(e.getMessage(), e);
                 }
@@ -957,17 +956,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         return stopRendering;
     }
 
-    private void waiterLoop() {
-
-//        Integer integer = Optional.ofNullable(lastTupleReference.get())
-//                .map(Tuple::getKey)
-//                .map(String::length)
-//                .map(e -> (e / 10))
-//                .filter(e -> (e < 2000))
-//                .orElse(2000);
-//
-//        threadService.sleep(integer);
-    }
 
     private void initializePosixPermissions() {
 
@@ -996,18 +984,18 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
         tabPane.getTabs()
                 .stream()
-                .filter(t-> t instanceof MyTab)
-                .map(t->(MyTab)t)
-                .filter(t-> !t.isNew())
+                .filter(t -> t instanceof MyTab)
+                .map(t -> (MyTab) t)
+                .filter(t -> !t.isNew())
                 .forEach(MyTab::saveDoc);
     }
 
     public void loadAllTabs() {
         tabPane.getTabs()
                 .stream()
-                .filter(t-> t instanceof MyTab)
-                .map(t->(MyTab)t)
-                .filter(t-> !t.isNew())
+                .filter(t -> t instanceof MyTab)
+                .map(t -> (MyTab) t)
+                .filter(t -> !t.isNew())
                 .forEach(MyTab::reload);
     }
 
@@ -1881,8 +1869,8 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         current.currentTab().setChangedProperty(true);
     }
 
-    private AtomicReference<Tuple<String, String>> lastTupleReference = new AtomicReference<>();
     private AtomicReference<Tuple<String, String>> latestTupleReference = new AtomicReference<>();
+    private AtomicBoolean tupleConsumed = new AtomicBoolean(false);
 
     private void renderLoop() {
 
@@ -1895,10 +1883,11 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         if (Objects.isNull(tuple))
             return;
 
-        if (tuple.equals(lastTupleReference.get()))
+        if (!tupleConsumed.getAndSet(true)) {
+            tupleConsumed.set(true);
+        } else {
             return;
-
-        lastTupleReference.set(tuple);
+        }
 
         String text = tuple.getKey();
         String mode = tuple.getValue();
@@ -1982,6 +1971,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     @WebkitCall(from = "editor")
     public void textListener(String text, String mode) {
         latestTupleReference.set(new Tuple<>(text, mode));
+        tupleConsumed.set(false);
     }
 
     @WebkitCall(from = "asciidoctor-odf.js")
@@ -2511,9 +2501,9 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         threadService.runActionLater(() -> {
 
             ToggleButton toggleButton = new ToggleButton();
-            toggleButton.setPrefSize(20,80);
+            toggleButton.setPrefSize(20, 80);
             toggleButton.setToggleGroup(rightToggleGroup);
-            toggleButton.getStyleClass().addAll("corner-toggle-button","corner-bottom-half");
+            toggleButton.getStyleClass().addAll("corner-toggle-button", "corner-bottom-half");
             final Label label = new Label("Worker");
             label.setRotate(90);
             toggleButton.setGraphic(new Group(label));
