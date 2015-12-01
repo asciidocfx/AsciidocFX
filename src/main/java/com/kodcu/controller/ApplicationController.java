@@ -107,6 +107,7 @@ import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static java.nio.file.StandardOpenOption.*;
@@ -130,6 +131,8 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     public VBox rightTooglesBox;
     public VBox configBox;
     public ToggleGroup rightToggleGroup;
+    public MenuButton donateButton;
+    public ToggleButton toggleConfigButton;
     private Logger logger = LoggerFactory.getLogger(ApplicationController.class);
     public Label odfPro;
     public VBox logVBox;
@@ -351,6 +354,9 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     private ConverterResult lastConverterResult;
     private HostServices hostServices;
 
+    @Value("${application.donation}")
+    private String donationUrl;
+
     public void createAsciidocTable() {
         asciidocTableStage.showAndWait();
     }
@@ -542,6 +548,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 //        initializePosixPermissions();
         initializeNashornConverter();
         initializeTerminal();
+        initializeDonation();
 
         terminalTabPane.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             Optional.ofNullable(newValue)
@@ -863,6 +870,33 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         tabService.initializeTabChangeListener(tabPane);
     }
 
+    private void initializeDonation() {
+        donateButton.setGraphic(AwesomeDude.createIconLabel(AwesomeIcon.PAYPAL, "14.0"));
+        Tooltip.install(donateButton, new Tooltip("Donate to AsciidocFX project"));
+
+        IntStream.of(10, 25, 50, 100)
+                .forEach(unit -> {
+                    final MenuItem menuItem = MenuItemBuilt.item("$ " + unit)
+                            .click(event -> {
+                                browseInDesktop(String.format(donationUrl, unit));
+                            });
+                    donateButton.getItems().add(menuItem);
+                });
+
+        donateButton.getItems().add(MenuItemBuilt.item("× Close")
+                .click(event -> {
+                    if (!toggleConfigButton.isSelected()) {
+                        toggleConfigButton.fire();
+                    }
+
+                    threadService.schedule(() -> {
+                        threadService.runActionLater(() -> {
+                            editorConfigBean.showDonateProperty().setValue(false);
+                        });
+                    }, 2, TimeUnit.SECONDS);
+                }));
+    }
+
     public void openInDesktop(Path path) {
         try {
             hostServices.showDocument(path.toUri().toString());
@@ -1067,6 +1101,8 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                 }
             }
         });*/
+
+        editorConfigBean.showDonateProperty().bindBidirectional(donateButton.visibleProperty());
 
         locationConfigBean.mathjaxProperty().addListener((observable, oldValue, newValue) -> {
             if (Objects.nonNull(newValue)) {

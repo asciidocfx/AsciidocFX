@@ -29,10 +29,11 @@
                     </ToggleButton>
                     <ToggleButton toggleGroup="$rightToggleGroup" styleClass="corner-toggle-button,corner-bottom-half"
                                   onAction="#toggleConfigurationView"
+                                  fx:id="toggleConfigButton"
                                   prefHeight="80" prefWidth="20">
                         <graphic>
                             <Group>
-                                <Label text="Configuration" rotate="90"></Label>
+                                <Label text="Settings" rotate="90"></Label>
                             </Group>
                         </graphic>
                         <padding>
@@ -200,6 +201,9 @@
                                                     <HBox.margin>
                                                         <Insets/>
                                                     </HBox.margin>
+                                                </MenuButton>
+                                                <MenuButton fx:id="donateButton" visible="false">
+
                                                 </MenuButton>
                                             </children>
                                             <padding>
