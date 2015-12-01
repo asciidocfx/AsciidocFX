@@ -622,8 +622,7 @@
     -fx-effect: null !important;
 }
 
-
-.button, .menu-button , .toggle-button,.choice-box{
+.button, .menu-button, .toggle-button, .choice-box {
     -fx-background-color: linear-gradient(#eeeeee, #d2d2d2);;
     -fx-text-fill: black;
     -fx-border-radius: 3;
@@ -633,7 +632,13 @@
     -fx-border-style: solid;
 
 }
-.button:hover, .menu-button:hover, .toggle-button:hover,.choice-box:hover {
+
+.button:hover,
+.menu-button:hover,
+.toggle-button:hover,
+.toggle-button:selected,
+.toggle-button:focused,
+.choice-box:hover {
     -fx-background-color: #cccccc;
     -fx-text-fill: black;
 }
@@ -669,7 +674,7 @@
     -fx-background-color: transparent;
 }
 
-.tree-view,.list-view{
+.tree-view, .list-view {
     -fx-background-insets: 0;
     -fx-padding: 0;
     -fx-border-width: 0;
