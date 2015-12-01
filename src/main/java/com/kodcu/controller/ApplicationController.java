@@ -40,6 +40,7 @@ import de.jensd.fx.fontawesome.AwesomeIcon;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
+import javafx.application.HostServices;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -58,12 +59,7 @@ import javafx.geometry.Insets;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.scene.control.*;
-import javafx.scene.control.Label;
-import javafx.scene.control.Menu;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTreeCell;
 import javafx.scene.input.*;
@@ -86,15 +82,13 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
-import javax.swing.*;
-import java.awt.*;
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
@@ -104,7 +98,6 @@ import java.nio.file.attribute.PosixFileAttributeView;
 import java.nio.file.attribute.PosixFilePermission;
 import java.security.CodeSource;
 import java.util.*;
-import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -304,6 +297,15 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     @Value("${application.version}")
     private String version;
 
+    @Value("${application.issue}")
+    private String issuePage;
+    @Value("${application.forum}")
+    private String issueForum;
+    @Value("${application.gitter}")
+    private String gitterChat;
+    @Value("${application.github}")
+    private String githubPage;
+
     @Autowired
     private SlideConverter slideConverter;
 
@@ -347,6 +349,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     private String liveUrl;
 
     private ConverterResult lastConverterResult;
+    private HostServices hostServices;
 
     public void createAsciidocTable() {
         asciidocTableStage.showAndWait();
@@ -861,25 +864,20 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     }
 
     public void openInDesktop(Path path) {
-        SwingUtilities.invokeLater(() -> {
-            try {
-                Desktop desktop = Desktop.getDesktop();
-                desktop.open(path.toFile());
-            } catch (Exception e) {
-                logger.error(e.getMessage(), e);
-            }
-        });
+        try {
+            hostServices.showDocument(path.toUri().toString());
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+        }
     }
 
-    public void browseInDesktop(String uri) {
-        SwingUtilities.invokeLater(() -> {
-            try {
-                Desktop desktop = Desktop.getDesktop();
-                desktop.browse(URI.create(uri));
-            } catch (Exception e) {
-                logger.error(e.getMessage(), e);
-            }
-        });
+
+    public void browseInDesktop(String url) {
+        try {
+            hostServices.showDocument(UriComponentsBuilder.fromHttpUrl(url).build().toUri().toASCIIString());
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+        }
     }
 
     private void initializeTerminal() {
@@ -889,8 +887,8 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         terminalLeftBox.getChildren().add(newTerminalButton);
         terminalLeftBox.getChildren().add(closeTerminalButton);
 
-        Tooltip.install(newTerminalButton,new Tooltip("New Terminal"));
-        Tooltip.install(closeTerminalButton,new Tooltip("Close Terminal"));
+        Tooltip.install(newTerminalButton, new Tooltip("New Terminal"));
+        Tooltip.install(closeTerminalButton, new Tooltip("Close Terminal"));
 
         newTerminalButton.setOnAction(this::newTerminal);
         closeTerminalButton.setOnAction(this::closeTerminal);
@@ -2219,22 +2217,22 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     @FXML
     private void bugReport(ActionEvent actionEvent) {
-        browseInDesktop("https://github.com/asciidocfx/AsciidocFX/issues");
+        browseInDesktop(issuePage);
     }
 
     @FXML
     private void openCommunityForum(ActionEvent actionEvent) {
-        browseInDesktop("https://groups.google.com/d/forum/asciidocfx-discuss");
+        browseInDesktop(issueForum);
     }
 
     @FXML
     private void openGitterChat(ActionEvent actionEvent) {
-        browseInDesktop("https://gitter.im/asciidocfx/AsciidocFX");
+        browseInDesktop(gitterChat);
     }
 
     @FXML
     private void openGithubPage(ActionEvent actionEvent) {
-        browseInDesktop("https://github.com/asciidocfx/AsciidocFX");
+        browseInDesktop(githubPage);
     }
 
     @FXML
@@ -2686,5 +2684,13 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     public ShowerHider getRightShowerHider() {
         return rightShowerHider;
+    }
+
+    public void setHostServices(HostServices hostServices) {
+        this.hostServices = hostServices;
+    }
+
+    public HostServices getHostServices() {
+        return hostServices;
     }
 }
