@@ -18,7 +18,7 @@ image:https://badges.gitter.im/Join%20Chat.svg["Gitter", link="https://gitter.im
 <script async defer id="github-bjs" src="https://buttons.github.io/buttons.js"></script>
 ++++
 
-Asciidoc FX is a book / document editor to build PDF, Epub, Mobi and HTML books, documents and slides.
+Asciidoc FX is a book / document editor to build PDF, Epub, Mobi and HTML books, documents and slides. AsciidocFX is also a winner of https://www.oracle.com/corporate/pressrelease/dukes-award-102815.html[Duke's Choice Award 2015].
 
 .AsciidocFX - Duke's Choice Award 2015 winner
 image::images/asciidocfx.png[]
