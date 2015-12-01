@@ -8,11 +8,9 @@ import javafx.collections.ObservableList;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Font;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Scope;
@@ -153,7 +151,7 @@ public class ShellTab extends Tab {
 
     public void print(String text) {
 
-        threadService.runActionLater(() -> {
+        threadService.runActionFairlyLater(() -> {
                     if (text.contains(">") || text.contains("$")) {
                         String[] split = text.split(">|\\$", 2);
 
