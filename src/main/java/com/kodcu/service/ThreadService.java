@@ -3,11 +3,8 @@ package com.kodcu.service;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import java.util.LinkedList;
 import java.util.concurrent.*;
 import java.util.function.Consumer;
 
@@ -18,16 +15,15 @@ import java.util.function.Consumer;
 public class ThreadService {
 
     private final ScheduledExecutorService threadPollWorker;
-    private final Logger logger = LoggerFactory.getLogger(ThreadService.class);
-    private final LinkedList<Runnable> queues = new LinkedList<>();
+    private ConcurrentHashMap<String, Buff> buffMap = new ConcurrentHashMap<>();
 
     public ThreadService() {
         int nThreads = Runtime.getRuntime().availableProcessors() * 2;
         threadPollWorker = Executors.newScheduledThreadPool((nThreads >= 4) ? nThreads : 4);
     }
 
-    public void schedule(Runnable runnable, long delay, TimeUnit timeUnit) {
-        threadPollWorker.schedule(runnable, delay, timeUnit);
+    public ScheduledFuture<?> schedule(Runnable runnable, long delay, TimeUnit timeUnit) {
+        return threadPollWorker.schedule(runnable, delay, timeUnit);
     }
 
     // Runs Task in background thread pool
@@ -84,6 +80,21 @@ public class ThreadService {
             Thread.sleep(ms);
         } catch (InterruptedException e) {
 //            logger.error("Error in Thread#sleep", e);
+        }
+    }
+
+
+    public Buff buff(String id) {
+        buffMap.putIfAbsent(id, new Buff(this));
+        return buffMap.get(id);
+    }
+
+    public void runActionFairlyLater(Runnable runnable) {
+        if (Platform.isFxApplicationThread()) {
+            runnable.run();
+        } else {
+            Platform.runLater(runnable);
+            sleep(50);
         }
     }
 }
