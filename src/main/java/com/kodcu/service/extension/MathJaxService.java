@@ -2,6 +2,7 @@ package com.kodcu.service.extension;
 
 import com.kodcu.controller.ApplicationController;
 import com.kodcu.other.Current;
+import com.kodcu.other.IOHelper;
 import com.kodcu.service.ThreadService;
 import javafx.concurrent.Worker;
 import javafx.scene.web.WebEngine;
@@ -115,7 +116,7 @@ public class MathJaxService {
             return;
 
         Integer cacheHit = current.getCache().get(imageTarget);
-        int hashCode = (imagesDir + imageTarget + formula + width + height).hashCode();
+        int hashCode = Objects.hash(imagesDir, imageTarget, formula, width, height);
         if (Objects.nonNull(cacheHit))
             if (hashCode == cacheHit)
                 return;
@@ -138,7 +139,7 @@ public class MathJaxService {
             Files.createDirectories(path.resolve(imagesDir));
 
             Path imagePath = path.resolve(imageTarget);
-            Files.write(imagePath, svg.getBytes(Charset.forName("UTF-8")), CREATE, WRITE, TRUNCATE_EXISTING);
+            IOHelper.writeToFile(imagePath, svg.getBytes(Charset.forName("UTF-8")), CREATE, WRITE, TRUNCATE_EXISTING, SYNC);
 
             logger.debug("MathJax extension is ended for {}", imageTarget);
             threadService.runActionLater(() -> {
@@ -169,7 +170,7 @@ public class MathJaxService {
             Files.createDirectories(path.resolve(imagesDir));
 
             Path imagePath = path.resolve(imageTarget);
-            Files.write(imagePath, ostream.toByteArray(), CREATE, WRITE, TRUNCATE_EXISTING);
+            IOHelper.writeToFile(imagePath, ostream.toByteArray(), CREATE, WRITE, TRUNCATE_EXISTING, SYNC);
 
             logger.debug("MathJax extension is ended for {}", imageTarget);
             threadService.runActionLater(() -> {
