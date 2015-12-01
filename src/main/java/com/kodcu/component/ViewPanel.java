@@ -28,6 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 
+import java.nio.file.Path;
 import java.util.Iterator;
 import java.util.Objects;
 import java.util.Optional;
@@ -244,4 +245,19 @@ public abstract class ViewPanel extends AnchorPane {
     public abstract void scrollByPosition(String text);
 
     public abstract void scrollByLine(String text);
+
+    public void clearImageCache(Path imagePath) {
+
+        Optional.ofNullable(imagePath)
+                .map(Path::getFileName)
+                .map(Path::toString)
+                .ifPresent(imageName -> {
+                    threadService.runActionLater(() -> {
+                        webEngine().executeScript(String.format("clearImageCache('%s')", imageName));
+                    });
+
+                });
+    }
+
+    ;
 }

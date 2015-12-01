@@ -1892,8 +1892,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         String text = tuple.getKey();
         String mode = tuple.getValue();
 
-        latestTupleReference.set(null);
-
         try {
 
             boolean bookArticleHeader = this.bookArticleHeaderRegex.matcher(text).find();
@@ -2408,12 +2406,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     }*/
 
     public void clearImageCache(Path imagePath) {
-        Optional.ofNullable(imagePath)
-                .map(Path::getFileName)
-                .map(Path::toString)
-                .ifPresent(imageName -> {
-                    htmlPane.webEngine().executeScript(String.format("clearImageCache('%s')", imageName));
-                });
+        rightShowerHider.getShowing().clearImageCache(imagePath);
     }
 
     public ObservableList<DocumentMode> getModeList() {

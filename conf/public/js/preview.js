@@ -2,17 +2,15 @@ var $placeholder = $("#placeholder");
 
 var clearCacheAction = new BufferedAction();
 function clearImageCache(imageName) {
-    //clearCacheAction.buff(function () {
-    //    $placeholder.find("img").each(function () {
-    //        var image = $(this);
-    //        var srcAttr = image.attr("src");
-    //        if (srcAttr) {
-    //            if (srcAttr.indexOf(imageName) != -1) {
-    //                image.attr("src", srcAttr);
-    //            }
-    //        }
-    //    });
-    //}, 200);
+    clearCacheAction.buff(function () {
+        $placeholder.find("img").each(function () {
+            var image = $(this);
+            var srcAttr = image.attr("src");
+            if (srcAttr) {
+                    image.attr("src", srcAttr);
+            }
+        });
+    }, 500);
 }
 
 function imageToBase64Url() {
@@ -31,7 +29,7 @@ function updateBase64Url(index, base64) {
 }
 
 var hljsAction = new BufferedAction();
-var firstRefresh = true;
+
 function refreshUI(data) {
 
     $placeholder.html(data);
