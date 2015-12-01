@@ -62,7 +62,7 @@ public class LiveReloadPane extends ViewPanel {
 
     @Override
     public void browse() {
-        controller.browseInDesktop(webEngine().getLocation());
+        super.browse();
     }
 
     @Override

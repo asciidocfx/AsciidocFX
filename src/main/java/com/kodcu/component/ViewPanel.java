@@ -140,7 +140,12 @@ public abstract class ViewPanel extends AnchorPane {
         VBox.setVgrow(webView, Priority.ALWAYS);
     }
 
-    public abstract void browse();
+    public void browse(){
+        threadService.runActionLater(()->{
+            final String documentURI = webEngine().getDocument().getDocumentURI();
+            controller.browseInDesktop(documentURI);
+        });
+    };
 
     public void onscroll(Object pos, Object max) {
 
