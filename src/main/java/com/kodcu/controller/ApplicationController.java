@@ -889,6 +889,9 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         terminalLeftBox.getChildren().add(newTerminalButton);
         terminalLeftBox.getChildren().add(closeTerminalButton);
 
+        Tooltip.install(newTerminalButton,new Tooltip("New Terminal"));
+        Tooltip.install(closeTerminalButton,new Tooltip("Close Terminal"));
+
         newTerminalButton.setOnAction(this::newTerminal);
         closeTerminalButton.setOnAction(this::closeTerminal);
 
