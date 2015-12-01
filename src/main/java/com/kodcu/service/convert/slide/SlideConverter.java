@@ -1,12 +1,10 @@
 package com.kodcu.service.convert.slide;
 
-import com.kodcu.component.PreviewTab;
 import com.kodcu.component.SlidePane;
 import com.kodcu.controller.ApplicationController;
 import com.kodcu.other.Current;
 import com.kodcu.service.DirectoryService;
 import com.kodcu.service.ThreadService;
-import javafx.scene.layout.VBox;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -61,7 +59,7 @@ public class SlideConverter {
 
             String url = String.format(slideUrl, controller.getPort(), directoryService.interPath());
 
-            if (slidePane.isVisible() || !url.equals(slidePane.getLocation())) {
+            if (controller.rightShowerHider.getShowing() != slidePane || !url.equals(slidePane.getLocation())) {
                 slidePane.load(url);
             } else {
                 threadService.runActionLater(() -> {
