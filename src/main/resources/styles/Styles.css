@@ -426,6 +426,8 @@
 
 .file-tree {
     -fx-border-color: #ccc !important;
+    -fx-border-width: 1 !important;
+    -fx-border-style: solid !important;
 }
 
 .menu-hbox {

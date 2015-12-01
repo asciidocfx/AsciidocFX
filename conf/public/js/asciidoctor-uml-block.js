@@ -39,7 +39,9 @@ function process_uml_block(obj) {
     if (cache != "enabled") {
         //afx[name](reader.$read(), type, imagesdir, target);
 
-        var parameters = [reader.$read(), type, imagesdir, target];
+        var parameters = [reader.$read(), type, imagesdir, target].map(function (e) {
+            return e + "";
+        });
         var command = name;
 
         //afx[command].apply(afx,parameters);

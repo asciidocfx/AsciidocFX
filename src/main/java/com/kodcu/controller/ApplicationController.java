@@ -151,7 +151,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     public TreeView<Item> fileSystemView;
     public Label workingDirButton;
     public Label refreshLabel;
-    public BorderPane rootAnchor;
+    public AnchorPane rootAnchor;
     public ProgressIndicator indikator;
     public ListView<Item> recentListView;
     public MenuItem openFileTreeItem;
@@ -874,7 +874,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     public void browseInDesktop(String url) {
         try {
-            hostServices.showDocument(UriComponentsBuilder.fromHttpUrl(url).build().toUri().toASCIIString());
+            hostServices.showDocument(UriComponentsBuilder.fromUriString(url).build().toUri().toASCIIString());
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
         }
@@ -2199,7 +2199,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         return tabPane;
     }
 
-    public BorderPane getRootAnchor() {
+    public AnchorPane getRootAnchor() {
         return rootAnchor;
     }
 
@@ -2424,10 +2424,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     public void setIncludeAsciidocResource(boolean includeAsciidocResource) {
         this.includeAsciidocResource.set(includeAsciidocResource);
-    }
-
-    public void removeChildElement(Node node) {
-        getRootAnchor().getChildren().remove(node);
     }
 
     public ProgressBar getProgressBar() {
@@ -2693,4 +2689,5 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     public HostServices getHostServices() {
         return hostServices;
     }
+
 }

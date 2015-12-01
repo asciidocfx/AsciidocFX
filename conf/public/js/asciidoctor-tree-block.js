@@ -50,7 +50,10 @@ Opal.modules["tree-block/extension"] = function (Opal) {
 
                     var oldStyle = (readed.match(/#/g) || []).length > (readed.match(/(-|\|)/g) || []).length;
                     var command = oldStyle ? "createFileTree" : "createHighlightFileTree";
-                    var parameters = [readed, type, imagesdir, targetUri, width, height];
+
+                    var parameters = [readed, type, imagesdir, targetUri, width, height].map(function (e) {
+                        return e + "";
+                    });
 
                     postMessage(JSON.stringify({
                         type: "afx",
