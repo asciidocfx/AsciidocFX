@@ -18,6 +18,7 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -52,35 +53,36 @@ public class FileBrowseService {
 
     public void browse(final Path path) {
 
-        threadService.runActionLater(() -> {
-
-//            controller.getWorkDirTabPane().getSelectionModel().selectFirst(); // fix
-
-            this.treeView = controller.getFileSystemView();
-
-            int selectedIndex = treeView.getSelectionModel().getSelectedIndex();
-            if (selectedIndex != -1)
-                lastSelectedItem = selectedIndex;
-
-            rootItem = new TreeItem<>(new Item(path, String.format("Loading... (%s)", Optional.of(path).map(Path::getFileName).orElse(path))), awesomeService.getIcon(path));
-            rootItem.setExpanded(true);
-
-            treeView.setRoot(rootItem);
-
-            threadService.runTaskLater(() -> {
-
-                this.addPathToTree(path);
-
-                if (Objects.nonNull(lastSelectedItem)) {
+        threadService.buff("fileBrowse")
+                .schedule(() -> {
                     threadService.runActionLater(() -> {
-                        treeView.getSelectionModel().select(lastSelectedItem);
-                    });
-                }
 
-                logger.debug("Filesystem Tree relisted for {}", path);
-            });
+                        this.treeView = controller.getFileSystemView();
 
-        }, true);
+                        int selectedIndex = treeView.getSelectionModel().getSelectedIndex();
+                        if (selectedIndex != -1)
+                            lastSelectedItem = selectedIndex;
+
+                        rootItem = new TreeItem<>(new Item(path, String.format("Loading... (%s)", Optional.of(path).map(Path::getFileName).orElse(path))), awesomeService.getIcon(path));
+                        rootItem.setExpanded(true);
+
+                        treeView.setRoot(rootItem);
+
+                        threadService.runTaskLater(() -> {
+
+                            this.addPathToTree(path);
+
+                            if (Objects.nonNull(lastSelectedItem)) {
+                                threadService.runActionLater(() -> {
+                                    treeView.getSelectionModel().select(lastSelectedItem);
+                                });
+                            }
+
+                            logger.debug("Filesystem Tree relisted for {}", path);
+                        });
+
+                    }, true);
+                }, 500, TimeUnit.MILLISECONDS);
     }
 
 
@@ -88,11 +90,8 @@ public class FileBrowseService {
 
         try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(path);) {
 
-            final List<Path> pathList = StreamSupport
+            List<TreeItem<Item>> subItemList = StreamSupport
                     .stream(directoryStream.spliterator(), false)
-                    .collect(Collectors.toList());
-
-            List<TreeItem<Item>> subItemList = pathList.stream()
                     .filter(p -> !pathResolver.isHidden(p))
                     .filter(pathResolver::isViewable)
                     .sorted(pathOrder::comparePaths)

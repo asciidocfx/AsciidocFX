@@ -18,7 +18,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 
 /**
@@ -30,7 +29,6 @@ public class TableViewLogAppender extends UnsynchronizedAppenderBase<ILoggingEve
     private static TableView<MyLog> logViewer;
     private static ObservableList<MyLog> logList;
     private static List<MyLog> buffer = Collections.synchronizedList(new LinkedList<MyLog>());
-    private static AtomicBoolean scheduled = new AtomicBoolean(false);
     private static Label logShortMessage;
     private static ThreadService threadService;
     PatternLayoutEncoder encoder;
@@ -83,17 +81,13 @@ public class TableViewLogAppender extends UnsynchronizedAppenderBase<ILoggingEve
         MyLog myLog = new MyLog(level, message);
         buffer.add(myLog);
 
-        if (!scheduled.get()) {
-            scheduled.set(true);
-            threadService.schedule(() -> {
-                Platform.runLater(() -> {
-                    List<MyLog> clone = new LinkedList<>(buffer);
-                    buffer.clear();
-                    logList.addAll(clone);
-                    scheduled.set(false);
-                });
-            }, 3, TimeUnit.SECONDS);
-        }
+        threadService.buff("logAppender").schedule(() -> {
+            Platform.runLater(() -> {
+                List<MyLog> clone = new LinkedList<>(buffer);
+                buffer.clear();
+                logList.addAll(clone);
+            });
+        }, 2, TimeUnit.SECONDS);
     }
 
     public PatternLayoutEncoder getEncoder() {
