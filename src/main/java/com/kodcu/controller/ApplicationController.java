@@ -2459,10 +2459,10 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                     indikatorService.startProgressBar();
                     IOHelper.copyDirectory(configPath.resolve("slide/frameworks"), folderPath);
                     indikatorService.stopProgressBar();
-                    directoryService.changeWorkigDir(folderPath);
                     threadService.runActionLater(() -> {
                         tabService.addTab(folderPath.resolve("slide.adoc"));
                     });
+                    directoryService.changeWorkigDir(folderPath);
                 });
             }
         });
