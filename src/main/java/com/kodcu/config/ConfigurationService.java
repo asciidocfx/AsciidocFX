@@ -69,6 +69,7 @@ public class ConfigurationService {
         ScrollPane formsPane = new ScrollPane();
 
         ToggleGroup toggleGroup = new ToggleGroup();
+        controller.setConfigToggleGroup(toggleGroup);
         FlowPane flowPane = new FlowPane(5, 5);
         flowPane.setPadding(new Insets(5,0,0,0));
 

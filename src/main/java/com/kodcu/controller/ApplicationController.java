@@ -356,6 +356,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     @Value("${application.donation}")
     private String donationUrl;
+    private ToggleGroup configToggleGroup;
 
     public void createAsciidocTable() {
         asciidocTableStage.showAndWait();
@@ -889,6 +890,13 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                         toggleConfigButton.fire();
                     }
 
+                    if (Objects.nonNull(configToggleGroup)) {
+                        final ObservableList<Toggle> toggles = configToggleGroup.getToggles();
+                        if (!toggles.isEmpty()) {
+                            ((ToggleButton)toggles.get(0)).fire();
+                        }
+                    }
+
                     threadService.schedule(() -> {
                         threadService.runActionLater(() -> {
                             editorConfigBean.showDonateProperty().setValue(false);
@@ -1102,6 +1110,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             }
         });*/
 
+        donateButton.managedProperty().bind(donateButton.visibleProperty());
         editorConfigBean.showDonateProperty().bindBidirectional(donateButton.visibleProperty());
 
         locationConfigBean.mathjaxProperty().addListener((observable, oldValue, newValue) -> {
@@ -2726,4 +2735,11 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         return hostServices;
     }
 
+    public void setConfigToggleGroup(ToggleGroup configToggleGroup) {
+        this.configToggleGroup = configToggleGroup;
+    }
+
+    public ToggleGroup getConfigToggleGroup() {
+        return configToggleGroup;
+    }
 }
