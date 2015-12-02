@@ -99,6 +99,7 @@ import java.nio.file.attribute.PosixFilePermission;
 import java.security.CodeSource;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -893,7 +894,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                     if (Objects.nonNull(configToggleGroup)) {
                         final ObservableList<Toggle> toggles = configToggleGroup.getToggles();
                         if (!toggles.isEmpty()) {
-                            ((ToggleButton)toggles.get(0)).fire();
+                            ((ToggleButton) toggles.get(0)).fire();
                         }
                     }
 
@@ -1916,9 +1917,11 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     }
 
     private AtomicReference<Tuple<String, String>> latestTupleReference = new AtomicReference<>();
-    private AtomicBoolean tupleConsumed = new AtomicBoolean(false);
+    private Semaphore renderLoopSemaphore = new Semaphore(1);
 
-    private void renderLoop() {
+    private void renderLoop() throws InterruptedException {
+
+        renderLoopSemaphore.acquire();
 
         if (stopRendering.get()) {
             return;
@@ -1928,12 +1931,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
         if (Objects.isNull(tuple))
             return;
-
-        if (!tupleConsumed.getAndSet(true)) {
-            tupleConsumed.set(true);
-        } else {
-            return;
-        }
 
         String text = tuple.getKey();
         String mode = tuple.getValue();
@@ -2015,7 +2012,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     @WebkitCall(from = "editor")
     public void textListener(String text, String mode) {
         latestTupleReference.set(new Tuple<>(text, mode));
-        tupleConsumed.set(false);
+        renderLoopSemaphore.release();
     }
 
     @WebkitCall(from = "asciidoctor-odf.js")
