@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 import java.nio.file.*;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 import static java.nio.file.StandardWatchEventKinds.*;
 
@@ -91,7 +92,9 @@ public class FileWatchService {
                     }
 
                     if (updateFsView) {
-                        fileBrowseService.browse(lastWatchedPath);
+                        threadService.buff("watchService").schedule(() -> {
+                            fileBrowseService.browse(lastWatchedPath);
+                        }, 500, TimeUnit.MILLISECONDS);
                     }
 
                 }

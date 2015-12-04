@@ -18,7 +18,6 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -52,39 +51,25 @@ public class FileBrowseService {
     }
 
     public void browse(final Path path) {
+        threadService.runActionLater(() -> {
 
-        threadService.buff("fileBrowse")
-                .schedule(() -> {
-                    threadService.runActionLater(() -> {
+            this.treeView = controller.getFileSystemView();
 
-                        this.treeView = controller.getFileSystemView();
+            int selectedIndex = treeView.getSelectionModel().getSelectedIndex();
+            if (selectedIndex != -1)
+                lastSelectedItem = selectedIndex;
 
-                        int selectedIndex = treeView.getSelectionModel().getSelectedIndex();
-                        if (selectedIndex != -1)
-                            lastSelectedItem = selectedIndex;
+            rootItem = new TreeItem<>(new Item(path, String.format("Loading... (%s)", Optional.of(path).map(Path::getFileName).orElse(path))), awesomeService.getIcon(path));
+            rootItem.setExpanded(true);
 
-                        rootItem = new TreeItem<>(new Item(path, String.format("Loading... (%s)", Optional.of(path).map(Path::getFileName).orElse(path))), awesomeService.getIcon(path));
-                        rootItem.setExpanded(true);
+            treeView.setRoot(rootItem);
 
-                        treeView.setRoot(rootItem);
+            threadService.runTaskLater((() -> {
+                this.addPathToTree(path);
+            }));
 
-                        threadService.runTaskLater(() -> {
-
-                            this.addPathToTree(path);
-
-                            if (Objects.nonNull(lastSelectedItem)) {
-                                threadService.runActionLater(() -> {
-                                    treeView.getSelectionModel().select(lastSelectedItem);
-                                });
-                            }
-
-                            logger.debug("Filesystem Tree relisted for {}", path);
-                        });
-
-                    }, true);
-                }, 500, TimeUnit.MILLISECONDS);
+        }, true);
     }
-
 
     public void addPathToTree(Path path) {
 
@@ -92,8 +77,6 @@ public class FileBrowseService {
 
             List<TreeItem<Item>> subItemList = StreamSupport
                     .stream(directoryStream.spliterator(), false)
-                    .filter(p -> !pathResolver.isHidden(p))
-                    .filter(pathResolver::isViewable)
                     .sorted(pathOrder::comparePaths)
                     .map(p -> new TreeItem<>(new Item(p), awesomeService.getIcon(p)))
                     .collect(Collectors.toList());
@@ -103,12 +86,19 @@ public class FileBrowseService {
                 rootItem.setExpanded(true);
                 rootItem.getChildren().addAll(subItemList);
                 controller.getFileSystemView().setRoot(rootItem);
+
+                if (Objects.nonNull(lastSelectedItem)) {
+                    threadService.runActionLater(() -> {
+                        treeView.getSelectionModel().select(lastSelectedItem);
+                    }, true);
+                }
             }, true);
+
+            logger.debug("Filesystem Tree relisted for {}", path);
 
         } catch (Exception e) {
             logger.error("Problem occured while updating WorkDir panel", e);
         }
-
 
     }
 
