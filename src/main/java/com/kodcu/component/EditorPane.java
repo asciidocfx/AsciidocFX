@@ -12,10 +12,10 @@ import com.kodcu.service.ui.TabService;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.Event;
-import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.input.Dragboard;
@@ -88,6 +88,7 @@ public class EditorPane extends AnchorPane {
         this.handleReadyTasks = FXCollections.observableArrayList();
         this.parserService = parserService;
         this.webView = new WebView();
+        this.ready.addListener(this::afterEditorReady);
         webEngine().setConfirmHandler(this::handleConfirm);
         initializeMargins();
         initializeEditorContextMenus();
@@ -95,19 +96,12 @@ public class EditorPane extends AnchorPane {
 
     private Boolean handleConfirm(String param) {
         if ("command:ready".equals(param)) {
-            handleEditorReady();
-            ObservableList<Runnable> runnables = FXCollections.observableArrayList(handleReadyTasks);
-            handleReadyTasks.clear();
-            for (Runnable runnable : runnables) {
-                runnable.run();
-            }
-            ready.setValue(true);
-            updatePreviewUrl();
+            afterEditorLoaded();
         }
         return false;
     }
 
-    private void handleEditorReady() {
+    private void afterEditorLoaded() {
         getWindow().setMember("afx", controller);
         updateOptions();
 
@@ -120,17 +114,33 @@ public class EditorPane extends AnchorPane {
                     setInitialized();
                     setEditorValue(content);
                     resetUndoManager();
+                    ready.setValue(true);
                 });
             });
         } else {
             setInitialized();
             setEditorValue(initialEditorValue);
             resetUndoManager();
+            ready.setValue(true);
         }
 
         this.getChildren().add(webView);
         webView.requestFocus();
     }
+
+    private void afterEditorReady(ObservableValue observable, boolean oldValue, boolean newValue) {
+        if (newValue) {
+            ObservableList<Runnable> runnables = FXCollections.observableArrayList(handleReadyTasks);
+            handleReadyTasks.clear();
+            for (Runnable runnable : runnables) {
+                runnable.run();
+            }
+
+            updatePreviewUrl();
+        }
+    }
+
+    ;
 
     public void updatePreviewUrl() {
         threadService.runActionLater(() -> {
