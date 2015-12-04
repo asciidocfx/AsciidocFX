@@ -9,9 +9,6 @@ myWorker.onmessage = function (e) {
     else if (data.type == "afx") {
         afx[data.func].apply(afx, data.parameters);
     }
-    else {
-        afx.completeWebWorker(data);
-    }
 
 };
 

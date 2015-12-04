@@ -2,26 +2,23 @@ function getOption(options) {
     return Opal.hash(JSON.parse(options));
 }
 
+var fillOutAction = new BufferedAction();
 function convertBackend(taskId, content, options) {
 
     var doc = Opal.Asciidoctor.$load(content, getOption(options));
     var rendered = doc.$convert();
 
-    var result = {
-        taskId: taskId,
-        rendered: rendered,
-        doctype: doc.doctype,
-        backend: doc.$backend()
-    };
-
-    self.postMessage(JSON.stringify(result));
+    self.postMessage(JSON.stringify({
+        type: "afx",
+        func: "completeWebWorker",
+        parameters: [taskId, rendered, doc.$backend(), doc.doctype]
+    }));
 
     fillOutAction.buff(function () {
         fillOutlines(doc);
     }, 1000);
 }
 
-var fillOutAction = new BufferedAction();
 function convertAsciidoc(taskId, content, options) {
 
     convertBackend(taskId, content, options);

@@ -28,7 +28,6 @@ importScripts("/afx/resource/js/asciidoctor-deck.js");
 importScripts("/afx/resource/js/outliner.js");
 importScripts("/afx/resource/js/webworker-converters.js");
 
-var buff = new BufferedAction();
 var lastTaskId = "";
 self.onmessage = function (e) {
     try {
@@ -42,10 +41,7 @@ self.onmessage = function (e) {
         lastTaskId = taskId || "";
 
         if (func && func in self) {
-
-            buff.buff(function () {
-                self[func](taskId, content, options);
-            }, 10);
+            self[func](taskId, content, options);
         }
 
     }

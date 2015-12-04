@@ -1893,21 +1893,30 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     public void completeWebWorkerExceptionally(Object message, Object taskId) {
         threadService.runTaskLater(() -> {
             final Map<String, CompletableFuture<ConverterResult>> workerTasks = asciidocWebkitConverter.getWebWorkerTasks();
-            final CompletableFuture<ConverterResult> completableFuture = workerTasks.get(taskId);
-            if (!completableFuture.isDone()) {
-                completableFuture.completeExceptionally(new RuntimeException(String.format("Task: %s is not completed - %s", taskId, message)));
-            }
+            Optional.ofNullable(workerTasks.get(taskId))
+                    .filter(c -> !c.isDone())
+                    .ifPresent(c -> {
+                        c.completeExceptionally(new RuntimeException(String.format("Task: %s is not completed - %s", taskId, message)));
+                    });
+            workerTasks.remove(taskId);
         });
     }
 
 
     @WebkitCall(from = "converter.js")
-    public void completeWebWorker(JSObject object) {
+    public void completeWebWorker(String taskId, String rendered, String backend, String doctype) {
         threadService.runTaskLater(() -> {
-            final ConverterResult converterResult = new ConverterResult(object);
+            final ConverterResult converterResult = new ConverterResult(taskId, rendered, backend, doctype);
             final Map<String, CompletableFuture<ConverterResult>> workerTasks = asciidocWebkitConverter.getWebWorkerTasks();
             final CompletableFuture<ConverterResult> completableFuture = workerTasks.get(converterResult.getTaskId());
-            completableFuture.complete(converterResult);
+
+            Optional.ofNullable(completableFuture)
+                    .filter(c -> !c.isDone())
+                    .ifPresent(c -> {
+                        c.complete(converterResult);
+                    });
+
+            workerTasks.remove(converterResult.getTaskId());
         });
     }
 
@@ -2012,7 +2021,9 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     @WebkitCall(from = "editor")
     public void textListener(String text, String mode) {
         latestTupleReference.set(new Tuple<>(text, mode));
-        renderLoopSemaphore.release();
+        if (renderLoopSemaphore.hasQueuedThreads()) {
+            renderLoopSemaphore.release();
+        }
     }
 
     @WebkitCall(from = "asciidoctor-odf.js")
