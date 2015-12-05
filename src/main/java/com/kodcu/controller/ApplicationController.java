@@ -878,7 +878,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
         IntStream.of(10, 25, 50, 100)
                 .forEach(unit -> {
-                    final MenuItem menuItem = MenuItemBuilt.item("$ " + unit)
+                    final MenuItem menuItem = MenuItemBuilt.item("€ "+unit)
                             .click(event -> {
                                 browseInDesktop(String.format(donationUrl, unit));
                             });

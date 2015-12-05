@@ -2,7 +2,7 @@
 :experimental:
 :toc:
 :toc-placement: left
-:asciifocfx-version: 1.4.2
+:asciifocfx-version: 1.4.3
 :download-root: https://github.com/asciidocfx/AsciidocFX/releases/download/v{asciifocfx-version}/
 
 image:https://api.travis-ci.org/asciidocfx/AsciidocFX.svg?branch=master[Build Status,link="https://travis-ci.org/asciidocfx/AsciidocFX"]
