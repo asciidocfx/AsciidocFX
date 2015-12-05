@@ -64,6 +64,7 @@ public class EditorPane extends AnchorPane {
     private String initialEditorValue = "";
     private Path path;
     private FileTime lastModifiedTime;
+    private static String lastInterPath;
     private final String escapeBackSlash = "(?<!\\\\)"; // ignores if word started with \
     private final String ignoreSuffix = "(?<!\\\\)"; // ignores if word started with \
     private final BooleanProperty ready = new SimpleBooleanProperty(false);
@@ -140,16 +141,26 @@ public class EditorPane extends AnchorPane {
         }
     }
 
-    ;
-
     public void updatePreviewUrl() {
+        final String interPath = directoryService.interPath(path);
+
+        final boolean isSameInterPath = Optional.ofNullable(interPath)
+                .filter(i -> !i.isEmpty())
+                .filter(i -> i.equals(lastInterPath))
+                .isPresent();
+
+        if (isSameInterPath) {
+            this.rerender();
+            return;
+        }
+
         threadService.runActionLater(() -> {
             if (is("asciidoc") || is("markdown")) {
                 applicationContext.getBean(HtmlPane.class)
-                        .load(String.format(previewUrl, controller.getPort(), directoryService.interPath(path)));
+                        .load(String.format(previewUrl, controller.getPort(), lastInterPath = interPath));
             } else if (is("html")) {
                 applicationContext.getBean(LiveReloadPane.class)
-                        .load(String.format(liveUrl, controller.getPort(), directoryService.interPath(path)));
+                        .load(String.format(liveUrl, controller.getPort(), lastInterPath = interPath));
             }
         }, true);
     }
