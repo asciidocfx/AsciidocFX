@@ -1,10 +1,10 @@
 package com.kodcu.boot;
 
 import com.kodcu.commandline.AfxUsageFormatter;
-import com.kodcu.controller.ApplicationController;
+import com.kodcu.commandline.CmdlineStarter;
 import de.tototec.cmdoption.CmdlineParser;
 import de.tototec.cmdoption.CmdlineParserException;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import javafx.application.Application;
 
 /**
  * Created by Hakan on 12/6/2015.
@@ -22,52 +22,27 @@ public class AppEntrance {
             System.exit(1);
         }
 
-        if (controlArgs(config, cp))
-            AppStarter.launch(args);
+        if (controlFlags(config, cp))
+            new CmdlineStarter(config, cp).start();
         else
-            new CmdLineStart(config,cp).start();
+            Application.launch(AppStarter.class, args);
     }
 
-    private static boolean controlArgs(CmdlineConfig config, CmdlineParser cp) {
+    private static boolean controlFlags(CmdlineConfig config, CmdlineParser cp) {
         cp.setProgramName("asciidocfx");
-        cp.setAboutLine("\nThe asciidocfx command line interface (CLI) converts the AsciiDoc source file to HTML5, DocBook 5, PDF, ODT, MARKDOWN, DESKJS, and REVEALJS.\n" +
+        cp.setAboutLine("\nAsciidocFX 1.4.2\nThe asciidocfx command line interface (CLI) converts the AsciiDoc source file to HTML5, DocBook 5, PDF, ODT, MARKDOWN, DESKJS, and REVEALJS.\n" +
                 "By default, the output is written to a file with the basename of the source file and the appropriate extension.\n" +
                 "Example: asciidocfx -b html5 source.adoc\n" +
                 "Or you can specify a destination path along with an appropriate extension and an out file\n" +
                 "Example: asciidocfx -b pdf -d /path/to/dest -o pdfsource.pdf source.adoc");
         cp.setUsageFormatter(new AfxUsageFormatter(true, 160));
 
-        if (config.help) {
+        if (config.help || config.version) {
             cp.usage();
-            return false;
+            System.exit(0);
         }
 
-        if (config.version){
-            cp.setAboutLine("AsciidocFX 1.4.2");
-            return false;
-        }
-
-        return !((config.backend.size() != 0 && config.files.size() != 0 ) || config.destination.size() != 0 || config.output.size() != 0);
+        return (config.backend.size() != 0 && config.files.size() != 0);
     }
 
-    private static class CmdLineStart {
-
-        private CmdlineConfig config;
-        private CmdlineParser cp;
-
-        public CmdLineStart(CmdlineConfig config, CmdlineParser cp) {
-            this.config = config;
-            this.cp = cp;
-        }
-
-
-        public void start() {
-            final AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext(SpringCoreConfig.class);
-//            ctx.register(SpringAppConfig.class);
-//            ctx.refresh();
-//            ApplicationController pdf = ctx.getBean(ApplicationController.class);
-//            controller = ctx.getBean(ApplicationController.class);
-            System.out.println("gmmm");
-        }
-    }
 }
