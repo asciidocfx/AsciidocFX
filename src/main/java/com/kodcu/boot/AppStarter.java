@@ -5,7 +5,6 @@ import com.kodcu.controller.ApplicationController;
 import com.kodcu.service.ThreadService;
 import com.kodcu.service.ui.TabService;
 import de.tototec.cmdoption.CmdlineParser;
-import de.tototec.cmdoption.CmdlineParserException;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
@@ -46,18 +45,7 @@ public class AppStarter extends Application {
 
         final CmdlineConfig config = new CmdlineConfig();
         final CmdlineParser cp = new CmdlineParser(config);
-
-        try {
-            cp.parse(getParameters().getRaw().toArray(new String[0]));
-        } catch (final CmdlineParserException e) {
-            System.err.println("Invalid commandline given: " + e.getMessage());
-            System.exit(1);
-        }
-
-        if (config.help) {
-            cp.usage();
-            System.exit(0);
-        }
+        cp.parse(getParameters().getRaw().toArray(new String[0]));
 
         try {
             startApp(stage, config);
@@ -200,8 +188,8 @@ public class AppStarter extends Application {
      *
      * @param args the command line arguments
      */
-    public static void main(String[] args) {
-        launch(args);
-    }
+//    public static void main(String[] args) {
+//        launch(args);
+//    }
 
 }
