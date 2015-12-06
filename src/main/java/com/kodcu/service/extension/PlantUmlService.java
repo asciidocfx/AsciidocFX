@@ -80,7 +80,7 @@ public class PlantUmlService {
 
                     Files.createDirectories(path.resolve(imagesDir));
 
-                    IOHelper.writeToFile(umlPath, os.toByteArray(), CREATE, WRITE, TRUNCATE_EXISTING);
+                    IOHelper.writeToFile(umlPath, os.toByteArray(), CREATE, WRITE, TRUNCATE_EXISTING,SYNC);
 
                     logger.debug("UML extension is ended for {}", imageTarget);
 

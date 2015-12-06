@@ -15,6 +15,7 @@ import org.apache.fop.apps.FopFactory;
 import org.apache.fop.cli.InputHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.xml.transform.Source;
 import javax.xml.transform.TransformerException;
@@ -67,7 +68,7 @@ public abstract class AbstractPdfConverter implements DocumentConverter<String> 
                         try {
                             if (href.charAt(0) == '/') href = "file:" + href;
                             //logger.debug("href = " + href);
-                            Path path = Paths.get(URI.create(href));
+                            Path path = Paths.get(UriComponentsBuilder.fromUriString(href).build().toUri());
                             if (!Files.exists(path)) {
 
                                 Path tryThis = currentTabPathDir.resolve(path.subpath(0, path.getNameCount()));

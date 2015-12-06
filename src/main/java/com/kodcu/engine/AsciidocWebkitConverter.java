@@ -18,12 +18,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.json.JsonObject;
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Optional;
+import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
-import java.util.stream.Stream;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by usta on 09.04.2015.
@@ -36,6 +37,8 @@ public class AsciidocWebkitConverter extends ViewPanel implements AsciidocConver
     private final DocbookConfigBean docbookConfigBean;
     private final HtmlConfigBean htmlConfigBean;
     private final AsciidocConfigMerger configMerger;
+
+    private final Map<String, CompletableFuture<ConverterResult>> webWorkerTasks = new ConcurrentHashMap();
 
     @Value("${application.index.url}")
     private String indexUrl;
@@ -58,18 +61,14 @@ public class AsciidocWebkitConverter extends ViewPanel implements AsciidocConver
         return webView;
     }
 
-    public String getTemplate(String templateName, String templateDir) throws IOException {
+    public String getTemplate(String templateDir) {
 
-        Stream<Path> slide = Files.find(controller.getConfigPath().resolve("slide/templates").resolve(templateDir), Integer.MAX_VALUE, (path, basicFileAttributes) -> path.toString().contains(templateName));
+        Path path = controller.getConfigPath().resolve("slide/templates").resolve(templateDir);
 
-        Optional<Path> first = slide.findFirst();
-
-        if (!first.isPresent()) {
-            logger.error("Template name : {} not found in {}", templateName, templateDir);
+        if (Files.notExists(path)) {
+            logger.error("Template not found in {}", path);
             return "";
         }
-
-        Path path = first.get();
 
         String template = IOHelper.readFile(path);
         return template;
@@ -145,28 +144,27 @@ public class AsciidocWebkitConverter extends ViewPanel implements AsciidocConver
 
     protected ConverterResult convert(String functionName, String asciidoc, JsonObject config) {
 
-        if (!Platform.isFxApplicationThread()) {
-            final CompletableFuture<ConverterResult> completableFuture = new CompletableFuture<>();
-            completableFuture.runAsync(() -> {
-                threadService.runActionLater(() -> {
-                    try {
-                        ConverterResult converterResult = convert(functionName, asciidoc, config);
-                        completableFuture.complete(converterResult);
-                    } catch (Exception e) {
-                        completableFuture.completeExceptionally(e);
-                    }
-                });
-            }, threadService.executor());
+        final CompletableFuture<ConverterResult> completableFuture = new CompletableFuture();
+        final String taskId = UUID.randomUUID().toString();
 
-            return completableFuture.join();
+        webWorkerTasks.put(taskId, completableFuture);
+        final String conf = config.toString();
+        threadService.runActionLater(() -> {
+            this.setMember("taskId", taskId);
+            this.setMember("editorValue", asciidoc);
+            this.setMember("editorOptions", conf);
+            try {
+                webEngine().executeScript(String.format("%s(taskId,editorValue,editorOptions)", functionName));
+            } catch (Exception e) {
+                completableFuture.completeExceptionally(e);
+            }
+        });
+
+        try {
+            return completableFuture.get(60, TimeUnit.SECONDS);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
-
-        this.setMember("editorValue", asciidoc);
-        this.setMember("editorOptions", config.toString());
-        JSObject result = (JSObject) webEngine().executeScript(String.format("%s(editorValue,editorOptions)", functionName));
-        ConverterResult converterResult = new ConverterResult(result);
-
-        return converterResult;
     }
 
     private JsonObject updateConfig(String asciidoc, JsonObject config) {
@@ -191,6 +189,10 @@ public class AsciidocWebkitConverter extends ViewPanel implements AsciidocConver
     @Override
     public void convertOdf(String asciidoc) {
         convert("convertOdf", asciidoc, updateConfig(asciidoc, odfConfigBean.getJSON()));
+    }
+
+    public Map<String, CompletableFuture<ConverterResult>> getWebWorkerTasks() {
+        return webWorkerTasks;
     }
 
     public boolean isHtml(String text) {

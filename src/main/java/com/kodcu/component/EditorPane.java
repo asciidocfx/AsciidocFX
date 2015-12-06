@@ -12,6 +12,7 @@ import com.kodcu.service.ui.TabService;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.Event;
@@ -63,6 +64,7 @@ public class EditorPane extends AnchorPane {
     private String initialEditorValue = "";
     private Path path;
     private FileTime lastModifiedTime;
+    private static String lastInterPath;
     private final String escapeBackSlash = "(?<!\\\\)"; // ignores if word started with \
     private final String ignoreSuffix = "(?<!\\\\)"; // ignores if word started with \
     private final BooleanProperty ready = new SimpleBooleanProperty(false);
@@ -87,6 +89,7 @@ public class EditorPane extends AnchorPane {
         this.handleReadyTasks = FXCollections.observableArrayList();
         this.parserService = parserService;
         this.webView = new WebView();
+        this.ready.addListener(this::afterEditorReady);
         webEngine().setConfirmHandler(this::handleConfirm);
         initializeMargins();
         initializeEditorContextMenus();
@@ -94,19 +97,12 @@ public class EditorPane extends AnchorPane {
 
     private Boolean handleConfirm(String param) {
         if ("command:ready".equals(param)) {
-            handleEditorReady();
-            ObservableList<Runnable> runnables = FXCollections.observableArrayList(handleReadyTasks);
-            handleReadyTasks.clear();
-            for (Runnable runnable : runnables) {
-                runnable.run();
-            }
-            ready.setValue(true);
-            updatePreviewUrl();
+            afterEditorLoaded();
         }
         return false;
     }
 
-    private void handleEditorReady() {
+    private void afterEditorLoaded() {
         getWindow().setMember("afx", controller);
         updateOptions();
 
@@ -119,26 +115,52 @@ public class EditorPane extends AnchorPane {
                     setInitialized();
                     setEditorValue(content);
                     resetUndoManager();
+                    ready.setValue(true);
                 });
             });
         } else {
             setInitialized();
             setEditorValue(initialEditorValue);
             resetUndoManager();
+            ready.setValue(true);
         }
 
         this.getChildren().add(webView);
         webView.requestFocus();
     }
 
+    private void afterEditorReady(ObservableValue observable, boolean oldValue, boolean newValue) {
+        if (newValue) {
+            ObservableList<Runnable> runnables = FXCollections.observableArrayList(handleReadyTasks);
+            handleReadyTasks.clear();
+            for (Runnable runnable : runnables) {
+                runnable.run();
+            }
+
+            updatePreviewUrl();
+        }
+    }
+
     public void updatePreviewUrl() {
+        final String interPath = directoryService.interPath(path);
+
+        final boolean isSameInterPath = Optional.ofNullable(interPath)
+                .filter(i -> !i.isEmpty())
+                .filter(i -> i.equals(lastInterPath))
+                .isPresent();
+
+        if (isSameInterPath) {
+            this.rerender();
+            return;
+        }
+
         threadService.runActionLater(() -> {
             if (is("asciidoc") || is("markdown")) {
                 applicationContext.getBean(HtmlPane.class)
-                        .load(String.format(previewUrl, controller.getPort(), directoryService.interPath(path)));
+                        .load(String.format(previewUrl, controller.getPort(), lastInterPath = interPath));
             } else if (is("html")) {
                 applicationContext.getBean(LiveReloadPane.class)
-                        .load(String.format(liveUrl, controller.getPort(), directoryService.interPath(path)));
+                        .load(String.format(liveUrl, controller.getPort(), lastInterPath = interPath));
             }
         }, true);
     }
@@ -233,8 +255,8 @@ public class EditorPane extends AnchorPane {
 
         if (Objects.nonNull(lineno)) {
 
-            ViewPanel node = (ViewPanel) controller.getPreviewTab().getContent();
-            node.disableScrollingAndJumping();
+            ViewPanel viewPanel = controller.getRightShowerHider().getShowing();
+            viewPanel.disableScrollingAndJumping();
 
             try {
                 webEngine().executeScript(String.format("editor.gotoLine(%d,3,false)", (lineno)));
@@ -243,7 +265,8 @@ public class EditorPane extends AnchorPane {
                 logger.error("Error occured while moving cursor to line {}", lineno);
             }
 
-            node.enableScrollingAndJumping();
+            viewPanel.enableScrollingAndJumping();
+
         }
     }
 

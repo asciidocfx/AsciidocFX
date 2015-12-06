@@ -141,7 +141,9 @@ public abstract class AsciidoctorConfigBase extends ConfigurationBase {
     public FXForm getConfigForm() {
         FXForm configForm = new FXFormBuilder<>()
                 .resourceBundle(ResourceBundle.getBundle("asciidoctorConfig"))
-                .includeAndReorder("jsPlatform", "attributes").build();
+                .includeAndReorder(
+//                        "jsPlatform",
+                        "attributes").build();
 
         return configForm;
     }

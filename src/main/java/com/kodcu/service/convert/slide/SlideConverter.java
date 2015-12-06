@@ -1,6 +1,5 @@
 package com.kodcu.service.convert.slide;
 
-import com.kodcu.component.PreviewTab;
 import com.kodcu.component.SlidePane;
 import com.kodcu.controller.ApplicationController;
 import com.kodcu.other.Current;
@@ -58,11 +57,9 @@ public class SlideConverter {
 
             this.rendered = rendered;
 
-            PreviewTab previewTab = controller.getPreviewTab();
-
             String url = String.format(slideUrl, controller.getPort(), directoryService.interPath());
 
-            if (previewTab.getContent() != slidePane || !url.equals(slidePane.getLocation())) {
+            if (controller.rightShowerHider.getShowing() != slidePane || !url.equals(slidePane.getLocation())) {
                 slidePane.load(url);
             } else {
                 threadService.runActionLater(() -> {

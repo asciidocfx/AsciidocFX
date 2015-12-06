@@ -377,10 +377,9 @@ public class TabService {
 
     public void addImageTab(Path imagePath) {
 
-        TabPane previewTabPane = controller.getPreviewTabPane();
-
         ImageTab tab = new ImageTab(imagePath);
 
+        final TabPane previewTabPane = controller.getTabPane();
         if (previewTabPane.getTabs().contains(tab)) {
             previewTabPane.getSelectionModel().select(tab);
             return;
@@ -404,7 +403,7 @@ public class TabService {
         scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
         scrollPane.setContent(imageView);
         scrollPane.addEventFilter(ScrollEvent.SCROLL, e -> {
-            if (e.isControlDown() && e.getDeltaY() > 0) {
+            if (e.isShortcutDown() && e.getDeltaY() > 0) {
                 // zoom in
                 imageView.setFitWidth(imageView.getFitWidth() + 16.0);
             } else if (e.isControlDown() && e.getDeltaY() < 0) {
@@ -426,6 +425,7 @@ public class TabService {
         tabPane.setOnMouseReleased(event -> {
             Optional.ofNullable(itemProperty)
                     .map(ObservableObjectValue::get)
+                    .filter(e-> e instanceof MyTab)
                     .map(e -> (MyTab) e)
                     .map(MyTab::getEditorPane)
                     .ifPresent(EditorPane::focus);
@@ -433,6 +433,7 @@ public class TabService {
 
         itemProperty.addListener((observable, oldValue, selectedTab) -> {
             Optional.ofNullable(selectedTab)
+                    .filter(e-> e instanceof MyTab)
                     .map(e -> (MyTab) e)
                     .map(MyTab::getEditorPane)
                     .filter(EditorPane::getReady)

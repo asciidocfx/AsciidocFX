@@ -150,12 +150,11 @@ public class GitbookToAsciibookService {
 
         markdownFileList.forEach(IOHelper::deleteIfExists);
 
-        directoryService.changeWorkigDir(asciibookDir);
-
         threadService.runActionLater(() -> {
             tabService.addTab(asciibookDir.resolve("SUMMARY.adoc"));
         });
 
+        directoryService.changeWorkigDir(asciibookDir);
 
     }
 

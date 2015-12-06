@@ -38,6 +38,7 @@ public class FileBrowseService {
     private TreeItem<Item> rootItem;
 
     private Integer lastSelectedItem;
+    private TreeView<Item> treeView;
 
     @Autowired
     public FileBrowseService(final PathOrderService pathOrder, final ThreadService threadService, final PathResolverService pathResolver,
@@ -50,12 +51,9 @@ public class FileBrowseService {
     }
 
     public void browse(final Path path) {
-
         threadService.runActionLater(() -> {
 
-            controller.getWorkDirTabPane().getSelectionModel().selectFirst(); // fix
-
-            TreeView<Item> treeView = controller.getFileSystemView();
+            this.treeView = controller.getFileSystemView();
 
             int selectedIndex = treeView.getSelectionModel().getSelectedIndex();
             if (selectedIndex != -1)
@@ -66,22 +64,12 @@ public class FileBrowseService {
 
             treeView.setRoot(rootItem);
 
-            threadService.runTaskLater(() -> {
-
+            threadService.runTaskLater((() -> {
                 this.addPathToTree(path);
-
-                if (Objects.nonNull(lastSelectedItem)) {
-                    threadService.runActionLater(() -> {
-                        treeView.getSelectionModel().select(lastSelectedItem);
-                    });
-                }
-
-                logger.debug("Filesystem Tree relisted for {}", path);
-            });
+            }));
 
         }, true);
     }
-
 
     public void addPathToTree(Path path) {
 
@@ -89,8 +77,6 @@ public class FileBrowseService {
 
             List<TreeItem<Item>> subItemList = StreamSupport
                     .stream(directoryStream.spliterator(), false)
-                    .filter(p -> !pathResolver.isHidden(p))
-                    .filter(pathResolver::isViewable)
                     .sorted(pathOrder::comparePaths)
                     .map(p -> new TreeItem<>(new Item(p), awesomeService.getIcon(p)))
                     .collect(Collectors.toList());
@@ -100,12 +86,19 @@ public class FileBrowseService {
                 rootItem.setExpanded(true);
                 rootItem.getChildren().addAll(subItemList);
                 controller.getFileSystemView().setRoot(rootItem);
+
+                if (Objects.nonNull(lastSelectedItem)) {
+                    threadService.runActionLater(() -> {
+                        treeView.getSelectionModel().select(lastSelectedItem);
+                    }, true);
+                }
             }, true);
+
+            logger.debug("Filesystem Tree relisted for {}", path);
 
         } catch (Exception e) {
             logger.error("Problem occured while updating WorkDir panel", e);
         }
-
 
     }
 

@@ -62,9 +62,8 @@ public class ShellTab extends Tab {
         directoryField.setMinWidth(0);
         directoryField.setPrefColumnCount(0);
         directoryField.setEditable(false);
-        directoryField.textProperty().addListener((observable, oldValue, newValue) -> {
-            directoryField.setPrefColumnCount(directoryField.getText().length() + 1);
-        });
+
+        directoryField.prefColumnCountProperty().bind(directoryField.lengthProperty().add(1));
 
         ContextMenu contextMenu = new ContextMenu();
         MenuItem newTab = new MenuItem("New");
@@ -79,6 +78,9 @@ public class ShellTab extends Tab {
 
         contextMenu.getItems().addAll(newTab, closeTab, closeOthers, closeAll);
         this.setContextMenu(contextMenu);
+
+        textField.setStyle("-fx-background-color: seashell;");
+        directoryField.setStyle("-fx-background-color: seashell;");
 
         HBox horizontal = new HBox(directoryField, textField);
         HBox.setHgrow(textField, Priority.ALWAYS);
@@ -151,7 +153,7 @@ public class ShellTab extends Tab {
 
     public void print(String text) {
 
-        threadService.runActionLater(() -> {
+        threadService.runActionFairlyLater(() -> {
                     if (text.contains(">") || text.contains("$")) {
                         String[] split = text.split(">|\\$", 2);
 
@@ -257,6 +259,8 @@ public class ShellTab extends Tab {
         threadService.start(() -> {
             errorReader.lines().forEach(this::print);
         });
+
+        focusCommandInput();
 
         process.waitFor();
     }

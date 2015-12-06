@@ -136,6 +136,8 @@ public class AppStarter extends Application {
 
         if (controller.getTabPane().getTabs().isEmpty())
             controller.newDoc();
+
+        controller.setHostServices(getHostServices());
     }
 
     private void registerStartupListener(CmdlineConfig config) {

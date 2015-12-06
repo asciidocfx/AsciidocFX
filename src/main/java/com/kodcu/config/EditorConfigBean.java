@@ -63,6 +63,8 @@ public class EditorConfigBean extends ConfigurationBase {
     private StringProperty terminalCharset = new SimpleStringProperty("UTF-8");
     private StringProperty terminalWinCommand = new SimpleStringProperty("cmd.exe");
     private StringProperty terminalNixCommand = new SimpleStringProperty("/bin/bash");
+    private BooleanProperty showDonate = new SimpleBooleanProperty(true);
+    private BooleanProperty validateDocbook = new SimpleBooleanProperty(true);
 
     private Logger logger = LoggerFactory.getLogger(EditorConfigBean.class);
 
@@ -250,6 +252,30 @@ public class EditorConfigBean extends ConfigurationBase {
         this.terminalWinCommand.set(terminalWinCommand);
     }
 
+    public boolean getShowDonate() {
+        return showDonate.get();
+    }
+
+    public BooleanProperty showDonateProperty() {
+        return showDonate;
+    }
+
+    public void setShowDonate(boolean showDonate) {
+        this.showDonate.set(showDonate);
+    }
+
+    public boolean getValidateDocbook() {
+        return validateDocbook.get();
+    }
+
+    public BooleanProperty validateDocbookProperty() {
+        return validateDocbook;
+    }
+
+    public void setValidateDocbook(boolean validateDocbook) {
+        this.validateDocbook.set(validateDocbook);
+    }
+
     @Override
     public String formName() {
         return "Editor Settings";
@@ -260,7 +286,7 @@ public class EditorConfigBean extends ConfigurationBase {
 
         FXForm editorConfigForm = new FXFormBuilder<>()
                 .resourceBundle(ResourceBundle.getBundle("editorConfig"))
-                .includeAndReorder("editorTheme", "fontFamily", "fontSize", "scrollSpeed", "useWrapMode", "wrapLimit", "showGutter", "defaultLanguage", "autoUpdate", "terminalWinCommand", "terminalNixCommand", "terminalCharset")
+                .includeAndReorder("showDonate", "validateDocbook", "editorTheme", "fontFamily", "fontSize", "scrollSpeed", "useWrapMode", "wrapLimit", "showGutter", "defaultLanguage", "autoUpdate", "terminalWinCommand", "terminalNixCommand", "terminalCharset")
                 .build();
 
         DefaultFactoryProvider editorConfigFormProvider = new DefaultFactoryProvider();
@@ -318,6 +344,8 @@ public class EditorConfigBean extends ConfigurationBase {
         String terminalWinCommand = jsonObject.getString("terminalWinCommand", "cmd.exe");
         String terminalNixCommand = jsonObject.getString("terminalNixCommand", "/bin/bash");
         String terminalCharset = jsonObject.getString("terminalCharset", "UTF-8");
+        boolean showDonate = jsonObject.getBoolean("showDonate", true);
+        final boolean validateDocbook = jsonObject.getBoolean("validateDocbook", true);
 
         IOHelper.close(jsonReader, fileReader);
 
@@ -333,6 +361,8 @@ public class EditorConfigBean extends ConfigurationBase {
             this.setTerminalWinCommand(terminalWinCommand);
             this.setTerminalNixCommand(terminalNixCommand);
             this.setTerminalCharset(terminalCharset);
+            this.setShowDonate(showDonate);
+            this.setValidateDocbook(validateDocbook);
 
             if (jsonObject.containsKey("scrollSpeed")) {
                 this.setScrollSpeed(jsonObject.getJsonNumber("scrollSpeed").doubleValue());
@@ -410,7 +440,9 @@ public class EditorConfigBean extends ConfigurationBase {
                 .add("autoUpdate", getAutoUpdate())
                 .add("terminalCharset", getTerminalCharset())
                 .add("terminalWinCommand", getTerminalWinCommand())
-                .add("terminalNixCommand", getTerminalNixCommand());
+                .add("terminalNixCommand", getTerminalNixCommand())
+                .add("showDonate", getShowDonate())
+                .add("validateDocbook", getValidateDocbook());
 
         return objectBuilder.build();
     }

@@ -1,4 +1,3 @@
-var imageCacheNumber = Math.floor(Math.random() * (999999999999 - 2)) + 1;
 var $placeholder = $("#placeholder");
 
 var clearCacheAction = new BufferedAction();
@@ -8,13 +7,10 @@ function clearImageCache(imageName) {
             var image = $(this);
             var srcAttr = image.attr("src");
             if (srcAttr) {
-                if (srcAttr.indexOf(imageName) != -1) {
-                    var cache = Math.floor(Math.random() * (999999999999 - 2)) + 1;
-                    image.attr("src", srcAttr.split("?")[0] + "?cache=" + cache);
-                }
+                    image.attr("src", srcAttr);
             }
         });
-    }, 200);
+    }, 500);
 }
 
 function imageToBase64Url() {
@@ -33,26 +29,13 @@ function updateBase64Url(index, base64) {
 }
 
 var hljsAction = new BufferedAction();
-var firstRefresh = true;
+
 function refreshUI(data) {
 
-    if (firstRefresh) {
-        firstRefresh = false;
-        var $data = $("<div></div>").append(data);
-        $data.find("img").each(function () {
-            var $image = $(this);
-            var attr = $image.attr("src");
-            if (attr)
-                $image.attr("src", attr + "?cache=" + imageCacheNumber);
-        });
-        $placeholder.html($data.html());
-    }
-    else {
-        $placeholder.html(data);
-    }
+    $placeholder.html(data);
 
     hljsAction.buff(function () {
-        $('pre').children("code").each(function () {
+        $placeholder.find('pre').children("code").each(function () {
             if (!$(this).hasClass("hljs")) {
                 hljs.highlightBlock(this);
             }

@@ -9,18 +9,16 @@ import java.util.function.Consumer;
  * Created by usta on 20.06.2015.
  */
 public class ConverterResult {
+    private String taskId;
     private String rendered;
     private String backend;
     private String doctype;
 
-    public ConverterResult(JSObject jsObject) {
-        String rendered = (String) jsObject.getMember("rendered");
-        String backend = (String) jsObject.getMember("backend");
-        String doctype = (String) jsObject.getMember("doctype");
-
-        setRendered(rendered);
-        setBackend(backend);
-        setDoctype(doctype);
+    public ConverterResult(String taskId, String rendered, String backend, String doctype) {
+        this.taskId = taskId;
+        this.rendered = rendered;
+        this.backend = backend;
+        this.doctype = doctype;
     }
 
     public ConverterResult(jdk.nashorn.api.scripting.JSObject jsObject) {
@@ -55,6 +53,14 @@ public class ConverterResult {
 
     public boolean isBackend(String backend) {
         return backend.equals(this.backend);
+    }
+
+    public String getTaskId() {
+        return taskId;
+    }
+
+    public void setTaskId(String taskId) {
+        this.taskId = taskId;
     }
 
     public void afterRender(Consumer<String> consumer, Runnable... runnable) {

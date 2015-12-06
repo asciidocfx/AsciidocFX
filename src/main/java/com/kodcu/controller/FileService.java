@@ -24,7 +24,7 @@ import java.util.zip.GZIPOutputStream;
 public class FileService {
 
     private static int DEFAULT_BUFFER_SIZE = 10240; // ..bytes = 10KB.
-    private static long DEFAULT_EXPIRE_TIME = 604800000L; // ..ms = 1 week.
+    private static long DEFAULT_EXPIRE_TIME = 1; // ..ms = 1 week.
     private static String MULTIPART_BOUNDARY = "MULTIPART_BYTERANGES";
 
     private Logger logger = LoggerFactory.getLogger(FileService.class);
@@ -66,7 +66,8 @@ public class FileService {
             // Do your thing if the file is not supplied to the request URL.
             // Throw an exception, or send 404, or show default/warning page, or just ignore it.
             response.setStatus(HttpServletResponse.SC_NO_CONTENT);
-            response.setDateHeader("Expires", 0);
+            response.setDateHeader("Expires", DEFAULT_EXPIRE_TIME);
+            response.setHeader("Cache-Control", String.format("public, max-age=%d", DEFAULT_EXPIRE_TIME));
             response.getWriter().close();
             return;
         }
@@ -86,9 +87,7 @@ public class FileService {
         // If-None-Match header should contain "*" or ETag. If so, then return 304.
         String ifNoneMatch = request.getHeader("If-None-Match");
         if (ifNoneMatch != null && matches(ifNoneMatch, eTag)) {
-            response.setStatus(HttpServletResponse.SC_NOT_MODIFIED);
-            response.setHeader("ETag", eTag); // Required in 304.
-            response.setDateHeader("Expires", expires); // Postpone cache with 1 week.
+            setNotModified(response, eTag, expires);
             return;
         }
 
@@ -96,9 +95,7 @@ public class FileService {
         // This header is ignored if any If-None-Match header is specified.
         long ifModifiedSince = request.getDateHeader("If-Modified-Since");
         if (ifNoneMatch == null && ifModifiedSince != -1 && ifModifiedSince + 1000 > lastModified) {
-            response.setStatus(HttpServletResponse.SC_NOT_MODIFIED);
-            response.setHeader("ETag", eTag); // Required in 304.
-            response.setDateHeader("Expires", expires); // Postpone cache with 1 week.
+            setNotModified(response, eTag, expires);
             return;
         }
 
@@ -216,6 +213,7 @@ public class FileService {
         response.setHeader("Accept-Ranges", "bytes");
         response.setHeader("ETag", eTag);
         response.setDateHeader("Last-Modified", lastModified);
+        response.setHeader("Cache-Control", String.format("public, max-age=%d", DEFAULT_EXPIRE_TIME));
         response.setDateHeader("Expires", expires);
 
 
@@ -298,6 +296,13 @@ public class FileService {
             close(output);
             close(input);
         }
+    }
+
+    private void setNotModified(HttpServletResponse response, String eTag, long expires) {
+        response.setStatus(HttpServletResponse.SC_NOT_MODIFIED);
+        response.setHeader("ETag", eTag); // Required in 304.
+        response.setDateHeader("Expires", expires); // Postpone cache with 1 week.
+        response.setHeader("Cache-Control", String.format("public, max-age=%d", DEFAULT_EXPIRE_TIME));
     }
 
     // Helpers (can be refactored to public utility class) ----------------------------------------
