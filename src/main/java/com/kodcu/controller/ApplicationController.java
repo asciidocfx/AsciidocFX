@@ -453,7 +453,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     }
 
     @WebkitCall(from = "asciidoctor-math")
-    public void math(String formula, String type, String imagesDir, String imageTarget) {
+    public void math(String formula, String type, String imagesDir, String imageTarget, String nodename) {
         mathJaxService.appendFormula(formula, imagesDir, imageTarget);
     }
 
@@ -878,7 +878,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
         IntStream.of(10, 25, 50, 100)
                 .forEach(unit -> {
-                    final MenuItem menuItem = MenuItemBuilt.item("€ "+unit)
+                    final MenuItem menuItem = MenuItemBuilt.item("€ " + unit)
                             .click(event -> {
                                 browseInDesktop(String.format(donationUrl, unit));
                             });
@@ -1813,22 +1813,26 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     }
 
     @WebkitCall(from = "asciidoctor-uml")
-    public void uml(String uml, String type, String imagesDir, String imageTarget) throws IOException {
-        plantuml(uml, type, imagesDir, imageTarget);
+    public void uml(String uml, String type, String imagesDir, String imageTarget, String nodename) throws IOException {
+        plantuml(uml, type, imagesDir, imageTarget, nodename);
     }
 
     @WebkitCall(from = "asciidoctor-uml")
-    public void plantuml(String uml, String type, String imagesDir, String imageTarget) throws IOException {
+    public void plantuml(String uml, String type, String imagesDir, String imageTarget, String nodename) throws IOException {
 
         threadService.runTaskLater(() -> {
-            plantUmlService.plantUml(uml, type, imagesDir, imageTarget);
+            plantUmlService.plantUml(uml, type, imagesDir, imageTarget, nodename);
         });
     }
 
-    @WebkitCall(from = "asciidoctor-ditaa")
-    public void ditaa(String ditaa, String type, String imagesDir, String imageTarget) throws IOException {
-        String plantUmlString = "@startditaa\n" + ditaa + "\n@endditaa\n";
-        this.plantuml(plantUmlString, type, imagesDir, imageTarget);
+    @WebkitCall(from = "asciidoctor-uml")
+    public void graphviz(String graphviz, String type, String imagesDir, String imageTarget, String nodename) throws IOException {
+        this.plantuml(graphviz, type, imagesDir, imageTarget, nodename);
+    }
+
+    @WebkitCall(from = "asciidoctor-uml")
+    public void ditaa(String ditaa, String type, String imagesDir, String imageTarget, String nodename) throws IOException {
+        this.plantuml(ditaa, type, imagesDir, imageTarget, nodename);
     }
 
     @WebkitCall(from = "asciidoctor-chart")
