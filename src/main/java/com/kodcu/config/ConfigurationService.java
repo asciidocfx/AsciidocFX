@@ -1,12 +1,9 @@
 package com.kodcu.config;
 
-import com.kodcu.component.PreviewTab;
 import com.kodcu.component.ToggleButtonBuilt;
 import com.kodcu.controller.ApplicationController;
 import com.kodcu.service.ThreadService;
-import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
-import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.Priority;
@@ -34,10 +31,11 @@ public class ConfigurationService {
     private final ApplicationController controller;
     private final StoredConfigBean storedConfigBean;
     private final ThreadService threadService;
+    private final SpellcheckConfigBean spellcheckConfigBean;
     private VBox configBox;
 
     @Autowired
-    public ConfigurationService(LocationConfigBean locationConfigBean, EditorConfigBean editorConfigBean, PreviewConfigBean previewConfigBean, HtmlConfigBean htmlConfigBean, OdfConfigBean odfConfigBean, DocbookConfigBean docbookConfigBean, ApplicationController controller, StoredConfigBean storedConfigBean, ThreadService threadService) {
+    public ConfigurationService(LocationConfigBean locationConfigBean, EditorConfigBean editorConfigBean, PreviewConfigBean previewConfigBean, HtmlConfigBean htmlConfigBean, OdfConfigBean odfConfigBean, DocbookConfigBean docbookConfigBean, ApplicationController controller, StoredConfigBean storedConfigBean, ThreadService threadService, SpellcheckConfigBean spellcheckConfigBean) {
         this.locationConfigBean = locationConfigBean;
         this.editorConfigBean = editorConfigBean;
         this.previewConfigBean = previewConfigBean;
@@ -47,6 +45,7 @@ public class ConfigurationService {
         this.controller = controller;
         this.storedConfigBean = storedConfigBean;
         this.threadService = threadService;
+        this.spellcheckConfigBean = spellcheckConfigBean;
     }
 
     public void loadConfigurations(Runnable... runnables) {
@@ -58,13 +57,16 @@ public class ConfigurationService {
         htmlConfigBean.load();
         odfConfigBean.load();
         docbookConfigBean.load();
+        spellcheckConfigBean.load();
 
         List<ConfigurationBase> configBeanList = Arrays.asList(editorConfigBean,
                 locationConfigBean,
                 previewConfigBean,
                 htmlConfigBean,
                 docbookConfigBean,
-                odfConfigBean);
+                odfConfigBean
+//                ,spellcheckConfigBean
+        );
 
         ScrollPane formsPane = new ScrollPane();
 

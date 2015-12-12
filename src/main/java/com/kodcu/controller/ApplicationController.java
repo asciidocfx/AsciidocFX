@@ -34,6 +34,7 @@ import com.kodcu.service.ui.IndikatorService;
 import com.kodcu.service.ui.TabService;
 import com.kodcu.service.ui.TooltipTimeFixService;
 import com.kodcu.shell.ShellTab;
+import com.kodcu.spell.dictionary.DictionaryService;
 import com.sun.javafx.stage.StageHelper;
 import de.jensd.fx.fontawesome.AwesomeDude;
 import de.jensd.fx.fontawesome.AwesomeIcon;
@@ -288,6 +289,12 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     @Autowired
     private ChartProvider chartProvider;
+
+    @Autowired
+    private DictionaryService dictionaryService;
+
+    @Autowired
+    private SpellcheckConfigBean spellcheckConfigBean;
 
     private Stage stage;
     private List<WebSocketSession> sessionList = new ArrayList<>();
@@ -2028,6 +2035,29 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         if (renderLoopSemaphore.hasQueuedThreads()) {
             renderLoopSemaphore.release();
         }
+    }
+
+    @WebkitCall(from = "editor")
+    public void checkWordSuggestions(String word) {
+        final List<String> stringList = dictionaryService.getSuggestionMap()
+                .getOrDefault(word, Arrays.asList());
+        current.currentEditor().showSuggestions(stringList);
+    }
+
+    @WebkitCall(from = "editor")
+    public void processTokens() {
+
+        if (spellcheckConfigBean.getDisableSpellCheck()) {
+            return;
+        }
+
+        final EditorPane editorPane = current.currentEditor();
+        final String tokenList = editorPane.tokenList();
+        final String mode = editorPane.editorMode();
+
+        threadService.runTaskLater(() -> {
+            dictionaryService.processTokens(editorPane, tokenList, mode);
+        });
     }
 
     @WebkitCall(from = "asciidoctor-odf.js")

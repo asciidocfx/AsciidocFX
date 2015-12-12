@@ -1,6 +1,8 @@
 var editor = ace.edit("editor");
 editor.renderer.setScrollMargin(10, 0, 10, 0);
 var modelist = ace.require("ace/ext/modelist");
+var range = ace.require("ace/range");
+var TokenIterator = ace.require("ace/token_iterator").TokenIterator;
 editor.renderer.setShowGutter(false);
 editor.setHighlightActiveLine(false);
 editor.getSession().setMode("ace/mode/asciidoc");
@@ -67,6 +69,8 @@ editor.getSession().on('changeScrollTop', function (scroll) {
             updateHtmlScroll();
         }
     }, 50);
+
+    checkSpelling();
 });
 
 var updateStatusAction = new BufferedAction();
@@ -96,7 +100,6 @@ editor.getSession().selection.on('changeCursor', function (e) {
 
 });
 
-var constructListAction = new BufferedAction();
 var renderAction = new BufferedAction();
 var editorChangeListener = function (obj) {
 
@@ -107,7 +110,52 @@ var editorChangeListener = function (obj) {
         afx.textListener(editor.getValue(), editorMode());
     }, 100);
 
+    checkSpelling();
+
 };
+
+function clearTypoMarkers() {
+    if (markers.length) {
+        var marker = markers.pop();
+        while (marker) {
+            editor.getSession().removeMarker(marker);
+            marker = markers.pop();
+        }
+    }
+}
+
+var spellcheckAction = new BufferedAction();
+function checkSpelling() {
+
+    clearTypoMarkers();
+    spellcheckAction.buff(function () {
+        afx.processTokens();
+    }, 1000);
+}
+
+function getTokenList() {
+    var tokenit = new TokenIterator(editor.getSession(), editor.getFirstVisibleRow(), 0);
+    var currentToken = tokenit.getCurrentToken();
+
+    var allTokens = [];
+
+    while (currentToken) {
+        allTokens.push({
+            type: currentToken.type,
+            value: currentToken.value,
+            row: tokenit.getCurrentTokenRow(),
+            start: tokenit.getCurrentTokenColumn(),
+            end: tokenit.getCurrentTokenColumn() + currentToken.value.length
+        });
+
+        if (editor.getLastVisibleRow() < tokenit.getCurrentTokenRow()) {
+            break;
+        }
+
+        currentToken = tokenit.stepForward();
+    }
+    return allTokens;
+}
 
 function updateOptions() {
     var editorConfigBean = afx.getEditorConfigBean();
@@ -228,6 +276,7 @@ function rerender() {
         afx.textListener(editor.getValue(), editorMode());
         updateStatusBox();
     }, 100);
+    checkSpelling();
 }
 
 function editorMode() {
@@ -242,4 +291,45 @@ function setInitialized() {
 
 function resetUndoManager() {
     editor.getSession().setUndoManager(new ace.UndoManager());
+}
+
+var markers = [];
+function addTypo(row, start, end, tokenClass) {
+    var marker = editor.getSession().addMarker(
+        new range.Range(row, start, row, end), tokenClass, "typo"
+    );
+
+    markers.push(marker);
+}
+
+function checkWordSuggestions() {
+    var cursorPosition = editor.getCursorPosition();
+    var selectionIsEmpty = editor.selection.isEmpty();
+    if (selectionIsEmpty) {
+        editor.selection.selectWord();
+    }
+    var selectedText = editor.getSelectedText();
+    if (selectedText && "" != selectedText.trim()) {
+        afx.checkWordSuggestions(selectedText);
+    }
+
+    if (selectionIsEmpty) {
+        editor.selection.clearSelection();
+        editor.moveCursorToPosition(cursorPosition);
+    }
+
+}
+
+function replaceMisspelled(suggestion) {
+    var cursorPosition = editor.getCursorPosition();
+    var selectionIsEmpty = editor.selection.isEmpty();
+    if (selectionIsEmpty) {
+        editor.selection.selectWord();
+    }
+    editor.session.replace(editor.selection.getRange(), suggestion);
+    editor.selection.clearSelection();
+    if (selectionIsEmpty) {
+        editor.moveCursorToPosition(cursorPosition);
+    }
+
 }

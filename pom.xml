@@ -169,6 +169,11 @@
             <artifactId>simple-odf</artifactId>
             <version>0.7-incubating</version>
         </dependency>
+        <dependency>
+            <groupId>org.carrot2</groupId>
+            <artifactId>morfologik-speller</artifactId>
+            <version>1.10.0</version>
+        </dependency>
     </dependencies>
 
     <build>
