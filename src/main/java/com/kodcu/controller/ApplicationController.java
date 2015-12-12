@@ -1618,7 +1618,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     }
 
     public void externalBrowse() {
-        rightShowerHider.getShowing().browse();
+        rightShowerHider.getShowing().ifPresent(ViewPanel::browse);
     }
 
     ChangeListener<Boolean> outlineTabChangeListener;
@@ -1794,14 +1794,15 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     @WebkitCall(from = "editor")
     public void onscroll(Object pos, Object max) {
-        rightShowerHider.getShowing().onscroll(pos, max);
+        rightShowerHider.getShowing()
+                .ifPresent(s -> s.onscroll(pos, max));
     }
 
     @WebkitCall(from = "editor")
     public void scrollByLine(String text) {
         threadService.runActionLater(() -> {
             try {
-                rightShowerHider.getShowing().scrollByLine(text);
+                rightShowerHider.getShowing().ifPresent(w -> w.scrollByLine(text));
             } catch (Exception e) {
                 logger.debug(e.getMessage(), e);
             }
@@ -1818,8 +1819,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         threadService.runActionLater(() -> {
             try {
                 String selection = asciidocWebkitConverter.findRenderedSelection(text);
-                rightShowerHider.getShowing().scrollByPosition(selection);
-
+                rightShowerHider.getShowing().ifPresent(w -> w.scrollByPosition(selection));
             } catch (Exception e) {
                 logger.debug(e.getMessage(), e);
             }
@@ -2501,7 +2501,8 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     }*/
 
     public void clearImageCache(Path imagePath) {
-        rightShowerHider.getShowing().clearImageCache(imagePath);
+        rightShowerHider.getShowing()
+                .ifPresent(w -> w.clearImageCache(imagePath));
     }
 
     public ObservableList<DocumentMode> getModeList() {

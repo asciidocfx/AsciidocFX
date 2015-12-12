@@ -265,8 +265,10 @@ public class EditorPane extends AnchorPane {
 
         if (Objects.nonNull(lineno)) {
 
-            ViewPanel viewPanel = controller.getRightShowerHider().getShowing();
-            viewPanel.disableScrollingAndJumping();
+            final Optional<ViewPanel> viewPanelOptional = controller.getRightShowerHider().getShowing();
+
+            viewPanelOptional.ifPresent(ViewPanel::disableScrollingAndJumping);
+
 
             try {
                 webEngine().executeScript(String.format("editor.gotoLine(%d,3,false)", (lineno)));
@@ -275,7 +277,7 @@ public class EditorPane extends AnchorPane {
                 logger.error("Error occured while moving cursor to line {}", lineno);
             }
 
-            viewPanel.enableScrollingAndJumping();
+            viewPanelOptional.ifPresent(ViewPanel::enableScrollingAndJumping);
 
         }
     }

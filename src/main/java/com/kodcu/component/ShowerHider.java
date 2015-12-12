@@ -9,6 +9,8 @@ import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.layout.AnchorPane;
 
+import java.util.Optional;
+
 /**
  * Created by usta on 29.11.2015.
  */
@@ -92,7 +94,10 @@ public class ShowerHider extends AnchorPane {
         return slaves;
     }
 
-    public ViewPanel getShowing() {
-        return (ViewPanel) getChildren().get(0);
+    public Optional<ViewPanel> getShowing() {
+        return Optional.ofNullable(getChildren().get(0))
+                .filter(n -> n instanceof ViewPanel)
+                .map(n -> (ViewPanel) n);
+
     }
 }
