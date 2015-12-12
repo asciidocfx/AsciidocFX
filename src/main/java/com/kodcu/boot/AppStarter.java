@@ -68,25 +68,14 @@ public class AppStarter extends Application {
     }
 
     private void startApp(final Stage stage, final CmdlineConfig config) throws Throwable {
-        final FXMLLoader parentLoader = new FXMLLoader();
-        final FXMLLoader asciidocTableLoader = new FXMLLoader();
-        final FXMLLoader markdownTableLoader = new FXMLLoader();
 
         context = SpringApplication.run(SpringAppConfig.class);
-        asciidocTableLoader.setControllerFactory(context::getBean);
-        markdownTableLoader.setControllerFactory(context::getBean);
+
+        final FXMLLoader parentLoader = new FXMLLoader();
         parentLoader.setControllerFactory(context::getBean);
-
-        InputStream asciidocTableStream = getClass().getResourceAsStream("/fxml/AsciidocTablePopup.fxml");
-        AnchorPane asciidocTableAnchor = asciidocTableLoader.load(asciidocTableStream);
-
-        InputStream markdownTableStream = getClass().getResourceAsStream("/fxml/MarkdownTablePopup.fxml");
-        AnchorPane markdownTableAnchor = markdownTableLoader.load(markdownTableStream);
 
         InputStream sceneStream = getClass().getResourceAsStream("/fxml/Scene.fxml");
         Parent root = parentLoader.load(sceneStream);
-
-        controller = parentLoader.getController();
 
         Scene scene = new Scene(root);
 
@@ -95,6 +84,24 @@ public class AppStarter extends Application {
         stage.setTitle("AsciidocFX");
         InputStream logoStream = getClass().getResourceAsStream("/logo.png");
         stage.getIcons().add(new Image(logoStream));
+
+        stage.setScene(scene);
+        stage.show();
+
+        IOUtils.closeQuietly(sceneStream);
+        IOUtils.closeQuietly(logoStream);
+
+        final FXMLLoader asciidocTableLoader = new FXMLLoader();
+        final FXMLLoader markdownTableLoader = new FXMLLoader();
+
+        asciidocTableLoader.setControllerFactory(context::getBean);
+        markdownTableLoader.setControllerFactory(context::getBean);
+
+        InputStream asciidocTableStream = getClass().getResourceAsStream("/fxml/AsciidocTablePopup.fxml");
+        AnchorPane asciidocTableAnchor = asciidocTableLoader.load(asciidocTableStream);
+
+        InputStream markdownTableStream = getClass().getResourceAsStream("/fxml/MarkdownTablePopup.fxml");
+        AnchorPane markdownTableAnchor = markdownTableLoader.load(markdownTableStream);
 
         Stage asciidocTableStage = new Stage();
         asciidocTableStage.setScene(new Scene(asciidocTableAnchor));
@@ -112,8 +119,8 @@ public class AppStarter extends Application {
 
         IOUtils.closeQuietly(asciidocTableStream);
         IOUtils.closeQuietly(markdownTableStream);
-        IOUtils.closeQuietly(sceneStream);
-        IOUtils.closeQuietly(logoStream);
+
+        controller = parentLoader.getController();
 
         controller.setStage(stage);
         controller.setScene(scene);
@@ -124,9 +131,6 @@ public class AppStarter extends Application {
 
 //        controller.initializeAutoSaver();
         controller.initializeSaveOnBlur();
-
-        stage.setScene(scene);
-        stage.show();
 
         scene.getAccelerators().put(new KeyCodeCombination(KeyCode.S, SHORTCUT_DOWN), controller::saveDoc);
         scene.getAccelerators().put(new KeyCodeCombination(KeyCode.M, SHORTCUT_DOWN), controller::adjustSplitPane);
