@@ -152,6 +152,9 @@ public class AppStarter extends Application {
             controller.newDoc();
 
         controller.setHostServices(getHostServices());
+
+        stage.widthProperty().addListener(controller::stageWidthChanged);
+        stage.heightProperty().addListener(controller::stageWidthChanged);
     }
 
     private void registerStartupListener(CmdlineConfig config) {

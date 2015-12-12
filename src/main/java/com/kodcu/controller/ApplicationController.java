@@ -47,6 +47,7 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -548,6 +549,12 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                 logger.error("Problem occured while converting image to base64 for {}", url);
             }
         });
+    }
+
+    public void stageWidthChanged(ObservableValue observable, Number oldValue, Number newValue) {
+        if (!terminalToggleButton.isSelected() && !logToggleButton.isSelected()) {
+            mainVerticalSplitPane.setDividerPosition(0, 1);
+        }
     }
 
     @Override
