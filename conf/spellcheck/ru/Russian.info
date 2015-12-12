@@ -1,0 +1,14 @@
+#
+# Dictionary properties.
+#
+# Russian dictionary originally developed by www.aot.ru and licensing under LGPL.
+# http://www.aot.ru/download.php file rus-src-morph.tar.gz
+# or http://sourceforge.net/p/seman/svn/HEAD/tree/trunk/Dicts/SrcMorph/RusSrc/   rev 242  file  morphs.mrd
+# It was partially converted to fsa format in 2008, 2010, 2011, 2014 by Yakov Reztsov.
+
+
+fsa.dict.separator=+
+fsa.dict.encoding=koi8-r
+
+fsa.dict.uses-prefixes=false
+fsa.dict.uses-infixes=false
