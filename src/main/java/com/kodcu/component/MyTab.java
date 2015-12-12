@@ -271,7 +271,7 @@ public class MyTab extends Tab {
     }
 
     private void closeIt() {
-        Platform.runLater(() -> {
+        threadService.runActionLater(() -> {
             tabService.getClosedPaths().add(Optional.ofNullable(getPath()));
             this.getTabPane().getTabs().remove(this); // keep it here
             ObservableList<Tab> tabs = controller.getTabPane().getTabs();

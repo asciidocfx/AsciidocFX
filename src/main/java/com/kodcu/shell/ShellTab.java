@@ -153,7 +153,7 @@ public class ShellTab extends Tab {
 
     public void print(String text) {
 
-        threadService.runActionFairlyLater(() -> {
+        threadService.runActionLater(() -> {
                     if (text.contains(">") || text.contains("$")) {
                         String[] split = text.split(">|\\$", 2);
 

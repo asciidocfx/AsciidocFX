@@ -42,19 +42,33 @@ public class ThreadService {
 
     // Runs task in JavaFX Thread
     public void runActionLater(Consumer<ActionEvent> consumer) {
-        if (Platform.isFxApplicationThread()) {
+        runActionLater(()->{
             consumer.accept(null);
-        } else {
-            Platform.runLater(() -> consumer.accept(null));
-        }
+        });
     }
 
+    private final Semaphore semaphore = new Semaphore(1);
+
     // Runs task in JavaFX Thread
-    public void runActionLater(Runnable runnable) {
+    public void runActionLater(final Runnable runnable) {
         if (Platform.isFxApplicationThread()) {
             runnable.run();
         } else {
-            Platform.runLater(runnable);
+            try {
+                semaphore.acquire();
+                Platform.runLater(() -> {
+                    try {
+                        runnable.run();
+                        semaphore.release();
+                    } catch (Exception e) {
+                        semaphore.release();
+                        throw new RuntimeException(e);
+                    }
+                });
+            } catch (Exception e) {
+                semaphore.release();
+                throw new RuntimeException(e);
+            }
         }
     }
 
@@ -89,12 +103,4 @@ public class ThreadService {
         return buffMap.get(id);
     }
 
-    public void runActionFairlyLater(Runnable runnable) {
-        if (Platform.isFxApplicationThread()) {
-            runnable.run();
-        } else {
-            Platform.runLater(runnable);
-            sleep(50);
-        }
-    }
 }

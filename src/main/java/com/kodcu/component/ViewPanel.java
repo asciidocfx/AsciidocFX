@@ -152,14 +152,9 @@ public abstract class ViewPanel extends AnchorPane {
         if (stopScrolling.get())
             return;
 
-        if (Platform.isFxApplicationThread()) {
+        threadService.runActionLater(()->{
             runScrolling(pos, max);
-        } else {
-            Platform.runLater(() -> {
-                runScrolling(pos, max);
-            });
-        }
-
+        });
     }
 
     public abstract void runScroller(String text);
