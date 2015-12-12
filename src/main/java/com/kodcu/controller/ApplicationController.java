@@ -1769,7 +1769,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     }
 
     @FXML
-    public void openDoc(Event event) {
+    public void openDoc(Event... event) {
         tabService.openDoc();
     }
 
@@ -2226,7 +2226,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     }
 
     public void saveAndCloseCurrentTab() {
-        this.saveDoc();
+//        this.saveDoc();
         threadService.runActionLater(current.currentTab()::close);
     }
 
