@@ -43,8 +43,6 @@ function convertOdf(taskId, content, options) {
     var doc = Opal.Asciidoctor.$load(content, getOption(options));
     var rendered = doc.$convert();
 
-    var result = doc.$convert();
-
     var result = {
         taskId: taskId,
         rendered: rendered,
