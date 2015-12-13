@@ -278,7 +278,7 @@ public class MyTab extends Tab {
             if (tabs.isEmpty()) {
                 tabService.newDoc();
             }
-        });
+        },true);
     }
 
     @Override
