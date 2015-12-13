@@ -15,11 +15,15 @@ import java.util.function.Consumer;
 public class ThreadService {
 
     private final ScheduledExecutorService threadPollWorker;
-    private ConcurrentHashMap<String, Buff> buffMap = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, Buff> buffMap = new ConcurrentHashMap<>();
+    private final Semaphore uiSemaphore;
+
 
     public ThreadService() {
-        int nThreads = Runtime.getRuntime().availableProcessors() * 2;
-        threadPollWorker = Executors.newScheduledThreadPool((nThreads >= 4) ? nThreads : 4);
+        final int availableProcessors = Runtime.getRuntime().availableProcessors();
+        final int corePoolSize = (availableProcessors * 2 >= 4) ? availableProcessors * 2 : 4;
+        threadPollWorker = Executors.newScheduledThreadPool(corePoolSize);
+        uiSemaphore = new Semaphore(corePoolSize, true);
     }
 
     public ScheduledFuture<?> schedule(Runnable runnable, long delay, TimeUnit timeUnit) {
@@ -42,19 +46,32 @@ public class ThreadService {
 
     // Runs task in JavaFX Thread
     public void runActionLater(Consumer<ActionEvent> consumer) {
-        if (Platform.isFxApplicationThread()) {
+        runActionLater(() -> {
             consumer.accept(null);
-        } else {
-            Platform.runLater(() -> consumer.accept(null));
-        }
+        });
     }
 
+
     // Runs task in JavaFX Thread
-    public void runActionLater(Runnable runnable) {
+    public void runActionLater(final Runnable runnable) {
         if (Platform.isFxApplicationThread()) {
             runnable.run();
         } else {
-            Platform.runLater(runnable);
+            try {
+                uiSemaphore.acquire();
+                Platform.runLater(() -> {
+                    try {
+                        runnable.run();
+                        uiSemaphore.release();
+                    } catch (Exception e) {
+                        uiSemaphore.release();
+                        throw new RuntimeException(e);
+                    }
+                });
+            } catch (Exception e) {
+                uiSemaphore.release();
+                throw new RuntimeException(e);
+            }
         }
     }
 
@@ -89,12 +106,4 @@ public class ThreadService {
         return buffMap.get(id);
     }
 
-    public void runActionFairlyLater(Runnable runnable) {
-        if (Platform.isFxApplicationThread()) {
-            runnable.run();
-        } else {
-            Platform.runLater(runnable);
-            sleep(50);
-        }
-    }
 }

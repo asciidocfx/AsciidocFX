@@ -1,5 +1,6 @@
 package com.kodcu.component;
 
+import com.kodcu.config.SpellcheckConfigBean;
 import com.kodcu.controller.ApplicationController;
 import com.kodcu.other.IOHelper;
 import com.kodcu.service.DirectoryService;
@@ -9,15 +10,17 @@ import com.kodcu.service.convert.markdown.MarkdownService;
 import com.kodcu.service.extension.AsciiTreeGenerator;
 import com.kodcu.service.shortcut.ShortcutProvider;
 import com.kodcu.service.ui.TabService;
+import com.kodcu.spell.dictionary.Token;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.Event;
-import javafx.scene.control.ContextMenu;
-import javafx.scene.control.MenuItem;
+import javafx.scene.control.*;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.AnchorPane;
@@ -39,9 +42,7 @@ import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.FileTime;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * Created by usta on 09.04.2015.
@@ -59,6 +60,7 @@ public class EditorPane extends AnchorPane {
     private final TabService tabService;
     private final AsciiTreeGenerator asciiTreeGenerator;
     private final ParserService parserService;
+    private final SpellcheckConfigBean spellcheckConfigBean;
     private final ObservableList<Runnable> handleReadyTasks;
     private String mode = "ace/mode/asciidoc";
     private String initialEditorValue = "";
@@ -68,6 +70,7 @@ public class EditorPane extends AnchorPane {
     private final String escapeBackSlash = "(?<!\\\\)"; // ignores if word started with \
     private final String ignoreSuffix = "(?<!\\\\)"; // ignores if word started with \
     private final BooleanProperty ready = new SimpleBooleanProperty(false);
+    private final ObjectProperty<Path> spellLanguage = new SimpleObjectProperty<>();
 
     @Value("${application.live.url}")
     private String liveUrl;
@@ -76,15 +79,17 @@ public class EditorPane extends AnchorPane {
     private String previewUrl;
 
     private final DirectoryService directoryService;
+    private ContextMenu contextMenu;
 
     @Autowired
-    public EditorPane(ApplicationController controller, ThreadService threadService, ShortcutProvider shortcutProvider, ApplicationContext applicationContext, TabService tabService, AsciiTreeGenerator asciiTreeGenerator, ParserService parserService, DirectoryService directoryService) {
+    public EditorPane(ApplicationController controller, ThreadService threadService, ShortcutProvider shortcutProvider, ApplicationContext applicationContext, TabService tabService, AsciiTreeGenerator asciiTreeGenerator, ParserService parserService, SpellcheckConfigBean spellcheckConfigBean, DirectoryService directoryService) {
         this.controller = controller;
         this.threadService = threadService;
         this.shortcutProvider = shortcutProvider;
         this.applicationContext = applicationContext;
         this.tabService = tabService;
         this.asciiTreeGenerator = asciiTreeGenerator;
+        this.spellcheckConfigBean = spellcheckConfigBean;
         this.directoryService = directoryService;
         this.handleReadyTasks = FXCollections.observableArrayList();
         this.parserService = parserService;
@@ -148,6 +153,11 @@ public class EditorPane extends AnchorPane {
                 .filter(i -> !i.isEmpty())
                 .filter(i -> i.equals(lastInterPath))
                 .isPresent();
+
+        if (Objects.isNull(lastInterPath)) {
+            lastInterPath = interPath;
+            return;
+        }
 
         if (isSameInterPath) {
             this.rerender();
@@ -255,8 +265,10 @@ public class EditorPane extends AnchorPane {
 
         if (Objects.nonNull(lineno)) {
 
-            ViewPanel viewPanel = controller.getRightShowerHider().getShowing();
-            viewPanel.disableScrollingAndJumping();
+            final Optional<ViewPanel> viewPanelOptional = controller.getRightShowerHider().getShowing();
+
+            viewPanelOptional.ifPresent(ViewPanel::disableScrollingAndJumping);
+
 
             try {
                 webEngine().executeScript(String.format("editor.gotoLine(%d,3,false)", (lineno)));
@@ -265,7 +277,7 @@ public class EditorPane extends AnchorPane {
                 logger.error("Error occured while moving cursor to line {}", lineno);
             }
 
-            viewPanel.enableScrollingAndJumping();
+            viewPanelOptional.ifPresent(ViewPanel::enableScrollingAndJumping);
 
         }
     }
@@ -278,7 +290,7 @@ public class EditorPane extends AnchorPane {
     }
 
     public String editorMode() {
-        return (String) this.call("editorMode", new Object[]{});
+        return (String) webEngine().executeScript("editorMode()");
     }
 
     public void fillModeList(ObservableList modeList) {
@@ -352,7 +364,7 @@ public class EditorPane extends AnchorPane {
 
         webView.setContextMenuEnabled(false);
 
-        ContextMenu menu = new ContextMenu();
+        this.contextMenu = new ContextMenu();
 
         MenuItem cut = MenuItemBuilt.item("Cut").click(e -> {
             controller.cutCopy(editorSelection());
@@ -382,24 +394,82 @@ public class EditorPane extends AnchorPane {
                     }));
         });
 
+
+        final Menu editorLanguage = new Menu("Editor language");
+        final Menu defaultLanguage = new Menu("Default language");
+
+        ToggleGroup editorLanguageGroup = new ToggleGroup();
+        ToggleGroup defaultLanguageGroup = new ToggleGroup();
+
+        final RadioMenuItem disableSpeller = CheckItemBuilt.check("Disable spell check", false)
+                .bindBi(spellcheckConfigBean.disableSpellCheckProperty())
+                .click(e -> {
+                    checkSpelling();
+                })
+                .build();
+
+        Menu languageMenu = new Menu("Spell Checker");
+        languageMenu.getItems().addAll(editorLanguage, defaultLanguage, disableSpeller);
+
         getWebView().setOnMouseClicked(event -> {
 
-            if (menu.getItems().size() == 0) {
-                menu.getItems().addAll(cut, copy, paste, pasteRaw,
-                        markdownToAsciidoc,
-                        replacements,
-                        indexSelection,
-                        includeAsSubDocument
-                );
+            final ObservableList<MenuItem> contextMenuItems = contextMenu.getItems();
+
+            final List<MenuItem> menuItems = Arrays.asList(cut, copy, paste, pasteRaw,
+                    markdownToAsciidoc,
+                    replacements,
+                    indexSelection,
+                    includeAsSubDocument,
+                    languageMenu);
+
+            for (MenuItem menuItem : menuItems) {
+                if (!contextMenuItems.contains(menuItem)) {
+                    contextMenuItems.add(menuItem);
+                }
             }
 
-            if (menu.isShowing()) {
-                menu.hide();
+            if (editorLanguage.getItems().isEmpty()) {
+
+                editorLanguage.getItems().add(CheckItemBuilt.check("Use default language", true)
+                        .click(e -> {
+                            setSpellLanguage(null);
+                            checkSpelling();
+                        })
+                        .group(editorLanguageGroup)
+                        .build());
+
+                final ObservableList<Path> languages = spellcheckConfigBean.getLanguages();
+
+                for (Path language : languages) {
+                    final String pathCleanName = IOHelper.getPathCleanName(language);
+                    editorLanguage.getItems().add(CheckItemBuilt.check(pathCleanName, false)
+                            .click(e -> {
+                                setSpellLanguage(language);
+                                checkSpelling();
+                            })
+                            .group(editorLanguageGroup)
+                            .build());
+
+
+                    defaultLanguage.getItems().add(CheckItemBuilt.check(pathCleanName, spellcheckConfigBean.defaultLanguageProperty().isEqualTo(language).get())
+                            .click(e -> {
+                                spellcheckConfigBean.setDefaultLanguage(language);
+                                checkSpelling();
+                            })
+                            .group(defaultLanguageGroup)
+                            .build());
+                }
+
+            }
+
+            if (contextMenu.isShowing()) {
+                contextMenu.hide();
             }
             if (event.getButton() == MouseButton.SECONDARY) {
                 markdownToAsciidoc.setVisible(isMarkdown());
                 indexSelection.setVisible(isAsciidoc());
-                menu.show(getWebView(), event.getScreenX(), event.getScreenY());
+                contextMenu.show(getWebView(), event.getScreenX(), event.getScreenY());
+                checkWordSuggestions();
             }
         });
 
@@ -460,6 +530,14 @@ public class EditorPane extends AnchorPane {
             event.setDropCompleted(success);
             event.consume();
         });
+    }
+
+    private void checkWordSuggestions() {
+        webEngine().executeScript("checkWordSuggestions()");
+    }
+
+    private void checkSpelling() {
+        webEngine().executeScript("checkSpelling()");
     }
 
     private String getSelectionOrAll() {
@@ -527,8 +605,63 @@ public class EditorPane extends AnchorPane {
         return ready;
     }
 
+    public Path getSpellLanguage() {
+        return spellLanguage.get();
+    }
+
+    public ObjectProperty<Path> spellLanguageProperty() {
+        return spellLanguage;
+    }
+
+    public void setSpellLanguage(Path spellLanguage) {
+        this.spellLanguage.set(spellLanguage);
+    }
 
     public void removeToLineStart() {
         webEngine().executeScript("editor.removeToLineStart()");
+    }
+
+    public void addTypo(Token token) {
+        String tokenClass = token.isEmptySuggestion() ? "misspelled" : "misspelled-strong";
+        webEngine().executeScript(String.format("addTypo(%d,%d,%d,'%s')",
+                token.getRow(),
+                token.getStart(),
+                token.getEnd(),
+                tokenClass));
+    }
+
+    public void showSuggestions(List<String> suggestions) {
+        final ObservableList<MenuItem> contextMenuItems = contextMenu.getItems();
+
+        contextMenuItems.removeIf(m -> m.getStyleClass().contains("spell-suggestion"));
+
+        if (suggestions.isEmpty()) {
+            return;
+        }
+
+        final List<MenuItem> spells = new ArrayList<>();
+
+        for (String suggestion : suggestions) {
+            final MenuItem menuItem = MenuItemBuilt.item(suggestion)
+                    .clazz("spell-suggestion").click(event -> {
+                        this.replaceMisspelled(suggestion);
+                    });
+
+            spells.add(menuItem);
+        }
+
+        final SeparatorMenuItem menuItem = new SeparatorMenuItem();
+        menuItem.getStyleClass().add("spell-suggestion");
+        spells.add(menuItem);
+
+        contextMenuItems.addAll(0, spells);
+    }
+
+    private void replaceMisspelled(String suggestion) {
+        webEngine().executeScript(String.format("replaceMisspelled('%s')", suggestion));
+    }
+
+    public String tokenList() {
+        return (String) webEngine().executeScript("JSON.stringify(getTokenList())");
     }
 }

@@ -39,24 +39,35 @@ public class PlantUmlService {
         this.threadService = threadService;
     }
 
-    public void plantUml(String uml, String type, String imagesDir, String imageTarget) {
+    public void plantUml(String uml, String type, String imagesDir, String imageTarget, String nodename) {
         Objects.requireNonNull(imageTarget);
 
         if (!imageTarget.endsWith(".png") && !imageTarget.endsWith(".svg"))
             return;
 
-        String defaultScale = "\nskinparam dpi 300\n";
+        StringBuffer stringBuffer = new StringBuffer(uml);
 
-        if (!uml.contains("@start") && !uml.contains("@end")) {
-            uml = defaultScale + uml;
-            uml = "@startuml\n" + uml + "\n@enduml";
-        } else if (uml.contains("@startuml")) {
-            uml = uml.replaceFirst("@startuml", "@startuml" + defaultScale);
+//        if (nodename.contains("uml")) {
+//            if (!uml.contains("skinparam") && !uml.contains("dpi") && !uml.contains("@start")) {
+//                stringBuffer.insert(0, "\nskinparam dpi 300\n");
+//            }
+//        }
+
+        appendHeaderNotExist(stringBuffer, nodename, "uml", "uml");
+        appendHeaderNotExist(stringBuffer, nodename, "ditaa", "ditaa");
+        appendHeaderNotExist(stringBuffer, nodename, "graphviz", "uml");
+
+        uml = stringBuffer.toString();
+
+        if (nodename.contains("uml")) {
+            if (!uml.contains("skinparam") && !uml.contains("dpi")) {
+                uml = uml.replaceFirst("@startuml", "@startuml\nskinparam dpi 300\n");
+            }
         }
 
         Integer cacheHit = current.getCache().get(imageTarget);
 
-        int hashCode = (imageTarget + imagesDir + type + uml).hashCode();
+        int hashCode = (imageTarget + imagesDir + type + uml + nodename).hashCode();
 
         if (Objects.nonNull(cacheHit))
             if (hashCode == cacheHit)
@@ -80,7 +91,7 @@ public class PlantUmlService {
 
                     Files.createDirectories(path.resolve(imagesDir));
 
-                    IOHelper.writeToFile(umlPath, os.toByteArray(), CREATE, WRITE, TRUNCATE_EXISTING,SYNC);
+                    IOHelper.writeToFile(umlPath, os.toByteArray(), CREATE, WRITE, TRUNCATE_EXISTING, SYNC);
 
                     logger.debug("UML extension is ended for {}", imageTarget);
 
@@ -98,5 +109,19 @@ public class PlantUmlService {
         } catch (IOException e) {
             logger.error("Problem occured while generating UML diagram", e);
         }
+    }
+
+    private void appendHeaderNotExist(StringBuffer stringBuffer, String nodename, String ifNode, String header) {
+
+        if (nodename.contains(ifNode)) {
+            if (stringBuffer.indexOf("@start") == -1) {
+                stringBuffer.insert(0, "@start" + header + "\n");
+            }
+            if (stringBuffer.indexOf("@end") == -1) {
+                stringBuffer.append("\n@end" + header);
+            }
+        }
+
+
     }
 }

@@ -34,6 +34,7 @@ import com.kodcu.service.ui.IndikatorService;
 import com.kodcu.service.ui.TabService;
 import com.kodcu.service.ui.TooltipTimeFixService;
 import com.kodcu.shell.ShellTab;
+import com.kodcu.spell.dictionary.DictionaryService;
 import com.sun.javafx.stage.StageHelper;
 import de.jensd.fx.fontawesome.AwesomeDude;
 import de.jensd.fx.fontawesome.AwesomeIcon;
@@ -46,6 +47,7 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -289,6 +291,12 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     @Autowired
     private ChartProvider chartProvider;
 
+    @Autowired
+    private DictionaryService dictionaryService;
+
+    @Autowired
+    private SpellcheckConfigBean spellcheckConfigBean;
+
     private Stage stage;
     private List<WebSocketSession> sessionList = new ArrayList<>();
     private ObjectProperty<Scene> scene = new SimpleObjectProperty<>();
@@ -453,7 +461,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     }
 
     @WebkitCall(from = "asciidoctor-math")
-    public void math(String formula, String type, String imagesDir, String imageTarget) {
+    public void math(String formula, String type, String imagesDir, String imageTarget, String nodename) {
         mathJaxService.appendFormula(formula, imagesDir, imageTarget);
     }
 
@@ -541,6 +549,12 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                 logger.error("Problem occured while converting image to base64 for {}", url);
             }
         });
+    }
+
+    public void stageWidthChanged(ObservableValue observable, Number oldValue, Number newValue) {
+        if (!terminalToggleButton.isSelected() && !logToggleButton.isSelected()) {
+            mainVerticalSplitPane.setDividerPosition(0, 1);
+        }
     }
 
     @Override
@@ -878,7 +892,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
         IntStream.of(10, 25, 50, 100)
                 .forEach(unit -> {
-                    final MenuItem menuItem = MenuItemBuilt.item("€ "+unit)
+                    final MenuItem menuItem = MenuItemBuilt.item("€ " + unit)
                             .click(event -> {
                                 browseInDesktop(String.format(donationUrl, unit));
                             });
@@ -1604,7 +1618,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     }
 
     public void externalBrowse() {
-        rightShowerHider.getShowing().browse();
+        rightShowerHider.getShowing().ifPresent(ViewPanel::browse);
     }
 
     ChangeListener<Boolean> outlineTabChangeListener;
@@ -1762,7 +1776,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     }
 
     @FXML
-    public void openDoc(Event event) {
+    public void openDoc(Event... event) {
         tabService.openDoc();
     }
 
@@ -1780,14 +1794,15 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     @WebkitCall(from = "editor")
     public void onscroll(Object pos, Object max) {
-        rightShowerHider.getShowing().onscroll(pos, max);
+        rightShowerHider.getShowing()
+                .ifPresent(s -> s.onscroll(pos, max));
     }
 
     @WebkitCall(from = "editor")
     public void scrollByLine(String text) {
         threadService.runActionLater(() -> {
             try {
-                rightShowerHider.getShowing().scrollByLine(text);
+                rightShowerHider.getShowing().ifPresent(w -> w.scrollByLine(text));
             } catch (Exception e) {
                 logger.debug(e.getMessage(), e);
             }
@@ -1804,8 +1819,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         threadService.runActionLater(() -> {
             try {
                 String selection = asciidocWebkitConverter.findRenderedSelection(text);
-                rightShowerHider.getShowing().scrollByPosition(selection);
-
+                rightShowerHider.getShowing().ifPresent(w -> w.scrollByPosition(selection));
             } catch (Exception e) {
                 logger.debug(e.getMessage(), e);
             }
@@ -1813,22 +1827,26 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     }
 
     @WebkitCall(from = "asciidoctor-uml")
-    public void uml(String uml, String type, String imagesDir, String imageTarget) throws IOException {
-        plantuml(uml, type, imagesDir, imageTarget);
+    public void uml(String uml, String type, String imagesDir, String imageTarget, String nodename) throws IOException {
+        plantuml(uml, type, imagesDir, imageTarget, nodename);
     }
 
     @WebkitCall(from = "asciidoctor-uml")
-    public void plantuml(String uml, String type, String imagesDir, String imageTarget) throws IOException {
+    public void plantuml(String uml, String type, String imagesDir, String imageTarget, String nodename) throws IOException {
 
         threadService.runTaskLater(() -> {
-            plantUmlService.plantUml(uml, type, imagesDir, imageTarget);
+            plantUmlService.plantUml(uml, type, imagesDir, imageTarget, nodename);
         });
     }
 
-    @WebkitCall(from = "asciidoctor-ditaa")
-    public void ditaa(String ditaa, String type, String imagesDir, String imageTarget) throws IOException {
-        String plantUmlString = "@startditaa\n" + ditaa + "\n@endditaa\n";
-        this.plantuml(plantUmlString, type, imagesDir, imageTarget);
+    @WebkitCall(from = "asciidoctor-uml")
+    public void graphviz(String graphviz, String type, String imagesDir, String imageTarget, String nodename) throws IOException {
+        this.plantuml(graphviz, type, imagesDir, imageTarget, nodename);
+    }
+
+    @WebkitCall(from = "asciidoctor-uml")
+    public void ditaa(String ditaa, String type, String imagesDir, String imageTarget, String nodename) throws IOException {
+        this.plantuml(ditaa, type, imagesDir, imageTarget, nodename);
     }
 
     @WebkitCall(from = "asciidoctor-chart")
@@ -2026,6 +2044,29 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         }
     }
 
+    @WebkitCall(from = "editor")
+    public void checkWordSuggestions(String word) {
+        final List<String> stringList = dictionaryService.getSuggestionMap()
+                .getOrDefault(word, Arrays.asList());
+        current.currentEditor().showSuggestions(stringList);
+    }
+
+    @WebkitCall(from = "editor")
+    public void processTokens() {
+
+        if (spellcheckConfigBean.getDisableSpellCheck()) {
+            return;
+        }
+
+        final EditorPane editorPane = current.currentEditor();
+        final String tokenList = editorPane.tokenList();
+        final String mode = editorPane.editorMode();
+
+        threadService.runTaskLater(() -> {
+            dictionaryService.processTokens(editorPane, tokenList, mode);
+        });
+    }
+
     @WebkitCall(from = "asciidoctor-odf.js")
     public synchronized void convertToOdf(String name, Object obj) throws Exception {
         JSObject jObj = (JSObject) obj;
@@ -2192,7 +2233,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     }
 
     public void saveAndCloseCurrentTab() {
-        this.saveDoc();
+//        this.saveDoc();
         threadService.runActionLater(current.currentTab()::close);
     }
 
@@ -2460,7 +2501,8 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     }*/
 
     public void clearImageCache(Path imagePath) {
-        rightShowerHider.getShowing().clearImageCache(imagePath);
+        rightShowerHider.getShowing()
+                .ifPresent(w -> w.clearImageCache(imagePath));
     }
 
     public ObservableList<DocumentMode> getModeList() {

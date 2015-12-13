@@ -68,7 +68,7 @@ public class TableViewLogAppender extends UnsynchronizedAppenderBase<ILoggingEve
         }
 
         final String finalMessage = message;
-        Platform.runLater(() -> {
+        threadService.runActionLater(() -> {
             logShortMessage.setText(finalMessage);
         });
 
@@ -82,9 +82,9 @@ public class TableViewLogAppender extends UnsynchronizedAppenderBase<ILoggingEve
         buffer.add(myLog);
 
         threadService.buff("logAppender").schedule(() -> {
-            Platform.runLater(() -> {
-                List<MyLog> clone = new LinkedList<>(buffer);
-                buffer.clear();
+            final List<MyLog> clone = new LinkedList<>(buffer);
+            buffer.clear();
+            threadService.runActionLater(() -> {
                 logList.addAll(clone);
             });
         }, 2, TimeUnit.SECONDS);

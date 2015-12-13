@@ -39,7 +39,7 @@ function process_uml_block(obj) {
     if (cache != "enabled") {
         //afx[name](reader.$read(), type, imagesdir, target);
 
-        var parameters = [reader.$read(), type, imagesdir, target].map(function (e) {
+        var parameters = [reader.$read(), type, imagesdir, target, name].map(function (e) {
             return e + "";
         });
         var command = name;
@@ -47,9 +47,9 @@ function process_uml_block(obj) {
         //afx[command].apply(afx,parameters);
 
         postMessage(JSON.stringify({
-            type:"afx",
-            func:command,
-            parameters:parameters
+            type: "afx",
+            func: command,
+            parameters: parameters
         }));
 
     }
@@ -140,6 +140,6 @@ function registerUmlBlock(name) {
 }
 
 
-["uml", "plantuml", "ditaa", "math"].forEach(function (name) {
+["uml", "plantuml", "ditaa", "math", "graphviz"].forEach(function (name) {
     registerUmlBlock(name);
 });

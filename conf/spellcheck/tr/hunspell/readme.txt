@@ -1,0 +1,1 @@
+This Turkish hunspell dictionary is obtained from Firefox add-on Türkçe İmla Denetimi 3.4(https://addons.mozilla.org/en-US/firefox/addon/turkce-imla-denetimi/). This add-on (version 3.4) and the files within is released under Mozilla Public License version-1.1. See License.txt for the specific language on governing rights and limitations under the License. 

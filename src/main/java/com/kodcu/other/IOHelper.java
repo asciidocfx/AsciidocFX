@@ -337,4 +337,8 @@ public class IOHelper {
 
         return null;
     }
+
+    public static String getPathCleanName(Path object) {
+        return object.getFileName().toString().replaceAll("\\..*", "");
+    }
 }
