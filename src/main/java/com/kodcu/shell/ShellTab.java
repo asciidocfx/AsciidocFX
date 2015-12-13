@@ -21,6 +21,7 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Optional;
 
@@ -48,6 +49,12 @@ public class ShellTab extends Tab {
     private final ThreadService threadService;
     private final DirectoryService directoryService;
     private final EditorConfigBean editorConfigBean;
+    private InputStreamReader inputStreamReader;
+    private InputStreamReader errorStreamReader;
+    private OutputStreamWriter outputStreamWriter;
+    private InputStream inputStream;
+    private InputStream errorStream;
+    private OutputStream outputStream;
 
     @Autowired
     public ShellTab(ApplicationController controller, ThreadService threadService, DirectoryService directoryService, EditorConfigBean editorConfigBean) {
@@ -248,9 +255,16 @@ public class ShellTab extends Tab {
         this.process = processBuilder.start();
 
         Charset charset = Charset.forName(editorConfigBean.getTerminalCharset());
-        this.inputReader = new BufferedReader(new InputStreamReader(process.getInputStream(), charset));
-        this.errorReader = new BufferedReader(new InputStreamReader(process.getErrorStream(), charset));
-        this.outputWriter = new BufferedWriter(new OutputStreamWriter(process.getOutputStream(), charset));
+        this.inputStream = process.getInputStream();
+        this.inputStreamReader = new InputStreamReader(inputStream, charset);
+        this.inputReader = new BufferedReader(inputStreamReader);
+        this.errorStream = process.getErrorStream();
+        this.errorStreamReader = new InputStreamReader(errorStream, charset);
+        this.errorReader = new BufferedReader(errorStreamReader);
+
+        this.outputStream = process.getOutputStream();
+        this.outputStreamWriter = new OutputStreamWriter(outputStream, charset);
+        this.outputWriter = new BufferedWriter(outputStreamWriter);
 
         threadService.start(() -> {
             inputReader.lines().forEach(this::print);
@@ -270,7 +284,17 @@ public class ShellTab extends Tab {
         ObservableList<Tab> tabs = this.getTabPane().getTabs();
         tabs.remove(this);
 
-        Optional.ofNullable(process).ifPresent(Process::destroyForcibly);
+
+        Optional.ofNullable(process).ifPresent(Process::destroy);
+
+        Arrays.asList(inputStream, inputStreamReader, inputReader, errorStream, errorStreamReader, errorReader, outputStream, outputStreamWriter, outputWriter)
+                .forEach((closeable) -> {
+                    try {
+                        closeable.close();
+                    } catch (IOException e) {
+//                        e.printStackTrace();
+                    }
+                });
 
     }
 
