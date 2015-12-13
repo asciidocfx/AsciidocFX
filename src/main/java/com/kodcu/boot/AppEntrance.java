@@ -32,7 +32,7 @@ public class AppEntrance {
         cp.setProgramName("asciidocfx");
         cp.setAboutLine("\nAsciidocFX 1.4.2\nThe asciidocfx command line interface (CLI) converts the AsciiDoc source file to HTML5, DocBook 5, PDF, ODT, MARKDOWN, DESKJS, and REVEALJS.\n" +
                 "By default, the output is written to a file with the basename of the source file and the appropriate extension.\n" +
-                "Example: asciidocfx -b html5 source.adoc\n" +
+                "This is the minimal command chain example to work with ACLI: asciidocfx -b html5 source.adoc\n" +
                 "Or you can specify a destination path along with an appropriate extension and an out file\n" +
                 "Example: asciidocfx -b pdf -d /path/to/dest -o pdfsource.pdf source.adoc");
         cp.setUsageFormatter(new AfxUsageFormatter(true, 160));

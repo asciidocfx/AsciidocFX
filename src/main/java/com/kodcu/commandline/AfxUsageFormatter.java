@@ -40,11 +40,11 @@ public class AfxUsageFormatter extends DefaultUsageFormatter {
         output.append(i18n.tr("Usage:")).append("  ");
         output.append(cmdlineModel.getProgramName() == null ? i18n.tr("program") : cmdlineModel.getProgramName());
         output.append(" ").append(i18n.tr("[parameters]"));
-        output.append("\n\t");
+        output.append("\n\t\t");
         output.append(cmdlineModel.getProgramName() == null ? i18n.tr("program") : cmdlineModel.getProgramName());
         output.append(" ").append(i18n.tr("[options..."));
         output.append(" ").append(i18n.tr("file]"));
-        output.append("\n\t");
+        output.append("\n\t\t");
         output.append(cmdlineModel.getProgramName() == null ? i18n.tr("program") : cmdlineModel.getProgramName());
         output.append(" ").append(i18n.tr("[ --help | -h | --version ]"));
 
