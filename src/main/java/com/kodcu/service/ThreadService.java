@@ -15,11 +15,15 @@ import java.util.function.Consumer;
 public class ThreadService {
 
     private final ScheduledExecutorService threadPollWorker;
-    private ConcurrentHashMap<String, Buff> buffMap = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, Buff> buffMap = new ConcurrentHashMap<>();
+    private final Semaphore uiSemaphore;
+
 
     public ThreadService() {
-        int nThreads = Runtime.getRuntime().availableProcessors() * 2;
-        threadPollWorker = Executors.newScheduledThreadPool((nThreads >= 4) ? nThreads : 4);
+        final int availableProcessors = Runtime.getRuntime().availableProcessors();
+        final int corePoolSize = (availableProcessors * 2 >= 4) ? availableProcessors * 2 : 4;
+        threadPollWorker = Executors.newScheduledThreadPool(corePoolSize);
+        uiSemaphore = new Semaphore(corePoolSize, true);
     }
 
     public ScheduledFuture<?> schedule(Runnable runnable, long delay, TimeUnit timeUnit) {
@@ -42,12 +46,11 @@ public class ThreadService {
 
     // Runs task in JavaFX Thread
     public void runActionLater(Consumer<ActionEvent> consumer) {
-        runActionLater(()->{
+        runActionLater(() -> {
             consumer.accept(null);
         });
     }
 
-    private final Semaphore semaphore = new Semaphore(1);
 
     // Runs task in JavaFX Thread
     public void runActionLater(final Runnable runnable) {
@@ -55,18 +58,18 @@ public class ThreadService {
             runnable.run();
         } else {
             try {
-                semaphore.acquire();
+                uiSemaphore.acquire();
                 Platform.runLater(() -> {
                     try {
                         runnable.run();
-                        semaphore.release();
+                        uiSemaphore.release();
                     } catch (Exception e) {
-                        semaphore.release();
+                        uiSemaphore.release();
                         throw new RuntimeException(e);
                     }
                 });
             } catch (Exception e) {
-                semaphore.release();
+                uiSemaphore.release();
                 throw new RuntimeException(e);
             }
         }
