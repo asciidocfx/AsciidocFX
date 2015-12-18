@@ -341,4 +341,14 @@ public class IOHelper {
     public static String getPathCleanName(Path object) {
         return object.getFileName().toString().replaceAll("\\..*", "");
     }
+
+    public static <T> T readFile(Path path, Class<T> clazz) {
+
+        if (clazz.isAssignableFrom(byte[].class)) {
+            return clazz.cast(readAllBytes(path));
+        } else {
+            return clazz.cast(readFile(path));
+        }
+
+    }
 }
