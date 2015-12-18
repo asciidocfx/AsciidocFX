@@ -2,7 +2,7 @@ function sendConsole(message, taskId) {
     self.postMessage(JSON.stringify({
         type: "log",
         message: message,
-        taskId: taskId
+        taskId: taskId || lastTaskId
     }));
 }
 var console = {
@@ -20,6 +20,7 @@ importScripts("/afx/resource/js/jade.js");
 importScripts("/afx/resource/js/asciidoctor-all.js");
 importScripts("/afx/resource/js/asciidoctor-docbook.js");
 importScripts("/afx/resource/js/asciidoctor-data-line.js");
+importScripts("/afx/resource/js/asciidoctor-data-uri.js");
 importScripts("/afx/resource/js/asciidoctor-chart-block.js");
 importScripts("/afx/resource/js/asciidoctor-tree-block.js");
 importScripts("/afx/resource/js/asciidoctor-uml-block.js");
@@ -51,5 +52,5 @@ self.onmessage = function (e) {
 };
 
 self.onerror = function (e) {
-    console.log(e, lastTaskId);
+    console.log(e);
 };
