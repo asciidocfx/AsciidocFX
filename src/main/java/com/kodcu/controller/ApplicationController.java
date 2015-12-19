@@ -1908,13 +1908,14 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     }
 
     @WebkitCall(from = "converter.js")
-    public void completeWebWorkerExceptionally(Object message, Object taskId) {
+    public void completeWebWorkerExceptionally(Object taskId) {
         threadService.runTaskLater(() -> {
             final Map<String, CompletableFuture<ConverterResult>> workerTasks = asciidocWebkitConverter.getWebWorkerTasks();
             Optional.ofNullable(workerTasks.get(taskId))
                     .filter(c -> !c.isDone())
                     .ifPresent(c -> {
-                        c.completeExceptionally(new RuntimeException(String.format("Task: %s is not completed - %s", taskId, message)));
+                        final RuntimeException ex = new RuntimeException(String.format("Task: %s is not completed", taskId));
+                        c.completeExceptionally(ex);
                     });
             workerTasks.remove(taskId);
         });
@@ -2196,26 +2197,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         }
     }
 
-    @WebkitCall
-    public void debug(String message) {
-        logger.debug(message);
-    }
-
-    @WebkitCall
-    public void error(String message) {
-        logger.error(message);
-    }
-
-    @WebkitCall
-    public void info(String message) {
-        logger.info(message);
-    }
-
-    @WebkitCall
-    public void warn(String message) {
-        logger.warn(message);
-    }
-
     public void saveDoc() {
         current.currentTab().saveDoc();
     }
@@ -2361,10 +2342,29 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         return shortcutProvider;
     }
 
-    public void log(Object... objects) {
-        for (Object object : objects) {
+    @WebkitCall
+    public void log(Object object) {
+        debug(object);
+    }
+
+    @WebkitCall
+    public void debug(Object object) {
+        logger.debug(object + "");
+    }
+
+    @WebkitCall
+    public void warn(Object object) {
+        logger.warn(object + "");
+    }
+
+    @WebkitCall
+    public void info(Object object) {
+        logger.info(object + "");
+    }
+
+    @WebkitCall
+    public void error(Object object) {
             logger.error(object + "");
-        }
     }
 
     @FXML

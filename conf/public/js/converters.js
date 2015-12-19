@@ -4,7 +4,16 @@ myWorker.onmessage = function (e) {
     var data = (typeof e.data) == "string" ? JSON.parse(e.data) : e.data;
 
     if (data.type == "log") {
-        afx.completeWebWorkerExceptionally(JSON.stringify(data.message), data.taskId);
+
+        var logLevel = data.level;
+
+        if (logLevel) {
+            if (logLevel == "error") {
+                afx.completeWebWorkerExceptionally(data.taskId);
+            }
+
+            afx[logLevel].call(afx, JSON.stringify(data.message));
+        }
     }
     else if (data.type == "afx") {
         afx[data.func].apply(afx, data.parameters);
@@ -14,7 +23,7 @@ myWorker.onmessage = function (e) {
 
 myWorker.onerror = function (e) {
     var data = (typeof e) == "string" ? e : JSON.stringify(e);
-    afx.log(data);
+    afx["error"].call(afx, data);
 };
 
 myWorker.postMessage();

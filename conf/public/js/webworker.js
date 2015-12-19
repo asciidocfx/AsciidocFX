@@ -1,16 +1,32 @@
-function sendConsole(message, taskId) {
+function sendConsole(message, level) {
     self.postMessage(JSON.stringify({
         type: "log",
+        level: level,
         message: message,
-        taskId: taskId || lastTaskId
+        taskId: lastTaskId
     }));
 }
-var console = {
-    log: sendConsole,
-    debug: sendConsole,
-    warn: sendConsole,
-    error: sendConsole,
-    info: sendConsole
+
+var console = {};
+
+console.log = function (msg) {
+    sendConsole(msg, "log");
+};
+
+console.debug = function (msg) {
+    sendConsole(msg, "debug");
+};
+
+console.warn = function (msg) {
+    sendConsole(msg, "warn");
+};
+
+console.error = function (msg) {
+    sendConsole(msg, "error");
+};
+
+console.info = function (msg) {
+    sendConsole(msg, "info");
 };
 
 var afx = {};
@@ -29,9 +45,17 @@ importScripts("/afx/resource/js/asciidoctor-deck.js");
 importScripts("/afx/resource/js/outliner.js");
 importScripts("/afx/resource/js/webworker-converters.js");
 
+self.onerror = function (e) {
+    console.error(e);
+};
+
 var lastTaskId = "";
 self.onmessage = function (e) {
     try {
+
+        if (!e.data) {
+            return;
+        }
 
         var data = JSON.parse(e.data) || {};
 
@@ -47,10 +71,6 @@ self.onmessage = function (e) {
 
     }
     catch (e) {
-        console.log(e, lastTaskId);
+        console.error(e);
     }
-};
-
-self.onerror = function (e) {
-    console.log(e);
 };
