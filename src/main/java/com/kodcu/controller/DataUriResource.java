@@ -39,52 +39,37 @@ public class DataUriResource {
     @ResponseBody
     public String readUri(@RequestBody String data) {
 
-        final StringReader stringReader = new StringReader(data);
-        final JsonReader jsonReader = Json.createReader(stringReader);
+        try (final StringReader stringReader = new StringReader(data);
+             final JsonReader jsonReader = Json.createReader(stringReader);) {
 
-        final JsonObject object = jsonReader.readObject();
-        String imageUri = object.getString("imageUri");
-        String dataFormat = "data:image/%s;%s,%s";
+            final JsonObject object = jsonReader.readObject();
+            String imageUri = object.getString("imageUri");
+            String dataFormat = "data:image/%s;%s,%s";
 
-        if (imageUri.startsWith("//")) {
-            imageUri = imageUri.replaceFirst("//", "http://");
+            if (imageUri.startsWith("//")) {
+                imageUri = imageUri.replaceFirst("//", "http://");
+            }
+
+            dataFormat = String.format(dataFormat, "png", "base64", "%s");
+
+            if (isExternalUri(imageUri)) {
+                return String.format(dataFormat, getExternalContent(imageUri));
+            } else {
+                return String.format(dataFormat, getLocalContent(imageUri));
+            }
+
         }
-
-//        if (isSvg(imageUri)) {
-//            dataFormat = String.format(dataFormat, "svg+xml", "utf8", "%s");
-//        } else {
-        dataFormat = String.format(dataFormat, "png", "base64", "%s");
-//        }
-
-        if (isExternalUri(imageUri)) {
-            return String.format(dataFormat, getExternalContent(imageUri));
-        } else {
-            return String.format(dataFormat, getLocalContent(imageUri));
-        }
-
     }
 
     private Object getLocalContent(String uri) {
         final Path path = directoryService.findPathInCurrentOrWorkDir(uri);
-//        if (isSvg(uri)) {
-//            String file = IOHelper.readFile(path, String.class);
-//            file = String.join(" ", file.split("\\r?\\n"));
-//            return file.replaceAll("<\\?xml(.+?)\\?>", "").trim();
-//        } else {
         final byte[] bytes = IOHelper.readFile(path, byte[].class);
         return base64Encoder.encodeToString(bytes);
-//        }
     }
 
     private Object getExternalContent(String uri) {
-//        if (isSvg(uri)) {
-//            String file = restTemplate.getForObject(uri, String.class);
-//            file = String.join(" ", file.split("\\r?\\n"));
-//            return file.replaceAll("<\\?xml(.+?)\\?>", "").trim();
-//        } else {
         final byte[] bytes = restTemplate.getForObject(uri, byte[].class);
         return base64Encoder.encodeToString(bytes);
-//        }
     }
 
     private boolean isSvg(String uri) {
