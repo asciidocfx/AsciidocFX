@@ -2,6 +2,7 @@ package com.kodcu.shell;
 
 import com.kodcu.config.EditorConfigBean;
 import com.kodcu.controller.ApplicationController;
+import com.kodcu.other.OSHelper;
 import com.kodcu.service.DirectoryService;
 import com.kodcu.service.ThreadService;
 import javafx.collections.ObservableList;
@@ -21,7 +22,6 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Optional;
 
@@ -190,7 +190,9 @@ public class ShellTab extends Tab {
     }
 
     private void clearHistory() {
-        textArea.clear();
+        threadService.runActionLater(() -> {
+            textArea.clear();
+        });
     }
 
     public class CommandChecker {
@@ -207,7 +209,7 @@ public class ShellTab extends Tab {
 
         public CommandChecker checkCommand(String command, Runnable runnable) {
             if (!matched && text.equalsIgnoreCase(command)) {
-                threadService.runActionLater(runnable);
+                runnable.run();
                 matched = true;
             }
 
@@ -231,10 +233,8 @@ public class ShellTab extends Tab {
 
     private void initializeProcess(Path terminalPath) throws Exception {
 
-        String os = System.getProperty("os.name").toLowerCase();
-
         String[] commands;
-        if (os.contains("win")) {
+        if (OSHelper.isWindows()) {
             commands = editorConfigBean.getTerminalWinCommand().split("\\|");
         } else {
             commands = editorConfigBean.getTerminalNixCommand().split("\\|");
@@ -281,21 +281,17 @@ public class ShellTab extends Tab {
 
     public void destroy() {
 
-        ObservableList<Tab> tabs = this.getTabPane().getTabs();
-        tabs.remove(this);
+        threadService.runActionLater(() -> {
 
+            ObservableList<Tab> tabs = this.getTabPane().getTabs();
+            tabs.remove(this);
 
-        Optional.ofNullable(process).ifPresent(Process::destroy);
-
-        Arrays.asList(inputStream, inputStreamReader, inputReader, errorStream, errorStreamReader, errorReader, outputStream, outputStreamWriter, outputWriter)
-                .forEach((closeable) -> {
-                    try {
-                        closeable.close();
-                    } catch (IOException e) {
-//                        e.printStackTrace();
-                    }
-                });
-
+            threadService.start(() -> {
+                Optional.ofNullable(process).ifPresent(Process::destroy);
+                process.exitValue();
+            });
+        });
     }
+
 
 }
