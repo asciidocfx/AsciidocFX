@@ -1,16 +1,32 @@
-function sendConsole(message, taskId) {
+function sendConsole(message, level) {
     self.postMessage(JSON.stringify({
         type: "log",
+        level: level,
         message: message,
-        taskId: taskId
+        taskId: lastTaskId
     }));
 }
-var console = {
-    log: sendConsole,
-    debug: sendConsole,
-    warn: sendConsole,
-    error: sendConsole,
-    info: sendConsole
+
+var console = {};
+
+console.log = function (msg) {
+    sendConsole(msg, "log");
+};
+
+console.debug = function (msg) {
+    sendConsole(msg, "debug");
+};
+
+console.warn = function (msg) {
+    sendConsole(msg, "warn");
+};
+
+console.error = function (msg) {
+    sendConsole(msg, "error");
+};
+
+console.info = function (msg) {
+    sendConsole(msg, "info");
 };
 
 var afx = {};
@@ -20,6 +36,7 @@ importScripts("/afx/resource/js/jade.js");
 importScripts("/afx/resource/js/asciidoctor-all.js");
 importScripts("/afx/resource/js/asciidoctor-docbook.js");
 importScripts("/afx/resource/js/asciidoctor-data-line.js");
+importScripts("/afx/resource/js/asciidoctor-data-uri.js");
 importScripts("/afx/resource/js/asciidoctor-chart-block.js");
 importScripts("/afx/resource/js/asciidoctor-tree-block.js");
 importScripts("/afx/resource/js/asciidoctor-uml-block.js");
@@ -28,9 +45,17 @@ importScripts("/afx/resource/js/asciidoctor-deck.js");
 importScripts("/afx/resource/js/outliner.js");
 importScripts("/afx/resource/js/webworker-converters.js");
 
+self.onerror = function (e) {
+    console.error(e);
+};
+
 var lastTaskId = "";
 self.onmessage = function (e) {
     try {
+
+        if (!e.data) {
+            return;
+        }
 
         var data = JSON.parse(e.data) || {};
 
@@ -46,10 +71,6 @@ self.onmessage = function (e) {
 
     }
     catch (e) {
-        console.log(e, lastTaskId);
+        console.error(e);
     }
-};
-
-self.onerror = function (e) {
-    console.log(e, lastTaskId);
 };

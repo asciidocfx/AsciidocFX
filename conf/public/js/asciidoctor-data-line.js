@@ -20,15 +20,19 @@ Opal.modules["image-data-line-treeprocessor/extension"] = function (Opal) {
                 if (document.$attr('apply-data-line')['$nil?']())
                     return document;
 
-                document.$find_by().forEach(function (node) {
-                    if (node)
-                        if (node.$source_location)
+                try {
+                    document.$find_by().forEach(function (node) {
+                        if (node && node.$source_location)
                             if (node.$source_location().lineno) {
                                 var nodeName = node.node_name;
                                 var lineno = node.$source_location().lineno;
                                 node.$attributes()['$[]=']("role", "data-line-" + lineno);
                             }
-                });
+                    });
+                }
+                catch (e) {
+                    // doesn't apply data-line for labeled list
+                }
 
                 return document;
             }, nil) && 'process'
