@@ -206,14 +206,6 @@ public class IOHelper {
         }
     }
 
-    public static void setUserConfig(FopFactory fopFactory, String configUri) {
-        try {
-            fopFactory.setUserConfig(configUri);
-        } catch (SAXException | IOException e) {
-            logger.error("Problem occured while setting {} as UserConfig", configUri, e);
-        }
-    }
-
     public static void deleteIfExists(Path path) {
         try {
             Files.deleteIfExists(path);
