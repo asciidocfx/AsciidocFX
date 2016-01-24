@@ -10,7 +10,7 @@
                 version='1.0'>
 
 <!-- ********************************************************************
-     $Id: inline.xsl 9718 2013-01-30 18:29:51Z bobstayton $
+     $Id: inline.xsl 9963 2015-05-20 18:37:42Z bobstayton $
      ********************************************************************
 
      This file is part of the XSL DocBook Stylesheet distribution.
@@ -29,6 +29,30 @@
   </xsl:param>
   <xsl:param name="linkend" select="$node/@linkend"/>
   <xsl:param name="xhref" select="$node/@xlink:href"/>
+
+  <!-- check for nested links, which are undefined in the output -->
+  <xsl:if test="($linkend or $xhref) and $node/ancestor::*[@xlink:href or @linkend]">
+    <xsl:message>
+      <xsl:text>WARNING: nested link may be undefined in output: </xsl:text>
+      <xsl:text>&lt;</xsl:text>
+      <xsl:value-of select="name($node)"/>
+      <xsl:text> </xsl:text>
+      <xsl:choose>
+        <xsl:when test="$linkend">
+          <xsl:text>@linkend = '</xsl:text>
+          <xsl:value-of select="$linkend"/>
+          <xsl:text>'&gt;</xsl:text>
+        </xsl:when>
+        <xsl:when test="$xhref">
+          <xsl:text>@xlink:href = '</xsl:text>
+          <xsl:value-of select="$xhref"/>
+          <xsl:text>'&gt;</xsl:text>
+        </xsl:when>
+      </xsl:choose>
+      <xsl:text> nested inside parent element </xsl:text>
+      <xsl:value-of select="name($node/parent::*)"/>
+    </xsl:message>
+  </xsl:if>
 
   <xsl:choose>
     <xsl:when test="$xhref
@@ -149,10 +173,12 @@
 
 <xsl:template name="inline.sansseq">
   <xsl:param name="content">
+    <xsl:apply-templates/>
+  </xsl:param>
+
+  <xsl:param name="contentwithlink">
     <xsl:call-template name="simple.xlink">
-        <xsl:with-param name="content">
-          <xsl:apply-templates/>
-        </xsl:with-param>
+      <xsl:with-param name="content" select="$content"/>
     </xsl:call-template>
   </xsl:param>
 
@@ -166,11 +192,11 @@
               <xsl:otherwise>rtl</xsl:otherwise>
             </xsl:choose>
           </xsl:attribute>
-          <xsl:copy-of select="$content"/>
+          <xsl:copy-of select="$contentwithlink"/>
         </fo:inline>
       </xsl:when>
       <xsl:otherwise>
-        <xsl:copy-of select="$content"/>
+        <xsl:copy-of select="$contentwithlink"/>
       </xsl:otherwise>
     </xsl:choose>
   </fo:inline>
@@ -178,10 +204,12 @@
 
 <xsl:template name="inline.charseq">
   <xsl:param name="content">
+    <xsl:apply-templates/>
+  </xsl:param>
+
+  <xsl:param name="contentwithlink">
     <xsl:call-template name="simple.xlink">
-      <xsl:with-param name="content">
-        <xsl:apply-templates/>
-      </xsl:with-param>
+      <xsl:with-param name="content" select="$content"/>
     </xsl:call-template>
   </xsl:param>
 
@@ -194,23 +222,26 @@
             <xsl:otherwise>rtl</xsl:otherwise>
           </xsl:choose>
         </xsl:attribute>
-        <xsl:copy-of select="$content"/>
+        <xsl:copy-of select="$contentwithlink"/>
       </fo:inline>
     </xsl:when>
     <xsl:otherwise>
-      <xsl:copy-of select="$content"/>
+      <xsl:copy-of select="$contentwithlink"/>
     </xsl:otherwise>
   </xsl:choose>
 </xsl:template>
 
 <xsl:template name="inline.monoseq">
   <xsl:param name="content">
+    <xsl:apply-templates/>
+  </xsl:param>
+
+  <xsl:param name="contentwithlink">
     <xsl:call-template name="simple.xlink">
-      <xsl:with-param name="content">
-        <xsl:apply-templates/>
-      </xsl:with-param>
+      <xsl:with-param name="content" select="$content"/>
     </xsl:call-template>
   </xsl:param>
+
 
   <fo:inline xsl:use-attribute-sets="monospace.properties">
     <xsl:call-template name="anchor"/>
@@ -222,16 +253,18 @@
         </xsl:choose>
       </xsl:attribute>
     </xsl:if>
-    <xsl:copy-of select="$content"/>
+    <xsl:copy-of select="$contentwithlink"/>
   </fo:inline>
 </xsl:template>
 
 <xsl:template name="inline.boldseq">
   <xsl:param name="content">
+    <xsl:apply-templates/>
+  </xsl:param>
+
+  <xsl:param name="contentwithlink">
     <xsl:call-template name="simple.xlink">
-      <xsl:with-param name="content">
-        <xsl:apply-templates/>
-      </xsl:with-param>
+      <xsl:with-param name="content" select="$content"/>
     </xsl:call-template>
   </xsl:param>
 
@@ -244,16 +277,18 @@
         </xsl:choose>
       </xsl:attribute>
     </xsl:if>
-    <xsl:copy-of select="$content"/>
+    <xsl:copy-of select="$contentwithlink"/>
   </fo:inline>
 </xsl:template>
 
 <xsl:template name="inline.italicseq">
   <xsl:param name="content">
+    <xsl:apply-templates/>
+  </xsl:param>
+
+  <xsl:param name="contentwithlink">
     <xsl:call-template name="simple.xlink">
-      <xsl:with-param name="content">
-        <xsl:apply-templates/>
-      </xsl:with-param>
+      <xsl:with-param name="content" select="$content"/>
     </xsl:call-template>
   </xsl:param>
 
@@ -267,16 +302,18 @@
         </xsl:choose>
       </xsl:attribute>
     </xsl:if>
-    <xsl:copy-of select="$content"/>
+    <xsl:copy-of select="$contentwithlink"/>
   </fo:inline>
 </xsl:template>
 
 <xsl:template name="inline.boldmonoseq">
   <xsl:param name="content">
+    <xsl:apply-templates/>
+  </xsl:param>
+
+  <xsl:param name="contentwithlink">
     <xsl:call-template name="simple.xlink">
-      <xsl:with-param name="content">
-        <xsl:apply-templates/>
-      </xsl:with-param>
+      <xsl:with-param name="content" select="$content"/>
     </xsl:call-template>
   </xsl:param>
 
@@ -290,16 +327,18 @@
         </xsl:choose>
       </xsl:attribute>
     </xsl:if>
-    <xsl:copy-of select="$content"/>
+    <xsl:copy-of select="$contentwithlink"/>
   </fo:inline>
 </xsl:template>
 
 <xsl:template name="inline.italicmonoseq">
   <xsl:param name="content">
+    <xsl:apply-templates/>
+  </xsl:param>
+
+  <xsl:param name="contentwithlink">
     <xsl:call-template name="simple.xlink">
-      <xsl:with-param name="content">
-        <xsl:apply-templates/>
-      </xsl:with-param>
+      <xsl:with-param name="content" select="$content"/>
     </xsl:call-template>
   </xsl:param>
 
@@ -313,16 +352,18 @@
         </xsl:choose>
       </xsl:attribute>
     </xsl:if>
-    <xsl:copy-of select="$content"/>
+    <xsl:copy-of select="$contentwithlink"/>
   </fo:inline>
 </xsl:template>
 
 <xsl:template name="inline.superscriptseq">
   <xsl:param name="content">
+    <xsl:apply-templates/>
+  </xsl:param>
+
+  <xsl:param name="contentwithlink">
     <xsl:call-template name="simple.xlink">
-      <xsl:with-param name="content">
-        <xsl:apply-templates/>
-      </xsl:with-param>
+      <xsl:with-param name="content" select="$content"/>
     </xsl:call-template>
   </xsl:param>
 
@@ -344,16 +385,18 @@
         <xsl:attribute name="baseline-shift">super</xsl:attribute>
       </xsl:otherwise>
     </xsl:choose>
-    <xsl:copy-of select="$content"/>
+    <xsl:copy-of select="$contentwithlink"/>
   </fo:inline>
 </xsl:template>
 
 <xsl:template name="inline.subscriptseq">
   <xsl:param name="content">
+    <xsl:apply-templates/>
+  </xsl:param>
+
+  <xsl:param name="contentwithlink">
     <xsl:call-template name="simple.xlink">
-      <xsl:with-param name="content">
-        <xsl:apply-templates/>
-      </xsl:with-param>
+      <xsl:with-param name="content" select="$content"/>
     </xsl:call-template>
   </xsl:param>
 
@@ -375,7 +418,7 @@
         <xsl:attribute name="baseline-shift">sub</xsl:attribute>
       </xsl:otherwise>
     </xsl:choose>
-    <xsl:copy-of select="$content"/>
+    <xsl:copy-of select="$contentwithlink"/>
   </fo:inline>
 </xsl:template>
 
@@ -687,14 +730,6 @@
 </xsl:template>
 
 <xsl:template match="emphasis">
-  <xsl:variable name="depth">
-    <xsl:call-template name="dot.count">
-      <xsl:with-param name="string">
-        <xsl:number level="multiple"/>
-      </xsl:with-param>
-    </xsl:call-template>
-  </xsl:variable>
-
   <xsl:choose>
     <xsl:when test="@role='bold' or @role='strong'">
       <xsl:call-template name="inline.boldseq"/>
@@ -710,6 +745,11 @@
       </fo:inline>
     </xsl:when>
     <xsl:otherwise>
+      <!-- How many regular emphasis ancestors does this element have -->
+      <xsl:variable name="depth" select="count(ancestor::emphasis
+	[not(contains(' bold strong underline strikethrough ', concat(' ', @role, ' ')))]
+	)"/>
+
       <xsl:choose>
         <xsl:when test="$depth mod 2 = 1">
           <fo:inline font-style="normal">
@@ -1114,8 +1154,9 @@
   <xsl:variable name="mm.separator">
     <xsl:choose>
       <xsl:when test="($fop.extensions != 0 or $fop1.extensions != 0 ) and
-                contains($menuchoice.menu.separator, '&#x2192;')">
-        <fo:inline font-family="Symbol">
+                contains($menuchoice.menu.separator, '&#x2192;') and
+                $symbol.font.family != ''">
+        <fo:inline font-size=".75em" font-family="{$symbol.font.family}">
           <xsl:copy-of select="$menuchoice.menu.separator"/>
         </fo:inline>
       </xsl:when>

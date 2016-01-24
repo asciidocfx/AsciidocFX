@@ -53,6 +53,10 @@
 <l:gentext key="copyright" text="版权"/>
 <l:gentext key="Dedication" text="题词"/>
 <l:gentext key="dedication" text="题词"/>
+<l:gentext key="Dialogue" text="对白"/>
+<l:gentext key="dialogue" text="对白"/>
+<l:gentext key="Drama" text="剧本"/>
+<l:gentext key="drama" text="剧本"/>
 <l:gentext key="Edition" text="版"/>
 <l:gentext key="edition" text="版"/>
 <l:gentext key="Editor" text="编者"/>
@@ -88,6 +92,8 @@
 <l:gentext key="note" text="注意"/>
 <l:gentext key="Part" text="部分"/>
 <l:gentext key="part" text="部分"/>
+<l:gentext key="Poetry" text="诗歌"/>
+<l:gentext key="poetry" text="诗歌"/>
 <l:gentext key="Preface" text="前言"/>
 <l:gentext key="preface" text="前言"/>
 <l:gentext key="Procedure" text="过程"/>
@@ -98,20 +104,20 @@
 <l:gentext key="Published" text="出版方"/>
 <l:gentext key="published" text="出版方"/>
 <l:gentext key="Publisher" text="出版者"/>
-<l:gentext key="Qandadiv" text="质保"/>
-<l:gentext key="qandadiv" text="质保"/>
+<l:gentext key="Qandadiv" text="答问集"/>
+<l:gentext key="qandadiv" text="答问集"/>
 <l:gentext key="QandASet" text="常见问题"/>
 <l:gentext key="Question" text="问："/>
 <l:gentext key="question" text="问："/>
-<l:gentext key="RefEntry" text=""/>
-<l:gentext key="refentry" text=""/>
+<l:gentext key="RefEntry" text="页"/>
+<l:gentext key="refentry" text="页"/>
 <l:gentext key="Reference" text="参考"/>
 <l:gentext key="reference" text="参考"/>
 <l:gentext key="References" text="参考"/>
 <l:gentext key="RefName" text="名称"/>
 <l:gentext key="refname" text="名称"/>
-<l:gentext key="RefSection" text=""/>
-<l:gentext key="refsection" text=""/>
+<l:gentext key="RefSection" text="节"/>
+<l:gentext key="refsection" text="节"/>
 <l:gentext key="RefSynopsisDiv" text="大纲"/>
 <l:gentext key="refsynopsisdiv" text="大纲"/>
 <l:gentext key="RevHistory" text="修订历史"/>
@@ -130,10 +136,10 @@
 <l:gentext key="seealso" text="参见"/>
 <l:gentext key="Seealso" text="参见"/>
 <l:gentext key="SeeAlso" text="参见"/>
-<l:gentext key="set" text="Set"/>
-<l:gentext key="Set" text="Set"/>
-<l:gentext key="setindex" text="Set Index"/>
-<l:gentext key="SetIndex" text="Set Index"/>
+<l:gentext key="set" text="集合"/>
+<l:gentext key="Set" text="集合"/>
+<l:gentext key="setindex" text="索引"/>
+<l:gentext key="SetIndex" text="索引"/>
 <l:gentext key="Sidebar" text="侧栏"/>
 <l:gentext key="sidebar" text="侧栏"/>
 <l:gentext key="step" text="步骤"/>
@@ -151,6 +157,7 @@
 <l:gentext key="and" text="和"/>
 <l:gentext key="or" text="或"/>
 <l:gentext key="by" text="由"/>
+<l:gentext key="optional-step" text="(可选的) "/>
 <l:gentext key="Edited" text="编辑时间"/>
 <l:gentext key="edited" text="编辑时间"/>
 <l:gentext key="Editedby" text="编辑"/>
@@ -171,6 +178,8 @@
 <l:gentext key="unexpectedelementname" text="未预期的名称"/>
 <l:gentext key="unsupported" text="不支持"/>
 <l:gentext key="xrefto" text="xref to"/>
+<l:gentext key="video-unsupported" text="你的浏览器不支持 video 标签"/>
+<l:gentext key="audio-unsupported" text="你的浏览器不支持 audio 标签"/>
 <l:gentext key="Authors" text="作者"/>
 <l:gentext key="copyeditor" text="版权编辑"/>
 <l:gentext key="graphicdesigner" text="美术编辑"/>
@@ -216,27 +225,27 @@
 <l:gentext key="hyphenation-character" text="-"/>
 <l:gentext key="hyphenation-push-character-count" text="2"/>
 <l:gentext key="hyphenation-remain-character-count" text="2"/>
-<l:context name="keycap"><l:template name="alt" text="Alt" lang="en"/>
-<l:template name="backspace" text="&lt;—" lang="en"/>
-<l:template name="command" text="⌘" lang="en"/>
-<l:template name="control" text="Ctrl" lang="en"/>
-<l:template name="delete" text="Del" lang="en"/>
-<l:template name="down" text="↓" lang="en"/>
-<l:template name="end" text="End" lang="en"/>
-<l:template name="enter" text="Enter" lang="en"/>
-<l:template name="escape" text="Esc" lang="en"/>
-<l:template name="home" text="Home" lang="en"/>
-<l:template name="insert" text="Ins" lang="en"/>
-<l:template name="left" text="←" lang="en"/>
-<l:template name="meta" text="Meta" lang="en"/>
-<l:template name="option" text="???" lang="en"/>
-<l:template name="pagedown" text="Page ↓" lang="en"/>
-<l:template name="pageup" text="Page ↑" lang="en"/>
-<l:template name="right" text="→" lang="en"/>
-<l:template name="shift" text="Shift" lang="en"/>
-<l:template name="space" text="Space" lang="en"/>
-<l:template name="tab" text="→|" lang="en"/>
-<l:template name="up" text="↑" lang="en"/>
+<l:context name="keycap"><l:template name="alt" text="Alt"/>
+<l:template name="backspace" text="&lt;—"/>
+<l:template name="command" text="⌘"/>
+<l:template name="control" text="Ctrl"/>
+<l:template name="delete" text="Del"/>
+<l:template name="down" text="↓"/>
+<l:template name="end" text="End"/>
+<l:template name="enter" text="Enter"/>
+<l:template name="escape" text="Esc"/>
+<l:template name="home" text="Home"/>
+<l:template name="insert" text="Ins"/>
+<l:template name="left" text="←"/>
+<l:template name="meta" text="Meta"/>
+<l:template name="option" text="⌥"/>
+<l:template name="pagedown" text="Page ↓"/>
+<l:template name="pageup" text="Page ↑"/>
+<l:template name="right" text="→"/>
+<l:template name="shift" text="Shift"/>
+<l:template name="space" text="Space"/>
+<l:template name="tab" text="→|"/>
+<l:template name="up" text="↑"/>
 </l:context>
 <l:context name="webhelp"><l:template name="Search" text="搜索"/>
 <l:template name="Enter_a_term_and_click" text="输入字词，然后点击 "/>
@@ -317,7 +326,7 @@
 <l:template name="refsect3" text="%t"/>
 <l:template name="refsynopsisdiv" text="%t"/>
 <l:template name="refsynopsisdivinfo" text="%t"/>
-<l:template name="screenshot" text="%t" lang="en"/>
+<l:template name="screenshot" text="%t"/>
 <l:template name="segmentedlist" text="%t"/>
 <l:template name="set" text="%t"/>
 <l:template name="setindex" text="%t"/>
@@ -345,8 +354,11 @@
 <l:template name="sect5" text="%t"/>
 <l:template name="section" text="%t"/>
 <l:template name="simplesect" text="%t"/>
-<l:template name="topic" text="%t" lang="en"/>
+<l:template name="topic" text="%t"/>
 <l:template name="part" text="%t"/>
+<l:template name="dialogue" text="%t"/>
+<l:template name="drama" text="%t"/>
+<l:template name="poetry" text="%t"/>
 </l:context>
 <l:context name="title-numbered"><l:template name="appendix" text="附录 %n. %t"/>
 <l:template name="article/appendix" text="%n. %t"/>
@@ -360,7 +372,7 @@
 <l:template name="sect5" text="%n. %t"/>
 <l:template name="section" text="%n. %t"/>
 <l:template name="simplesect" text="%t"/>
-<l:template name="topic" text="%t" lang="en"/>
+<l:template name="topic" text="%t"/>
 </l:context>
 <l:context name="subtitle"><l:template name="appendix" text="%s"/>
 <l:template name="acknowledgements" text="%s"/>
@@ -400,8 +412,11 @@
 <l:template name="setindex" text="%s"/>
 <l:template name="sidebar" text="%s"/>
 <l:template name="simplesect" text="%s"/>
-<l:template name="topic" text="%t" lang="en"/>
+<l:template name="topic" text="%t"/>
 <l:template name="toc" text="%s"/>
+<l:template name="dialogue" text="%s"/>
+<l:template name="drama" text="%s"/>
+<l:template name="poetry" text="%s"/>
 </l:context>
 <l:context name="xref"><l:template name="abstract" text="%t"/>
 <l:template name="acknowledgements" text="%t"/>
@@ -455,7 +470,7 @@
 <l:template name="question" text="问： %n"/>
 <l:template name="reference" text="%t"/>
 <l:template name="refsynopsisdiv" text="%t"/>
-<l:template name="screenshot" text="%t" lang="en"/>
+<l:template name="screenshot" text="%t"/>
 <l:template name="segmentedlist" text="%t"/>
 <l:template name="set" text="%t"/>
 <l:template name="setindex" text="%t"/>
@@ -475,7 +490,10 @@
 <l:template name="docnamelong" text=" 在文档标题 %o"/>
 <l:template name="pageabbrev" text="(第 %p 页)"/>
 <l:template name="Page" text="第 %p 页"/>
-<l:template name="topic" text="%t" lang="en"/>
+<l:template name="topic" text="%t"/>
+<l:template name="dialogue" text="%t"/>
+<l:template name="drama" text="%t"/>
+<l:template name="poetry" text="%t"/>
 <l:template name="bridgehead" text="“%t”一节"/>
 <l:template name="refsection" text="“%t”一节"/>
 <l:template name="refsect1" text="“%t”一节"/>
@@ -499,7 +517,7 @@
 <l:template name="part" text="第 %n 部分"/>
 <l:template name="procedure" text="过程 %n"/>
 <l:template name="productionset" text="产品 %n"/>
-<l:template name="qandadiv" text="质保 %n"/>
+<l:template name="qandadiv" text="答问集 %n"/>
 <l:template name="qandaentry" text="问： %n"/>
 <l:template name="question" text="问： %n"/>
 <l:template name="sect1" text="第 %n 节"/>
@@ -519,7 +537,7 @@
 <l:template name="part" text="第 %n 部分 “%t”"/>
 <l:template name="procedure" text="过程 %n, “%t”"/>
 <l:template name="productionset" text="产品 %n, “%t”"/>
-<l:template name="qandadiv" text="质保 %n, “%t”"/>
+<l:template name="qandadiv" text="答问集 %n, “%t”"/>
 <l:template name="refsect1" text="“%t”一节"/>
 <l:template name="refsect2" text="“%t”一节"/>
 <l:template name="refsect3" text="“%t”一节"/>

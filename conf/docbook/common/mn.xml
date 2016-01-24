@@ -53,6 +53,10 @@
 <l:gentext key="copyright" text="зохиогчийн эрх"/>
 <l:gentext key="Dedication" text="Зохиогчийн үг"/>
 <l:gentext key="dedication" text="зохиогчийн үг"/>
+<l:gentext key="Dialogue" text="Dialogue" lang="en"/>
+<l:gentext key="dialogue" text="Dialogue" lang="en"/>
+<l:gentext key="Drama" text="Drama" lang="en"/>
+<l:gentext key="drama" text="Drama" lang="en"/>
 <l:gentext key="Edition" text="Хэвлэл"/>
 <l:gentext key="edition" text="хэвлэл"/>
 <l:gentext key="Editor" text="Хянан тохиолдуулагч"/>
@@ -88,6 +92,8 @@
 <l:gentext key="note" text="тэмдэглэл"/>
 <l:gentext key="Part" text="хэсэг"/>
 <l:gentext key="part" text="Хэсэг"/>
+<l:gentext key="Poetry" text="Poetry" lang="en"/>
+<l:gentext key="poetry" text="Poetry" lang="en"/>
 <l:gentext key="Preface" text="Өмнөх үг"/>
 <l:gentext key="preface" text="өмнөх үг"/>
 <l:gentext key="Procedure" text="Гүйцэтгэл"/>
@@ -151,6 +157,7 @@
 <l:gentext key="and" text="ба"/>
 <l:gentext key="or" text="or" lang="en"/>
 <l:gentext key="by" text=""/>
+<l:gentext key="optional-step" text="(Optional) " lang="en"/>
 <l:gentext key="Edited" text="Хянасан"/>
 <l:gentext key="edited" text="хянасан"/>
 <l:gentext key="Editedby" text="Хянан тохиолдуулсан"/>
@@ -171,6 +178,8 @@
 <l:gentext key="unexpectedelementname" text="Санамсаргүй элемент"/>
 <l:gentext key="unsupported" text="дэмжигдээгүй"/>
 <l:gentext key="xrefto" text="xref руу"/>
+<l:gentext key="video-unsupported" text="Your browser does not support the video tag" lang="en"/>
+<l:gentext key="audio-unsupported" text="Your browser does not support the audio tag" lang="en"/>
 <l:gentext key="Authors" text="Зохиогчид"/>
 <l:gentext key="copyeditor" text="Хуулбар хянан тохиолдуулагч"/>
 <l:gentext key="graphicdesigner" text="График дизайнч"/>
@@ -229,7 +238,7 @@
 <l:template name="insert" text="Ins" lang="en"/>
 <l:template name="left" text="←" lang="en"/>
 <l:template name="meta" text="Meta" lang="en"/>
-<l:template name="option" text="???" lang="en"/>
+<l:template name="option" text="⌥" lang="en"/>
 <l:template name="pagedown" text="Page ↓" lang="en"/>
 <l:template name="pageup" text="Page ↑" lang="en"/>
 <l:template name="right" text="→" lang="en"/>
@@ -347,6 +356,9 @@
 <l:template name="simplesect" text="%t"/>
 <l:template name="topic" text="%t" lang="en"/>
 <l:template name="part" text="%t"/>
+<l:template name="dialogue" text="%t" lang="en"/>
+<l:template name="drama" text="%t" lang="en"/>
+<l:template name="poetry" text="%t" lang="en"/>
 </l:context>
 <l:context name="title-numbered"><l:template name="appendix" text="Хавсралт %n. %t"/>
 <l:template name="article/appendix" text="%n. %t"/>
@@ -402,6 +414,9 @@
 <l:template name="simplesect" text="%s"/>
 <l:template name="topic" text="%t" lang="en"/>
 <l:template name="toc" text="%s"/>
+<l:template name="dialogue" text="%s" lang="en"/>
+<l:template name="drama" text="%s" lang="en"/>
+<l:template name="poetry" text="%s" lang="en"/>
 </l:context>
 <l:context name="xref"><l:template name="abstract" text="%t"/>
 <l:template name="acknowledgements" text="%t" lang="en"/>
@@ -476,6 +491,9 @@
 <l:template name="pageabbrev" text="(Х. %p)"/>
 <l:template name="Page" text="Хуудас %p"/>
 <l:template name="topic" text="%t" lang="en"/>
+<l:template name="dialogue" text="%t" lang="en"/>
+<l:template name="drama" text="%t" lang="en"/>
+<l:template name="poetry" text="%t" lang="en"/>
 <l:template name="bridgehead" text="«%t»"/>
 <l:template name="refsection" text="«%t»"/>
 <l:template name="refsect1" text="«%t»"/>

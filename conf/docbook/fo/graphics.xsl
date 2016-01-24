@@ -14,7 +14,7 @@
                 version='1.0'>
 
 <!-- ********************************************************************
-     $Id: graphics.xsl 9647 2012-10-26 17:42:03Z bobstayton $
+     $Id: graphics.xsl 9941 2014-09-06 16:35:04Z bobstayton $
      ********************************************************************
 
      This file is part of the XSL DocBook Stylesheet distribution.
@@ -174,6 +174,7 @@
         <xsl:with-param name="filename">
           <xsl:if test="$img.src.path != '' and
                         not(starts-with($filename, '/')) and
+                        not(starts-with($filename, 'file:/')) and
                         not(contains($filename, '://'))">
             <xsl:value-of select="$img.src.path"/>
           </xsl:if>

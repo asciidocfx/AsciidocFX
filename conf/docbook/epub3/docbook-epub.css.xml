@@ -1,18 +1,11 @@
 <?xml version="1.0"?>
 <style>
 
-
-
     /********************************/
     /* start of styles in block.xsl */
 
     .formalpara-title {
     font-weight: bold;
-    color : #133050;
-    }
-
-    .title{
-    color : #133050;
     }
 
     div.blockquote-title {
@@ -65,7 +58,7 @@
     /* start of styles in autotoc.xsl */
 
     /* top level entries */
-    nav>ol>li>a {
+    nav&gt;ol&gt;li&gt;a {
     margin-top: 1em;
     margin-bottom: 1em;
     }
@@ -79,7 +72,6 @@
 
     div.figure-title {
     font-weight: bold;
-    text-align:center;
     }
 
     div.example-title {
@@ -139,11 +131,32 @@
 
     nav ol li a {
     text-decoration: none;
+    color: black;
     font-family: sans-serif;
     }
 
     #guide {
     display: none;
+    }
+
+    img {
+    max-width:95%;
+    }
+
+    .title{
+    color : #133050;
+    }
+
+    .formalpara-title {
+    color : #133050;
+    }
+
+    div.figure-title {
+    text-align:center;
+    }
+
+    .informalfigure > img , .figure > img{
+    border: 1px solid #D8D8D8;
     }
 
     .tip, .note, .warning, .caution, .important {
@@ -153,22 +166,23 @@
     padding-left: 5px;
     }
 
-    .informalfigure > img , .figure > img{
-    border: 1px solid #D8D8D8;
-    }
-
-    img {
-        max-width:95%;
-    }
-
-    div.figure {
-        display: inline-block;
-    }
-
     .toc .toc-title {
-        font-size: 1.25em;
-        font-weight: bold;
+    font-size: 1.25em;
+    font-weight: bold;
     }
 
+    .figure {
+    display: inline-block;
+    }
+
+    pre.programlisting {
+    white-space: pre-wrap;
+    font-family: monospace;
+    }
+
+    pre.screen {
+    white-space: pre-wrap;
+    font-family: monospace;
+    }
 
 </style>

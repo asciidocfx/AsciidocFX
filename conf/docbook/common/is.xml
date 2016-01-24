@@ -53,6 +53,10 @@
 <l:gentext key="copyright" text="höfundaréttur"/>
 <l:gentext key="Dedication" text="Tileinkun"/>
 <l:gentext key="dedication" text="tileinkun"/>
+<l:gentext key="Dialogue" text="Dialogue" lang="en"/>
+<l:gentext key="dialogue" text="Dialogue" lang="en"/>
+<l:gentext key="Drama" text="Drama" lang="en"/>
+<l:gentext key="drama" text="Drama" lang="en"/>
 <l:gentext key="Edition" text="Útgáfa"/>
 <l:gentext key="edition" text="útgáfa"/>
 <l:gentext key="Editor" text="Ritstjórn"/>
@@ -88,6 +92,8 @@
 <l:gentext key="note" text="athugasemd"/>
 <l:gentext key="Part" text="Hluti"/>
 <l:gentext key="part" text="hluti"/>
+<l:gentext key="Poetry" text="Poetry" lang="en"/>
+<l:gentext key="poetry" text="Poetry" lang="en"/>
 <l:gentext key="Preface" text="Formáli"/>
 <l:gentext key="preface" text="formáli"/>
 <l:gentext key="Procedure" text="Vinnuferli"/>
@@ -151,6 +157,7 @@
 <l:gentext key="and" text="og"/>
 <l:gentext key="or" text="eða"/>
 <l:gentext key="by" text="af"/>
+<l:gentext key="optional-step" text="(Optional) " lang="en"/>
 <l:gentext key="Edited" text="Ritstýrt"/>
 <l:gentext key="edited" text="ritstýrt"/>
 <l:gentext key="Editedby" text="Ritstýrt af"/>
@@ -171,6 +178,8 @@
 <l:gentext key="unexpectedelementname" text="óvænt heiti á einingu"/>
 <l:gentext key="unsupported" text="óstutt"/>
 <l:gentext key="xrefto" text="xref í"/>
+<l:gentext key="video-unsupported" text="Your browser does not support the video tag" lang="en"/>
+<l:gentext key="audio-unsupported" text="Your browser does not support the audio tag" lang="en"/>
 <l:gentext key="Authors" text="Höfundar"/>
 <l:gentext key="copyeditor" text=""/>
 <l:gentext key="graphicdesigner" text=""/>
@@ -229,7 +238,7 @@
 <l:template name="insert" text="Ins" lang="en"/>
 <l:template name="left" text="←" lang="en"/>
 <l:template name="meta" text="Meta" lang="en"/>
-<l:template name="option" text="???" lang="en"/>
+<l:template name="option" text="⌥" lang="en"/>
 <l:template name="pagedown" text="Page ↓" lang="en"/>
 <l:template name="pageup" text="Page ↑" lang="en"/>
 <l:template name="right" text="→" lang="en"/>
@@ -347,6 +356,9 @@
 <l:template name="simplesect" text="%t"/>
 <l:template name="topic" text="%t" lang="en"/>
 <l:template name="part" text="%t"/>
+<l:template name="dialogue" text="%t" lang="en"/>
+<l:template name="drama" text="%t" lang="en"/>
+<l:template name="poetry" text="%t" lang="en"/>
 </l:context>
 <l:context name="title-numbered"><l:template name="appendix" text="Viðauki %n. %t"/>
 <l:template name="article/appendix" text="%n. %t"/>
@@ -402,6 +414,9 @@
 <l:template name="simplesect" text="%s"/>
 <l:template name="topic" text="%t" lang="en"/>
 <l:template name="toc" text="%s"/>
+<l:template name="dialogue" text="%s" lang="en"/>
+<l:template name="drama" text="%s" lang="en"/>
+<l:template name="poetry" text="%s" lang="en"/>
 </l:context>
 <l:context name="xref"><l:template name="abstract" text="%t"/>
 <l:template name="acknowledgements" text="%t"/>
@@ -476,6 +491,9 @@
 <l:template name="pageabbrev" text="(bls. %p)"/>
 <l:template name="Page" text="Blaðsíða %p"/>
 <l:template name="topic" text="%t" lang="en"/>
+<l:template name="dialogue" text="%t" lang="en"/>
+<l:template name="drama" text="%t" lang="en"/>
+<l:template name="poetry" text="%t" lang="en"/>
 <l:template name="bridgehead" text=" “%t”"/>
 <l:template name="refsection" text=" “%t”"/>
 <l:template name="refsect1" text=" “%t”"/>

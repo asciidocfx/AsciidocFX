@@ -2159,7 +2159,11 @@ p {
 <li><a href="#truearea-chart">Area Chart</a></li>
 </ul>
 </li>
-<li><a href="#truehow-to-build-asciidocfx">How to Build AsciidocFX</a></li>
+<li><a href="#truehow-to-build-asciidocfx">How to Build AsciidocFX</a>
+<ul class="sectlevel2">
+<li><a href="#truebuild-on-linux-ubuntu-mint">Build on Linux (Ubuntu/Mint)</a></li>
+</ul>
+</li>
 <li><a href="#truebooks-written-with-asciidocfx">Books Written with AsciidocFX</a></li>
 <li><a href="#trueslides-reveal-js-and-deck-js">Slides (Reveal.js and Deck.js)</a></li>
 <li><a href="#trueused-technologies">Used Technologies</a></li>
@@ -2806,6 +2810,52 @@ NOTE: All builds x64 based. If you want to use in x86 systems, build AsciidocFX 
 </tr>
 </table>
 </div>
+<div class="sect2">
+<h3 id="truebuild-on-linux-ubuntu-mint"><a class="anchor" href="#truebuild-on-linux-ubuntu-mint"></a>Build on Linux (Ubuntu/Mint)</h3>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Install Oracle JDK 8.</p>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="http://tecadmin.net/install-oracle-java-8-jdk-8-ubuntu-via-ppa/" class="bare">http://tecadmin.net/install-oracle-java-8-jdk-8-ubuntu-via-ppa/</a></p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Install Maven</p>
+<div class="ulist">
+<ul>
+<li>
+<p>sudo apt-get install maven</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Install Git</p>
+<div class="ulist">
+<ul>
+<li>
+<p>sudo apt-get install git</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Clone the AsciidocFX repository from Github.</p>
+</li>
+<li>
+<p>Navigate to the <strong>AsciidocFX</strong> directory and run $ <code>mvn clean install</code></p>
+</li>
+<li>
+<p>Navigate to the <strong>target/appassembler/bin</strong> directory and run $ <code>./asciidocfx.sh</code> to start AsciidocFX.</p>
+</li>
+</ol>
+</div>
+</div>
 </div>
 </div>
 <div class="sect1">
@@ -3134,7 +3184,7 @@ This means, that on a German "QWERTZ" layout the shortcuts for <code>undo</code>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2015-12-19 02:19:28 TST
+Last updated 2016-01-24 13:36:10 SAST
 </div>
 </div>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.9.1/styles/github.min.css">

@@ -53,6 +53,10 @@
 <l:gentext key="copyright" text="ophavsret"/>
 <l:gentext key="Dedication" text="Tilegnet"/>
 <l:gentext key="dedication" text="tilegnet"/>
+<l:gentext key="Dialogue" text="Dialogue" lang="en"/>
+<l:gentext key="dialogue" text="Dialogue" lang="en"/>
+<l:gentext key="Drama" text="Drama" lang="en"/>
+<l:gentext key="drama" text="Drama" lang="en"/>
 <l:gentext key="Edition" text="Udgave"/>
 <l:gentext key="edition" text="udgave"/>
 <l:gentext key="Editor" text="Redaktør"/>
@@ -88,6 +92,8 @@
 <l:gentext key="note" text="bemærk"/>
 <l:gentext key="Part" text="Del"/>
 <l:gentext key="part" text="del"/>
+<l:gentext key="Poetry" text="Poetry" lang="en"/>
+<l:gentext key="poetry" text="Poetry" lang="en"/>
 <l:gentext key="Preface" text="Forord"/>
 <l:gentext key="preface" text="forord"/>
 <l:gentext key="Procedure" text="Procedure"/>
@@ -151,6 +157,7 @@
 <l:gentext key="and" text="og"/>
 <l:gentext key="or" text="eller"/>
 <l:gentext key="by" text="af"/>
+<l:gentext key="optional-step" text="(Optional) " lang="en"/>
 <l:gentext key="Edited" text="Redigeret"/>
 <l:gentext key="edited" text="redigeret"/>
 <l:gentext key="Editedby" text="Redigeret af"/>
@@ -171,6 +178,8 @@
 <l:gentext key="unexpectedelementname" text="uventet elementnavn"/>
 <l:gentext key="unsupported" text="ikke understøttet"/>
 <l:gentext key="xrefto" text="krydshenvisning til"/>
+<l:gentext key="video-unsupported" text="Your browser does not support the video tag" lang="en"/>
+<l:gentext key="audio-unsupported" text="Your browser does not support the audio tag" lang="en"/>
 <l:gentext key="Authors" text="Forfattere"/>
 <l:gentext key="copyeditor" text="Kopieringsredaktør"/>
 <l:gentext key="graphicdesigner" text="Grafisk designer"/>
@@ -216,27 +225,27 @@
 <l:gentext key="hyphenation-character" text="-"/>
 <l:gentext key="hyphenation-push-character-count" text="2"/>
 <l:gentext key="hyphenation-remain-character-count" text="2"/>
-<l:context name="keycap"><l:template name="alt" text="Alt" lang="en"/>
-<l:template name="backspace" text="&lt;—" lang="en"/>
-<l:template name="command" text="⌘" lang="en"/>
-<l:template name="control" text="Ctrl" lang="en"/>
-<l:template name="delete" text="Del" lang="en"/>
-<l:template name="down" text="↓" lang="en"/>
-<l:template name="end" text="End" lang="en"/>
-<l:template name="enter" text="Enter" lang="en"/>
-<l:template name="escape" text="Esc" lang="en"/>
-<l:template name="home" text="Home" lang="en"/>
-<l:template name="insert" text="Ins" lang="en"/>
-<l:template name="left" text="←" lang="en"/>
-<l:template name="meta" text="Meta" lang="en"/>
-<l:template name="option" text="???" lang="en"/>
-<l:template name="pagedown" text="Page ↓" lang="en"/>
-<l:template name="pageup" text="Page ↑" lang="en"/>
-<l:template name="right" text="→" lang="en"/>
-<l:template name="shift" text="Shift" lang="en"/>
-<l:template name="space" text="Space" lang="en"/>
-<l:template name="tab" text="→|" lang="en"/>
-<l:template name="up" text="↑" lang="en"/>
+<l:context name="keycap"><l:template name="alt" text="Alt"/>
+<l:template name="backspace" text="&lt;—"/>
+<l:template name="command" text="⌘"/>
+<l:template name="control" text="Ctrl"/>
+<l:template name="delete" text="Del"/>
+<l:template name="down" text="↓"/>
+<l:template name="end" text="End"/>
+<l:template name="enter" text="Enter"/>
+<l:template name="escape" text="Esc"/>
+<l:template name="home" text="Home"/>
+<l:template name="insert" text="Ins"/>
+<l:template name="left" text="←"/>
+<l:template name="meta" text="Meta"/>
+<l:template name="option" text="???"/>
+<l:template name="pagedown" text="Page ↓"/>
+<l:template name="pageup" text="Page ↑"/>
+<l:template name="right" text="→"/>
+<l:template name="shift" text="⇧"/>
+<l:template name="space" text="Space"/>
+<l:template name="tab" text="Tab"/>
+<l:template name="up" text="↑"/>
 </l:context>
 <l:context name="webhelp"><l:template name="Search" text="Search" lang="en"/>
 <l:template name="Enter_a_term_and_click" text="Enter a term and click " lang="en"/>
@@ -347,6 +356,9 @@
 <l:template name="simplesect" text="%t"/>
 <l:template name="topic" text="%t" lang="en"/>
 <l:template name="part" text="%t" lang="en"/>
+<l:template name="dialogue" text="%t" lang="en"/>
+<l:template name="drama" text="%t" lang="en"/>
+<l:template name="poetry" text="%t" lang="en"/>
 </l:context>
 <l:context name="title-numbered"><l:template name="appendix" text="Appendiks %n. %t"/>
 <l:template name="article/appendix" text="%n. %t" lang="en"/>
@@ -402,6 +414,9 @@
 <l:template name="simplesect" text="%s"/>
 <l:template name="topic" text="%t" lang="en"/>
 <l:template name="toc" text="%s"/>
+<l:template name="dialogue" text="%s" lang="en"/>
+<l:template name="drama" text="%s" lang="en"/>
+<l:template name="poetry" text="%s" lang="en"/>
 </l:context>
 <l:context name="xref"><l:template name="abstract" text="%t"/>
 <l:template name="acknowledgements" text="%t" lang="en"/>
@@ -476,6 +491,9 @@
 <l:template name="pageabbrev" text="(p. %p)" lang="en"/>
 <l:template name="Page" text="Page %p" lang="en"/>
 <l:template name="topic" text="%t" lang="en"/>
+<l:template name="dialogue" text="%t" lang="en"/>
+<l:template name="drama" text="%t" lang="en"/>
+<l:template name="poetry" text="%t" lang="en"/>
 <l:template name="bridgehead" text="afsnittet der hedder “%t”"/>
 <l:template name="refsection" text="“%t”"/>
 <l:template name="refsect1" text="“%t”"/>

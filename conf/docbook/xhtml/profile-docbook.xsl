@@ -3,12 +3,12 @@
 <!--from the HTML stylesheets.-->
 <!--This file was created automatically by xsl2profile-->
 <!--from the DocBook XSL stylesheets.-->
-<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:ng="http://docbook.org/docbook-ng" xmlns:db="http://docbook.org/ns/docbook" xmlns:exsl="http://exslt.org/common" xmlns:exslt="http://exslt.org/common" xmlns="http://www.w3.org/1999/xhtml" exslt:dummy="dummy" ng:dummy="dummy" db:dummy="dummy" extension-element-prefixes="exslt" exclude-result-prefixes="db ng exsl exslt exslt" version="1.0">
+<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:exsl="http://exslt.org/common" xmlns:exslt="http://exslt.org/common" xmlns:ng="http://docbook.org/docbook-ng" xmlns:db="http://docbook.org/ns/docbook" xmlns="http://www.w3.org/1999/xhtml" exslt:dummy="dummy" ng:dummy="dummy" db:dummy="dummy" extension-element-prefixes="exslt" exclude-result-prefixes="exsl exslt" version="1.0">
 
 <xsl:output method="xml" encoding="UTF-8" indent="no" doctype-public="-//W3C//DTD XHTML 1.0 Transitional//EN" doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"/>
 
 <!-- ********************************************************************
-     $Id: docbook.xsl 9605 2012-09-18 10:48:54Z tom_schr $
+     $Id: docbook.xsl 9983 2015-09-16 20:58:50Z bobstayton $
      ********************************************************************
 
      This file is part of the XSL DocBook Stylesheet distribution.
@@ -46,6 +46,7 @@
 <xsl:include href="inline.xsl"/>
 <xsl:include href="footnote.xsl"/>
 <xsl:include href="html.xsl"/>
+<xsl:include href="its.xsl"/>
 <xsl:include href="info.xsl"/>
 <xsl:include href="keywords.xsl"/>
 <xsl:include href="division.xsl"/>
@@ -70,6 +71,7 @@
 <xsl:include href="html-rtf.xsl"/>
 <xsl:include href="annotations.xsl"/>
 <xsl:include href="../common/stripns.xsl"/>
+<xsl:include href="publishers.xsl"/>
 
 <xsl:param name="stylesheet.result.type" select="'xhtml'"/>
 <xsl:param name="htmlhelp.output" select="0"/>
@@ -383,28 +385,26 @@ var popup_</xsl:text>
   <xsl:param name="nav.context"/>
 </xsl:template>
 
-<!-- To use the same stripped nodeset everywhere, it should
+<!-- To use the same namespace-adjusted nodeset everywhere, it should
 be created as a global variable here.
-Used by docbook.xsl, chunk-code.xsl and chunkfast.xsl -->
+Used by docbook.xsl, chunk-common.xsl, chunktoc.xsl, and
+chunk-code.xsl; and in $chunk.hierarchy used in chunkfast.xsl -->
 <xsl:variable name="no.namespace">
-  <xsl:if test="$exsl.node.set.available != 0                     and (*/self::ng:* or */self::db:*)">
-    <xsl:apply-templates select="/*" mode="stripNS"/>
+  <xsl:if test="$exsl.node.set.available != 0 and                  namespace-uri(/*) = 'http://docbook.org/ns/docbook'">
+      <xsl:apply-templates select="/*" mode="stripNS"/>
   </xsl:if>
 </xsl:variable>
 
-<xslo:include xmlns:xslo="http://www.w3.org/1999/XSL/Transform" href="../profiling/profile-mode.xsl"/><xslo:variable xmlns:xslo="http://www.w3.org/1999/XSL/Transform" name="profiled-content"><xslo:choose><xslo:when test="*/self::ng:* or */self::db:*"><xslo:message>Note: namesp. cut : stripped namespace before processing</xslo:message><xslo:variable name="stripped-content"><xslo:apply-templates select="/" mode="stripNS"/></xslo:variable><xslo:message>Note: namesp. cut : processing stripped document</xslo:message><xslo:apply-templates select="exslt:node-set($stripped-content)" mode="profile"/></xslo:when><xslo:otherwise><xslo:apply-templates select="/" mode="profile"/></xslo:otherwise></xslo:choose></xslo:variable><xslo:variable xmlns:xslo="http://www.w3.org/1999/XSL/Transform" name="profiled-nodes" select="exslt:node-set($profiled-content)"/><xsl:template match="/">
+<xslo:include xmlns:xslo="http://www.w3.org/1999/XSL/Transform" href="../profiling/profile-mode.xsl"/><xslo:variable xmlns:xslo="http://www.w3.org/1999/XSL/Transform" name="profiled-content"><xslo:choose><xslo:when test="$exsl.node.set.available != 0 and                      namespace-uri(/*) = 'http://docbook.org/ns/docbook'"><xslo:variable name="no.namespace"><xslo:apply-templates select="/*" mode="stripNS"/></xslo:variable><xslo:call-template name="log.message"><xslo:with-param name="level">Note</xslo:with-param><xslo:with-param name="source"><xslo:call-template name="get.doc.title"/></xslo:with-param><xslo:with-param name="context-desc"><xslo:text>namesp. cut</xslo:text></xslo:with-param><xslo:with-param name="message"><xslo:text>stripped namespace before processing</xslo:text></xslo:with-param></xslo:call-template><xslo:apply-templates select="exslt:node-set($no.namespace)" mode="profile"/></xslo:when><xslo:otherwise><xslo:apply-templates select="/" mode="profile"/></xslo:otherwise></xslo:choose></xslo:variable><xslo:variable xmlns:xslo="http://www.w3.org/1999/XSL/Transform" name="profiled-nodes" select="exslt:node-set($profiled-content)"/><xsl:template match="/">
   <!-- * Get a title for current doc so that we let the user -->
   <!-- * know what document we are processing at this point. -->
   <xsl:variable name="doc.title">
     <xsl:call-template name="get.doc.title"/>
   </xsl:variable>
   <xsl:choose>
-    <!-- Hack! If someone hands us a DocBook V5.x or DocBook NG document,
-         toss the namespace and continue.  Use the docbook5 namespaced
-         stylesheets for DocBook5 if you don't want to use this feature.-->
-    <!-- include extra test for Xalan quirk -->
+    <!-- fix namespace if necessary -->
     <xsl:when test="false()"/>
-    <!-- Can't process unless namespace removed -->
+    <!-- Can't process unless namespace fixed with exsl node-set()-->
     <xsl:when test="false()"/>
     <xsl:otherwise>
       <xsl:choose>

@@ -4,7 +4,7 @@
                 version='1.0'>
 
 <!-- ********************************************************************
-     $Id: biblio.xsl 9330 2012-05-05 22:48:55Z bobstayton $
+     $Id: biblio.xsl 9886 2014-02-10 17:52:50Z bobstayton $
      ********************************************************************
 
      This file is part of the XSL DocBook Stylesheet distribution.
@@ -395,6 +395,11 @@
 
 <xsl:template match="biblioset" mode="bibliography.mode">
   <fo:inline>
+    <xsl:if test="@id">
+      <xsl:attribute name="id">
+        <xsl:value-of select="@id"/>
+      </xsl:attribute>
+    </xsl:if>
     <xsl:apply-templates mode="bibliography.mode"/>
   </fo:inline>
 </xsl:template>

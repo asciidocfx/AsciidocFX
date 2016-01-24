@@ -5,7 +5,7 @@
                 version='1.0'>
 
 <!-- ********************************************************************
-     $Id: division.xsl 9730 2013-03-15 15:26:25Z bobstayton $
+     $Id: division.xsl 9841 2014-01-07 22:31:09Z bobstayton $
      ********************************************************************
 
      This file is part of the XSL DocBook Stylesheet distribution.
@@ -31,7 +31,9 @@
 
   <fo:block keep-with-next.within-column="always"
             hyphenate="false">
-    <xsl:if test="$axf.extensions != 0">
+    <xsl:if test="$axf.extensions != 0 and 
+                  $xsl1.1.bookmarks = 0 and 
+                  $show.bookmarks != 0">
       <xsl:attribute name="axf:outline-level">
         <xsl:choose>
           <xsl:when test="count($node/ancestor::*) > 0">
@@ -602,5 +604,6 @@
   <xsl:number from="book" count="part" format="I."/>
 </xsl:template>
 
+<!-- ==================================================================== -->
 </xsl:stylesheet>
 

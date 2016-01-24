@@ -53,6 +53,10 @@
 <l:gentext key="copyright" text="حق طبع ونشر"/>
 <l:gentext key="Dedication" text="اهداء"/>
 <l:gentext key="dedication" text="اهداء"/>
+<l:gentext key="Dialogue" text="Dialogue" lang="en"/>
+<l:gentext key="dialogue" text="Dialogue" lang="en"/>
+<l:gentext key="Drama" text="Drama" lang="en"/>
+<l:gentext key="drama" text="Drama" lang="en"/>
 <l:gentext key="Edition" text="ويرايش"/>
 <l:gentext key="edition" text="ويرايش"/>
 <l:gentext key="Editor" text="ويرايش"/>
@@ -88,6 +92,8 @@
 <l:gentext key="note" text="ياداشت"/>
 <l:gentext key="Part" text="بخش"/>
 <l:gentext key="part" text="بخش"/>
+<l:gentext key="Poetry" text="Poetry" lang="en"/>
+<l:gentext key="poetry" text="Poetry" lang="en"/>
 <l:gentext key="Preface" text="ديباچه"/>
 <l:gentext key="preface" text="ديباچه"/>
 <l:gentext key="Procedure" text="رويه"/>
@@ -151,6 +157,7 @@
 <l:gentext key="and" text="و"/>
 <l:gentext key="or" text="or" lang="en"/>
 <l:gentext key="by" text="توسط"/>
+<l:gentext key="optional-step" text="(Optional) " lang="en"/>
 <l:gentext key="Edited" text="ویرایش شده"/>
 <l:gentext key="edited" text="ویرایش شده"/>
 <l:gentext key="Editedby" text="ویرایستار"/>
@@ -171,6 +178,8 @@
 <l:gentext key="unexpectedelementname" text="نام عنصرغيرمنتظره"/>
 <l:gentext key="unsupported" text="پشتيبانی نشده"/>
 <l:gentext key="xrefto" text="ارجاع به"/>
+<l:gentext key="video-unsupported" text="Your browser does not support the video tag" lang="en"/>
+<l:gentext key="audio-unsupported" text="Your browser does not support the audio tag" lang="en"/>
 <l:gentext key="Authors" text="نویسندگان"/>
 <l:gentext key="copyeditor" text="اصلاح کننده کپی"/>
 <l:gentext key="graphicdesigner" text="طراحی گرافیکی"/>
@@ -229,7 +238,7 @@
 <l:template name="insert" text="Ins" lang="en"/>
 <l:template name="left" text="←" lang="en"/>
 <l:template name="meta" text="Meta" lang="en"/>
-<l:template name="option" text="???" lang="en"/>
+<l:template name="option" text="⌥" lang="en"/>
 <l:template name="pagedown" text="Page ↓" lang="en"/>
 <l:template name="pageup" text="Page ↑" lang="en"/>
 <l:template name="right" text="→" lang="en"/>
@@ -347,6 +356,9 @@
 <l:template name="simplesect" text="%t"/>
 <l:template name="topic" text="%t" lang="en"/>
 <l:template name="part" text="%t" lang="en"/>
+<l:template name="dialogue" text="%t" lang="en"/>
+<l:template name="drama" text="%t" lang="en"/>
+<l:template name="poetry" text="%t" lang="en"/>
 </l:context>
 <l:context name="title-numbered"><l:template name="appendix" text="&#10;      پيوست %n. %t"/>
 <l:template name="article/appendix" text="%n. %t"/>
@@ -402,6 +414,9 @@
 <l:template name="simplesect" text="%s"/>
 <l:template name="topic" text="%t" lang="en"/>
 <l:template name="toc" text="%s"/>
+<l:template name="dialogue" text="%s" lang="en"/>
+<l:template name="drama" text="%s" lang="en"/>
+<l:template name="poetry" text="%s" lang="en"/>
 </l:context>
 <l:context name="xref"><l:template name="abstract" text="%t"/>
 <l:template name="acknowledgements" text="%t" lang="en"/>
@@ -476,6 +491,9 @@
 <l:template name="pageabbrev" text="(%p ص)"/>
 <l:template name="Page" text="%p صفحه‌ی"/>
 <l:template name="topic" text="%t" lang="en"/>
+<l:template name="dialogue" text="%t" lang="en"/>
+<l:template name="drama" text="%t" lang="en"/>
+<l:template name="poetry" text="%t" lang="en"/>
 <l:template name="bridgehead" text="&#10;      بخشی بنام&#10;      “%t”&#10;    "/>
 <l:template name="refsection" text="&#10;      بخشی بنام&#10;      “%t”&#10;    "/>
 <l:template name="refsect1" text="&#10;      بخشی بنام&#10;      “%t”&#10;    "/>

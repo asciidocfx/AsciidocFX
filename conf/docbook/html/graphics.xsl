@@ -11,7 +11,7 @@
                 version='1.0'>
 
 <!-- ********************************************************************
-     $Id: graphics.xsl 9710 2013-01-22 19:34:18Z bobstayton $
+     $Id: graphics.xsl 9939 2014-09-06 08:14:22Z bobstayton $
      ********************************************************************
 
      This file is part of the XSL DocBook Stylesheet distribution.
@@ -252,25 +252,22 @@
     </xsl:choose>
   </xsl:variable>
 
-  <xsl:variable name="output_filename">
-    <xsl:choose>
-      <xsl:when test="@entityref">
-        <xsl:value-of select="$filename"/>
-      </xsl:when>
-      <!--
-        Moved test for $keep.relative.image.uris to template below:
-            <xsl:template match="@fileref">
-      -->
-      <xsl:otherwise>
-        <xsl:value-of select="$filename"/>
-      </xsl:otherwise>
-    </xsl:choose>
-  </xsl:variable>
-
   <xsl:variable name="img.src.path.pi">
     <xsl:call-template name="pi.dbhtml_img.src.path">
       <xsl:with-param name="node" select=".."/>
     </xsl:call-template>
+  </xsl:variable>
+
+  <!-- is the file path relative and can be modified by img.src.path? -->
+  <xsl:variable name="is.relative">
+    <xsl:choose>
+      <xsl:when test="$img.src.path != '' and
+                      $tag = 'img' and
+                      not(starts-with($filename, '/')) and
+                      not(starts-with($filename, 'file:/')) and
+                      not(contains($filename, '://'))">1</xsl:when>
+      <xsl:otherwise>0</xsl:otherwise>
+    </xsl:choose>
   </xsl:variable>
 
   <xsl:variable name="filename.for.graphicsize">
@@ -278,11 +275,8 @@
       <xsl:when test="$img.src.path.pi != ''">
         <xsl:value-of select="concat($img.src.path.pi, $filename)"/>
       </xsl:when>
-      <xsl:when test="$img.src.path != '' and
-                      $graphicsize.use.img.src.path != 0 and
-                      $tag = 'img' and
-                      not(starts-with($filename, '/')) and
-                      not(contains($filename, '://'))">
+      <xsl:when test="$is.relative = 1 and
+                      $graphicsize.use.img.src.path != 0">
         <xsl:value-of select="concat($img.src.path, $filename)"/>
       </xsl:when>
       <xsl:otherwise>
@@ -550,14 +544,11 @@ valign: <xsl:value-of select="@valign"/></xsl:message>
         <object type="image/svg+xml">
 	  <xsl:attribute name="data">
 	    <xsl:choose>
-	      <xsl:when test="$img.src.path != '' and
-                           $tag = 'img' and
-			   not(starts-with($output_filename, '/')) and
-			   not(contains($output_filename, '://'))">
+	      <xsl:when test="$is.relative = 1">
 		<xsl:value-of select="$img.src.path"/>
 	      </xsl:when>
            </xsl:choose>
-	   <xsl:value-of select="$output_filename"/>
+	   <xsl:value-of select="$filename"/>
 	  </xsl:attribute>
 	  <xsl:call-template name="process.image.attributes">
             <!--xsl:with-param name="alt" select="$alt"/ there's no alt here-->
@@ -584,14 +575,11 @@ valign: <xsl:value-of select="@valign"/></xsl:message>
 	    <embed type="image/svg+xml">
 	      <xsl:attribute name="src">
 		<xsl:choose>
-                  <xsl:when test="$img.src.path != '' and
-				  $tag = 'img' and
-				  not(starts-with($output_filename, '/')) and
-				  not(contains($output_filename, '://'))">
+                  <xsl:when test="$is.relative = 1">
 		    <xsl:value-of select="$img.src.path"/>
                   </xsl:when>
 		</xsl:choose>
-		<xsl:value-of select="$output_filename"/>
+		<xsl:value-of select="$filename"/>
               </xsl:attribute>
               <xsl:call-template name="process.image.attributes">
                 <!--xsl:with-param name="alt" select="$alt"/ there's no alt here -->
@@ -609,6 +597,15 @@ valign: <xsl:value-of select="@valign"/></xsl:message>
         </object>
       </xsl:when>
       <xsl:otherwise>
+        <xsl:variable name="src">
+          <xsl:choose>
+             <xsl:when test="$is.relative = 1">
+               <xsl:value-of select="$img.src.path"/>
+             </xsl:when>
+           </xsl:choose>
+           <xsl:value-of select="$filename"/>
+        </xsl:variable>
+        <xsl:variable name="imgcontents">
         <xsl:element name="{$tag}">
          <xsl:if test="$tag = 'img' and ../../self::imageobjectco">
            <xsl:variable name="mapname">
@@ -635,15 +632,7 @@ valign: <xsl:value-of select="@valign"/></xsl:message>
          </xsl:if>
 
           <xsl:attribute name="src">
-           <xsl:choose>
-             <xsl:when test="$img.src.path != '' and
-                           $tag = 'img' and
-                             not(starts-with($output_filename, '/')) and
-                           not(contains($output_filename, '://'))">
-               <xsl:value-of select="$img.src.path"/>
-             </xsl:when>
-           </xsl:choose>
-            <xsl:value-of select="$output_filename"/>
+            <xsl:value-of select="$src"/>
           </xsl:attribute>
 
           <xsl:if test="@align">
@@ -681,6 +670,18 @@ valign: <xsl:value-of select="@valign"/></xsl:message>
             <xsl:with-param name="viewport" select="$viewport"/>
           </xsl:call-template>
         </xsl:element>
+        </xsl:variable>
+        
+        <xsl:choose>
+          <xsl:when test="$link.to.self.for.mediaobject = 0">
+            <xsl:copy-of select="$imgcontents"/>
+          </xsl:when>
+          <xsl:otherwise>
+            <a href="{$src}">
+              <xsl:copy-of select="$imgcontents"/>
+            </a>
+          </xsl:otherwise>
+        </xsl:choose>
       </xsl:otherwise>
     </xsl:choose>
   </xsl:variable>
@@ -1291,6 +1292,9 @@ valign: <xsl:value-of select="@valign"/></xsl:message>
             <xsl:when test="ancestor::mediaobject/alt">
               <xsl:apply-templates select="ancestor::mediaobject/alt"/>
             </xsl:when>
+            <xsl:when test="ancestor::inlinemediaobject/alt">
+              <xsl:apply-templates select="ancestor::inlinemediaobject/alt"/>
+            </xsl:when>
             <xsl:otherwise>
               <xsl:apply-templates select="$phrases[not(@role) or @role!='tex'][1]"/>
             </xsl:otherwise>
@@ -1437,6 +1441,10 @@ valign: <xsl:value-of select="@valign"/></xsl:message>
 
 <!-- ==================================================================== -->
 
+<xsl:template match="inlinemediaobject/alt">
+  <xsl:apply-templates/>
+</xsl:template>
+  
 <xsl:template match="mediaobject/alt">
   <xsl:apply-templates/>
 </xsl:template>

@@ -4,7 +4,7 @@
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns="http://www.w3.org/1999/xhtml" version="1.0">
 
 <!-- ********************************************************************
-     $Id: refentry.xsl 9297 2012-04-22 03:56:16Z bobstayton $
+     $Id: refentry.xsl 9962 2015-04-30 17:35:04Z bobstayton $
      ********************************************************************
 
      This file is part of the XSL DocBook Stylesheet distribution.
@@ -185,6 +185,18 @@
     </xsl:call-template>
     <xsl:text> </xsl:text>
     <xsl:apply-templates/>
+  </xsl:if>
+</xsl:template>
+
+<!-- This handles repurpose in TOC line to turn off any nested links -->
+<xsl:template match="refpurpose" mode="no.anchor.mode">
+  <xsl:if test="node()">
+    <xsl:text> </xsl:text>
+    <xsl:call-template name="dingbat">
+      <xsl:with-param name="dingbat">em-dash</xsl:with-param>
+    </xsl:call-template>
+    <xsl:text> </xsl:text>
+    <xsl:apply-templates mode="no.anchor.mode"/>
   </xsl:if>
 </xsl:template>
 

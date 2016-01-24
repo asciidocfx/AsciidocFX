@@ -53,6 +53,10 @@
 <l:gentext key="copyright" text="版权"/>
 <l:gentext key="Dedication" text="题词"/>
 <l:gentext key="dedication" text="题词"/>
+<l:gentext key="Dialogue" text="对白"/>
+<l:gentext key="dialogue" text="对白"/>
+<l:gentext key="Drama" text="剧本"/>
+<l:gentext key="drama" text="剧本"/>
 <l:gentext key="Edition" text="版"/>
 <l:gentext key="edition" text="版"/>
 <l:gentext key="Editor" text="编者"/>
@@ -88,6 +92,8 @@
 <l:gentext key="note" text="注意"/>
 <l:gentext key="Part" text="部分"/>
 <l:gentext key="part" text="部分"/>
+<l:gentext key="Poetry" text="诗歌"/>
+<l:gentext key="poetry" text="诗歌"/>
 <l:gentext key="Preface" text="前言"/>
 <l:gentext key="preface" text="前言"/>
 <l:gentext key="Procedure" text="过程"/>
@@ -151,6 +157,7 @@
 <l:gentext key="and" text="和"/>
 <l:gentext key="or" text="或"/>
 <l:gentext key="by" text="由"/>
+<l:gentext key="optional-step" text="(可选的) "/>
 <l:gentext key="Edited" text="编辑时间"/>
 <l:gentext key="edited" text="编辑时间"/>
 <l:gentext key="Editedby" text="编辑"/>
@@ -171,6 +178,8 @@
 <l:gentext key="unexpectedelementname" text="未预期的名称"/>
 <l:gentext key="unsupported" text="不支持"/>
 <l:gentext key="xrefto" text="xref to"/>
+<l:gentext key="video-unsupported" text="你的浏览器不支持 video 标签"/>
+<l:gentext key="audio-unsupported" text="你的浏览器不支持 audio 标签"/>
 <l:gentext key="Authors" text="作者"/>
 <l:gentext key="copyeditor" text="版权编辑"/>
 <l:gentext key="graphicdesigner" text="美术编辑"/>
@@ -216,40 +225,40 @@
 <l:gentext key="hyphenation-character" text="-"/>
 <l:gentext key="hyphenation-push-character-count" text="2"/>
 <l:gentext key="hyphenation-remain-character-count" text="2"/>
-<l:context name="keycap"><l:template name="alt" text="Alt" lang="en"/>
-<l:template name="backspace" text="&lt;—" lang="en"/>
-<l:template name="command" text="⌘" lang="en"/>
-<l:template name="control" text="Ctrl" lang="en"/>
-<l:template name="delete" text="Del" lang="en"/>
-<l:template name="down" text="↓" lang="en"/>
-<l:template name="end" text="End" lang="en"/>
-<l:template name="enter" text="Enter" lang="en"/>
-<l:template name="escape" text="Esc" lang="en"/>
-<l:template name="home" text="Home" lang="en"/>
-<l:template name="insert" text="Ins" lang="en"/>
-<l:template name="left" text="←" lang="en"/>
-<l:template name="meta" text="Meta" lang="en"/>
-<l:template name="option" text="???" lang="en"/>
-<l:template name="pagedown" text="Page ↓" lang="en"/>
-<l:template name="pageup" text="Page ↑" lang="en"/>
-<l:template name="right" text="→" lang="en"/>
-<l:template name="shift" text="Shift" lang="en"/>
-<l:template name="space" text="Space" lang="en"/>
-<l:template name="tab" text="→|" lang="en"/>
-<l:template name="up" text="↑" lang="en"/>
+<l:context name="keycap"><l:template name="alt" text="Alt"/>
+<l:template name="backspace" text="&lt;—"/>
+<l:template name="command" text="⌘"/>
+<l:template name="control" text="Ctrl"/>
+<l:template name="delete" text="Del"/>
+<l:template name="down" text="↓"/>
+<l:template name="end" text="End"/>
+<l:template name="enter" text="Enter"/>
+<l:template name="escape" text="Esc"/>
+<l:template name="home" text="Home"/>
+<l:template name="insert" text="Ins"/>
+<l:template name="left" text="←"/>
+<l:template name="meta" text="Meta"/>
+<l:template name="option" text="⌥"/>
+<l:template name="pagedown" text="Page ↓"/>
+<l:template name="pageup" text="Page ↑"/>
+<l:template name="right" text="→"/>
+<l:template name="shift" text="Shift"/>
+<l:template name="space" text="Space"/>
+<l:template name="tab" text="→|"/>
+<l:template name="up" text="↑"/>
 </l:context>
-<l:context name="webhelp"><l:template name="Search" text="Search" lang="en"/>
-<l:template name="Enter_a_term_and_click" text="Enter a term and click " lang="en"/>
-<l:template name="Go" text="Go" lang="en"/>
-<l:template name="to_perform_a_search" text=" to perform a search." lang="en"/>
-<l:template name="txt_filesfound" text="Results" lang="en"/>
-<l:template name="txt_enter_at_least_1_char" text="You must enter at least one character." lang="en"/>
-<l:template name="txt_browser_not_supported" text="JavaScript is disabled on your browser. Please enable JavaScript to enjoy all the features of this site." lang="en"/>
-<l:template name="txt_please_wait" text="Please wait. Search in progress..." lang="en"/>
-<l:template name="txt_results_for" text="Results for: " lang="en"/>
-<l:template name="TableofContents" text="Contents" lang="en"/>
-<l:template name="HighlightButton" text="Toggle search result highlighting" lang="en"/>
-<l:template name="Your_search_returned_no_results" text="Your search returned no results." lang="en"/>
+<l:context name="webhelp"><l:template name="Search" text="搜索"/>
+<l:template name="Enter_a_term_and_click" text="输入字词，然后点击 "/>
+<l:template name="Go" text="去"/>
+<l:template name="to_perform_a_search" text=" to perform a search."/>
+<l:template name="txt_filesfound" text="条结果"/>
+<l:template name="txt_enter_at_least_1_char" text="您必须输入至少一个字符。"/>
+<l:template name="txt_browser_not_supported" text="JavaScript is disabled on your browser. Please enable JavaScript to enjoy all the features of this site."/>
+<l:template name="txt_please_wait" text="请稍候。搜索中..."/>
+<l:template name="txt_results_for" text="结果： "/>
+<l:template name="TableofContents" text="Contents"/>
+<l:template name="HighlightButton" text="Toggle search result highlighting"/>
+<l:template name="Your_search_returned_no_results" text="Your search returned no results."/>
 </l:context>
 <l:context name="styles"><l:template name="person-name" text="first-last"/>
 </l:context>
@@ -317,7 +326,7 @@
 <l:template name="refsect3" text="%t"/>
 <l:template name="refsynopsisdiv" text="%t"/>
 <l:template name="refsynopsisdivinfo" text="%t"/>
-<l:template name="screenshot" text="%t" lang="en"/>
+<l:template name="screenshot" text="%t"/>
 <l:template name="segmentedlist" text="%t"/>
 <l:template name="set" text="%t"/>
 <l:template name="setindex" text="%t"/>
@@ -345,8 +354,11 @@
 <l:template name="sect5" text="%t"/>
 <l:template name="section" text="%t"/>
 <l:template name="simplesect" text="%t"/>
-<l:template name="topic" text="%t" lang="en"/>
+<l:template name="topic" text="%t"/>
 <l:template name="part" text="%t"/>
+<l:template name="dialogue" text="%t"/>
+<l:template name="drama" text="%t"/>
+<l:template name="poetry" text="%t"/>
 </l:context>
 <l:context name="title-numbered"><l:template name="appendix" text="附录 %n. %t"/>
 <l:template name="article/appendix" text="%n. %t"/>
@@ -360,7 +372,7 @@
 <l:template name="sect5" text="%n. %t"/>
 <l:template name="section" text="%n. %t"/>
 <l:template name="simplesect" text="%t"/>
-<l:template name="topic" text="%t" lang="en"/>
+<l:template name="topic" text="%t"/>
 </l:context>
 <l:context name="subtitle"><l:template name="appendix" text="%s"/>
 <l:template name="acknowledgements" text="%s"/>
@@ -400,8 +412,11 @@
 <l:template name="setindex" text="%s"/>
 <l:template name="sidebar" text="%s"/>
 <l:template name="simplesect" text="%s"/>
-<l:template name="topic" text="%t" lang="en"/>
+<l:template name="topic" text="%t"/>
 <l:template name="toc" text="%s"/>
+<l:template name="dialogue" text="%s"/>
+<l:template name="drama" text="%s"/>
+<l:template name="poetry" text="%s"/>
 </l:context>
 <l:context name="xref"><l:template name="abstract" text="%t"/>
 <l:template name="acknowledgements" text="%t"/>
@@ -455,7 +470,7 @@
 <l:template name="question" text="问： %n"/>
 <l:template name="reference" text="%t"/>
 <l:template name="refsynopsisdiv" text="%t"/>
-<l:template name="screenshot" text="%t" lang="en"/>
+<l:template name="screenshot" text="%t"/>
 <l:template name="segmentedlist" text="%t"/>
 <l:template name="set" text="%t"/>
 <l:template name="setindex" text="%t"/>
@@ -475,7 +490,10 @@
 <l:template name="docnamelong" text=" 在文档标题 %o"/>
 <l:template name="pageabbrev" text="(第 %p 页)"/>
 <l:template name="Page" text="第 %p 页"/>
-<l:template name="topic" text="%t" lang="en"/>
+<l:template name="topic" text="%t"/>
+<l:template name="dialogue" text="%t"/>
+<l:template name="drama" text="%t"/>
+<l:template name="poetry" text="%t"/>
 <l:template name="bridgehead" text="“%t”一节"/>
 <l:template name="refsection" text="“%t”一节"/>
 <l:template name="refsect1" text="“%t”一节"/>

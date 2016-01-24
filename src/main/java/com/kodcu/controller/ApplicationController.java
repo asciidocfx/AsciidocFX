@@ -14,6 +14,7 @@ import com.kodcu.logging.TableViewLogAppender;
 import com.kodcu.other.*;
 import com.kodcu.outline.Section;
 import com.kodcu.service.*;
+import com.kodcu.service.convert.DocumentConverter;
 import com.kodcu.service.convert.GitbookToAsciibookService;
 import com.kodcu.service.convert.docbook.DocBookConverter;
 import com.kodcu.service.convert.ebook.EpubConverter;
@@ -21,7 +22,6 @@ import com.kodcu.service.convert.ebook.MobiConverter;
 import com.kodcu.service.convert.html.HtmlBookConverter;
 import com.kodcu.service.convert.markdown.MarkdownService;
 import com.kodcu.service.convert.odf.ODFConverter;
-import com.kodcu.service.convert.pdf.AbstractPdfConverter;
 import com.kodcu.service.convert.slide.SlideConverter;
 import com.kodcu.service.extension.MathJaxService;
 import com.kodcu.service.extension.PlantUmlService;
@@ -247,7 +247,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     @Autowired
     @Qualifier("pdfBookConverter")
-    private AbstractPdfConverter pdfBookConverter;
+    private DocumentConverter pdfBookConverter;
 
     @Autowired
     private EpubConverter epubConverter;

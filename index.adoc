@@ -448,6 +448,19 @@ For other charts and available options, look at https://github.com/asciidocfx/As
 NOTE: We are generating builts with *Travis-CI* automatically.
 NOTE: All builds x64 based. If you want to use in x86 systems, build AsciidocFX yourself.
 
+=== Build on Linux (Ubuntu/Mint)
+
+. Install Oracle JDK 8.
+** http://tecadmin.net/install-oracle-java-8-jdk-8-ubuntu-via-ppa/
+. Install Maven
+** sudo apt-get install maven
+. Install Git
+** sudo apt-get install git
+. Clone the AsciidocFX repository from Github.
+. Navigate to the *AsciidocFX* directory and run $ `mvn clean install`
+. Navigate to the *target/appassembler/bin* directory and run $ `./asciidocfx.sh` to start AsciidocFX.
+
+
 == Books Written with AsciidocFX
 
 Java 8 Ebook::

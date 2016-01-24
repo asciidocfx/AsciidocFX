@@ -4,7 +4,7 @@
                 version='1.0'>
 
 <!-- ********************************************************************
-     $Id: block.xsl 9389 2012-06-02 19:02:39Z bobstayton $
+     $Id: block.xsl 9998 2015-10-15 17:47:59Z bobstayton $
      ********************************************************************
 
      This file is part of the XSL DocBook Stylesheet distribution.
@@ -145,7 +145,7 @@
 <xsl:template match="epigraph">
   <fo:block>
     <xsl:call-template name="anchor"/>
-    <xsl:apply-templates select="para|simpara|formalpara|literallayout"/>
+    <xsl:apply-templates select="child::*[local-name(.)!='attribution']"/>
     <xsl:if test="attribution">
       <fo:inline>
         <xsl:text>&#x2014;</xsl:text>
