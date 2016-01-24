@@ -174,6 +174,16 @@
             <artifactId>morfologik-speller</artifactId>
             <version>1.10.0</version>
         </dependency>
+        <dependency>
+            <groupId>org.asciidoctor</groupId>
+            <artifactId>asciidoctorj</artifactId>
+            <version>1.5.4</version>
+        </dependency>
+        <dependency>
+            <groupId>org.asciidoctor</groupId>
+            <artifactId>asciidoctorj-pdf</artifactId>
+            <version>1.5.0-alpha.11</version>
+        </dependency>
     </dependencies>
 
     <build>

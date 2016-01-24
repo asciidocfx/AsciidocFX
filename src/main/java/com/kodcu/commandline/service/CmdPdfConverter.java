@@ -1,5 +1,6 @@
 package com.kodcu.commandline.service;
 
+import com.kodcu.boot.CmdlineConfig;
 import org.asciidoctor.Asciidoctor;
 import org.springframework.stereotype.Component;
 
@@ -14,10 +15,10 @@ import static org.asciidoctor.OptionsBuilder.options;
 @Component
 public class CmdPdfConverter {
 
-    public void convert(String file) {
+    public void convert(CmdlineConfig config) {
         // just try asciidoctor-pdf service
         Asciidoctor asciidoctor = create();
-        File inputFile = new File(file);
+        File inputFile = new File(config.getFiles().get(0));
         asciidoctor.convertFile(inputFile, options().backend("pdf").get());
     }
 }

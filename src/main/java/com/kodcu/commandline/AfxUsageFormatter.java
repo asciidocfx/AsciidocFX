@@ -39,7 +39,7 @@ public class AfxUsageFormatter extends DefaultUsageFormatter {
         // Usage
         output.append(i18n.tr("Usage:")).append("  ");
         output.append(cmdlineModel.getProgramName() == null ? i18n.tr("program") : cmdlineModel.getProgramName());
-        output.append(" ").append(i18n.tr("[parameters]"));
+        output.append(" ").append(i18n.tr("[parameter...]"));
         output.append("\n\t\t");
         output.append(cmdlineModel.getProgramName() == null ? i18n.tr("program") : cmdlineModel.getProgramName());
         output.append(" ").append(i18n.tr("[options..."));
