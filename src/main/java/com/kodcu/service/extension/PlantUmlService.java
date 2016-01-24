@@ -3,9 +3,11 @@ package com.kodcu.service.extension;
 import com.kodcu.controller.ApplicationController;
 import com.kodcu.other.Current;
 import com.kodcu.other.IOHelper;
+import com.kodcu.service.DirectoryService;
 import com.kodcu.service.ThreadService;
 import net.sourceforge.plantuml.FileFormat;
 import net.sourceforge.plantuml.FileFormatOption;
+import net.sourceforge.plantuml.FileSystem;
 import net.sourceforge.plantuml.SourceStringReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,11 +34,14 @@ public class PlantUmlService {
     private final ApplicationController controller;
     private final ThreadService threadService;
 
+    private final DirectoryService directoryService;
+
     @Autowired
-    public PlantUmlService(final Current current, final ApplicationController controller, final ThreadService threadService) {
+    public PlantUmlService(final Current current, final ApplicationController controller, final ThreadService threadService, DirectoryService directoryService) {
         this.current = current;
         this.controller = controller;
         this.threadService = threadService;
+        this.directoryService = directoryService;
     }
 
     public void plantUml(String uml, String type, String imagesDir, String imageTarget, String nodename) {
@@ -81,6 +86,8 @@ public class PlantUmlService {
 
             Path path = current.currentTab().getParentOrWorkdir();
             Path umlPath = path.resolve(imageTarget);
+
+            FileSystem.getInstance().setCurrentDir(path.toFile());
 
             FileFormat fileType = imageTarget.endsWith(".svg") ? FileFormat.SVG : FileFormat.PNG;
 
