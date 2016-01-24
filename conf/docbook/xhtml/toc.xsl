@@ -4,7 +4,7 @@
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns="http://www.w3.org/1999/xhtml" version="1.0">
 
 <!-- ********************************************************************
-     $Id: toc.xsl 9297 2012-04-22 03:56:16Z bobstayton $
+     $Id: toc.xsl 9796 2013-09-03 16:26:58Z bobstayton $
      ********************************************************************
 
      This file is part of the XSL DocBook Stylesheet distribution.
@@ -230,21 +230,21 @@
   </xsl:choose>
 </xsl:template>
 
-<xsl:template match="toc/title">
+<xsl:template match="toc/title | tocdiv/title">
   <div>
     <xsl:apply-templates select="." mode="common.html.attributes"/>
     <xsl:apply-templates/>
   </div>
 </xsl:template>
 
-<xsl:template match="toc/subtitle">
+<xsl:template match="toc/subtitle | tocdiv/subtitle">
   <div>
     <xsl:apply-templates select="." mode="common.html.attributes"/>
     <xsl:apply-templates/>
   </div>
 </xsl:template>
 
-<xsl:template match="toc/titleabbrev">
+<xsl:template match="toc/titleabbrev | tocdiv/titleabbrev">
 </xsl:template>
 
 <!-- ==================================================================== -->

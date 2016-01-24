@@ -53,6 +53,10 @@
 <l:gentext key="copyright" text="авторське право"/>
 <l:gentext key="Dedication" text="Присвята"/>
 <l:gentext key="dedication" text="присвята"/>
+<l:gentext key="Dialogue" text="Dialogue" lang="en"/>
+<l:gentext key="dialogue" text="Dialogue" lang="en"/>
+<l:gentext key="Drama" text="Drama" lang="en"/>
+<l:gentext key="drama" text="Drama" lang="en"/>
 <l:gentext key="Edition" text="Видання"/>
 <l:gentext key="edition" text="видання"/>
 <l:gentext key="Editor" text="Editor"/>
@@ -88,6 +92,8 @@
 <l:gentext key="note" text="примітка"/>
 <l:gentext key="Part" text="Частина"/>
 <l:gentext key="part" text="частина"/>
+<l:gentext key="Poetry" text="Poetry" lang="en"/>
+<l:gentext key="poetry" text="Poetry" lang="en"/>
 <l:gentext key="Preface" text="Передмова"/>
 <l:gentext key="preface" text="передмова"/>
 <l:gentext key="Procedure" text="Процедура"/>
@@ -151,6 +157,7 @@
 <l:gentext key="and" text=""/>
 <l:gentext key="or" text="або"/>
 <l:gentext key="by" text=""/>
+<l:gentext key="optional-step" text="(Optional) " lang="en"/>
 <l:gentext key="Edited" text="За редакції"/>
 <l:gentext key="edited" text="за редакції"/>
 <l:gentext key="Editedby" text="За редакції"/>
@@ -171,6 +178,8 @@
 <l:gentext key="unexpectedelementname" text="неочікувана назва елемента"/>
 <l:gentext key="unsupported" text="не підтримується"/>
 <l:gentext key="xrefto" text="xref to"/>
+<l:gentext key="video-unsupported" text="Your browser does not support the video tag" lang="en"/>
+<l:gentext key="audio-unsupported" text="Your browser does not support the audio tag" lang="en"/>
 <l:gentext key="Authors" text="Автори"/>
 <l:gentext key="copyeditor" text="Редактор"/>
 <l:gentext key="graphicdesigner" text="Художнє оформлення"/>
@@ -206,10 +215,10 @@
 <l:gentext key="uppercase.alpha" text="АБВГҐДЕЄЖЗИІЇЙКЛМНОПРСТУФХЦЧШЩЬЮЯ"/>
 <l:gentext key="normalize.sort.input" text="AaÀàÁáÂâÃãÄäÅåĀāĂăĄąǍǎǞǟǠǡǺǻȀȁȂȃȦȧḀḁẚẠạẢảẤấẦầẨẩẪẫẬậẮắẰằẲẳẴẵẶặBbƀƁɓƂƃḂḃḄḅḆḇCcÇçĆćĈĉĊċČčƇƈɕḈḉDdĎďĐđƊɗƋƌǅǲȡɖḊḋḌḍḎḏḐḑḒḓEeÈèÉéÊêËëĒēĔĕĖėĘęĚěȄȅȆȇȨȩḔḕḖḗḘḙḚḛḜḝẸẹẺẻẼẽẾếỀềỂểỄễỆệFfƑƒḞḟGgĜĝĞğĠġĢģƓɠǤǥǦǧǴǵḠḡHhĤĥĦħȞȟɦḢḣḤḥḦḧḨḩḪḫẖIiÌìÍíÎîÏïĨĩĪīĬĭĮįİƗɨǏǐȈȉȊȋḬḭḮḯỈỉỊịJjĴĵǰʝKkĶķƘƙǨǩḰḱḲḳḴḵLlĹĺĻļĽľĿŀŁłƚǈȴɫɬɭḶḷḸḹḺḻḼḽMmɱḾḿṀṁṂṃNnÑñŃńŅņŇňƝɲƞȠǋǸǹȵɳṄṅṆṇṈṉṊṋOoÒòÓóÔôÕõÖöØøŌōŎŏŐőƟƠơǑǒǪǫǬǭǾǿȌȍȎȏȪȫȬȭȮȯȰȱṌṍṎṏṐṑṒṓỌọỎỏỐốỒồỔổỖỗỘộỚớỜờỞởỠỡỢợPpƤƥṔṕṖṗQqʠRrŔŕŖŗŘřȐȑȒȓɼɽɾṘṙṚṛṜṝṞṟSsŚśŜŝŞşŠšȘșʂṠṡṢṣṤṥṦṧṨṩTtŢţŤťŦŧƫƬƭƮʈȚțȶṪṫṬṭṮṯṰṱẗUuÙùÚúÛûÜüŨũŪūŬŭŮůŰűŲųƯưǓǔǕǖǗǘǙǚǛǜȔȕȖȗṲṳṴṵṶṷṸṹṺṻỤụỦủỨứỪừỬửỮữỰựVvƲʋṼṽṾṿWwŴŵẀẁẂẃẄẅẆẇẈẉẘXxẊẋẌẍYyÝýÿŸŶŷƳƴȲȳẎẏẙỲỳỴỵỶỷỸỹZzŹźŻżŽžƵƶȤȥʐʑẐẑẒẓẔẕẕ" lang="en"/>
 <l:gentext key="normalize.sort.output" text="AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABBBBBBBBBBBBBCCCCCCCCCCCCCCCCCDDDDDDDDDDDDDDDDDDDDDDDDEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEFFFFFFGGGGGGGGGGGGGGGGGGGGHHHHHHHHHHHHHHHHHHHHIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIJJJJJJKKKKKKKKKKKKKKLLLLLLLLLLLLLLLLLLLLLLLLLLMMMMMMMMMNNNNNNNNNNNNNNNNNNNNNNNNNNNOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOPPPPPPPPQQQRRRRRRRRRRRRRRRRRRRRRRRSSSSSSSSSSSSSSSSSSSSSSSTTTTTTTTTTTTTTTTTTTTTTTTTUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUVVVVVVVVWWWWWWWWWWWWWWWXXXXXXYYYYYYYYYYYYYYYYYYYYYYYZZZZZZZZZZZZZZZZZZZZZ" lang="en"/>
-<l:dingbat key="startquote" text="“"/>
-<l:dingbat key="endquote" text="”"/>
-<l:dingbat key="nestedstartquote" text="‘"/>
-<l:dingbat key="nestedendquote" text="’"/>
+<l:dingbat key="startquote" text="«"/>
+<l:dingbat key="endquote" text="»"/>
+<l:dingbat key="nestedstartquote" text="„"/>
+<l:dingbat key="nestedendquote" text="“"/>
 <l:dingbat key="singlestartquote" text="‘" lang="en"/>
 <l:dingbat key="singleendquote" text="’" lang="en"/>
 <l:dingbat key="bullet" text="•"/>
@@ -229,7 +238,7 @@
 <l:template name="insert" text="Ins" lang="en"/>
 <l:template name="left" text="←" lang="en"/>
 <l:template name="meta" text="Meta" lang="en"/>
-<l:template name="option" text="???" lang="en"/>
+<l:template name="option" text="⌥" lang="en"/>
 <l:template name="pagedown" text="Page ↓" lang="en"/>
 <l:template name="pageup" text="Page ↑" lang="en"/>
 <l:template name="right" text="→" lang="en"/>
@@ -238,18 +247,18 @@
 <l:template name="tab" text="→|" lang="en"/>
 <l:template name="up" text="↑" lang="en"/>
 </l:context>
-<l:context name="webhelp"><l:template name="Search" text="Search" lang="en"/>
-<l:template name="Enter_a_term_and_click" text="Enter a term and click " lang="en"/>
-<l:template name="Go" text="Go" lang="en"/>
-<l:template name="to_perform_a_search" text=" to perform a search." lang="en"/>
-<l:template name="txt_filesfound" text="Results" lang="en"/>
-<l:template name="txt_enter_at_least_1_char" text="You must enter at least one character." lang="en"/>
-<l:template name="txt_browser_not_supported" text="JavaScript is disabled on your browser. Please enable JavaScript to enjoy all the features of this site." lang="en"/>
-<l:template name="txt_please_wait" text="Please wait. Search in progress..." lang="en"/>
-<l:template name="txt_results_for" text="Results for: " lang="en"/>
-<l:template name="TableofContents" text="Contents" lang="en"/>
-<l:template name="HighlightButton" text="Toggle search result highlighting" lang="en"/>
-<l:template name="Your_search_returned_no_results" text="Your search returned no results." lang="en"/>
+<l:context name="webhelp"><l:template name="Search" text="Пошук"/>
+<l:template name="Enter_a_term_and_click" text="Введіть критерій пошуку і натисніть "/>
+<l:template name="Go" text="Шукати"/>
+<l:template name="to_perform_a_search" text=", щоб розпочати пошук."/>
+<l:template name="txt_filesfound" text="Результати"/>
+<l:template name="txt_enter_at_least_1_char" text="Вам слід ввести принаймні один символ"/>
+<l:template name="txt_browser_not_supported" text="У вашій програмі для перегляду вимкнено JavaScript. Будь ласка, увімкніть JavaScript, щоб мати змогу скористатися усіма можливостями цього сайта."/>
+<l:template name="txt_please_wait" text="Зачекайте. Виконуємо пошук..."/>
+<l:template name="txt_results_for" text="Результати для: "/>
+<l:template name="TableofContents" text="Вміст"/>
+<l:template name="HighlightButton" text="Увімкнути або вимкнути підсвічування знайдених відповідників"/>
+<l:template name="Your_search_returned_no_results" text="Відповідників не знайдено."/>
 </l:context>
 <l:context name="styles"><l:template name="person-name" text="first-last"/>
 </l:context>
@@ -347,6 +356,9 @@
 <l:template name="simplesect" text="%t"/>
 <l:template name="topic" text="%t" lang="en"/>
 <l:template name="part" text="%t" lang="en"/>
+<l:template name="dialogue" text="%t" lang="en"/>
+<l:template name="drama" text="%t" lang="en"/>
+<l:template name="poetry" text="%t" lang="en"/>
 </l:context>
 <l:context name="title-numbered"><l:template name="appendix" text="Додаток %n. %t"/>
 <l:template name="article/appendix" text="%n. %t" lang="en"/>
@@ -402,6 +414,9 @@
 <l:template name="simplesect" text="%s"/>
 <l:template name="topic" text="%t" lang="en"/>
 <l:template name="toc" text="%s"/>
+<l:template name="dialogue" text="%s" lang="en"/>
+<l:template name="drama" text="%s" lang="en"/>
+<l:template name="poetry" text="%s" lang="en"/>
 </l:context>
 <l:context name="xref"><l:template name="abstract" text="%t"/>
 <l:template name="acknowledgements" text="%t" lang="en"/>
@@ -476,18 +491,21 @@
 <l:template name="pageabbrev" text="(p. %p)" lang="en"/>
 <l:template name="Page" text="Page %p" lang="en"/>
 <l:template name="topic" text="%t" lang="en"/>
-<l:template name="bridgehead" text="“%t”"/>
-<l:template name="refsection" text="“%t”"/>
-<l:template name="refsect1" text="“%t”"/>
-<l:template name="refsect2" text="“%t”"/>
-<l:template name="refsect3" text="“%t”"/>
-<l:template name="sect1" text="“%t”"/>
-<l:template name="sect2" text="“%t”"/>
-<l:template name="sect3" text="“%t”"/>
-<l:template name="sect4" text="“%t”"/>
-<l:template name="sect5" text="“%t”"/>
-<l:template name="section" text="“%t”"/>
-<l:template name="simplesect" text="“%t”"/>
+<l:template name="dialogue" text="%t" lang="en"/>
+<l:template name="drama" text="%t" lang="en"/>
+<l:template name="poetry" text="%t" lang="en"/>
+<l:template name="bridgehead" text="«%t»"/>
+<l:template name="refsection" text="«%t»"/>
+<l:template name="refsect1" text="«%t»"/>
+<l:template name="refsect2" text="«%t»"/>
+<l:template name="refsect3" text="«%t»"/>
+<l:template name="sect1" text="«%t»"/>
+<l:template name="sect2" text="«%t»"/>
+<l:template name="sect3" text="«%t»"/>
+<l:template name="sect4" text="«%t»"/>
+<l:template name="sect5" text="«%t»"/>
+<l:template name="section" text="«%t»"/>
+<l:template name="simplesect" text="«%t»"/>
 </l:context>
 <l:context name="xref-number"><l:template name="answer" text="В: %n"/>
 <l:template name="appendix" text="Додаток %n"/>
@@ -511,27 +529,27 @@
 <l:template name="table" text="Таблиця %n"/>
 </l:context>
 <l:context name="xref-number-and-title"><l:template name="appendix" text="Додаток %n, %t"/>
-<l:template name="bridgehead" text="Розділ %n, “%t”"/>
+<l:template name="bridgehead" text="Розділ %n, «%t»"/>
 <l:template name="chapter" text="Розділ %n, %t"/>
-<l:template name="equation" text="Формула %n, “%t”"/>
-<l:template name="example" text="Приклад %n, “%t”"/>
-<l:template name="figure" text="Рисунок %n, “%t”"/>
-<l:template name="part" text="Частина %n, “%t”"/>
-<l:template name="procedure" text="Процедура %n, “%t”"/>
-<l:template name="productionset" text="Продукція %n, “%t”"/>
-<l:template name="qandadiv" text="П і В %n, “%t”"/>
-<l:template name="refsect1" text="розділ з назвою “%t”"/>
-<l:template name="refsect2" text="розділ з назвою “%t”"/>
-<l:template name="refsect3" text="розділ з назвою “%t”"/>
-<l:template name="refsection" text="розділ з назвою “%t”"/>
-<l:template name="sect1" text="Розділ %n, “%t”"/>
-<l:template name="sect2" text="Розділ %n, “%t”"/>
-<l:template name="sect3" text="Розділ %n, “%t”"/>
-<l:template name="sect4" text="Розділ %n, “%t”"/>
-<l:template name="sect5" text="Розділ %n, “%t”"/>
-<l:template name="section" text="Розділ %n, “%t”"/>
-<l:template name="simplesect" text="розділ з назвою “%t”"/>
-<l:template name="table" text="Таблиця %n, “%t”"/>
+<l:template name="equation" text="Формула %n, «%t»"/>
+<l:template name="example" text="Приклад %n, «%t»"/>
+<l:template name="figure" text="Рисунок %n, «%t»"/>
+<l:template name="part" text="Частина %n, «%t»"/>
+<l:template name="procedure" text="Процедура %n, «%t»"/>
+<l:template name="productionset" text="Продукція %n, «%t»"/>
+<l:template name="qandadiv" text="П і В %n, «%t»"/>
+<l:template name="refsect1" text="розділ з назвою «%t»"/>
+<l:template name="refsect2" text="розділ з назвою «%t»"/>
+<l:template name="refsect3" text="розділ з назвою «%t»"/>
+<l:template name="refsection" text="розділ з назвою «%t»"/>
+<l:template name="sect1" text="Розділ %n, «%t»"/>
+<l:template name="sect2" text="Розділ %n, «%t»"/>
+<l:template name="sect3" text="Розділ %n, «%t»"/>
+<l:template name="sect4" text="Розділ %n, «%t»"/>
+<l:template name="sect5" text="Розділ %n, «%t»"/>
+<l:template name="section" text="Розділ %n, «%t»"/>
+<l:template name="simplesect" text="розділ з назвою «%t»"/>
+<l:template name="table" text="Таблиця %n, «%t»"/>
 </l:context>
 <l:context name="authorgroup"><l:template name="sep" text=", "/>
 <l:template name="sep2" text="  "/>

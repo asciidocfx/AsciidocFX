@@ -4,7 +4,7 @@
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns="http://www.w3.org/1999/xhtml" version="1.0">
 
 <!-- ********************************************************************
-     $Id: html.xsl 9306 2012-04-28 03:49:00Z bobstayton $
+     $Id: html.xsl 9772 2013-05-15 08:05:56Z kosek $
      ********************************************************************
 
      This file is part of the XSL DocBook Stylesheet distribution.
@@ -361,6 +361,9 @@
   <xsl:apply-templates select="." mode="class.attribute">
     <xsl:with-param name="class" select="$class"/>
   </xsl:apply-templates>
+  <xsl:call-template name="its.attributes">
+    <xsl:with-param name="inherit" select="$inherit"/>
+  </xsl:call-template>
 </xsl:template>
 
 <!-- Apply common attributes not including class -->
@@ -371,6 +374,7 @@
 <xsl:template match="*" mode="locale.html.attributes">
   <xsl:call-template name="generate.html.lang"/>
   <xsl:call-template name="dir"/>
+  <xsl:call-template name="its.attributes"/>
 </xsl:template>
 
 <!-- Pass through any lang attributes -->

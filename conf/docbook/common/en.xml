@@ -53,6 +53,10 @@
 <l:gentext key="copyright" text="Copyright"/>
 <l:gentext key="Dedication" text="Dedication"/>
 <l:gentext key="dedication" text="Dedication"/>
+<l:gentext key="Dialogue" text="Dialogue"/>
+<l:gentext key="dialogue" text="Dialogue"/>
+<l:gentext key="Drama" text="Drama"/>
+<l:gentext key="drama" text="Drama"/>
 <l:gentext key="Edition" text="Edition"/>
 <l:gentext key="edition" text="Edition"/>
 <l:gentext key="Editor" text="Editor"/>
@@ -88,6 +92,8 @@
 <l:gentext key="note" text="Note"/>
 <l:gentext key="Part" text="Part"/>
 <l:gentext key="part" text="Part"/>
+<l:gentext key="Poetry" text="Poetry"/>
+<l:gentext key="poetry" text="Poetry"/>
 <l:gentext key="Preface" text="Preface"/>
 <l:gentext key="preface" text="Preface"/>
 <l:gentext key="Procedure" text="Procedure"/>
@@ -151,6 +157,7 @@
 <l:gentext key="and" text="and"/>
 <l:gentext key="or" text="or"/>
 <l:gentext key="by" text="by"/>
+<l:gentext key="optional-step" text="(Optional) "/>
 <l:gentext key="Edited" text="Edited"/>
 <l:gentext key="edited" text="Edited"/>
 <l:gentext key="Editedby" text="Edited by"/>
@@ -171,6 +178,8 @@
 <l:gentext key="unexpectedelementname" text="Unexpected element name"/>
 <l:gentext key="unsupported" text="unsupported"/>
 <l:gentext key="xrefto" text="xref to"/>
+<l:gentext key="video-unsupported" text="Your browser does not support the video tag"/>
+<l:gentext key="audio-unsupported" text="Your browser does not support the audio tag"/>
 <l:gentext key="Authors" text="Authors"/>
 <l:gentext key="copyeditor" text="Copy Editor"/>
 <l:gentext key="graphicdesigner" text="Graphic Designer"/>
@@ -229,7 +238,7 @@
 <l:template name="insert" text="Ins"/>
 <l:template name="left" text="←"/>
 <l:template name="meta" text="Meta"/>
-<l:template name="option" text="???"/>
+<l:template name="option" text="⌥"/>
 <l:template name="pagedown" text="Page ↓"/>
 <l:template name="pageup" text="Page ↑"/>
 <l:template name="right" text="→"/>
@@ -347,6 +356,9 @@
 <l:template name="simplesect" text="%t"/>
 <l:template name="topic" text="%t"/>
 <l:template name="part" text="%t"/>
+<l:template name="dialogue" text="%t"/>
+<l:template name="drama" text="%t"/>
+<l:template name="poetry" text="%t"/>
 </l:context>
 <l:context name="title-numbered"><l:template name="appendix" text="Appendix %n. %t"/>
 <l:template name="article/appendix" text="%n. %t"/>
@@ -402,6 +414,9 @@
 <l:template name="simplesect" text="%s"/>
 <l:template name="topic" text="%t"/>
 <l:template name="toc" text="%s"/>
+<l:template name="dialogue" text="%s"/>
+<l:template name="drama" text="%s"/>
+<l:template name="poetry" text="%s"/>
 </l:context>
 <l:context name="xref"><l:template name="abstract" text="%t"/>
 <l:template name="acknowledgements" text="%t"/>
@@ -476,6 +491,9 @@
 <l:template name="pageabbrev" text="(p. %p)"/>
 <l:template name="Page" text="Page %p"/>
 <l:template name="topic" text="%t"/>
+<l:template name="dialogue" text="%t"/>
+<l:template name="drama" text="%t"/>
+<l:template name="poetry" text="%t"/>
 <l:template name="bridgehead" text="the section called “%t”"/>
 <l:template name="refsection" text="the section called “%t”"/>
 <l:template name="refsect1" text="the section called “%t”"/>

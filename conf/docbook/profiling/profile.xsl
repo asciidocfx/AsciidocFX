@@ -28,6 +28,7 @@
 <xsl:param name="profile.conformance" select="''"/>
 <xsl:param name="profile.lang" select="''"/>
 <xsl:param name="profile.os" select="''"/>
+<xsl:param name="profile.outputformat" select="';'"/>
 <xsl:param name="profile.revision" select="''"/>
 <xsl:param name="profile.revisionflag" select="''"/>
 <xsl:param name="profile.role" select="''"/>

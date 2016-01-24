@@ -5,7 +5,7 @@
                 version='1.0'>
 
 <!-- ********************************************************************
-     $Id: fop1.xsl 9293 2012-04-19 18:42:11Z bobstayton $
+     $Id: fop1.xsl 9915 2014-05-13 16:05:06Z bobstayton $
      ********************************************************************
 
      This file is part of the XSL DocBook Stylesheet distribution.
@@ -14,14 +14,8 @@
 
      ******************************************************************** -->
 
-<!-- ==================================================================== -->
 
-<xsl:variable name="bookmarks.state">
-  <xsl:choose>
-    <xsl:when test="$bookmarks.collapse != 0">hide</xsl:when>
-    <xsl:otherwise>show</xsl:otherwise>
-  </xsl:choose>
-</xsl:variable>
+<!-- ==================================================================== -->
 
 <xsl:template match="*" mode="fop1.outline">
   <xsl:apply-templates select="*" mode="fop1.outline"/>
@@ -30,7 +24,8 @@
 <xsl:template match="set|book|part|reference|
                      preface|chapter|appendix|article|topic
                      |glossary|bibliography|index|setindex
-                     |refentry
+                     |refentry|refsynopsisdiv
+                     |refsect1|refsect2|refsect3|refsection
                      |sect1|sect2|sect3|sect4|sect5|section"
               mode="fop1.outline">
 
@@ -76,7 +71,8 @@
       <xsl:if test="contains($toc.params, 'toc')
                     and (book|part|reference|preface|chapter|appendix|article|topic
                          |glossary|bibliography|index|setindex
-                         |refentry
+                         |refentry|refsynopsisdiv
+                         |refsect1|refsect2|refsect3|refsection
                          |sect1|sect2|sect3|sect4|sect5|section)">
         <fo:bookmark internal-destination="toc...{$id}">
           <fo:bookmark-title>
@@ -95,40 +91,22 @@
 </xsl:template>
 
 <xsl:template match="*" mode="fop1.foxdest">
-  <xsl:apply-templates select="*" mode="fop1.foxdest"/>
-</xsl:template>
-
-<xsl:template match="set|book|part|reference|
-                     preface|chapter|appendix|article|topic
-                     |glossary|bibliography|index|setindex
-                     |refentry
-                     |sect1|sect2|sect3|sect4|sect5|section"
-              mode="fop1.foxdest">
   <xsl:variable name="id">
-    <xsl:call-template name="object.id"/>
+    <xsl:value-of select="(@id|@xml:id)[1]"/>
   </xsl:variable>
-  <xsl:variable name="bookmark-label">
-    <xsl:apply-templates select="." mode="object.title.markup"/>
-  </xsl:variable>
-  <!--xsl:if test="$id != ''">
-    <fox:destination internal-destination="{$id}"/>
-  </xsl:if-->
-
-  <!-- Put the root element bookmark at the same level as its children -->
-  <!-- If the object is a set or book, generate a bookmark for the toc -->
-
   <xsl:choose>
-    <xsl:when test="self::index and $generate.index = 0"/>	
-    <xsl:when test="parent::*">
+    <xsl:when test="self::index and $generate.index = 0"/>
+    <!-- ID on the footnote is not passed to the output FO -->
+    <xsl:when test="not(self::footnote) and $id != ''">
       <fox:destination internal-destination="{$id}"/>
-        <xsl:apply-templates select="*" mode="fop1.foxdest"/>
+      <xsl:apply-templates select="*" mode="fop1.foxdest"/>
     </xsl:when>
     <xsl:otherwise>
-      <fox:destination internal-destination="{$id}"/>
       <xsl:apply-templates select="*" mode="fop1.foxdest"/>
     </xsl:otherwise>
   </xsl:choose>
 </xsl:template>
+
 <!-- Metadata support ("Document Properties" in Adobe Reader) -->
 <xsl:template name="fop1-document-information">
   <xsl:variable name="authors" select="(//author|//editor|//corpauthor|//authorgroup)[1]"/>

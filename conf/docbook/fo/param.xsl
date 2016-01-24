@@ -4,7 +4,7 @@
 <!-- This file is generated from param.xweb -->
 
 <!-- ********************************************************************
-     $Id: param.xweb 9673 2012-12-02 20:06:41Z bobstayton $
+     $Id: param.xweb 9996 2015-10-01 16:35:10Z bobstayton $
      ********************************************************************
 
      This file is part of the XSL DocBook Stylesheet distribution.
@@ -394,6 +394,7 @@ set       toc,title
 <xsl:param name="index.term.separator"/>
 <xsl:param name="insert.link.page.number">no</xsl:param>
 <xsl:param name="insert.xref.page.number">no</xsl:param>
+<xsl:param name="insert.xref.page.number.para">yes</xsl:param>
 <xsl:attribute-set name="itemizedlist.properties" use-attribute-sets="list.block.properties">
 </xsl:attribute-set>
 <xsl:attribute-set name="itemizedlist.label.properties">
@@ -624,6 +625,7 @@ set       toc,title
 <xsl:param name="profile.conformance"/>
 <xsl:param name="profile.lang"/>
 <xsl:param name="profile.os"/>
+<xsl:param name="profile.outputformat"/>
 <xsl:param name="profile.revision"/>
 <xsl:param name="profile.revisionflag"/>
 <xsl:param name="profile.role"/>
@@ -850,7 +852,12 @@ set       toc,title
 
 <xsl:param name="table.cell.border.color">black</xsl:param>
 <xsl:param name="table.cell.border.style">solid</xsl:param>
-<xsl:param name="table.cell.border.thickness">0.5pt</xsl:param>
+<xsl:param name="table.cell.border.thickness">
+  <xsl:choose>
+    <xsl:when test="contains($stylesheet.result.type,'html')">1px</xsl:when>
+    <xsl:otherwise>0.5pt</xsl:otherwise>
+  </xsl:choose>
+</xsl:param>
 <xsl:attribute-set name="table.cell.padding">
   <xsl:attribute name="padding-start">2pt</xsl:attribute>
   <xsl:attribute name="padding-end">2pt</xsl:attribute>
@@ -870,7 +877,12 @@ set       toc,title
 
 <xsl:param name="table.frame.border.color">black</xsl:param>
 <xsl:param name="table.frame.border.style">solid</xsl:param>
-<xsl:param name="table.frame.border.thickness">0.5pt</xsl:param>
+<xsl:param name="table.frame.border.thickness">
+  <xsl:choose>
+    <xsl:when test="contains($stylesheet.result.type,'html')">1px</xsl:when>
+    <xsl:otherwise>0.5pt</xsl:otherwise>
+  </xsl:choose>
+</xsl:param>
 <xsl:attribute-set name="table.properties" use-attribute-sets="formal.object.properties">
   <xsl:attribute name="keep-together.within-column">auto</xsl:attribute>
 </xsl:attribute-set>
@@ -906,6 +918,13 @@ set       toc,title
   <xsl:attribute name="text-align">start</xsl:attribute>
   <xsl:attribute name="end-indent"><xsl:value-of select="concat($toc.indent.width, 'pt')"/></xsl:attribute>
   <xsl:attribute name="last-line-end-indent"><xsl:value-of select="concat('-', $toc.indent.width, 'pt')"/></xsl:attribute>
+</xsl:attribute-set>
+<xsl:attribute-set name="toc.leader.properties">
+  <xsl:attribute name="leader-pattern">dots</xsl:attribute>
+  <xsl:attribute name="leader-pattern-width">3pt</xsl:attribute>
+  <xsl:attribute name="leader-alignment">reference-area</xsl:attribute>
+  <xsl:attribute name="padding-left">3pt</xsl:attribute>
+  <xsl:attribute name="padding-right">3pt</xsl:attribute>
 </xsl:attribute-set>
 <xsl:attribute-set name="toc.margin.properties">
   <xsl:attribute name="space-before.minimum">0.5em</xsl:attribute>
@@ -988,6 +1007,42 @@ set       toc,title
 </xsl:attribute-set>
 <xsl:attribute-set name="para.properties" use-attribute-sets="normal.para.spacing">
 </xsl:attribute-set>
+    <xsl:param name="mark.optional.procedure.steps">1</xsl:param>
+  
+<xsl:param name="xsl1.1.bookmarks">
+  <xsl:choose>
+    <xsl:when test="$fop1.extensions != 0">1</xsl:when>
+    <xsl:when test="$xep.extensions != 0">1</xsl:when>
+    <xsl:when test="$axf.extensions != 0">1</xsl:when>
+    <xsl:otherwise>0</xsl:otherwise>
+  </xsl:choose></xsl:param>
+<xsl:param name="show.bookmarks" select="1"/>
+<xsl:param name="autolink.index.see" select="1"/>
+<xsl:attribute-set name="publishers.properties">
+  <xsl:attribute name="space-before">1em</xsl:attribute>
+  <xsl:attribute name="space-after">1em</xsl:attribute>
+  <xsl:attribute name="keep-together.within-column">auto</xsl:attribute>
+</xsl:attribute-set>
+<xsl:attribute-set name="drama.properties" use-attribute-sets="publishers.properties"/>
+<xsl:attribute-set name="poetry.properties" use-attribute-sets="publishers.properties"/>
+<xsl:attribute-set name="stagedir.properties">
+  <xsl:attribute name="font-weight">bold</xsl:attribute>
+  <xsl:attribute name="font-style">italic</xsl:attribute>
+  <xsl:attribute name="space-before">1em</xsl:attribute>
+  <xsl:attribute name="space-after">1em</xsl:attribute>
+</xsl:attribute-set>
+<xsl:attribute-set name="linegroup.properties">
+  <xsl:attribute name="provisional-distance-between-starts">20%</xsl:attribute>
+  <xsl:attribute name="provisional-label-separation">.3em</xsl:attribute>
+  <xsl:attribute name="space-before">.5em</xsl:attribute>
+</xsl:attribute-set>
+<xsl:attribute-set name="speaker.properties"/>
+<xsl:attribute-set name="line.properties"/>
+<xsl:attribute-set name="inlinestagedir.properties">
+  <xsl:attribute name="font-weight">bold</xsl:attribute>
+  <xsl:attribute name="font-style">italic</xsl:attribute>
+</xsl:attribute-set>
+<xsl:attribute-set name="dialogue.properties" use-attribute-sets="publishers.properties"/>
 
 </xsl:stylesheet>
 

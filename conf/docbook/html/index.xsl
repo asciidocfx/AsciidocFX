@@ -3,7 +3,7 @@
                 version='1.0'>
 
 <!-- ********************************************************************
-     $Id: index.xsl 9297 2012-04-22 03:56:16Z bobstayton $
+     $Id: index.xsl 9811 2013-09-20 11:04:58Z mzjn $
      ********************************************************************
 
      This file is part of the XSL DocBook Stylesheet distribution.
@@ -126,6 +126,13 @@
     <xsl:apply-templates select="." mode="common.html.attributes"/>
     <xsl:apply-templates/>
   </h3>
+</xsl:template>
+
+<xsl:template match="indexdiv/subtitle">
+  <h4>
+    <xsl:apply-templates select="." mode="common.html.attributes"/>
+    <xsl:apply-templates/>
+  </h4>
 </xsl:template>
 
 <!-- ==================================================================== -->

@@ -16,6 +16,9 @@ stylesheets to inherit all the features of the
 XHTML stylesheets while making the minimum changes
 for them to produce valid EPUB3.
 
+If you need to customize the epub3 stylesheet, see the section
+below titled "Customizing the epub3 stylesheet".
+
 Usage
 -----------
 The general process for creating an EPUB3 ebook is:
@@ -53,9 +56,11 @@ subdirectory that will contain the .xhtml files and
 the epub package files.  Here is an example using xsltproc:
 
 xsltproc \
-  --stringparam base.dir ebook1/OEBPS/  \
+  --stringparam base.dir ebook1/  \
   epub3/chunk.xsl \
   mybook.xml
+
+Make sure you don't include the OEBPS directory in base.dir.
 
 After processing a document with this setting, you should find
 the following output:
@@ -135,6 +140,79 @@ Ibis EPUB3 preview version
    - Does not format MathML yet.
    - Does not handle videodata or audiodata yet.
    - Handles SVG with external viewer.
+
+
+Customizing the epub3 stylesheet
+---------------------------------
+As with all DocBook stylesheets that generate chunked output, a
+customization requires two files: one for chunking behavior and
+one for element formatting.  Most people only need to customize
+element formatting, but you still need the two files to keep the
+proper import precedence.  See this doc for details about this
+issue:
+
+   http://www.sagehill.net/docbookxsl/ChunkingCustomization.html
+
+Here is an example of the chunking stylesheet, which is the one you
+apply to your document when processing:
+
+custom-epub3-chunk.xsl
+--------------------------------------------------------------------
+<?xml version="1.0"?>
+<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+                xmlns:d="http://docbook.org/ns/docbook"
+                version="1.0"
+                exclude-result-prefixes="d">
+
+<!-- Import the element customization module, shown below -->
+<xsl:import href="custom-epub3-elements.xsl"/>
+
+<!-- import stock DocBook XSL file; use a catalog for local files-->
+<xsl:import href="http://docbook.sourceforge.net/release/xsl/current/xhtml/chunk-common.xsl"/>
+
+<!-- include (not import) stock DocBook XSL file; use a catalog for local files-->
+<xsl:include href="http://docbook.sourceforge.net/release/xsl/current/xhtml/chunk-code.xsl"/>
+
+<!-- include (not import) stock DocBook XSL file; use a catalog for local files-->
+<xsl:include href="http://docbook.sourceforge.net/release/xsl/current/epub3/epub3-chunk-mods.xsl"/>
+
+<!-- Add here any templates that change chunking behavior.
+That is, any templates copied from chunk-common.xsl or
+chunk-core.xsl and modified.  Any such customized templates
+with a @match attribute must also have a priority="1"
+attribute to override the original in chunk-code.xsl -->
+
+</xsl:stylesheet>
+--------------------------------------------------------------------
+
+The following stylesheet file is imported by the above file.
+
+custom-epub3-elements.xsl
+--------------------------------------------------------------------
+<?xml version="1.0" encoding="utf-8"?>
+<xsl:stylesheet 
+  xmlns:xsl="http://www.w3.org/1999/XSL/Transform" 
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:d="http://docbook.org/ns/docbook"
+  exclude-result-prefixes="#default d"
+  version="1.0">
+
+<xsl:import href="http://docbook.sourceforge.net/release/xsl/current/xhtml5/docbook.xsl"/>
+<xsl:include href="http://docbook.sourceforge.net/release/xsl/current/epub3/epub3-element-mods.xsl"/>
+
+<!-- Add here any templates that change element format.  Any
+such customized templates with a @match attribute must also
+have a priority="1" attribute to override the original.  -->
+
+<!-- Add here any templates that change element formatting.
+That is, any templates not copied from chunk-common.xsl or
+chunk-core.xsl.  Any customized templates with a @match
+attribute must also have a priority="1" attribute to
+override the original. -->
+
+</xsl:stylesheet>
+--------------------------------------------------------------------
+
 
 
 EPUB metadata
