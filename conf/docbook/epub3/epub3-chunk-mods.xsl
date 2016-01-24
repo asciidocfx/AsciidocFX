@@ -28,7 +28,7 @@
 
 <!-- EPUB3: customize to generate package files -->
 <xsl:template match="*" mode="process.root" priority="2">
-  <xsl:call-template name="check.for.xalan"/>
+  <!--<xsl:call-template name="check.for.xalan"/>-->
   <xsl:apply-templates select="."/>
   <xsl:call-template name="generate.css.files"/>
 
