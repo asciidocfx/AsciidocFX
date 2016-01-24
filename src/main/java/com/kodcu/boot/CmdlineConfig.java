@@ -22,6 +22,30 @@ public class CmdlineConfig {
     @CmdOption(names = {"-d", "--destination-dir"}, description = "destination output directory", args = {"DIR"})
     final List<String> destination = new LinkedList<String>();
 
-    @CmdOption(names = {"-o", "--out-file"}, description = "output file (default: based on path of input file)", args = {"FILE"})
+    @CmdOption(names = {"-o", "--out-file"}, description = "output file (default: based on the path of a given source asciidoc file)", args = {"FILE"})
     final List<String> output = new LinkedList<String>();
+
+    public List<String> getBackend() {
+        return backend;
+    }
+
+    public boolean isVersion() {
+        return version;
+    }
+
+    public List<String> getOutput() {
+        return output;
+    }
+
+    public boolean isHelp() {
+        return help;
+    }
+
+    public List<String> getFiles() {
+        return files;
+    }
+
+    public List<String> getDestination() {
+        return destination;
+    }
 }

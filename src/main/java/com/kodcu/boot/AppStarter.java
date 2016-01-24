@@ -4,7 +4,6 @@ import com.install4j.api.launcher.StartupNotification;
 import com.kodcu.controller.ApplicationController;
 import com.kodcu.service.ThreadService;
 import com.kodcu.service.ui.TabService;
-import de.tototec.cmdoption.CmdlineParser;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
@@ -25,6 +24,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import java.io.File;
 import java.io.InputStream;
 import java.nio.file.Paths;
+import java.util.Arrays;
 
 import static javafx.scene.input.KeyCombination.SHORTCUT_DOWN;
 
@@ -42,20 +42,15 @@ public class AppStarter extends Application {
 
         // http://bit.ly/1Euk8hh
         System.setProperty("jsse.enableSNIExtension", "false");
-
-        final CmdlineConfig config = new CmdlineConfig();
-        final CmdlineParser cp = new CmdlineParser(config);
-        cp.parse(getParameters().getRaw().toArray(new String[0]));
-
         try {
-            startApp(stage, config);
+            startApp(stage, getParameters().getRaw().toArray(new String[0]));
         } catch (final Throwable e) {
             logger.error("Problem occured while starting AsciidocFX", e);
         }
 
     }
 
-    private void startApp(final Stage stage, final CmdlineConfig config) throws Throwable {
+    private void startApp(final Stage stage, final String... config) throws Throwable {
 
         context = SpringApplication.run(SpringAppConfig.class);
 
@@ -149,7 +144,7 @@ public class AppStarter extends Application {
         stage.heightProperty().addListener(controller::stageWidthChanged);
     }
 
-    private void registerStartupListener(CmdlineConfig config) {
+    private void registerStartupListener(String... config) {
 
         final ThreadService threadService = context.getBean(ThreadService.class);
         final TabService tabService = context.getBean(TabService.class);
@@ -167,20 +162,18 @@ public class AppStarter extends Application {
             });
         });
 
-        if (!config.files.isEmpty()) {
-            threadService.runActionLater(() -> {
-                config.files.stream().forEach(f -> {
-                    File file = new File(f).getAbsoluteFile();
-                    if (file.exists()) {
-                        logger.info("Opening file as requsted from cmdline: {}", file);
-                        tabService.addTab(file.toPath());
-                    } else {
-                        // TODO: do we want to create such a file on demand?
-                        logger.error("Cannot open non-existent file: {}", file);
-                    }
-                });
+        threadService.runActionLater(() -> {
+            Arrays.asList(config).forEach(f -> {
+                File file = new File(f).getAbsoluteFile();
+                if (file.exists()) {
+                    logger.info("Opening file as requsted from cmdline: {}", file);
+                    tabService.addTab(file.toPath());
+                } else {
+                    // TODO: do we want to create such a file on demand?
+                    logger.error("Cannot open non-existent file: {}", file);
+                }
             });
-        }
+        });
     }
 
     @Override

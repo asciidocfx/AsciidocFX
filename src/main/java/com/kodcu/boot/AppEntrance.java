@@ -1,10 +1,11 @@
 package com.kodcu.boot;
 
-import com.kodcu.commandline.AfxUsageFormatter;
+import com.kodcu.commandline.CmdConfig;
 import com.kodcu.commandline.CmdlineStarter;
 import de.tototec.cmdoption.CmdlineParser;
 import de.tototec.cmdoption.CmdlineParserException;
 import javafx.application.Application;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 /**
  * Created by Hakan on 12/6/2015.
@@ -12,8 +13,9 @@ import javafx.application.Application;
 public class AppEntrance {
 
     public static void main(String[] args) {
-        final CmdlineConfig config = new CmdlineConfig();
-        final CmdlineParser cp = new CmdlineParser(config);
+        final AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext(CmdConfig.class);
+        final CmdlineConfig config = ctx.getBean(CmdlineConfig.class);
+        final CmdlineParser cp = ctx.getBean(CmdlineParser.class);
 
         try {
             cp.parse(args);
@@ -22,26 +24,26 @@ public class AppEntrance {
             System.exit(1);
         }
 
-        if (controlFlags(config, cp))
-            new CmdlineStarter(config, cp).start();
-        else
-            Application.launch(AppStarter.class, args);
+        if (controlFlags(config, cp)) {
+            CmdlineStarter starter = ctx.getBean(CmdlineStarter.class);
+            starter.start();
+        }
+        else {
+            String[] files;
+            if (!config.getFiles().isEmpty())
+                files = config.getFiles().stream().toArray(String[]::new);
+            else
+                files = args;
+            Application.launch(AppStarter.class, files);
+        }
     }
 
     private static boolean controlFlags(CmdlineConfig config, CmdlineParser cp) {
-        cp.setProgramName("asciidocfx");
-        cp.setAboutLine("\nAsciidocFX 1.4.2\nThe asciidocfx command line interface (CLI) converts the AsciiDoc source file to HTML5, DocBook 5, PDF, ODT, MARKDOWN, DESKJS, and REVEALJS.\n" +
-                "By default, the output is written to a file with the basename of the source file and the appropriate extension.\n" +
-                "This is the minimal command chain example to work with ACLI: asciidocfx -b html5 source.adoc\n" +
-                "Or you can specify a destination path along with an appropriate extension and an out file\n" +
-                "Example: asciidocfx -b pdf -d /path/to/dest -o pdfsource.pdf source.adoc");
-        cp.setUsageFormatter(new AfxUsageFormatter(true, 160));
-
         if (config.help || config.version) {
             cp.usage();
             System.exit(0);
         }
-
+        // we are looking at a backend type and a file to be converted to
         return (config.backend.size() != 0 && config.files.size() != 0);
     }
 
