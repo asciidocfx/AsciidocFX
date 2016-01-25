@@ -1676,7 +1676,8 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                 });
             }
 
-            outlineTreeView.getRoot().getChildren().clear();
+            if (outlineList.size() > 0)
+                outlineTreeView.getRoot().getChildren().clear();
 
             for (Section section : outlineList) {
                 TreeItem<Section> sectionItem = new TreeItem<>(section);
