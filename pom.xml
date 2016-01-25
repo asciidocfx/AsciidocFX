@@ -152,7 +152,7 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>appassembler-maven-plugin</artifactId>
-                <version>1.9</version>
+                <version>1.10</version>
                 <executions>
                     <execution>
                         <phase>package</phase>
