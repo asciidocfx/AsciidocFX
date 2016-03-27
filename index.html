@@ -2888,6 +2888,19 @@ NOTE: All builds x64 based. If you want to use in x86 systems, build AsciidocFX 
 </div>
 </li>
 <li>
+<p>[<em>Workaround for location of install4j in pom.xml</em>]:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>sudo mkdir -p /home/travis/build/asciidocfx/AsciidocFX</p>
+</li>
+<li>
+<p>sudo ln -s /opt/install4j6/ /home/travis/build/asciidocfx/AsciidocFX/install4j6</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
 <p>Create release builds. Run the following command from folder AsciidocFX:</p>
 <div class="ulist">
 <ul>
@@ -3234,7 +3247,7 @@ This means, that on a German "QWERTZ" layout the shortcuts for <code>undo</code>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2016-03-26 19:31:43 SAST
+Last updated 2016-03-27 07:52:32 SAST
 </div>
 </div>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.9.1/styles/github.min.css">
