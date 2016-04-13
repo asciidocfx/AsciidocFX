@@ -150,6 +150,48 @@
                             </configuration>
                         </plugin>-->
             <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>2.7</version>
+                <executions>
+                    <execution>
+                        <id>copy-extra-resources</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${basedir}/target/extra-resources/conf</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${basedir}/conf</directory>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>com.excelsiorjet</groupId>
+                <artifactId>excelsior-jet-maven-plugin</artifactId>
+                <version>0.5.1</version>
+                <configuration>
+                    <mainClass>${mainClass}</mainClass>
+                    <hideConsole>true</hideConsole>
+                    <outputName>AsciidocFX</outputName>
+                    <jvmArgs>
+                        <jvmArg>-Duser.language=en</jvmArg>
+                        <jvmArg>-Duser.country=US</jvmArg>
+                        <jvmArg>-Dasciidocfx.home=$(Root)</jvmArg>
+                    </jvmArgs>
+                    <packageFilesDir>${basedir}/target/extra-resources</packageFilesDir>
+                    <packaging>native-bundle</packaging>
+                    <globalOptimizer>true</globalOptimizer>
+                    <optRtFiles>
+                        <optRtFile>javafx-webkit</optRtFile>
+                    </optRtFiles>
+                </configuration>
+            </plugin>
+            <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>appassembler-maven-plugin</artifactId>
                 <version>1.10</version>
