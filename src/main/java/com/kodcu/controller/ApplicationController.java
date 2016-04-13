@@ -1404,9 +1404,15 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     private void initializePaths() {
 
         try {
-            CodeSource codeSource = ApplicationController.class.getProtectionDomain().getCodeSource();
-            File jarFile = new File(codeSource.getLocation().toURI().getPath());
-            installationPath = jarFile.toPath().getParent().getParent();
+            String homeProp = System.getProperty("asciidocfx.home");
+            if (homeProp != null) {
+                installationPath = new File(homeProp).toPath();
+            } else {
+                //guess installation path
+                CodeSource codeSource = ApplicationController.class.getProtectionDomain().getCodeSource();
+                File jarFile = new File(codeSource.getLocation().toURI().getPath());
+                installationPath = jarFile.toPath().getParent().getParent();
+            }
             configPath = installationPath.resolve("conf");
 
             Optional<String> linuxHome = Optional.ofNullable(System.getenv("HOME"));
