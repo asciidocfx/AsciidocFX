@@ -462,7 +462,7 @@ Creating a runnable build::
 . Navigate to the *AsciidocFX* directory and run $ `mvn clean install`
 . Navigate to the *target/appassembler/bin* directory and run $ `./asciidocfx.sh` to start AsciidocFX.
 
-Create release builds::
+Creating release builds::
 
 . Download and install install4j
 ** wget --continue http://download-keycdn.ej-technologies.com/install4j/install4j_linux_6_0_4.deb
