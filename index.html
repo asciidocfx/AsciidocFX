@@ -2812,6 +2812,13 @@ NOTE: All builds x64 based. If you want to use in x86 systems, build AsciidocFX 
 </div>
 <div class="sect2">
 <h3 id="truebuild-on-linux-ubuntu-mint"><a class="anchor" href="#truebuild-on-linux-ubuntu-mint"></a>Build on Linux (Ubuntu/Mint)</h3>
+<div class="paragraph">
+<p>Tested with Ubuntu 14.04 (LTS), Mint 17.3, and Ubuntu 16.04 (LTS).</p>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Creating a runnable build</dt>
+<dd>
 <div class="olist arabic">
 <ol class="arabic">
 <li>
@@ -2854,6 +2861,65 @@ NOTE: All builds x64 based. If you want to use in x86 systems, build AsciidocFX 
 <p>Navigate to the <strong>target/appassembler/bin</strong> directory and run $ <code>./asciidocfx.sh</code> to start AsciidocFX.</p>
 </li>
 </ol>
+</div>
+</dd>
+<dt class="hdlist1">Creating release builds</dt>
+<dd>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Download and install install4j</p>
+<div class="ulist">
+<ul>
+<li>
+<p>wget --continue <a href="http://download-keycdn.ej-technologies.com/install4j/install4j_linux_6_0_4.deb" class="bare">http://download-keycdn.ej-technologies.com/install4j/install4j_linux_6_0_4.deb</a></p>
+</li>
+<li>
+<p>sudo dpkg -i install4j_linux_6_0_4.deb</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Register your install4j license key and download JREs to /opt/install4j6/jres.</p>
+<div class="ulist">
+<ul>
+<li>
+<p>/opt/install4j6/bin/install4j</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>[<em>Workaround for location of install4j in pom.xml</em>]:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>sudo mkdir -p /home/travis/build/asciidocfx/AsciidocFX</p>
+</li>
+<li>
+<p>sudo ln -s /opt/install4j6/ /home/travis/build/asciidocfx/AsciidocFX/install4j6</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Create release builds. Run the following command from folder AsciidocFX:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>mvn package</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Builds are in folder AsciidocFX/target/media</p>
+</li>
+</ol>
+</div>
+</dd>
+</dl>
 </div>
 </div>
 </div>
@@ -3184,7 +3250,7 @@ This means, that on a German "QWERTZ" layout the shortcuts for <code>undo</code>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2016-01-24 13:36:10 SAST
+Last updated 2016-04-26 17:59:43 SAST
 </div>
 </div>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.9.1/styles/github.min.css">

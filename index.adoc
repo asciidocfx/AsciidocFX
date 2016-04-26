@@ -440,15 +440,19 @@ For other charts and available options, look at https://github.com/asciidocfx/As
 
 == How to Build AsciidocFX
 
-1. Firstly, install http://www.oracle.com/technetwork/java/javase/downloads/index.html[JDK 8]
-2. Download http://maven.apache.org/download.cgi[Apache Maven] and set `/bin` directory to environment variables
-3. Enter `AsciidocFX` directory and run `$ mvn clean install`
-4. Follow to `target/appassembler/bin` directory and you will see `asciidocfx.sh` and `asciidocfx.bat`
+. Firstly, install http://www.oracle.com/technetwork/java/javase/downloads/index.html[JDK 8]
+. Download http://maven.apache.org/download.cgi[Apache Maven] and set `/bin` directory to environment variables
+. Enter `AsciidocFX` directory and run `$ mvn clean install`
+. Follow to `target/appassembler/bin` directory and you will see `asciidocfx.sh` and `asciidocfx.bat`
 
 NOTE: We are generating builts with *Travis-CI* automatically.
 NOTE: All builds x64 based. If you want to use in x86 systems, build AsciidocFX yourself.
 
 === Build on Linux (Ubuntu/Mint)
+
+Tested with Ubuntu 14.04 (LTS), Mint 17.3, and Ubuntu 16.04 (LTS).
+
+Creating a runnable build::
 
 . Install Oracle JDK 8.
 ** http://tecadmin.net/install-oracle-java-8-jdk-8-ubuntu-via-ppa/
@@ -460,6 +464,19 @@ NOTE: All builds x64 based. If you want to use in x86 systems, build AsciidocFX 
 . Navigate to the *AsciidocFX* directory and run $ `mvn clean install`
 . Navigate to the *target/appassembler/bin* directory and run $ `./asciidocfx.sh` to start AsciidocFX.
 
+Creating release builds::
+
+. Download and install install4j
+** wget --continue http://download-keycdn.ej-technologies.com/install4j/install4j_linux_6_0_4.deb
+** sudo dpkg -i install4j_linux_6_0_4.deb
+. Register your install4j license key and download JREs to /opt/install4j6/jres.
+** /opt/install4j6/bin/install4j
+. [__Workaround for location of install4j in pom.xml__]:
+** sudo mkdir -p /home/travis/build/asciidocfx/AsciidocFX
+** sudo ln -s /opt/install4j6/ /home/travis/build/asciidocfx/AsciidocFX/install4j6
+. Create release builds. Run the following command from folder AsciidocFX:
+** mvn package
+. Builds are in folder AsciidocFX/target/media
 
 == Books Written with AsciidocFX
 
