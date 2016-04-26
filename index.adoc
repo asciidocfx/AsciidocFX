@@ -450,6 +450,8 @@ NOTE: All builds x64 based. If you want to use in x86 systems, build AsciidocFX 
 
 === Build on Linux (Ubuntu/Mint)
 
+Tested with Ubuntu 14.04 (LTS), Mint 17.3, and Ubuntu 16.04 (LTS).
+
 Creating a runnable build::
 
 . Install Oracle JDK 8.
