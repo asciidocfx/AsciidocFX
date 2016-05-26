@@ -46,7 +46,7 @@ public class DictionaryService {
 
     private LanguageSpeller getLanguageSpeller(Path defaultLanguage) {
         try {
-            Dictionary dictionary = Dictionary.read(defaultLanguage.toFile());
+            Dictionary dictionary = Dictionary.read(defaultLanguage);
             Speller speller = new Speller(dictionary);
             final LanguageSpeller languageSpeller = new LanguageSpeller();
             languageSpeller.setDictionary(dictionary);
