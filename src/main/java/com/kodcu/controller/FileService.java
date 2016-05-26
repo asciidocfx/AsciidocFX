@@ -23,29 +23,31 @@ import java.util.zip.GZIPOutputStream;
 @Component
 public class FileService {
 
-    private static int DEFAULT_BUFFER_SIZE = 10240; // ..bytes = 10KB.
-    private static long DEFAULT_EXPIRE_TIME = 1; // ..ms = 1 week.
-    private static String MULTIPART_BOUNDARY = "MULTIPART_BYTERANGES";
+    private int DEFAULT_BUFFER_SIZE = 10240; // ..bytes = 10KB.
+    private long DEFAULT_EXPIRE_TIME = 1; // ..ms = 1 week.
+    private String MULTIPART_BOUNDARY = "MULTIPART_BYTERANGES";
+
+    private List<String> contentMethods = Arrays.asList("GET", "POST", "PUT", "DELETE");
 
     private Logger logger = LoggerFactory.getLogger(FileService.class);
 
     public void processFile(HttpServletRequest request, HttpServletResponse response, Path path) {
         try {
-            processRequest(request, response, path, "GET".equalsIgnoreCase(request.getMethod()));
+            processRequest(request, response, path, hasContent(request));
         } catch (Exception e) {
             logger.debug(e.getMessage(), e);
         }
+    }
+
+    private boolean hasContent(HttpServletRequest request) {
+        return contentMethods.contains(request.getMethod());
     }
 
     public void processFile(AllController.Payload payload, Path path) {
 
         HttpServletRequest request = payload.getRequest();
         HttpServletResponse response = payload.getResponse();
-        try {
-            processRequest(request, response, path, "GET".equalsIgnoreCase(request.getMethod()));
-        } catch (Exception e) {
-            logger.debug(e.getMessage(), e);
-        }
+        processFile(request, response, path);
     }
 
     /**
@@ -314,7 +316,7 @@ public class FileService {
      * @param toAccept     The value to be accepted.
      * @return True if the given accept header accepts the given value.
      */
-    private static boolean accepts(String acceptHeader, String toAccept) {
+    private boolean accepts(String acceptHeader, String toAccept) {
         String[] acceptValues = acceptHeader.split("\\s*(,|;)\\s*");
         Arrays.sort(acceptValues);
         return Arrays.binarySearch(acceptValues, toAccept) > -1
@@ -329,7 +331,7 @@ public class FileService {
      * @param toMatch     The value to be matched.
      * @return True if the given match header matches the given value.
      */
-    private static boolean matches(String matchHeader, String toMatch) {
+    private boolean matches(String matchHeader, String toMatch) {
         String[] matchValues = matchHeader.split("\\s*,\\s*");
         Arrays.sort(matchValues);
         return Arrays.binarySearch(matchValues, toMatch) > -1
@@ -345,7 +347,7 @@ public class FileService {
      * @param endIndex   The end index of the substring to be returned as long.
      * @return A substring of the given string value as long or -1 if substring is empty.
      */
-    private static long sublong(String value, int beginIndex, int endIndex) {
+    private long sublong(String value, int beginIndex, int endIndex) {
         String substring = value.substring(beginIndex, endIndex);
         return (substring.length() > 0) ? Long.parseLong(substring) : -1;
     }
@@ -359,7 +361,7 @@ public class FileService {
      * @param length Length of the byte range.
      * @throws IOException If something fails at I/O level.
      */
-    private static void copy(RandomAccessFile input, OutputStream output, long start, long length)
+    private void copy(RandomAccessFile input, OutputStream output, long start, long length)
             throws IOException {
         byte[] buffer = new byte[DEFAULT_BUFFER_SIZE];
         int read;
@@ -390,7 +392,7 @@ public class FileService {
      *
      * @param resource The resource to be closed.
      */
-    private static void close(Closeable resource) {
+    private void close(Closeable resource) {
         if (resource != null) {
             try {
                 resource.close();
