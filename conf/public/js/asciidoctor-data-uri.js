@@ -36,19 +36,25 @@ Opal.modules["data-uri-treeprocessor/extension"] = function (Opal) {
 
                         var target = node.$attr('target');
 
-                        if (target.indexOf(".svg") != -1) {
-                            return;
+                        var imageUri = node.$image_uri(target);
+                        var mimetype = "image/png";
+
+                        if (imageUri) {
+                            var uriParts = imageUri.split(".");
+                            if (uriParts.length >= 2) {
+                                var ext = uriParts[uriParts.length - 1];
+                                mimetype = ext == "svg" ? "image/svg+xml" : "image/" + ext;
+                            }
                         }
 
-                        var imageUri = node.$image_uri(target);
+                        var params = {
+                            path: imageUri,
+                            mimetype: mimetype
+                        }
 
-                        var request = new XMLHttpRequest();
-                        request.open("post", "/read-data-uri", false);
-                        //request.responseType = "arraybuffer";
-                        request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-                        request.send(JSON.stringify({imageUri: imageUri}));
+                        var dataUri = Ajax.postFile("/read-data-uri", params);
 
-                        node.$attributes()['$[]=']("target", request.responseText);
+                        node.$attributes()['$[]=']("target", dataUri);
 
                     });
                 } catch (e) {
