@@ -24,6 +24,8 @@ Opal.modules["asciidoctor/converter/revealjs"] = function (Opal) {
             return (def.$convert = function (node, template_name, opts) {
                     var __self = this;
 
+                    console.log("In convert");
+
                     var obj = {};
                     obj.node = node;
                     obj.name = node.$node_name ? node.$node_name() : "";
@@ -42,7 +44,7 @@ Opal.modules["asciidoctor/converter/revealjs"] = function (Opal) {
                     if (!map[obj.name]) {
 
                         //var template = afx.getTemplate(obj.name + ".jade", "revealjs");
-                        var template = Opal.File.$read("/afx/jade/revealjs/"+obj.name+".jade");
+                        var template = Ajax.getFile("/afx/jade/revealjs/"+obj.name+".jade");
                         var fn = jade.compile(template, {pretty: true});
                         map[obj.name] = fn;
                     }
