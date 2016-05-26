@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 import static org.springframework.web.bind.annotation.RequestMethod.*;
@@ -46,7 +47,7 @@ public class AllController {
     }
 
 
-    @RequestMapping(value = {"/**/*.*", "*.*"}, method = {GET, HEAD, OPTIONS}, produces = "*/*")
+    @RequestMapping(value = {"/**/*.*", "*.*"}, method = {GET, HEAD, OPTIONS, POST}, produces = "*/*", consumes = "*/*")
     @ResponseBody
     public void all(HttpServletRequest request, HttpServletResponse response) {
 
@@ -132,6 +133,10 @@ public class AllController {
 
         public void setStatus(HttpStatus status) {
             response.setStatus(status.value());
+        }
+
+        public String param(String param) {
+            return getRequest().getParameter(param);
         }
     }
 
