@@ -32,6 +32,7 @@ console.info = function (msg) {
 var afx = {};
 
 importScripts("/afx/resource/js/buffhelper.js");
+importScripts("/afx/resource/js/ajax.js");
 importScripts("/afx/resource/js/jade.js");
 importScripts("/afx/resource/js/asciidoctor-all.js");
 importScripts("/afx/resource/js/asciidoctor-docbook.js");
