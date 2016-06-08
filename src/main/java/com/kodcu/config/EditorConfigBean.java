@@ -65,6 +65,7 @@ public class EditorConfigBean extends ConfigurationBase {
     private StringProperty terminalNixCommand = new SimpleStringProperty("/bin/bash");
     private BooleanProperty showDonate = new SimpleBooleanProperty(true);
     private BooleanProperty validateDocbook = new SimpleBooleanProperty(true);
+    private StringProperty clipboardImageFilePattern = new SimpleStringProperty("'Image'-ddMMyy-hhmmss.SSS'.png'");
 
     private Logger logger = LoggerFactory.getLogger(EditorConfigBean.class);
 
@@ -276,6 +277,18 @@ public class EditorConfigBean extends ConfigurationBase {
         this.validateDocbook.set(validateDocbook);
     }
 
+    public String getClipboardImageFilePattern() {
+        return clipboardImageFilePattern.get();
+    }
+
+    public StringProperty clipboardImageFilePatternProperty() {
+        return clipboardImageFilePattern;
+    }
+
+    public void setClipboardImageFilePattern(String clipboardImageFilePattern) {
+        this.clipboardImageFilePattern.set(clipboardImageFilePattern);
+    }
+
     @Override
     public String formName() {
         return "Editor Settings";
@@ -286,7 +299,9 @@ public class EditorConfigBean extends ConfigurationBase {
 
         FXForm editorConfigForm = new FXFormBuilder<>()
                 .resourceBundle(ResourceBundle.getBundle("editorConfig"))
-                .includeAndReorder("showDonate", "validateDocbook", "editorTheme", "fontFamily", "fontSize", "scrollSpeed", "useWrapMode", "wrapLimit", "showGutter", "defaultLanguage", "autoUpdate", "terminalWinCommand", "terminalNixCommand", "terminalCharset")
+                .includeAndReorder("showDonate", "validateDocbook", "editorTheme", "fontFamily", "fontSize",
+                        "scrollSpeed", "useWrapMode", "wrapLimit", "showGutter", "defaultLanguage", "autoUpdate",
+                        "terminalWinCommand", "terminalNixCommand", "terminalCharset","clipboardImageFilePattern")
                 .build();
 
         DefaultFactoryProvider editorConfigFormProvider = new DefaultFactoryProvider();
@@ -346,6 +361,7 @@ public class EditorConfigBean extends ConfigurationBase {
         String terminalCharset = jsonObject.getString("terminalCharset", "UTF-8");
         boolean showDonate = jsonObject.getBoolean("showDonate", true);
         final boolean validateDocbook = jsonObject.getBoolean("validateDocbook", true);
+        String clipboardImageFilePattern = jsonObject.getString("clipboardImageFilePattern", "'Image'-ddMMyy-hhmmss.SSS'.png'");
 
         IOHelper.close(jsonReader, fileReader);
 
@@ -363,6 +379,7 @@ public class EditorConfigBean extends ConfigurationBase {
             this.setTerminalCharset(terminalCharset);
             this.setShowDonate(showDonate);
             this.setValidateDocbook(validateDocbook);
+            this.setClipboardImageFilePattern(clipboardImageFilePattern);
 
             if (jsonObject.containsKey("scrollSpeed")) {
                 this.setScrollSpeed(jsonObject.getJsonNumber("scrollSpeed").doubleValue());
@@ -442,7 +459,8 @@ public class EditorConfigBean extends ConfigurationBase {
                 .add("terminalWinCommand", getTerminalWinCommand())
                 .add("terminalNixCommand", getTerminalNixCommand())
                 .add("showDonate", getShowDonate())
-                .add("validateDocbook", getValidateDocbook());
+                .add("validateDocbook", getValidateDocbook())
+                .add("clipboardImageFilePattern",getClipboardImageFilePattern());
 
         return objectBuilder.build();
     }

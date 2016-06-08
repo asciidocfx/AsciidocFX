@@ -64,6 +64,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTreeCell;
+import javafx.scene.image.Image;
 import javafx.scene.input.*;
 import javafx.scene.layout.*;
 import javafx.scene.text.Text;
@@ -2152,6 +2153,15 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             }
         }
 
+        if(clipboard.hasImage()){
+            Image image = clipboard.getImage();
+            Optional<String> block = parserService.toImageBlock(image);
+            if (block.isPresent()) {
+                editorPane.insert(block.get());
+                return;
+            }
+        }
+
         editorPane.execCommand("paste-raw-1");
     }
 
@@ -2162,6 +2172,15 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
         if (clipboard.hasFiles()) {
             Optional<String> block = parserService.toImageBlock(clipboard.getFiles());
+            if (block.isPresent()) {
+                editorPane.insert(block.get());
+                return;
+            }
+        }
+
+        if(clipboard.hasImage()){
+            Image image = clipboard.getImage();
+            Optional<String> block = parserService.toImageBlock(image);
             if (block.isPresent()) {
                 editorPane.insert(block.get());
                 return;
@@ -2798,5 +2817,9 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     public ToggleGroup getConfigToggleGroup() {
         return configToggleGroup;
+    }
+
+    public String getClipboardImageFilePattern() {
+        return editorConfigBean.getClipboardImageFilePattern();
     }
 }
