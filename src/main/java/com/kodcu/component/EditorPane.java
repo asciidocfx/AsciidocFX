@@ -20,9 +20,10 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.scene.control.*;
+import javafx.scene.input.ContextMenuEvent;
 import javafx.scene.input.Dragboard;
-import javafx.scene.input.MouseButton;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
@@ -365,6 +366,8 @@ public class EditorPane extends AnchorPane {
         webView.setContextMenuEnabled(false);
 
         this.contextMenu = new ContextMenu();
+        this.contextMenu.setAutoFix(true);
+        this.contextMenu.setAutoHide(true);
 
         MenuItem cut = MenuItemBuilt.item("Cut").click(e -> {
             controller.cutCopy(editorSelection());
@@ -411,7 +414,7 @@ public class EditorPane extends AnchorPane {
         Menu languageMenu = new Menu("Spell Checker");
         languageMenu.getItems().addAll(editorLanguage, defaultLanguage, disableSpeller);
 
-        getWebView().setOnMouseClicked(event -> {
+        EventHandler<ContextMenuEvent> contextMenuRequested = event -> {
 
             final ObservableList<MenuItem> contextMenuItems = contextMenu.getItems();
 
@@ -442,7 +445,8 @@ public class EditorPane extends AnchorPane {
 
                 for (Path language : languages) {
                     final String pathCleanName = IOHelper.getPathCleanName(language);
-                    editorLanguage.getItems().add(CheckItemBuilt.check(pathCleanName, false)
+                    editorLanguage.getItems()
+                            .add(CheckItemBuilt.check(pathCleanName, false)
                             .click(e -> {
                                 setSpellLanguage(language);
                                 checkSpelling();
@@ -451,7 +455,8 @@ public class EditorPane extends AnchorPane {
                             .build());
 
 
-                    defaultLanguage.getItems().add(CheckItemBuilt.check(pathCleanName, spellcheckConfigBean.defaultLanguageProperty().isEqualTo(language).get())
+                    defaultLanguage.getItems()
+                            .add(CheckItemBuilt.check(pathCleanName, spellcheckConfigBean.defaultLanguageProperty().isEqualTo(language).get())
                             .click(e -> {
                                 spellcheckConfigBean.setDefaultLanguage(language);
                                 checkSpelling();
@@ -465,11 +470,18 @@ public class EditorPane extends AnchorPane {
             if (contextMenu.isShowing()) {
                 contextMenu.hide();
             }
-            if (event.getButton() == MouseButton.SECONDARY) {
-                markdownToAsciidoc.setVisible(isMarkdown());
-                indexSelection.setVisible(isAsciidoc());
-                contextMenu.show(getWebView(), event.getScreenX(), event.getScreenY());
-                checkWordSuggestions();
+
+            markdownToAsciidoc.setVisible(isMarkdown());
+            indexSelection.setVisible(isAsciidoc());
+            contextMenu.show(getWebView(), event.getSceneX(), event.getSceneY());
+            checkWordSuggestions();
+
+        };
+
+        getWebView().setOnContextMenuRequested(contextMenuRequested);
+        getWebView().setOnMouseClicked(event -> {
+            if (contextMenu.isShowing()) {
+                contextMenu.hide();
             }
         });
 
