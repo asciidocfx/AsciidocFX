@@ -754,5 +754,35 @@
     "caption": "Log",
     "mode": "ace/mode/text",
     "extensions": "log"
+  },{
+    "name": "fortran",
+    "caption": "Fortran",
+    "mode": "ace/mode/fortran",
+    "extensions": "f|for|f90"
+  },{
+    "name": "gobstones",
+    "caption": "Gobstones",
+    "mode": "ace/mode/gobstones",
+    "extensions": "gobstones"
+  },{
+    "name": "nsis",
+    "caption": "Nsis",
+    "mode": "ace/mode/nsis",
+    "extensions": "nsis"
+  },{
+    "name": "razor",
+    "caption": "Razor",
+    "mode": "ace/mode/razor",
+    "extensions": "cshtml|vbhtml"
+  },{
+    "name": "rst",
+    "caption": "reStructuredText",
+    "mode": "ace/mode/rst",
+    "extensions": "rst"
+  },{
+    "name": "wollok",
+    "caption": "Wollok",
+    "mode": "ace/mode/wollok",
+    "extensions": "wlk"
   }
 ]
