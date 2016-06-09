@@ -291,6 +291,11 @@
                     <xsl:call-template name="inline.charseq"/>
                 </fo:inline>
             </xsl:when>
+            <xsl:otherwise>
+                <fo:inline color="{@role}">
+                    <xsl:apply-templates/>
+                </fo:inline>
+            </xsl:otherwise>
         </xsl:choose>
     </xsl:template>
 
