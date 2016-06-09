@@ -19,16 +19,18 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.Event;
-import javafx.event.EventHandler;
+import javafx.event.*;
 import javafx.scene.control.*;
 import javafx.scene.input.ContextMenuEvent;
 import javafx.scene.input.Dragboard;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
+import javafx.stage.WindowEvent;
 import javafx.util.Callback;
 import netscape.javascript.JSObject;
 import org.slf4j.Logger;
@@ -44,6 +46,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.FileTime;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Created by usta on 09.04.2015.
@@ -72,6 +75,7 @@ public class EditorPane extends AnchorPane {
     private final String ignoreSuffix = "(?<!\\\\)"; // ignores if word started with \
     private final BooleanProperty ready = new SimpleBooleanProperty(false);
     private final ObjectProperty<Path> spellLanguage = new SimpleObjectProperty<>();
+    private final AtomicBoolean contextOpen = new AtomicBoolean(false);
 
     @Value("${application.live.url}")
     private String liveUrl;
@@ -364,10 +368,7 @@ public class EditorPane extends AnchorPane {
     public void initializeEditorContextMenus() {
 
         webView.setContextMenuEnabled(false);
-
-        this.contextMenu = new ContextMenu();
-        this.contextMenu.setAutoFix(true);
-        this.contextMenu.setAutoHide(true);
+        contextMenu = new ContextMenu();
 
         MenuItem cut = MenuItemBuilt.item("Cut").click(e -> {
             controller.cutCopy(editorSelection());
@@ -474,9 +475,22 @@ public class EditorPane extends AnchorPane {
             markdownToAsciidoc.setVisible(isMarkdown());
             indexSelection.setVisible(isAsciidoc());
             contextMenu.show(getWebView(), event.getSceneX(), event.getSceneY());
+            contextOpen.set(true);
             checkWordSuggestions();
 
         };
+
+        contextMenu.setOnHidden(event->{
+            threadService.runActionLater(()->{
+                contextOpen.set(false);
+            },true);
+        });
+
+        getWebView().addEventFilter(KeyEvent.ANY, event -> {
+            if(contextOpen.get()){
+                event.consume();
+            }
+        });
 
         getWebView().setOnContextMenuRequested(contextMenuRequested);
         getWebView().setOnMouseClicked(event -> {
