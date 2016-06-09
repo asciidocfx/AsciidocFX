@@ -28,18 +28,20 @@ function updateBase64Url(index, base64) {
     afx.cutCopy(clonedContent.html());
 }
 
-var hljsAction = new BufferedAction();
+var sourceHighlightAction = new BufferedAction();
 
 function refreshUI(data) {
 
     $placeholder.html(data);
 
-    hljsAction.buff(function () {
-        $placeholder.find('pre').children("code").each(function () {
+    sourceHighlightAction.buff(function () {
+        $placeholder.find('pre.highlightjs').children("code").each(function () {
             if (!$(this).hasClass("hljs")) {
                 hljs.highlightBlock(this);
             }
         });
+
+        prettyPrint();
     }, 1000);
 
 }

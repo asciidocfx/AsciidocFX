@@ -784,5 +784,10 @@
     "caption": "Wollok",
     "mode": "ace/mode/wollok",
     "extensions": "wlk"
+  },{
+    "name": "puml",
+    "caption": "PlantUML",
+    "mode": "ace/mode/puml",
+    "extensions": "puml"
   }
 ]
