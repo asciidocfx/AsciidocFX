@@ -55,7 +55,7 @@ public class TreeService {
         this.awesomeService = awesomeService;
     }
 
-    public void createFileTree(String tree, String type, String imagesDir, String imageTarget, String width, String height) {
+    public void createFileTree(String tree, String type, String imagesDir, String imageTarget, String nodename) {
 
         Objects.requireNonNull(imageTarget);
 
@@ -73,7 +73,7 @@ public class TreeService {
 
             Integer cacheHit = current.getCache().get(imageTarget);
 
-            int hashCode = (imageTarget + imagesDir + type + tree + width + height).hashCode();
+            int hashCode = (imageTarget + imagesDir + type + tree).hashCode();
             if (Objects.isNull(cacheHit) || hashCode != cacheHit) {
 
                 logger.debug("Tree extension is started for {}", imageTarget);
@@ -158,7 +158,7 @@ public class TreeService {
                     fileView.setPrefWidth(250);
                     fileView.setPrefHeight(treeItems.size() * 24);
 
-                    try {
+             /*       try {
                         Double value = Double.valueOf(width);
 
                         if (width.contains("+") || width.contains("-"))
@@ -176,7 +176,7 @@ public class TreeService {
                         else
                             fileView.setPrefHeight(value);
                     } catch (Exception e) {
-                    }
+                    }*/
 
                     threadService.runActionLater(() -> {
                         controller.getRootAnchor().getChildren().add(fileView);
@@ -203,7 +203,7 @@ public class TreeService {
         }
     }
 
-    public void createHighlightFileTree(String tree, String type, String imagesDir, String imageTarget, String width, String height) {
+    public void createHighlightFileTree(String tree, String type, String imagesDir, String imageTarget, String nodename) {
         Objects.requireNonNull(imageTarget);
 
         if (!imageTarget.endsWith(".png"))
@@ -214,7 +214,7 @@ public class TreeService {
 
         Integer cacheHit = current.getCache().get(imageTarget);
 
-        int hashCode = (imageTarget + imagesDir + type + tree + width + height).hashCode();
+        int hashCode = (imageTarget + imagesDir + type + tree ).hashCode();
         if (Objects.isNull(cacheHit) || hashCode != cacheHit) {
 
             threadService.runActionLater(() -> {
@@ -227,7 +227,7 @@ public class TreeService {
                 treeview.setLayoutX(-89999);
                 treeview.setLayoutY(-89999);
 
-                try {
+              /*  try {
                     Double value = Double.valueOf(width);
 
                     if (width.contains("+") || width.contains("-"))
@@ -245,7 +245,7 @@ public class TreeService {
                     else
                         treeview.setPrefHeight(value);
                 } catch (Exception e) {
-                }
+                }*/
 
                 threadService.runActionLater(() -> {
                     treeview.getEngine().load(String.format(treeviewUrl, controller.getPort()));

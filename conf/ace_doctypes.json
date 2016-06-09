@@ -789,5 +789,10 @@
     "caption": "PlantUML",
     "mode": "ace/mode/puml",
     "extensions": "puml"
+  },{
+    "name": "ditaa",
+    "caption": "Ditaa",
+    "mode": "ace/mode/ditaa",
+    "extensions": "ditaa"
   }
 ]

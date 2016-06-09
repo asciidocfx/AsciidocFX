@@ -514,17 +514,25 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         });
     }
 
-    public void createFileTree(String tree, String type, String imagesDir, String imageTarget, String width, String height) {
+    public void tree(String content, String type, String imagesDir, String imageTarget, String nodename) {
+        if (content.split("#").length > content.split("\\|-").length) {
+            createFileTree(content, type, imagesDir, imageTarget, nodename);
+        } else {
+            createHighlightFileTree(content, type, imagesDir, imageTarget, nodename);
+        }
+    }
+
+    public void createFileTree(String tree, String type, String imagesDir, String imageTarget, String nodename) {
 
         threadService.runTaskLater(() -> {
-            treeService.createFileTree(tree, type, imagesDir, imageTarget, width, height);
+            treeService.createFileTree(tree, type, imagesDir, imageTarget, nodename);
         });
     }
 
-    public void createHighlightFileTree(String tree, String type, String imagesDir, String imageTarget, String width, String height) {
+    public void createHighlightFileTree(String tree, String type, String imagesDir, String imageTarget, String nodename) {
 
         threadService.runTaskLater(() -> {
-            treeService.createHighlightFileTree(tree, type, imagesDir, imageTarget, width, height);
+            treeService.createHighlightFileTree(tree, type, imagesDir, imageTarget, nodename);
         });
     }
 
@@ -2153,7 +2161,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             }
         }
 
-        if(clipboard.hasImage()){
+        if (clipboard.hasImage()) {
             Image image = clipboard.getImage();
             Optional<String> block = parserService.toImageBlock(image);
             if (block.isPresent()) {
@@ -2178,7 +2186,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             }
         }
 
-        if(clipboard.hasImage()){
+        if (clipboard.hasImage()) {
             Image image = clipboard.getImage();
             Optional<String> block = parserService.toImageBlock(image);
             if (block.isPresent()) {
@@ -2390,7 +2398,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     @WebkitCall
     public void error(Object object) {
-            logger.error(object + "");
+        logger.error(object + "");
     }
 
     @FXML

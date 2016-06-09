@@ -92,9 +92,9 @@ function registerUmlBlock(name) {
         ;
         __self.$include(Opal.get('Asciidoctor'));
         return (function ($base, $super) {
-            function $TreeBlock() {
+            function $ExtensionBlock() {
             };
-            var __self = $TreeBlock = $klass($base, $super, (name + 'TreeBlock'), $TreeBlock);
+            var __self = $ExtensionBlock = $klass($base, $super, (name + 'ExtensionBlock'), $ExtensionBlock);
 
             var def = __self.$$proto, $scope = __self.$$scope;
 
@@ -131,7 +131,7 @@ function registerUmlBlock(name) {
         return ($a = ($b = $scope.get('Extensions')).$register, $a.$$p = (TMP_1 = function () {
             var self = TMP_1.$$s || this;
 
-            return self.$block($scope.get(name + 'TreeBlock'))
+            return self.$block($scope.get(name + 'ExtensionBlock'))
         }, TMP_1.$$s = __self, TMP_1), $a).call($b);
     };
 
@@ -140,6 +140,6 @@ function registerUmlBlock(name) {
 }
 
 
-["uml", "plantuml", "ditaa", "math", "graphviz"].forEach(function (name) {
+["uml", "plantuml", "ditaa", "math", "graphviz","tree"].forEach(function (name) {
     registerUmlBlock(name);
 });

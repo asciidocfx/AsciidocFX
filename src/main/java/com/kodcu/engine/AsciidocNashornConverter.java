@@ -132,7 +132,7 @@ public class AsciidocNashornConverter implements AsciidocConvertible {
                 scriptEngine.put("afx", this.controller);
 
                 List<String> scripts = Arrays.asList("nashorn-shim.js", "jade.js", "asciidoctor-all.js", "asciidoctor-image-size-info.js",
-                        "asciidoctor-data-line.js", "asciidoctor-uml-block.js", "asciidoctor-tree-block.js",
+                        "asciidoctor-data-line.js", "asciidoctor-block-extensions.js",
                         "asciidoctor-chart-block.js", "asciidoctor-docbook.js", "asciidoctor-reveal.js", "asciidoctor-deck.js",
                         "apply-replacements.js", "asciidoctor-odf.js", "buffhelper.js", "outliner.js", "converters.js");
 
