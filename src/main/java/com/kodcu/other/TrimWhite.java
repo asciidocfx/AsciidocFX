@@ -9,8 +9,8 @@ import java.awt.image.BufferedImage;
 public class TrimWhite {
 
     public BufferedImage trim(BufferedImage img) {
-        int width = getTrimmedWidth(img);
-        int height = getTrimmedHeight(img);
+        int width = getTrimmedWidth(img) + 5;
+        int height = getTrimmedHeight(img) + 5;
 
         BufferedImage newImg = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         Graphics g = newImg.createGraphics();
