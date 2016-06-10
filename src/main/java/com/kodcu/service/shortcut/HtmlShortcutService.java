@@ -40,7 +40,7 @@ public class HtmlShortcutService implements ShortcutService {
 
     @Override
     public void addCode(String lang) {
-        current.currentEngine().executeScript("editorMenu.html.addSourceCode('" + lang + "')");
+        current.currentEngine().executeScript(String.format("editorMenu.html.addSourceCode(\"%s\")", lang));
     }
 
     @Override

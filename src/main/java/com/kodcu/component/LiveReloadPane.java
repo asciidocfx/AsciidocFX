@@ -82,7 +82,7 @@ public class LiveReloadPane extends ViewPanel {
 
         Optional.ofNullable(xPath)
                 .ifPresent(xp -> {
-                    webEngine().executeScript(String.format("scrollByXPath('%s',%s)", xp, lineno));
+                    webEngine().executeScript(String.format("scrollByXPath(\"%s\",%s)", xp, lineno));
                 });
     }
 

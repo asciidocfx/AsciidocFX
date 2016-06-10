@@ -40,7 +40,7 @@ public class AsciidocShortcutService implements ShortcutService {
 
     @Override
     public void addCode(String lang) {
-        current.currentEngine().executeScript("editorMenu.asciidoc.addSourceCode('" + lang + "')");
+        current.currentEngine().executeScript(String.format("editorMenu.asciidoc.addSourceCode(\"%s\")", lang));
     }
 
     @Override
@@ -105,7 +105,7 @@ public class AsciidocShortcutService implements ShortcutService {
 
     @Override
     public void addAdmonition(String type) {
-        current.currentEngine().executeScript(String.format("editorMenu.asciidoc.addAdmonition('%s')", type));
+        current.currentEngine().executeScript(String.format("editorMenu.asciidoc.addAdmonition(\"%s\")", type));
     }
 
     @Override

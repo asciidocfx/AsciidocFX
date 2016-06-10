@@ -253,7 +253,7 @@ public abstract class ViewPanel extends AnchorPane {
                 .map(Path::toString)
                 .ifPresent(imageName -> {
                     threadService.runActionLater(() -> {
-                        webEngine().executeScript(String.format("clearImageCache('%s')", imageName));
+                        webEngine().executeScript(String.format("clearImageCache(\"%s\")", imageName));
                     });
 
                 });

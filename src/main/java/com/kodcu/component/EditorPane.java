@@ -289,7 +289,7 @@ public class EditorPane extends AnchorPane {
 
     public void changeEditorMode() {
         if (Objects.nonNull(path)) {
-            String mode = (String) webEngine().executeScript(String.format("changeEditorMode('%s')", path.toUri().toString()));
+            String mode = (String) webEngine().executeScript(String.format("changeEditorMode(\"%s\")", path.toUri().toString()));
             setMode(mode);
         }
     }
@@ -684,7 +684,7 @@ public class EditorPane extends AnchorPane {
     }
 
     private void replaceMisspelled(String suggestion) {
-        webEngine().executeScript(String.format("replaceMisspelled('%s')", suggestion));
+        webEngine().executeScript(String.format("replaceMisspelled(\"%s\")", suggestion));
     }
 
     public String tokenList() {
