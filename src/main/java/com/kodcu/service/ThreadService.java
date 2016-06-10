@@ -1,10 +1,13 @@
 package com.kodcu.service;
 
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import org.springframework.stereotype.Component;
 
+import java.util.Objects;
 import java.util.concurrent.*;
 import java.util.function.Consumer;
 
@@ -40,6 +43,12 @@ public class ThreadService {
                 return null;
             }
         };
+
+        task.exceptionProperty().addListener((observable, oldValue, newValue) -> {
+            if(Objects.nonNull(newValue)){
+                newValue.printStackTrace();
+            }
+        });
 
         return threadPollWorker.submit(task);
     }
