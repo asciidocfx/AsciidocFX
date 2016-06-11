@@ -19,20 +19,22 @@ function runScroller(lineno) {
                     var minMatch = latestClass.match(/data-line-(\d+)/);
                     var maxMatch = nextClass.match(/data-line-(\d+)/);
 
-                    if (minMatch.length && maxMatch.length) {
+                    if (maxMatch && minMatch) {
+                        if (minMatch.length && maxMatch.length) {
 
-                        var min = minMatch[1];
-                        var max = maxMatch[1];
+                            var min = minMatch[1];
+                            var max = maxMatch[1];
 
-                        var div = (Math.abs(lineno - min) * 100) / Math.abs(max - min);
+                            var div = (Math.abs(lineno - min) * 100) / Math.abs(max - min);
 
-                        var minTop = latestNode.offset().top;
-                        var maxTop = nextNode.offset().top;
+                            var minTop = latestNode.offset().top;
+                            var maxTop = nextNode.offset().top;
 
-                        var result = ((Math.abs(maxTop - minTop) * div) / 150) + Math.abs(minTop);
+                            var result = ((Math.abs(maxTop - minTop) * div) / 150) + Math.abs(minTop);
 
-                        if (result != Infinity && result > 0)
-                            window.scrollTo(0, result);
+                            if (result != Infinity && result > 0)
+                                window.scrollTo(0, result);
+                        }
                     }
                 }
             }
