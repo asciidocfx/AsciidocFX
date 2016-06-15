@@ -13,7 +13,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Objects;
 import java.util.function.Consumer;
 
 import static org.springframework.web.bind.annotation.RequestMethod.*;
@@ -31,12 +30,13 @@ public class AllController {
     private final SlideResource slideResource;
     private final JadeResource jadeResource;
     private final WebWorkerResource webWorkerResource;
+    private final CacheResource cacheResource;
 
 
     private Logger logger = LoggerFactory.getLogger(AllController.class);
 
     @Autowired
-    public AllController(DynamicResource dynamicResource, EpubResource epubResource, GeneralResource generalResource, LiveResource liveResource, SlideResource slideResource, JadeResource jadeResource, WebWorkerResource webWorkerResource) {
+    public AllController(DynamicResource dynamicResource, EpubResource epubResource, GeneralResource generalResource, LiveResource liveResource, SlideResource slideResource, JadeResource jadeResource, WebWorkerResource webWorkerResource, CacheResource cacheResource) {
         this.dynamicResource = dynamicResource;
         this.epubResource = epubResource;
         this.generalResource = generalResource;
@@ -44,6 +44,7 @@ public class AllController {
         this.slideResource = slideResource;
         this.jadeResource = jadeResource;
         this.webWorkerResource = webWorkerResource;
+        this.cacheResource = cacheResource;
     }
 
 
@@ -57,6 +58,7 @@ public class AllController {
         payload.setRequestURI(request.getRequestURI());
 
         Router router = new Router(payload)
+                .executeIf("/afx/cache/", cacheResource::executeCachedResource)
                 .executeIf("/afx/resource/", generalResource::executeAfxResource)
                 .executeIf("/afx/dynamic/", dynamicResource::executeDynamicResource)
                 .executeIf("/afx/live/", liveResource::executeLiveResource)
