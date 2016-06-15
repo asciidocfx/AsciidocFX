@@ -17,17 +17,14 @@ Opal.modules["image-data-line-treeprocessor/extension"] = function (Opal) {
         return (def.$process = function (document) {
                 var self = this;
 
-                if (document.$attr('apply-data-line')['$nil?']())
+                if (document._is_nil("apply-data-line"))
                     return document;
 
                 try {
                     document.$find_by().forEach(function (node) {
-                        if (node && node.$source_location)
-                            if (node.$source_location().lineno) {
-                                var nodeName = node.node_name;
-                                var lineno = node.$source_location().lineno;
-                                node.$attributes()['$[]=']("role", "data-line-" + lineno);
-                            }
+                        node._line_number(function (lineno) {
+                            node._set_attribute("role", "data-line-" + lineno);
+                        });
                     });
                 }
                 catch (e) {
