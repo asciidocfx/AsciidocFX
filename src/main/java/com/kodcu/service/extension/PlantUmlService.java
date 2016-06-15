@@ -5,6 +5,7 @@ import com.kodcu.other.Current;
 import com.kodcu.other.IOHelper;
 import com.kodcu.service.DirectoryService;
 import com.kodcu.service.ThreadService;
+import com.kodcu.service.cache.BinaryCacheService;
 import net.sourceforge.plantuml.FileFormat;
 import net.sourceforge.plantuml.FileFormatOption;
 import net.sourceforge.plantuml.FileSystem;
@@ -16,7 +17,6 @@ import org.springframework.stereotype.Component;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Objects;
 
@@ -33,30 +33,28 @@ public class PlantUmlService {
     private final Current current;
     private final ApplicationController controller;
     private final ThreadService threadService;
+    private final BinaryCacheService binaryCacheService;
 
     private final DirectoryService directoryService;
 
     @Autowired
-    public PlantUmlService(final Current current, final ApplicationController controller, final ThreadService threadService, DirectoryService directoryService) {
+    public PlantUmlService(final Current current, final ApplicationController controller, final ThreadService threadService, BinaryCacheService binaryCacheService, DirectoryService directoryService) {
         this.current = current;
         this.controller = controller;
         this.threadService = threadService;
+        this.binaryCacheService = binaryCacheService;
         this.directoryService = directoryService;
     }
 
     public void plantUml(String uml, String type, String imagesDir, String imageTarget, String nodename) {
         Objects.requireNonNull(imageTarget);
 
-        if (!imageTarget.endsWith(".png") && !imageTarget.endsWith(".svg"))
+        boolean cachedResource = imageTarget.contains("/afx/cache");
+
+        if (!imageTarget.endsWith(".png") && !imageTarget.endsWith(".svg")  && !cachedResource)
             return;
 
         StringBuffer stringBuffer = new StringBuffer(uml);
-
-//        if (nodename.contains("uml")) {
-//            if (!uml.contains("skinparam") && !uml.contains("dpi") && !uml.contains("@start")) {
-//                stringBuffer.insert(0, "\nskinparam dpi 300\n");
-//            }
-//        }
 
         appendHeaderNotExist(stringBuffer, nodename, "uml", "uml");
         appendHeaderNotExist(stringBuffer, nodename, "ditaa", "ditaa");
@@ -96,9 +94,12 @@ public class PlantUmlService {
 
                     reader.generateImage(os, new FileFormatOption(fileType));
 
-                    Files.createDirectories(path.resolve(imagesDir));
-
-                    IOHelper.writeToFile(umlPath, os.toByteArray(), CREATE, WRITE, TRUNCATE_EXISTING, SYNC);
+                    if (!cachedResource) {
+                        IOHelper.createDirectories(path.resolve(imagesDir));
+                        IOHelper.writeToFile(umlPath, os.toByteArray(), CREATE, WRITE, TRUNCATE_EXISTING, SYNC);
+                    } else {
+                        binaryCacheService.putBinary(imageTarget, os.toByteArray());
+                    }
 
                     logger.debug("UML extension is ended for {}", imageTarget);
 
