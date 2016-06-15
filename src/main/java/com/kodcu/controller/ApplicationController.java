@@ -463,14 +463,13 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     @WebkitCall(from = "asciidoctor-math")
     public void math(String formula, String type, String imagesDir, String imageTarget, String nodename) {
-        mathJaxService.appendFormula(formula, imagesDir, imageTarget);
+
+        mathJaxService.processFormula(formula, imagesDir, imageTarget);
     }
 
     @WebkitCall(from = "mathjax.html")
-    public void svgToPng(String imagesDir, String imageTarget, String svg, String formula, float width, float height) {
-        threadService.runTaskLater(() -> {
-            mathJaxService.svgToPng(imagesDir, imageTarget, svg, formula, width, height);
-        });
+    public void snapshotFormula(String formula, String imagesDir, String imageTarget) {
+        mathJaxService.snapshotFormula(formula, imagesDir, imageTarget);
     }
 
     private void convertMobi() {
