@@ -91,7 +91,7 @@ Opal.modules["chart-block-macro/extension"] = function (Opal) {
 
         __self.$use_dsl();
         __self.$named("chart");
-        __self.$on_context(["open", "literal", "listing"]);
+        __self.$on_context(["open", "literal", "listing","pass"]);
         __self.$parse_content_as("literal");
 
         return (def.$process = function (parent, reader, attrs) {
