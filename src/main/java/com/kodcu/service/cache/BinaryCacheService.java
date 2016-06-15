@@ -130,8 +130,6 @@ public class BinaryCacheService {
 
         cache.put(key, new InMemoryData(key, bytes));
         long length = totalSize.addAndGet(bytes.length);
-
-        logger.debug("Cache length: {}", length);
     }
 
     private boolean hasCacheFor(byte[] bytes) {
