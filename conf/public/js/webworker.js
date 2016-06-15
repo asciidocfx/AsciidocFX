@@ -1,4 +1,13 @@
 function sendConsole(message, level) {
+
+    if (message.constructor == Error) {
+        var stack = message.stack.replace(/^[^\(]+?[\n$]/gm, '')
+            .replace(/^\s+at\s+/gm, '')
+            .replace(/^Object.<anonymous>\s*\(/gm, '{anonymous}()@')
+            .split('\n');
+        message = (message + '\n' + stack);
+    }
+
     self.postMessage(JSON.stringify({
         type: "log",
         level: level,
@@ -34,14 +43,17 @@ var afx = {};
 importScripts("/afx/resource/js/buffhelper.js");
 importScripts("/afx/resource/js/ajax.js");
 importScripts("/afx/resource/js/jade.js");
+importScripts("/afx/resource/js/md5.js");
+importScripts("/afx/resource/js/prototypes.js");
 importScripts("/afx/resource/js/asciidoctor-all.js");
 importScripts("/afx/resource/js/asciidoctor-docbook.js");
 importScripts("/afx/resource/js/asciidoctor-data-line.js");
 importScripts("/afx/resource/js/asciidoctor-data-uri.js");
 importScripts("/afx/resource/js/asciidoctor-chart-block.js");
-importScripts("/afx/resource/js/asciidoctor-tree-block.js");
+importScripts("/afx/resource/js/asciidoctor-extension-helpers.js");
 importScripts("/afx/resource/js/asciidoctor-block-extensions.js");
 importScripts("/afx/resource/js/asciidoctor-block-macro-extensions.js");
+importScripts("/afx/resource/js/asciidoctor-inline-macro-extensions.js");
 importScripts("/afx/resource/js/asciidoctor-reveal.js");
 importScripts("/afx/resource/js/asciidoctor-deck.js");
 importScripts("/afx/resource/js/outliner.js");
