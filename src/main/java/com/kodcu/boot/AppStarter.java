@@ -1,6 +1,7 @@
 package com.kodcu.boot;
 
 import com.install4j.api.launcher.StartupNotification;
+import com.kodcu.config.EditorConfigBean;
 import com.kodcu.controller.ApplicationController;
 import com.kodcu.service.ThreadService;
 import com.kodcu.service.ui.TabService;
@@ -8,6 +9,8 @@ import de.tototec.cmdoption.CmdlineParser;
 import de.tototec.cmdoption.CmdlineParserException;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -26,6 +29,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import java.io.File;
 import java.io.InputStream;
 import java.nio.file.Paths;
+import java.util.Objects;
 
 import static javafx.scene.input.KeyCombination.SHORTCUT_DOWN;
 
@@ -35,6 +39,8 @@ public class AppStarter extends Application {
 
     private static ApplicationController controller;
     private static ConfigurableApplicationContext context;
+    private EditorConfigBean editorConfigBean;
+    private Stage stage;
 
     @Override
     public void start(final Stage stage) {
@@ -69,7 +75,9 @@ public class AppStarter extends Application {
 
     private void startApp(final Stage stage, final CmdlineConfig config) throws Throwable {
 
+        this.stage = stage;
         context = SpringApplication.run(SpringAppConfig.class);
+        editorConfigBean = context.getBean(EditorConfigBean.class);
 
         final FXMLLoader parentLoader = new FXMLLoader();
         parentLoader.setControllerFactory(context::getBean);
@@ -84,6 +92,8 @@ public class AppStarter extends Application {
         stage.setTitle("AsciidocFX");
         InputStream logoStream = getClass().getResourceAsStream("/logo.png");
         stage.getIcons().add(new Image(logoStream));
+
+        rememberStageScreenState();
 
         stage.setScene(scene);
         stage.show();
@@ -159,6 +169,49 @@ public class AppStarter extends Application {
 
         stage.widthProperty().addListener(controller::stageWidthChanged);
         stage.heightProperty().addListener(controller::stageWidthChanged);
+    }
+
+    private void rememberStageScreenState() {
+
+        stage.xProperty().addListener((observable, oldValue, newValue) -> {
+            editorConfigBean.setScreenX(newValue.doubleValue());
+        });
+
+        stage.yProperty().addListener((observable, oldValue, newValue) -> {
+            editorConfigBean.setScreenY(newValue.doubleValue());
+        });
+
+        stage.widthProperty().addListener((observable, oldValue, newValue) -> {
+            editorConfigBean.setScreenWidth(newValue.doubleValue());
+        });
+
+        stage.heightProperty().addListener((observable, oldValue, newValue) -> {
+            editorConfigBean.setScreenHeight(newValue.doubleValue());
+        });
+
+        editorConfigBean.screenXProperty().addListener((observable, oldValue, newValue) -> {
+            if (Objects.nonNull(newValue)) {
+                stage.setX(newValue.doubleValue());
+            }
+        });
+
+        editorConfigBean.screenYProperty().addListener((observable, oldValue, newValue) -> {
+            if (Objects.nonNull(newValue)) {
+                stage.setY(newValue.doubleValue());
+            }
+        });
+
+        editorConfigBean.screenWidthProperty().addListener((observable, oldValue, newValue) -> {
+            if (Objects.nonNull(newValue)) {
+                stage.setWidth(newValue.doubleValue());
+            }
+        });
+
+        editorConfigBean.screenHeightProperty().addListener((observable, oldValue, newValue) -> {
+            if (Objects.nonNull(newValue)) {
+                stage.setHeight(newValue.doubleValue());
+            }
+        });
     }
 
     private void registerStartupListener(CmdlineConfig config) {

@@ -66,6 +66,10 @@ public class EditorConfigBean extends ConfigurationBase {
     private BooleanProperty showDonate = new SimpleBooleanProperty(true);
     private BooleanProperty validateDocbook = new SimpleBooleanProperty(true);
     private StringProperty clipboardImageFilePattern = new SimpleStringProperty("'Image'-ddMMyy-hhmmss.SSS'.png'");
+    private DoubleProperty screenX = new SimpleDoubleProperty(0);
+    private DoubleProperty screenY = new SimpleDoubleProperty(0);
+    private DoubleProperty screenWidth = new SimpleDoubleProperty();
+    private DoubleProperty screenHeight = new SimpleDoubleProperty();
 
     private Logger logger = LoggerFactory.getLogger(EditorConfigBean.class);
 
@@ -289,6 +293,54 @@ public class EditorConfigBean extends ConfigurationBase {
         this.clipboardImageFilePattern.set(clipboardImageFilePattern);
     }
 
+    public double getScreenY() {
+        return screenY.get();
+    }
+
+    public DoubleProperty screenYProperty() {
+        return screenY;
+    }
+
+    public void setScreenY(double screenY) {
+        this.screenY.set(screenY);
+    }
+
+    public double getScreenX() {
+        return screenX.get();
+    }
+
+    public DoubleProperty screenXProperty() {
+        return screenX;
+    }
+
+    public void setScreenX(double screenX) {
+        this.screenX.set(screenX);
+    }
+
+    public double getScreenWidth() {
+        return screenWidth.get();
+    }
+
+    public DoubleProperty screenWidthProperty() {
+        return screenWidth;
+    }
+
+    public void setScreenWidth(double screenWidth) {
+        this.screenWidth.set(screenWidth);
+    }
+
+    public double getScreenHeight() {
+        return screenHeight.get();
+    }
+
+    public DoubleProperty screenHeightProperty() {
+        return screenHeight;
+    }
+
+    public void setScreenHeight(double screenHeight) {
+        this.screenHeight.set(screenHeight);
+    }
+
     @Override
     public String formName() {
         return "Editor Settings";
@@ -301,7 +353,7 @@ public class EditorConfigBean extends ConfigurationBase {
                 .resourceBundle(ResourceBundle.getBundle("editorConfig"))
                 .includeAndReorder("showDonate", "validateDocbook", "editorTheme", "fontFamily", "fontSize",
                         "scrollSpeed", "useWrapMode", "wrapLimit", "showGutter", "defaultLanguage", "autoUpdate",
-                        "terminalWinCommand", "terminalNixCommand", "terminalCharset","clipboardImageFilePattern")
+                        "terminalWinCommand", "terminalNixCommand", "terminalCharset", "clipboardImageFilePattern")
                 .build();
 
         DefaultFactoryProvider editorConfigFormProvider = new DefaultFactoryProvider();
@@ -395,6 +447,26 @@ public class EditorConfigBean extends ConfigurationBase {
                 this.setSecondSplitter(secondSplitter.doubleValue());
             }
 
+            if (jsonObject.containsKey("screenX")) {
+                double screenX = jsonObject.getJsonNumber("screenX").doubleValue();
+                this.setScreenX(screenX);
+            }
+
+            if (jsonObject.containsKey("screenY")) {
+                double screenY = jsonObject.getJsonNumber("screenY").doubleValue();
+                this.setScreenY(screenY);
+            }
+
+            if (jsonObject.containsKey("screenWidth")) {
+                double screenWidth = jsonObject.getJsonNumber("screenWidth").doubleValue();
+                this.setScreenWidth(screenWidth);
+            }
+
+            if (jsonObject.containsKey("screenHeight")) {
+                double screenHeight = jsonObject.getJsonNumber("screenHeight").doubleValue();
+                this.setScreenHeight(screenHeight);
+            }
+
             this.getEditorTheme().set(0, theme);
             this.getDefaultLanguage().set(0, defaultLanguage);
 
@@ -460,7 +532,11 @@ public class EditorConfigBean extends ConfigurationBase {
                 .add("terminalNixCommand", getTerminalNixCommand())
                 .add("showDonate", getShowDonate())
                 .add("validateDocbook", getValidateDocbook())
-                .add("clipboardImageFilePattern",getClipboardImageFilePattern());
+                .add("clipboardImageFilePattern", getClipboardImageFilePattern())
+                .add("screenX", getScreenX())
+                .add("screenY", getScreenY())
+                .add("screenWidth", getScreenWidth())
+                .add("screenHeight", getScreenHeight());
 
         return objectBuilder.build();
     }
