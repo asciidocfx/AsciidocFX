@@ -327,8 +327,8 @@
                                                         <Label fx:id="docbookPro" minWidth="-Infinity"
                                                                styleClass="docbook"
                                                                text="Docbook"/>
-                                                        <Label fx:id="odfPro" minWidth="-Infinity" styleClass="docbook"
-                                                               text="Odt"/>
+                                                        <!--<Label fx:id="odfPro" minWidth="-Infinity" styleClass="docbook"-->
+                                                               <!--text="Odt"/>-->
                                                     </children>
                                                 </FlowPane>
                                                 <Pane maxWidth="1.7976931348623157E308" prefHeight="1.0" prefWidth="1.0"
