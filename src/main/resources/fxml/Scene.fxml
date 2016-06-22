@@ -307,7 +307,7 @@
                                       AnchorPane.leftAnchor="0.0"
                                       AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                     <children>
-                                        <HBox styleClass="menu-hbox, convert-box" minHeight="33">
+                                        <HBox styleClass="menu-hbox, convert-box">
                                             <children>
                                                 <FlowPane hgap="15" prefWidth="-1.0" vgap="5">
                                                     <children>
