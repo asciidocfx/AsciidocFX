@@ -4,8 +4,11 @@ import com.kodcu.other.Current;
 import com.kodcu.service.DirectoryService;
 import com.kodcu.service.ThreadService;
 import com.kodcu.service.ui.TabService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestTemplate;
 
 import java.nio.file.Path;
 import java.util.Optional;
@@ -23,9 +26,12 @@ public class WebWorkerResource {
     private final ThreadService threadService;
     private final ApplicationController controller;
     private final DataUriController dataUriService;
+    private final RestTemplate restTemplate;
+
+    private Logger logger = LoggerFactory.getLogger(WebWorkerResource.class);
 
     @Autowired
-    public WebWorkerResource(Current current, TabService tabService, DirectoryService directoryService, FileService fileService, ThreadService threadService, ApplicationController controller, DataUriController dataUriService) {
+    public WebWorkerResource(Current current, TabService tabService, DirectoryService directoryService, FileService fileService, ThreadService threadService, ApplicationController controller, DataUriController dataUriService, RestTemplate restTemplate) {
         this.current = current;
         this.tabService = tabService;
         this.directoryService = directoryService;
@@ -33,6 +39,7 @@ public class WebWorkerResource {
         this.threadService = threadService;
         this.controller = controller;
         this.dataUriService = dataUriService;
+        this.restTemplate = restTemplate;
     }
 
 
@@ -49,6 +56,25 @@ public class WebWorkerResource {
 
             if (controller.getIncludeAsciidocResource()) {
                 payload.write(String.format("link:%s[]", finalURI));
+                return;
+            }
+
+            if (finalURI.startsWith("//")) {
+                finalURI = finalURI.replace("//", "http://");
+            }
+
+            if (finalURI.startsWith("http://") || finalURI.startsWith("https://")) {
+
+                String data = "";
+
+                try {
+                    data = restTemplate.getForObject(finalURI, String.class);
+                } catch (Exception ex) {
+                    logger.warn("resource not found or not readable: {}", finalURI);
+                }
+
+                payload.write(data);
+
                 return;
             }
 
