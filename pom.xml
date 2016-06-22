@@ -5,7 +5,7 @@
 
     <groupId>com.kodcu</groupId>
     <artifactId>AsciidocFX</artifactId>
-    <version>1.4.5</version>
+    <version>1.4.6</version>
     <packaging>jar</packaging>
 
     <name>AsciidocFX</name>
@@ -108,7 +108,7 @@
         <dependency>
             <groupId>net.sourceforge.plantuml</groupId>
             <artifactId>plantuml</artifactId>
-            <version>8041</version>
+            <version>8043</version>
         </dependency>
         <dependency>
             <groupId>org.apache.xmlgraphics</groupId>
@@ -186,7 +186,7 @@
             <plugin>
                 <groupId>org.sonatype.install4j</groupId>
                 <artifactId>install4j-maven-plugin</artifactId>
-                <version>1.0.7</version>
+                <version>1.1.1</version>
                 <executions>
                     <execution>
                         <id>compile-installers</id>
