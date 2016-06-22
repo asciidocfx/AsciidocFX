@@ -140,19 +140,21 @@ public abstract class ViewPanel extends AnchorPane {
         VBox.setVgrow(webView, Priority.ALWAYS);
     }
 
-    public void browse(){
-        threadService.runActionLater(()->{
+    public void browse() {
+        threadService.runActionLater(() -> {
             final String documentURI = webEngine().getDocument().getDocumentURI();
             controller.browseInDesktop(documentURI);
         });
-    };
+    }
+
+    ;
 
     public void onscroll(Object pos, Object max) {
 
         if (stopScrolling.get())
             return;
 
-        threadService.runActionLater(()->{
+        threadService.runActionLater(() -> {
             runScrolling(pos, max);
         });
     }
@@ -251,13 +253,16 @@ public abstract class ViewPanel extends AnchorPane {
         Optional.ofNullable(imagePath)
                 .map(Path::getFileName)
                 .map(Path::toString)
-                .ifPresent(imageName -> {
-                    threadService.runActionLater(() -> {
-                        webEngine().executeScript(String.format("clearImageCache(\"%s\")", imageName));
-                    });
-
-                });
+                .ifPresent(this::clearImageCache);
     }
 
     ;
+
+    public void clearImageCache(String imagePath) {
+
+        threadService.runActionLater(() -> {
+            webEngine().executeScript(String.format("clearImageCache(\"%s\")", imagePath));
+        });
+
+    }
 }

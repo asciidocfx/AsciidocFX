@@ -44,9 +44,8 @@ function process_inline_macro_extension(obj) {
     }
     else {
         target = parent._cached_image_uri(content);
-        //var host = ((typeof location) != "undefined") ? location.host : "";
-        //filename = "http://" + host + filename;
-        filename = target;
+        var host = ((typeof location) != "undefined") ? "http://" + location.host : "";
+        filename = host + target;
     }
 
     var stems = ["stem", "asciimath", "latexmath", "mathml"];

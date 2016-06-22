@@ -71,9 +71,6 @@ public class TreeService {
         if (!imageTarget.endsWith(".png") && !cachedResource)
             return;
 
-        Path path = current.currentTab().getParentOrWorkdir();
-        Path treePath = path.resolve(imageTarget);
-
         Integer cacheHit = current.getCache().get(imageTarget);
 
         int hashCode = (imageTarget + imagesDir + type + tree).hashCode();
@@ -156,22 +153,27 @@ public class TreeService {
                 fileView.setPrefWidth(250);
                 fileView.setPrefHeight(treeItems.size() * 24);
 
-                threadService.runActionLater(()->{
+                Path path = current.currentTab().getParentOrWorkdir();
+
+                threadService.runActionLater(() -> {
                     controller.getRootAnchor().getChildren().add(fileView);
                     WritableImage writableImage = getSnaphotTreeView().snapshot(new SnapshotParameters(), null);
                     BufferedImage bufferedImage = SwingFXUtils.fromFXImage(writableImage, null);
 
                     if (!cachedResource) {
+
+                        Path treePath = path.resolve(imageTarget);
                         IOHelper.createDirectories(path.resolve(imagesDir));
                         IOHelper.imageWrite((BufferedImage) bufferedImage, "png", treePath.toFile());
+                        controller.clearImageCache(treePath);
 
                     } else {
                         binaryCacheService.putBinary(imageTarget, (BufferedImage) bufferedImage);
+                        controller.clearImageCache(imageTarget);
                     }
 
                     logger.debug("Tree extension is ended for {}", imageTarget);
 
-                    controller.clearImageCache(treePath);
                     controller.getRootAnchor().getChildren().remove(fileView);
                 });
 
@@ -189,7 +191,6 @@ public class TreeService {
             fileView.getStyleClass().add("file-tree");
             fileView.setLayoutX(-13000);
             fileView.setLayoutY(-13000);
-            controller.getRootAnchor().getChildren().add(fileView);
         }
         return fileView;
     }
@@ -203,13 +204,12 @@ public class TreeService {
         if (!imageTarget.endsWith(".png") && !cachedResource)
             return;
 
-        Path path = current.currentTab().getParentOrWorkdir();
-        Path treePath = path.resolve(imageTarget);
-
         Integer cacheHit = current.getCache().get(imageTarget);
 
         int hashCode = (imageTarget + imagesDir + type + tree).hashCode();
         if (Objects.isNull(cacheHit) || hashCode != cacheHit) {
+
+            Path path = current.currentTab().getParentOrWorkdir();
 
             threadService.runActionLater(() -> {
 
@@ -242,15 +242,17 @@ public class TreeService {
                             BufferedImage trimmed = trimWhite.trim(bufferedImage);
 
                             if (!cachedResource) {
+
+                                Path treePath = path.resolve(imageTarget);
                                 IOHelper.createDirectories(path.resolve(imagesDir));
                                 IOHelper.imageWrite(trimmed, "png", treePath.toFile());
-
+                                controller.clearImageCache(treePath);
                             } else {
                                 binaryCacheService.putBinary(imageTarget, trimmed);
+                                controller.clearImageCache(imageTarget);
                             }
 
                             threadService.runActionLater(() -> {
-                                controller.clearImageCache(treePath);
                                 controller.getRootAnchor().getChildren().remove(treeview);
                             });
                         });

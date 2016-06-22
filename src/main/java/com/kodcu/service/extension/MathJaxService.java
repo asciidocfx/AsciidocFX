@@ -140,9 +140,6 @@ public class MathJaxService {
             if (!imageTarget.endsWith(".png") && !cachedResource)
                 return;
 
-            Path path = current.currentTab().getParentOrWorkdir();
-            Path imagePath = path.resolve(imageTarget);
-
             Integer cacheHit = current.getCache().get(imageTarget);
 
             int hashCode = (imageTarget + imagesDir + formula).hashCode();
@@ -152,21 +149,29 @@ public class MathJaxService {
                 WritableImage writableImage = getWebView().snapshot(new SnapshotParameters(), null);
                 BufferedImage bufferedImage = SwingFXUtils.fromFXImage(writableImage, null);
 
+                Path path = current.currentTab().getParentOrWorkdir();
+
                 threadService.runTaskLater(() -> {
                     try {
                         TrimWhite trimWhite = new TrimWhite();
                         BufferedImage trimmed = trimWhite.trim(bufferedImage);
                         if (!cachedResource) {
+                            Path imagePath = path.resolve(imageTarget);
                             IOHelper.createDirectories(imagePath.getParent());
                             IOHelper.imageWrite(trimmed, "png", imagePath.toFile());
+                            threadService.runActionLater(() -> {
+                                controller.clearImageCache(imagePath);
+                            });
                         } else {
                             binaryCacheService.putBinary(imageTarget, trimmed);
+                            threadService.runActionLater(() -> {
+                                controller.clearImageCache(imageTarget);
+                            });
                         }
+
                         current.getCache().put(imageTarget, hashCode);
                         logger.debug("MathJax extension is ended for {}", imageTarget);
-                        threadService.runActionLater(() -> {
-                            controller.clearImageCache(imagePath);
-                        });
+
                     } catch (Exception e) {
                         logger.error("Problem occured while generating MathJax png", e);
                         throw new RuntimeException(e);

@@ -138,7 +138,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     public MenuButton donateButton;
     public ToggleButton toggleConfigButton;
     private Logger logger = LoggerFactory.getLogger(ApplicationController.class);
-    public Label odfPro;
+    public Label odfPro = new Label();
     public VBox logVBox;
     public Label statusText;
     public SplitPane editorSplitPane;
@@ -2538,6 +2538,11 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     }*/
 
     public void clearImageCache(Path imagePath) {
+        rightShowerHider.getShowing()
+                .ifPresent(w -> w.clearImageCache(imagePath));
+    }
+
+    public void clearImageCache(String imagePath) {
         rightShowerHider.getShowing()
                 .ifPresent(w -> w.clearImageCache(imagePath));
     }
