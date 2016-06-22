@@ -5,6 +5,6 @@
     "scrollSpeed":0.1,
     "useWrapMode":true,
     "wrapLimit":0,
-    "showGutter":false,
+    "showGutter":true,
     "editorTheme":"xcode"
 }
