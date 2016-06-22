@@ -1188,6 +1188,10 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             applyForAllEditorPanes(editorPane -> editorPane.setFontSize(newValue.intValue()));
         });
 
+        editorConfigBean.foldStyleProperty().addListener((observable, oldValue, newValue) -> {
+            applyForAllEditorPanes(editorPane -> editorPane.setFoldStyle(newValue));
+        });
+
         ObservableList<Item> recentFilesList = storedConfigBean.getRecentFiles();
         ObservableList<String> favoriteDirectories = storedConfigBean.getFavoriteDirectories();
 

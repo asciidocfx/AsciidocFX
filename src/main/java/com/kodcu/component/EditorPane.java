@@ -1,5 +1,7 @@
 package com.kodcu.component;
 
+import com.kodcu.config.EditorConfigBean;
+import com.kodcu.config.FoldStyle;
 import com.kodcu.config.SpellcheckConfigBean;
 import com.kodcu.controller.ApplicationController;
 import com.kodcu.other.IOHelper;
@@ -25,12 +27,10 @@ import javafx.scene.input.ContextMenuEvent;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
-import javafx.stage.WindowEvent;
 import javafx.util.Callback;
 import netscape.javascript.JSObject;
 import org.slf4j.Logger;
@@ -58,6 +58,7 @@ public class EditorPane extends AnchorPane {
     private final WebView webView;
     private final Logger logger = LoggerFactory.getLogger(EditorPane.class);
     private final ApplicationController controller;
+    private final EditorConfigBean editorConfigBean;
     private final ThreadService threadService;
     private final ShortcutProvider shortcutProvider;
     private final ApplicationContext applicationContext;
@@ -87,8 +88,9 @@ public class EditorPane extends AnchorPane {
     private ContextMenu contextMenu;
 
     @Autowired
-    public EditorPane(ApplicationController controller, ThreadService threadService, ShortcutProvider shortcutProvider, ApplicationContext applicationContext, TabService tabService, AsciiTreeGenerator asciiTreeGenerator, ParserService parserService, SpellcheckConfigBean spellcheckConfigBean, DirectoryService directoryService) {
+    public EditorPane(ApplicationController controller, EditorConfigBean editorConfigBean, ThreadService threadService, ShortcutProvider shortcutProvider, ApplicationContext applicationContext, TabService tabService, AsciiTreeGenerator asciiTreeGenerator, ParserService parserService, SpellcheckConfigBean spellcheckConfigBean, DirectoryService directoryService) {
         this.controller = controller;
+        this.editorConfigBean = editorConfigBean;
         this.threadService = threadService;
         this.shortcutProvider = shortcutProvider;
         this.applicationContext = applicationContext;
@@ -247,11 +249,18 @@ public class EditorPane extends AnchorPane {
             getWindow().setMember("editorValue", value);
             webEngine().executeScript("setEditorValue(editorValue)");
             getWebView().requestFocus();
+            updateFoldStyle();
         });
+
+
     }
 
     public void switchMode(Object... args) {
-        this.call("switchMode", args);
+        threadService.runActionLater(() -> {
+            this.call("switchMode", args);
+        });
+
+        updateFoldStyle();
     }
 
     public void rerender(Object... args) {
@@ -292,6 +301,7 @@ public class EditorPane extends AnchorPane {
             String mode = (String) webEngine().executeScript(String.format("changeEditorMode(\"%s\")", path.toUri().toString()));
             setMode(mode);
         }
+        updateFoldStyle();
     }
 
     public String editorMode() {
@@ -448,22 +458,22 @@ public class EditorPane extends AnchorPane {
                     final String pathCleanName = IOHelper.getPathCleanName(language);
                     editorLanguage.getItems()
                             .add(CheckItemBuilt.check(pathCleanName, false)
-                            .click(e -> {
-                                setSpellLanguage(language);
-                                checkSpelling();
-                            })
-                            .group(editorLanguageGroup)
-                            .build());
+                                    .click(e -> {
+                                        setSpellLanguage(language);
+                                        checkSpelling();
+                                    })
+                                    .group(editorLanguageGroup)
+                                    .build());
 
 
                     defaultLanguage.getItems()
                             .add(CheckItemBuilt.check(pathCleanName, spellcheckConfigBean.defaultLanguageProperty().isEqualTo(language).get())
-                            .click(e -> {
-                                spellcheckConfigBean.setDefaultLanguage(language);
-                                checkSpelling();
-                            })
-                            .group(defaultLanguageGroup)
-                            .build());
+                                    .click(e -> {
+                                        spellcheckConfigBean.setDefaultLanguage(language);
+                                        checkSpelling();
+                                    })
+                                    .group(defaultLanguageGroup)
+                                    .build());
                 }
 
             }
@@ -480,14 +490,14 @@ public class EditorPane extends AnchorPane {
 
         };
 
-        contextMenu.setOnHidden(event->{
-            threadService.runActionLater(()->{
+        contextMenu.setOnHidden(event -> {
+            threadService.runActionLater(() -> {
                 contextOpen.set(false);
-            },true);
+            }, true);
         });
 
         getWebView().addEventFilter(KeyEvent.ANY, event -> {
-            if(contextOpen.get()){
+            if (contextOpen.get()) {
                 event.consume();
             }
         });
@@ -649,7 +659,8 @@ public class EditorPane extends AnchorPane {
 
     public void addTypo(Token token) {
         String tokenClass = token.isEmptySuggestion() ? "misspelled" : "misspelled-strong";
-        webEngine().executeScript(String.format("addTypo(%d,%d,%d,'%s')",
+
+        webEngine().executeScript(String.format("addTypo(%d,%d,%d,\"%s\")",
                 token.getRow(),
                 token.getStart(),
                 token.getEnd(),
@@ -689,5 +700,21 @@ public class EditorPane extends AnchorPane {
 
     public String tokenList() {
         return (String) webEngine().executeScript("JSON.stringify(getTokenList())");
+    }
+
+    public void updateFoldStyle() {
+        FoldStyle foldStyle = editorConfigBean.getFoldStyle();
+        setFoldStyle(foldStyle);
+    }
+
+    public void setFoldStyle(FoldStyle style) {
+
+        if (Objects.isNull(style)) {
+            return;
+        }
+
+        threadService.runActionLater(() -> {
+            this.call("setFoldStyle", style.name().toLowerCase(Locale.ENGLISH));
+        });
     }
 }

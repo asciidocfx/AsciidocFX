@@ -70,6 +70,7 @@ public class EditorConfigBean extends ConfigurationBase {
     private DoubleProperty screenY = new SimpleDoubleProperty(0);
     private DoubleProperty screenWidth = new SimpleDoubleProperty();
     private DoubleProperty screenHeight = new SimpleDoubleProperty();
+    public ObjectProperty<FoldStyle> foldStyle = new SimpleObjectProperty<>(FoldStyle.DEFAULT);
 
     private Logger logger = LoggerFactory.getLogger(EditorConfigBean.class);
 
@@ -341,6 +342,18 @@ public class EditorConfigBean extends ConfigurationBase {
         this.screenHeight.set(screenHeight);
     }
 
+    public FoldStyle getFoldStyle() {
+        return foldStyle.get();
+    }
+
+    public ObjectProperty<FoldStyle> foldStyleProperty() {
+        return foldStyle;
+    }
+
+    public void setFoldStyle(FoldStyle foldStyle) {
+        this.foldStyle.set(foldStyle);
+    }
+
     @Override
     public String formName() {
         return "Editor Settings";
@@ -352,7 +365,7 @@ public class EditorConfigBean extends ConfigurationBase {
         FXForm editorConfigForm = new FXFormBuilder<>()
                 .resourceBundle(ResourceBundle.getBundle("editorConfig"))
                 .includeAndReorder("showDonate", "validateDocbook", "editorTheme", "fontFamily", "fontSize",
-                        "scrollSpeed", "useWrapMode", "wrapLimit", "showGutter", "defaultLanguage", "autoUpdate",
+                        "scrollSpeed", "useWrapMode", "wrapLimit", "foldStyle", "showGutter", "defaultLanguage", "autoUpdate",
                         "terminalWinCommand", "terminalNixCommand", "terminalCharset", "clipboardImageFilePattern")
                 .build();
 
@@ -414,6 +427,8 @@ public class EditorConfigBean extends ConfigurationBase {
         boolean showDonate = jsonObject.getBoolean("showDonate", true);
         final boolean validateDocbook = jsonObject.getBoolean("validateDocbook", true);
         String clipboardImageFilePattern = jsonObject.getString("clipboardImageFilePattern", "'Image'-ddMMyy-hhmmss.SSS'.png'");
+        String foldStyle = jsonObject.getString("foldStyle", "default");
+
 
         IOHelper.close(jsonReader, fileReader);
 
@@ -432,6 +447,10 @@ public class EditorConfigBean extends ConfigurationBase {
             this.setShowDonate(showDonate);
             this.setValidateDocbook(validateDocbook);
             this.setClipboardImageFilePattern(clipboardImageFilePattern);
+
+            if (FoldStyle.contains(foldStyle)) {
+                this.setFoldStyle(FoldStyle.valueOf(foldStyle));
+            }
 
             if (jsonObject.containsKey("scrollSpeed")) {
                 this.setScrollSpeed(jsonObject.getJsonNumber("scrollSpeed").doubleValue());
@@ -536,7 +555,8 @@ public class EditorConfigBean extends ConfigurationBase {
                 .add("screenX", getScreenX())
                 .add("screenY", getScreenY())
                 .add("screenWidth", getScreenWidth())
-                .add("screenHeight", getScreenHeight());
+                .add("screenHeight", getScreenHeight())
+                .add("foldStyle", getFoldStyle().name());
 
         return objectBuilder.build();
     }

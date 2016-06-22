@@ -9,7 +9,7 @@ editor.getSession().setMode("ace/mode/asciidoc");
 editor.getSession().setUseWrapMode(true);
 editor.setShowPrintMargin(false);
 editor.setBehavioursEnabled(true);
-editor.session.setFoldStyle("manual");
+setFoldStyle("default");
 editor.setOptions({
     enableSnippets: true,
     dragEnabled: true
@@ -332,4 +332,20 @@ function replaceMisspelled(suggestion) {
         editor.moveCursorToPosition(cursorPosition);
     }
 
+}
+
+function setFoldStyle(style) {
+
+    if (!style || style == "" || style == "default") {
+        var mode = editorMode();
+        if (mode == "asciidoc" || mode == "markdown") {
+            setFoldStyle("manual");
+        }
+        else {
+            setFoldStyle("markbeginend");
+        }
+    }
+    else {
+        editor.session.setFoldStyle(style);
+    }
 }
