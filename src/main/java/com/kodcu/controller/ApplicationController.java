@@ -1324,8 +1324,10 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     private void applyForAllEditorPanes(Consumer<EditorPane> editorPaneConsumer) {
         ObservableList<Tab> tabs = tabPane.getTabs();
         for (Tab tab : tabs) {
-            MyTab myTab = (MyTab) tab;
-            editorPaneConsumer.accept(myTab.getEditorPane());
+           if(tab instanceof MyTab){
+               MyTab myTab = (MyTab) tab;
+               editorPaneConsumer.accept(myTab.getEditorPane());
+           }
         }
     }
 
@@ -2672,7 +2674,9 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     public void closeAllTabs(Event event) {
         ObservableList<Tab> tabs = FXCollections.observableArrayList(tabPane.getTabs());
 
-        tabs.stream().map(t -> (MyTab) t).sorted((mo1, mo2) -> {
+        tabs.stream()
+                .filter(t -> t instanceof MyTab)
+                .map(t -> (MyTab) t).sorted((mo1, mo2) -> {
             if (mo1.isNew() && !mo2.isNew())
                 return -1;
             else if (mo2.isNew() && !mo1.isNew()) {

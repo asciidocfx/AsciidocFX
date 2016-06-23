@@ -76,10 +76,12 @@ public class FileWatchService {
                             Path modifiedPath = path.resolve(ev.context());
                             ObservableList<Tab> tabs = controller.getTabPane().getTabs();
                             for (Tab tab : tabs) {
-                                MyTab myTab = (MyTab) tab;
-                                if (modifiedPath.equals(myTab.getPath())) {
-                                    myTab.reload();
-                                    break;
+                                if(tab instanceof MyTab){
+                                    MyTab myTab = (MyTab) tab;
+                                    if (modifiedPath.equals(myTab.getPath())) {
+                                        myTab.reload();
+                                        break;
+                                    }
                                 }
                             }
                             watckKey.reset();

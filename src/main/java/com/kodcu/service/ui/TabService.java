@@ -103,13 +103,15 @@ public class TabService {
 
         ObservableList<Tab> tabs = controller.getTabPane().getTabs();
         for (Tab tab : tabs) {
-            MyTab myTab = (MyTab) tab;
-            Path currentPath = myTab.getPath();
-            if (Objects.nonNull(currentPath))
-                if (currentPath.equals(path)) {
-                    myTab.select(); // Select already added tab
-                    return;
-                }
+            if(tab instanceof MyTab){
+                MyTab myTab = (MyTab) tab;
+                Path currentPath = myTab.getPath();
+                if (Objects.nonNull(currentPath))
+                    if (currentPath.equals(path)) {
+                        myTab.select(); // Select already added tab
+                        return;
+                    }
+            }
         }
 
         AnchorPane anchorPane = new AnchorPane();
@@ -226,7 +228,9 @@ public class TabService {
             blackList.addAll(tab.getTabPane().getTabs());
             blackList.remove(tab);
 
-            blackList.stream().map(t -> (MyTab) t).sorted((mo1, mo2) -> {
+            blackList.stream()
+                    .filter(t-> t instanceof MyTab)
+                    .map(t -> (MyTab) t).sorted((mo1, mo2) -> {
                 if (mo1.isNew() && !mo2.isNew())
                     return -1;
                 else if (mo2.isNew() && !mo1.isNew()) {
