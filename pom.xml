@@ -134,6 +134,12 @@
             <groupId>org.carrot2</groupId>
             <artifactId>morfologik-speller</artifactId>
             <version>2.1.0</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>morfologik-polish</artifactId>
+                    <groupId>org.carrot2</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
     </dependencies>
 
