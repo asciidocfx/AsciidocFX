@@ -13,14 +13,14 @@ import java.util.Objects;
 /**
  * Created by usta on 12.06.2016.
  */
-public class InMemoryData implements CacheData {
+public class InMemoryDAta implements CacheData {
 
     private final byte[] bytes;
     private final ZonedDateTime lastModified;
     private final String key;
     private ByteArrayInputStream byteArrayStream;
 
-    public InMemoryData(String key, byte[] bytes) {
+    public InMemoryDAta(String key, byte[] bytes) {
         this.key = key;
         this.bytes = bytes;
         this.lastModified = ZonedDateTime.now();

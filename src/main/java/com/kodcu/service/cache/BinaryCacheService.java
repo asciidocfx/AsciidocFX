@@ -18,10 +18,7 @@ import java.nio.file.StandardOpenOption;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.function.BiFunction;
-import java.util.function.Consumer;
 
 /**
  * Created by usta on 12.06.2016.
@@ -128,7 +125,7 @@ public class BinaryCacheService {
                 .map(e->e.length())
                 .ifPresent(aLong -> totalSize.addAndGet(-aLong));
 
-        cache.put(key, new InMemoryData(key, bytes));
+        cache.put(key, new InMemoryDAta(key, bytes));
         long length = totalSize.addAndGet(bytes.length);
     }
 
