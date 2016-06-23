@@ -154,6 +154,7 @@ function registerInlineMacroExtensions(name) {
     })(Opal);
 }
 
-["math", "stem", "asciimath", "latexmath", "mathml"].forEach(function (name) {
+// there is a bug for math asciimath:[] generates text + image ascii<img>
+["stem", "asciimath", "latexmath", "mathml"].forEach(function (name) {
     registerInlineMacroExtensions(name);
 });
