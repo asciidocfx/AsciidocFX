@@ -12,7 +12,7 @@ script: mvn install -Pinstall-runtime
 before_script:
 - wget http://download-aws.ej-technologies.com/install4j/install4j_unix_6_1_2.tar.gz
 - tar zxvf install4j_unix_6_1_2.tar.gz
-- wget -O /home/travis/build/asciidocfx/AsciidocFX/install4j6/jres/linux-amd64-1.8.0_92.tar.gz http://asciidocfx.com/jres/linux-amd64-1.8.0_92.tar.gz
+- wget -O /home/travis/build/asciidocfx/AsciidocFX/install4j6/jres/linux-amd64-1.8.0_91.tar.gz http://asciidocfx.com/jres/linux-amd64-1.8.0_91.tar.gz
 - wget -O /home/travis/build/asciidocfx/AsciidocFX/install4j6/jres/macosx-amd64-1.8.0_92.tar.gz http://asciidocfx.com/jres/macosx-amd64-1.8.0_92.tar.gz
 - wget -O /home/travis/build/asciidocfx/AsciidocFX/install4j6/jres/windows-amd64-1.8.0_92.tar.gz http://asciidocfx.com/jres/windows-amd64-1.8.0_92.tar.gz
 - mvn clean
