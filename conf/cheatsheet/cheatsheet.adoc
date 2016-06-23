@@ -383,7 +383,7 @@ MathJAX matematiksel kompleks formüllerin, metinsel olarak ifade edildiği çe�
 ==== MathML ile formül örneği
 
 .Başlık (opsiyonel)
-[math,file="mathml-formula.svg"]
+[math,file="mathml-formula.png"]
 --
 <math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
   <mi>x</mi>
