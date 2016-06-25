@@ -16,7 +16,7 @@ public class ConverterResult {
 
     public ConverterResult(String taskId, String rendered, String backend, String doctype) {
         this.taskId = taskId;
-        this.rendered = rendered;
+        this.rendered = fixLineEnding(rendered);
         this.backend = backend;
         this.doctype = doctype;
     }
@@ -28,7 +28,16 @@ public class ConverterResult {
     }
 
     public void setRendered(String rendered) {
-        this.rendered = rendered;
+        this.rendered = fixLineEnding(rendered);
+    }
+
+    private String fixLineEnding(String rendered) {
+
+        if (Objects.isNull(rendered)) {
+            return null;
+        }
+
+        return rendered.replaceAll("\\R", "\n");
     }
 
     public String getRendered() {
