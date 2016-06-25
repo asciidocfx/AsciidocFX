@@ -79,7 +79,7 @@ public class TreeService {
             logger.debug("Tree extension is started for {}", imageTarget);
 
             try {
-                List<String> strings = Arrays.asList(tree.split("\n"));
+                List<String> strings = Arrays.asList(tree.split("\\r?\\n"));
                 List<TreeItem<Tuple<Integer, String>>> treeItems = strings.stream()
                         .map(s -> {
                             int level = StringUtils.countOccurrencesOf(s, "#");
