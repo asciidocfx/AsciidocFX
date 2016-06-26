@@ -1324,10 +1324,10 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     private void applyForAllEditorPanes(Consumer<EditorPane> editorPaneConsumer) {
         ObservableList<Tab> tabs = tabPane.getTabs();
         for (Tab tab : tabs) {
-           if(tab instanceof MyTab){
-               MyTab myTab = (MyTab) tab;
-               editorPaneConsumer.accept(myTab.getEditorPane());
-           }
+            if (tab instanceof MyTab) {
+                MyTab myTab = (MyTab) tab;
+                editorPaneConsumer.accept(myTab.getEditorPane());
+            }
         }
     }
 
@@ -1439,7 +1439,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                     .findFirst()
                     .ifPresent(path -> logPath = path.resolve(configDirName).resolve("log").toString());
 
-        } catch (URISyntaxException e) {
+        } catch (Exception e) {
             logger.error("Problem occured while resolving conf and log paths", e);
         }
 
