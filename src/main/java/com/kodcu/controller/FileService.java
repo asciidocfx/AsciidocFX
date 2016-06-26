@@ -71,6 +71,9 @@ public class FileService {
             response.setDateHeader("Expires", DEFAULT_EXPIRE_TIME);
             response.setHeader("Cache-Control", String.format("public, max-age=%d", DEFAULT_EXPIRE_TIME));
             response.getWriter().close();
+
+            logger.warn("File not found or is not exist {}", path);
+
             return;
         }
 
