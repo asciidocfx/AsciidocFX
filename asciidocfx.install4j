@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <install4j version="6.1.2" transformSequenceNumber="5">
   <directoryPresets config="outputs" />
-  <application name="AsciidocFX" distributionSourceDir="" applicationId="7853-9376-5862-1224" mediaDir="target" mediaFilePattern="${compiler:sys.shortName}_${compiler:sys.platform}_${compiler:sys.version}" compression="6" lzmaCompression="true" pack200Compression="true" excludeSignedFromPacking="false" commonExternalFiles="false" createMd5Sums="true" shrinkRuntime="true" shortName="AsciidocFX" publisher="AsciidocFX" publisherWeb="http://asciidocfx.com" version="1.4.6" allPathsRelative="false" backupOnSave="false" autoSave="false" convertDotsToUnderscores="true" macSignature="????" macVolumeId="b98c377570068f5e" javaMinVersion="1.8" javaMaxVersion="" allowBetaVM="true" jdkMode="runtimeJre" jdkName="">
+  <application name="AsciidocFX" distributionSourceDir="" applicationId="7853-9376-5862-1224" mediaDir="target" mediaFilePattern="${compiler:sys.shortName}_${compiler:sys.platform}_${compiler:sys.version}" compression="4" lzmaCompression="true" pack200Compression="true" excludeSignedFromPacking="false" commonExternalFiles="false" createMd5Sums="true" shrinkRuntime="true" shortName="AsciidocFX" publisher="AsciidocFX" publisherWeb="http://asciidocfx.com" version="1.4.6" allPathsRelative="false" backupOnSave="false" autoSave="false" convertDotsToUnderscores="true" macSignature="????" macVolumeId="b98c377570068f5e" javaMinVersion="1.8" javaMaxVersion="" allowBetaVM="true" jdkMode="runtimeJre" jdkName="">
     <languages skipLanguageSelection="false" languageSelectionInPrincipalLanguage="false">
       <principalLanguage id="en" customLocalizationFile="" />
       <additionalLanguages />
@@ -1472,7 +1472,7 @@ return true;</string>
         <customAttributes />
       </autoUpdate>
     </unixArchive>
-    <windows name="Windows Installer No JRE" id="407" customizedId="" mediaFileName="AsciidocFX_Windows_No_JRE" installDir="${compiler:sys.shortName}" overridePrincipalLanguage="false" jreBitType="32" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" downloadURL="" includeAllDownloadableComponents="false" includedJRE="" manualJREEntry="false" bundleType="1" jreURL="" jreShared="false" directDownload="false" installOnlyIfNecessary="false" customInstallBaseDir="" contentFilesType="1" verifyIntegrity="true">
+    <windows name="Windows Installer No JRE" id="407" customizedId="" mediaFileName="AsciidocFX_Windows_No_JRE" installDir="${compiler:sys.shortName}" overridePrincipalLanguage="false" jreBitType="64" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" downloadURL="" includeAllDownloadableComponents="false" includedJRE="" manualJREEntry="false" bundleType="1" jreURL="" jreShared="false" directDownload="false" installOnlyIfNecessary="false" customInstallBaseDir="" contentFilesType="1" verifyIntegrity="true">
       <excludedComponents />
       <includedDownloadableComponents />
       <excludedLaunchers />
@@ -1498,7 +1498,7 @@ return true;</string>
         <customAttributes />
       </autoUpdate>
     </unixArchive>
-    <windowsArchive name="Windows Archive No JRE" id="416" customizedId="" mediaFileName="AsciidocFX_Windows_No_JRE" installDir="${compiler:sys.shortName}" overridePrincipalLanguage="false" jreBitType="32" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" downloadURL="" includeAllDownloadableComponents="true" includedJRE="" manualJREEntry="false">
+    <windowsArchive name="Windows Archive No JRE" id="416" customizedId="" mediaFileName="AsciidocFX_Windows_No_JRE" installDir="${compiler:sys.shortName}" overridePrincipalLanguage="false" jreBitType="64" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" downloadURL="" includeAllDownloadableComponents="true" includedJRE="" manualJREEntry="false">
       <excludedComponents />
       <includedDownloadableComponents />
       <excludedLaunchers />
@@ -1512,6 +1512,8 @@ return true;</string>
       </autoUpdate>
     </windowsArchive>
   </mediaSets>
-  <buildIds buildAll="true" />
+  <buildIds buildAll="true">
+    <mediaSet refId="416" />
+  </buildIds>
   <buildOptions verbose="false" faster="false" disableSigning="false" disableJreBundling="false" debug="false" />
 </install4j>
