@@ -209,9 +209,9 @@ public class EditorPane extends AnchorPane {
 
     public void load(String url) {
         if (Objects.nonNull(url))
-            Platform.runLater(() -> {
+            threadService.runActionLater(() -> {
                 webEngine().load(url);
-            });
+            }, true);
         else
             logger.error("Url is not loaded. Reason: null reference");
     }
