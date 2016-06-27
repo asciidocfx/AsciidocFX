@@ -24,8 +24,6 @@ Opal.modules["asciidoctor/converter/revealjs"] = function (Opal) {
             return (def.$convert = function (node, template_name, opts) {
                     var __self = this;
 
-                    console.log("In convert");
-
                     var obj = {};
                     obj.node = node;
                     obj.name = node.$node_name ? node.$node_name() : "";
