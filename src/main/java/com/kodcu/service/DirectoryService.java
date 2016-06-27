@@ -328,4 +328,8 @@ public class DirectoryService {
                 .findFirst()
                 .orElseGet(() -> null);
     }
+
+    public Path currentParentOrWorkdir() {
+        return current.currentPath().map(Path::getParent).orElse(this.workingDirectory());
+    }
 }

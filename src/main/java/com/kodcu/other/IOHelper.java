@@ -99,17 +99,26 @@ public class IOHelper {
         return null;
     }
 
-    public static Path createTempFile(Path path, String suffix) {
+    public static Path createTempFile(Path path, String prefix, String suffix) {
+
         if (Objects.isNull(path)) {
             return createTempFile(suffix);
         }
         try {
-            return Files.createTempFile(path, "asciidoc-temp", suffix);
+            return Files.createTempFile(path, prefix, suffix);
         } catch (Exception e) {
             logger.error("Problem occured while creating temp file {}", path, e);
         }
 
         return null;
+    }
+
+    public static Path createTempFile(Path path, String suffix) {
+        if (Objects.isNull(path)) {
+            return createTempFile(suffix);
+        }
+
+        return createTempFile(path, "asciidoc-temp", suffix);
     }
 
     public static void copy(Path source, Path target, CopyOption... copyOptions) {
