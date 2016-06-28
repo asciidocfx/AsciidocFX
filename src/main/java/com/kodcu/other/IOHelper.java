@@ -352,4 +352,22 @@ public class IOHelper {
         }
 
     }
+
+    public static boolean isEmptyDir(Path path) {
+        try (DirectoryStream<Path> dirStream = Files.newDirectoryStream(path)) {
+            return !dirStream.iterator().hasNext();
+        } catch (Exception e) {
+            logger.warn("Problem occured while checking is directory empty {}", path);
+        }
+        return false;
+    }
+
+    public static WatchService newWatchService() {
+        try {
+            return FileSystems.getDefault().newWatchService();
+        } catch (Exception e) {
+            logger.warn("Problem occured while creating new watch service");
+        }
+        return null;
+    }
 }
