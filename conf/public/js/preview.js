@@ -32,6 +32,10 @@ var sourceHighlightAction = new BufferedAction();
 
 function refreshUI(data) {
 
+    if (data.lastIndexOf("<!DOCTYPE html>", 0) === 0) {
+        data = "<p>You sent full DOCTYPE!</p>";
+    }
+
     $placeholder.html(data);
 
     sourceHighlightAction.buff(function () {
