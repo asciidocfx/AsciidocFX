@@ -10,15 +10,13 @@ import com.kodcu.other.Current;
 import com.kodcu.other.ExtensionFilters;
 import com.kodcu.other.IOHelper;
 import com.kodcu.other.Item;
-import com.kodcu.service.DirectoryService;
-import com.kodcu.service.ParserService;
-import com.kodcu.service.PathResolverService;
-import com.kodcu.service.ThreadService;
+import com.kodcu.service.*;
 import com.kodcu.service.extension.AsciiTreeGenerator;
 import com.kodcu.service.shortcut.ShortcutProvider;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.value.ObservableObjectValue;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.control.*;
@@ -43,6 +41,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 /**
@@ -448,4 +447,19 @@ public class TabService {
     public ObservableList<Optional<Path>> getClosedPaths() {
         return closedPaths;
     }
+
+    public void applyForEachMyTab(Consumer<MyTab> consumer, List<? extends Tab> tabs) {
+        for (Tab tab : tabs) {
+            if (tab instanceof MyTab) {
+                MyTab myTab = (MyTab) tab;
+                consumer.accept(myTab);
+            }
+        }
+    }
+
+    public void applyForEachMyTab(Consumer<MyTab> consumer) {
+        ObservableList<Tab> tabs = controller.getTabPane().getTabs();
+        applyForEachMyTab(consumer, tabs);
+    }
+
 }
