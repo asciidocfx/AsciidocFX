@@ -78,6 +78,8 @@ public class EditorPane extends AnchorPane {
     private final ObjectProperty<Path> spellLanguage = new SimpleObjectProperty<>();
     private final AtomicBoolean contextOpen = new AtomicBoolean(false);
 
+    private final BooleanProperty changedProperty = new SimpleBooleanProperty(false);
+
     @Value("${application.live.url}")
     private String liveUrl;
 
@@ -116,6 +118,7 @@ public class EditorPane extends AnchorPane {
 
     private void afterEditorLoaded() {
         getWindow().setMember("afx", controller);
+        getWindow().setMember("editorPane", this);
         updateOptions();
 
         if (Objects.nonNull(path)) {
@@ -154,7 +157,7 @@ public class EditorPane extends AnchorPane {
     }
 
     public void updatePreviewUrl() {
-        final String interPath = directoryService.interPath(path);
+        final String interPath = directoryService.interPath();
 
         final boolean isSameInterPath = Optional.ofNullable(interPath)
                 .filter(i -> !i.isEmpty())
@@ -597,6 +600,13 @@ public class EditorPane extends AnchorPane {
 
     }
 
+    @WebkitCall(from = "editor")
+    public void appendWildcard() {
+        threadService.runActionLater(() -> {
+            setChangedProperty(true);
+        });
+    }
+
     public ObservableList<Runnable> getHandleReadyTasks() {
         return handleReadyTasks;
     }
@@ -716,5 +726,17 @@ public class EditorPane extends AnchorPane {
         threadService.runActionLater(() -> {
             this.call("setFoldStyle", style.name().toLowerCase(Locale.ENGLISH));
         });
+    }
+
+    public boolean getChangedProperty() {
+        return changedProperty.get();
+    }
+
+    public BooleanProperty changedPropertyProperty() {
+        return changedProperty;
+    }
+
+    public void setChangedProperty(boolean changedProperty) {
+        this.changedProperty.set(changedProperty);
     }
 }

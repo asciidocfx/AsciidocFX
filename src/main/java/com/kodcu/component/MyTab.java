@@ -49,7 +49,6 @@ public class MyTab extends Tab {
     private final TabService tabService;
     private final ApplicationController controller;
     private final ThreadService threadService;
-    private final BooleanProperty changedProperty = new SimpleBooleanProperty(false);
 
     private final Logger logger = LoggerFactory.getLogger(MyTab.class);
 
@@ -61,7 +60,8 @@ public class MyTab extends Tab {
         this.tabService = tabService;
         this.controller = controller;
         this.threadService = threadService;
-        this.changedProperty.addListener((observable, oldValue, newValue) -> {
+        changedPropertyProperty().addListener((observable, oldValue, newValue) -> {
+
             if (newValue) {
                 if (!getStyleClass().contains("mytab-changed"))
                     getStyleClass().add("mytab-changed");
@@ -104,7 +104,7 @@ public class MyTab extends Tab {
 
     public boolean isSaved() {
 //        return !this.getTabText().contains(" *");
-        return !changedProperty.get();
+        return !this.editorPane.getChangedProperty();
     }
 
     public ButtonType close() {
@@ -158,7 +158,7 @@ public class MyTab extends Tab {
     public boolean isChanged() {
 //        String tabText = getTabText();
 //        return tabText.contains(" *");
-        return changedProperty.get();
+        return this.editorPane.getChangedProperty();
     }
 
     public synchronized void reload() {
@@ -186,15 +186,14 @@ public class MyTab extends Tab {
                 });
     }
 
-    public void load() {
+    public synchronized void load() {
         FileTime latestModifiedTime = IOHelper.getLastModifiedTime(getPath());
         setLastModifiedTime(latestModifiedTime);
         String content = IOHelper.readFile(getPath());
-        threadService.runActionLater(() -> {
-            editorPane.setEditorValue(content);
-            this.select();
-            setTabText(getPath().getFileName().toString());
-        });
+        editorPane.setEditorValue(content);
+        this.select();
+        setTabText(getPath().getFileName().toString());
+        setChangedProperty(false);
     }
 
     private synchronized void save() {
@@ -248,7 +247,7 @@ public class MyTab extends Tab {
 
         setLastModifiedTime(IOHelper.getLastModifiedTime(getPath()));
 
-        changedProperty.set(false);
+        setChangedProperty(false);
 
         ObservableList<Item> recentFiles = storedConfigBean.getRecentFiles();
         recentFiles.remove(new Item(getPath()));
@@ -278,7 +277,7 @@ public class MyTab extends Tab {
             if (tabs.isEmpty()) {
                 tabService.newDoc();
             }
-        },true);
+        }, true);
     }
 
     @Override
@@ -334,15 +333,15 @@ public class MyTab extends Tab {
     }
 
     public boolean getChangedProperty() {
-        return changedProperty.get();
+        return this.editorPane.getChangedProperty();
     }
 
     public BooleanProperty changedPropertyProperty() {
-        return changedProperty;
+        return this.editorPane.changedPropertyProperty();
     }
 
     public void setChangedProperty(boolean changedProperty) {
-        this.changedProperty.set(changedProperty);
+        this.editorPane.setChangedProperty(changedProperty);
     }
 
     public Path getParentOrWorkdir() {

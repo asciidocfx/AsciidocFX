@@ -104,7 +104,7 @@ var renderAction = new BufferedAction();
 var editorChangeListener = function (obj) {
 
     if (afterFirstChange)
-        afx.appendWildcard();
+        editorPane.appendWildcard();
 
     renderAction.buff(function () {
         afx.textListener(editor.getValue(), editorMode());
