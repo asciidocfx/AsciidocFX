@@ -72,7 +72,9 @@ public class FileService {
             response.setHeader("Cache-Control", String.format("public, max-age=%d", DEFAULT_EXPIRE_TIME));
             response.getWriter().close();
 
-            logger.warn("File not found or is not exist {}", path);
+            if (Objects.nonNull(path)) {
+                logger.warn("File not found or is not exist {}", path);
+            }
 
             return;
         }
