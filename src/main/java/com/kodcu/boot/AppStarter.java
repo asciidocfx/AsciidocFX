@@ -9,8 +9,6 @@ import de.tototec.cmdoption.CmdlineParser;
 import de.tototec.cmdoption.CmdlineParserException;
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -151,6 +149,8 @@ public class AppStarter extends Application {
 
         final ThreadService threadService = context.getBean(ThreadService.class);
 //        final TabService tabService = context.getBean(TabService.class);
+
+        controller.initializeTabWatchListener();
 
         threadService.start(() -> {
             try {
