@@ -195,6 +195,8 @@ public class TabService {
         return path;
     }
 
+
+    // TODO: It is not a right place for this helper
     public List<Path> getSelectedTabPaths() {
         ObservableList<TreeItem<Item>> treeItems = controller.getFileSystemView().getSelectionModel().getSelectedItems();
         return treeItems.stream()
