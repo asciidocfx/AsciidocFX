@@ -101,7 +101,7 @@ public class ThreadService {
         return threadPollWorker;
     }
 
-    public void sleep(int ms) {
+    public static void sleep(int ms) {
         try {
             Thread.sleep(ms);
         } catch (InterruptedException e) {
