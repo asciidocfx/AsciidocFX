@@ -681,3 +681,20 @@
     -fx-padding: 0;
     -fx-border-width: 0;
 }
+
+.basic-search {
+    -fx-text-fill: black;
+    -fx-background-color: #fcfcfc;
+    -fx-padding: 3px;
+    -fx-background-radius: 0 0 0 5;
+}
+
+.tree-cell {
+    -fx-padding: 0.25em; /* 3 */
+    -fx-indent: 20;
+}
+
+.tree-cell > .tree-disclosure-node > .arrow  {
+    -fx-padding: 0.333333em; /* 4 */
+    -fx-shape: "M6 4l20 12-20 12z";
+}
