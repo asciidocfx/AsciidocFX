@@ -9,6 +9,7 @@ import com.kodcu.config.*;
 import com.kodcu.engine.AsciidocConverterProvider;
 import com.kodcu.engine.AsciidocNashornConverter;
 import com.kodcu.engine.AsciidocWebkitConverter;
+import com.kodcu.keyboard.KeyHelper;
 import com.kodcu.logging.MyLog;
 import com.kodcu.logging.TableViewLogAppender;
 import com.kodcu.other.*;
@@ -42,10 +43,7 @@ import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
 import javafx.application.HostServices;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.*;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -92,7 +90,6 @@ import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
 import java.io.File;
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -137,6 +134,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     public ToggleGroup rightToggleGroup;
     public MenuButton donateButton;
     public ToggleButton toggleConfigButton;
+    public Label basicSearch;
     private Logger logger = LoggerFactory.getLogger(ApplicationController.class);
     public Label odfPro = new Label();
     public VBox logVBox;
@@ -409,7 +407,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             sampleBookService.produceSampleBook(configPath, file.toPath());
             directoryService.setWorkingDirectory(Optional.of(file.toPath()));
             fileBrowser.browse(file.toPath());
-            fileWatchService.registerWatcher(file.toPath());
             threadService.runActionLater(() -> {
                 directoryView(null);
                 tabService.addTab(file.toPath().resolve("book.adoc"));
@@ -636,6 +633,93 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         AwesomeDude.setIcon(refreshLabel, AwesomeIcon.REFRESH, "14.0");
         AwesomeDude.setIcon(goUpLabel, AwesomeIcon.LEVEL_UP, "14.0");
 
+        AwesomeDude.setIcon(basicSearch, AwesomeIcon.SEARCH, "14.00");
+
+        basicSearch.visibleProperty().bind(fileSystemView.focusedProperty().and(basicSearch.textProperty().isNotEmpty()));
+        basicSearch.visibleProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue) {
+                basicSearch.setText("");
+            }
+        });
+
+        AtomicBoolean dontKeyType = new AtomicBoolean(true);
+        fileSystemView.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
+            dontKeyType.set(true);
+
+            if (KeyHelper.isBackSpace(event)) {
+                if (basicSearch.isVisible()) {
+                    event.consume();
+                    Optional.ofNullable(basicSearch.getText())
+                            .filter(t -> t.length() > 0)
+                            .map(t -> t.substring(0, t.length() - 1))
+                            .ifPresent(s -> {
+                                basicSearch.setText(s);
+                                fileBrowser.searchAndSelect(basicSearch.getText());
+                            });
+                }
+            } else if (KeyHelper.isUp(event)) {
+                if (basicSearch.isVisible()) {
+                    event.consume();
+                    fileBrowser.searchDownAndSelect(basicSearch.getText());
+                }
+            } else if (KeyHelper.isDown(event)) {
+                if (basicSearch.isVisible()) {
+                    event.consume();
+                    fileBrowser.searchUpAndSelect(basicSearch.getText());
+                }
+            } else if (KeyHelper.isDelete(event)) {
+                event.consume();
+                deleteSelectedItems(event);
+            } else if (KeyHelper.isCopy(event)) {
+                event.consume();
+                this.copyFiles(tabService.getSelectedTabPaths());
+            } else if (KeyHelper.isF2(event)) {
+                event.consume();
+                this.renameFile(event);
+            } else if (KeyHelper.isEnter(event)) {
+                event.consume();
+                TreeItem<Item> selectedItem = fileSystemView.getSelectionModel().getSelectedItem();
+
+                if (Objects.isNull(selectedItem))
+                    return;
+
+                Path selectedPath = selectedItem.getValue().getPath();
+                tabService.previewDocument(selectedPath);
+            }
+
+            if (event.isConsumed()) {
+                dontKeyType.set(false);
+            }
+
+        });
+
+        fileSystemView.addEventHandler(KeyEvent.KEY_TYPED, event -> {
+
+            if (dontKeyType.get()) {
+                String eventText = Optional.ofNullable(event.getText())
+                        .filter(e -> !e.isEmpty())
+                        .orElseGet(() -> {
+                            String character = event.getCharacter();
+                            char[] chars = character.toCharArray();
+                            if (chars.length > 0) {
+                                if (chars[0] == '\u0000') {
+                                    return "";
+                                } else {
+                                    return new String(chars);
+                                }
+                            }
+                            return character;
+                        });
+
+                if (!eventText.isEmpty()) {
+                    event.consume();
+                    basicSearch.setText(basicSearch.getText() + eventText);
+                    fileBrowser.searchAndSelect(basicSearch.getText());
+                }
+            }
+
+        });
+
         leftButton.setGraphic(AwesomeDude.createIconLabel(AwesomeIcon.ELLIPSIS_H, "14.0"));
         afxVersionItem.setText(String.join(" ", "Version", version));
 
@@ -783,30 +867,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                     .forEach(tabService::previewDocument);
         });
 
-        deletePathItem.setOnAction(event -> {
-
-            ObservableList<TreeItem<Item>> selectedItems = fileSystemView.getSelectionModel().getSelectedItems();
-
-            List<Path> pathList = selectedItems.stream()
-                    .map(e -> e.getValue())
-                    .map(e -> e.getPath())
-                    .collect(Collectors.toList());
-
-            AlertHelper.deleteAlert(pathList).ifPresent(btn -> {
-                if (btn == ButtonType.YES) {
-                    pathList
-                            .forEach(path -> threadService.runTaskLater(() -> {
-                                if (Files.isDirectory(path)) {
-                                    IOHelper.deleteDirectory(path);
-                                } else {
-                                    IOHelper.deleteIfExists(path);
-                                }
-                            }));
-                }
-
-            });
-
-        });
+        deletePathItem.setOnAction(this::deleteSelectedItems);
 
         openFolderTreeItem.setOnAction(event -> {
             Path path = tabService.getSelectedTabPath();
@@ -843,14 +904,18 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
         fileSystemView.setOnMouseClicked(event -> {
             TreeItem<Item> selectedItem = fileSystemView.getSelectionModel().getSelectedItem();
+
             if (Objects.isNull(selectedItem))
                 return;
 
             event.consume();
+
             Path selectedPath = selectedItem.getValue().getPath();
-            if (event.getButton() == MouseButton.PRIMARY)
-                if (event.getClickCount() == 2)
+            if (event.getButton() == MouseButton.PRIMARY) {
+                if (event.getClickCount() >= 2) {
                     tabService.previewDocument(selectedPath);
+                }
+            }
         });
 
         fileSystemView.getSelectionModel().getSelectedIndices().addListener((ListChangeListener<? super Integer>) p -> {
@@ -871,7 +936,19 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                     addToFavSeparator.setVisible(false);
                 }
             } else if (selectedItems.size() == 1) {
-                Path path = selectedItems.get(0).getValue().getPath();
+                TreeItem<Item> itemTreeItem = selectedItems.get(0);
+                Item value = itemTreeItem.getValue();
+                Path path = value.getPath();
+
+                Optional<Path> optional = Optional.ofNullable(selectedItems)
+                        .filter(e -> e.size() > 0)
+                        .map(e -> e.get(0).getValue())
+                        .map(Item::getPath);
+
+                if (!optional.isPresent()) {
+                    return;
+                }
+
                 boolean isDirectory = Files.isDirectory(path);
                 newMenu.setVisible(isDirectory);
                 renameFile.setVisible(!isDirectory);
@@ -892,6 +969,70 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         });
 
         tabService.initializeTabChangeListener(tabPane);
+    }
+
+    private void deleteSelectedItems(Event event) {
+        List<TreeItem<Item>> selectedItems = fileSystemView
+                .getSelectionModel()
+                .getSelectedItems()
+                .stream()
+                .collect(Collectors.toList());
+
+        List<Path> pathList = selectedItems.stream()
+                .map(e -> e.getValue())
+                .map(e -> e.getPath())
+                .collect(Collectors.toList());
+
+        AlertHelper.deleteAlert(pathList).ifPresent(btn -> {
+            if (btn == ButtonType.YES) {
+
+                fileSystemView.setDisable(true);
+
+                threadService.runTaskLater(() -> {
+                    try {
+                        boolean hasDirectory = false;
+                        for (TreeItem<Item> selectedItem : selectedItems) {
+//                            int selectedIndex = fileBrowser.findIndex(selectedItem);
+                            Path path = selectedItem.getValue().getPath();
+
+                            if (Files.isDirectory(path)) {
+
+                                if (!hasDirectory) {
+                                    hasDirectory = true;
+                                    fileWatchService.unRegisterAllPath();
+                                }
+
+                                if (path.getRoot().equals(path)) {
+                                    threadService.runActionLater(() -> {
+                                        AlertHelper.okayAlert("You can't delete fileystem root");
+                                    });
+                                    continue;
+                                }
+
+                                IOHelper.deleteDirectory(path);
+                            } else {
+                                IOHelper.deleteIfExists(path);
+                            }
+
+//                            fileSystemView.getSelectionModel().select(selectedIndex);
+                        }
+
+                        if (hasDirectory) {
+                            fileBrowser.refresh();
+                        }
+                    } catch (Exception ex) {
+                        logger.error(ex.getMessage(), ex);
+                    }
+
+                    threadService.runActionLater(() -> {
+                        fileSystemView.setDisable(false);
+                        fileSystemView.requestFocus();
+                    });
+                });
+
+            }
+
+        });
     }
 
     private void initializeDonation() {
@@ -1068,11 +1209,21 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     public void initializeSaveOnBlur() {
 
         stage.focusedProperty().addListener((observable, oldValue, newValue) -> {
+
+            Node focusOwner = stage.getScene().getFocusOwner();
+
             if (StageHelper.getStages().size() == 1) {
                 if (!newValue) {
                     saveAllTabs();
                 } else {
                     loadAllTabs();
+                }
+            }
+
+            if (newValue) {
+                if (Objects.nonNull(focusOwner)) {
+//                    logger.info("Focus owner changed {}", focusOwner);
+                    focusOwner.requestFocus();
                 }
             }
         });
@@ -1960,11 +2111,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         });
     }
 
-    @WebkitCall(from = "editor")
-    public void appendWildcard() {
-        current.currentTab().setChangedProperty(true);
-    }
-
     private AtomicReference<Tuple<String, String>> latestTupleReference = new AtomicReference<>();
     private Semaphore renderLoopSemaphore = new Semaphore(1);
 
@@ -2470,26 +2616,39 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     }
 
     @FXML
-    public void renameFile(ActionEvent actionEvent) {
+    public void renameFile(Event actionEvent) {
 
         RenameDialog dialog = RenameDialog.create();
 
         Path path = fileSystemView.getSelectionModel().getSelectedItem()
                 .getValue().getPath();
 
-        dialog.getEditor().setText(path.getFileName().toString());
+        TextField editor = dialog.getEditor();
+        editor.setText(path.getFileName().toString());
 
         Consumer<String> consumer = result -> {
             if (dialog.isShowing())
                 dialog.hide();
 
-            if (result.trim().matches("^[^\\\\/:?*\"<>|]+$"))
-                IOHelper.move(path, path.getParent().resolve(result.trim()));
+            threadService.runTaskLater(() -> {
+                if (result.trim().matches("^[^\\\\/:?*\"<>|]+$")) {
+                    IOHelper.move(path, path.getParent().resolve(result.trim()));
+                }
+            });
         };
 
-        dialog.getEditor().setOnAction(event -> {
-            consumer.accept(dialog.getEditor().getText());
+        editor.setOnAction(event -> {
+            consumer.accept(editor.getText());
         });
+
+        if(!Files.isDirectory(path)){
+            int extensionIndex = editor.getText().lastIndexOf(".");
+            if (extensionIndex > 0) {
+                threadService.runActionLater(() -> {
+                    editor.selectRange(0, extensionIndex);
+                }, true);
+            }
+        }
 
         dialog.showAndWait().ifPresent(consumer);
     }
@@ -2841,5 +3000,18 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     public String getClipboardImageFilePattern() {
         return editorConfigBean.getClipboardImageFilePattern();
+    }
+
+    public void initializeTabWatchListener() {
+        getTabPane().getTabs().addListener((ListChangeListener<Tab>) c -> {
+            c.next();
+            List<? extends Tab> addedSubList = c.getAddedSubList();
+
+            threadService.runTaskLater(() -> {
+                tabService.applyForEachMyTab(myTab -> {
+                    fileWatchService.registerPathWatcher(myTab.getPath());
+                }, addedSubList);
+            });
+        });
     }
 }
