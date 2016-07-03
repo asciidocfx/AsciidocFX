@@ -1,8 +1,9 @@
 package com.kodcu.other;
 
+import com.kodcu.service.ThreadService;
+import org.apache.commons.io.FileDeleteStrategy;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.fop.apps.FopFactory;
 import org.joox.JOOX;
 import org.joox.Match;
 import org.slf4j.Logger;
@@ -215,12 +216,15 @@ public class IOHelper {
         }
     }
 
-    public static void deleteIfExists(Path path) {
+    public static Optional<Exception> deleteIfExists(Path path) {
         try {
             Files.deleteIfExists(path);
         } catch (Exception e) {
             logger.error("Problem occured while deleting {}", path, e);
+            return Optional.ofNullable(e);
         }
+
+        return Optional.empty();
     }
 
     public static void copyDirectory(Path sourceDir, Path targetDir) {
@@ -275,10 +279,88 @@ public class IOHelper {
 
     public static void deleteDirectory(Path path) {
         try {
-            FileUtils.deleteDirectory(path.toFile());
+            // Firstly try forced delete
+            Optional<Exception> forceDelete = IOHelper.forceDelete(path);
+
+            if (!forceDelete.isPresent()) {
+                return;
+            }
+
+            // if forced delete failed, try recursively delete dir
+            Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
+                @Override
+                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                    Optional<Exception> exception = IOHelper
+                            .forceDelete(file)
+                            .flatMap(e -> {
+                                ThreadService.sleep(100);
+                                return IOHelper.forceDelete(file);
+                            });
+
+                    if (exception.isPresent()) {
+                        throw new IOException(exception.get());
+                    }
+
+                    return FileVisitResult.CONTINUE;
+                }
+
+                @Override
+                public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException {
+                    Optional<Exception> exception = IOHelper
+                            .forceDelete(file)
+                            .flatMap(e -> {
+                                ThreadService.sleep(100);
+                                return IOHelper.forceDelete(file);
+                            });
+
+                    if (exception.isPresent()) {
+                        throw new IOException(exception.get());
+                    }
+
+                    return FileVisitResult.CONTINUE;
+                }
+
+                @Override
+                public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
+                    if (exc == null) {
+                        Optional<Exception> exception = IOHelper
+                                .forceDelete(dir)
+                                .flatMap(e -> {
+                                    ThreadService.sleep(100);
+                                    return IOHelper.forceDelete(dir);
+                                });
+
+                        if (exception.isPresent()) {
+                            throw new IOException(exception.get());
+                        }
+                        return FileVisitResult.CONTINUE;
+                    } else {
+                        throw exc;
+                    }
+                }
+            });
         } catch (Exception e) {
             logger.error("Problem occured while deleting {} path", path, e);
         }
+    }
+
+    private static Optional<Exception> forceDelete(Path path) {
+
+        try {
+            Objects.requireNonNull(path);
+
+            if (Files.notExists(path)) {
+                return Optional.empty();
+            }
+
+            FileUtils.forceDelete(path.toFile());
+        } catch (FileNotFoundException fnx) {
+            return Optional.empty();
+        } catch (Exception e) {
+            logger.error("Problem occured while deleting {}", path, e);
+            return Optional.ofNullable(e);
+        }
+        return Optional.empty();
     }
 
     public static List<String> readAllLines(Path path) {
