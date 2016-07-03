@@ -67,7 +67,11 @@ public class SpellcheckConfigBean extends ConfigurationBase {
 
     public Path getDefaultLanguage() {
         if (Objects.isNull(defaultLanguage.get())) {
-            setDefaultLanguage(getLanguages().get(0));
+            Optional.ofNullable(getLanguages())
+                    .filter(langs -> !langs.isEmpty())
+                    .ifPresent(langs -> {
+                        setDefaultLanguage(langs.get(0));
+                    });
         }
         return defaultLanguage.get();
     }
