@@ -208,85 +208,97 @@
                                                 <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
                                             </padding>
                                         </FlowPane>
-                                        <ShowerHider fx:id="leftShowerHider" VBox.vgrow="ALWAYS">
-                                            <master>
-                                                <TreeView fx:id="fileSystemView" showRoot="true">
-                                                    <contextMenu>
-                                                        <ContextMenu>
-                                                            <items>
-                                                                <MenuItem fx:id="openFileTreeItem"
-                                                                          mnemonicParsing="false" text="Open"/>
-                                                                <MenuItem id="openFolderTreeItem"
-                                                                          fx:id="openFolderTreeItem"
-                                                                          mnemonicParsing="false"
-                                                                          text="Browse"/>
-                                                                <SeparatorMenuItem fx:id="renameSeparator"/>
-                                                                <MenuItem fx:id="renameFile"
-                                                                          mnemonicParsing="false"
-                                                                          onAction="#renameFile" text="Rename"/>
-                                                                <Menu fx:id="newMenu" text="New">
+                                        <StackPane VBox.vgrow="ALWAYS">
+                                            <children>
+                                                <ShowerHider fx:id="leftShowerHider" VBox.vgrow="ALWAYS">
+                                                    <master>
+                                                        <TreeView fx:id="fileSystemView" showRoot="true">
+                                                            <contextMenu>
+                                                                <ContextMenu>
                                                                     <items>
-                                                                        <MenuItem fx:id="newFile"
+                                                                        <MenuItem fx:id="openFileTreeItem"
+                                                                                  mnemonicParsing="false" text="Open"/>
+                                                                        <MenuItem id="openFolderTreeItem"
+                                                                                  fx:id="openFolderTreeItem"
                                                                                   mnemonicParsing="false"
-                                                                                  onAction="#createFile"
-                                                                                  text="New File"/>
-                                                                        <MenuItem fx:id="newFolder"
+                                                                                  text="Browse"/>
+                                                                        <SeparatorMenuItem fx:id="renameSeparator"/>
+                                                                        <MenuItem fx:id="renameFile"
                                                                                   mnemonicParsing="false"
-                                                                                  onAction="#createFolder"
-                                                                                  text="New Folder"/>
-                                                                        <MenuItem fx:id="newSlide"
-                                                                                  onAction="#newSlide"
-                                                                                  text="New Slide"/>
+                                                                                  onAction="#renameFile" text="Rename"/>
+                                                                        <Menu fx:id="newMenu" text="New">
+                                                                            <items>
+                                                                                <MenuItem fx:id="newFile"
+                                                                                          mnemonicParsing="false"
+                                                                                          onAction="#createFile"
+                                                                                          text="New File"/>
+                                                                                <MenuItem fx:id="newFolder"
+                                                                                          mnemonicParsing="false"
+                                                                                          onAction="#createFolder"
+                                                                                          text="New Folder"/>
+                                                                                <MenuItem fx:id="newSlide"
+                                                                                          onAction="#newSlide"
+                                                                                          text="New Slide"/>
+                                                                            </items>
+                                                                        </Menu>
+                                                                        <SeparatorMenuItem/>
+                                                                        <MenuItem mnemonicParsing="false"
+                                                                                  onAction="#copyPath"
+                                                                                  text="Copy Path"/>
+                                                                        <MenuItem fx:id="copyTreeItem"
+                                                                                  mnemonicParsing="false" text="Copy"/>
+                                                                        <SeparatorMenuItem fx:id="addToFavSeparator"/>
+                                                                        <MenuItem fx:id="addToFavoriteDir"
+                                                                                  onAction="#addToFavoriteDir"
+                                                                                  text="Add to Fav. Dirs"/>
+                                                                        <Menu fx:id="favoriteDirMenu"
+                                                                              text="Favorite Dirs"/>
+                                                                        <SeparatorMenuItem/>
+                                                                        <MenuItem onAction="#openTerminalItem"
+                                                                                  text="Open in Terminal"/>
+                                                                        <SeparatorMenuItem/>
+                                                                        <MenuItem fx:id="deletePathItem"
+                                                                                  mnemonicParsing="false"
+                                                                                  text="Delete"/>
                                                                     </items>
-                                                                </Menu>
-                                                                <SeparatorMenuItem/>
-                                                                <MenuItem mnemonicParsing="false"
-                                                                          onAction="#copyPath"
-                                                                          text="Copy Path"/>
-                                                                <MenuItem fx:id="copyTreeItem"
-                                                                          mnemonicParsing="false" text="Copy"/>
-                                                                <SeparatorMenuItem fx:id="addToFavSeparator"/>
-                                                                <MenuItem fx:id="addToFavoriteDir"
-                                                                          onAction="#addToFavoriteDir"
-                                                                          text="Add to Fav. Dirs"/>
-                                                                <Menu fx:id="favoriteDirMenu"
-                                                                      text="Favorite Dirs"/>
-                                                                <SeparatorMenuItem/>
-                                                                <MenuItem onAction="#openTerminalItem"
-                                                                          text="Open in Terminal"/>
-                                                                <SeparatorMenuItem/>
-                                                                <MenuItem fx:id="deletePathItem"
-                                                                          mnemonicParsing="false"
-                                                                          text="Delete"/>
-                                                            </items>
-                                                        </ContextMenu>
-                                                    </contextMenu>
-                                                </TreeView>
-                                            </master>
-                                            <slaves>
-                                                <TreeView fx:id="outlineTreeView"/>
-                                                <ListView id="recetListView" fx:id="recentListView"
-                                                          styleClass="recentListView">
-                                                    <contextMenu>
-                                                        <ContextMenu>
-                                                            <items>
-                                                                <MenuItem fx:id="openFileListItem"
-                                                                          mnemonicParsing="false"
-                                                                          text="Open"/>
-                                                                <MenuItem fx:id="openFolderListItem"
-                                                                          mnemonicParsing="false"
-                                                                          text="Browse"/>
-                                                                <MenuItem fx:id="copyPathListItem"
-                                                                          mnemonicParsing="false"
-                                                                          text="Copy Path"/>
-                                                                <MenuItem fx:id="copyListItem" mnemonicParsing="false"
-                                                                          text="Copy"/>
-                                                            </items>
-                                                        </ContextMenu>
-                                                    </contextMenu>
-                                                </ListView>
-                                            </slaves>
-                                        </ShowerHider>
+                                                                </ContextMenu>
+                                                            </contextMenu>
+                                                        </TreeView>
+                                                    </master>
+                                                    <slaves>
+                                                        <TreeView fx:id="outlineTreeView"/>
+                                                        <ListView id="recetListView" fx:id="recentListView"
+                                                                  styleClass="recentListView">
+                                                            <contextMenu>
+                                                                <ContextMenu>
+                                                                    <items>
+                                                                        <MenuItem fx:id="openFileListItem"
+                                                                                  mnemonicParsing="false"
+                                                                                  text="Open"/>
+                                                                        <MenuItem fx:id="openFolderListItem"
+                                                                                  mnemonicParsing="false"
+                                                                                  text="Browse"/>
+                                                                        <MenuItem fx:id="copyPathListItem"
+                                                                                  mnemonicParsing="false"
+                                                                                  text="Copy Path"/>
+                                                                        <MenuItem fx:id="copyListItem"
+                                                                                  mnemonicParsing="false"
+                                                                                  text="Copy"/>
+                                                                    </items>
+                                                                </ContextMenu>
+                                                            </contextMenu>
+                                                        </ListView>
+                                                    </slaves>
+                                                </ShowerHider>
+                                                <Label fx:id="basicSearch" text=""
+                                                       StackPane.alignment="TOP_RIGHT"
+                                                       styleClass="basic-search">
+                                                    <StackPane.margin>
+                                                        <Insets left="5.0" right="10.0"/>
+                                                    </StackPane.margin>
+                                                </Label>
+                                            </children>
+                                        </StackPane>
                                     </children>
                                 </VBox>
                                 <SplitPane fx:id="editorSplitPane" orientation="VERTICAL">
