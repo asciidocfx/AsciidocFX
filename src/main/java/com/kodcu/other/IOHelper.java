@@ -439,7 +439,7 @@ public class IOHelper {
         try (DirectoryStream<Path> dirStream = Files.newDirectoryStream(path)) {
             return !dirStream.iterator().hasNext();
         } catch (Exception e) {
-            logger.warn("Problem occured while checking is directory empty {}", path);
+//            logger.warn("Problem occured while checking is directory empty {}", path);
         }
         return false;
     }
