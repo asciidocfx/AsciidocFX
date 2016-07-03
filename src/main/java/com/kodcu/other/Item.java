@@ -51,6 +51,6 @@ public class Item {
 
     @Override
     public int hashCode() {
-        return path.hashCode();
+        return Objects.hash(path);
     }
 }
