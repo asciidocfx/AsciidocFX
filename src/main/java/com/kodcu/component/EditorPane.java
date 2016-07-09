@@ -4,6 +4,7 @@ import com.kodcu.config.EditorConfigBean;
 import com.kodcu.config.FoldStyle;
 import com.kodcu.config.SpellcheckConfigBean;
 import com.kodcu.controller.ApplicationController;
+import com.kodcu.keyboard.KeyHelper;
 import com.kodcu.other.IOHelper;
 import com.kodcu.service.DirectoryService;
 import com.kodcu.service.ParserService;
@@ -13,7 +14,6 @@ import com.kodcu.service.extension.AsciiTreeGenerator;
 import com.kodcu.service.shortcut.ShortcutProvider;
 import com.kodcu.service.ui.TabService;
 import com.kodcu.spell.dictionary.Token;
-import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -22,10 +22,9 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.*;
+import javafx.geometry.Bounds;
 import javafx.scene.control.*;
-import javafx.scene.input.ContextMenuEvent;
-import javafx.scene.input.Dragboard;
-import javafx.scene.input.KeyEvent;
+import javafx.scene.input.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
@@ -88,6 +87,8 @@ public class EditorPane extends AnchorPane {
 
     private final DirectoryService directoryService;
     private ContextMenu contextMenu;
+    private Number pageX;
+    private Number pageY;
 
     @Autowired
     public EditorPane(ApplicationController controller, EditorConfigBean editorConfigBean, ThreadService threadService, ShortcutProvider shortcutProvider, ApplicationContext applicationContext, TabService tabService, AsciiTreeGenerator asciiTreeGenerator, ParserService parserService, SpellcheckConfigBean spellcheckConfigBean, DirectoryService directoryService) {
@@ -428,7 +429,7 @@ public class EditorPane extends AnchorPane {
         Menu languageMenu = new Menu("Spell Checker");
         languageMenu.getItems().addAll(editorLanguage, defaultLanguage, disableSpeller);
 
-        EventHandler<ContextMenuEvent> contextMenuRequested = event -> {
+        EventHandler<Event> contextMenuRequested = event -> {
 
             final ObservableList<MenuItem> contextMenuItems = contextMenu.getItems();
 
@@ -487,11 +488,42 @@ public class EditorPane extends AnchorPane {
 
             markdownToAsciidoc.setVisible(isMarkdown());
             indexSelection.setVisible(isAsciidoc());
-            contextMenu.show(getWebView(), event.getSceneX(), event.getSceneY());
-            contextOpen.set(true);
+
+            if (event instanceof MouseEvent) {
+                MouseEvent mouseEvent = (MouseEvent) event;
+                contextMenu.show(getWebView(), mouseEvent.getSceneX(), mouseEvent.getSceneY() + 20);
+                contextOpen.set(true);
+            } else {
+                updateCursorCoordinates();
+                Bounds bounds = getWebView().localToScene(getWebView().getLayoutBounds());
+
+                contextMenu.show(getWebView(), pageX.doubleValue() + bounds.getMinX(), pageY.doubleValue() + bounds.getMinY() + 35);
+                contextOpen.set(true);
+            }
+
             checkWordSuggestions();
 
         };
+
+        getWebView().addEventHandler(KeyEvent.KEY_PRESSED, event -> {
+            if (KeyHelper.isContextMenu(event)) {
+                event.consume();
+                contextMenuRequested.handle(event);
+                return;
+            }
+
+            if (contextMenu.isShowing()) {
+                contextMenu.hide();
+            }
+        });
+
+        getWebView().addEventFilter(KeyEvent.ANY, event -> {
+            if (contextOpen.get()) {
+                if (KeyHelper.isEnter(event)) {
+                    event.consume();
+                }
+            }
+        });
 
         contextMenu.setOnHidden(event -> {
             threadService.runActionLater(() -> {
@@ -499,16 +531,14 @@ public class EditorPane extends AnchorPane {
             }, true);
         });
 
-        getWebView().addEventFilter(KeyEvent.ANY, event -> {
-            if (contextOpen.get()) {
-                event.consume();
-            }
-        });
-
-        getWebView().setOnContextMenuRequested(contextMenuRequested);
         getWebView().setOnMouseClicked(event -> {
-            if (contextMenu.isShowing()) {
-                contextMenu.hide();
+            if (event.getButton() == MouseButton.SECONDARY) {
+                event.consume();
+                contextMenuRequested.handle(event);
+            } else {
+                if (contextMenu.isShowing()) {
+                    contextMenu.hide();
+                }
             }
         });
 
@@ -726,6 +756,14 @@ public class EditorPane extends AnchorPane {
         threadService.runActionLater(() -> {
             this.call("setFoldStyle", style.name().toLowerCase(Locale.ENGLISH));
         });
+    }
+
+    public void updateCursorCoordinates() {
+        if (ready.get()) {
+            JSObject coordinates = (JSObject) this.call("getCursorCoordinates");
+            this.pageX = (Number) coordinates.getMember("pageX");
+            this.pageY = (Number) coordinates.getMember("pageY");
+        }
     }
 
     public boolean getChangedProperty() {

@@ -349,3 +349,7 @@ function setFoldStyle(style) {
         editor.session.setFoldStyle(style);
     }
 }
+
+function getCursorCoordinates() {
+    return editor.renderer.textToScreenCoordinates(editor.getCursorPosition());
+}
