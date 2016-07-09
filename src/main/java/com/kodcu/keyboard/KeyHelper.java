@@ -16,6 +16,8 @@ import static javafx.scene.input.KeyCombination.SHORTCUT_DOWN;
  */
 public class KeyHelper {
 
+    private static final KeyPairs UNDEFINED = new KeyPairs(KeyCode.UNDEFINED);
+    private static final KeyPairs CONTEXT_MENU = new KeyPairs(KeyCode.CONTEXT_MENU);
     private static final KeyPairs F2 = new KeyPairs(KeyCode.F2);
     private static final KeyPairs COPY = new KeyPairs(KeyCode.C, SHORTCUT_DOWN);
     private static final KeyPairs DELETE = new KeyPairs(KeyCode.DELETE);
@@ -33,6 +35,10 @@ public class KeyHelper {
         return UP.match(event);
     }
 
+    public static boolean isContextMenu(KeyEvent event) {
+        return CONTEXT_MENU.match(event);
+    }
+
     public static boolean isDown(KeyEvent event) {
         return DOWN.match(event);
     }
@@ -45,7 +51,24 @@ public class KeyHelper {
     }
 
     public static boolean isEnter(KeyEvent event) {
-        return ENTER.match(event);
+        boolean enter = false;
+
+        enter = ENTER.match(event);
+
+        if (!enter) {
+            if (isUndefined(event)) {
+                String character = event.getCharacter();
+                if (character.matches("\\R")) {
+                    enter = true;
+                }
+            }
+        }
+
+        return enter;
+    }
+
+    public static boolean isUndefined(KeyEvent event) {
+        return UNDEFINED.match(event);
     }
 
     public static boolean isDelete(KeyEvent event) {
