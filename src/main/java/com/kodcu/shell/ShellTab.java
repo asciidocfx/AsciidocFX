@@ -5,6 +5,8 @@ import com.kodcu.controller.ApplicationController;
 import com.kodcu.other.OSHelper;
 import com.kodcu.service.DirectoryService;
 import com.kodcu.service.ThreadService;
+import com.pty4j.PtyProcess;
+import com.pty4j.WinSize;
 import javafx.collections.ObservableList;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
@@ -12,6 +14,8 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextFlow;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Scope;
@@ -22,8 +26,9 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.LinkedList;
-import java.util.Optional;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created by usta on 16.09.2015.
@@ -34,13 +39,13 @@ import java.util.Optional;
 public class ShellTab extends Tab {
 
     private VBox vertical = new VBox();
-    private TextArea textArea = new TextArea();
+    //    private TextArea textArea = new TextArea();
+    private TextFlow textFlow = new TextFlow();
     private TextField textField = new TextField();
     private TextField directoryField = new TextField();
 
     private LinkedList<String> commandHistory = new LinkedList<>();
 
-    private Process process;
     private BufferedReader inputReader;
     private BufferedReader errorReader;
     private BufferedWriter outputWriter;
@@ -55,6 +60,7 @@ public class ShellTab extends Tab {
     private InputStream inputStream;
     private InputStream errorStream;
     private OutputStream outputStream;
+    private PtyProcess process;
 
     @Autowired
     public ShellTab(ApplicationController controller, ThreadService threadService, DirectoryService directoryService, EditorConfigBean editorConfigBean) {
@@ -63,8 +69,8 @@ public class ShellTab extends Tab {
         this.directoryService = directoryService;
         this.editorConfigBean = editorConfigBean;
 
-        VBox.setVgrow(textArea, Priority.ALWAYS);
-        vertical.getChildren().add(textArea);
+        VBox.setVgrow(textFlow, Priority.ALWAYS);
+        vertical.getChildren().add(textFlow);
 
         directoryField.setMinWidth(0);
         directoryField.setPrefColumnCount(0);
@@ -93,14 +99,14 @@ public class ShellTab extends Tab {
         HBox.setHgrow(textField, Priority.ALWAYS);
         vertical.getChildren().add(horizontal);
 
-        textArea.setWrapText(true);
-        textArea.setEditable(false);
+//        textArea.setWrapText(true);
+//        textArea.setEditable(false);
 
-        textArea.textProperty().addListener((observable, oldValue, newValue) -> {
-            threadService.runActionLater(() -> {
-                textArea.setScrollTop(Double.MAX_VALUE);
-            });
-        });
+//        textArea.textProperty().addListener((observable, oldValue, newValue) -> {
+//            threadService.runActionLater(() -> {
+//                textArea.setScrollTop(Double.MAX_VALUE);
+//            });
+//        });
 
         setContent(vertical);
 
@@ -129,10 +135,10 @@ public class ShellTab extends Tab {
             commandHistory.addLast(command);
 
             CommandChecker commandChecker = new CommandChecker(command.trim())
-                    .checkCommand("clear", this::clearHistory)
-                    .checkCommand("cls", this::clearHistory)
-                    .checkCommand("exit", this::destroy)
-                    .checkCommand("close", this::destroy);
+                    .checkCommand("clear", this::clearHistory);
+//                    .checkCommand("cls", this::clearHistory)
+//                    .checkCommand("exit", this::destroy)
+//                    .checkCommand("close", this::destroy);
 
             if (!commandChecker.isMatched()) {
                 command(command);
@@ -160,38 +166,32 @@ public class ShellTab extends Tab {
 
     public void print(String text) {
 
-        threadService.runActionLater(() -> {
-                    if (text.contains(">") || text.contains("$")) {
-                        String[] split = text.split(">|\\$", 2);
+        String[] tokens = text.split("\\e");
 
-                        if (split.length > 1) {
-                            Optional<Path> optional = Optional.empty();
-                            try {
-                                optional = Optional.ofNullable(split[0])
-                                        .map(Paths::get)
-                                        .filter(Files::isDirectory)
-                                        .filter(Files::exists);
 
-                                if (optional.isPresent()) {
-                                    directoryField.setText(split[0]);
-                                }
-                            } catch (Exception e) {
-                            }
+        for (String token : tokens) {
 
-                            if (!optional.isPresent()) {
-                                textArea.appendText(text + "\n");
-                            }
-                        }
-                    } else {
-                        textArea.appendText(text + "\n");
-                    }
-                }
-        );
+            Pattern compile = Pattern.compile("\\[(?<back>[0-9]);(?<fore>[0-9].)m.*");
+            Matcher matcher = compile.matcher(token);
+
+            if (matcher.matches()) {
+                String back = matcher.group("back");
+                String fore = matcher.group("fore");
+
+                System.out.println();
+            } else {
+                threadService.runActionLater(() -> {
+                    textFlow.getChildren().add(new Text(token + "\n"));
+                });
+            }
+        }
+
     }
 
     private void clearHistory() {
         threadService.runActionLater(() -> {
-            textArea.clear();
+//            textArea.clear();
+            textFlow.getChildren().clear();
         });
     }
 
@@ -223,7 +223,7 @@ public class ShellTab extends Tab {
             try {
                 outputWriter.write(command.trim());
                 outputWriter.newLine();
-                outputWriter.newLine();
+//                outputWriter.newLine();
                 outputWriter.flush();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -240,19 +240,19 @@ public class ShellTab extends Tab {
             commands = editorConfigBean.getTerminalNixCommand().split("\\|");
         }
 
-        ProcessBuilder processBuilder = new ProcessBuilder(commands);
-        processBuilder.redirectError(ProcessBuilder.Redirect.PIPE);
-        processBuilder.redirectInput(ProcessBuilder.Redirect.PIPE);
-        processBuilder.redirectOutput(ProcessBuilder.Redirect.PIPE);
-
-        processBuilder.directory(directoryService.workingDirectory().toFile());
-
         Optional.ofNullable(terminalPath)
                 .filter(Files::exists)
-                .map(Path::toFile)
-                .ifPresent(processBuilder::directory);
+                .map(Path::toFile);
+//                .ifPresent(processBuilder::directory);
 
-        this.process = processBuilder.start();
+        Map<String, String> envs = new HashMap<>(System.getenv());
+        envs.put("TERM", "xterm");
+        String[] command = new String[]{"cmd.exe"};
+
+        this.process = PtyProcess.exec(command, envs);
+        process.setWinSize(new WinSize(100, 50));
+        InputStreamReader in = new InputStreamReader(process.getInputStream());
+        OutputStream out = process.getOutputStream();
 
         Charset charset = Charset.forName(editorConfigBean.getTerminalCharset());
         this.inputStream = process.getInputStream();
@@ -287,10 +287,27 @@ public class ShellTab extends Tab {
             tabs.remove(this);
 
             threadService.start(() -> {
-                Optional.ofNullable(process).ifPresent(Process::destroy);
-                process.exitValue();
+//                Optional.ofNullable(process).ifPresent(Process::destroy);
+//                process.exitValue();
             });
         });
+    }
+
+
+    public static void main(String[] args) throws IOException, InterruptedException {
+        Map<String, String> envs = new HashMap<>(System.getenv());
+        envs.put("TERM", "xterm");
+        String[] command = new String[]{"cmd.exe"};
+
+        PtyProcess ptyProcess = PtyProcess.exec(command, envs);
+        ptyProcess.setWinSize(new WinSize(20, 10, 1000, 400));
+        InputStreamReader in = new InputStreamReader(ptyProcess.getInputStream());
+        OutputStream out = ptyProcess.getOutputStream();
+
+        ptyProcess.waitFor();
+
+        System.in.read();
+
     }
 
 
