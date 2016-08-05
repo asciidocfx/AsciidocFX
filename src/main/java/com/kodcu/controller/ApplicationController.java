@@ -832,7 +832,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         liveReloadPane.webEngine().setOnAlert(event -> {
             if ("LIVE_LOADED".equals(event.getData())) {
                 liveReloadPane.setMember("afx", this);
-                current.currentEditor().rerender();
+//                current.currentEditor().rerender();
             }
         });
 
@@ -2156,11 +2156,14 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                 }
 
             } else if ("html".equalsIgnoreCase(mode)) {
-                if (liveReloadPane.getReady()) {
-                    liveReloadPane.updateDomdom();
-                } else {
-                    liveReloadPane.load(String.format(liveUrl, port, directoryService.interPath()));
-                }
+//                if (liveReloadPane.getReady()) {
+//                    liveReloadPane.updateDomdom();
+//                } else {
+                threadService.buff("htmlEditor")
+                        .schedule(() -> {
+                            liveReloadPane.load(String.format(liveUrl, port, directoryService.interPath()));
+                        }, 500, TimeUnit.MILLISECONDS);
+//                }
 
                 rightShowerHider.showNode(liveReloadPane);
 
