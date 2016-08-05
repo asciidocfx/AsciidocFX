@@ -12,7 +12,7 @@ public class Buff {
 
     private final ThreadService threadService;
     private AtomicReference<Runnable> runnable = new AtomicReference<>();
-    private AtomicReference<ScheduledFuture<?>> scheduledFuture = new AtomicReference<>();
+    private ScheduledFuture<?> schedule;
 
     public Buff(ThreadService threadService) {
         this.threadService = threadService;
@@ -20,11 +20,14 @@ public class Buff {
 
     public void schedule(Runnable runnable, int delay, TimeUnit timeUnit) {
         this.runnable.set(runnable);
-        if (Objects.isNull(scheduledFuture.get())) {
-            scheduledFuture.set(threadService.schedule(() -> {
-                scheduledFuture.set(null);
-                this.runnable.getAndSet(null).run();
-            }, delay, timeUnit));
+        if (Objects.isNull(this.schedule)) {
+            this.schedule = threadService.schedule(() -> {
+                this.schedule = null;
+                Runnable currentRunnable = this.runnable.get();
+                if (Objects.nonNull(currentRunnable)) {
+                    currentRunnable.run();
+                }
+            }, delay, timeUnit);
         }
 
     }
