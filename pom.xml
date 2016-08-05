@@ -27,7 +27,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>1.3.5.RELEASE</version>
+        <version>1.4.0.RELEASE</version>
     </parent>
 
     <dependencies>
@@ -39,7 +39,7 @@
         <dependency>
             <groupId>com.dooapp.fxform2</groupId>
             <artifactId>core</artifactId>
-            <version>8.0.17</version>
+            <version>8.0.18</version>
             <exclusions>
                 <exclusion>
                     <artifactId>validation-api</artifactId>
@@ -108,7 +108,7 @@
         <dependency>
             <groupId>net.sourceforge.plantuml</groupId>
             <artifactId>plantuml</artifactId>
-            <version>8043</version>
+            <version>8046</version>
         </dependency>
         <dependency>
             <groupId>org.apache.xmlgraphics</groupId>
