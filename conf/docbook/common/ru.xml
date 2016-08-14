@@ -53,6 +53,10 @@
 <l:gentext key="copyright" text="Авторские права"/>
 <l:gentext key="Dedication" text="Посвящается"/>
 <l:gentext key="dedication" text="Посвящается"/>
+<l:gentext key="Dialogue" text="Dialogue" lang="en"/>
+<l:gentext key="dialogue" text="Dialogue" lang="en"/>
+<l:gentext key="Drama" text="Drama" lang="en"/>
+<l:gentext key="drama" text="Drama" lang="en"/>
 <l:gentext key="Edition" text="Редакция"/>
 <l:gentext key="edition" text="Редакция"/>
 <l:gentext key="Editor" text="Редактор"/>
@@ -88,6 +92,8 @@
 <l:gentext key="note" text="Примечание"/>
 <l:gentext key="Part" text="Часть"/>
 <l:gentext key="part" text="Часть"/>
+<l:gentext key="Poetry" text="Poetry" lang="en"/>
+<l:gentext key="poetry" text="Poetry" lang="en"/>
 <l:gentext key="Preface" text="Предисловие"/>
 <l:gentext key="preface" text="Предисловие"/>
 <l:gentext key="Procedure" text="Процедура"/>
@@ -151,6 +157,7 @@
 <l:gentext key="and" text=""/>
 <l:gentext key="or" text="или"/>
 <l:gentext key="by" text=""/>
+<l:gentext key="optional-step" text="(Optional) " lang="en"/>
 <l:gentext key="Edited" text="Под редакцией"/>
 <l:gentext key="edited" text="Под редакцией"/>
 <l:gentext key="Editedby" text="Под редакцией"/>
@@ -171,6 +178,8 @@
 <l:gentext key="unexpectedelementname" text="unexpected element name"/>
 <l:gentext key="unsupported" text="unsupported"/>
 <l:gentext key="xrefto" text="xref to"/>
+<l:gentext key="video-unsupported" text="Your browser does not support the video tag" lang="en"/>
+<l:gentext key="audio-unsupported" text="Your browser does not support the audio tag" lang="en"/>
 <l:gentext key="Authors" text="Авторы"/>
 <l:gentext key="copyeditor" text="Редактор копии"/>
 <l:gentext key="graphicdesigner" text="Графический дизайн"/>
@@ -229,7 +238,7 @@
 <l:template name="insert" text="Ins" lang="en"/>
 <l:template name="left" text="←" lang="en"/>
 <l:template name="meta" text="Meta" lang="en"/>
-<l:template name="option" text="???" lang="en"/>
+<l:template name="option" text="⌥" lang="en"/>
 <l:template name="pagedown" text="Page ↓" lang="en"/>
 <l:template name="pageup" text="Page ↑" lang="en"/>
 <l:template name="right" text="→" lang="en"/>
@@ -238,18 +247,18 @@
 <l:template name="tab" text="→|" lang="en"/>
 <l:template name="up" text="↑" lang="en"/>
 </l:context>
-<l:context name="webhelp"><l:template name="Search" text="Search" lang="en"/>
-<l:template name="Enter_a_term_and_click" text="Enter a term and click " lang="en"/>
-<l:template name="Go" text="Go" lang="en"/>
-<l:template name="to_perform_a_search" text=" to perform a search." lang="en"/>
-<l:template name="txt_filesfound" text="Results" lang="en"/>
-<l:template name="txt_enter_at_least_1_char" text="You must enter at least one character." lang="en"/>
-<l:template name="txt_browser_not_supported" text="JavaScript is disabled on your browser. Please enable JavaScript to enjoy all the features of this site." lang="en"/>
-<l:template name="txt_please_wait" text="Please wait. Search in progress..." lang="en"/>
-<l:template name="txt_results_for" text="Results for: " lang="en"/>
-<l:template name="TableofContents" text="Contents" lang="en"/>
-<l:template name="HighlightButton" text="Toggle search result highlighting" lang="en"/>
-<l:template name="Your_search_returned_no_results" text="Your search returned no results." lang="en"/>
+<l:context name="webhelp"><l:template name="Search" text="Поиск"/>
+<l:template name="Enter_a_term_and_click" text="Введите запрос и нажмите "/>
+<l:template name="Go" text="Искать"/>
+<l:template name="to_perform_a_search" text=", чтобы выполнить поиск."/>
+<l:template name="txt_filesfound" text="Результаты"/>
+<l:template name="txt_enter_at_least_1_char" text="Вам следует ввести хотя бы один символ."/>
+<l:template name="txt_browser_not_supported" text="В вашем браузере выключено использование JavaScript. Пожалуйста, включите JavaScript, чтобы пользоваться этим сайтом полноценно."/>
+<l:template name="txt_please_wait" text="Подождите. Выполняется поиск..."/>
+<l:template name="txt_results_for" text="Результаты для: "/>
+<l:template name="TableofContents" text="Содержание"/>
+<l:template name="HighlightButton" text="Включить или выключить подсвечивание результатов поиска"/>
+<l:template name="Your_search_returned_no_results" text="Ничего не найдено для поискового запроса."/>
 </l:context>
 <l:context name="styles"><l:template name="person-name" text="first-last"/>
 </l:context>
@@ -347,6 +356,9 @@
 <l:template name="simplesect" text="%t"/>
 <l:template name="topic" text="%t" lang="en"/>
 <l:template name="part" text="%t" lang="en"/>
+<l:template name="dialogue" text="%t" lang="en"/>
+<l:template name="drama" text="%t" lang="en"/>
+<l:template name="poetry" text="%t" lang="en"/>
 </l:context>
 <l:context name="title-numbered"><l:template name="appendix" text="Приложение %n. %t"/>
 <l:template name="article/appendix" text="%n. %t" lang="en"/>
@@ -402,6 +414,9 @@
 <l:template name="simplesect" text="%s"/>
 <l:template name="topic" text="%t" lang="en"/>
 <l:template name="toc" text="%s"/>
+<l:template name="dialogue" text="%s" lang="en"/>
+<l:template name="drama" text="%s" lang="en"/>
+<l:template name="poetry" text="%s" lang="en"/>
 </l:context>
 <l:context name="xref"><l:template name="abstract" text="%t"/>
 <l:template name="acknowledgements" text="%t" lang="en"/>
@@ -476,6 +491,9 @@
 <l:template name="pageabbrev" text="(p. %p)" lang="en"/>
 <l:template name="Page" text="Page %p" lang="en"/>
 <l:template name="topic" text="%t" lang="en"/>
+<l:template name="dialogue" text="%t" lang="en"/>
+<l:template name="drama" text="%t" lang="en"/>
+<l:template name="poetry" text="%t" lang="en"/>
 <l:template name="bridgehead" text="«%t»"/>
 <l:template name="refsection" text="«%t»"/>
 <l:template name="refsect1" text="«%t»"/>

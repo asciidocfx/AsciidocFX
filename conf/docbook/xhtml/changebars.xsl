@@ -14,7 +14,7 @@
      ******************************************************************** -->
 
 <!-- ==================================================================== -->
-<xsl:import href="docbook.xsl"/>
+<xsl:import href="docbook-no-doctype.xsl"/>
 
 <xsl:param name="show.revisionflag" select="'1'"/>
 

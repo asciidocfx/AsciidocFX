@@ -46,7 +46,7 @@ public class MarkdownShortcutService implements ShortcutService {
 
     @Override
     public void addCode(String lang) {
-        current.currentEngine().executeScript("editorMenu.markdown.addSourceCode('" + lang + "')");
+        current.currentEngine().executeScript(String.format("editorMenu.markdown.addSourceCode(\"%s\")", lang));
     }
 
     @Override

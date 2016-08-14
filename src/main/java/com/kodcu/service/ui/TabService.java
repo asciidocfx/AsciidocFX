@@ -10,15 +10,13 @@ import com.kodcu.other.Current;
 import com.kodcu.other.ExtensionFilters;
 import com.kodcu.other.IOHelper;
 import com.kodcu.other.Item;
-import com.kodcu.service.DirectoryService;
-import com.kodcu.service.ParserService;
-import com.kodcu.service.PathResolverService;
-import com.kodcu.service.ThreadService;
+import com.kodcu.service.*;
 import com.kodcu.service.extension.AsciiTreeGenerator;
 import com.kodcu.service.shortcut.ShortcutProvider;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.value.ObservableObjectValue;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.control.*;
@@ -43,6 +41,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 /**
@@ -103,13 +102,15 @@ public class TabService {
 
         ObservableList<Tab> tabs = controller.getTabPane().getTabs();
         for (Tab tab : tabs) {
-            MyTab myTab = (MyTab) tab;
-            Path currentPath = myTab.getPath();
-            if (Objects.nonNull(currentPath))
-                if (currentPath.equals(path)) {
-                    myTab.select(); // Select already added tab
-                    return;
-                }
+            if(tab instanceof MyTab){
+                MyTab myTab = (MyTab) tab;
+                Path currentPath = myTab.getPath();
+                if (Objects.nonNull(currentPath))
+                    if (currentPath.equals(path)) {
+                        myTab.select(); // Select already added tab
+                        return;
+                    }
+            }
         }
 
         AnchorPane anchorPane = new AnchorPane();
@@ -194,6 +195,8 @@ public class TabService {
         return path;
     }
 
+
+    // TODO: It is not a right place for this helper
     public List<Path> getSelectedTabPaths() {
         ObservableList<TreeItem<Item>> treeItems = controller.getFileSystemView().getSelectionModel().getSelectedItems();
         return treeItems.stream()
@@ -226,7 +229,9 @@ public class TabService {
             blackList.addAll(tab.getTabPane().getTabs());
             blackList.remove(tab);
 
-            blackList.stream().map(t -> (MyTab) t).sorted((mo1, mo2) -> {
+            blackList.stream()
+                    .filter(t-> t instanceof MyTab)
+                    .map(t -> (MyTab) t).sorted((mo1, mo2) -> {
                 if (mo1.isNew() && !mo2.isNew())
                     return -1;
                 else if (mo2.isNew() && !mo1.isNew()) {
@@ -377,10 +382,9 @@ public class TabService {
 
     public void addImageTab(Path imagePath) {
 
-        TabPane previewTabPane = controller.getPreviewTabPane();
-
         ImageTab tab = new ImageTab(imagePath);
 
+        final TabPane previewTabPane = controller.getTabPane();
         if (previewTabPane.getTabs().contains(tab)) {
             previewTabPane.getSelectionModel().select(tab);
             return;
@@ -404,7 +408,7 @@ public class TabService {
         scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
         scrollPane.setContent(imageView);
         scrollPane.addEventFilter(ScrollEvent.SCROLL, e -> {
-            if (e.isControlDown() && e.getDeltaY() > 0) {
+            if (e.isShortcutDown() && e.getDeltaY() > 0) {
                 // zoom in
                 imageView.setFitWidth(imageView.getFitWidth() + 16.0);
             } else if (e.isControlDown() && e.getDeltaY() < 0) {
@@ -426,6 +430,7 @@ public class TabService {
         tabPane.setOnMouseReleased(event -> {
             Optional.ofNullable(itemProperty)
                     .map(ObservableObjectValue::get)
+                    .filter(e-> e instanceof MyTab)
                     .map(e -> (MyTab) e)
                     .map(MyTab::getEditorPane)
                     .ifPresent(EditorPane::focus);
@@ -433,6 +438,7 @@ public class TabService {
 
         itemProperty.addListener((observable, oldValue, selectedTab) -> {
             Optional.ofNullable(selectedTab)
+                    .filter(e-> e instanceof MyTab)
                     .map(e -> (MyTab) e)
                     .map(MyTab::getEditorPane)
                     .filter(EditorPane::getReady)
@@ -443,4 +449,19 @@ public class TabService {
     public ObservableList<Optional<Path>> getClosedPaths() {
         return closedPaths;
     }
+
+    public void applyForEachMyTab(Consumer<MyTab> consumer, List<? extends Tab> tabs) {
+        for (Tab tab : tabs) {
+            if (tab instanceof MyTab) {
+                MyTab myTab = (MyTab) tab;
+                consumer.accept(myTab);
+            }
+        }
+    }
+
+    public void applyForEachMyTab(Consumer<MyTab> consumer) {
+        ObservableList<Tab> tabs = controller.getTabPane().getTabs();
+        applyForEachMyTab(consumer, tabs);
+    }
+
 }

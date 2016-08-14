@@ -15,8 +15,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.function.Consumer;
 
-import static org.springframework.web.bind.annotation.RequestMethod.GET;
-import static org.springframework.web.bind.annotation.RequestMethod.HEAD;
+import static org.springframework.web.bind.annotation.RequestMethod.*;
 
 /**
  * Created by usta on 02.09.2015.
@@ -29,21 +28,27 @@ public class AllController {
     private final GeneralResource generalResource;
     private final LiveResource liveResource;
     private final SlideResource slideResource;
+    private final JadeResource jadeResource;
+    private final WebWorkerResource webWorkerResource;
+    private final CacheResource cacheResource;
 
 
     private Logger logger = LoggerFactory.getLogger(AllController.class);
 
     @Autowired
-    public AllController(DynamicResource dynamicResource, EpubResource epubResource, GeneralResource generalResource, LiveResource liveResource, SlideResource slideResource) {
+    public AllController(DynamicResource dynamicResource, EpubResource epubResource, GeneralResource generalResource, LiveResource liveResource, SlideResource slideResource, JadeResource jadeResource, WebWorkerResource webWorkerResource, CacheResource cacheResource) {
         this.dynamicResource = dynamicResource;
         this.epubResource = epubResource;
         this.generalResource = generalResource;
         this.liveResource = liveResource;
         this.slideResource = slideResource;
+        this.jadeResource = jadeResource;
+        this.webWorkerResource = webWorkerResource;
+        this.cacheResource = cacheResource;
     }
 
 
-    @RequestMapping(value = {"/**/*.*", "*.*"}, method = {GET, HEAD}, produces = "*/*")
+    @RequestMapping(value = {"/**/*.*", "*.*"}, method = {GET, HEAD, OPTIONS, POST}, produces = "*/*", consumes = "*/*")
     @ResponseBody
     public void all(HttpServletRequest request, HttpServletResponse response) {
 
@@ -53,10 +58,13 @@ public class AllController {
         payload.setRequestURI(request.getRequestURI());
 
         Router router = new Router(payload)
+                .executeIf("/afx/cache/", cacheResource::executeCachedResource)
                 .executeIf("/afx/resource/", generalResource::executeAfxResource)
                 .executeIf("/afx/dynamic/", dynamicResource::executeDynamicResource)
                 .executeIf("/afx/live/", liveResource::executeLiveResource)
                 .executeIf("/afx/slide/", slideResource::executeSlideResource)
+                .executeIf("/afx/worker/", webWorkerResource::executeWorkerResource)
+                .executeIf("/afx/jade/", jadeResource::executeJadeResource)
                 .executeIf("/afx/epub/", epubResource::executeEpubResource);
 
     }
@@ -127,6 +135,10 @@ public class AllController {
 
         public void setStatus(HttpStatus status) {
             response.setStatus(status.value());
+        }
+
+        public String param(String param) {
+            return getRequest().getParameter(param);
         }
     }
 

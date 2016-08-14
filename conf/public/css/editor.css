@@ -9,3 +9,39 @@ body {
     bottom: 0px;
     right: 0px;
 }
+
+.ace_marker-layer .misspelled-strong, .misspelled-strong {
+    position: absolute;
+    z-index: -2;
+    border-bottom: 1px dashed #e3727e;
+    margin-bottom: -1px;
+    border-bottom-left-radius: 0px;
+    border-bottom-right-radius: 0px;
+}
+
+.ace_marker-layer .misspelled, .misspelled {
+    position: absolute;
+    z-index: -2;
+    border-bottom: 1px dashed #cccccc;
+    margin-bottom: -1px;
+    border-bottom-left-radius: 0px;
+    border-bottom-right-radius: 0px;
+}
+
+.ace_br1 ,
+.ace_br2 ,
+.ace_br3 ,
+.ace_br4 ,
+.ace_br5 ,
+.ace_br6 ,
+.ace_br7 ,
+.ace_br8 ,
+.ace_br9 ,
+.ace_br10,
+.ace_br11,
+.ace_br12,
+.ace_br13,
+.ace_br14,
+.ace_br15{
+    border-radius: 0px !important;
+}

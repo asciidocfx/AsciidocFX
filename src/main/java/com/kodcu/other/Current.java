@@ -120,4 +120,10 @@ public class Current {
     public Path getCurrentEpubPath() {
         return currentEpubPath;
     }
+
+    public String currentClearTabText() {
+        String tabText = getCurrentTabText().replace("*", "").trim();
+        tabText = tabText.contains(".") ? tabText.split("\\.")[0] : tabText;
+        return tabText;
+    }
 }

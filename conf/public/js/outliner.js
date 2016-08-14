@@ -1,5 +1,12 @@
 function fillOutlines(doc) {
-    afx.clearOutline();
+    //afx.clearOutline();
+
+    postMessage(JSON.stringify({
+        type:"afx",
+        func:"clearOutline",
+        parameters :[]
+    }));
+
     var sections = doc.$sections();
     sections.forEach(function (section, i) {
 
@@ -9,11 +16,23 @@ function fillOutlines(doc) {
         var id = section.$id();
         var parentLineNo = lineno;
 
-        afx.fillOutline(null, level, title, lineno, id);
+        //afx.fillOutline(null, level, title, lineno, id);
+
+        postMessage(JSON.stringify({
+            type:"afx",
+            func:"fillOutline",
+            parameters :[null, level, title, lineno, id]
+        }));
+
         fillOutlinesSubSections(section);
 
     });
-    afx.finishOutline();
+    //afx.finishOutline();
+    postMessage(JSON.stringify({
+        type:"afx",
+        func:"finishOutline",
+        parameters :[]
+    }));
 }
 
 function fillOutlinesSubSections(section) {
@@ -26,7 +45,14 @@ function fillOutlinesSubSections(section) {
         var lineno = subsection.$lineno();
         var id = subsection.$id();
 
-        afx.fillOutline(parentLineNo, level, title, lineno, id);
+        //afx.fillOutline(parentLineNo, level, title, lineno, id);
+
+        postMessage(JSON.stringify({
+            type:"afx",
+            func:"fillOutline",
+            parameters :[parentLineNo, level, title, lineno, id]
+        }));
+
         fillOutlinesSubSections(subsection);
     });
 }

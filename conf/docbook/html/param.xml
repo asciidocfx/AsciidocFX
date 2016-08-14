@@ -3,7 +3,7 @@
 <info>
 <title>HTML Parameter Reference</title>
 <releaseinfo role="meta">
-$Id: param.xweb 9658 2012-10-29 22:28:34Z bobstayton $
+$Id: param.xweb 9995 2015-10-01 16:34:45Z bobstayton $
 </releaseinfo>
 <author>
   <personname>
@@ -1321,6 +1321,59 @@ not a location within the section.
 <para>If non-zero, and if a <tag>titleabbrev</tag> is defined, the abbreviated title
 is used as the link text of a back reference in the index.
 </para>
+
+</refsection>
+</refentry>
+
+<refentry version="5.0" xml:id="autolink.index.see">
+<refmeta>
+<refentrytitle>autolink.index.see</refentrytitle>
+<refmiscinfo class="other" otherclass="datatype">boolean</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>autolink.index.see</refname>
+<refpurpose>Link index see and seealso to index primary</refpurpose>
+</refnamediv>
+
+<refsynopsisdiv>
+<programlisting xml:id="autolink.index.see.frag">&lt;xsl:param name="autolink.index.see" select="1"&gt;&lt;/xsl:param&gt;</programlisting>
+</refsynopsisdiv>
+
+<refsection><info><title>Description</title></info>
+
+<para>If this param is set to a non-zero value,
+(default = 1), then the
+stylesheet will attempt for form a link between a 
+<tag>see</tag> or <tag>seealso</tag> element
+and a matching indexterm <tag>primary</tag> element.
+</para>
+
+<para>The stylesheet uses an exact text match after 
+applying the <literal>normalize-space()</literal> function.
+If the <tag>see</tag> or <tag>seealso</tag> text contains a comma,
+then only the text prior to the comma is used.
+This assumes the author is using the convention "see primary, secondary"
+to specify a subentry.  Automatic links always land on the primary
+entry in the index, so the reader has to look down to see the
+secondary entry.</para>
+<para>If there is no match on a 
+<tag>primary</tag>, no link is formed, but the text
+still displays.</para>
+
+<para>No attempt is made to automatically link to text in
+<tag>secondary</tag> or <tag>tertiary</tag> elements.
+If you want to link to such elements, you can form a
+manual link by adding a linkend attribute to the 
+<tag>see</tag> or <tag>seealso</tag> element, where
+the linkend references an id or xml:id attribute on
+such a subelement.  Such manual links take precedence over
+any automatic links.
+</para>
+
+<para>If this parameter is zero, then
+no automatic links from see and seealso
+are formed within the index.  Any manual links are
+still processed, however.</para>
 
 </refsection>
 </refentry>
@@ -4183,14 +4236,19 @@ length (not a percentage).</para>
 
 <refsynopsisdiv>
 <programlisting xml:id="table.cell.border.thickness.frag">
-&lt;xsl:param name="table.cell.border.thickness"&gt;0.5pt&lt;/xsl:param&gt;
+&lt;xsl:param name="table.cell.border.thickness"&gt;
+  &lt;xsl:choose&gt;
+    &lt;xsl:when test="contains($stylesheet.result.type,'html')"&gt;1px&lt;/xsl:when&gt;
+    &lt;xsl:otherwise&gt;0.5pt&lt;/xsl:otherwise&gt;
+  &lt;/xsl:choose&gt;
+&lt;/xsl:param&gt;
 </programlisting>
 </refsynopsisdiv>
 
 <refsection><info><title>Description</title></info>
 
 <para>If non-zero, specifies the thickness of borders on table
-cells. The units are points. See <link xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://www.w3.org/TR/CSS21/box.html#border-width-properties">
+cells. See <link xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://www.w3.org/TR/CSS21/box.html#border-width-properties">
 CSS</link></para>
 
 <note>
@@ -4280,7 +4338,12 @@ yellow.</para>
 
 <refsynopsisdiv>
 <programlisting xml:id="table.frame.border.thickness.frag">
-&lt;xsl:param name="table.frame.border.thickness"&gt;0.5pt&lt;/xsl:param&gt;
+&lt;xsl:param name="table.frame.border.thickness"&gt;
+  &lt;xsl:choose&gt;
+    &lt;xsl:when test="contains($stylesheet.result.type,'html')"&gt;1px&lt;/xsl:when&gt;
+    &lt;xsl:otherwise&gt;0.5pt&lt;/xsl:otherwise&gt;
+  &lt;/xsl:choose&gt;
+&lt;/xsl:param&gt;
 </programlisting>
 </refsynopsisdiv>
 
@@ -5220,7 +5283,7 @@ included in both user.xml and reference.xml documents.
 <para>How do you write the link to custom.xml in intro.xml
 so that it is interpreted correctly in all 3 documents?</para>
 <itemizedlist>
-<listitem><para>If you use xref, it will fail in user.xml.</para>
+<listitem><para>If you use xref, it will fail in booklet.xml.</para>
 </listitem>
 <listitem><para>If you use olink (pointing to reference.xml),
 the reference in user.xml  
@@ -5395,6 +5458,53 @@ attribute whose value specifies a page reference.
 
 </refsection>
 </refentry>
+
+<refentry version="5.0" xml:id="insert.xref.page.number.para">
+<refmeta>
+<refentrytitle>insert.xref.page.number.para</refentrytitle>
+<refmiscinfo class="other" otherclass="datatype">list</refmiscinfo> 
+<refmiscinfo class="other" otherclass="value">yes</refmiscinfo>
+<refmiscinfo class="other" otherclass="value">maybe</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>insert.xref.page.number.para</refname>
+<refpurpose>Turns page numbers in xrefs to paragraphs on and off</refpurpose>
+</refnamediv>
+
+<refsynopsisdiv>
+<programlisting xml:id="insert.xref.page.number.para.frag">
+&lt;xsl:param name="insert.xref.page.number.para"&gt;yes&lt;/xsl:param&gt;
+</programlisting>
+</refsynopsisdiv>
+
+<refsection><info><title>Description</title></info>
+
+<para>The value of this parameter determines if
+cross references (<tag>xref</tag>s) to paragraphs in
+printed output will include page number citations.
+</para>
+<para>Historically, cross references to paragraphs
+included page number citations unconditionally, regardless
+of the <parameter>insert.xref.page.number</parameter>
+value.</para>
+<variablelist>
+<varlistentry>
+<term>yes</term>
+<listitem><para>Page number references will be generated
+for paragraphs.</para></listitem>
+</varlistentry>
+<varlistentry>
+<term>maybe</term>
+<listitem><para>Whether page number references are generated
+for an <tag>xref</tag> element referring to a paragraph will
+be controlled by the <parameter>insert.xref.page.number</parameter>
+rules.</para></listitem>
+</varlistentry>
+</variablelist>
+
+</refsection>
+</refentry>
+
 
 <refentry version="5.0" xml:id="use.role.as.xrefstyle">
 <refmeta>
@@ -7692,6 +7802,42 @@ for the sequence of selection.</para>
 </refsection>
 </refentry>
 
+<refentry version="5.0" xml:id="link.to.self.for.mediaobject">
+  <refmeta>
+    <refentrytitle>link.to.self.for.mediaobject</refentrytitle>
+    <refmiscinfo class="other" otherclass="datatype">boolean</refmiscinfo>
+  </refmeta>
+  <refnamediv>
+    <refname>link.to.self.for.mediaobject</refname>
+    <refpurpose>Include <tag>a</tag> element to image objects itself to go to a full-size, freely-zoomable version</refpurpose>
+  </refnamediv>
+
+  <refsynopsisdiv>
+<programlisting xml:id="link.to.self.for.mediaobject.frag">
+&lt;xsl:param name="link.to.self.for.mediaobject" select="0"&gt;&lt;/xsl:param&gt;
+</programlisting>
+  </refsynopsisdiv>
+
+  <refsection>
+    <info>
+      <title>Description</title>
+    </info>
+    <para>In some cases, it can be very helpful to be able to click on an embedded <tag>figure</tag>
+      or <tag>informalfigure</tag> to get a full-size, freely-zoomable version of an image, for
+      instance when targeting readers on smartphones. This is implemented for images only, but not
+      for audio or video objects. </para>
+        
+    <para>If non-zero, the image will be wrapped in an <tag>a</tag> element, using the <tag class="attribute">href</tag> 
+      attribute pointing to the image itself: </para>
+    <screen>&lt;a href="source/image"&gt;
+   &lt;!-- the image object --&gt;
+&lt;/a&gt;</screen>
+
+    <para> If the value of <parameter>link.to.self.for.mediaobject.xml</parameter> is zero
+      (default), then no <tag>a</tag> container is added. </para>
+  </refsection>
+</refentry>
+
 <refentry version="5.0" xml:id="use.role.for.mediaobject">
 <refmeta>
 <refentrytitle>use.role.for.mediaobject</refentrytitle>
@@ -8804,6 +8950,39 @@ attribute</refpurpose>
 <refsynopsisdiv>
 <programlisting xml:id="profile.os.frag">
 &lt;xsl:param name="profile.os"&gt;&lt;/xsl:param&gt;
+</programlisting>
+</refsynopsisdiv>
+
+<refsection><info><title>Description</title></info>
+
+<para>The value of this parameter specifies profiles which should be
+included in the output. You can specify multiple profiles by
+separating them by semicolon. You can change separator character by
+<parameter>profile.separator</parameter>
+parameter.</para>
+
+<para>This parameter has effect only when you are using profiling
+stylesheets (<filename>profile-docbook.xsl</filename>,
+<filename>profile-chunk.xsl</filename>, &#8230;) instead of normal
+ones (<filename>docbook.xsl</filename>,
+<filename>chunk.xsl</filename>, &#8230;).</para>
+
+</refsection>
+</refentry>
+
+<refentry version="5.0" xml:id="profile.outputformat">
+<refmeta>
+<refentrytitle>profile.outputformat</refentrytitle>
+<refmiscinfo class="other" otherclass="datatype">string</refmiscinfo>
+</refmeta>
+<refnamediv>
+    <refname>profile.outputformat</refname>
+    <refpurpose>Target profile for <tag class="attribute">outputformat</tag> attribute</refpurpose>
+  </refnamediv>
+
+<refsynopsisdiv>
+<programlisting xml:id="profile.outputformat.frag">
+&lt;xsl:param name="profile.outputformat"&gt;&lt;/xsl:param&gt;
 </programlisting>
 </refsynopsisdiv>
 
@@ -10975,7 +11154,7 @@ around all these parameters.</para>
 &lt;xsl:stylesheet exclude-result-prefixes="src" version="1.0"&gt;
 
 &lt;!-- ********************************************************************
-     $Id: param.xweb 9658 2012-10-29 22:28:34Z bobstayton $
+     $Id: param.xweb 9995 2015-10-01 16:34:45Z bobstayton $
      ********************************************************************
 
      This file is part of the XSL DocBook Stylesheet distribution.
@@ -11001,6 +11180,7 @@ around all these parameters.</para>
 &lt;src:fragref linkend="author.othername.in.middle.frag"&gt;&lt;/src:fragref&gt;
 &lt;src:fragref linkend="autotoc.label.in.hyperlink.frag"&gt;&lt;/src:fragref&gt;
 &lt;src:fragref linkend="autotoc.label.separator.frag"&gt;&lt;/src:fragref&gt;
+&lt;src:fragref linkend="autolink.index.see.frag"&gt;&lt;/src:fragref&gt;
 &lt;src:fragref linkend="base.dir.frag"&gt;&lt;/src:fragref&gt;
 &lt;src:fragref linkend="biblioentry.item.separator.frag"&gt;&lt;/src:fragref&gt;
 &lt;src:fragref linkend="bibliography.collection.frag"&gt;&lt;/src:fragref&gt;
@@ -11165,6 +11345,7 @@ around all these parameters.</para>
 &lt;src:fragref linkend="insert.olink.page.number.frag"&gt;&lt;/src:fragref&gt;
 &lt;src:fragref linkend="insert.olink.pdf.frag.frag"&gt;&lt;/src:fragref&gt;
 &lt;src:fragref linkend="insert.xref.page.number.frag"&gt;&lt;/src:fragref&gt;
+&lt;src:fragref linkend="insert.xref.page.number.para.frag"&gt;&lt;/src:fragref&gt;
 &lt;src:fragref linkend="javahelp.encoding.frag"&gt;&lt;/src:fragref&gt;
 &lt;src:fragref linkend="keep.relative.image.uris.frag"&gt;&lt;/src:fragref&gt;
 &lt;src:fragref linkend="l10n.gentext.default.language.frag"&gt;&lt;/src:fragref&gt;
@@ -11217,6 +11398,7 @@ around all these parameters.</para>
 &lt;src:fragref linkend="profile.conformance.frag"&gt;&lt;/src:fragref&gt;
 &lt;src:fragref linkend="profile.lang.frag"&gt;&lt;/src:fragref&gt;
 &lt;src:fragref linkend="profile.os.frag"&gt;&lt;/src:fragref&gt;
+&lt;src:fragref linkend="profile.outputformat.frag"&gt;&lt;/src:fragref&gt;
 &lt;src:fragref linkend="profile.revision.frag"&gt;&lt;/src:fragref&gt;
 &lt;src:fragref linkend="profile.revisionflag.frag"&gt;&lt;/src:fragref&gt;
 &lt;src:fragref linkend="profile.role.frag"&gt;&lt;/src:fragref&gt;
@@ -11300,6 +11482,7 @@ around all these parameters.</para>
 &lt;src:fragref linkend="xref.label-title.separator.frag"&gt;&lt;/src:fragref&gt;
 &lt;src:fragref linkend="xref.title-page.separator.frag"&gt;&lt;/src:fragref&gt;
 &lt;src:fragref linkend="xref.with.number.and.title.frag"&gt;&lt;/src:fragref&gt;
+&lt;src:fragref linkend="link.to.self.for.mediaobject.frag"&gt;&lt;/src:fragref&gt;
 
 &lt;/xsl:stylesheet&gt;
 </programlisting>

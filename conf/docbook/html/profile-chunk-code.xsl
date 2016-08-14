@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="US-ASCII"?>
 <!--This file was created automatically by xsl2profile-->
 <!--from the DocBook XSL stylesheets.-->
-<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:exsl="http://exslt.org/common" xmlns:cf="http://docbook.sourceforge.net/xmlns/chunkfast/1.0" xmlns:ng="http://docbook.org/docbook-ng" xmlns:db="http://docbook.org/ns/docbook" xmlns:exslt="http://exslt.org/common" exslt:dummy="dummy" ng:dummy="dummy" db:dummy="dummy" extension-element-prefixes="exslt" exclude-result-prefixes="exsl cf ng db exslt" version="1.0">
+<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:exsl="http://exslt.org/common" xmlns:cf="http://docbook.sourceforge.net/xmlns/chunkfast/1.0" xmlns:exslt="http://exslt.org/common" xmlns:ng="http://docbook.org/docbook-ng" xmlns:db="http://docbook.org/ns/docbook" exslt:dummy="dummy" ng:dummy="dummy" db:dummy="dummy" extension-element-prefixes="exslt" exclude-result-prefixes="exsl cf exslt" version="1.0">
 
 <!-- ********************************************************************
-     $Id: chunk-code.xsl 9328 2012-05-03 16:28:23Z bobstayton $
+     $Id: chunk-code.xsl 9936 2014-08-29 21:34:58Z bobstayton $
      ********************************************************************
 
      This file is part of the XSL DocBook Stylesheet distribution.
@@ -128,6 +128,15 @@
     <xsl:when test="not($recursive) and $filename != ''">
       <!-- if this chunk has an explicit name, use it -->
       <xsl:value-of select="$filename"/>
+    </xsl:when>
+
+    <!-- treat nested set separate from root -->
+    <xsl:when test="self::set and ancestor::set">
+      <xsl:text>se</xsl:text>
+      <xsl:number level="any" format="01"/>
+      <xsl:if test="not($recursive)">
+        <xsl:value-of select="$html.ext"/>
+      </xsl:if>
     </xsl:when>
 
     <xsl:when test="self::set">
@@ -424,18 +433,15 @@
 <!-- Leave legalnotice chunk out of the list for Next and Prev -->
 <xsl:template match="legalnotice" mode="find.chunks"/>
 
-<xslo:include xmlns:xslo="http://www.w3.org/1999/XSL/Transform" href="../profiling/profile-mode.xsl"/><xslo:variable xmlns:xslo="http://www.w3.org/1999/XSL/Transform" name="profiled-content"><xslo:choose><xslo:when test="*/self::ng:* or */self::db:*"><xslo:message>Note: namesp. cut : stripped namespace before processing</xslo:message><xslo:variable name="stripped-content"><xslo:apply-templates select="/" mode="stripNS"/></xslo:variable><xslo:message>Note: namesp. cut : processing stripped document</xslo:message><xslo:apply-templates select="exslt:node-set($stripped-content)" mode="profile"/></xslo:when><xslo:otherwise><xslo:apply-templates select="/" mode="profile"/></xslo:otherwise></xslo:choose></xslo:variable><xslo:variable xmlns:xslo="http://www.w3.org/1999/XSL/Transform" name="profiled-nodes" select="exslt:node-set($profiled-content)"/><xsl:template match="/">
+<xslo:include xmlns:xslo="http://www.w3.org/1999/XSL/Transform" href="../profiling/profile-mode.xsl"/><xslo:variable xmlns:xslo="http://www.w3.org/1999/XSL/Transform" name="profiled-content"><xslo:choose><xslo:when test="$exsl.node.set.available != 0 and                      namespace-uri(/*) = 'http://docbook.org/ns/docbook'"><xslo:variable name="no.namespace"><xslo:apply-templates select="/*" mode="stripNS"/></xslo:variable><xslo:call-template name="log.message"><xslo:with-param name="level">Note</xslo:with-param><xslo:with-param name="source"><xslo:call-template name="get.doc.title"/></xslo:with-param><xslo:with-param name="context-desc"><xslo:text>namesp. cut</xslo:text></xslo:with-param><xslo:with-param name="message"><xslo:text>stripped namespace before processing</xslo:text></xslo:with-param></xslo:call-template><xslo:apply-templates select="exslt:node-set($no.namespace)" mode="profile"/></xslo:when><xslo:otherwise><xslo:apply-templates select="/" mode="profile"/></xslo:otherwise></xslo:choose></xslo:variable><xslo:variable xmlns:xslo="http://www.w3.org/1999/XSL/Transform" name="profiled-nodes" select="exslt:node-set($profiled-content)"/><xsl:template match="/">
   <!-- * Get a title for current doc so that we let the user -->
   <!-- * know what document we are processing at this point. -->
   <xsl:variable name="doc.title">
     <xsl:call-template name="get.doc.title"/>
   </xsl:variable>
   <xsl:choose>
-    <!-- Hack! If someone hands us a DocBook V5.x or DocBook NG document,
-         toss the namespace and continue.  Use the docbook5 namespaced
-	 stylesheets for DocBook5 if you don't want to use this feature.-->
     <xsl:when test="false()"/>
-    <!-- Can't process unless namespace removed -->
+    <!-- Can't process unless namespace fixed with exsl node-set()-->
     <xsl:when test="false()"/>
     <xsl:otherwise>
       <xsl:choose>
@@ -609,6 +615,26 @@
       </xsl:with-param>
       <xsl:with-param name="base.name">
         <xsl:apply-templates mode="chunk-filename" select="."/>
+      </xsl:with-param>
+    </xsl:call-template>
+    <xsl:text>
+</xsl:text>
+  </xsl:if>
+</xsl:template>
+
+<xsl:template match="revhistory" mode="enumerate-files">
+  <xsl:variable name="id"><xsl:call-template name="object.id"/></xsl:variable>
+  <xsl:if test="$generate.revhistory.link != 0">
+    <xsl:call-template name="make-relative-filename">
+      <xsl:with-param name="base.dir">
+        <xsl:if test="$manifest.in.base.dir = 0">
+          <xsl:value-of select="$chunk.base.dir"/>
+        </xsl:if>
+      </xsl:with-param>
+      <xsl:with-param name="base.name">
+	<xsl:call-template name="ln.or.rh.filename">
+	  <xsl:with-param name="is.ln" select="false()"/>
+	</xsl:call-template>
       </xsl:with-param>
     </xsl:call-template>
     <xsl:text>

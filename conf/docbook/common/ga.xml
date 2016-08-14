@@ -53,6 +53,10 @@
 <l:gentext key="copyright" text="Cóipcheart"/>
 <l:gentext key="Dedication" text="Tíolacadh"/>
 <l:gentext key="dedication" text="Tíolacadh"/>
+<l:gentext key="Dialogue" text="Dialogue" lang="en"/>
+<l:gentext key="dialogue" text="Dialogue" lang="en"/>
+<l:gentext key="Drama" text="Drama" lang="en"/>
+<l:gentext key="drama" text="Drama" lang="en"/>
 <l:gentext key="Edition" text="Eagrán"/>
 <l:gentext key="edition" text="Eagrán"/>
 <l:gentext key="Editor" text="Editor" lang="en"/>
@@ -88,6 +92,8 @@
 <l:gentext key="note" text="Nóta"/>
 <l:gentext key="Part" text="Cuid"/>
 <l:gentext key="part" text="Cuid"/>
+<l:gentext key="Poetry" text="Poetry" lang="en"/>
+<l:gentext key="poetry" text="Poetry" lang="en"/>
 <l:gentext key="Preface" text="Réamhrá"/>
 <l:gentext key="preface" text="Réamhrá"/>
 <l:gentext key="Procedure" text="Gnás"/>
@@ -151,6 +157,7 @@
 <l:gentext key="and" text="agus"/>
 <l:gentext key="or" text="nó"/>
 <l:gentext key="by" text="le"/>
+<l:gentext key="optional-step" text="(Optional) " lang="en"/>
 <l:gentext key="Edited" text="Curtha in eagar"/>
 <l:gentext key="edited" text="Curtha in eagar"/>
 <l:gentext key="Editedby" text="Curtha in eagar ag"/>
@@ -171,6 +178,8 @@
 <l:gentext key="unexpectedelementname" text="Ainm eiliminte gan choinne"/>
 <l:gentext key="unsupported" text="gan tacaíocht"/>
 <l:gentext key="xrefto" text="xref go"/>
+<l:gentext key="video-unsupported" text="Your browser does not support the video tag" lang="en"/>
+<l:gentext key="audio-unsupported" text="Your browser does not support the audio tag" lang="en"/>
 <l:gentext key="Authors" text="Authors" lang="en"/>
 <l:gentext key="copyeditor" text="Copy Editor" lang="en"/>
 <l:gentext key="graphicdesigner" text="Graphic Designer" lang="en"/>
@@ -229,7 +238,7 @@
 <l:template name="insert" text="Ins" lang="en"/>
 <l:template name="left" text="←" lang="en"/>
 <l:template name="meta" text="Meta" lang="en"/>
-<l:template name="option" text="???" lang="en"/>
+<l:template name="option" text="⌥" lang="en"/>
 <l:template name="pagedown" text="Page ↓" lang="en"/>
 <l:template name="pageup" text="Page ↑" lang="en"/>
 <l:template name="right" text="→" lang="en"/>
@@ -347,6 +356,9 @@
 <l:template name="simplesect" text="%t"/>
 <l:template name="topic" text="%t" lang="en"/>
 <l:template name="part" text="%t" lang="en"/>
+<l:template name="dialogue" text="%t" lang="en"/>
+<l:template name="drama" text="%t" lang="en"/>
+<l:template name="poetry" text="%t" lang="en"/>
 </l:context>
 <l:context name="title-numbered"><l:template name="appendix" text="Aguisín %n. %t"/>
 <l:template name="article/appendix" text="%n. %t"/>
@@ -402,6 +414,9 @@
 <l:template name="simplesect" text="%s"/>
 <l:template name="topic" text="%t" lang="en"/>
 <l:template name="toc" text="%s"/>
+<l:template name="dialogue" text="%s" lang="en"/>
+<l:template name="drama" text="%s" lang="en"/>
+<l:template name="poetry" text="%s" lang="en"/>
 </l:context>
 <l:context name="xref"><l:template name="abstract" text="%t"/>
 <l:template name="acknowledgements" text="%t" lang="en"/>
@@ -476,6 +491,9 @@
 <l:template name="pageabbrev" text="(lch. %p)"/>
 <l:template name="Page" text="Leathanach %p"/>
 <l:template name="topic" text="%t" lang="en"/>
+<l:template name="dialogue" text="%t" lang="en"/>
+<l:template name="drama" text="%t" lang="en"/>
+<l:template name="poetry" text="%t" lang="en"/>
 <l:template name="bridgehead" text="an rannán dar teideal “%t”"/>
 <l:template name="refsection" text="an rannán dar teideal “%t”"/>
 <l:template name="refsect1" text="an rannán dar teideal “%t”"/>

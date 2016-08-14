@@ -1,10 +1,9 @@
 package com.kodcu.config;
 
-import com.kodcu.component.PreviewTab;
 import com.kodcu.component.ToggleButtonBuilt;
 import com.kodcu.controller.ApplicationController;
 import com.kodcu.service.ThreadService;
-import javafx.collections.ObservableList;
+import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.Priority;
@@ -32,12 +31,11 @@ public class ConfigurationService {
     private final ApplicationController controller;
     private final StoredConfigBean storedConfigBean;
     private final ThreadService threadService;
-    private final Accordion configAccordion = new Accordion();
-    private final VBox configBox = new VBox(5);
-    private final Tab mockTab = new PreviewTab("Editor Settings");
+    private final SpellcheckConfigBean spellcheckConfigBean;
+    private VBox configBox;
 
     @Autowired
-    public ConfigurationService(LocationConfigBean locationConfigBean, EditorConfigBean editorConfigBean, PreviewConfigBean previewConfigBean, HtmlConfigBean htmlConfigBean, OdfConfigBean odfConfigBean, DocbookConfigBean docbookConfigBean, ApplicationController controller, StoredConfigBean storedConfigBean, ThreadService threadService) {
+    public ConfigurationService(LocationConfigBean locationConfigBean, EditorConfigBean editorConfigBean, PreviewConfigBean previewConfigBean, HtmlConfigBean htmlConfigBean, OdfConfigBean odfConfigBean, DocbookConfigBean docbookConfigBean, ApplicationController controller, StoredConfigBean storedConfigBean, ThreadService threadService, SpellcheckConfigBean spellcheckConfigBean) {
         this.locationConfigBean = locationConfigBean;
         this.editorConfigBean = editorConfigBean;
         this.previewConfigBean = previewConfigBean;
@@ -47,6 +45,7 @@ public class ConfigurationService {
         this.controller = controller;
         this.storedConfigBean = storedConfigBean;
         this.threadService = threadService;
+        this.spellcheckConfigBean = spellcheckConfigBean;
     }
 
     public void loadConfigurations(Runnable... runnables) {
@@ -58,18 +57,23 @@ public class ConfigurationService {
         htmlConfigBean.load();
         odfConfigBean.load();
         docbookConfigBean.load();
+        spellcheckConfigBean.load();
 
         List<ConfigurationBase> configBeanList = Arrays.asList(editorConfigBean,
                 locationConfigBean,
                 previewConfigBean,
                 htmlConfigBean,
                 docbookConfigBean,
-                odfConfigBean);
+                odfConfigBean
+//                ,spellcheckConfigBean
+        );
 
         ScrollPane formsPane = new ScrollPane();
 
         ToggleGroup toggleGroup = new ToggleGroup();
+        controller.setConfigToggleGroup(toggleGroup);
         FlowPane flowPane = new FlowPane(5, 5);
+        flowPane.setPadding(new Insets(5,0,0,0));
 
         List<ToggleButton> toggleButtons = new ArrayList<>();
         VBox editorConfigForm = null;
@@ -95,6 +99,7 @@ public class ConfigurationService {
                 flowPane.getChildren().add(toggleButton);
             }
 
+            configBox = controller.getConfigBox();
             configBox.getChildren().add(flowPane);
             configBox.getChildren().add(formsPane);
 
@@ -104,19 +109,6 @@ public class ConfigurationService {
                 runnable.run();
             }
         });
-    }
-
-    public void showConfig() {
-
-        TabPane previewTabPane = controller.getPreviewTabPane();
-        ObservableList<Tab> tabs = previewTabPane.getTabs();
-
-        if (!tabs.contains(mockTab)) {
-            Tab configurationTab = new PreviewTab("Editor Settings", configBox);
-            tabs.add(configurationTab);
-        }
-
-        previewTabPane.getSelectionModel().select(mockTab);
     }
 
 }

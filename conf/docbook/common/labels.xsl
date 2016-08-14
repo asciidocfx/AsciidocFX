@@ -5,7 +5,7 @@
                 version='1.0'>
 
 <!-- ********************************************************************
-     $Id: labels.xsl 9706 2013-01-16 18:56:16Z bobstayton $
+     $Id: labels.xsl 9816 2013-09-24 03:35:07Z stilor $
      ********************************************************************
 
      This file is part of the XSL DocBook Stylesheet distribution.
@@ -29,7 +29,13 @@ element label.</para>
 </refdescription>
 </doc:mode>
 
+<!--
+     Note that this template is applied to parent of the object being
+     referenced, and that object is passed via parameter.
+-->
 <xsl:template match="*" mode="intralabel.punctuation">
+  <xsl:param name="object" select="."/>
+
   <xsl:text>.</xsl:text>
 </xsl:template>
 
@@ -84,7 +90,9 @@ element label.</para>
         <xsl:if test="$part.label != ''">
           <xsl:value-of select="$part.label"/>
           <xsl:apply-templates select="ancestor::part" 
-                               mode="intralabel.punctuation"/>
+                               mode="intralabel.punctuation">
+            <xsl:with-param name="object" select="."/>
+          </xsl:apply-templates>
         </xsl:if>
       </xsl:if>
       <xsl:variable name="format">
@@ -119,7 +127,9 @@ element label.</para>
         <xsl:if test="$part.label != ''">
           <xsl:value-of select="$part.label"/>
           <xsl:apply-templates select="ancestor::part" 
-                               mode="intralabel.punctuation"/>
+                               mode="intralabel.punctuation">
+            <xsl:with-param name="object" select="."/>
+          </xsl:apply-templates>
         </xsl:if>
       </xsl:if>
       <xsl:variable name="format">
@@ -154,7 +164,9 @@ element label.</para>
         <xsl:if test="$part.label != ''">
           <xsl:value-of select="$part.label"/>
           <xsl:apply-templates select="ancestor::part" 
-                               mode="intralabel.punctuation"/>
+                               mode="intralabel.punctuation">
+            <xsl:with-param name="object" select="."/>
+          </xsl:apply-templates>
         </xsl:if>
       </xsl:if>
       <xsl:variable name="format">
@@ -202,7 +214,9 @@ element label.</para>
         <xsl:if test="$part.label != ''">
           <xsl:value-of select="$part.label"/>
           <xsl:apply-templates select="ancestor::part" 
-                               mode="intralabel.punctuation"/>
+                               mode="intralabel.punctuation">
+            <xsl:with-param name="object" select="."/>
+          </xsl:apply-templates>
         </xsl:if>
       </xsl:if>
       <xsl:variable name="format">
@@ -238,7 +252,9 @@ element label.</para>
     </xsl:variable>
     <xsl:if test="$parent.section.label != '0'">
       <xsl:apply-templates select=".." mode="label.markup"/>
-      <xsl:apply-templates select=".." mode="intralabel.punctuation"/>
+      <xsl:apply-templates select=".." mode="intralabel.punctuation">
+        <xsl:with-param name="object" select="."/>
+      </xsl:apply-templates>
     </xsl:if>
   </xsl:if>
 
@@ -263,7 +279,9 @@ element label.</para>
     </xsl:variable>
     <xsl:if test="$parent.label != ''">
       <xsl:apply-templates select=".." mode="label.markup"/>
-      <xsl:apply-templates select=".." mode="intralabel.punctuation"/>
+      <xsl:apply-templates select=".." mode="intralabel.punctuation">
+        <xsl:with-param name="object" select="."/>
+      </xsl:apply-templates>
     </xsl:if>
   </xsl:if>
 
@@ -304,7 +322,9 @@ element label.</para>
       </xsl:variable>
       <xsl:if test="$parent.label != ''">
         <xsl:apply-templates select=".." mode="label.markup"/>
-        <xsl:apply-templates select=".." mode="intralabel.punctuation"/>
+        <xsl:apply-templates select=".." mode="intralabel.punctuation">
+          <xsl:with-param name="object" select="."/>
+        </xsl:apply-templates>
       </xsl:if>
     </xsl:if>
   </xsl:variable>
@@ -339,7 +359,9 @@ element label.</para>
   </xsl:variable>
   <xsl:if test="$parent.section.label != '0'">
     <xsl:apply-templates select=".." mode="label.markup"/>
-    <xsl:apply-templates select=".." mode="intralabel.punctuation"/>
+    <xsl:apply-templates select=".." mode="intralabel.punctuation">
+      <xsl:with-param name="object" select="."/>
+    </xsl:apply-templates>
   </xsl:if>
 
   <xsl:variable name="is.numbered">
@@ -404,7 +426,9 @@ element label.</para>
   </xsl:variable>
   <xsl:if test="$parent.label != ''">
     <xsl:apply-templates select=".." mode="label.markup"/>
-    <xsl:apply-templates select=".." mode="intralabel.punctuation"/>
+    <xsl:apply-templates select=".." mode="intralabel.punctuation">
+      <xsl:with-param name="object" select="."/>
+    </xsl:apply-templates>
   </xsl:if>
 
   <xsl:choose>
@@ -442,7 +466,9 @@ element label.</para>
     </xsl:variable>
     <xsl:if test="$parent.section.label != ''">
       <xsl:apply-templates select=".." mode="label.markup"/>
-      <xsl:apply-templates select=".." mode="intralabel.punctuation"/>
+      <xsl:apply-templates select=".." mode="intralabel.punctuation">
+        <xsl:with-param name="object" select="."/>
+      </xsl:apply-templates>
     </xsl:if>
   </xsl:if>
 
@@ -467,7 +493,9 @@ element label.</para>
     </xsl:variable>
     <xsl:if test="$parent.label != ''">
       <xsl:apply-templates select=".." mode="label.markup"/>
-      <xsl:apply-templates select=".." mode="intralabel.punctuation"/>
+      <xsl:apply-templates select=".." mode="intralabel.punctuation">
+        <xsl:with-param name="object" select="."/>
+      </xsl:apply-templates>
     </xsl:if>
   </xsl:if>
 
@@ -515,7 +543,9 @@ element label.</para>
     <xsl:if test="$qanda.inherit.numeration != 0">
       <xsl:if test="$lparent.prefix != ''">
         <xsl:apply-templates select="$lparent" mode="label.markup"/>
-        <xsl:apply-templates select="$lparent" mode="intralabel.punctuation"/>
+        <xsl:apply-templates select="$lparent" mode="intralabel.punctuation">
+          <xsl:with-param name="object" select="."/>
+        </xsl:apply-templates>
       </xsl:if>
     </xsl:if>
   </xsl:variable>
@@ -564,12 +594,16 @@ element label.</para>
           <xsl:if test="string-length($div.label) != 0">
             <xsl:copy-of select="$div.label"/>
             <xsl:apply-templates select="ancestor::qandadiv[1]"
-                                 mode="intralabel.punctuation"/>
+                                 mode="intralabel.punctuation">
+              <xsl:with-param name="object" select="."/>
+            </xsl:apply-templates>
           </xsl:if>
         </xsl:when>
         <xsl:when test="$lparent.prefix != ''">
           <xsl:apply-templates select="$lparent" mode="label.markup"/>
-          <xsl:apply-templates select="$lparent" mode="intralabel.punctuation"/>
+          <xsl:apply-templates select="$lparent" mode="intralabel.punctuation">
+            <xsl:with-param name="object" select="."/>
+          </xsl:apply-templates>
         </xsl:when>
       </xsl:choose>
     </xsl:if>
@@ -658,7 +692,9 @@ element label.</para>
       <xsl:choose>
         <xsl:when test="$prefix != ''">
             <xsl:apply-templates select="$pchap" mode="label.markup"/>
-            <xsl:apply-templates select="$pchap" mode="intralabel.punctuation"/>
+            <xsl:apply-templates select="$pchap" mode="intralabel.punctuation">
+              <xsl:with-param name="object" select="."/>
+            </xsl:apply-templates>
           <xsl:number format="1" from="chapter|appendix" level="any"/>
         </xsl:when>
         <xsl:otherwise>
@@ -693,13 +729,15 @@ element label.</para>
         <xsl:when test="count($pchap)>0">
           <xsl:if test="$prefix != ''">
             <xsl:apply-templates select="$pchap" mode="label.markup"/>
-            <xsl:apply-templates select="$pchap" mode="intralabel.punctuation"/>
+            <xsl:apply-templates select="$pchap" mode="intralabel.punctuation">
+              <xsl:with-param name="object" select="."/>
+            </xsl:apply-templates>
           </xsl:if>
-          <xsl:number count="procedure[title]" format="1" 
+          <xsl:number count="procedure[title|blockinfo/title|info/title]" format="1" 
                       from="chapter|appendix" level="any"/>
         </xsl:when>
         <xsl:otherwise>
-          <xsl:number count="procedure[title]" format="1" 
+          <xsl:number count="procedure[title|blockinfo/title|info/title]" format="1" 
                       from="book|article" level="any"/>
         </xsl:otherwise>
       </xsl:choose>
@@ -728,7 +766,9 @@ element label.</para>
         <xsl:when test="count($pchap)>0">
           <xsl:if test="$prefix != ''">
             <xsl:apply-templates select="$pchap" mode="label.markup"/>
-            <xsl:apply-templates select="$pchap" mode="intralabel.punctuation"/>
+            <xsl:apply-templates select="$pchap" mode="intralabel.punctuation">
+              <xsl:with-param name="object" select="."/>
+            </xsl:apply-templates>
           </xsl:if>
           <xsl:number format="1" count="equation" 
                       from="chapter|appendix" level="any"/>

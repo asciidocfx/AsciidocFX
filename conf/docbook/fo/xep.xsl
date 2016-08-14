@@ -5,7 +5,7 @@
                 version='1.0'>
 
 <!-- ********************************************************************
-     $Id: xep.xsl 9293 2012-04-19 18:42:11Z bobstayton $
+     $Id: xep.xsl 9838 2014-01-07 21:36:28Z bobstayton $
      ********************************************************************
      (c) Stephane Bline Peregrine Systems 2001
      Implementation of xep extensions:
@@ -130,6 +130,9 @@
     <xsl:when test="self::index and $generate.index = 0"/>	
     <xsl:when test="parent::*">
       <rx:bookmark internal-destination="{$id}">
+        <xsl:attribute name="starting-state">
+          <xsl:value-of select="$bookmarks.state"/>
+        </xsl:attribute>
         <rx:bookmark-label>
           <xsl:value-of select="normalize-space($bookmark-label)"/>
         </rx:bookmark-label>
@@ -139,6 +142,9 @@
     <xsl:otherwise>
       <xsl:if test="$bookmark-label != ''">
         <rx:bookmark internal-destination="{$id}">
+          <xsl:attribute name="starting-state">
+            <xsl:value-of select="$bookmarks.state"/>
+          </xsl:attribute>
           <rx:bookmark-label>
             <xsl:value-of select="normalize-space($bookmark-label)"/>
           </rx:bookmark-label>

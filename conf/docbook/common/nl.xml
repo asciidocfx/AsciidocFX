@@ -53,6 +53,10 @@
 <l:gentext key="copyright" text="copyright"/>
 <l:gentext key="Dedication" text="Opdracht"/>
 <l:gentext key="dedication" text="opdracht"/>
+<l:gentext key="Dialogue" text="Dialogue" lang="en"/>
+<l:gentext key="dialogue" text="Dialogue" lang="en"/>
+<l:gentext key="Drama" text="Drama" lang="en"/>
+<l:gentext key="drama" text="Drama" lang="en"/>
 <l:gentext key="Edition" text="Uitgave"/>
 <l:gentext key="edition" text="uitgave"/>
 <l:gentext key="Editor" text="Redacteur"/>
@@ -88,6 +92,8 @@
 <l:gentext key="note" text="opmerking"/>
 <l:gentext key="Part" text="Deel"/>
 <l:gentext key="part" text="deel"/>
+<l:gentext key="Poetry" text="Poetry" lang="en"/>
+<l:gentext key="poetry" text="Poetry" lang="en"/>
 <l:gentext key="Preface" text="Voorwoord"/>
 <l:gentext key="preface" text="voorwoord"/>
 <l:gentext key="Procedure" text="Procedure"/>
@@ -151,6 +157,7 @@
 <l:gentext key="and" text="en"/>
 <l:gentext key="or" text="of"/>
 <l:gentext key="by" text="door"/>
+<l:gentext key="optional-step" text="(Optional) " lang="en"/>
 <l:gentext key="Edited" text="Redactie"/>
 <l:gentext key="edited" text="redactie"/>
 <l:gentext key="Editedby" text="Onder redactie van"/>
@@ -171,6 +178,8 @@
 <l:gentext key="unexpectedelementname" text="Onverwachte element naam"/>
 <l:gentext key="unsupported" text="niet ondersteund"/>
 <l:gentext key="xrefto" text="xref naar"/>
+<l:gentext key="video-unsupported" text="Your browser does not support the video tag" lang="en"/>
+<l:gentext key="audio-unsupported" text="Your browser does not support the audio tag" lang="en"/>
 <l:gentext key="Authors" text="Auteurs"/>
 <l:gentext key="copyeditor" text="Copy redacteur"/>
 <l:gentext key="graphicdesigner" text="Grafisch ontwerper"/>
@@ -229,7 +238,7 @@
 <l:template name="insert" text="Ins" lang="en"/>
 <l:template name="left" text="←" lang="en"/>
 <l:template name="meta" text="Meta" lang="en"/>
-<l:template name="option" text="???" lang="en"/>
+<l:template name="option" text="⌥" lang="en"/>
 <l:template name="pagedown" text="Page ↓" lang="en"/>
 <l:template name="pageup" text="Page ↑" lang="en"/>
 <l:template name="right" text="→" lang="en"/>
@@ -238,18 +247,18 @@
 <l:template name="tab" text="→|" lang="en"/>
 <l:template name="up" text="↑" lang="en"/>
 </l:context>
-<l:context name="webhelp"><l:template name="Search" text="Search" lang="en"/>
-<l:template name="Enter_a_term_and_click" text="Enter a term and click " lang="en"/>
-<l:template name="Go" text="Go" lang="en"/>
-<l:template name="to_perform_a_search" text=" to perform a search." lang="en"/>
-<l:template name="txt_filesfound" text="Results" lang="en"/>
-<l:template name="txt_enter_at_least_1_char" text="You must enter at least one character." lang="en"/>
-<l:template name="txt_browser_not_supported" text="JavaScript is disabled on your browser. Please enable JavaScript to enjoy all the features of this site." lang="en"/>
-<l:template name="txt_please_wait" text="Please wait. Search in progress..." lang="en"/>
-<l:template name="txt_results_for" text="Results for: " lang="en"/>
-<l:template name="TableofContents" text="Contents" lang="en"/>
-<l:template name="HighlightButton" text="Toggle search result highlighting" lang="en"/>
-<l:template name="Your_search_returned_no_results" text="Your search returned no results." lang="en"/>
+<l:context name="webhelp"><l:template name="Search" text="Zoeken"/>
+<l:template name="Enter_a_term_and_click" text="Voer een zoekterm in en klik op "/>
+<l:template name="Go" text="Ga"/>
+<l:template name="to_perform_a_search" text=" om te zoeken."/>
+<l:template name="txt_filesfound" text="Resultaten"/>
+<l:template name="txt_enter_at_least_1_char" text="U moet minstens één teken invoeren."/>
+<l:template name="txt_browser_not_supported" text="JavaScript is uitgeschakeld in uw browser. Schakel het a.u.b. in om van alle mogelijkheden van deze site te genieten."/>
+<l:template name="txt_please_wait" text="A.u.b. wachten. Er wordt gezocht..."/>
+<l:template name="txt_results_for" text="Resultaten voor: "/>
+<l:template name="TableofContents" text="Inhoud"/>
+<l:template name="HighlightButton" text="Zet het markeren van resultaten aan of uit"/>
+<l:template name="Your_search_returned_no_results" text="Uw zoekopdracht leverde geen resultaten op."/>
 </l:context>
 <l:context name="styles"><l:template name="person-name" text="first-last"/>
 </l:context>
@@ -347,6 +356,9 @@
 <l:template name="simplesect" text="%t"/>
 <l:template name="topic" text="%t" lang="en"/>
 <l:template name="part" text="%t" lang="en"/>
+<l:template name="dialogue" text="%t" lang="en"/>
+<l:template name="drama" text="%t" lang="en"/>
+<l:template name="poetry" text="%t" lang="en"/>
 </l:context>
 <l:context name="title-numbered"><l:template name="appendix" text="Bijlage %n. %t"/>
 <l:template name="article/appendix" text="%n. %t" lang="en"/>
@@ -402,6 +414,9 @@
 <l:template name="simplesect" text="%s"/>
 <l:template name="topic" text="%t" lang="en"/>
 <l:template name="toc" text="%s"/>
+<l:template name="dialogue" text="%s" lang="en"/>
+<l:template name="drama" text="%s" lang="en"/>
+<l:template name="poetry" text="%s" lang="en"/>
 </l:context>
 <l:context name="xref"><l:template name="abstract" text="%t"/>
 <l:template name="acknowledgements" text="%t" lang="en"/>
@@ -476,6 +491,9 @@
 <l:template name="pageabbrev" text="(p. %p)" lang="en"/>
 <l:template name="Page" text="Page %p" lang="en"/>
 <l:template name="topic" text="%t" lang="en"/>
+<l:template name="dialogue" text="%t" lang="en"/>
+<l:template name="drama" text="%t" lang="en"/>
+<l:template name="poetry" text="%t" lang="en"/>
 <l:template name="bridgehead" text="de paragraaf met de naam “%t”"/>
 <l:template name="refsection" text="de paragraaf met de naam “%t”"/>
 <l:template name="refsect1" text="de paragraaf met de naam “%t”"/>

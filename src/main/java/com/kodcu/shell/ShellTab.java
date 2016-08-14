@@ -2,6 +2,7 @@ package com.kodcu.shell;
 
 import com.kodcu.config.EditorConfigBean;
 import com.kodcu.controller.ApplicationController;
+import com.kodcu.other.OSHelper;
 import com.kodcu.service.DirectoryService;
 import com.kodcu.service.ThreadService;
 import javafx.collections.ObservableList;
@@ -48,6 +49,12 @@ public class ShellTab extends Tab {
     private final ThreadService threadService;
     private final DirectoryService directoryService;
     private final EditorConfigBean editorConfigBean;
+    private InputStreamReader inputStreamReader;
+    private InputStreamReader errorStreamReader;
+    private OutputStreamWriter outputStreamWriter;
+    private InputStream inputStream;
+    private InputStream errorStream;
+    private OutputStream outputStream;
 
     @Autowired
     public ShellTab(ApplicationController controller, ThreadService threadService, DirectoryService directoryService, EditorConfigBean editorConfigBean) {
@@ -62,9 +69,8 @@ public class ShellTab extends Tab {
         directoryField.setMinWidth(0);
         directoryField.setPrefColumnCount(0);
         directoryField.setEditable(false);
-        directoryField.textProperty().addListener((observable, oldValue, newValue) -> {
-            directoryField.setPrefColumnCount(directoryField.getText().length() + 1);
-        });
+
+        directoryField.prefColumnCountProperty().bind(directoryField.lengthProperty().add(1));
 
         ContextMenu contextMenu = new ContextMenu();
         MenuItem newTab = new MenuItem("New");
@@ -79,6 +85,9 @@ public class ShellTab extends Tab {
 
         contextMenu.getItems().addAll(newTab, closeTab, closeOthers, closeAll);
         this.setContextMenu(contextMenu);
+
+        textField.setStyle("-fx-background-color: seashell;");
+        directoryField.setStyle("-fx-background-color: seashell;");
 
         HBox horizontal = new HBox(directoryField, textField);
         HBox.setHgrow(textField, Priority.ALWAYS);
@@ -181,7 +190,9 @@ public class ShellTab extends Tab {
     }
 
     private void clearHistory() {
-        textArea.clear();
+        threadService.runActionLater(() -> {
+            textArea.clear();
+        });
     }
 
     public class CommandChecker {
@@ -198,7 +209,7 @@ public class ShellTab extends Tab {
 
         public CommandChecker checkCommand(String command, Runnable runnable) {
             if (!matched && text.equalsIgnoreCase(command)) {
-                threadService.runActionLater(runnable);
+                runnable.run();
                 matched = true;
             }
 
@@ -222,10 +233,8 @@ public class ShellTab extends Tab {
 
     private void initializeProcess(Path terminalPath) throws Exception {
 
-        String os = System.getProperty("os.name").toLowerCase();
-
         String[] commands;
-        if (os.contains("win")) {
+        if (OSHelper.isWindows()) {
             commands = editorConfigBean.getTerminalWinCommand().split("\\|");
         } else {
             commands = editorConfigBean.getTerminalNixCommand().split("\\|");
@@ -246,9 +255,16 @@ public class ShellTab extends Tab {
         this.process = processBuilder.start();
 
         Charset charset = Charset.forName(editorConfigBean.getTerminalCharset());
-        this.inputReader = new BufferedReader(new InputStreamReader(process.getInputStream(), charset));
-        this.errorReader = new BufferedReader(new InputStreamReader(process.getErrorStream(), charset));
-        this.outputWriter = new BufferedWriter(new OutputStreamWriter(process.getOutputStream(), charset));
+        this.inputStream = process.getInputStream();
+        this.inputStreamReader = new InputStreamReader(inputStream, charset);
+        this.inputReader = new BufferedReader(inputStreamReader);
+        this.errorStream = process.getErrorStream();
+        this.errorStreamReader = new InputStreamReader(errorStream, charset);
+        this.errorReader = new BufferedReader(errorStreamReader);
+
+        this.outputStream = process.getOutputStream();
+        this.outputStreamWriter = new OutputStreamWriter(outputStream, charset);
+        this.outputWriter = new BufferedWriter(outputStreamWriter);
 
         threadService.start(() -> {
             inputReader.lines().forEach(this::print);
@@ -258,16 +274,24 @@ public class ShellTab extends Tab {
             errorReader.lines().forEach(this::print);
         });
 
+        focusCommandInput();
+
         process.waitFor();
     }
 
     public void destroy() {
 
-        ObservableList<Tab> tabs = this.getTabPane().getTabs();
-        tabs.remove(this);
+        threadService.runActionLater(() -> {
 
-        Optional.ofNullable(process).ifPresent(Process::destroyForcibly);
+            ObservableList<Tab> tabs = this.getTabPane().getTabs();
+            tabs.remove(this);
 
+            threadService.start(() -> {
+                Optional.ofNullable(process).ifPresent(Process::destroy);
+                process.exitValue();
+            });
+        });
     }
+
 
 }

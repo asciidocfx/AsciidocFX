@@ -32,14 +32,14 @@ editor.commands.addCommand({
     readOnly: true
 });
 
-editor.commands.addCommand({
-    name: 'close-1',
-    bindKey: {win: 'Ctrl-W', mac: 'Command-W'},
-    exec: function (editor) {
-        afx.saveAndCloseCurrentTab();
-    },
-    readOnly: true
-});
+//editor.commands.addCommand({
+//    name: 'close-1',
+//    bindKey: {win: 'Ctrl-W', mac: 'Command-W'},
+//    exec: function (editor) {
+//        afx.saveAndCloseCurrentTab();
+//    },
+//    readOnly: true
+//});
 
 editor.commands.addCommand({
     name: 'copy-1',

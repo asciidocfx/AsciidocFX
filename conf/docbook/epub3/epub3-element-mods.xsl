@@ -33,10 +33,6 @@
 
 <xsl:import href="titlepage.templates.xsl"/>
 
-<!--
-<xsl:key name="image-filerefs" match="graphic|inlinegraphic|imagedata" use="@fileref"/>
--->
-
 <!--==============================================================-->
 <!--  DocBook XSL Parameter settings                              -->
 <!--==============================================================-->
@@ -49,7 +45,33 @@ article  toc,title,figure,table,example,equation
 </xsl:param>
 <xsl:param name="generate.manifest" select="0"/>
 <xsl:param name="manifest.in.base.dir" select="1"/>
-<xsl:param name="base.dir" select="'OEBPS/'"/>
+
+<!-- HTML chunk output goes to $base.dir/OEPBS -->
+<xsl:variable name="chunk.base.dir">
+  <xsl:choose>
+    <xsl:when test="$base.dir != '' and contains($base.dir, $epub.oebps.dir)">
+      <xsl:value-of select="substring-before($base.dir, $epub.oebps.dir)"/>
+    </xsl:when>
+    <!-- If epub.oebps.dir reset but base.dir still has OEBPS: -->
+    <xsl:when test="$base.dir != '' and contains($base.dir, 'OEBPS')">
+      <xsl:value-of select="substring-before($base.dir, 'OEBPS')"/>
+    </xsl:when>
+    <xsl:when test="string-length($base.dir) = 0"></xsl:when>
+    <!-- make sure to add trailing slash if omitted by user -->
+    <xsl:when test="substring($base.dir, string-length($base.dir), 1) = '/'">
+      <xsl:value-of select="$base.dir"/>
+    </xsl:when>
+    <xsl:otherwise>
+      <xsl:value-of select="concat($base.dir, '/')"/>
+    </xsl:otherwise>
+  </xsl:choose>
+  <xsl:value-of select="$epub.oebps.dir"/>
+  <xsl:if test="substring($epub.oebps.dir, string-length($epub.oebps.dir), 1) != '/'">
+    <xsl:text>/</xsl:text>
+  </xsl:if>
+</xsl:variable>
+
+
 <xsl:param name="index.links.to.section" select="0"/>
 
 <!-- Epub does not yet support external links -->
@@ -101,10 +123,10 @@ article  toc,title,figure,table,example,equation
   name="epub.vocabulary.profile.package">http://www.idpf.org/epub/30/profile/package/</xsl:param>
 <xsl:param name="epub.output.epub.types" select="1"/>
 <xsl:param name="epub.oebps.dir" select="'OEBPS'"/> 
-<xsl:param name="epub.metainf.dir" select="'META-INF/'"/> 
+<xsl:variable name="epub.metainf.dir" select="'META-INF/'"/> 
 <xsl:param name="epub.ncx.filename" select="'toc.ncx'"/> 
-<xsl:param name="epub.mimetype.filename" select="'mimetype'"/> 
-<xsl:param name="epub.mimetype.value" select="'application/epub+zip'"/> 
+<xsl:variable name="epub.mimetype.filename" select="'mimetype'"/> 
+<xsl:variable name="epub.mimetype.value" select="'application/epub+zip'"/> 
 <xsl:param name="epub.container.filename" select="'container.xml'"/> 
 <xsl:param name="epub.package.filename" select="'package.opf'"/> 
 <xsl:param name="epub.cover.filename" select="concat('cover', $html.ext)"/> 
@@ -622,15 +644,18 @@ article  toc,title,figure,table,example,equation
   </xsl:variable>
 
   <xsl:if test="string-length($date) != 0">
-    <xsl:element name="meta" namespace="{$opf.namespace}">
-      <xsl:attribute name="property">dcterms:date</xsl:attribute>
-      <xsl:value-of select="$date"/>
-    </xsl:element>
-  
-    <xsl:if test="$epub.include.optional.metadata.dc.elements != 0">
-      <dc:date>
+    <!-- Can only output one date for epub, pubdate has priority -->
+    <xsl:if test="self::pubdate or (self::date and not(../pubdate) )">
+      <xsl:element name="meta" namespace="{$opf.namespace}">
+        <xsl:attribute name="property">dcterms:date</xsl:attribute>
         <xsl:value-of select="$date"/>
-      </dc:date>
+      </xsl:element>
+    
+      <xsl:if test="$epub.include.optional.metadata.dc.elements != 0">
+        <dc:date>
+          <xsl:value-of select="$date"/>
+        </dc:date>
+      </xsl:if>
     </xsl:if>
   </xsl:if>
 
@@ -815,7 +840,7 @@ article  toc,title,figure,table,example,equation
   </xsl:variable>
 
   <!-- if no docbook date element, use copyright year for single date metadata -->
-  <xsl:if test="not(../date)">
+  <xsl:if test="not(../date) and not(../pubdate)">
     <xsl:variable name="date.content">
       <xsl:call-template name="format.meta.date">
         <xsl:with-param name="string">
@@ -1209,7 +1234,69 @@ article  toc,title,figure,table,example,equation
   </xsl:element>
 </xsl:template>
 
-<xsl:template name="manifest.fonts"/>
+<xsl:template name="manifest.fonts">
+  <xsl:param name="font.list" select="$epub.embedded.fonts"/>
+  <xsl:param name="count" select="0"/>
+
+  <xsl:choose>
+    <xsl:when test="$font.list != '' and
+            not(contains($font.list, ','))">
+      <xsl:call-template name="embedded-font-item">
+        <xsl:with-param name="font.file" select="normalize-space($font.list)"/>
+        <xsl:with-param name="font.order" select="$count + 1"/>
+      </xsl:call-template>
+    </xsl:when>
+    <xsl:when test="$font.list != '' and
+           contains($font.list, ',')">
+      <xsl:variable name="this.font" 
+                    select="substring-before($font.list, ',')"/>
+      <xsl:variable name="rest"
+                    select="substring-after($font.list, ',')"/>
+
+      <xsl:call-template name="embedded-font-item">
+        <xsl:with-param name="font.file" select="normalize-space($this.font)"/>
+        <xsl:with-param name="font.order" select="$count + 1"/>
+      </xsl:call-template>
+
+      <!-- recurse to process the rest -->
+      <xsl:call-template name="manifest.fonts">
+        <xsl:with-param name="font.list" select="$rest"/>
+        <xsl:with-param name="count" select="$count + 1"/>
+      </xsl:call-template>
+    </xsl:when>
+  </xsl:choose>
+
+</xsl:template>
+
+
+<xsl:template name="embedded-font-item">
+  <xsl:param name="font.file"/>
+  <xsl:param name="font.order" select="1"/>
+
+  <xsl:element namespace="http://www.idpf.org/2007/opf" name="item">
+    <xsl:attribute name="id">
+      <xsl:value-of select="concat('epub.embedded.font.', $font.order)"/>
+    </xsl:attribute>
+    <xsl:attribute name="href">
+      <xsl:value-of select="$font.file"/>
+    </xsl:attribute>
+    <xsl:choose>
+      <xsl:when test="contains($font.file, '.otf')">
+        <xsl:attribute name="media-type">application/vnd.ms-opentype</xsl:attribute>
+      </xsl:when>
+      <xsl:when test="contains($font.file, '.woff')">
+        <xsl:attribute name="media-type">application/font-woff</xsl:attribute>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:message>
+          <xsl:text>WARNING: embedded fonts should be OpenType or WOFF!  (</xsl:text>
+          <xsl:value-of select="$font.file"/>
+          <xsl:text>)</xsl:text>
+        </xsl:message>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:element>
+</xsl:template>
 
 <!--Misc items in the manifest based on content -->
 <xsl:template name="manifest.other.items">
@@ -1610,42 +1697,44 @@ article  toc,title,figure,table,example,equation
   <xsl:param name="object" select="."/>
 
   <xsl:if test="$object">
-    <xsl:variable name="output_filename">
-      <xsl:call-template name="mediaobject.filename">
-        <xsl:with-param name="object" select="$object"/>
-      </xsl:call-template>
-    </xsl:variable>
-
-    <xsl:variable name="image.filename">
-       <xsl:if test="$img.src.path != '' and
-                       not(starts-with($output_filename, '/')) and
-                       not(contains($output_filename, '://'))">
-         <xsl:value-of select="$img.src.path"/>
-       </xsl:if>
-       <xsl:value-of select="$output_filename"/>
-    </xsl:variable>
-
-    <xsl:variable name="image.extension">
-      <xsl:call-template name="filename-extension">
-        <xsl:with-param name="filename" select="$image.filename"/>
-      </xsl:call-template>
-    </xsl:variable>
-
-    <xsl:variable name="image.type">
-      <xsl:call-template name="graphic.format.content-type">
-        <xsl:with-param name="format" select="translate($image.extension, 
-                   &lowercase;, &uppercase;)"/>
-      </xsl:call-template>
-    </xsl:variable>
-
-    <xsl:element name="tmp-filename" namespace="">
-      <xsl:element name="tmp-href" namespace="">
-        <xsl:value-of select="$image.filename"/>
+    <xsl:for-each select="$object/imagedata|$object/videodata|$object/audiodata">
+      <xsl:variable name="output_filename">
+        <xsl:call-template name="mediaobject.filename">
+          <xsl:with-param name="object" select="."/>
+        </xsl:call-template>
+      </xsl:variable>
+  
+      <xsl:variable name="image.filename">
+         <xsl:if test="$img.src.path != '' and
+                         not(starts-with($output_filename, '/')) and
+                         not(contains($output_filename, '://'))">
+           <xsl:value-of select="$img.src.path"/>
+         </xsl:if>
+         <xsl:value-of select="$output_filename"/>
+      </xsl:variable>
+  
+      <xsl:variable name="image.extension">
+        <xsl:call-template name="filename-extension">
+          <xsl:with-param name="filename" select="$image.filename"/>
+        </xsl:call-template>
+      </xsl:variable>
+  
+      <xsl:variable name="image.type">
+        <xsl:call-template name="graphic.format.content-type">
+          <xsl:with-param name="format" select="translate($image.extension, 
+                     &lowercase;, &uppercase;)"/>
+        </xsl:call-template>
+      </xsl:variable>
+  
+      <xsl:element name="tmp-filename" namespace="">
+        <xsl:element name="tmp-href" namespace="">
+          <xsl:value-of select="$image.filename"/>
+        </xsl:element>
+        <xsl:element name="media-type" namespace="">
+          <xsl:value-of select="$image.type"/>
+        </xsl:element>
       </xsl:element>
-      <xsl:element name="media-type" namespace="">
-        <xsl:value-of select="$image.type"/>
-      </xsl:element>
-    </xsl:element>
+    </xsl:for-each>
 
   </xsl:if>
 </xsl:template>

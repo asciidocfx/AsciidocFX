@@ -164,7 +164,6 @@ public class DirectoryService {
 
         this.setWorkingDirectory(Optional.of(path));
         fileBrowser.browse(path);
-        fileWatchService.registerWatcher(path);
         this.setInitialDirectory(Optional.ofNullable(path.toFile()));
         controller.getStage().setTitle(String.format("AsciidocFX - %s", path));
 
@@ -179,23 +178,13 @@ public class DirectoryService {
     }
 
     public String interPath() {
-
-        try {
-            Path workingDirectory = current.currentPath().map(Path::getParent).orElse(this.workingDirectory());
-            Path subpath = workingDirectory.subpath(0, workingDirectory.getNameCount());
-            return subpath.toString().replace('\\', '/');
-        } catch (Exception e) {
-            return ".";
-        }
-
+        return interPath(workingDirectory());
     }
 
     public String interPath(Path path) {
 
         try {
-            Path workingDirectory = Optional.ofNullable(path)
-                    .map(Path::getParent).orElse(this.workingDirectory());
-            Path subpath = workingDirectory.subpath(0, workingDirectory.getNameCount());
+            Path subpath = path.subpath(0, path.getNameCount());
             return subpath.toString().replace('\\', '/');
         } catch (Exception e) {
             return ".";
@@ -327,5 +316,9 @@ public class DirectoryService {
                 .map(path -> path.resolve(uri))
                 .findFirst()
                 .orElseGet(() -> null);
+    }
+
+    public Path currentParentOrWorkdir() {
+        return current.currentPath().map(Path::getParent).orElse(this.workingDirectory());
     }
 }

@@ -2,84 +2,116 @@
 <html>
 <head lang="en">
     <meta charset="UTF-8">
-    <title></title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>MathJax Generator</title>
+    <link rel="stylesheet" href="/afx/resource/css/reset.css">
+    <style>
+        #formula {
+            display: inline-block !important;
+        }
+
+        .MathJax, .MathJax_Preview, .MathJax_PHTML {
+            font-size: 1.3em !important;
+        }
+
+        .MathJax_Display, .MJXp-display {
+            margin: 0 !important;
+        }
+
+    </style>
 </head>
 <body>
 
-<div id="formulas">
-
-</div>
+<div id="formula">...</div>
 <script src="/afx/resource/js/jquery.js" type="text/javascript"></script>
 <script type="text/x-mathjax-config">
   MathJax.Hub.Config({
-  extensions: ["tex2jax.js","mml2jax.js","MathEvents.js","MathZoom.js","MathMenu.js","toMathML.js","TeX/noErrors.js","TeX/noUndefined.js","TeX/AMSmath.js","TeX/AMSsymbols.js","CHTML-preview.js"],
-  jax: ["input/TeX","input/MathML","output/SVG","output/CommonHTML"]
+  messageStyle: "none",
+  showMathMenu: true,
+  tex2jax: {
+    inlineMath: [["$","$"], ["\\(","\\)"]],
+    displayMath: [["$$","$$"], ["\\[", "\\]"]],
+    ignoreClass: "nostem|nolatexmath"
+  },
+  asciimath2jax: {
+    delimiters: [['`','`'], ['\\$','\\$']],
+    ignoreClass: "nostem|nolatexmath"
+  },
+  mml2jax: {
+    ignoreClass: "nostem|nolatexmath"
+  },
+  TeX: { equationNumbers: { autoNumber: "AMS" } },
+  extensions: ["tex2jax.js","mml2jax.js","asciimath2jax.js"],
+  jax: ["input/TeX","input/MathML","input/AsciiMath","output/PreviewHTML"]
 });
+
 </script>
 <script src="/afx/dynamic/mathjax/MathJax.js"></script>
 <script type="text/javascript">
 
-    function afterRender(finishCallback) {
-        if ((typeof MathJax) != "undefined")
-            MathJax.Hub.Queue(["Typeset", MathJax.Hub], finishCallback);
+    function Atom(formula, imagesDir, imageTarget) {
+        this.formula = formula;
+        this.imagesDir = imagesDir;
+        this.imageTarget = imageTarget;
+        this.hashCode = function () {
+            return (this.formula + this.imagesDir + this.imageTarget);
+        }
     }
 
-    function appendFormula(formula, imagesDir, imageTarget) {
+    var atoms = [];
+    var cache = {};
+    var starter = Promise.resolve();
+    function processFormula(formula, imagesDir, imageTarget) {
 
-        imageTarget = imageTarget.replace(/\./g,"--dot--");
-        imageTarget = imageTarget.replace(/\//g,"--fw--");
-        imageTarget = imageTarget.replace(/\\/g,"--bk--");
+        atoms.push(new Atom(formula, imagesDir, imageTarget));
 
-        $("#formulas").find("#" + imageTarget).remove();
+        starter = starter.then(function () {
+            return new Promise(function (resolved, rejected) {
 
-        var $div = $("<div class='formulaz'></div>");
-        $div.attr("id", imageTarget);
-        $div.append(formula);
+                var popped = atoms.pop();
 
-        $("#formulas").append($div);
-
-        afterRender(function () {
-            $.each($("#formulas").children("div.formulaz"), function (index, elem) {
-
-                var svg = $(this).find(".MathJax_SVG svg");
-
-                try {
-                    svg.attr("width", svg[0].getBoundingClientRect().width);
-                    svg.attr("height", svg[0].getBoundingClientRect().height);
-                }
-                catch (e) {
+                if (!popped) {
+                    resolved();
+                    return;
                 }
 
-                if (svg.length) {
-                    var fileName = $(this).attr("id");
-                    svg.attr("xmlns", "http://www.w3.org/2000/svg");
-                    svg.get(0).insertBefore($("#MathJax_SVG_glyphs").clone().get(0), svg.firstChild);
+                var element = document.querySelector("#formula");
 
-                    var bbox = svg.get(0).getBBox();
-                    var viewBox = [bbox.x, bbox.y, bbox.width, bbox.height].join(" ");
-                    svg.attr("viewBox", viewBox);
+                if (element.innerHTML == popped.formula) {
+                    resolved();
+                    return;
+                }
 
-                    var svgStrings = new XMLSerializer().serializeToString(svg.get(0));
+                var cacheHit = cache[popped.imageTarget];
+                var hashCode = popped.hashCode();
 
-                    var svgWidth = (bbox.width > 600) ? 600 : bbox.width;
-                    var svgHeight = (bbox.height / (bbox.width / svgWidth));
+                if (cacheHit && cacheHit == hashCode) {
+                    resolved();
+                    return;
+                }
 
+                element.innerHTML = popped.formula;
 
-                    fileName = fileName.replace("--dot--",".");
-                    fileName = fileName.replace("--bk--","\\");
-                    fileName = fileName.replace("--fw--","/");
-
-                    afx.svgToPng(imagesDir, fileName, svgStrings, formula, svgWidth, svgHeight);
-
+                if ((typeof MathJax) != "undefined") {
+                    MathJax.Hub.Queue(["Typeset", MathJax.Hub], function () {
+                        try {
+                            afx.snapshotFormula(popped.formula, popped.imagesDir, popped.imageTarget);
+                            cache[popped.imageTarget] = hashCode;
+                        }
+                        catch (e) {
+                            // handled in java code
+                        }
+                        resolved();
+                    });
+                }
+                else {
+                    resolved();
                 }
 
             });
-
         });
-
-
     }
 </script>
-<script src="/afx/resource/js/firebug-import.js"></script>
+<!--<script src="/afx/resource/js/firebug-import.js"></script>-->
 </body>
 </html>

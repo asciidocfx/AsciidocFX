@@ -2,12 +2,18 @@ package com.kodcu.service.extension;
 
 import com.kodcu.controller.ApplicationController;
 import com.kodcu.other.Current;
+import com.kodcu.other.IOHelper;
+import com.kodcu.other.TrimWhite;
 import com.kodcu.service.ThreadService;
+import com.kodcu.service.cache.BinaryCacheService;
 import javafx.concurrent.Worker;
+import javafx.embed.swing.SwingFXUtils;
+import javafx.scene.SnapshotParameters;
+import javafx.scene.image.WritableImage;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import netscape.javascript.JSObject;
-import org.apache.batik.dom.svg.SAXSVGDocumentFactory;
+import org.apache.batik.anim.dom.SAXSVGDocumentFactory;
 import org.apache.batik.transcoder.TranscoderInput;
 import org.apache.batik.transcoder.TranscoderOutput;
 import org.apache.batik.transcoder.image.PNGTranscoder;
@@ -19,6 +25,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.w3c.dom.svg.SVGDocument;
 
+import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.StringReader;
@@ -40,6 +47,7 @@ public class MathJaxService {
     private final ApplicationController controller;
     private final Current current;
     private final ThreadService threadService;
+    private final BinaryCacheService binaryCacheService;
     private WebView webView;
     private boolean initialized;
 
@@ -47,10 +55,11 @@ public class MathJaxService {
     private String mathjaxUrl;
 
     @Autowired
-    public MathJaxService(final ApplicationController controller, final Current current, ThreadService threadService) {
+    public MathJaxService(final ApplicationController controller, final Current current, ThreadService threadService, BinaryCacheService binaryCacheService) {
         this.controller = controller;
         this.current = current;
         this.threadService = threadService;
+        this.binaryCacheService = binaryCacheService;
     }
 
     private void initialize(Runnable... runnable) {
@@ -88,14 +97,15 @@ public class MathJaxService {
         return getWebView().getEngine();
     }
 
-    public void appendFormula(String formula, String imagesDir, String imageTarget) {
+    public void processFormula(String formula, String imagesDir, String imageTarget) {
+
         threadService.runActionLater(() -> {
 
             if (initialized) {
-                getWindow().call("appendFormula", formula, imagesDir, imageTarget);
+                getWindow().call("processFormula", formula, imagesDir, imageTarget);
             } else {
                 initialize(() -> {
-                    getWindow().call("appendFormula", formula, imagesDir, imageTarget);
+                    getWindow().call("processFormula", formula, imagesDir, imageTarget);
                 });
             }
 
@@ -106,86 +116,73 @@ public class MathJaxService {
         return (JSObject) webEngine().executeScript("window");
     }
 
-    public void svgToPng(String imagesDir, String imageTarget, String svg, String formula, float width, float height) {
-
-        if (!svg.startsWith("<svg"))
-            return;
-
-        if (!imageTarget.endsWith(".png") && !imageTarget.endsWith(".svg"))
-            return;
-
-        Integer cacheHit = current.getCache().get(imageTarget);
-        int hashCode = (imagesDir + imageTarget + formula + width + height).hashCode();
-        if (Objects.nonNull(cacheHit))
-            if (hashCode == cacheHit)
-                return;
-
-        logger.debug("MatJax extension is started for {}", imageTarget);
-
-        current.getCache().put(imageTarget, hashCode);
-
-        if (imageTarget.endsWith(".png"))
-            saveAsPng(imagesDir, imageTarget, svg, formula, width, height);
-        else if (imageTarget.endsWith(".svg"))
-            saveAsSvg(imagesDir, imageTarget, svg, formula, width, height);
-
-    }
-
-    private void saveAsSvg(String imagesDir, String imageTarget, String svg, String formula, float width, float height) {
-        try {
-
-            Path path = current.currentTab().getParentOrWorkdir();
-            Files.createDirectories(path.resolve(imagesDir));
-
-            Path imagePath = path.resolve(imageTarget);
-            Files.write(imagePath, svg.getBytes(Charset.forName("UTF-8")), CREATE, WRITE, TRUNCATE_EXISTING);
-
-            logger.debug("MathJax extension is ended for {}", imageTarget);
-            threadService.runActionLater(() -> {
-                controller.clearImageCache(imagePath);
-            });
-        } catch (IOException e) {
-            logger.error("Problem occured while generating MathJax svg", e);
-        }
-    }
-
-    private void saveAsPng(String imagesDir, String imageTarget, String svg, String formula, float width, float height) {
-        try (StringReader reader = new StringReader(svg);
-             ByteArrayOutputStream ostream = new ByteArrayOutputStream();) {
-
-            String uri = "http://www.w3.org/2000/svg";
-            SAXSVGDocumentFactory f = new SAXSVGDocumentFactory(XMLResourceDescriptor.getXMLParserClassName());
-            SVGDocument doc = f.createSVGDocument(uri, reader);
-
-            TranscoderInput transcoderInput = new TranscoderInput(doc);
-            TranscoderOutput transcoderOutput = new TranscoderOutput(ostream);
-
-            PNGTranscoder transcoder = new PNGTranscoder();
-            transcoder.addTranscodingHint(PNGTranscoder.KEY_WIDTH, width);
-            transcoder.addTranscodingHint(PNGTranscoder.KEY_HEIGHT, height);
-            transcoder.transcode(transcoderInput, transcoderOutput);
-
-            Path path = current.currentTab().getParentOrWorkdir();
-            Files.createDirectories(path.resolve(imagesDir));
-
-            Path imagePath = path.resolve(imageTarget);
-            Files.write(imagePath, ostream.toByteArray(), CREATE, WRITE, TRUNCATE_EXISTING);
-
-            logger.debug("MathJax extension is ended for {}", imageTarget);
-            threadService.runActionLater(() -> {
-                controller.clearImageCache(imagePath);
-            });
-
-        } catch (Exception e) {
-            logger.error("Problem occured while generating MathJax png", e);
-        }
-    }
-
     public WebView getWebView() {
         if (Objects.isNull(webView)) {
             webView = new WebView();
-            webView.setVisible(false);
+            webView.setMaxHeight(1000);
+            webView.setPrefHeight(1000);
+            webView.setMaxWidth(1000);
+            webView.setPrefWidth(1000);
+            webView.setLayoutX(-22000);
+            webView.setLayoutY(-22000);
+            controller.getRootAnchor().getChildren().add(webView);
         }
         return webView;
+    }
+
+    public void snapshotFormula(String formula, String imagesDir, String imageTarget) {
+
+        try {
+            Objects.requireNonNull(imageTarget);
+
+            boolean cachedResource = imageTarget.contains("/afx/cache");
+
+            if (!imageTarget.endsWith(".png") && !cachedResource)
+                return;
+
+            Integer cacheHit = current.getCache().get(imageTarget);
+
+            int hashCode = (imageTarget + imagesDir + formula).hashCode();
+
+            if (Objects.isNull(cacheHit) || hashCode != cacheHit) {
+
+                WritableImage writableImage = getWebView().snapshot(new SnapshotParameters(), null);
+                BufferedImage bufferedImage = SwingFXUtils.fromFXImage(writableImage, null);
+
+                Path path = current.currentTab().getParentOrWorkdir();
+
+                threadService.runTaskLater(() -> {
+                    try {
+                        TrimWhite trimWhite = new TrimWhite();
+                        BufferedImage trimmed = trimWhite.trim(bufferedImage);
+                        if (!cachedResource) {
+                            Path imagePath = path.resolve(imageTarget);
+                            IOHelper.createDirectories(imagePath.getParent());
+                            IOHelper.imageWrite(trimmed, "png", imagePath.toFile());
+                            threadService.runActionLater(() -> {
+                                controller.clearImageCache(imagePath);
+                            });
+                        } else {
+                            binaryCacheService.putBinary(imageTarget, trimmed);
+                            threadService.runActionLater(() -> {
+                                controller.clearImageCache(imageTarget);
+                            });
+                        }
+
+                        current.getCache().put(imageTarget, hashCode);
+                        logger.debug("MathJax extension is ended for {}", imageTarget);
+
+                    } catch (Exception e) {
+                        logger.error("Problem occured while generating MathJax png", e);
+                        throw new RuntimeException(e);
+                    }
+                });
+            }
+        } catch (Exception e) {
+            logger.error("Problem occured while generating MathJax png", e);
+            throw e;
+        }
+
+
     }
 }

@@ -5,6 +5,7 @@ import com.kodcu.engine.AsciidocConverterProvider;
 import com.kodcu.other.Current;
 import com.kodcu.other.IOHelper;
 import com.kodcu.other.XMLHelper;
+import com.kodcu.service.ThreadService;
 import com.kodcu.service.convert.DocumentConverter;
 import org.joox.Match;
 import org.slf4j.Logger;
@@ -31,13 +32,15 @@ public class DocBookConverter implements DocbookTraversable, DocumentConverter<S
     private final AsciidocConverterProvider converterProvider;
     private final DocbookValidator docbookValidator;
     private final DocbookConfigBean docbookConfigBean;
+    private final ThreadService threadService;
 
     @Autowired
-    public DocBookConverter(Current current, AsciidocConverterProvider converterProvider, DocbookValidator docbookValidator, DocbookConfigBean docbookConfigBean) {
+    public DocBookConverter(Current current, AsciidocConverterProvider converterProvider, DocbookValidator docbookValidator, DocbookConfigBean docbookConfigBean, ThreadService threadService) {
         this.current = current;
         this.converterProvider = converterProvider;
         this.docbookValidator = docbookValidator;
         this.docbookConfigBean = docbookConfigBean;
+        this.threadService = threadService;
     }
 
 
@@ -49,34 +52,37 @@ public class DocBookConverter implements DocbookTraversable, DocumentConverter<S
 
         String asciidoc = current.currentEditorValue();
 
-        String rendered = converterProvider.get(docbookConfigBean).convertDocbook(asciidoc).getRendered();
+        threadService.runTaskLater(() -> {
 
-        boolean validated = docbookValidator.validateDocbook(rendered);
+            String rendered = converterProvider.get(docbookConfigBean).convertDocbook(asciidoc).getRendered();
 
-        if (!validated)
-            return;
+            boolean validated = docbookValidator.validateDocbook(rendered);
 
-        StringReader bookReader = new StringReader(rendered);
-        Match rootDocument = IOHelper.$(new InputSource(bookReader));
-        bookReader.close();
+            if (!validated)
+                return;
+
+            StringReader bookReader = new StringReader(rendered);
+            Match rootDocument = IOHelper.$(new InputSource(bookReader));
+            bookReader.close();
 
 //            // makes figure centering
-        rootDocument.find("figure").find("imagedata").attr("align", "center");
+            rootDocument.find("figure").find("imagedata").attr("align", "center");
 
-        // remove callout's duplicated refs and pick last
-        rootDocument.find("callout").forEach(elem -> {
-            String arearefs = $(elem).attr("arearefs");
-            String[] cos = arearefs.split(" ");
-            if (cos.length > 1)
-                $(elem).attr("arearefs", cos[cos.length - 1]);
+            // remove callout's duplicated refs and pick last
+            rootDocument.find("callout").forEach(elem -> {
+                String arearefs = $(elem).attr("arearefs");
+                String[] cos = arearefs.split(" ");
+                if (cos.length > 1)
+                    $(elem).attr("arearefs", cos[cos.length - 1]);
+            });
+
+            String result = XMLHelper.nodeToString(rootDocument.document(), false);
+//            result = result.replace("00HEADER00COLON00", ":");
+
+            for (Consumer<String> step : nextStep) {
+                step.accept(result);
+            }
         });
-
-        String result = XMLHelper.nodeToString(rootDocument.document(), false);
-        result = result.replace("00HEADER00COLON00", ":");
-
-        for (Consumer<String> step : nextStep) {
-            step.accept(result);
-        }
     }
 
 

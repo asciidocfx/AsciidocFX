@@ -4,7 +4,7 @@
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns="http://www.w3.org/1999/xhtml" version="1.0">
 
 <!-- ********************************************************************
-     $Id: block.xsl 9667 2012-11-26 23:10:44Z bobstayton $
+     $Id: block.xsl 9997 2015-10-15 17:44:09Z bobstayton $
      ********************************************************************
 
      This file is part of the XSL DocBook Stylesheet distribution.
@@ -229,7 +229,7 @@
   <div>
     <xsl:call-template name="common.html.attributes"/>
     <xsl:call-template name="id.attribute"/>
-    <xsl:apply-templates select="para|simpara|formalpara|literallayout"/>
+    <xsl:apply-templates select="child::*[local-name(.)!='attribution']"/>
     <xsl:if test="attribution">
       <div class="attribution">
         <span>&#8212;<xsl:apply-templates select="attribution"/></span>

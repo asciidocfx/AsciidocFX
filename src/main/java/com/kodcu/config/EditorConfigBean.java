@@ -63,6 +63,14 @@ public class EditorConfigBean extends ConfigurationBase {
     private StringProperty terminalCharset = new SimpleStringProperty("UTF-8");
     private StringProperty terminalWinCommand = new SimpleStringProperty("cmd.exe");
     private StringProperty terminalNixCommand = new SimpleStringProperty("/bin/bash");
+    private BooleanProperty showDonate = new SimpleBooleanProperty(true);
+    private BooleanProperty validateDocbook = new SimpleBooleanProperty(true);
+    private StringProperty clipboardImageFilePattern = new SimpleStringProperty("'Image'-ddMMyy-hhmmss.SSS'.png'");
+    private DoubleProperty screenX = new SimpleDoubleProperty(0);
+    private DoubleProperty screenY = new SimpleDoubleProperty(0);
+    private DoubleProperty screenWidth = new SimpleDoubleProperty();
+    private DoubleProperty screenHeight = new SimpleDoubleProperty();
+    public ObjectProperty<FoldStyle> foldStyle = new SimpleObjectProperty<>(FoldStyle.DEFAULT);
 
     private Logger logger = LoggerFactory.getLogger(EditorConfigBean.class);
 
@@ -250,6 +258,102 @@ public class EditorConfigBean extends ConfigurationBase {
         this.terminalWinCommand.set(terminalWinCommand);
     }
 
+    public boolean getShowDonate() {
+        return showDonate.get();
+    }
+
+    public BooleanProperty showDonateProperty() {
+        return showDonate;
+    }
+
+    public void setShowDonate(boolean showDonate) {
+        this.showDonate.set(showDonate);
+    }
+
+    public boolean getValidateDocbook() {
+        return validateDocbook.get();
+    }
+
+    public BooleanProperty validateDocbookProperty() {
+        return validateDocbook;
+    }
+
+    public void setValidateDocbook(boolean validateDocbook) {
+        this.validateDocbook.set(validateDocbook);
+    }
+
+    public String getClipboardImageFilePattern() {
+        return clipboardImageFilePattern.get();
+    }
+
+    public StringProperty clipboardImageFilePatternProperty() {
+        return clipboardImageFilePattern;
+    }
+
+    public void setClipboardImageFilePattern(String clipboardImageFilePattern) {
+        this.clipboardImageFilePattern.set(clipboardImageFilePattern);
+    }
+
+    public double getScreenY() {
+        return screenY.get();
+    }
+
+    public DoubleProperty screenYProperty() {
+        return screenY;
+    }
+
+    public void setScreenY(double screenY) {
+        this.screenY.set(screenY);
+    }
+
+    public double getScreenX() {
+        return screenX.get();
+    }
+
+    public DoubleProperty screenXProperty() {
+        return screenX;
+    }
+
+    public void setScreenX(double screenX) {
+        this.screenX.set(screenX);
+    }
+
+    public double getScreenWidth() {
+        return screenWidth.get();
+    }
+
+    public DoubleProperty screenWidthProperty() {
+        return screenWidth;
+    }
+
+    public void setScreenWidth(double screenWidth) {
+        this.screenWidth.set(screenWidth);
+    }
+
+    public double getScreenHeight() {
+        return screenHeight.get();
+    }
+
+    public DoubleProperty screenHeightProperty() {
+        return screenHeight;
+    }
+
+    public void setScreenHeight(double screenHeight) {
+        this.screenHeight.set(screenHeight);
+    }
+
+    public FoldStyle getFoldStyle() {
+        return foldStyle.get();
+    }
+
+    public ObjectProperty<FoldStyle> foldStyleProperty() {
+        return foldStyle;
+    }
+
+    public void setFoldStyle(FoldStyle foldStyle) {
+        this.foldStyle.set(foldStyle);
+    }
+
     @Override
     public String formName() {
         return "Editor Settings";
@@ -260,7 +364,9 @@ public class EditorConfigBean extends ConfigurationBase {
 
         FXForm editorConfigForm = new FXFormBuilder<>()
                 .resourceBundle(ResourceBundle.getBundle("editorConfig"))
-                .includeAndReorder("editorTheme", "fontFamily", "fontSize", "scrollSpeed", "useWrapMode", "wrapLimit", "showGutter", "defaultLanguage", "autoUpdate", "terminalWinCommand", "terminalNixCommand", "terminalCharset")
+                .includeAndReorder("showDonate", "validateDocbook", "editorTheme", "fontFamily", "fontSize",
+                        "scrollSpeed", "useWrapMode", "wrapLimit", "foldStyle", "showGutter", "defaultLanguage", "autoUpdate",
+                        "terminalWinCommand", "terminalNixCommand", "terminalCharset", "clipboardImageFilePattern")
                 .build();
 
         DefaultFactoryProvider editorConfigFormProvider = new DefaultFactoryProvider();
@@ -318,6 +424,11 @@ public class EditorConfigBean extends ConfigurationBase {
         String terminalWinCommand = jsonObject.getString("terminalWinCommand", "cmd.exe");
         String terminalNixCommand = jsonObject.getString("terminalNixCommand", "/bin/bash");
         String terminalCharset = jsonObject.getString("terminalCharset", "UTF-8");
+        boolean showDonate = jsonObject.getBoolean("showDonate", true);
+        final boolean validateDocbook = jsonObject.getBoolean("validateDocbook", true);
+        String clipboardImageFilePattern = jsonObject.getString("clipboardImageFilePattern", "'Image'-ddMMyy-hhmmss.SSS'.png'");
+        String foldStyle = jsonObject.getString("foldStyle", "default");
+
 
         IOHelper.close(jsonReader, fileReader);
 
@@ -333,6 +444,13 @@ public class EditorConfigBean extends ConfigurationBase {
             this.setTerminalWinCommand(terminalWinCommand);
             this.setTerminalNixCommand(terminalNixCommand);
             this.setTerminalCharset(terminalCharset);
+            this.setShowDonate(showDonate);
+            this.setValidateDocbook(validateDocbook);
+            this.setClipboardImageFilePattern(clipboardImageFilePattern);
+
+            if (FoldStyle.contains(foldStyle)) {
+                this.setFoldStyle(FoldStyle.valueOf(foldStyle));
+            }
 
             if (jsonObject.containsKey("scrollSpeed")) {
                 this.setScrollSpeed(jsonObject.getJsonNumber("scrollSpeed").doubleValue());
@@ -346,6 +464,26 @@ public class EditorConfigBean extends ConfigurationBase {
             if (jsonObject.containsKey("secondSplitter")) {
                 JsonNumber secondSplitter = jsonObject.getJsonNumber("secondSplitter");
                 this.setSecondSplitter(secondSplitter.doubleValue());
+            }
+
+            if (jsonObject.containsKey("screenX")) {
+                double screenX = jsonObject.getJsonNumber("screenX").doubleValue();
+                this.setScreenX(screenX);
+            }
+
+            if (jsonObject.containsKey("screenY")) {
+                double screenY = jsonObject.getJsonNumber("screenY").doubleValue();
+                this.setScreenY(screenY);
+            }
+
+            if (jsonObject.containsKey("screenWidth")) {
+                double screenWidth = jsonObject.getJsonNumber("screenWidth").doubleValue();
+                this.setScreenWidth(screenWidth);
+            }
+
+            if (jsonObject.containsKey("screenHeight")) {
+                double screenHeight = jsonObject.getJsonNumber("screenHeight").doubleValue();
+                this.setScreenHeight(screenHeight);
             }
 
             this.getEditorTheme().set(0, theme);
@@ -410,7 +548,15 @@ public class EditorConfigBean extends ConfigurationBase {
                 .add("autoUpdate", getAutoUpdate())
                 .add("terminalCharset", getTerminalCharset())
                 .add("terminalWinCommand", getTerminalWinCommand())
-                .add("terminalNixCommand", getTerminalNixCommand());
+                .add("terminalNixCommand", getTerminalNixCommand())
+                .add("showDonate", getShowDonate())
+                .add("validateDocbook", getValidateDocbook())
+                .add("clipboardImageFilePattern", getClipboardImageFilePattern())
+                .add("screenX", getScreenX())
+                .add("screenY", getScreenY())
+                .add("screenWidth", getScreenWidth())
+                .add("screenHeight", getScreenHeight())
+                .add("foldStyle", getFoldStyle().name());
 
         return objectBuilder.build();
     }

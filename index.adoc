@@ -2,8 +2,8 @@
 :experimental:
 :toc:
 :toc-placement: left
-:asciifocfx-version: 1.4.0
-:download-root: https://github.com/asciidocfx/AsciidocFX/releases/download/v{asciifocfx-version}/
+:asciidocfx-version: 1.4.7
+:download-root: https://github.com/asciidocfx/AsciidocFX/releases/download/v{asciidocfx-version}/
 
 image:https://api.travis-ci.org/asciidocfx/AsciidocFX.svg?branch=master[Build Status,link="https://travis-ci.org/asciidocfx/AsciidocFX"]
 image:https://badges.gitter.im/Join%20Chat.svg["Gitter", link="https://gitter.im/asciidocfx/AsciidocFX"]
@@ -18,7 +18,7 @@ image:https://badges.gitter.im/Join%20Chat.svg["Gitter", link="https://gitter.im
 <script async defer id="github-bjs" src="https://buttons.github.io/buttons.js"></script>
 ++++
 
-Asciidoc FX is a book / document editor to build PDF, Epub, Mobi and HTML books, documents and slides.
+Asciidoc FX is a book / document editor to build PDF, Epub, Mobi and HTML books, documents and slides. AsciidocFX is also a winner of https://www.oracle.com/corporate/pressrelease/dukes-award-102815.html[Duke's Choice Award 2015].
 
 .AsciidocFX - Duke's Choice Award 2015 winner
 image::images/asciidocfx.png[]
@@ -45,8 +45,14 @@ image::images/asciidocfx.png[]
 
 == How to Install AsciidocFX
 
-.You can download the latest release from https://github.com/asciidocfx/AsciidocFX/releases[Github releases page].
+There are a number of operating systems that AsciidocFX supports.
 
+NOTE: The latest releases are available from the https://github.com/asciidocfx/AsciidocFX/releases[Github releases page].
+
+<<Supported_OS>> shows the list of available builds with links for reference. If you are looking for the very latest version, visit the link in the note above to be guaranteed of downloading the latest and greatest version of AsciidocFX.
+
+[[Supported_OS]]
+.Supported Operating Systems and Builds 
 [width="100%",options="header"]
 |====================
 | OS | JRE included? | Filename 
@@ -59,7 +65,7 @@ image::images/asciidocfx.png[]
 | No | {download-root}AsciidocFX_Linux_No_JRE.tar.gz[AsciidocFX_Linux_No_JRE.tar.gz] 
 |====================
 
-*Linux*
+=== Install on Linux
 
 After the download is completed, untar the package in your preferred directory.
 
@@ -68,28 +74,28 @@ $ cd /bin
 $ ./AsciidocFX.sh
 
 ////
-*Arch Linux*
+=== Install on Arch Linux
 
-Also you can install with package manager in Arch Linux
+Install using the package manager in Arch Linux
 
 [source,bash]
 $ yaourt -S asciidocfx
 ////
 
-*Windows*
+=== Install on Windows
 
 Download executable/installer and run it.
 
-*Mac*
+=== Install on Mac
 
-Download _dmg_ and run it.
+Download the `.dmg` and run it.
 
 === Installation Notes
 
 There are two AsciidocFX package flavors, you can download it with JRE 8 out-of-box or if you have already installed JRE 8 (Update 40 or above), you can download *No_JRE builds
 
 Graphviz::
-PlantUML extension needs Graphviz, if you will use it, then install it:
+  PlantUML extension needs Graphviz, if you will use it, then install it:
 +
 .Ubuntu
 [source,bash]
@@ -442,6 +448,19 @@ For other charts and available options, look at https://github.com/asciidocfx/As
 NOTE: We are generating builts with *Travis-CI* automatically.
 NOTE: All builds x64 based. If you want to use in x86 systems, build AsciidocFX yourself.
 
+=== Build on Linux (Ubuntu/Mint)
+
+. Install Oracle JDK 8.
+** http://tecadmin.net/install-oracle-java-8-jdk-8-ubuntu-via-ppa/
+. Install Maven
+** sudo apt-get install maven
+. Install Git
+** sudo apt-get install git
+. Clone the AsciidocFX repository from Github.
+. Navigate to the *AsciidocFX* directory and run $ `mvn clean install`
+. Navigate to the *target/appassembler/bin* directory and run $ `./asciidocfx.sh` to start AsciidocFX.
+
+
 == Books Written with AsciidocFX
 
 Java 8 Ebook::
@@ -552,7 +571,8 @@ To see what has changed in recent versions of AsciidocFX, see the https://github
 
 == Support
 
-Support AsciidocFX with pull requests or https://github.com/asciidocfx/AsciidocFX/issues[open an issue] for bug & feature requests. You can make discussions in https://groups.google.com/d/forum/asciidocfx-discuss[mail group] or in the chat room at https://gitter.im/asciidocfx/AsciidocFX[Gitter.im].
+Support AsciidocFX with pull requests or open an issue for bug & feature requests. You can make discussions in https://groups.google.com/d/forum/asciidocfx-discuss[mail group] or in the chat room at https://gitter.im/asciidocfx/AsciidocFX[Gitter.im].
+
 
 ++++
 <script>

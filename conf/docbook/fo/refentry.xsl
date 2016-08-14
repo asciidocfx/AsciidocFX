@@ -5,7 +5,7 @@
                 version='1.0'>
 
 <!-- ********************************************************************
-     $Id: refentry.xsl 9647 2012-10-26 17:42:03Z bobstayton $
+     $Id: refentry.xsl 9841 2014-01-07 22:31:09Z bobstayton $
      ********************************************************************
 
      This file is part of the XSL DocBook Stylesheet distribution.
@@ -637,7 +637,9 @@
       </xsl:choose>
     </xsl:variable>
 
-    <xsl:if test="$axf.extensions != 0">
+    <xsl:if test="$axf.extensions != 0 and 
+                  $xsl1.1.bookmarks = 0 and 
+                  $show.bookmarks != 0">
       <xsl:attribute name="axf:outline-level">
         <xsl:value-of select="count(ancestor::*)-1 + $offset"/>
       </xsl:attribute>

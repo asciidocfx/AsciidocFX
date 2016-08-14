@@ -11,13 +11,13 @@ import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableView;
+import javafx.scene.control.ToggleButton;
 
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 
 /**
@@ -29,11 +29,10 @@ public class TableViewLogAppender extends UnsynchronizedAppenderBase<ILoggingEve
     private static TableView<MyLog> logViewer;
     private static ObservableList<MyLog> logList;
     private static List<MyLog> buffer = Collections.synchronizedList(new LinkedList<MyLog>());
-    private static AtomicBoolean scheduled = new AtomicBoolean(false);
     private static Label logShortMessage;
     private static ThreadService threadService;
     PatternLayoutEncoder encoder;
-    private static Label logShowHider;
+    private static ToggleButton logShowHider;
 
     public static void setLogViewer(TableView<MyLog> logViewer) {
         TableViewLogAppender.logViewer = logViewer;
@@ -47,11 +46,11 @@ public class TableViewLogAppender extends UnsynchronizedAppenderBase<ILoggingEve
         TableViewLogAppender.logShortMessage = logShortMessage;
     }
 
-    public static void setShowHideLogs(Label logShowHider) {
+    public static void setShowHideLogs(ToggleButton logShowHider) {
         TableViewLogAppender.logShowHider = logShowHider;
     }
 
-    public static Label getLogShowHider() {
+    public static ToggleButton getLogShowHider() {
         return logShowHider;
     }
 
@@ -69,7 +68,7 @@ public class TableViewLogAppender extends UnsynchronizedAppenderBase<ILoggingEve
         }
 
         final String finalMessage = message;
-        Platform.runLater(() -> {
+        threadService.runActionLater(() -> {
             logShortMessage.setText(finalMessage);
         });
 
@@ -82,17 +81,13 @@ public class TableViewLogAppender extends UnsynchronizedAppenderBase<ILoggingEve
         MyLog myLog = new MyLog(level, message);
         buffer.add(myLog);
 
-        if (!scheduled.get()) {
-            scheduled.set(true);
-            threadService.schedule(() -> {
-                Platform.runLater(() -> {
-                    List<MyLog> clone = new LinkedList<>(buffer);
-                    buffer.clear();
-                    logList.addAll(clone);
-                    scheduled.set(false);
-                });
-            }, 3, TimeUnit.SECONDS);
-        }
+        threadService.buff("logAppender").schedule(() -> {
+            final List<MyLog> clone = new LinkedList<>(buffer);
+            buffer.clear();
+            threadService.runActionLater(() -> {
+                logList.addAll(clone);
+            });
+        }, 2, TimeUnit.SECONDS);
     }
 
     public PatternLayoutEncoder getEncoder() {

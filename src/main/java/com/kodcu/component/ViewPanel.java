@@ -3,7 +3,6 @@ package com.kodcu.component;
 import com.kodcu.controller.ApplicationController;
 import com.kodcu.other.Current;
 import com.kodcu.service.ThreadService;
-import com.sun.javafx.robot.impl.FXRobotHelper;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
@@ -29,6 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 
+import java.nio.file.Path;
 import java.util.Iterator;
 import java.util.Objects;
 import java.util.Optional;
@@ -96,7 +96,7 @@ public abstract class ViewPanel extends AnchorPane {
         getWebView().setOnContextMenuRequested(event -> {
 
             @SuppressWarnings("deprecation")
-            final Iterator<Window> windows = Window.impl_getWindows();
+            final Iterator<Window> windows = Window.getWindows().iterator();
 
             while (windows.hasNext()) {
                 final Window window = windows.next();
@@ -142,21 +142,23 @@ public abstract class ViewPanel extends AnchorPane {
         VBox.setVgrow(webView, Priority.ALWAYS);
     }
 
-    public abstract void browse();
+    public void browse() {
+        threadService.runActionLater(() -> {
+            final String documentURI = webEngine().getDocument().getDocumentURI();
+            controller.browseInDesktop(documentURI);
+        });
+    }
+
+    ;
 
     public void onscroll(Object pos, Object max) {
 
         if (stopScrolling.get())
             return;
 
-        if (Platform.isFxApplicationThread()) {
+        threadService.runActionLater(() -> {
             runScrolling(pos, max);
-        } else {
-            Platform.runLater(() -> {
-                runScrolling(pos, max);
-            });
-        }
-
+        });
     }
 
     public abstract void runScroller(String text);
@@ -247,4 +249,22 @@ public abstract class ViewPanel extends AnchorPane {
     public abstract void scrollByPosition(String text);
 
     public abstract void scrollByLine(String text);
+
+    public void clearImageCache(Path imagePath) {
+
+        Optional.ofNullable(imagePath)
+                .map(Path::getFileName)
+                .map(Path::toString)
+                .ifPresent(this::clearImageCache);
+    }
+
+    ;
+
+    public void clearImageCache(String imagePath) {
+
+        threadService.runActionLater(() -> {
+            webEngine().executeScript(String.format("clearImageCache(\"%s\")", imagePath));
+        });
+
+    }
 }

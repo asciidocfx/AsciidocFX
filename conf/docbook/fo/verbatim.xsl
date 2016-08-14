@@ -9,7 +9,7 @@
                 version='1.0'>
 
 <!-- ********************************************************************
-     $Id: verbatim.xsl 9590 2012-09-02 20:53:23Z tom_schr $
+     $Id: verbatim.xsl 9804 2013-09-09 15:00:31Z tom_schr $
      ********************************************************************
 
      This file is part of the XSL DocBook Stylesheet distribution.
@@ -66,16 +66,27 @@
   <xsl:variable name="keep.together">
     <xsl:call-template name="pi.dbfo_keep-together"/>
   </xsl:variable>
+  
+  <xsl:variable name="font.size">
+    <xsl:call-template name="pi.dbfo_font-size">
+      <xsl:with-param name="node"
+        select="(self::*[processing-instruction('dbfo')]|
+                 parent::*[processing-instruction('dbfo')])[last()]"/>
+    </xsl:call-template>
+  </xsl:variable>
 
   <xsl:variable name="block.content">
     <xsl:choose>
       <xsl:when test="$shade.verbatim != 0">
         <fo:block id="{$id}"
              xsl:use-attribute-sets="monospace.verbatim.properties shade.verbatim.style">
-	  <xsl:if test="$keep.together != ''">
-	    <xsl:attribute name="keep-together.within-column"><xsl:value-of
-	    select="$keep.together"/></xsl:attribute>
-	  </xsl:if>
+         <xsl:if test="$keep.together != ''">
+           <xsl:attribute name="keep-together.within-column"><xsl:value-of
+               select="$keep.together"/></xsl:attribute>
+         </xsl:if>
+         <xsl:if test="$font.size != ''">
+           <xsl:attribute name="font-size"><xsl:value-of select="$font.size"/></xsl:attribute>
+         </xsl:if>
           <xsl:choose>
             <xsl:when test="$hyphenate.verbatim != 0 and 
                             $exsl.node.set.available != 0">

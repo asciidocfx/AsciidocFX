@@ -61,13 +61,25 @@
   <xslo:include href="../profiling/profile-mode.xsl"/>
   <xslo:variable name="profiled-content">
     <xslo:choose>
-      <xslo:when test="*/self::ng:* or */self::db:*">
-        <xslo:message>Note: namesp. cut : stripped namespace before processing</xslo:message>
-        <xslo:variable name="stripped-content">
-          <xslo:apply-templates select="/" mode="stripNS"/>
+
+      <xslo:when test="$exsl.node.set.available != 0 and 
+                    namespace-uri(/*) = 'http://docbook.org/ns/docbook'">
+        <xslo:variable name="no.namespace">
+          <xslo:apply-templates select="/*" mode="stripNS"/>
         </xslo:variable>
-        <xslo:message>Note: namesp. cut : processing stripped document</xslo:message>
-        <xslo:apply-templates select="exslt:node-set($stripped-content)" mode="profile"/>
+        <xslo:call-template name="log.message">
+          <xslo:with-param name="level">Note</xslo:with-param>
+          <xslo:with-param name="source">
+            <xslo:call-template name="get.doc.title"/>
+          </xslo:with-param>
+          <xslo:with-param name="context-desc">
+            <xslo:text>namesp. cut</xslo:text>
+          </xslo:with-param>
+          <xslo:with-param name="message">
+            <xslo:text>stripped namespace before processing</xslo:text>
+          </xslo:with-param>
+        </xslo:call-template>
+        <xslo:apply-templates select="exslt:node-set($no.namespace)" mode="profile"/>
       </xslo:when>
       <xslo:otherwise>
         <xslo:apply-templates select="/" mode="profile"/>
@@ -139,7 +151,8 @@
 </xsl:template>
 
 <!-- DB5 namespace stripping is already done  -->
-<xsl:template match="xsl:when[contains(@test, 'self::db')]" mode="correct">
+<xsl:template match="xsl:when[contains(@test, 'namespace-uri')
+                          and contains(@test, 'http://docbook.org/ns/docbook')]" mode="correct">
   <xsl:copy>
     <xsl:attribute name="test">false()</xsl:attribute>
   </xsl:copy>
@@ -156,4 +169,9 @@
   <xsl:copy/>
 </xsl:template>
 
+<xsl:template match="xsl:include[@href = 'chunk-code.xsl']">
+  <xsl:copy>
+    <xsl:attribute name="href">profile-chunk-code.xsl</xsl:attribute>
+  </xsl:copy>
+</xsl:template>
 </xsl:stylesheet>

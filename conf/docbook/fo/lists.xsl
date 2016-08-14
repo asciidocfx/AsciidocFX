@@ -4,7 +4,7 @@
                 version='1.0'>
 
 <!-- ********************************************************************
-     $Id: lists.xsl 9668 2012-11-28 00:47:59Z bobstayton $
+     $Id: lists.xsl 9999 2015-10-15 17:55:56Z bobstayton $
      ********************************************************************
 
      This file is part of the XSL DocBook Stylesheet distribution.
@@ -321,7 +321,7 @@
                                    local-name()='simpara' or 
                                    local-name()='formalpara']"
               priority="2">
-  <fo:block>
+  <fo:block xsl:use-attribute-sets="para.properties">
     <xsl:call-template name="anchor"/>
     <xsl:apply-templates/>
   </fo:block>
@@ -594,6 +594,7 @@
 
 <xsl:template match="varlistentry/term">
   <fo:inline>
+    <xsl:call-template name="anchor"/>
     <xsl:call-template name="simple.xlink">
       <xsl:with-param name="content">
         <xsl:apply-templates/>
@@ -951,7 +952,7 @@
                         |processing-instruction()[preceding-sibling::step]"/>
 
   <fo:block id="{$id}" xsl:use-attribute-sets="procedure.properties list.block.spacing">
-    <xsl:if test="./title and $placement = 'before'">
+    <xsl:if test="(title or blockinfo/title or info/title) and $placement = 'before'">
       <!-- n.b. gentext code tests for $formal.procedures and may make an "informal" -->
       <!-- heading even though we called formal.object.heading. odd but true. -->
       <xsl:call-template name="formal.object.heading"/>
@@ -965,7 +966,7 @@
       <xsl:apply-templates select="$steps"/>
     </fo:list-block>
 
-    <xsl:if test="./title and $placement != 'before'">
+    <xsl:if test="(title or blockinfo/title or info/title) and $placement != 'before'">
       <!-- n.b. gentext code tests for $formal.procedures and may make an "informal" -->
       <!-- heading even though we called formal.object.heading. odd but true. -->
       <xsl:call-template name="formal.object.heading"/>
@@ -1063,6 +1064,31 @@
   </fo:block>
 </xsl:template>
 
+<!-- Add (Optional) when the step is optional -->
+<xsl:template match="step[@performance = 'optional']/*[1][self::para]" priority="3">
+  <xsl:variable name="keep.together">
+    <xsl:call-template name="pi.dbfo_keep-together"/>
+  </xsl:variable>
+  <fo:block xsl:use-attribute-sets="para.properties">
+    <xsl:if test="$keep.together != ''">
+      <xsl:attribute name="keep-together.within-column"><xsl:value-of
+                      select="$keep.together"/></xsl:attribute>
+    </xsl:if>
+    <xsl:call-template name="anchor"/>
+    <xsl:if test="$mark.optional.procedure.steps != 0">
+      <xsl:call-template name="optional.step.marker"/>
+    </xsl:if>
+    <xsl:apply-templates/>
+  </fo:block>
+</xsl:template>
+
+<xsl:template name="optional.step.marker">
+  <fo:inline>
+    <xsl:call-template name="gentext">
+      <xsl:with-param name="key">optional-step</xsl:with-param>
+    </xsl:call-template>
+  </fo:inline>
+</xsl:template>
 <!-- ==================================================================== -->
 
 <xsl:template match="segmentedlist">

@@ -9,11 +9,13 @@ import com.kodcu.config.*;
 import com.kodcu.engine.AsciidocConverterProvider;
 import com.kodcu.engine.AsciidocNashornConverter;
 import com.kodcu.engine.AsciidocWebkitConverter;
+import com.kodcu.keyboard.KeyHelper;
 import com.kodcu.logging.MyLog;
 import com.kodcu.logging.TableViewLogAppender;
 import com.kodcu.other.*;
 import com.kodcu.outline.Section;
 import com.kodcu.service.*;
+import com.kodcu.service.convert.DocumentConverter;
 import com.kodcu.service.convert.GitbookToAsciibookService;
 import com.kodcu.service.convert.docbook.DocBookConverter;
 import com.kodcu.service.convert.ebook.EpubConverter;
@@ -21,7 +23,6 @@ import com.kodcu.service.convert.ebook.MobiConverter;
 import com.kodcu.service.convert.html.HtmlBookConverter;
 import com.kodcu.service.convert.markdown.MarkdownService;
 import com.kodcu.service.convert.odf.ODFConverter;
-import com.kodcu.service.convert.pdf.AbstractPdfConverter;
 import com.kodcu.service.convert.slide.SlideConverter;
 import com.kodcu.service.extension.MathJaxService;
 import com.kodcu.service.extension.PlantUmlService;
@@ -34,14 +35,16 @@ import com.kodcu.service.ui.IndikatorService;
 import com.kodcu.service.ui.TabService;
 import com.kodcu.service.ui.TooltipTimeFixService;
 import com.kodcu.shell.ShellTab;
-//import com.sun.javafx.stage.StageHelper;
+import com.kodcu.spell.dictionary.DictionaryService;
 import de.jensd.fx.fontawesome.AwesomeDude;
 import de.jensd.fx.fontawesome.AwesomeIcon;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
+import javafx.application.HostServices;
 import javafx.beans.property.*;
 import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -51,17 +54,14 @@ import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.geometry.Side;
+import javafx.geometry.Insets;
+import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.scene.control.*;
-import javafx.scene.control.Label;
-import javafx.scene.control.Menu;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTreeCell;
+import javafx.scene.image.Image;
 import javafx.scene.input.*;
 import javafx.scene.layout.*;
 import javafx.scene.text.Text;
@@ -82,16 +82,14 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
+import org.springframework.web.util.UriComponentsBuilder;
+import javafx.stage.Window;
 
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
-import javax.swing.*;
-import java.awt.*;
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -100,7 +98,8 @@ import java.nio.file.attribute.PosixFileAttributeView;
 import java.nio.file.attribute.PosixFilePermission;
 import java.security.CodeSource;
 import java.util.*;
-import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -109,6 +108,7 @@ import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static java.nio.file.StandardOpenOption.*;
@@ -120,18 +120,27 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     public Label goUpLabel;
     public VBox terminalLeftBox;
     public TabPane terminalTabPane;
-    public TabPane bottomTabPane;
-    public Tab terminalTab;
+    public ToggleButton workdirToggle;
+    public ShowerHider leftShowerHider;
+    public ShowerHider rightShowerHider;
+    public ShowerHider bottomShowerHider;
+    public HBox terminalHBox;
+    public SplitPane mainVerticalSplitPane;
+    public ToggleButton logToggleButton;
+    public ToggleButton terminalToggleButton;
+    public ToggleGroup leftToggleGroup;
+    public VBox rightTooglesBox;
+    public VBox configBox;
+    public ToggleGroup rightToggleGroup;
+    public MenuButton donateButton;
+    public ToggleButton toggleConfigButton;
+    public Label basicSearch;
     private Logger logger = LoggerFactory.getLogger(ApplicationController.class);
-
-    public TabPane previewTabPane;
-    public Label odfPro;
+    public Label odfPro = new Label();
     public VBox logVBox;
     public Label statusText;
     public SplitPane editorSplitPane;
     public Label statusMessage;
-    public Label showHideLogs;
-    public Tab outlineTab;
     public MenuItem newFolder;
     public MenuItem newSlide;
     public Menu newMenu;
@@ -139,10 +148,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     public Menu favoriteDirMenu;
     public MenuItem addToFavoriteDir;
     public MenuItem afxVersionItem;
-    public TabPane workDirTabPane;
-    public CheckMenuItem hidePreviewPanel;
-    public MenuItem hideFileBrowser;
-    public MenuButton panelShowHideMenuButton;
     public MenuItem renameFile;
     public MenuItem newFile;
     public TabPane tabPane;
@@ -172,7 +177,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     public SeparatorMenuItem addToFavSeparator;
     private AnchorPane markdownTableAnchor;
     private Stage markdownTableStage;
-    private TreeView<Section> sectionTreeView;
+    public TreeView<Section> outlineTreeView;
 
     private Path userHome = Paths.get(System.getProperty("user.home"));
 
@@ -241,7 +246,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     @Autowired
     @Qualifier("pdfBookConverter")
-    private AbstractPdfConverter pdfBookConverter;
+    private DocumentConverter pdfBookConverter;
 
     @Autowired
     private EpubConverter epubConverter;
@@ -285,6 +290,12 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     @Autowired
     private ChartProvider chartProvider;
 
+    @Autowired
+    private DictionaryService dictionaryService;
+
+    @Autowired
+    private SpellcheckConfigBean spellcheckConfigBean;
+
     private Stage stage;
     private List<WebSocketSession> sessionList = new ArrayList<>();
     private ObjectProperty<Scene> scene = new SimpleObjectProperty<>();
@@ -293,11 +304,18 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     private final Clipboard clipboard = Clipboard.getSystemClipboard();
     private int port = 8080;
     private Path configPath;
-    private BooleanProperty fileBrowserVisibility = new SimpleBooleanProperty(false);
-    private BooleanProperty previewPanelVisibility = new SimpleBooleanProperty(false);
 
     @Value("${application.version}")
     private String version;
+
+    @Value("${application.issue}")
+    private String issuePage;
+    @Value("${application.forum}")
+    private String issueForum;
+    @Value("${application.gitter}")
+    private String gitterChat;
+    @Value("${application.github}")
+    private String githubPage;
 
     @Autowired
     private SlideConverter slideConverter;
@@ -317,7 +335,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     @Autowired
     private FileWatchService fileWatchService;
-    private PreviewTab previewTab;
 
     private Timeline progressBarTimeline = null;
 
@@ -343,6 +360,11 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     private String liveUrl;
 
     private ConverterResult lastConverterResult;
+    private HostServices hostServices;
+
+    @Value("${application.donation}")
+    private String donationUrl;
+    private ToggleGroup configToggleGroup;
 
     public void createAsciidocTable() {
         asciidocTableStage.showAndWait();
@@ -385,7 +407,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             sampleBookService.produceSampleBook(configPath, file.toPath());
             directoryService.setWorkingDirectory(Optional.of(file.toPath()));
             fileBrowser.browse(file.toPath());
-            fileWatchService.registerWatcher(file.toPath());
             threadService.runActionLater(() -> {
                 directoryView(null);
                 tabService.addTab(file.toPath().resolve("book.adoc"));
@@ -438,15 +459,14 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     }
 
     @WebkitCall(from = "asciidoctor-math")
-    public void math(String formula, String type, String imagesDir, String imageTarget) {
-        mathJaxService.appendFormula(formula, imagesDir, imageTarget);
+    public void math(String formula, String type, String imagesDir, String imageTarget, String nodename) {
+
+        mathJaxService.processFormula(formula, imagesDir, imageTarget);
     }
 
     @WebkitCall(from = "mathjax.html")
-    public void svgToPng(String imagesDir, String imageTarget, String svg, String formula, float width, float height) {
-        threadService.runTaskLater(() -> {
-            mathJaxService.svgToPng(imagesDir, imageTarget, svg, formula, width, height);
-        });
+    public void snapshotFormula(String formula, String imagesDir, String imageTarget) {
+        mathJaxService.snapshotFormula(formula, imagesDir, imageTarget);
     }
 
     private void convertMobi() {
@@ -490,17 +510,25 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         });
     }
 
-    public void createFileTree(String tree, String type, String imagesDir, String imageTarget, String width, String height) {
+    public void tree(String content, String type, String imagesDir, String imageTarget, String nodename) {
+        if (content.split("#").length > content.split("\\|-").length) {
+            createFileTree(content, type, imagesDir, imageTarget, nodename);
+        } else {
+            createHighlightFileTree(content, type, imagesDir, imageTarget, nodename);
+        }
+    }
+
+    public void createFileTree(String tree, String type, String imagesDir, String imageTarget, String nodename) {
 
         threadService.runTaskLater(() -> {
-            treeService.createFileTree(tree, type, imagesDir, imageTarget, width, height);
+            treeService.createFileTree(tree, type, imagesDir, imageTarget, nodename);
         });
     }
 
-    public void createHighlightFileTree(String tree, String type, String imagesDir, String imageTarget, String width, String height) {
+    public void createHighlightFileTree(String tree, String type, String imagesDir, String imageTarget, String nodename) {
 
         threadService.runTaskLater(() -> {
-            treeService.createHighlightFileTree(tree, type, imagesDir, imageTarget, width, height);
+            treeService.createHighlightFileTree(tree, type, imagesDir, imageTarget, nodename);
         });
     }
 
@@ -528,6 +556,12 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         });
     }
 
+    public void stageWidthChanged(ObservableValue observable, Number oldValue, Number newValue) {
+        if (!terminalToggleButton.isSelected() && !logToggleButton.isSelected()) {
+            mainVerticalSplitPane.setDividerPosition(0, 1);
+        }
+    }
+
     @Override
     public void initialize(URL url, ResourceBundle rb) {
 
@@ -535,12 +569,21 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 //        initializePosixPermissions();
         initializeNashornConverter();
         initializeTerminal();
+        initializeDonation();
+
+        terminalTabPane.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            Optional.ofNullable(newValue)
+                    .map(e -> ((ShellTab) e))
+                    .ifPresent(ShellTab::focusCommandInput);
+        });
+
+
+        Arrays.asList(htmlPane, slidePane, liveReloadPane).forEach(viewPanel -> VBox.getVgrow(viewPanel));
 
         threadService.runTaskLater(() -> {
             while (true) {
                 try {
                     renderLoop();
-                    waiterLoop();
                 } catch (Exception e) {
                     logger.error(e.getMessage(), e);
                 }
@@ -554,7 +597,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
         port = server.getEmbeddedServletContainer().getPort();
 
-        progressBar.prefWidthProperty().bind(previewTabPane.widthProperty());
+        progressBar.prefWidthProperty().bind(rightShowerHider.widthProperty());
 
         progressBarTimeline = new Timeline(
                 new KeyFrame(
@@ -566,31 +609,13 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                         new KeyValue(progressBar.progressProperty(), 1)
                 ));
 
-        this.previewTab = new PreviewTab("Preview", htmlPane);
-        this.previewTab.setClosable(false);
-
         threadService.runActionLater(() -> {
-            previewTabPane.getTabs().add(previewTab);
+            rightShowerHider.setMaster(htmlPane);
         }, true);
-
-        // Hide tab if one in tabpane
-        previewTabPane.getTabs().addListener((ListChangeListener) change -> {
-            final StackPane header = (StackPane) previewTabPane.lookup(".tab-header-area");
-
-            if (header != null) {
-                if (previewTabPane.getTabs().size() == 1)
-                    header.setPrefHeight(0);
-                else
-                    header.setPrefHeight(-1);
-            }
-        });
-        previewTabPane.setRotateGraphic(true);
 
         initializeLogViewer();
         initializeDoctypes();
 
-        previewTabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.ALL_TABS);
-        previewTabPane.setSide(Side.RIGHT);
         tooltipTimeFixService.fix();
 
         // Convert menu label icons
@@ -605,9 +630,95 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         // Left menu label icons
 
         AwesomeDude.setIcon(workingDirButton, AwesomeIcon.FOLDER_ALT, "14.0");
-        AwesomeDude.setIcon(panelShowHideMenuButton, AwesomeIcon.COLUMNS, "14.0");
         AwesomeDude.setIcon(refreshLabel, AwesomeIcon.REFRESH, "14.0");
         AwesomeDude.setIcon(goUpLabel, AwesomeIcon.LEVEL_UP, "14.0");
+
+        AwesomeDude.setIcon(basicSearch, AwesomeIcon.SEARCH, "14.00");
+
+        basicSearch.visibleProperty().bind(fileSystemView.focusedProperty().and(basicSearch.textProperty().isNotEmpty()));
+        basicSearch.visibleProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue) {
+                basicSearch.setText("");
+            }
+        });
+
+        AtomicBoolean dontKeyType = new AtomicBoolean(true);
+        fileSystemView.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
+            dontKeyType.set(true);
+
+            if (KeyHelper.isBackSpace(event)) {
+                if (basicSearch.isVisible()) {
+                    event.consume();
+                    Optional.ofNullable(basicSearch.getText())
+                            .filter(t -> t.length() > 0)
+                            .map(t -> t.substring(0, t.length() - 1))
+                            .ifPresent(s -> {
+                                basicSearch.setText(s);
+                                fileBrowser.searchAndSelect(basicSearch.getText());
+                            });
+                }
+            } else if (KeyHelper.isUp(event)) {
+                if (basicSearch.isVisible()) {
+                    event.consume();
+                    fileBrowser.searchDownAndSelect(basicSearch.getText());
+                }
+            } else if (KeyHelper.isDown(event)) {
+                if (basicSearch.isVisible()) {
+                    event.consume();
+                    fileBrowser.searchUpAndSelect(basicSearch.getText());
+                }
+            } else if (KeyHelper.isDelete(event)) {
+                event.consume();
+                deleteSelectedItems(event);
+            } else if (KeyHelper.isCopy(event)) {
+                event.consume();
+                this.copyFiles(tabService.getSelectedTabPaths());
+            } else if (KeyHelper.isF2(event)) {
+                event.consume();
+                this.renameFile(event);
+            } else if (KeyHelper.isEnter(event)) {
+                event.consume();
+                TreeItem<Item> selectedItem = fileSystemView.getSelectionModel().getSelectedItem();
+
+                if (Objects.isNull(selectedItem))
+                    return;
+
+                Path selectedPath = selectedItem.getValue().getPath();
+                tabService.previewDocument(selectedPath);
+            }
+
+            if (event.isConsumed()) {
+                dontKeyType.set(false);
+            }
+
+        });
+
+        fileSystemView.addEventHandler(KeyEvent.KEY_TYPED, event -> {
+
+            if (dontKeyType.get()) {
+                String eventText = Optional.ofNullable(event.getText())
+                        .filter(e -> !e.isEmpty())
+                        .orElseGet(() -> {
+                            String character = event.getCharacter();
+                            char[] chars = character.toCharArray();
+                            if (chars.length > 0) {
+                                if (chars[0] == '\u0000') {
+                                    return "";
+                                } else {
+                                    return new String(chars);
+                                }
+                            }
+                            return character;
+                        });
+
+                if (!eventText.isEmpty()) {
+                    event.consume();
+                    basicSearch.setText(basicSearch.getText() + eventText);
+                    fileBrowser.searchAndSelect(basicSearch.getText());
+                }
+            }
+
+        });
 
         leftButton.setGraphic(AwesomeDude.createIconLabel(AwesomeIcon.ELLIPSIS_H, "14.0"));
         afxVersionItem.setText(String.join(" ", "Version", version));
@@ -721,7 +832,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         liveReloadPane.webEngine().setOnAlert(event -> {
             if ("LIVE_LOADED".equals(event.getData())) {
                 liveReloadPane.setMember("afx", this);
-                current.currentEditor().rerender();
+//                current.currentEditor().rerender();
             }
         });
 
@@ -756,30 +867,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                     .forEach(tabService::previewDocument);
         });
 
-        deletePathItem.setOnAction(event -> {
-
-            ObservableList<TreeItem<Item>> selectedItems = fileSystemView.getSelectionModel().getSelectedItems();
-
-            List<Path> pathList = selectedItems.stream()
-                    .map(e -> e.getValue())
-                    .map(e -> e.getPath())
-                    .collect(Collectors.toList());
-
-            AlertHelper.deleteAlert(pathList).ifPresent(btn -> {
-                if (btn == ButtonType.YES) {
-                    pathList
-                            .forEach(path -> threadService.runTaskLater(() -> {
-                                if (Files.isDirectory(path)) {
-                                    IOHelper.deleteDirectory(path);
-                                } else {
-                                    IOHelper.deleteIfExists(path);
-                                }
-                            }));
-                }
-
-            });
-
-        });
+        deletePathItem.setOnAction(this::deleteSelectedItems);
 
         openFolderTreeItem.setOnAction(event -> {
             Path path = tabService.getSelectedTabPath();
@@ -816,14 +904,18 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
         fileSystemView.setOnMouseClicked(event -> {
             TreeItem<Item> selectedItem = fileSystemView.getSelectionModel().getSelectedItem();
+
             if (Objects.isNull(selectedItem))
                 return;
 
             event.consume();
+
             Path selectedPath = selectedItem.getValue().getPath();
-            if (event.getButton() == MouseButton.PRIMARY)
-                if (event.getClickCount() == 2)
+            if (event.getButton() == MouseButton.PRIMARY) {
+                if (event.getClickCount() >= 2) {
                     tabService.previewDocument(selectedPath);
+                }
+            }
         });
 
         fileSystemView.getSelectionModel().getSelectedIndices().addListener((ListChangeListener<? super Integer>) p -> {
@@ -844,7 +936,19 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                     addToFavSeparator.setVisible(false);
                 }
             } else if (selectedItems.size() == 1) {
-                Path path = selectedItems.get(0).getValue().getPath();
+                TreeItem<Item> itemTreeItem = selectedItems.get(0);
+                Item value = itemTreeItem.getValue();
+                Path path = value.getPath();
+
+                Optional<Path> optional = Optional.ofNullable(selectedItems)
+                        .filter(e -> e.size() > 0)
+                        .map(e -> e.get(0).getValue())
+                        .map(Item::getPath);
+
+                if (!optional.isPresent()) {
+                    return;
+                }
+
                 boolean isDirectory = Files.isDirectory(path);
                 newMenu.setVisible(isDirectory);
                 renameFile.setVisible(!isDirectory);
@@ -867,26 +971,119 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         tabService.initializeTabChangeListener(tabPane);
     }
 
-    public void openInDesktop(Path path) {
-        SwingUtilities.invokeLater(() -> {
-            try {
-                Desktop desktop = Desktop.getDesktop();
-                desktop.open(path.toFile());
-            } catch (Exception e) {
-                logger.error(e.getMessage(), e);
+    private void deleteSelectedItems(Event event) {
+        List<TreeItem<Item>> selectedItems = fileSystemView
+                .getSelectionModel()
+                .getSelectedItems()
+                .stream()
+                .collect(Collectors.toList());
+
+        List<Path> pathList = selectedItems.stream()
+                .map(e -> e.getValue())
+                .map(e -> e.getPath())
+                .collect(Collectors.toList());
+
+        AlertHelper.deleteAlert(pathList).ifPresent(btn -> {
+            if (btn == ButtonType.YES) {
+
+                fileSystemView.setDisable(true);
+
+                threadService.runTaskLater(() -> {
+                    try {
+                        boolean hasDirectory = false;
+                        for (TreeItem<Item> selectedItem : selectedItems) {
+//                            int selectedIndex = fileBrowser.findIndex(selectedItem);
+                            Path path = selectedItem.getValue().getPath();
+
+                            if (Files.isDirectory(path)) {
+
+                                if (!hasDirectory) {
+                                    hasDirectory = true;
+                                    fileWatchService.unRegisterAllPath();
+                                }
+
+                                if (path.getRoot().equals(path)) {
+                                    threadService.runActionLater(() -> {
+                                        AlertHelper.okayAlert("You can't delete fileystem root");
+                                    });
+                                    continue;
+                                }
+
+                                IOHelper.deleteDirectory(path);
+                            } else {
+                                IOHelper.deleteIfExists(path);
+                            }
+
+//                            fileSystemView.getSelectionModel().select(selectedIndex);
+                        }
+
+                        if (hasDirectory) {
+                            fileBrowser.refresh();
+                        }
+                    } catch (Exception ex) {
+                        logger.error(ex.getMessage(), ex);
+                    }
+
+                    threadService.runActionLater(() -> {
+                        fileSystemView.setDisable(false);
+                        fileSystemView.requestFocus();
+                    });
+                });
+
             }
+
         });
     }
 
-    public void browseInDesktop(String uri) {
-        SwingUtilities.invokeLater(() -> {
-            try {
-                Desktop desktop = Desktop.getDesktop();
-                desktop.browse(URI.create(uri));
-            } catch (Exception e) {
-                logger.error(e.getMessage(), e);
-            }
-        });
+    private void initializeDonation() {
+        donateButton.setGraphic(AwesomeDude.createIconLabel(AwesomeIcon.PAYPAL, "14.0"));
+        Tooltip.install(donateButton, new Tooltip("Donate to AsciidocFX project"));
+
+        IntStream.of(10, 25, 50, 100)
+                .forEach(unit -> {
+                    final MenuItem menuItem = MenuItemBuilt.item("€ " + unit)
+                            .click(event -> {
+                                browseInDesktop(String.format(donationUrl, unit));
+                            });
+                    donateButton.getItems().add(menuItem);
+                });
+
+        donateButton.getItems().add(MenuItemBuilt.item("× Close")
+                .click(event -> {
+                    if (!toggleConfigButton.isSelected()) {
+                        toggleConfigButton.fire();
+                    }
+
+                    if (Objects.nonNull(configToggleGroup)) {
+                        final ObservableList<Toggle> toggles = configToggleGroup.getToggles();
+                        if (!toggles.isEmpty()) {
+                            ((ToggleButton) toggles.get(0)).fire();
+                        }
+                    }
+
+                    threadService.schedule(() -> {
+                        threadService.runActionLater(() -> {
+                            editorConfigBean.showDonateProperty().setValue(false);
+                        });
+                    }, 2, TimeUnit.SECONDS);
+                }));
+    }
+
+    public void openInDesktop(Path path) {
+        try {
+            hostServices.showDocument(path.toUri().toString());
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+        }
+    }
+
+
+    public void browseInDesktop(String url) {
+        try {
+            hostServices.showDocument(UriComponentsBuilder.fromUriString(url).build().toUri().toASCIIString());
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+        }
     }
 
     private void initializeTerminal() {
@@ -896,21 +1093,14 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         terminalLeftBox.getChildren().add(newTerminalButton);
         terminalLeftBox.getChildren().add(closeTerminalButton);
 
+        Tooltip.install(newTerminalButton, new Tooltip("New Terminal"));
+        Tooltip.install(closeTerminalButton, new Tooltip("Close Terminal"));
+
         newTerminalButton.setOnAction(this::newTerminal);
         closeTerminalButton.setOnAction(this::closeTerminal);
 
         closeTerminalButton.setFocusTraversable(false);
         newTerminalButton.setFocusTraversable(false);
-
-        bottomTabPane.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            if ("Terminal".equals(newValue.getText())) {
-                if (terminalTabPane.getTabs().isEmpty()) {
-                    newTerminal(null);
-                } else {
-                    ((ShellTab) terminalTabPane.getSelectionModel().getSelectedItem()).focusCommandInput();
-                }
-            }
-        });
 
     }
 
@@ -919,26 +1109,23 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     @FXML
     public void newTerminal(ActionEvent actionEvent, Path... path) {
 
-        if (terminalTabPane.getTabs().isEmpty()) {
-            terminalNumber.set(0);
+        if (!terminalToggleButton.isSelected()) {
+            terminalToggleButton.fire();
         }
 
-        if (showHideLogs.getRotate() % 360 == 0) {
-            showHideLogs.setRotate(showHideLogs.getRotate() + 180);
-            editorSplitPane.setDividerPositions(0.5);
+        if (terminalTabPane.getTabs().isEmpty()) {
+            terminalNumber.set(0);
         }
 
         ShellTab shellTab = applicationContext.getBean(ShellTab.class);
         shellTab.setText(String.format("Terminal#%d", terminalNumber.incrementAndGet()));
         terminalTabPane.getTabs().add(shellTab);
         terminalTabPane.getSelectionModel().select(shellTab);
-        shellTab.focusCommandInput();
-
-        bottomTabPane.getSelectionModel().select(terminalTab);
 
         Path terminalPath = Optional.ofNullable(path).filter(e -> e.length > 0).map(e -> e[0]).orElse(null);
-
         shellTab.initialize(terminalPath);
+
+
     }
 
     @FXML
@@ -976,17 +1163,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         return stopRendering;
     }
 
-    private void waiterLoop() {
-
-        Integer integer = Optional.ofNullable(lastTupleReference.get())
-                .map(Tuple::getKey)
-                .map(String::length)
-                .map(e -> (e / 10))
-                .filter(e -> (e < 2000))
-                .orElse(2000);
-
-        threadService.sleep(integer);
-    }
 
     private void initializePosixPermissions() {
 
@@ -1012,35 +1188,46 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     }
 
     public void saveAllTabs() {
-        ObservableList<Tab> tabs = tabPane.getTabs();
-        for (Tab tab : tabs) {
-            MyTab myTab = (MyTab) tab;
-            if (!myTab.isNew()) {
-                myTab.saveDoc();
-            }
-        }
+
+        tabPane.getTabs()
+                .stream()
+                .filter(t -> t instanceof MyTab)
+                .map(t -> (MyTab) t)
+                .filter(t -> !t.isNew())
+                .forEach(MyTab::saveDoc);
     }
 
     public void loadAllTabs() {
-        ObservableList<Tab> tabs = tabPane.getTabs();
-        for (Tab tab : tabs) {
-            MyTab myTab = (MyTab) tab;
-            if (!myTab.isNew()) {
-                myTab.reload();
-            }
-        }
+        tabPane.getTabs()
+                .stream()
+                .filter(t -> t instanceof MyTab)
+                .map(t -> (MyTab) t)
+                .filter(t -> !t.isNew())
+                .forEach(MyTab::reload);
     }
 
     public void initializeSaveOnBlur() {
 
         stage.focusedProperty().addListener((observable, oldValue, newValue) -> {
-//            if (StageHelper.getStages().size() == 1) {
-//                if (!newValue) {
-//                    saveAllTabs();
-//                } else {
-//                    loadAllTabs();
-//                }
-//            }
+
+
+            Node focusOwner = stage.getScene().getFocusOwner();
+
+            if (Window.getWindows().size() == 1) {
+                if (!newValue) {
+                    saveAllTabs();
+                } else {
+                    loadAllTabs();
+                }
+            }
+
+            if (newValue) {
+                if (Objects.nonNull(focusOwner)) {
+//                    logger.info("Focus owner changed {}", focusOwner);
+                    focusOwner.requestFocus();
+                }
+            }
+
         });
 
     }
@@ -1099,6 +1286,9 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             }
         });*/
 
+        donateButton.managedProperty().bind(donateButton.visibleProperty());
+        editorConfigBean.showDonateProperty().bindBidirectional(donateButton.visibleProperty());
+
         locationConfigBean.mathjaxProperty().addListener((observable, oldValue, newValue) -> {
             if (Objects.nonNull(newValue)) {
                 if (!newValue.equals(oldValue)) {
@@ -1149,6 +1339,10 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
         editorConfigBean.fontSizeProperty().addListener((observable, oldValue, newValue) -> {
             applyForAllEditorPanes(editorPane -> editorPane.setFontSize(newValue.intValue()));
+        });
+
+        editorConfigBean.foldStyleProperty().addListener((observable, oldValue, newValue) -> {
+            applyForAllEditorPanes(editorPane -> editorPane.setFoldStyle(newValue));
         });
 
         ObservableList<Item> recentFilesList = storedConfigBean.getRecentFiles();
@@ -1283,8 +1477,10 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     private void applyForAllEditorPanes(Consumer<EditorPane> editorPaneConsumer) {
         ObservableList<Tab> tabs = tabPane.getTabs();
         for (Tab tab : tabs) {
-            MyTab myTab = (MyTab) tab;
-            editorPaneConsumer.accept(myTab.getEditorPane());
+            if (tab instanceof MyTab) {
+                MyTab myTab = (MyTab) tab;
+                editorPaneConsumer.accept(myTab.getEditorPane());
+            }
         }
     }
 
@@ -1375,9 +1571,15 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     private void initializePaths() {
 
         try {
-            CodeSource codeSource = ApplicationController.class.getProtectionDomain().getCodeSource();
-            File jarFile = new File(codeSource.getLocation().toURI().getPath());
-            installationPath = jarFile.toPath().getParent().getParent();
+            String homeProp = System.getProperty("asciidocfx.home");
+            if (homeProp != null) {
+                installationPath = new File(homeProp).toPath();
+            } else {
+                //guess installation path
+                CodeSource codeSource = ApplicationController.class.getProtectionDomain().getCodeSource();
+                File jarFile = new File(codeSource.getLocation().toURI().getPath());
+                installationPath = jarFile.toPath().getParent().getParent();
+            }
             configPath = installationPath.resolve("conf");
 
             Optional<String> linuxHome = Optional.ofNullable(System.getenv("HOME"));
@@ -1390,7 +1592,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                     .findFirst()
                     .ifPresent(path -> logPath = path.resolve(configDirName).resolve("log").toString());
 
-        } catch (URISyntaxException e) {
+        } catch (Exception e) {
             logger.error("Problem occured while resolving conf and log paths", e);
         }
 
@@ -1481,7 +1683,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         TableViewLogAppender.setThreadService(threadService);
         TableViewLogAppender.setLogList(logList);
         TableViewLogAppender.setStatusMessage(statusMessage);
-        TableViewLogAppender.setShowHideLogs(showHideLogs);
+        TableViewLogAppender.setShowHideLogs(logToggleButton);
         TableViewLogAppender.setLogViewer(logViewer);
 
         final EventHandler<ActionEvent> filterByLogLevel = event -> {
@@ -1575,28 +1777,8 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             control.prefHeightProperty().bind(searchLogField.heightProperty());
         }
 
-        AwesomeDude.setIcon(showHideLogs, AwesomeIcon.CHEVRON_CIRCLE_UP, "14.0");
-
-        showHideLogs.setOnMouseClicked(event -> {
-            showHideLogs.getStyleClass().removeAll("red-label");
-            showHideLogs.setRotate(showHideLogs.getRotate() + 180);
-            if (showHideLogs.getRotate() % 360 == 0)
-                editorSplitPane.setDividerPositions(1);
-            else
-                editorSplitPane.setDividerPositions(0.5);
-        });
-
-        scene.addListener((observableScene, oldScene, newScene) -> {
-            if (Objects.nonNull(newScene)) {
-                newScene.heightProperty().addListener((observable, oldValue, newValue) -> {
-                    if (showHideLogs.getRotate() % 360 == 0) {
-                        threadService.runActionLater(() -> {
-                            editorSplitPane.setDividerPositions(1);
-                        }, true);
-                    }
-                });
-            }
-        });
+        logViewer.setMinHeight(0);
+        logVBox.setMinHeight(0);
 
         logVBox.getChildren().addAll(logFlowPane, logViewer);
 
@@ -1609,38 +1791,29 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     }
 
     public void externalBrowse() {
-        ObservableList<Tab> tabs = previewTabPane.getTabs();
-        for (Tab tab : tabs) {
-            if (tab.isSelected()) {
-                Node content = tab.getContent();
-                if (Objects.nonNull(content))
-                    ((ViewPanel) content).browse();
-            }
-        }
+        rightShowerHider.getShowing().ifPresent(ViewPanel::browse);
     }
 
-    ChangeListener<Tab> outlineTabChangeListener;
+    ChangeListener<Boolean> outlineTabChangeListener;
 
     @WebkitCall(from = "index")
     public void fillOutlines(Object doc) {
 
-        if (outlineTab.isSelected()) {
+        if (outlineTreeView.isVisible()) {
             converterProvider.get(previewConfigBean).fillOutlines(doc);
         }
 
-        ReadOnlyObjectProperty<Tab> itemProperty = workDirTabPane.getSelectionModel().selectedItemProperty();
-
         if (Objects.nonNull(outlineTabChangeListener)) {
-            itemProperty.removeListener(outlineTabChangeListener);
+            outlineTreeView.visibleProperty().removeListener(outlineTabChangeListener);
         }
 
-        outlineTabChangeListener = (observable, old, nev) -> {
-            if (outlineTab == nev) {
+        outlineTabChangeListener = (observable, oldValue, newValue) -> {
+            if (newValue) {
                 converterProvider.get(previewConfigBean).fillOutlines(doc);
             }
         };
+        outlineTreeView.visibleProperty().addListener(outlineTabChangeListener);
 
-        itemProperty.addListener(outlineTabChangeListener);
     }
 
     @WebkitCall(from = "index")
@@ -1653,8 +1826,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
         threadService.runActionLater(() -> {
 
-            if (Objects.isNull(sectionTreeView)) {
-                sectionTreeView = new TreeView<Section>();
+            if (outlineTreeView.getRoot() == null) {
                 TreeItem<Section> rootItem = new TreeItem<>();
                 rootItem.setExpanded(true);
                 Section rootSection = new Section();
@@ -1664,11 +1836,11 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
                 rootItem.setValue(rootSection);
 
-                sectionTreeView.setRoot(rootItem);
+                outlineTreeView.setRoot(rootItem);
 
-                sectionTreeView.setOnMouseClicked(event -> {
+                outlineTreeView.setOnMouseClicked(event -> {
                     try {
-                        TreeItem<Section> item = sectionTreeView.getSelectionModel().getSelectedItem();
+                        TreeItem<Section> item = outlineTreeView.getSelectionModel().getSelectedItem();
                         EditorPane editorPane = current.currentEditor();
                         editorPane.moveCursorTo(item.getValue().getLineno());
                     } catch (Exception e) {
@@ -1677,12 +1849,13 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                 });
             }
 
-            sectionTreeView.getRoot().getChildren().clear();
+            if (outlineList.size() > 0)
+                outlineTreeView.getRoot().getChildren().clear();
 
             for (Section section : outlineList) {
                 TreeItem<Section> sectionItem = new TreeItem<>(section);
                 sectionItem.setExpanded(true);
-                sectionTreeView.getRoot().getChildren().add(sectionItem);
+                outlineTreeView.getRoot().getChildren().add(sectionItem);
 
                 TreeSet<Section> subsections = section.getSubsections();
                 for (Section subsection : subsections) {
@@ -1693,11 +1866,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                 }
             }
 
-            if (outlineList.size() == 0) {
-                outlineTab.setContent(new Label("Empty document level(s)"));
-            } else {
-                outlineTab.setContent(sectionTreeView);
-            }
         });
 
     }
@@ -1782,7 +1950,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     }
 
     @FXML
-    public void openDoc(Event event) {
+    public void openDoc(Event... event) {
         tabService.openDoc();
     }
 
@@ -1795,25 +1963,20 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     @WebkitCall(from = "editor")
     public boolean isLiveReloadPane() {
-        return previewTab.getContent() == liveReloadPane;
+        return liveReloadPane.isVisible();
     }
 
     @WebkitCall(from = "editor")
     public void onscroll(Object pos, Object max) {
-        Node content = previewTab.getContent();
-        if (Objects.nonNull(content)) {
-            ((ViewPanel) content).onscroll(pos, max);
-        }
+        rightShowerHider.getShowing()
+                .ifPresent(s -> s.onscroll(pos, max));
     }
 
     @WebkitCall(from = "editor")
     public void scrollByLine(String text) {
         threadService.runActionLater(() -> {
             try {
-                Node content = previewTab.getContent();
-                if (content instanceof ViewPanel) {
-                    ((ViewPanel) content).scrollByLine(text);
-                }
+                rightShowerHider.getShowing().ifPresent(w -> w.scrollByLine(text));
             } catch (Exception e) {
                 logger.debug(e.getMessage(), e);
             }
@@ -1829,11 +1992,8 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     public void scrollByPosition(String text) {
         threadService.runActionLater(() -> {
             try {
-                Node content = previewTab.getContent();
-                if (content instanceof ViewPanel) {
-                    String selection = asciidocWebkitConverter.findRenderedSelection(text);
-                    ((ViewPanel) content).scrollByPosition(selection);
-                }
+                String selection = asciidocWebkitConverter.findRenderedSelection(text);
+                rightShowerHider.getShowing().ifPresent(w -> w.scrollByPosition(selection));
             } catch (Exception e) {
                 logger.debug(e.getMessage(), e);
             }
@@ -1841,22 +2001,26 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     }
 
     @WebkitCall(from = "asciidoctor-uml")
-    public void uml(String uml, String type, String imagesDir, String imageTarget) throws IOException {
-        plantuml(uml, type, imagesDir, imageTarget);
+    public void uml(String uml, String type, String imagesDir, String imageTarget, String nodename) throws IOException {
+        plantuml(uml, type, imagesDir, imageTarget, nodename);
     }
 
     @WebkitCall(from = "asciidoctor-uml")
-    public void plantuml(String uml, String type, String imagesDir, String imageTarget) throws IOException {
+    public void plantuml(String uml, String type, String imagesDir, String imageTarget, String nodename) throws IOException {
 
         threadService.runTaskLater(() -> {
-            plantUmlService.plantUml(uml, type, imagesDir, imageTarget);
+            plantUmlService.plantUml(uml, type, imagesDir, imageTarget, nodename);
         });
     }
 
-    @WebkitCall(from = "asciidoctor-ditaa")
-    public void ditaa(String ditaa, String type, String imagesDir, String imageTarget) throws IOException {
-        String plantUmlString = "@startditaa\n" + ditaa + "\n@endditaa\n";
-        this.plantuml(plantUmlString, type, imagesDir, imageTarget);
+    @WebkitCall(from = "asciidoctor-uml")
+    public void graphviz(String graphviz, String type, String imagesDir, String imageTarget, String nodename) throws IOException {
+        this.plantuml(graphviz, type, imagesDir, imageTarget, nodename);
+    }
+
+    @WebkitCall(from = "asciidoctor-uml")
+    public void ditaa(String ditaa, String type, String imagesDir, String imageTarget, String nodename) throws IOException {
+        this.plantuml(ditaa, type, imagesDir, imageTarget, nodename);
     }
 
     @WebkitCall(from = "asciidoctor-chart")
@@ -1917,15 +2081,44 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         return optMap;
     }
 
-    @WebkitCall(from = "editor")
-    public void appendWildcard() {
-        current.currentTab().setChangedProperty(true);
+    @WebkitCall(from = "converter.js")
+    public void completeWebWorkerExceptionally(Object taskId) {
+        threadService.runTaskLater(() -> {
+            final Map<String, CompletableFuture<ConverterResult>> workerTasks = asciidocWebkitConverter.getWebWorkerTasks();
+            Optional.ofNullable(workerTasks.get(taskId))
+                    .filter(c -> !c.isDone())
+                    .ifPresent(c -> {
+                        final RuntimeException ex = new RuntimeException(String.format("Task: %s is not completed", taskId));
+                        c.completeExceptionally(ex);
+                    });
+            workerTasks.remove(taskId);
+        });
     }
 
-    private AtomicReference<Tuple<String, String>> lastTupleReference = new AtomicReference<>();
-    private AtomicReference<Tuple<String, String>> latestTupleReference = new AtomicReference<>();
 
-    private void renderLoop() {
+    @WebkitCall(from = "converter.js")
+    public void completeWebWorker(String taskId, String rendered, String backend, String doctype) {
+        threadService.runTaskLater(() -> {
+            final ConverterResult converterResult = new ConverterResult(taskId, rendered, backend, doctype);
+            final Map<String, CompletableFuture<ConverterResult>> workerTasks = asciidocWebkitConverter.getWebWorkerTasks();
+            final CompletableFuture<ConverterResult> completableFuture = workerTasks.get(converterResult.getTaskId());
+
+            Optional.ofNullable(completableFuture)
+                    .filter(c -> !c.isDone())
+                    .ifPresent(c -> {
+                        c.complete(converterResult);
+                    });
+
+            workerTasks.remove(converterResult.getTaskId());
+        });
+    }
+
+    private AtomicReference<Tuple<String, String>> latestTupleReference = new AtomicReference<>();
+    private Semaphore renderLoopSemaphore = new Semaphore(1);
+
+    private void renderLoop() throws InterruptedException {
+
+        renderLoopSemaphore.acquire();
 
         if (stopRendering.get()) {
             return;
@@ -1936,15 +2129,8 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         if (Objects.isNull(tuple))
             return;
 
-        if (tuple.equals(lastTupleReference.get()))
-            return;
-
-        lastTupleReference.set(tuple);
-
         String text = tuple.getKey();
         String mode = tuple.getValue();
-
-        latestTupleReference.set(null);
 
         try {
 
@@ -1962,23 +2148,26 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
                 if (lastConverterResult.isBackend("html5")) {
                     updateRendered(lastConverterResult.getRendered());
-                    previewTab.setChild(htmlPane);
+                    rightShowerHider.showNode(htmlPane);
                 }
 
                 if (lastConverterResult.isBackend("revealjs") || lastConverterResult.isBackend("deckjs")) {
                     slidePane.setBackend(lastConverterResult.getBackend());
                     slideConverter.convert(lastConverterResult.getRendered());
-                    previewTab.setChild(slidePane);
+                    rightShowerHider.showNode(slidePane);
                 }
 
             } else if ("html".equalsIgnoreCase(mode)) {
-                if (liveReloadPane.getReady()) {
-                    liveReloadPane.updateDomdom();
-                } else {
-                    liveReloadPane.load(String.format(liveUrl, port, directoryService.interPath()));
-                }
+//                if (liveReloadPane.getReady()) {
+//                    liveReloadPane.updateDomdom();
+//                } else {
+                threadService.buff("htmlEditor")
+                        .schedule(() -> {
+                            liveReloadPane.load(String.format(liveUrl, port, directoryService.interPath()));
+                        }, 500, TimeUnit.MILLISECONDS);
+//                }
 
-                previewTab.setChild(liveReloadPane);
+                rightShowerHider.showNode(liveReloadPane);
 
             } else if ("markdown".equalsIgnoreCase(mode)) {
                 MarkdownService markdownService = applicationContext.getBean(MarkdownService.class);
@@ -1986,7 +2175,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                     ConverterResult result = converterProvider.get(previewConfigBean).convertAsciidoc(asciidoc);
                     result.afterRender(this::updateRendered);
                 });
-                previewTab.setChild(htmlPane);
+                rightShowerHider.showNode(htmlPane);
             }
 
         } catch (Exception e) {
@@ -2023,17 +2212,43 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     @WebkitCall(from = "editor")
     public void textListener(String text, String mode) {
         latestTupleReference.set(new Tuple<>(text, mode));
+        if (renderLoopSemaphore.hasQueuedThreads()) {
+            renderLoopSemaphore.release();
+        }
+    }
+
+    @WebkitCall(from = "editor")
+    public void checkWordSuggestions(String word) {
+        final List<String> stringList = dictionaryService.getSuggestionMap()
+                .getOrDefault(word, Arrays.asList());
+        current.currentEditor().showSuggestions(stringList);
+    }
+
+    @WebkitCall(from = "editor")
+    public void processTokens() {
+
+        if (spellcheckConfigBean.getDisableSpellCheck()) {
+            return;
+        }
+
+        final EditorPane editorPane = current.currentEditor();
+        final String tokenList = editorPane.tokenList();
+        final String mode = editorPane.editorMode();
+
+        threadService.runTaskLater(() -> {
+            dictionaryService.processTokens(editorPane, tokenList, mode);
+        });
     }
 
     @WebkitCall(from = "asciidoctor-odf.js")
-    public void convertToOdf(String name, Object obj) throws Exception {
+    public synchronized void convertToOdf(String name, Object obj) throws Exception {
         JSObject jObj = (JSObject) obj;
         odfConverter.buildDocument(name, jObj);
     }
 
     @WebkitCall
-    public String getTemplate(String templateName, String templateDir) throws IOException {
-        return asciidocWebkitConverter.getTemplate(templateName, templateDir);
+    public String getTemplate(String templateDir) {
+        return asciidocWebkitConverter.getTemplate(templateDir);
     }
 
     public void cutCopy(String data) {
@@ -2102,6 +2317,15 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             }
         }
 
+        if (clipboard.hasImage()) {
+            Image image = clipboard.getImage();
+            Optional<String> block = parserService.toImageBlock(image);
+            if (block.isPresent()) {
+                editorPane.insert(block.get());
+                return;
+            }
+        }
+
         editorPane.execCommand("paste-raw-1");
     }
 
@@ -2112,6 +2336,15 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
         if (clipboard.hasFiles()) {
             Optional<String> block = parserService.toImageBlock(clipboard.getFiles());
+            if (block.isPresent()) {
+                editorPane.insert(block.get());
+                return;
+            }
+        }
+
+        if (clipboard.hasImage()) {
+            Image image = clipboard.getImage();
+            Optional<String> block = parserService.toImageBlock(image);
             if (block.isPresent()) {
                 editorPane.insert(block.get());
                 return;
@@ -2137,32 +2370,21 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
 
     public void adjustSplitPane() {
-        if (splitPane.getDividerPositions()[0] > 0.1) {
-            hideFileAndPreviewPanels(null);
-        } else {
-            showFileBrowser();
-            showPreviewPanel();
+
+        final Toggle selectedToggle1 = leftToggleGroup.getSelectedToggle();
+        final Toggle selectedToggle2 = rightToggleGroup.getSelectedToggle();
+        if (Objects.nonNull(selectedToggle1)) {
+            ((ToggleButton) selectedToggle1).fire();
         }
-    }
 
-    @WebkitCall
-    public void debug(String message) {
-        logger.debug(message);
-    }
+        if (Objects.nonNull(selectedToggle2)) {
+            ((ToggleButton) selectedToggle2).fire();
+        }
 
-    @WebkitCall
-    public void error(String message) {
-        logger.error(message);
-    }
-
-    @WebkitCall
-    public void info(String message) {
-        logger.info(message);
-    }
-
-    @WebkitCall
-    public void warn(String message) {
-        logger.warn(message);
+        if (Objects.isNull(selectedToggle1) && Objects.isNull(selectedToggle2)) {
+            ((ToggleButton) leftToggleGroup.getToggles().get(0)).fire();
+            ((ToggleButton) rightToggleGroup.getToggles().get(0)).fire();
+        }
     }
 
     public void saveDoc() {
@@ -2182,7 +2404,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     }
 
     public void saveAndCloseCurrentTab() {
-        this.saveDoc();
+//        this.saveDoc();
         threadService.runActionLater(current.currentTab()::close);
     }
 
@@ -2260,22 +2482,22 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     @FXML
     private void bugReport(ActionEvent actionEvent) {
-        browseInDesktop("https://github.com/asciidocfx/AsciidocFX/issues");
+        browseInDesktop(issuePage);
     }
 
     @FXML
     private void openCommunityForum(ActionEvent actionEvent) {
-        browseInDesktop("https://groups.google.com/d/forum/asciidocfx-discuss");
+        browseInDesktop(issueForum);
     }
 
     @FXML
     private void openGitterChat(ActionEvent actionEvent) {
-        browseInDesktop("https://gitter.im/asciidocfx/AsciidocFX");
+        browseInDesktop(gitterChat);
     }
 
     @FXML
     private void openGithubPage(ActionEvent actionEvent) {
-        browseInDesktop("https://github.com/asciidocfx/AsciidocFX");
+        browseInDesktop(githubPage);
     }
 
     @FXML
@@ -2308,6 +2530,31 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     public ShortcutProvider getShortcutProvider() {
         return shortcutProvider;
+    }
+
+    @WebkitCall
+    public void log(Object object) {
+        debug(object);
+    }
+
+    @WebkitCall
+    public void debug(Object object) {
+        logger.debug(object + "");
+    }
+
+    @WebkitCall
+    public void warn(Object object) {
+        logger.warn(object + "");
+    }
+
+    @WebkitCall
+    public void info(Object object) {
+        logger.info(object + "");
+    }
+
+    @WebkitCall
+    public void error(Object object) {
+        logger.error(object + "");
     }
 
     @FXML
@@ -2374,26 +2621,39 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     }
 
     @FXML
-    public void renameFile(ActionEvent actionEvent) {
+    public void renameFile(Event actionEvent) {
 
         RenameDialog dialog = RenameDialog.create();
 
         Path path = fileSystemView.getSelectionModel().getSelectedItem()
                 .getValue().getPath();
 
-        dialog.getEditor().setText(path.getFileName().toString());
+        TextField editor = dialog.getEditor();
+        editor.setText(path.getFileName().toString());
 
         Consumer<String> consumer = result -> {
             if (dialog.isShowing())
                 dialog.hide();
 
-            if (result.trim().matches("^[^\\\\/:?*\"<>|]+$"))
-                IOHelper.move(path, path.getParent().resolve(result.trim()));
+            threadService.runTaskLater(() -> {
+                if (result.trim().matches("^[^\\\\/:?*\"<>|]+$")) {
+                    IOHelper.move(path, path.getParent().resolve(result.trim()));
+                }
+            });
         };
 
-        dialog.getEditor().setOnAction(event -> {
-            consumer.accept(dialog.getEditor().getText());
+        editor.setOnAction(event -> {
+            consumer.accept(editor.getText());
         });
+
+        if(!Files.isDirectory(path)){
+            int extensionIndex = editor.getText().lastIndexOf(".");
+            if (extensionIndex > 0) {
+                threadService.runActionLater(() -> {
+                    editor.selectRange(0, extensionIndex);
+                }, true);
+            }
+        }
 
         dialog.showAndWait().ifPresent(consumer);
     }
@@ -2435,68 +2695,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     }
 
-    public boolean getFileBrowserVisibility() {
-        return fileBrowserVisibility.get();
-    }
-
-    public BooleanProperty fileBrowserVisibilityProperty() {
-        return fileBrowserVisibility;
-    }
-
-    public boolean getPreviewPanelVisibility() {
-        return previewPanelVisibility.get();
-    }
-
-    public BooleanProperty previewPanelVisibilityProperty() {
-        return previewPanelVisibility;
-    }
-
-    public TabPane getWorkDirTabPane() {
-        return workDirTabPane;
-    }
-
-    public void setWorkDirTabPane(TabPane workDirTabPane) {
-        this.workDirTabPane = workDirTabPane;
-    }
-
-    @FXML
-    public void hideFileBrowser(ActionEvent actionEvent) {
-        splitPane.setDividerPosition(0, 0);
-        fileBrowserVisibility.setValue(true);
-    }
-
-    public void showFileBrowser() {
-        splitPane.getDividers().get(0).setPosition(0.17551963048498845);
-        fileBrowserVisibility.setValue(false);
-
-    }
-
-    public void hidePreviewPanel() {
-        splitPane.setDividerPosition(1, 1);
-        previewPanelVisibility.setValue(true);
-    }
-
-    @FXML
-    public void togglePreviewPanel(ActionEvent actionEvent) {
-        if (hidePreviewPanel.isSelected()) {
-            hidePreviewPanel();
-        } else {
-            showPreviewPanel();
-        }
-    }
-
-    public void showPreviewPanel() {
-        splitPane.getDividers().get(1).setPosition(0.5996920708237106);
-        previewPanelVisibility.setValue(false);
-        hidePreviewPanel.setSelected(false);
-    }
-
-    @FXML
-    public void hideFileAndPreviewPanels(ActionEvent actionEvent) {
-        hidePreviewPanel.setSelected(true);
-        togglePreviewPanel(actionEvent);
-        hideFileBrowser(actionEvent);
-    }
 /*
     @WebkitCall
     public void fillModeList(String mode) {
@@ -2506,12 +2704,13 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     }*/
 
     public void clearImageCache(Path imagePath) {
-        Optional.ofNullable(imagePath)
-                .map(Path::getFileName)
-                .map(Path::toString)
-                .ifPresent(imageName -> {
-                    htmlPane.webEngine().executeScript(String.format("clearImageCache('%s')", imageName));
-                });
+        rightShowerHider.getShowing()
+                .ifPresent(w -> w.clearImageCache(imagePath));
+    }
+
+    public void clearImageCache(String imagePath) {
+        rightShowerHider.getShowing()
+                .ifPresent(w -> w.clearImageCache(imagePath));
     }
 
     public ObservableList<DocumentMode> getModeList() {
@@ -2528,24 +2727,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     public void setIncludeAsciidocResource(boolean includeAsciidocResource) {
         this.includeAsciidocResource.set(includeAsciidocResource);
-    }
-
-    public void removeChildElement(Node node) {
-        getRootAnchor().getChildren().remove(node);
-    }
-
-    @FXML
-    public void switchSlideView(ActionEvent actionEvent) {
-        splitPane.setDividerPositions(0, 0.45);
-        fileBrowserVisibility.setValue(true);
-    }
-
-    public TabPane getPreviewTabPane() {
-        return previewTabPane;
-    }
-
-    public PreviewTab getPreviewTab() {
-        return previewTab;
     }
 
     public ProgressBar getProgressBar() {
@@ -2577,11 +2758,10 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                     indikatorService.startProgressBar();
                     IOHelper.copyDirectory(configPath.resolve("slide/frameworks"), folderPath);
                     indikatorService.stopProgressBar();
-                    directoryService.changeWorkigDir(folderPath);
                     threadService.runActionLater(() -> {
                         tabService.addTab(folderPath.resolve("slide.adoc"));
-                        this.switchSlideView(actionEvent);
                     });
+                    directoryService.changeWorkigDir(folderPath);
                 });
             }
         });
@@ -2606,16 +2786,33 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     @FXML
     public void showSettings() {
-        configurationService.showConfig();
+
     }
 
     @WebkitCall(from = "editor-shortcut")
     public void showWorkerPane() {
         threadService.runActionLater(() -> {
-            PreviewTab workerTab = new PreviewTab("Worker Pane", asciidocWebkitConverter);
-            previewTabPane.getTabs().add(workerTab);
-            previewTabPane.getSelectionModel().select(workerTab);
+
+            ToggleButton toggleButton = new ToggleButton();
+            toggleButton.setPrefSize(20, 80);
+            toggleButton.setToggleGroup(rightToggleGroup);
+            toggleButton.getStyleClass().addAll("corner-toggle-button", "corner-bottom-half");
+            final Label label = new Label("Worker");
+            label.setRotate(90);
+            toggleButton.setGraphic(new Group(label));
+            toggleButton.setPadding(Insets.EMPTY);
+            toggleButton.setOnAction(this::toggleWorkerView);
+            toggleButton.fire();
+
+            final ObservableList<Node> children = rightTooglesBox.getChildren();
+
+            children.add(toggleButton);
+
         });
+    }
+
+    private void toggleWorkerView(ActionEvent actionEvent) {
+        rightShowerHider.showNode(asciidocWebkitConverter);
     }
 
     public void addRemoveRecentList(Path path) {
@@ -2641,7 +2838,9 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     public void closeAllTabs(Event event) {
         ObservableList<Tab> tabs = FXCollections.observableArrayList(tabPane.getTabs());
 
-        tabs.stream().map(t -> (MyTab) t).sorted((mo1, mo2) -> {
+        tabs.stream()
+                .filter(t -> t instanceof MyTab)
+                .map(t -> (MyTab) t).sorted((mo1, mo2) -> {
             if (mo1.isNew() && !mo2.isNew())
                 return -1;
             else if (mo2.isNew() && !mo1.isNew()) {
@@ -2693,6 +2892,10 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         }
     }
 
+    public VBox getConfigBox() {
+        return configBox;
+    }
+
     @WebkitCall(from = "asciidoctor-image-cache")
     public Integer readImageCache(String target) {
         return current.getCache().get(target);
@@ -2700,5 +2903,120 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     public String applyReplacements(String text) {
         return converterProvider.get(previewConfigBean).applyReplacements(text);
+    }
+
+    @FXML
+    public void toggleRecentView(ActionEvent actionEvent) {
+        final ToggleButton source = (ToggleButton) actionEvent.getSource();
+        splitPane.setDividerPosition(0, source.isSelected() ? 0.17 : 0);
+        if (source.isSelected()) {
+            leftShowerHider.showNode(recentListView);
+        }
+    }
+
+    @FXML
+    public void toggleWorkdirView(ActionEvent actionEvent) {
+        final ToggleButton source = (ToggleButton) actionEvent.getSource();
+        splitPane.setDividerPosition(0, source.isSelected() ? 0.17 : 0);
+        if (source.isSelected()) {
+            leftShowerHider.showDefaultNode();
+        }
+    }
+
+    @FXML
+    public void toggleOutlineView(ActionEvent actionEvent) {
+        final ToggleButton source = (ToggleButton) actionEvent.getSource();
+        splitPane.setDividerPosition(0, source.isSelected() ? 0.17 : 0);
+        if (source.isSelected()) {
+            leftShowerHider.showNode(outlineTreeView);
+        }
+    }
+
+    @FXML
+    public void togglePreviewView(ActionEvent actionEvent) {
+        final ToggleButton source = (ToggleButton) actionEvent.getSource();
+        splitPane.setDividerPosition(1, source.isSelected() ? 0.59 : 1);
+        if (source.isSelected()) {
+            rightShowerHider.showDefaultNode();
+        }
+
+    }
+
+    @FXML
+    public void toggleConfigurationView(ActionEvent actionEvent) {
+        final ToggleButton source = (ToggleButton) actionEvent.getSource();
+        splitPane.setDividerPosition(1, source.isSelected() ? 0.59 : 1);
+        if (source.isSelected()) {
+            rightShowerHider.showNode(configBox);
+        }
+
+    }
+
+    @FXML
+    public void toggleLogView(ActionEvent actionEvent) {
+        final ToggleButton source = (ToggleButton) actionEvent.getSource();
+
+        source.getStyleClass().remove("red-label");
+
+        mainVerticalSplitPane.setDividerPosition(0, source.isSelected() ? 0.40 : 1);
+
+        if (source.isSelected()) {
+            bottomShowerHider.showNode(logVBox);
+        }
+
+
+    }
+
+    @FXML
+    public void toggleTerminalView(ActionEvent actionEvent) {
+
+        final ToggleButton source = (ToggleButton) actionEvent.getSource();
+
+        mainVerticalSplitPane.setDividerPosition(0, source.isSelected() ? 0.40 : 1);
+
+        if (source.isSelected()) {
+            bottomShowerHider.showNode(terminalHBox);
+            if (terminalTabPane.getTabs().isEmpty()) {
+                newTerminal(null);
+            }
+        }
+
+    }
+
+    public ShowerHider getRightShowerHider() {
+        return rightShowerHider;
+    }
+
+    public void setHostServices(HostServices hostServices) {
+        this.hostServices = hostServices;
+    }
+
+    public HostServices getHostServices() {
+        return hostServices;
+    }
+
+    public void setConfigToggleGroup(ToggleGroup configToggleGroup) {
+        this.configToggleGroup = configToggleGroup;
+    }
+
+    public ToggleGroup getConfigToggleGroup() {
+        return configToggleGroup;
+    }
+
+    public String getClipboardImageFilePattern() {
+        return editorConfigBean.getClipboardImageFilePattern();
+    }
+
+    public void initializeTabWatchListener() {
+        getTabPane().getTabs().addListener((ListChangeListener<Tab>) c -> {
+            c.next();
+            List<? extends Tab> addedSubList = c.getAddedSubList();
+
+            threadService.runTaskLater(() -> {
+                tabService.applyForEachMyTab(myTab -> {
+                    fileWatchService.registerPathWatcher(myTab.getPath());
+                }, addedSubList);
+            });
+        });
     }
 }

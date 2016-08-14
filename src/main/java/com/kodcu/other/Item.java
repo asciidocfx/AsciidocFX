@@ -38,6 +38,12 @@ public class Item {
 
         Item item = (Item) o;
 
+        if(Objects.isNull(path))
+            return false;
+
+        if(Objects.isNull(item.path))
+            return false;
+
         if (!path.equals(item.path)) return false;
 
         return true;
@@ -45,6 +51,6 @@ public class Item {
 
     @Override
     public int hashCode() {
-        return path.hashCode();
+        return Objects.hash(path);
     }
 }
