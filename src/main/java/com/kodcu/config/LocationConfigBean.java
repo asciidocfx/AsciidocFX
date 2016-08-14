@@ -29,7 +29,7 @@ import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 import javax.json.JsonReader;
-import java.io.FileReader;
+import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Objects;
@@ -129,10 +129,10 @@ public class LocationConfigBean extends ConfigurationBase {
         DefaultFactoryProvider locationConfigFormProvider = new DefaultFactoryProvider();
 
 
-        locationConfigFormProvider.addFactory(new NamedFieldHandler("kindlegen"), new FileChooserFactory("Enter kindlegen path", controller::browse));
-        locationConfigFormProvider.addFactory(new NamedFieldHandler("mathjax"), new FileChooserFactory(controller::browse));
-        locationConfigFormProvider.addFactory(new NamedFieldHandler("stylesheetDefault"), new FileChooserEditableFactory(tabService::addTab, controller::browse));
-        locationConfigFormProvider.addFactory(new NamedFieldHandler("stylesheetOverrides"), new FileChooserEditableFactory(tabService::addTab, controller::browse));
+        locationConfigFormProvider.addFactory(new NamedFieldHandler("kindlegen"), new FileChooserFactory("Enter kindlegen path", controller::openInDesktop));
+        locationConfigFormProvider.addFactory(new NamedFieldHandler("mathjax"), new FileChooserFactory(controller::openInDesktop));
+        locationConfigFormProvider.addFactory(new NamedFieldHandler("stylesheetDefault"), new FileChooserEditableFactory(tabService::addTab, controller::openInDesktop));
+        locationConfigFormProvider.addFactory(new NamedFieldHandler("stylesheetOverrides"), new FileChooserEditableFactory(tabService::addTab, controller::openInDesktop));
         locationConfigForm.setEditorFactoryProvider(locationConfigFormProvider);
 
         locationConfigForm.setSource(this);
@@ -159,41 +159,41 @@ public class LocationConfigBean extends ConfigurationBase {
 
         fadeOut(infoLabel, "Loading...");
 
-            loadPathDefaults();
+        loadPathDefaults();
 
-            FileReader fileReader = IOHelper.fileReader(getConfigPath());
-            JsonReader jsonReader = Json.createReader(fileReader);
+        Reader fileReader = IOHelper.fileReader(getConfigPath());
+        JsonReader jsonReader = Json.createReader(fileReader);
 
-            JsonObject jsonObject = jsonReader.readObject();
+        JsonObject jsonObject = jsonReader.readObject();
 
-            String stylesheetDefault = jsonObject.getString("stylesheetDefault", null);
-            String stylesheetOverrides = jsonObject.getString("stylesheetOverrides", null);
-            String mathjax = jsonObject.getString("mathjax", null);
-            String kindlegen = jsonObject.getString("kindlegen", null);
+        String stylesheetDefault = jsonObject.getString("stylesheetDefault", null);
+        String stylesheetOverrides = jsonObject.getString("stylesheetOverrides", null);
+        String mathjax = jsonObject.getString("mathjax", null);
+        String kindlegen = jsonObject.getString("kindlegen", null);
 
-            IOHelper.close(jsonReader, fileReader);
+        IOHelper.close(jsonReader, fileReader);
 
-            threadService.runActionLater(() -> {
+        threadService.runActionLater(() -> {
 
-                if (Objects.nonNull(stylesheetDefault)) {
-                    this.setStylesheetDefault(stylesheetDefault);
-                }
+            if (Objects.nonNull(stylesheetDefault)) {
+                this.setStylesheetDefault(stylesheetDefault);
+            }
 
-                if (Objects.nonNull(stylesheetOverrides)) {
-                    this.setStylesheetOverrides(stylesheetOverrides);
-                }
+            if (Objects.nonNull(stylesheetOverrides)) {
+                this.setStylesheetOverrides(stylesheetOverrides);
+            }
 
-                if (Objects.nonNull(mathjax)) {
-                    this.setMathjax(mathjax);
-                }
+            if (Objects.nonNull(mathjax)) {
+                this.setMathjax(mathjax);
+            }
 
-                if (Objects.nonNull(kindlegen)) {
-                    this.setKindlegen(kindlegen);
-                }
+            if (Objects.nonNull(kindlegen)) {
+                this.setKindlegen(kindlegen);
+            }
 
-                fadeOut(infoLabel, "Loaded...");
+            fadeOut(infoLabel, "Loaded...");
 
-            });
+        });
 
     }
 

@@ -26,7 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.json.*;
-import java.io.FileReader;
+import java.io.Reader;
 import java.nio.file.Path;
 import java.util.*;
 
@@ -37,7 +37,7 @@ public abstract class AsciidoctorConfigBase extends ConfigurationBase {
 
     public ObjectProperty<JSPlatform> jsPlatform = new SimpleObjectProperty<>(JSPlatform.Webkit);
 
-    private ObjectProperty<ObservableList<String>> safe = new SimpleObjectProperty<>(FXCollections.observableArrayList());
+    private StringProperty safe = new SimpleStringProperty("safe");
 
     private BooleanProperty sourcemap = new SimpleBooleanProperty();
 
@@ -77,15 +77,15 @@ public abstract class AsciidoctorConfigBase extends ConfigurationBase {
         this.backend.set(backend);
     }
 
-    public ObservableList<String> getSafe() {
+    public String getSafe() {
         return safe.get();
     }
 
-    public ObjectProperty<ObservableList<String>> safeProperty() {
+    public StringProperty safeProperty() {
         return safe;
     }
 
-    public void setSafe(ObservableList<String> safe) {
+    public void setSafe(String safe) {
         this.safe.set(safe);
     }
 
@@ -141,7 +141,9 @@ public abstract class AsciidoctorConfigBase extends ConfigurationBase {
     public FXForm getConfigForm() {
         FXForm configForm = new FXFormBuilder<>()
                 .resourceBundle(ResourceBundle.getBundle("asciidoctorConfig"))
-                .includeAndReorder("jsPlatform", "attributes").build();
+                .includeAndReorder(
+//                        "jsPlatform",
+                        "attributes").build();
 
         return configForm;
     }
@@ -181,9 +183,7 @@ public abstract class AsciidoctorConfigBase extends ConfigurationBase {
 
         infoLabel.setText("Loading...");
 
-        setSafe(FXCollections.observableArrayList("safe", "secure", "server"));
-
-        FileReader fileReader = IOHelper.fileReader(getConfigPath());
+        Reader fileReader = IOHelper.fileReader(getConfigPath());
         JsonReader jsonReader = Json.createReader(fileReader);
 
         JsonObject jsonObject = jsonReader.readObject();
@@ -198,7 +198,7 @@ public abstract class AsciidoctorConfigBase extends ConfigurationBase {
         IOHelper.close(jsonReader, fileReader);
 
         threadService.runActionLater(() -> {
-            this.getSafe().set(0, safe);
+            this.setSafe(safe);
             this.sourcemap.set(sourcemap);
             this.setBackend(backend);
             this.setHeader_footer(header_footer);
@@ -244,7 +244,7 @@ public abstract class AsciidoctorConfigBase extends ConfigurationBase {
             objectBuilder.add("jsPlatform", getJsPlatform().name());
         }
 
-        objectBuilder.add("safe", getSafe().get(0));
+        objectBuilder.add("safe", getSafe());
 
         if (getSourcemap()) {
             objectBuilder.add("sourcemap", getSourcemap());

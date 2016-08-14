@@ -3,7 +3,7 @@
                 version="1.0">
 
 <!-- ********************************************************************
-     $Id: htmltbl.xsl 9501 2012-07-16 00:14:50Z bobstayton $
+     $Id: htmltbl.xsl 9916 2014-05-15 16:08:21Z bobstayton $
      ********************************************************************
 
      This file is part of the XSL DocBook Stylesheet distribution.
@@ -72,6 +72,7 @@
                    | @frame
                    | @headers
                    | @height
+                   | @id
                    | @lang
                    | @nowrap
                    | @onclick
@@ -85,12 +86,14 @@
                    | @onmouseover
                    | @onmouseup
                    | @rules
+                   | @scope
                    | @style
                    | @summary
                    | @title
                    | @valign
                    | @valign
                    | @width
+                   | @xml:id
                    | @xml:lang">
   <xsl:copy-of select="."/>
 </xsl:template>

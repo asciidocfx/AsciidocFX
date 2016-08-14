@@ -3,7 +3,7 @@
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
 
 <!-- ********************************************************************
-     $Id: param.xweb 9658 2012-10-29 22:28:34Z bobstayton $
+     $Id: param.xweb 9995 2015-10-01 16:34:45Z bobstayton $
      ********************************************************************
 
      This file is part of the XSL DocBook Stylesheet distribution.
@@ -77,6 +77,7 @@ http://docbook.sourceforge.net/release/images/annot-close.png</xsl:param>
 <xsl:param name="author.othername.in.middle" select="1"/>
 <xsl:param name="autotoc.label.in.hyperlink" select="1"/>
 <xsl:param name="autotoc.label.separator">. </xsl:param>
+<xsl:param name="autolink.index.see" select="1"/>
 <xsl:param name="base.dir"/>
 <xsl:param name="biblioentry.item.separator">. </xsl:param>
 <xsl:param name="bibliography.collection">http://docbook.sourceforge.net/release/bibliography/bibliography.xml</xsl:param>
@@ -284,6 +285,7 @@ set       toc,title
 <xsl:param name="insert.olink.page.number">no</xsl:param>
 <xsl:param name="insert.olink.pdf.frag" select="0"/>
 <xsl:param name="insert.xref.page.number">no</xsl:param>
+<xsl:param name="insert.xref.page.number.para">yes</xsl:param>
 <xsl:param name="javahelp.encoding">iso-8859-1</xsl:param>
 <xsl:param name="keep.relative.image.uris" select="1"/>
 
@@ -340,6 +342,7 @@ set       toc,title
 <xsl:param name="profile.conformance"/>
 <xsl:param name="profile.lang"/>
 <xsl:param name="profile.os"/>
+<xsl:param name="profile.outputformat"/>
 <xsl:param name="profile.revision"/>
 <xsl:param name="profile.revisionflag"/>
 <xsl:param name="profile.role"/>
@@ -387,13 +390,23 @@ set       toc,title
 <xsl:param name="table.cell.border.color"/>
 
 <xsl:param name="table.cell.border.style">solid</xsl:param>
-<xsl:param name="table.cell.border.thickness">0.5pt</xsl:param>
+<xsl:param name="table.cell.border.thickness">
+  <xsl:choose>
+    <xsl:when test="contains($stylesheet.result.type,'html')">1px</xsl:when>
+    <xsl:otherwise>0.5pt</xsl:otherwise>
+  </xsl:choose>
+</xsl:param>
 <xsl:param name="table.footnote.number.format">a</xsl:param>
 <xsl:param name="table.footnote.number.symbols"/>
 <xsl:param name="table.frame.border.color"/>
 
 <xsl:param name="table.frame.border.style">solid</xsl:param>
-<xsl:param name="table.frame.border.thickness">0.5pt</xsl:param>
+<xsl:param name="table.frame.border.thickness">
+  <xsl:choose>
+    <xsl:when test="contains($stylesheet.result.type,'html')">1px</xsl:when>
+    <xsl:otherwise>0.5pt</xsl:otherwise>
+  </xsl:choose>
+</xsl:param>
 <xsl:param name="tablecolumns.extension" select="1"/>
  <xsl:param name="target.database.document">olinkdb.xml</xsl:param>
 <xsl:param name="targets.filename">target.db</xsl:param>
@@ -438,6 +451,7 @@ set       toc,title
 <xsl:param name="xref.label-title.separator">: </xsl:param>
 <xsl:param name="xref.title-page.separator"><xsl:text> </xsl:text></xsl:param>
 <xsl:param name="xref.with.number.and.title" select="1"/>
+<xsl:param name="link.to.self.for.mediaobject" select="0"/>
 
 </xsl:stylesheet>
 

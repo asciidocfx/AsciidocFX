@@ -1,0 +1,588 @@
+= Asciidoc Book Editor based on JavaFX 8
+:experimental:
+:toc:
+:toc-placement: left
+:asciidocfx-version: 1.4.7
+:download-root: https://github.com/asciidocfx/AsciidocFX/releases/download/v{asciidocfx-version}/
+
+image:https://api.travis-ci.org/asciidocfx/AsciidocFX.svg?branch=master[Build Status,link="https://travis-ci.org/asciidocfx/AsciidocFX"]
+image:https://badges.gitter.im/Join%20Chat.svg["Gitter", link="https://gitter.im/asciidocfx/AsciidocFX"]
+
+++++
+<div style="width:100%;text-align: right;margin-bottom:20px;">
+<a class="github-button" href="https://github.com/asciidocfx/asciidocfx" data-icon="octicon-star" data-style="mega" data-count-href="/asciidocfx/asciidocfx/stargazers" data-count-api="/repos/asciidocfx/asciidocfx#stargazers_count" data-count-aria-label="# stargazers on GitHub" aria-label="Star asciidocfx/asciidocfx on GitHub">Star</a>
+
+<a class="github-button" href="https://github.com/asciidocfx/asciidocfx/fork" data-icon="octicon-git-branch" data-style="mega" data-count-href="/asciidocfx/asciidocfx/network" data-count-api="/repos/asciidocfx/asciidocfx#forks_count" data-count-aria-label="# forks on GitHub" aria-label="Fork asciidocfx/asciidocfx on GitHub">Fork</a>
+</div>
+
+<script async defer id="github-bjs" src="https://buttons.github.io/buttons.js"></script>
+++++
+
+Asciidoc FX is a book / document editor to build PDF, Epub, Mobi and HTML books, documents and slides. AsciidocFX is also a winner of https://www.oracle.com/corporate/pressrelease/dukes-award-102815.html[Duke's Choice Award 2015].
+
+.AsciidocFX - Duke's Choice Award 2015 winner
+image::images/asciidocfx.png[]
+
+== Features
+
+* Real-Time Preview
+* Multi-platform (Windows, Mac, Linux)
+* Creating Asciidoc Books
+* Creating Markdown Books
+* Creating PDF, HTML, Epub, Mobi, Odt, Docbook
+* Epub Viewer
+* External Browser Support
+* Table Generator
+* MathJax Extension
+* PlantUML Extension
+* ditaa Extension
+* Filesystem Tree Extension
+* JavaFX Charts Extension
+* Source Code Highlighter
+* Reveal.js Converter
+* Deck.js Converter
+* Nashorn support
+
+== How to Install AsciidocFX
+
+There are a number of operating systems that AsciidocFX supports.
+
+NOTE: The latest releases are available from the https://github.com/asciidocfx/AsciidocFX/releases[Github releases page].
+
+<<Supported_OS>> shows the list of available builds with links for reference. If you are looking for the very latest version, visit the link in the note above to be guaranteed of downloading the latest and greatest version of AsciidocFX.
+
+[[Supported_OS]]
+.Supported Operating Systems and Builds 
+[width="100%",options="header"]
+|====================
+| OS | JRE included? | Filename 
+^.^| Mac | Yes | {download-root}AsciidocFX_Mac.dmg[AsciidocFX_Mac.dmg] 
+.4+^.^| Windows | Yes | {download-root}AsciidocFX_Windows.exe[AsciidocFX_Windows.exe] 
+| Yes | {download-root}AsciidocFX_Windows.zip[AsciidocFX_Windows.zip] 
+| No | {download-root}AsciidocFX_Windows_No_JRE.exe[AsciidocFX_Windows_No_JRE.exe] 
+| No | {download-root}AsciidocFX_Windows_No_JRE.zip[AsciidocFX_Windows_No_JRE.zip] 
+.2+^.^| Linux | Yes | {download-root}AsciidocFX_Linux.tar.gz[AsciidocFX_Linux.tar.gz] 
+| No | {download-root}AsciidocFX_Linux_No_JRE.tar.gz[AsciidocFX_Linux_No_JRE.tar.gz] 
+|====================
+
+=== Install on Linux
+
+After the download is completed, untar the package in your preferred directory.
+
+[source,bash]
+$ cd /bin
+$ ./AsciidocFX.sh
+
+////
+=== Install on Arch Linux
+
+Install using the package manager in Arch Linux
+
+[source,bash]
+$ yaourt -S asciidocfx
+////
+
+=== Install on Windows
+
+Download executable/installer and run it.
+
+=== Install on Mac
+
+Download the `.dmg` and run it.
+
+=== Installation Notes
+
+There are two AsciidocFX package flavors, you can download it with JRE 8 out-of-box or if you have already installed JRE 8 (Update 40 or above), you can download *No_JRE builds
+
+Graphviz::
+  PlantUML extension needs Graphviz, if you will use it, then install it:
++
+.Ubuntu
+[source,bash]
+----
+sudo apt-get install graphviz
+----
++
+.Mac OS X
+[source,bash]
+----
+ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+brew install graphviz
+----
++
+.Windows
+----
+http://www.graphviz.org/pub/graphviz/stable/windows/graphviz-2.38.msi
+----
+
+[[microsoft-core-fonts]]
+Microsoft Core Fonts::
+You _must_ install Microsoft Core Fonts on Linux OSes also.
+
+[underline]#Ubuntu/Debian#
+
+[source,bash]
+----
+sudo apt-get install ttf-mscorefonts-installer
+----
+
+[underline]#Fedora#
+
+If you are using Fedora, you need to install the RPM provided from this URL: http://sourceforge.net/projects/mscorefonts2/files/latest/download[mscorefonts2]
+
+KindleGen::
+You _must_ install http://www.amazon.com/gp/feature.html?docId=1000765211[KindleGen], If you need to convert your documents into Mobi files. Once you specify the location of KindleGen executable, Mobi Service provided by AFX will be available.
+
+== A Quick Dive
+
+*http://youtu.be/2goMtz_vdtM[Video - Writing Books with Asciidoc FX]*
+
+== PlantUML Extension
+
+You can fulfill your UML needs with AsciidocFX. It supports PlantUML. AsciidocFX converts this textual UML elements as png or svg image.
+
+http://plantuml.sourceforge.net/[PlantUML] is a component that allows to quickly write :
+
+* Sequence diagram,
+* Usecase diagram,
+* Class diagram,
+* Activity diagram, (here is the new syntax),
+* Component diagram,
+* State diagram,
+* Object diagram.
+* wireframe graphical interface
+
+[source,java]
+----
+.UML Diagram Example
+[uml,file="uml-example.png"]
+--
+abstract class AbstractList
+abstract AbstractCollection
+interface List
+interface Collection
+
+List <|-- AbstractList
+Collection <|-- AbstractCollection
+
+Collection <|- List
+AbstractCollection <|- AbstractList
+AbstractList <|-- ArrayList
+
+class ArrayList {
+  Object[] elementData
+  size()
+}
+
+enum TimeUnit {
+  DAYS
+  HOURS
+  MINUTES
+}
+
+annotation SuppressWarnings
+--
+----
+.UML example output
+image::images/uml-example.png[]
+
+NOTE: In some UML elements, PlantUML needs to work with Graphviz. Because of this, you should install `Graphviz` manually for your platform. After installing Graphviz, you should set `GRAPHVIZ_DOT` environment variable to `dot` executable in Graphviz.
+
+== ditaa Extension
+
+AsciidocFX supports ditaa diagrams. 
+
+http://ditaa.sourceforge.net/[ditaa] is a component that converts diagrams drawn in ascii art to bitmap graphics.
+
+[source,asciidoc]
+----
+.ditaa Diagram Example
+[ditaa,file="images/ditaa-example.png"]
+--
+    +--------+   +-------+    +-------+
+    |        |---+ ditaa +--->|       |
+    |  Text  |   +-------+    |diagram|
+    |Document|   |!magic!|    |       |
+    |     {d}|   |       |    |       |
+    +---+----+   +-------+    +-------+
+        :                         ^
+        |       Lots of work      |
+        +-------------------------+
+--
+----
+
+image::images/ditaa-example.png[]
+
+== MathJax Extension
+
+http://www.mathjax.org/[MathJax] is an open source JavaScript display engine for mathematics that works in all browsers.
+
+You can use `Tex` or `MathML` languages for describing mathematical formulas in AsciidocFX. AsciidocFX converts this textual formulas as png or svg image.
+
+.For Example (Tex)
+[source,tex]
+----
+[math,file="tex-formula.png"]
+--
+\begin{align}
+\dot{x} & = \sigma(y-x) \\
+\dot{y} & = \rho x - y - xz \\
+\dot{z} & = -\beta z + xyp
+\end{align}
+--
+----
+
+////
+.Tex output
+[math,file="tex-formula.png"]
+--
+\begin{align}
+\dot{x} & = \sigma(y-x) \\
+\dot{y} & = \rho x - y - xz \\
+\dot{z} & = -\beta z + xyp
+\end{align}
+--
+////
+
+== Tex output
+image::images/tex-formula.png[]
+
+.For Example (MathML)
+[source,xml]
+----
+[math,file="mathml-formula.png"]
+--
+<math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+  <mi>x</mi>
+  <mo>=</mo>
+  <mrow>
+    <mfrac>
+      <mrow>
+        <mo>&#x2212;</mo>
+        <mi>b</mi>
+        <mo>&#xB1;</mo>
+        <msqrt>
+          <msup>
+            <mi>b</mi>
+            <mn>2</mn>
+          </msup>
+          <mo>&#x2212;</mo>
+          <mn>4</mn>
+          <mi>a</mi>
+          <mi>c</mi>
+        </msqrt>
+      </mrow>
+      <mrow>
+        <mn>2</mn>
+        <mi>a</mi>
+      </mrow>
+    </mfrac>
+  </mrow>
+  <mtext>.</mtext>
+</math>
+--
+----
+
+////
+.MathML output
+[math,file="mathml-formula.png"]
+--
+<math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+  <mi>x</mi>
+  <mo>=</mo>
+  <mrow>
+    <mfrac>
+      <mrow>
+        <mo>&#x2212;</mo>
+        <mi>b</mi>
+        <mo>&#xB1;</mo>
+        <msqrt>
+          <msup>
+            <mi>b</mi>
+            <mn>2</mn>
+          </msup>
+          <mo>&#x2212;</mo>
+          <mn>4</mn>
+          <mi>a</mi>
+          <mi>c</mi>
+        </msqrt>
+      </mrow>
+      <mrow>
+        <mn>2</mn>
+        <mi>a</mi>
+      </mrow>
+    </mfrac>
+  </mrow>
+  <mtext>.</mtext>
+</math>
+--
+////
+
+== MathML output
+image::images/mathml-formula.png[]
+
+== Filesystem Tree Extension
+
+You can represent filesystem tree in following `tree` block. There is two style of FS tree.
+
+[source,java]
+----
+[tree,file="tree-view.png"]
+--
+#src
+##main
+###java
+####com
+#####kodcu
+######App.java
+###resources
+####css
+#####style.css
+####js
+#####script.js
+####images
+#####image.png
+--
+----
+
+== Filesystem Tree output
+
+When you drag and drop a folder to editor, AFX will generate this like tree automatically.
+
+image::images/tree-view.png[]
+
+[source,java]
+----
+[tree,file="tree-view-new.png"]
+--
+root
+|-- photos
+|   |-- camp.gif
+|   |-- festival.png
+|   `-- balloon.jpg
+|-- videos
+|   |-- car-video.avi
+|   |-- dance.mp4
+|   |-- dance01.mpg
+|   |-- another video.divx
+|   `-- school videos
+|       `-- firstday.flv
+|-- documents
+|   |-- jsfile.js
+|   |-- powerpoint.ppt
+|   |-- chapter-01.asc
+|   |-- archive-db.zip
+|   |-- .gitignore
+|   |-- README
+|   `-- configuration.conf
+`-- etc.
+--
+----
+
+== Filesystem Tree output (__new__)
+image::images/tree-view-new.png[]
+
+== JavaFX Charts Extension
+
+JavaFX has 8 kind of Chart component and AsciidocFX supports all of them.
+
+=== Pie Chart
+
+----
+[chart,pie,file="secim-2014-pie.png",opt="title=2014 YEREL SEÇİM SONUÇLARI"]
+--
+AKP,  45.6, orange
+CHP,  27.8,red
+MHP,  15.2
+BDP,  4.2
+SP,  2
+--
+----
+
+'''
+
+----
+chart::pie[data-uri="pie.csv",file="secim-2014-pie-csv.png"]
+----
+
+image::images/secim-2014-pie.png[]
+
+=== Area Chart
+
+----
+[chart,area,file="area-chart.png"]
+--
+//April
+1,  4
+3,  10
+6,  15
+9,  8
+12, 5
+
+//May
+1,  20
+3,  15
+6,  13
+9,  12
+12, 14
+--
+----
+
+'''
+
+----
+chart::area[data-uri="area.csv",file="area-chart-csv.png"]
+----
+
+image::images/area-chart.png[]
+
+For other charts and available options, look at https://github.com/asciidocfx/AsciidocFX/wiki/Chart-Extension[Chart extension] wiki page!
+
+== How to Build AsciidocFX
+
+1. Firstly, install http://www.oracle.com/technetwork/java/javase/downloads/index.html[JDK 8]
+2. Download http://maven.apache.org/download.cgi[Apache Maven] and set `/bin` directory to environment variables
+3. Enter `AsciidocFX` directory and run `$ mvn clean install`
+4. Follow to `target/appassembler/bin` directory and you will see `asciidocfx.sh` and `asciidocfx.bat`
+
+NOTE: We are generating builts with *Travis-CI* automatically.
+NOTE: All builds x64 based. If you want to use in x86 systems, build AsciidocFX yourself.
+
+=== Build on Linux (Ubuntu/Mint)
+
+. Install Oracle JDK 8.
+** http://tecadmin.net/install-oracle-java-8-jdk-8-ubuntu-via-ppa/
+. Install Maven
+** sudo apt-get install maven
+. Install Git
+** sudo apt-get install git
+. Clone the AsciidocFX repository from Github.
+. Navigate to the *AsciidocFX* directory and run $ `mvn clean install`
+. Navigate to the *target/appassembler/bin* directory and run $ `./asciidocfx.sh` to start AsciidocFX.
+
+
+== Books Written with AsciidocFX
+
+Java 8 Ebook::
+* https://github.com/rahmanusta/java8-ebook[Github]
+* http://kodcu.com/java-8-ebook/[ePub + Kindle + PDF]
+
+AspectJ Ebook::
+* https://github.com/ozlerhakan/aspectj-ebook[Github]
+* http://kodcu.com/aspectj-ebook/[ePub + Kindle + PDF]
+
+== Slides (Reveal.js and Deck.js)
+
+AsciidocFX has a built-in template converter for Reveal.js and Deck.js. To getting start with slide authoring, you can just follow menu:New[Slide] menu.
+
+.menu:New[Slide]
+image::images/new-slide.png[]
+
+After that AFX will prompt you a freespace directory name and *"OK"* you will see the slide demo.
+
+.Slide demo
+image::images/slide-demo.png[]
+
+You can easily switch between reveal.js and deck.js by changing the comment below. Also, you can configure default settings by editing `_settings_reveal.adoc` and `include::_settings_deck.adoc`.
+
+[source,asciidoc]
+----
+\include::_settings_reveal.adoc[]
+
+// include::_settings_deck.adoc[]
+----
+
+== Used Technologies
+
+AsciidocFX uses Java, JavaScript and XML related technologies.
+
+* Java FX 8
+* Asciidoctor.js
+* Spring Boot
+* Spring WebSocket
+* Docbook
+* Apache Fop
+* Saxon 6.5
+* Ace editor
+* Nashorn
+
+== AsciidocFX Configuration
+
+You can configurate AsciidocFX with Settings page (Press kbd:[Ctrl+F4]). The all configs located in [Install_Dir]/conf folder.
+
+== Some Shortcuts
+
+AFX supports this ace shortcuts https://github.com/ajaxorg/ace/wiki/Default-Keyboard-Shortcuts and custom shortcuts listed below . If you suggest us any shortcut request, we can implement it.
+
+[width="100%",options="header,footer"]
+|===
+|Shortcut |Detail
+|kbd:[Ctrl+F4] | Show settings
+|kbd:[Ctrl+V] |Converts and pastes selection
+|kbd:[Ctrl+Shift+V] |Pastes selection
+|kbd:[tblx&#44;y + Tab] |Generates asciidoc table (x=row,y=column)
+|kbd:[tblx.y + Tab] |Generates asciidoc table (x=row,y=column)
+|kbd:[src + Tab] |Generates asciidoc source block (default lang: java)
+|kbd:[src.lang + Tab] |Generates asciidoc source block by lang
+|kbd:[src&#44;lang + Tab] |Generates asciidoc source block by lang
+|kbd:[img + Tab] |Generates image section
+|kbd:[book + Tab] |Generates book header section
+|kbd:[article + Tab] |Generates article header section
+|kbd:[uml + Tab] |Generates UML block
+|kbd:[math + Tab] |Generates Math block
+|kbd:[tree + Tab] |Generates Tree block
+|kbd:[quote + Tab] |Generates Quote block
+|kbd:[Ctrl+B] |Bolds selection
+|kbd:[Ctrl+I] |Italices selection
+|kbd:[Ctrl+U] |Underlines selection
+|kbd:[Ctrl+H] |Highlights selection
+|kbd:[Ctrl+D] |Duplicates selection
+|kbd:[Ctrl+L] |Displays line numbers
+|kbd:[Ctrl+X] |Removes current line
+|kbd:[Ctrl+N] |Creates new empty doc
+|kbd:[Ctrl+M] |Maximizes the tab pane
+|kbd:[Ctrl+S] |Saves current doc
+|kbd:[Ctrl+W] |Saves and closes current doc
+|kbd:[Ctrl+Shift+C] |Surrounds backtick `` selection
+|kbd:[Ctrl+Mouse_Scroll_Up] | Zoom in
+|kbd:[Ctrl+Mouse_Scroll_Down] | Zoom out
+|kbd:[F12] | Opens Firebug Lite (Requires Internet Connection)
+|===
+
+== Known Issues
+
+PDF output shows all text as \####::
+On Linux platforms you can face with this issue. For the getting around for the issue you need to install Microsoft Core Fonts to your platform. How to install <<microsoft-core-fonts>>
+Mac QWERTY Keyboard Bug::
+  There is a bug in JavaFX which makes all keyboards on a Mac behave as "QWERTY".
+  This means, that on a German "QWERTZ" layout the shortcuts for `undo` and `redo` are swapped.
+Text Artifacts (Rainbowing) on Text::
+  If you are being distracted by rainbow text artifacts on text, you can work around the issue by passing some VM options in `[Install_Dir]/AsciidocFX.vmoptions`, as shared in https://github.com/TomasMikula/RichTextFX/issues/145[this RichTextFX bug].
+  
+  . Open `AsciidocFX.vmoptions`.
+  . Add `-Dprism.text=t2k` and `-Dprism.lcdtext=false` to the file.
+  . Save and close.
+  . Launch AsciidocFX
+
+
+== Changelog
+
+To see what has changed in recent versions of AsciidocFX, see the https://github.com/asciidocfx/AsciidocFX/blob/master/CHANGELOG.asc[CHANGELOG]
+
+== Support
+
+Support AsciidocFX with pull requests or open an issue for bug & feature requests. You can make discussions in https://groups.google.com/d/forum/asciidocfx-discuss[mail group] or in the chat room at https://gitter.im/asciidocfx/AsciidocFX[Gitter.im].
+
+
+++++
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-55641163-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+++++

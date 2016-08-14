@@ -13,7 +13,8 @@ import org.springframework.stereotype.Component;
 
 import javax.script.Invocable;
 import javax.script.ScriptEngine;
-import java.io.FileReader;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.nio.file.PathMatcher;
@@ -60,8 +61,9 @@ public class GitbookToAsciibookService {
                 for (String script : scripts) {
 
                     Path resolve = configPath.resolve("public/js").resolve(script);
-                    try (FileReader fileReader = new FileReader(resolve.toFile());) {
-                        scriptEngine.eval(fileReader);
+                    try (FileInputStream fileInputStream = new FileInputStream(resolve.toFile());
+                         InputStreamReader is = new InputStreamReader(fileInputStream, "UTF-8");) {
+                        scriptEngine.eval(is);
                     }
 
                 }
@@ -148,12 +150,11 @@ public class GitbookToAsciibookService {
 
         markdownFileList.forEach(IOHelper::deleteIfExists);
 
-        directoryService.changeWorkigDir(asciibookDir);
-
         threadService.runActionLater(() -> {
             tabService.addTab(asciibookDir.resolve("SUMMARY.adoc"));
         });
 
+        directoryService.changeWorkigDir(asciibookDir);
 
     }
 

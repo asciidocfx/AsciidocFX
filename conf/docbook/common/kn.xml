@@ -53,6 +53,10 @@
 <l:gentext key="copyright" text="ಕೃತಿಸ್ವಾಮ್ಯ"/>
 <l:gentext key="Dedication" text="ಸಮರ್ಪಣೆ"/>
 <l:gentext key="dedication" text="ಸಮರ್ಪಣೆ"/>
+<l:gentext key="Dialogue" text="Dialogue" lang="en"/>
+<l:gentext key="dialogue" text="Dialogue" lang="en"/>
+<l:gentext key="Drama" text="Drama" lang="en"/>
+<l:gentext key="drama" text="Drama" lang="en"/>
 <l:gentext key="Edition" text="ಆವೃತ್ತಿ"/>
 <l:gentext key="edition" text="ಆವೃತ್ತಿ"/>
 <l:gentext key="Editor" text="ಸಂಪಾದಕ"/>
@@ -88,6 +92,8 @@
 <l:gentext key="note" text="ಸೂಚನೆ"/>
 <l:gentext key="Part" text="ಭಾಗ"/>
 <l:gentext key="part" text="ಭಾಗ"/>
+<l:gentext key="Poetry" text="Poetry" lang="en"/>
+<l:gentext key="poetry" text="Poetry" lang="en"/>
 <l:gentext key="Preface" text="ಪೀಠಿಕೆ"/>
 <l:gentext key="preface" text="ಪೀಠಿಕೆ"/>
 <l:gentext key="Procedure" text="ಕಾರ್ಯವಿಧಾನ"/>
@@ -151,6 +157,7 @@
 <l:gentext key="and" text="ಮತ್ತು"/>
 <l:gentext key="or" text="ಅಥವಾ"/>
 <l:gentext key="by" text="ಯಿಂದ"/>
+<l:gentext key="optional-step" text="(Optional) " lang="en"/>
 <l:gentext key="Edited" text="ಸಂಪಾದಿಸಿದ"/>
 <l:gentext key="edited" text="ಸಂಪಾದಿಸಿದ"/>
 <l:gentext key="Editedby" text="ಸಂಪಾದಕ"/>
@@ -171,6 +178,8 @@
 <l:gentext key="unexpectedelementname" text="ಅನಿರೀಕ್ಷಿತ ವಸ್ತುವಿನ ಹೆಸರು"/>
 <l:gentext key="unsupported" text="ಬೆಂಬಲವಿರದ"/>
 <l:gentext key="xrefto" text="xref ಗಾಗಿ"/>
+<l:gentext key="video-unsupported" text="Your browser does not support the video tag" lang="en"/>
+<l:gentext key="audio-unsupported" text="Your browser does not support the audio tag" lang="en"/>
 <l:gentext key="Authors" text="ಕತೃಗಳು"/>
 <l:gentext key="copyeditor" text="ಪ್ರತಿಯ ಸಂಪಾದಕ"/>
 <l:gentext key="graphicdesigner" text="ಗ್ರಾಫಿಕ್ ವಿನ್ಯಾಸಗಾರ"/>
@@ -229,7 +238,7 @@
 <l:template name="insert" text="Ins" lang="en"/>
 <l:template name="left" text="←" lang="en"/>
 <l:template name="meta" text="Meta" lang="en"/>
-<l:template name="option" text="???" lang="en"/>
+<l:template name="option" text="⌥" lang="en"/>
 <l:template name="pagedown" text="Page ↓" lang="en"/>
 <l:template name="pageup" text="Page ↑" lang="en"/>
 <l:template name="right" text="→" lang="en"/>
@@ -347,6 +356,9 @@
 <l:template name="simplesect" text="%t"/>
 <l:template name="topic" text="%t" lang="en"/>
 <l:template name="part" text="%t" lang="en"/>
+<l:template name="dialogue" text="%t" lang="en"/>
+<l:template name="drama" text="%t" lang="en"/>
+<l:template name="poetry" text="%t" lang="en"/>
 </l:context>
 <l:context name="title-numbered"><l:template name="appendix" text="ಅನುಬಂಧ %n. %t"/>
 <l:template name="article/appendix" text="%n. %t"/>
@@ -402,6 +414,9 @@
 <l:template name="simplesect" text="%s"/>
 <l:template name="topic" text="%t" lang="en"/>
 <l:template name="toc" text="%s"/>
+<l:template name="dialogue" text="%s" lang="en"/>
+<l:template name="drama" text="%s" lang="en"/>
+<l:template name="poetry" text="%s" lang="en"/>
 </l:context>
 <l:context name="xref"><l:template name="abstract" text="%t"/>
 <l:template name="acknowledgements" text="%t" lang="en"/>
@@ -476,6 +491,9 @@
 <l:template name="pageabbrev" text="(p. %p)"/>
 <l:template name="Page" text="Page %p"/>
 <l:template name="topic" text="%t" lang="en"/>
+<l:template name="dialogue" text="%t" lang="en"/>
+<l:template name="drama" text="%t" lang="en"/>
+<l:template name="poetry" text="%t" lang="en"/>
 <l:template name="bridgehead" text="ಕೋರಲಾದ ವಿಭಾಗ “%t”"/>
 <l:template name="refsection" text="ಕೋರಲಾದ ವಿಭಾಗ “%t”"/>
 <l:template name="refsect1" text="ಕೋರಲಾದ ವಿಭಾಗ “%t”"/>

@@ -2,13 +2,11 @@
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
                 xmlns:exsl="http://exslt.org/common"
                 xmlns:cf="http://docbook.sourceforge.net/xmlns/chunkfast/1.0"
-                xmlns:ng="http://docbook.org/docbook-ng"
-                xmlns:db="http://docbook.org/ns/docbook"
-                exclude-result-prefixes="exsl cf ng db"
+                exclude-result-prefixes="exsl cf"
                 version="1.0">
 
 <!-- ********************************************************************
-     $Id: chunk-code.xsl 9328 2012-05-03 16:28:23Z bobstayton $
+     $Id: chunk-code.xsl 9936 2014-08-29 21:34:58Z bobstayton $
      ********************************************************************
 
      This file is part of the XSL DocBook Stylesheet distribution.
@@ -132,6 +130,15 @@
     <xsl:when test="not($recursive) and $filename != ''">
       <!-- if this chunk has an explicit name, use it -->
       <xsl:value-of select="$filename"/>
+    </xsl:when>
+
+    <!-- treat nested set separate from root -->
+    <xsl:when test="self::set and ancestor::set">
+      <xsl:text>se</xsl:text>
+      <xsl:number level="any" format="01"/>
+      <xsl:if test="not($recursive)">
+        <xsl:value-of select="$html.ext"/>
+      </xsl:if>
     </xsl:when>
 
     <xsl:when test="self::set">
@@ -440,12 +447,8 @@
     <xsl:call-template name="get.doc.title"/>
   </xsl:variable>
   <xsl:choose>
-    <!-- Hack! If someone hands us a DocBook V5.x or DocBook NG document,
-         toss the namespace and continue.  Use the docbook5 namespaced
-	 stylesheets for DocBook5 if you don't want to use this feature.-->
-    <xsl:when test="$exsl.node.set.available != 0 
-                    and (*/self::ng:* or */self::db:*)">
-
+    <xsl:when test="$exsl.node.set.available != 0 and 
+                  namespace-uri(/*) = 'http://docbook.org/ns/docbook'">
       <xsl:call-template name="log.message">
         <xsl:with-param name="level">Note</xsl:with-param>
         <xsl:with-param name="source" select="$doc.title"/>
@@ -453,14 +456,14 @@
           <xsl:text>namesp. cut</xsl:text>
         </xsl:with-param>
         <xsl:with-param name="message">
-          <xsl:text>processing stripped document</xsl:text>
+          <xsl:text>stripped namespace before processing</xsl:text>
         </xsl:with-param>
       </xsl:call-template>
 
       <xsl:apply-templates select="exsl:node-set($no.namespace)"/>
     </xsl:when>
-    <!-- Can't process unless namespace removed -->
-    <xsl:when test="*/self::ng:* or */self::db:*">
+    <!-- Can't process unless namespace fixed with exsl node-set()-->
+    <xsl:when test="namespace-uri(/*) = 'http://docbook.org/ns/docbook'">
       <xsl:message terminate="yes">
         <xsl:text>Unable to strip the namespace from DB5 document,</xsl:text>
         <xsl:text> cannot proceed.</xsl:text>
@@ -660,6 +663,25 @@
       </xsl:with-param>
       <xsl:with-param name="base.name">
         <xsl:apply-templates mode="chunk-filename" select="."/>
+      </xsl:with-param>
+    </xsl:call-template>
+    <xsl:text>&#10;</xsl:text>
+  </xsl:if>
+</xsl:template>
+
+<xsl:template match="revhistory" mode="enumerate-files">
+  <xsl:variable name="id"><xsl:call-template name="object.id"/></xsl:variable>
+  <xsl:if test="$generate.revhistory.link != 0">
+    <xsl:call-template name="make-relative-filename">
+      <xsl:with-param name="base.dir">
+        <xsl:if test="$manifest.in.base.dir = 0">
+          <xsl:value-of select="$chunk.base.dir"/>
+        </xsl:if>
+      </xsl:with-param>
+      <xsl:with-param name="base.name">
+	<xsl:call-template name="ln.or.rh.filename">
+	  <xsl:with-param name="is.ln" select="false()"/>
+	</xsl:call-template>
       </xsl:with-param>
     </xsl:call-template>
     <xsl:text>&#10;</xsl:text>

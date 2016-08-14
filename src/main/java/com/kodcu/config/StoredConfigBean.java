@@ -2,6 +2,7 @@ package com.kodcu.config;
 
 import com.kodcu.controller.ApplicationController;
 import com.kodcu.other.IOHelper;
+import com.kodcu.other.Item;
 import com.kodcu.service.ThreadService;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -13,8 +14,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.json.*;
-import java.io.FileReader;
+import java.io.Reader;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Objects;
 
 /**
@@ -27,7 +30,7 @@ public class StoredConfigBean extends ConfigurationBase {
     private final ThreadService threadService;
 
     private StringProperty workingDirectory = new SimpleStringProperty();
-    private ObservableList<String> recentFiles = FXCollections.observableArrayList();
+    private ObservableList<Item> recentFiles = FXCollections.observableArrayList();
     private ObservableList<String> favoriteDirectories = FXCollections.observableArrayList();
 
 
@@ -55,11 +58,11 @@ public class StoredConfigBean extends ConfigurationBase {
         this.workingDirectory.set(workingDirectory);
     }
 
-    public ObservableList<String> getRecentFiles() {
+    public ObservableList<Item> getRecentFiles() {
         return recentFiles;
     }
 
-    public void setRecentFiles(ObservableList<String> recentFiles) {
+    public void setRecentFiles(ObservableList<Item> recentFiles) {
         this.recentFiles = recentFiles;
     }
 
@@ -84,7 +87,7 @@ public class StoredConfigBean extends ConfigurationBase {
     @Override
     public void load(ActionEvent... actionEvent) {
 
-        FileReader fileReader = IOHelper.fileReader(getConfigPath());
+        Reader fileReader = IOHelper.fileReader(getConfigPath());
         JsonReader jsonReader = Json.createReader(fileReader);
 
         JsonObject jsonObject = jsonReader.readObject();
@@ -102,7 +105,9 @@ public class StoredConfigBean extends ConfigurationBase {
             }
 
             if (Objects.nonNull(recentFiles)) {
-                recentFiles.stream().map(e -> (JsonString) e).map(e -> e.getString()).forEach(this.recentFiles::add);
+                recentFiles.stream().map(e -> (JsonString) e).map(e -> e.getString())
+                        .map(e -> new Item(Paths.get(e)))
+                        .forEach(this.recentFiles::add);
             }
             if (Objects.nonNull(favoriteDirectories)) {
                 favoriteDirectories.stream().map(e -> (JsonString) e).map(e -> e.getString()).forEach(this.favoriteDirectories::add);
@@ -122,8 +127,14 @@ public class StoredConfigBean extends ConfigurationBase {
         JsonArrayBuilder recentFilesArrayBuilder = Json.createArrayBuilder();
         JsonArrayBuilder favoriteDirectoriesArrayBuilder = Json.createArrayBuilder();
 
-        recentFiles.stream().forEach(recentFilesArrayBuilder::add);
-        favoriteDirectories.stream().forEach(favoriteDirectoriesArrayBuilder::add);
+        recentFiles.stream()
+                .map(Item::getPath)
+                .filter(Files::exists)
+                .map(e -> e.toString())
+                .forEach(recentFilesArrayBuilder::add);
+
+        favoriteDirectories.stream()
+                .forEach(favoriteDirectoriesArrayBuilder::add);
 
         objectBuilder
                 .add("workingDirectory", getWorkingDirectory())

@@ -188,9 +188,17 @@
         <xsl:text>Symbol,ZapfDingbats</xsl:text>
     </xsl:template>
 
+    <xsl:template name="pickfont-math">
+        <xsl:text>Liberation Serif,Times-Roman</xsl:text>
+    </xsl:template>
+
     <!--
       Fonts
     -->
+
+    <xsl:param name="math.font.family">
+        <xsl:call-template name="pickfont-math"/>
+    </xsl:param>
 
     <xsl:param name="body.font.family">
         <xsl:call-template name="pickfont-sans"/>
@@ -410,6 +418,11 @@
                     <xsl:call-template name="inline.charseq"/>
                 </fo:inline>
             </xsl:when>
+            <xsl:otherwise>
+                <fo:inline color="{@role}">
+                    <xsl:apply-templates/>
+                </fo:inline>
+            </xsl:otherwise>
         </xsl:choose>
     </xsl:template>
 
@@ -905,6 +918,22 @@
     </xsl:template>
 
     <!--
+        Math
+      -->
+
+    <xsl:template match="mml:math" xmlns:mml="http://www.w3.org/1998/Math/MathML">
+        <fo:instream-foreign-object>
+            <xsl:attribute name="font-family">
+                <xsl:value-of select="$math.font.family"/>
+            </xsl:attribute>
+            <xsl:copy>
+                <xsl:copy-of select="@*"/>
+                <xsl:apply-templates/>
+            </xsl:copy>
+        </fo:instream-foreign-object>
+    </xsl:template>
+
+    <!--
       Titles
     -->
 
@@ -1020,7 +1049,7 @@
         </xsl:attribute>
     </xsl:attribute-set>
 
-    <!-- override to set color -->
+    <!-- override to set color and move to separate line -->
     <xsl:template match="db:formalpara/db:title | formalpara/title">
         <xsl:variable name="titleStr">
             <xsl:apply-templates/>
@@ -1031,15 +1060,26 @@
             </xsl:if>
         </xsl:variable>
 
-        <fo:inline font-weight="bold"
-                   color="{$caption.color}"
-                   keep-with-next.within-line="always">
-            <xsl:copy-of select="$titleStr"/>
-            <xsl:if test="$lastChar != ''
-                    and not(contains($runinhead.title.end.punct, $lastChar))">
-                <xsl:value-of select="$runinhead.default.title.end.punct"/>
-            </xsl:if>
-        </fo:inline>
+        <xsl:if test="$runinhead.default.title.break.after = '1'">
+            <fo:block font-weight="bold" color="{$caption.color}">
+                <xsl:copy-of select="$titleStr"/>
+                <xsl:if test="$lastChar != '' and not(contains($runinhead.title.end.punct, $lastChar))">
+                    <xsl:value-of select="$runinhead.default.title.end.punct"/>
+                </xsl:if>
+            </fo:block>
+        </xsl:if>
+        <xsl:if test="not($runinhead.default.title.break.after = '1')">
+            <fo:inline font-weight="bold"
+                       color="{$caption.color}"
+                       keep-with-next.within-line="always"
+                       padding-end="1em">
+                <xsl:copy-of select="$titleStr"/>
+                <xsl:if test="$lastChar != '' and not(contains($runinhead.title.end.punct, $lastChar))">
+                    <xsl:value-of select="$runinhead.default.title.end.punct"/>
+                </xsl:if>
+            </fo:inline>
+            <xsl:text>&#160;</xsl:text>
+        </xsl:if>
     </xsl:template>
 
     <!--
@@ -1079,9 +1119,9 @@
     </xsl:attribute-set>
 
     <xsl:attribute-set name="list.item.spacing">
-        <xsl:attribute name="space-before.optimum">0.5em</xsl:attribute>
-        <xsl:attribute name="space-before.minimum">0.2em</xsl:attribute>
-        <xsl:attribute name="space-before.maximum">0.8em</xsl:attribute>
+        <xsl:attribute name="space-before.optimum">0.4em</xsl:attribute>
+        <xsl:attribute name="space-before.minimum">0.4em</xsl:attribute>
+        <xsl:attribute name="space-before.maximum">0.4em</xsl:attribute>
     </xsl:attribute-set>
 
     <xsl:attribute-set name="variablelist.term.properties">

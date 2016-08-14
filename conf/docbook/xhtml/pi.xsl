@@ -4,7 +4,7 @@
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:doc="http://nwalsh.com/xsl/documentation/1.0" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/1999/xhtml" exclude-result-prefixes="doc" version="1.0">
 
 <!-- ********************************************************************
-     $Id: pi.xsl 9022 2011-07-14 19:21:36Z bobstayton $
+     $Id: pi.xsl 9848 2014-01-17 22:44:39Z bobstayton $
      ********************************************************************
 
      This file is part of the XSL DocBook Stylesheet distribution.
@@ -15,7 +15,7 @@
 
 <doc:reference xmlns=""><info xmlns="http://www.w3.org/1999/xhtml"><title>HTML Processing Instruction Reference</title>
     <releaseinfo role="meta">
-      $Id: pi.xsl 9022 2011-07-14 19:21:36Z bobstayton $
+      $Id: pi.xsl 9848 2014-01-17 22:44:39Z bobstayton $
     </releaseinfo>
   </info>
   <partintro xmlns="http://www.w3.org/1999/xhtml" xml:id="partintro">
@@ -1018,7 +1018,7 @@ specifications in one processing instruction:
   </xsl:param>
   <xsl:choose>
     <xsl:when test="$href != ''">
-      <xsl:variable name="content" select="document($href,/)"/>
+      <xsl:variable name="content" select="document($href,.)"/>
       <xsl:choose>
         <xsl:when test="$content/*">
           <xsl:choose>

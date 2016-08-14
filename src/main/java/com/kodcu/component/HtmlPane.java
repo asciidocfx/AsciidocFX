@@ -7,9 +7,8 @@ import com.kodcu.config.PreviewConfigBean;
 import com.kodcu.controller.ApplicationController;
 import com.kodcu.engine.AsciidocWebkitConverter;
 import com.kodcu.other.Current;
+import com.kodcu.service.DirectoryService;
 import com.kodcu.service.ThreadService;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -27,11 +26,16 @@ public class HtmlPane extends ViewPanel {
     private final ThreadService threadService;
 
     @Value("${application.index.url}")
-    private String browseUrl;
+    private String indexUrl;
+
+    @Value("${application.preview.url}")
+    private String previewUrl;
+
     private final AsciidocWebkitConverter asciidocWebkitConverter;
+    private final DirectoryService directoryService;
 
     @Autowired
-    public HtmlPane(ThreadService threadService, ApplicationController controller, Current current, PreviewConfigBean previewConfigBean, OdfConfigBean odfConfigBean, DocbookConfigBean docbookConfigBean, HtmlConfigBean htmlConfigBean, AsciidocWebkitConverter asciidocWebkitConverter) {
+    public HtmlPane(ThreadService threadService, ApplicationController controller, Current current, PreviewConfigBean previewConfigBean, OdfConfigBean odfConfigBean, DocbookConfigBean docbookConfigBean, HtmlConfigBean htmlConfigBean, AsciidocWebkitConverter asciidocWebkitConverter, DirectoryService directoryService) {
         super(threadService, controller, current);
         this.previewConfigBean = previewConfigBean;
         this.odfConfigBean = odfConfigBean;
@@ -39,8 +43,14 @@ public class HtmlPane extends ViewPanel {
         this.htmlConfigBean = htmlConfigBean;
         this.threadService = threadService;
         this.asciidocWebkitConverter = asciidocWebkitConverter;
+        this.directoryService = directoryService;
     }
 
+
+    @Override
+    public void load(String url) {
+        super.load(url);
+    }
 
     public void refreshUI(String content) {
         threadService.runActionLater(() -> {
@@ -57,8 +67,7 @@ public class HtmlPane extends ViewPanel {
 
     @Override
     public void browse() {
-        controller.getHostServices()
-                .showDocument(String.format(browseUrl, controller.getPort()));
+        controller.browseInDesktop(String.format(indexUrl, controller.getPort(), directoryService.interPath()));
     }
 
     @Override
@@ -80,8 +89,6 @@ public class HtmlPane extends ViewPanel {
         if (stopJumping.get())
             return;
 
-        String selection = asciidocWebkitConverter.findRenderedSelection(text);
-
-        runScroller(selection);
+        runScroller(text);
     }
 }

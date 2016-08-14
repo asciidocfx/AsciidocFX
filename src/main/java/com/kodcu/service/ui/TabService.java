@@ -10,14 +10,13 @@ import com.kodcu.other.Current;
 import com.kodcu.other.ExtensionFilters;
 import com.kodcu.other.IOHelper;
 import com.kodcu.other.Item;
-import com.kodcu.service.DirectoryService;
-import com.kodcu.service.ParserService;
-import com.kodcu.service.PathResolverService;
-import com.kodcu.service.ThreadService;
+import com.kodcu.service.*;
 import com.kodcu.service.extension.AsciiTreeGenerator;
 import com.kodcu.service.shortcut.ShortcutProvider;
 import javafx.beans.property.ReadOnlyObjectProperty;
+import javafx.beans.value.ObservableObjectValue;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.control.*;
@@ -38,9 +37,12 @@ import org.springframework.stereotype.Component;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 /**
  * Created by usta on 25.12.2014.
@@ -91,7 +93,7 @@ public class TabService {
 
     public void addTab(Path path, Runnable... runnables) {
 
-        ObservableList<String> recentFiles = storedConfigBean.getRecentFiles();
+        ObservableList<Item> recentFiles = storedConfigBean.getRecentFiles();
         if (Files.notExists(path)) {
             recentFiles.remove(path.toString());
             logger.debug("Path {} not found in the filesystem", path);
@@ -100,13 +102,15 @@ public class TabService {
 
         ObservableList<Tab> tabs = controller.getTabPane().getTabs();
         for (Tab tab : tabs) {
-            MyTab myTab = (MyTab) tab;
-            Path currentPath = myTab.getPath();
-            if (Objects.nonNull(currentPath))
-                if (currentPath.equals(path)) {
-                    myTab.select(); // Select already added tab
-                    return;
-                }
+            if(tab instanceof MyTab){
+                MyTab myTab = (MyTab) tab;
+                Path currentPath = myTab.getPath();
+                if (Objects.nonNull(currentPath))
+                    if (currentPath.equals(path)) {
+                        myTab.select(); // Select already added tab
+                        return;
+                    }
+            }
         }
 
         AnchorPane anchorPane = new AnchorPane();
@@ -131,8 +135,8 @@ public class TabService {
         Tooltip tip = new Tooltip(path.toString());
         Tooltip.install(tab.getGraphic(), tip);
 
-        recentFiles.remove(path.toString());
-        recentFiles.add(0, path.toString());
+        recentFiles.remove(new Item(path));
+        recentFiles.add(0, new Item(path));
 
         editorPane.getHandleReadyTasks().clear();
         editorPane.getHandleReadyTasks().addAll(runnables);
@@ -175,9 +179,10 @@ public class TabService {
         List<File> chosenFiles = fileChooser.showOpenMultipleDialog(controller.getStage());
         if (chosenFiles != null) {
             chosenFiles.stream().map(File::toPath).forEach(this::previewDocument);
+            ObservableList<Item> recentFiles = storedConfigBean.getRecentFiles();
             chosenFiles.stream()
-                    .map(File::toString).filter(file -> !storedConfigBean.getRecentFiles().contains(file))
-                    .forEach(storedConfigBean.getRecentFiles()::addAll);
+                    .map(e -> new Item(e.toPath()))
+                    .filter(file -> !recentFiles.contains(file)).forEach(recentFiles::addAll);
             directoryService.setInitialDirectory(Optional.ofNullable(chosenFiles.get(0)));
         }
     }
@@ -188,6 +193,16 @@ public class TabService {
         Item value = selectedItem.getValue();
         Path path = value.getPath();
         return path;
+    }
+
+
+    // TODO: It is not a right place for this helper
+    public List<Path> getSelectedTabPaths() {
+        ObservableList<TreeItem<Item>> treeItems = controller.getFileSystemView().getSelectionModel().getSelectedItems();
+        return treeItems.stream()
+                .map(TreeItem::getValue)
+                .map(Item::getPath)
+                .collect(Collectors.toList());
     }
 
     public MyTab createTab() {
@@ -214,7 +229,9 @@ public class TabService {
             blackList.addAll(tab.getTabPane().getTabs());
             blackList.remove(tab);
 
-            blackList.stream().map(t -> (MyTab) t).sorted((mo1, mo2) -> {
+            blackList.stream()
+                    .filter(t-> t instanceof MyTab)
+                    .map(t -> (MyTab) t).sorted((mo1, mo2) -> {
                 if (mo1.isNew() && !mo2.isNew())
                     return -1;
                 else if (mo2.isNew() && !mo1.isNew()) {
@@ -280,14 +297,14 @@ public class TabService {
         MenuItem menuItem7 = new MenuItem("Browse");
 
         menuItem7.setOnAction(event -> {
-            current.currentPath().ifPresent(path -> {
-                controller.getHostServices().showDocument(path.getParent().toUri().toASCIIString());
-            });
+            current.currentPath()
+                    .map(Path::getParent)
+                    .ifPresent(controller::openInDesktop);
         });
 
         MenuItem copyItem = MenuItemBuilt.item("Copy").click(event -> {
             Optional.ofNullable(tab.getPath())
-                    .ifPresent(controller::copyFile);
+                    .ifPresent(path -> controller.copyFiles(Arrays.asList(path)));
         });
 
         MenuItem copyPathItem = MenuItemBuilt.item("Copy Path").click(event -> {
@@ -347,20 +364,17 @@ public class TabService {
         } else if (pathResolver.isHTML(path) || pathResolver.isAsciidoc(path) || pathResolver.isMarkdown(path)) {
             addTab(path);
         } else if (pathResolver.isEpub(path)) {
-
             current.setCurrentEpubPath(path);
-            controller.getHostServices()
-                    .showDocument(String.format(epubUrl, controller.getPort()));
+            controller.browseInDesktop(String.format(epubUrl, controller.getPort()));
         } else {
             List<String> supportedModes = controller.getSupportedModes();
             String extension = FilenameUtils.getExtension(path.toString());
 
             if ("".equals(extension) || supportedModes.contains(extension)) {
                 addTab(path);
-                controller.hidePreviewPanel();
+//                controller.hidePreviewPanel();
             } else {
-                controller.getHostServices()
-                        .showDocument(path.toUri().toString());
+                controller.openInDesktop(path);
             }
         }
 
@@ -368,10 +382,9 @@ public class TabService {
 
     public void addImageTab(Path imagePath) {
 
-        TabPane previewTabPane = controller.getPreviewTabPane();
-
         ImageTab tab = new ImageTab(imagePath);
 
+        final TabPane previewTabPane = controller.getTabPane();
         if (previewTabPane.getTabs().contains(tab)) {
             previewTabPane.getSelectionModel().select(tab);
             return;
@@ -395,7 +408,7 @@ public class TabService {
         scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
         scrollPane.setContent(imageView);
         scrollPane.addEventFilter(ScrollEvent.SCROLL, e -> {
-            if (e.isControlDown() && e.getDeltaY() > 0) {
+            if (e.isShortcutDown() && e.getDeltaY() > 0) {
                 // zoom in
                 imageView.setFitWidth(imageView.getFitWidth() + 16.0);
             } else if (e.isControlDown() && e.getDeltaY() < 0) {
@@ -415,26 +428,40 @@ public class TabService {
         ReadOnlyObjectProperty<Tab> itemProperty = tabPane.getSelectionModel().selectedItemProperty();
 
         tabPane.setOnMouseReleased(event -> {
-            ((MyTab) itemProperty.get()).getEditorPane().focus();
+            Optional.ofNullable(itemProperty)
+                    .map(ObservableObjectValue::get)
+                    .filter(e-> e instanceof MyTab)
+                    .map(e -> (MyTab) e)
+                    .map(MyTab::getEditorPane)
+                    .ifPresent(EditorPane::focus);
         });
 
         itemProperty.addListener((observable, oldValue, selectedTab) -> {
-            if (Objects.isNull(selectedTab))
-                return;
-            threadService.runActionLater(() -> {
-                EditorPane editorPane = ((MyTab) selectedTab).getEditorPane();
-                if (Objects.nonNull(editorPane)) {
-                    try {
-                        editorPane.rerender();
-                    } catch (Exception e) {
-                        logger.error("Problem occured after changing tab {}", selectedTab, e);
-                    }
-                }
-            });
+            Optional.ofNullable(selectedTab)
+                    .filter(e-> e instanceof MyTab)
+                    .map(e -> (MyTab) e)
+                    .map(MyTab::getEditorPane)
+                    .filter(EditorPane::getReady)
+                    .ifPresent(EditorPane::updatePreviewUrl);
         });
     }
 
     public ObservableList<Optional<Path>> getClosedPaths() {
         return closedPaths;
     }
+
+    public void applyForEachMyTab(Consumer<MyTab> consumer, List<? extends Tab> tabs) {
+        for (Tab tab : tabs) {
+            if (tab instanceof MyTab) {
+                MyTab myTab = (MyTab) tab;
+                consumer.accept(myTab);
+            }
+        }
+    }
+
+    public void applyForEachMyTab(Consumer<MyTab> consumer) {
+        ObservableList<Tab> tabs = controller.getTabPane().getTabs();
+        applyForEachMyTab(consumer, tabs);
+    }
+
 }

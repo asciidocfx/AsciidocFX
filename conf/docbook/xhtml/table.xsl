@@ -6,7 +6,7 @@
 <xsl:include href="../common/table.xsl"/>
 
 <!-- ********************************************************************
-     $Id: table.xsl 9297 2012-04-22 03:56:16Z bobstayton $
+     $Id: table.xsl 9978 2015-07-31 23:47:28Z bobstayton $
      ********************************************************************
 
      This file is part of the XSL DocBook Stylesheet distribution.
@@ -147,6 +147,9 @@
   </xsl:variable>
 
   <table>
+    <!-- common attributes should come from parent table, not tgroup -->
+    <xsl:apply-templates select=".." mode="common.html.attributes"/>
+
     <xsl:choose>
       <!-- If there's a textobject/phrase for the table summary, use it -->
       <xsl:when test="../textobject/phrase">
@@ -681,17 +684,6 @@
 
   <xsl:param name="spans"/>
 
-  <xsl:variable name="cellgi">
-    <xsl:choose>
-      <xsl:when test="ancestor::thead">th</xsl:when>
-      <xsl:when test="ancestor::tfoot">th</xsl:when>
-      <xsl:when test="ancestor::tbody and                        (ancestor::table[@rowheader = 'firstcol'] or                       ancestor::informaltable[@rowheader = 'firstcol']) and                       ancestor-or-self::entry[1][count(preceding-sibling::entry) = 0]">
-        <xsl:text>th</xsl:text>
-      </xsl:when>
-      <xsl:otherwise>td</xsl:otherwise>
-    </xsl:choose>
-  </xsl:variable>
-
   <xsl:variable name="empty.cell" select="count(node()) = 0"/>
 
   <xsl:variable name="named.colnum">
@@ -725,6 +717,17 @@
     </xsl:call-template>
   </xsl:variable>
 
+  <xsl:variable name="cellgi">
+    <xsl:choose>
+      <xsl:when test="ancestor::thead">th</xsl:when>
+      <xsl:when test="ancestor::tfoot">th</xsl:when>
+      <xsl:when test="ancestor::tbody and                        (ancestor::table[@rowheader = 'firstcol'] or                       ancestor::informaltable[@rowheader = 'firstcol']) and                       $entry.colnum = 1">
+        <xsl:text>th</xsl:text>
+      </xsl:when>
+      <xsl:otherwise>td</xsl:otherwise>
+    </xsl:choose>
+  </xsl:variable>
+
   <xsl:variable name="rowsep">
     <xsl:choose>
       <!-- If this is the last row, rowsep never applies. -->
@@ -734,7 +737,8 @@
       <xsl:when test="not(ancestor-or-self::row[1]/following-sibling::row                           or ancestor-or-self::thead/following-sibling::tbody                           or ancestor-or-self::tbody/preceding-sibling::tfoot)">
         <xsl:value-of select="0"/>
       </xsl:when>
-      <xsl:when test="@morerows and not(@morerows &lt;                   count(ancestor-or-self::row[1]/following-sibling::row))">
+      <!-- not last row with @morerows (thead is not last row) -->
+      <xsl:when test="not(ancestor::thead) and @morerows and not(@morerows &lt;                   count(ancestor-or-self::row[1]/following-sibling::row))">
         <xsl:value-of select="0"/>
       </xsl:when>
       <xsl:otherwise>

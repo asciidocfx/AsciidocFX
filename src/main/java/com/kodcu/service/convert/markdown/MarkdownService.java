@@ -11,7 +11,8 @@ import org.springframework.stereotype.Component;
 
 import javax.script.Invocable;
 import javax.script.ScriptEngine;
-import java.io.FileReader;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
@@ -49,8 +50,9 @@ public class MarkdownService {
 
                 for (String script : scripts) {
                     Path resolve = configPath.resolve("public/js").resolve(script);
-                    try (FileReader fileReader = new FileReader(resolve.toFile());) {
-                        scriptEngine.eval(fileReader);
+                    try (FileInputStream fileInputStream = new FileInputStream(resolve.toFile());
+                         InputStreamReader is = new InputStreamReader(fileInputStream, "UTF-8");) {
+                        scriptEngine.eval(is);
                     }
                 }
 

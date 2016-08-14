@@ -53,6 +53,10 @@
 <l:gentext key="copyright" text="স্বত্বাধিকার"/>
 <l:gentext key="Dedication" text="উৎসর্গপত্র"/>
 <l:gentext key="dedication" text="উৎসর্গপত্র"/>
+<l:gentext key="Dialogue" text="Dialogue" lang="en"/>
+<l:gentext key="dialogue" text="Dialogue" lang="en"/>
+<l:gentext key="Drama" text="Drama" lang="en"/>
+<l:gentext key="drama" text="Drama" lang="en"/>
 <l:gentext key="Edition" text="সংস্করণ"/>
 <l:gentext key="edition" text="সংস্করণ"/>
 <l:gentext key="Editor" text="সম্পাদক"/>
@@ -88,6 +92,8 @@
 <l:gentext key="note" text="উল্লেখ্য"/>
 <l:gentext key="Part" text="পরিচ্ছেদ"/>
 <l:gentext key="part" text="পরিচ্ছেদ"/>
+<l:gentext key="Poetry" text="Poetry" lang="en"/>
+<l:gentext key="poetry" text="Poetry" lang="en"/>
 <l:gentext key="Preface" text="মুখবন্ধ"/>
 <l:gentext key="preface" text="মুখবন্ধ"/>
 <l:gentext key="Procedure" text="পদ্ধতি"/>
@@ -151,6 +157,7 @@
 <l:gentext key="and" text="এবং"/>
 <l:gentext key="or" text="বা"/>
 <l:gentext key="by" text="দ্বারা"/>
+<l:gentext key="optional-step" text="(Optional) " lang="en"/>
 <l:gentext key="Edited" text="সম্পাদিত"/>
 <l:gentext key="edited" text="সম্পাদিত"/>
 <l:gentext key="Editedby" text="সম্পাদক"/>
@@ -171,6 +178,8 @@
 <l:gentext key="unexpectedelementname" text="অপ্রত্যাশিত সত্ত্বার নাম"/>
 <l:gentext key="unsupported" text="অসমর্থিত"/>
 <l:gentext key="xrefto" text="xref নির্দেশিকা"/>
+<l:gentext key="video-unsupported" text="Your browser does not support the video tag" lang="en"/>
+<l:gentext key="audio-unsupported" text="Your browser does not support the audio tag" lang="en"/>
 <l:gentext key="Authors" text="লেখক"/>
 <l:gentext key="copyeditor" text="প্রতিলিপি সম্পাদক"/>
 <l:gentext key="graphicdesigner" text="চিত্র শিল্পী"/>
@@ -229,7 +238,7 @@
 <l:template name="insert" text="Ins" lang="en"/>
 <l:template name="left" text="←" lang="en"/>
 <l:template name="meta" text="Meta" lang="en"/>
-<l:template name="option" text="???" lang="en"/>
+<l:template name="option" text="⌥" lang="en"/>
 <l:template name="pagedown" text="Page ↓" lang="en"/>
 <l:template name="pageup" text="Page ↑" lang="en"/>
 <l:template name="right" text="→" lang="en"/>
@@ -347,6 +356,9 @@
 <l:template name="simplesect" text="%t"/>
 <l:template name="topic" text="%t" lang="en"/>
 <l:template name="part" text="%t"/>
+<l:template name="dialogue" text="%t" lang="en"/>
+<l:template name="drama" text="%t" lang="en"/>
+<l:template name="poetry" text="%t" lang="en"/>
 </l:context>
 <l:context name="title-numbered"><l:template name="appendix" text="পরিশিষ্ট %n. %t"/>
 <l:template name="article/appendix" text="%n. %t"/>
@@ -402,6 +414,9 @@
 <l:template name="simplesect" text="%s"/>
 <l:template name="topic" text="%t" lang="en"/>
 <l:template name="toc" text="%s"/>
+<l:template name="dialogue" text="%s" lang="en"/>
+<l:template name="drama" text="%s" lang="en"/>
+<l:template name="poetry" text="%s" lang="en"/>
 </l:context>
 <l:context name="xref"><l:template name="abstract" text="%t"/>
 <l:template name="acknowledgements" text="%t"/>
@@ -476,6 +491,9 @@
 <l:template name="pageabbrev" text="(p. %p)"/>
 <l:template name="Page" text="Page %p"/>
 <l:template name="topic" text="%t" lang="en"/>
+<l:template name="dialogue" text="%t" lang="en"/>
+<l:template name="drama" text="%t" lang="en"/>
+<l:template name="poetry" text="%t" lang="en"/>
 <l:template name="bridgehead" text="উল্লিখিত বিভাগ “%t”"/>
 <l:template name="refsection" text="উল্লিখিত বিভাগ “%t”"/>
 <l:template name="refsect1" text="উল্লিখিত বিভাগ “%t”"/>

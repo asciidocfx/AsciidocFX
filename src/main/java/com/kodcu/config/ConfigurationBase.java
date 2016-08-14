@@ -19,7 +19,8 @@ import javax.json.JsonObject;
 import javax.json.JsonStructure;
 import javax.json.JsonWriter;
 import javax.json.stream.JsonGenerator;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
+import java.io.OutputStreamWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -107,7 +108,8 @@ public abstract class ConfigurationBase {
         Map<String, Object> properties = new HashMap<>(1);
         properties.put(JsonGenerator.PRETTY_PRINTING, true);
 
-        try (FileWriter fileWriter = new FileWriter(getConfigPath().toFile());
+        try (FileOutputStream fos = new FileOutputStream(getConfigPath().toFile());
+             OutputStreamWriter fileWriter = new OutputStreamWriter(fos, "UTF-8");
              JsonWriter jsonWriter = Json.createWriterFactory(properties).createWriter(fileWriter);) {
             jsonWriter.write(jsonStructure);
         } catch (Exception e) {

@@ -1,54 +1,67 @@
+var myWorker = new Worker("/afx/worker/webworker.js");
+myWorker.onmessage = function (e) {
+
+    var data = (typeof e.data) == "string" ? JSON.parse(e.data) : e.data;
+
+    if (data.type == "log") {
+
+        var logLevel = data.level;
+
+        if (logLevel) {
+            if (logLevel == "error") {
+                afx.completeWebWorkerExceptionally(data.taskId);
+            }
+
+            afx[logLevel].call(afx, JSON.stringify(data.message));
+        }
+    }
+    else if (data.type == "afx") {
+        afx[data.func].apply(afx, data.parameters);
+    }
+
+};
+
+myWorker.onerror = function (e) {
+    var data = (typeof e) == "string" ? e : JSON.stringify(e);
+    afx["error"].call(afx, data);
+};
+
+myWorker.postMessage();
+
 function getOption(options) {
     return Opal.hash(JSON.parse(options));
 }
 
 var fillOutAction = new BufferedAction();
-function convertAsciidoc(content, options) {
 
-    var rendered = "";
-
-    var doc = Opal.Asciidoctor.$load(content, getOption(options));
-
-    fillOutAction.buff(function () {
-        afx.fillOutlines(doc);
-    }, 3000);
-
-    rendered = doc.$convert();
-
-    return {
-        rendered: rendered,
-        doctype: doc.doctype,
-        backend: doc.$backend()
+function convertBackend(taskId, content, options) {
+    var message = {
+        func: arguments.callee.caller.name,
+        taskId: taskId,
+        content: content,
+        options: options
     };
+
+    myWorker.postMessage(JSON.stringify(message));
 }
 
-function convertOdf(content, options) {
-
-    var doc = Opal.Asciidoctor.$load(content, getOption(options));
-
-    return doc.$convert();
+function convertAsciidoc(taskId, content, options) {
+    convertBackend(taskId, content, options);
 }
 
-function convertHtml(content, options) {
-
+function convertOdf(taskId, content, options) {
     var doc = Opal.Asciidoctor.$load(content, getOption(options));
+    var rendered = doc.$convert();
 
-    return {
-        rendered: doc.$render(),
-        doctype: doc.doctype,
-        backend: doc.$backend()
-    };
+    afx.completeWebWorker(taskId, rendered, doc.$backend(), doc.doctype);
 }
 
-function convertDocbook(content, options) {
+function convertHtml(taskId, content, options) {
+    convertBackend(taskId, content, options);
+}
 
-    var doc = Opal.Asciidoctor.$load(content, getOption(options));
-
-    return {
-        rendered: doc.$render(),
-        doctype: doc.doctype,
-        backend: doc.$backend()
-    };
+function convertDocbook(taskId, content, options) {
+    convertBackend(taskId, content, options);
 }
 
 function findRenderedSelection(content) {

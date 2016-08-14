@@ -112,17 +112,17 @@ public class PieChartBuilderService extends ChartBuilderService {
             node.setStyle(String.format("-fx-text-fill: %s; -fx-font-size: %s;", titleColor, titleSize));
         }
 
-        pieChart.setLayoutX(-78000);
-        pieChart.setLayoutY(-78000);
+        pieChart.setLayoutX(-19000);
+        pieChart.setLayoutY(-19000);
 
         threadService.runActionLater(() -> {
             controller.getRootAnchor().getChildren().add(pieChart);
             WritableImage writableImage = pieChart.snapshot(new SnapshotParameters(), null);
-            controller.removeChildElement(pieChart);
+            controller.getRootAnchor().getChildren().remove(pieChart);
             BufferedImage bufferedImage = SwingFXUtils.fromFXImage(writableImage, null);
             IOHelper.createDirectories(currentRoot.resolve(imagesDir));
             IOHelper.imageWrite(bufferedImage, "png", imagePath.toFile());
-            controller.clearImageCache();
+            controller.clearImageCache(imagePath);
 
         });
     }

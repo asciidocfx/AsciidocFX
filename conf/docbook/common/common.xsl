@@ -11,7 +11,7 @@
                 version='1.0'>
 
 <!-- ********************************************************************
-     $Id: common.xsl 9347 2012-05-11 03:49:49Z bobstayton $
+     $Id: common.xsl 9965 2015-06-29 14:38:09Z tom_schr $
      ********************************************************************
 
      This file is part of the XSL DocBook Stylesheet distribution.
@@ -24,7 +24,7 @@
   <info>
     <title>Common » Base Template Reference</title>
     <releaseinfo role="meta">
-      $Id: common.xsl 9347 2012-05-11 03:49:49Z bobstayton $
+      $Id: common.xsl 9965 2015-06-29 14:38:09Z tom_schr $
     </releaseinfo>
   </info>
   <!-- * yes, partintro is a valid child of a reference... -->
@@ -479,7 +479,7 @@ Defaults to the context node.</para>
   <!-- Formats a personal name. Handles corpauthor as a special case. -->
   <xsl:param name="node" select="."/>
 
-  <xsl:variable name="style">
+  <xsl:param name="style">
     <xsl:choose>
       <xsl:when test="$node/@role">
         <xsl:value-of select="$node/@role"/>
@@ -491,7 +491,7 @@ Defaults to the context node.</para>
         </xsl:call-template>
       </xsl:otherwise>
     </xsl:choose>
-  </xsl:variable>
+  </xsl:param>
 
   <xsl:choose>
     <!-- the personname element is a specialcase -->
@@ -1221,7 +1221,7 @@ the ID is not unique.</para>
     <xsl:if test="count($targets)=0">
       <xsl:message>
         <xsl:text>Error: no ID for constraint linkend: </xsl:text>
-        <xsl:value-of select="$linkend"/>
+        <xsl:value-of select="concat('&quot;', $linkend, '&quot;')"/>
         <xsl:text>.</xsl:text>
       </xsl:message>
       <!--
@@ -2103,6 +2103,24 @@ engine does not support it.
     <xsl:when test="$upperformat = 'WEBM'">video/webm</xsl:when>
     <xsl:otherwise>
         <xsl:value-of select="concat('image/', $upperformat)"/> 
+    </xsl:otherwise>
+  </xsl:choose>
+</xsl:template>
+
+<xsl:template match="*" mode="xrefstyle">
+  <xsl:param name="referrer" select="."/>
+  <xsl:param name="target"/>
+  <xsl:param name="olink.key"/>
+
+  <!-- normally uses the @xrefstyle attribute in xref, but could
+       be customized based on the target element type -->
+  <xsl:choose>
+    <xsl:when test="@role and not(@xrefstyle) 
+                    and $use.role.as.xrefstyle != 0">
+      <xsl:value-of select="@role"/>
+    </xsl:when>
+    <xsl:otherwise>
+      <xsl:value-of select="@xrefstyle"/>
     </xsl:otherwise>
   </xsl:choose>
 </xsl:template>

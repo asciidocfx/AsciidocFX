@@ -14,11 +14,11 @@ code, kbd, pre, samp {
     font-size: 0.9em;
 }
 
-pre.highlight {
+pre.highlightjs {
     padding: 0px !important;
 }
 
-pre.highlight > code {
+pre.highlightjs > code {
     padding: 10px;
     border-radius: 4px;
 }
@@ -62,7 +62,31 @@ div#placeholder {
     word-wrap: break-word;
 }
 
-pre code {
+pre.highlightjs code {
     background: #F0F0F0;
     display: block;
+}
+
+li.L0, li.L1, li.L2, li.L3, li.L5, li.L6, li.L7, li.L8 {
+    list-style-type: decimal;
+}
+
+li.L0, li.L2, li.L4, li.L6, li.L8 {
+    background: #fff
+}
+
+li.L1, li.L3, li.L5, li.L7, li.L9 {
+    background: #eee
+}
+
+pre.prettyprint ol.linenums {
+    margin-left: 2.75em;
+}
+
+pre.prettyprint code {
+    background: transparent;
+}
+
+pre.prettyprint {
+    padding: 5px !important;
 }

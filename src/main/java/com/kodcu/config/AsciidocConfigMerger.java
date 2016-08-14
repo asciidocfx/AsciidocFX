@@ -23,7 +23,7 @@ public class AsciidocConfigMerger {
 
     private final EditorConfigBean editorConfigBean;
 
-    public final Pattern attributePattern = Pattern.compile("^:(?<key>.*):(.*)$", Pattern.MULTILINE);
+    public final Pattern attributePattern = Pattern.compile("^:(!*)(?<key>.*)(!*):(.*)$", Pattern.MULTILINE);
 
     @Autowired
     public AsciidocConfigMerger(EditorConfigBean editorConfigBean) {

@@ -2,17 +2,24 @@ package com.kodcu.service;
 
 import com.kodcu.component.MyTab;
 import com.kodcu.controller.ApplicationController;
+import com.kodcu.other.IOHelper;
 import com.kodcu.service.ui.FileBrowseService;
+import com.kodcu.service.ui.TabService;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Tab;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import java.nio.file.*;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 import static java.nio.file.StandardWatchEventKinds.*;
 
@@ -25,83 +32,183 @@ public class FileWatchService {
     private final Logger logger = LoggerFactory.getLogger(FileWatchService.class);
 
     private WatchService watcher = null;
-    private Path lastWatchedPath;
-    private WatchKey watckKey;
     private final ApplicationController controller;
     private final ThreadService threadService;
-    private final FileBrowseService fileBrowseService;
-
-    private WatchKey lastWatchKey;
 
     @Autowired
-    public FileWatchService(ApplicationController controller, ThreadService threadService, FileBrowseService fileBrowseService) {
+    private FileBrowseService fileBrowseService;
+
+    @Autowired
+    private ApplicationContext applicationContext;
+
+    private Map<WatchKey, Path> watchKeys = new ConcurrentHashMap<>();
+
+    @Autowired
+    public FileWatchService(ApplicationController controller, ThreadService threadService) {
         this.controller = controller;
         this.threadService = threadService;
-        this.fileBrowseService = fileBrowseService;
     }
 
-    public void registerWatcher(Path path) {
+    @PostConstruct
+    public void init() {
+        threadService.runTaskLater(this::watchPathChanges);
+    }
 
-        threadService.runTaskLater(() -> {
+    public void reCreateWatchService() {
+        if (Objects.nonNull(watcher)) {
             try {
-                if (Objects.isNull(watcher)) {
-                    watcher = FileSystems.getDefault().newWatchService();
+                if (watchKeys.keySet().size() > 10) {
+                    unRegisterAllPath();
+                    applicationContext.getBean(TabService.class)
+                            .applyForEachMyTab(myTab -> {
+                                registerPathWatcher(myTab.getPath());
+                            });
                 }
+            } catch (Exception e) {
+                logger.warn(e.getMessage());
+            }
+        } else {
+            watcher = IOHelper.newWatchService();
+        }
 
-                if (!path.equals(lastWatchedPath)) {
-                    if (Objects.nonNull(lastWatchKey)) {
-                        lastWatchKey.cancel();
-                        watcher.close();
-                        watcher = FileSystems.getDefault().newWatchService();
-                    }
-                    lastWatchedPath = path;
-                    this.lastWatchKey = path.register(watcher, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY);
+    }
+
+    public void unRegisterAllPath() {
+        for (Map.Entry<WatchKey, Path> entry : watchKeys.entrySet()) {
+            WatchKey watchKey = entry.getKey();
+            watchKey.cancel();
+            Path path = entry.getValue();
+            logger.info("Watch service cancelled watching {}", path);
+        }
+        watchKeys.clear();
+    }
+
+    private void watchPathChanges() {
+
+        if (Objects.isNull(watcher)) {
+            reCreateWatchService();
+        }
+
+        while (true) {
+
+            if (Objects.isNull(watcher)) {
+                break;
+            }
+
+            WatchKey watchKey = null;
+            Path path = null;
+
+            try {
+                watchKey = watcher.take();
+                path = watchKeys.get(watchKey);
+
+            } catch (ClosedWatchServiceException cws) {
+                if (Objects.nonNull(path)) {
+                    logger.info("Watch service closed for: {}", path);
                 }
+            } catch (Exception ex) {
+                logger.warn(ex.getMessage());
+                continue;
+            }
 
-                logger.debug("Watchservice started for: {}", path);
+            List<WatchEvent<?>> watchEvents = watchKey.pollEvents();
 
-                while (true) {
-
-                    if (!lastWatchKey.isValid())
-                        break;
-
-                    this.watckKey = watcher.take();
-                    List<WatchEvent<?>> watchEvents = watckKey.pollEvents();
-                    boolean updateFsView = false;
-                    for (WatchEvent<?> event : watchEvents) {
-                        WatchEvent.Kind<?> kind = event.kind();
-                        if (kind == ENTRY_MODIFY && event.count() == 1) {
-                            WatchEvent<Path> ev = (WatchEvent<Path>) event;
-                            Path modifiedPath = path.resolve(ev.context());
-                            ObservableList<Tab> tabs = controller.getTabPane().getTabs();
-                            for (Tab tab : tabs) {
-                                MyTab myTab = (MyTab) tab;
-                                if (modifiedPath.equals(myTab.getPath())) {
+            boolean updateFsView = false;
+            for (WatchEvent<?> event : watchEvents) {
+                WatchEvent.Kind<?> kind = event.kind();
+                if (kind == ENTRY_MODIFY && event.count() == 1) {
+                    WatchEvent<Path> ev = (WatchEvent<Path>) event;
+                    Path modifiedPath = path.resolve(ev.context());
+                    ObservableList<Tab> tabs = controller.getTabPane().getTabs();
+                    for (Tab tab : tabs) {
+                        if (tab instanceof MyTab) {
+                            MyTab myTab = (MyTab) tab;
+                            if (modifiedPath.equals(myTab.getPath())) {
+                                threadService.runActionLater(() -> {
                                     myTab.reload();
-                                    break;
-                                }
+                                });
+                                break;
                             }
-                            watckKey.reset();
-                        } else if (kind == ENTRY_MODIFY && event.count() > 1) {
-                            watckKey.reset();
-                        } else {
-                            updateFsView = true;
-                            watckKey.reset();
                         }
                     }
-
-                    if (updateFsView) {
-                        fileBrowseService.browse(lastWatchedPath);
-                    }
-
+                    watchKey.reset();
+                } else if (kind == ENTRY_MODIFY && event.count() > 1) {
+                    watchKey.reset();
+                } else {
+                    updateFsView = true;
+                    watchKey.reset();
                 }
 
-            } catch (ClosedWatchServiceException e) {
-                logger.debug("Watchservice closed for: {}", path, e);
+            }
+
+            if (updateFsView) {
+                fileBrowseService.refreshPathToTree(path);
+            }
+
+        }
+
+    }
+
+    public void registerPathWatcher(final Path path) {
+
+        threadService.runTaskLater(() -> {
+
+            if (Objects.isNull(path)) {
+                return;
+            }
+
+            Path finalPath = null;
+
+            if (!Files.isDirectory(path)) {
+                finalPath = path.getParent();
+            } else {
+                finalPath = path;
+            }
+
+            try {
+                boolean isRegistered = isRegisteredPath(finalPath, watchKeys);
+
+                if (!isRegistered) {
+                    WatchKey watchKey = finalPath.register(watcher, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY);
+                    watchKeys.put(watchKey, finalPath);
+                }
             } catch (Exception e) {
-                logger.debug("Could not register watcher for path: {}, but dont worry", path, e);
+                logger.warn("Couldn't register watcher for: {}", finalPath);
             }
         });
     }
 
+    public boolean isRegisteredPath(Path finalPath, Map<WatchKey, Path> watchKeys) {
+        boolean exist = false;
+        for (Map.Entry<WatchKey, Path> entry : watchKeys.entrySet()) {
+            WatchKey key = entry.getKey();
+            Path value = entry.getValue();
+
+            if (finalPath.equals(value)) {
+                if (key.isValid()) {
+                    exist = true;
+                    break;
+                }
+            }
+        }
+
+        return exist;
+    }
+
+    public void unRegisterPath(Path path) {
+        try {
+            for (Map.Entry<WatchKey, Path> entry : watchKeys.entrySet()) {
+                Path registeredPath = entry.getValue();
+                if (path.equals(registeredPath)) {
+                    WatchKey watchKey = entry.getKey();
+                    watchKey.cancel();
+                    watchKeys.remove(watchKey);
+                    break;
+                }
+
+            }
+        } catch (Exception ex) {
+
+        }
+    }
 }

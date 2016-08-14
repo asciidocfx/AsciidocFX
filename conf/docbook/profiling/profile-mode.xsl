@@ -81,6 +81,17 @@
   <xsl:variable name="os.ok" select="not(@os) or not($profile.os) or
                                      $os.content != '' or @os = ''"/>
 
+  <xsl:variable name="outputformat.content">
+    <xsl:if test="@outputformat">
+      <xsl:call-template name="cross.compare">
+        <xsl:with-param name="a" select="$profile.outputformat"/>
+        <xsl:with-param name="b" select="@outputformat"/>
+      </xsl:call-template>
+    </xsl:if>
+  </xsl:variable>
+  <xsl:variable name="outputformat.ok" select="not(@outputformat) or not($profile.outputformat) or
+                                     $outputformat.content != '' or @outputformat = ''"/>
+
   <xsl:variable name="revision.content">
     <xsl:if test="@revision">
       <xsl:call-template name="cross.compare">
@@ -190,6 +201,7 @@
                 $conformance.ok and 
                 $lang.ok and 
                 $os.ok and 
+                $outputformat.ok and
                 $revision.ok and 
                 $revisionflag.ok and 
                 $role.ok and 

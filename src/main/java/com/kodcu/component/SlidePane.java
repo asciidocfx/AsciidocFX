@@ -4,6 +4,9 @@ import com.kodcu.controller.ApplicationController;
 import com.kodcu.engine.AsciidocWebkitConverter;
 import com.kodcu.other.Current;
 import com.kodcu.service.ThreadService;
+import javafx.beans.property.ReadOnlyObjectProperty;
+import javafx.beans.value.ObservableValue;
+import javafx.concurrent.Worker;
 import netscape.javascript.JSObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,9 +27,24 @@ public class SlidePane extends ViewPanel {
     public SlidePane(ThreadService threadService, ApplicationController controller, Current current, AsciidocWebkitConverter asciidocWebkitConverter) {
         super(threadService, controller, current);
         this.asciidocWebkitConverter = asciidocWebkitConverter;
+        getWindow().setMember("afx", controller);
+        Worker<Void> loadWorker = webEngine().getLoadWorker();
+        ReadOnlyObjectProperty<Worker.State> stateProperty = loadWorker.stateProperty();
+        stateProperty.addListener(this::stateListener);
+    }
+
+    private void stateListener(ObservableValue<? extends Worker.State> observable, Worker.State oldValue, Worker.State newValue) {
+        if (newValue == Worker.State.SUCCEEDED) {
+            getWindow().setMember("afx", controller);
+            if ("revealjs".equals(backend))
+                this.loadJs("js/jquery.js", "js/reveal-extensions.js");
+            if ("deckjs".equals(backend))
+                this.loadJs("js/deck-extensions.js");
+        }
     }
 
     public void replaceSlides(String rendered) {
+        getWindow().setMember("afx", controller);
         String backendExt = backend + "Ext";
         try {
             ((JSObject) getWindow().eval(backendExt)).call("replaceSlides", rendered);
@@ -55,13 +73,11 @@ public class SlidePane extends ViewPanel {
     }
 
     @Override
-    public void scrollByLine(String text) {
+    public void scrollByLine(String lineno) {
         if (stopJumping.get())
             return;
 
-        String selection = asciidocWebkitConverter.findRenderedSelection(text);
-
-        runScroller(selection);
+        runScroller(lineno);
     }
 
     public String findRenderedSelection(String content) {
@@ -69,18 +85,9 @@ public class SlidePane extends ViewPanel {
         return (String) webEngine().executeScript("findRenderedSelection(context)");
     }
 
-    public void injectExtensions() {
-        this.setOnSuccess(() -> {
-            if ("revealjs".equals(backend))
-                this.loadJs("js/jquery.js", "js/reveal-extensions.js");
-            if ("deckjs".equals(backend))
-                this.loadJs("js/deck-extensions.js");
-        });
-    }
-
     @Override
     public void browse() {
-        controller.getHostServices().showDocument(webEngine().getLocation());
+      super.browse();
     }
 
     public void setBackend(String backend) {

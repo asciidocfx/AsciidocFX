@@ -6,6 +6,7 @@ import com.kodcu.controller.ApplicationController;
 import com.kodcu.other.ConverterResult;
 import com.kodcu.other.Current;
 import com.kodcu.other.IOHelper;
+import com.kodcu.service.DirectoryService;
 import com.kodcu.service.ThreadService;
 import javafx.application.Platform;
 import javafx.scene.web.WebView;
@@ -17,12 +18,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.json.JsonObject;
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Optional;
+import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
-import java.util.stream.Stream;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by usta on 09.04.2015.
@@ -36,37 +38,37 @@ public class AsciidocWebkitConverter extends ViewPanel implements AsciidocConver
     private final HtmlConfigBean htmlConfigBean;
     private final AsciidocConfigMerger configMerger;
 
+    private final Map<String, CompletableFuture<ConverterResult>> webWorkerTasks = new ConcurrentHashMap();
+
     @Value("${application.index.url}")
     private String indexUrl;
 
     private Logger logger = LoggerFactory.getLogger(AsciidocWebkitConverter.class);
+    private final DirectoryService directoryService;
 
     @Autowired
-    public AsciidocWebkitConverter(ThreadService threadService, ApplicationController controller, Current current, PreviewConfigBean previewConfigBean, OdfConfigBean odfConfigBean, DocbookConfigBean docbookConfigBean, HtmlConfigBean htmlConfigBean, AsciidocConfigMerger configMerger) {
+    public AsciidocWebkitConverter(ThreadService threadService, ApplicationController controller, Current current, PreviewConfigBean previewConfigBean, OdfConfigBean odfConfigBean, DocbookConfigBean docbookConfigBean, HtmlConfigBean htmlConfigBean, AsciidocConfigMerger configMerger, DirectoryService directoryService) {
         super(threadService, controller, current);
         this.previewConfigBean = previewConfigBean;
         this.odfConfigBean = odfConfigBean;
         this.docbookConfigBean = docbookConfigBean;
         this.htmlConfigBean = htmlConfigBean;
         this.configMerger = configMerger;
+        this.directoryService = directoryService;
     }
 
     public WebView getWebView() {
         return webView;
     }
 
-    public String getTemplate(String templateName, String templateDir) throws IOException {
+    public String getTemplate(String templateDir) {
 
-        Stream<Path> slide = Files.find(controller.getConfigPath().resolve("slide/templates").resolve(templateDir), Integer.MAX_VALUE, (path, basicFileAttributes) -> path.toString().contains(templateName));
+        Path path = controller.getConfigPath().resolve("slide/templates").resolve(templateDir);
 
-        Optional<Path> first = slide.findFirst();
-
-        if (!first.isPresent()) {
-            logger.error("Template name : {} not found in {}", templateName, templateDir);
+        if (Files.notExists(path)) {
+            logger.error("Template not found in {}", path);
             return "";
         }
-
-        Path path = first.get();
 
         String template = IOHelper.readFile(path);
         return template;
@@ -93,8 +95,7 @@ public class AsciidocWebkitConverter extends ViewPanel implements AsciidocConver
 
     @Override
     public void browse() {
-        controller.getHostServices()
-                .showDocument(String.format(indexUrl, controller.getPort()));
+        controller.browseInDesktop(String.format(indexUrl, controller.getPort(), directoryService.interPath()));
     }
 
     @Override
@@ -108,6 +109,34 @@ public class AsciidocWebkitConverter extends ViewPanel implements AsciidocConver
         });
     }
 
+    @Override
+    public String applyReplacements(String asciidoc) {
+
+        if (!Platform.isFxApplicationThread()) {
+            CompletableFuture<String> completableFuture = new CompletableFuture<>();
+            completableFuture.runAsync(() -> {
+                threadService.runActionLater(() -> {
+                    try {
+                        String replacements = applyReplacements(asciidoc);
+                        completableFuture.complete(replacements);
+                    } catch (Exception e) {
+                        completableFuture.completeExceptionally(e);
+                    }
+                });
+            });
+            return completableFuture.join();
+        }
+
+        try {
+            return (String) getWindow().call("apply_replacements", asciidoc);
+        } catch (Exception e) {
+            logger.debug("Problem occured while applying replacements", e);
+        }
+
+        return asciidoc;
+
+    }
+
     public String findRenderedSelection(String content) {
         this.setMember("context", content);
         return (String) webEngine().executeScript("findRenderedSelection(context)");
@@ -115,28 +144,27 @@ public class AsciidocWebkitConverter extends ViewPanel implements AsciidocConver
 
     protected ConverterResult convert(String functionName, String asciidoc, JsonObject config) {
 
-        if (!Platform.isFxApplicationThread()) {
-            final CompletableFuture<ConverterResult> completableFuture = new CompletableFuture<>();
-            completableFuture.runAsync(() -> {
-                threadService.runActionLater(() -> {
-                    try {
-                        ConverterResult converterResult = convert(functionName, asciidoc, config);
-                        completableFuture.complete(converterResult);
-                    } catch (Exception e) {
-                        completableFuture.completeExceptionally(e);
-                    }
-                });
-            }, threadService.executor());
+        final CompletableFuture<ConverterResult> completableFuture = new CompletableFuture();
+        final String taskId = UUID.randomUUID().toString();
 
-            return completableFuture.join();
+        webWorkerTasks.put(taskId, completableFuture);
+        final String conf = config.toString();
+        threadService.runActionLater(() -> {
+            this.setMember("taskId", taskId);
+            this.setMember("editorValue", asciidoc);
+            this.setMember("editorOptions", conf);
+            try {
+                webEngine().executeScript(String.format("if ((typeof %s)!== undefined){ %s(taskId,editorValue,editorOptions) }", functionName, functionName));
+            } catch (Exception e) {
+                completableFuture.completeExceptionally(e);
+            }
+        });
+
+        try {
+            return completableFuture.get(60, TimeUnit.SECONDS);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
-
-        this.setMember("editorValue", asciidoc);
-        this.setMember("editorOptions", config.toString());
-        JSObject result = (JSObject) webEngine().executeScript(String.format("%s(editorValue,editorOptions)", functionName));
-        ConverterResult converterResult = new ConverterResult(result);
-
-        return converterResult;
     }
 
     private JsonObject updateConfig(String asciidoc, JsonObject config) {
@@ -161,6 +189,10 @@ public class AsciidocWebkitConverter extends ViewPanel implements AsciidocConver
     @Override
     public void convertOdf(String asciidoc) {
         convert("convertOdf", asciidoc, updateConfig(asciidoc, odfConfigBean.getJSON()));
+    }
+
+    public Map<String, CompletableFuture<ConverterResult>> getWebWorkerTasks() {
+        return webWorkerTasks;
     }
 
     public boolean isHtml(String text) {

@@ -5,6 +5,8 @@ import com.kodcu.other.Current;
 import com.kodcu.other.IOHelper;
 import com.kodcu.other.PositionalXMLReader;
 import com.kodcu.service.ThreadService;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import org.joox.JOOX;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -13,22 +15,26 @@ import org.w3c.dom.Element;
 
 import java.nio.file.Path;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created by usta on 09.04.2015.
- * <p>
- * NOTE : getWebEngine i diğaerlerinde de böyle yap
- * *********************************************************
  */
 @Component
 public class LiveReloadPane extends ViewPanel {
 
     private ConcurrentHashMap<String, String> lineXPathMap = new ConcurrentHashMap<>();
+    private BooleanProperty ready = new SimpleBooleanProperty(false);
 
     @Autowired
     public LiveReloadPane(ThreadService threadService, ApplicationController controller, Current current) {
         super(threadService, controller, current);
+
+        setOnSuccess(() -> {
+            this.setMember("afx", this);
+            this.initializeDiffReplacer();
+        });
 
         webEngine().documentProperty().addListener((observable, oldDom, dom) -> {
 
@@ -56,8 +62,7 @@ public class LiveReloadPane extends ViewPanel {
 
     @Override
     public void browse() {
-        controller.getHostServices()
-                .showDocument(webEngine().getLocation());
+        super.browse();
     }
 
     @Override
@@ -71,13 +76,14 @@ public class LiveReloadPane extends ViewPanel {
     }
 
     @Override
-    public void scrollByLine(String lineNumber) {
+    public void scrollByLine(String lineno) {
 
-        String xPath = lineXPathMap.get(lineNumber);
+        String xPath = lineXPathMap.get(lineno);
 
-        if (Objects.nonNull(xPath)) {
-            webEngine().executeScript(String.format("scrollByXPath('%s')", xPath));
-        }
+        Optional.ofNullable(xPath)
+                .ifPresent(xp -> {
+                    webEngine().executeScript(String.format("scrollByXPath(\"%s\",%s)", xp, lineno));
+                });
     }
 
     public void initializeDiffReplacer() {
@@ -90,6 +96,7 @@ public class LiveReloadPane extends ViewPanel {
                 webEngine().executeScript(live);
                 webEngine().executeScript(diffHtml);
                 webEngine().executeScript(extension);
+                ready.setValue(true);
             });
         });
     }
@@ -100,5 +107,11 @@ public class LiveReloadPane extends ViewPanel {
         });
     }
 
+    public boolean getReady() {
+        return ready.get();
+    }
 
+    public BooleanProperty readyProperty() {
+        return ready;
+    }
 }

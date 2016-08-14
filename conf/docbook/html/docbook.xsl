@@ -1,10 +1,7 @@
 <?xml version='1.0'?>
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-                xmlns:ng="http://docbook.org/docbook-ng"
-                xmlns:db="http://docbook.org/ns/docbook"
                 xmlns:exsl="http://exslt.org/common"
-                xmlns:exslt="http://exslt.org/common"
-                exclude-result-prefixes="db ng exsl exslt"
+                exclude-result-prefixes="exsl"
                 version='1.0'>
 
 <xsl:output method="html"
@@ -12,7 +9,7 @@
             indent="no"/>
 
 <!-- ********************************************************************
-     $Id: docbook.xsl 9605 2012-09-18 10:48:54Z tom_schr $
+     $Id: docbook.xsl 9983 2015-09-16 20:58:50Z bobstayton $
      ********************************************************************
 
      This file is part of the XSL DocBook Stylesheet distribution.
@@ -50,6 +47,7 @@
 <xsl:include href="inline.xsl"/>
 <xsl:include href="footnote.xsl"/>
 <xsl:include href="html.xsl"/>
+<xsl:include href="its.xsl"/>
 <xsl:include href="info.xsl"/>
 <xsl:include href="keywords.xsl"/>
 <xsl:include href="division.xsl"/>
@@ -74,6 +72,7 @@
 <xsl:include href="html-rtf.xsl"/>
 <xsl:include href="annotations.xsl"/>
 <xsl:include href="../common/stripns.xsl"/>
+<xsl:include href="publishers.xsl"/>
 
 <xsl:param name="stylesheet.result.type" select="'html'"/>
 <xsl:param name="htmlhelp.output" select="0"/>
@@ -408,13 +407,14 @@ body { background-image: url('</xsl:text>
   <xsl:param name="nav.context"/>
 </xsl:template>
 
-<!-- To use the same stripped nodeset everywhere, it should
+<!-- To use the same namespace-adjusted nodeset everywhere, it should
 be created as a global variable here.
-Used by docbook.xsl, chunk-code.xsl and chunkfast.xsl -->
+Used by docbook.xsl, chunk-common.xsl, chunktoc.xsl, and
+chunk-code.xsl; and in $chunk.hierarchy used in chunkfast.xsl -->
 <xsl:variable name="no.namespace">
-  <xsl:if test="$exsl.node.set.available != 0
-                    and (*/self::ng:* or */self::db:*)">
-    <xsl:apply-templates select="/*" mode="stripNS"/>
+  <xsl:if test="$exsl.node.set.available != 0 and 
+                namespace-uri(/*) = 'http://docbook.org/ns/docbook'">
+      <xsl:apply-templates select="/*" mode="stripNS"/>
   </xsl:if>
 </xsl:variable>
 
@@ -425,12 +425,9 @@ Used by docbook.xsl, chunk-code.xsl and chunkfast.xsl -->
     <xsl:call-template name="get.doc.title"/>
   </xsl:variable>
   <xsl:choose>
-    <!-- Hack! If someone hands us a DocBook V5.x or DocBook NG document,
-         toss the namespace and continue.  Use the docbook5 namespaced
-         stylesheets for DocBook5 if you don't want to use this feature.-->
-    <!-- include extra test for Xalan quirk -->
-    <xsl:when test="$exsl.node.set.available != 0
-                    and (*/self::ng:* or */self::db:*)">
+    <!-- fix namespace if necessary -->
+    <xsl:when test="$exsl.node.set.available != 0 and 
+                  namespace-uri(/*) = 'http://docbook.org/ns/docbook'">
       <xsl:call-template name="log.message">
         <xsl:with-param name="level">Note</xsl:with-param>
         <xsl:with-param name="source" select="$doc.title"/>
@@ -441,30 +438,20 @@ Used by docbook.xsl, chunk-code.xsl and chunkfast.xsl -->
           <xsl:text>stripped namespace before processing</xsl:text>
         </xsl:with-param>
       </xsl:call-template>
-      <!-- DEBUG: to save stripped document.
-      <xsl:message>Saving stripped document.</xsl:message>
+      <!-- DEBUG: uncomment to save namespace-fixed document.
+      <xsl:message>Saving namespace-fixed document.</xsl:message>
       <xsl:call-template name="write.chunk">
-        <xsl:with-param name="filename" select="'/tmp/stripped.xml'"/>
+        <xsl:with-param name="filename" select="'namespace-fixed.debug.xml'"/>
         <xsl:with-param name="method" select="'xml'"/>
         <xsl:with-param name="content">
           <xsl:copy-of select="exsl:node-set($no.namespace)"/>
         </xsl:with-param>
       </xsl:call-template>
       -->
-      <xsl:call-template name="log.message">
-        <xsl:with-param name="level">Note</xsl:with-param>
-        <xsl:with-param name="source" select="$doc.title"/>
-        <xsl:with-param name="context-desc">
-          <xsl:text>namesp. cut</xsl:text>
-        </xsl:with-param>
-        <xsl:with-param name="message">
-          <xsl:text>processing stripped document</xsl:text>
-        </xsl:with-param>
-      </xsl:call-template>
       <xsl:apply-templates select="exsl:node-set($no.namespace)"/>
     </xsl:when>
-    <!-- Can't process unless namespace removed -->
-    <xsl:when test="*/self::ng:* or */self::db:*">
+    <!-- Can't process unless namespace fixed with exsl node-set()-->
+    <xsl:when test="namespace-uri(/*) = 'http://docbook.org/ns/docbook'">
       <xsl:message terminate="yes">
         <xsl:text>Unable to strip the namespace from DB5 document,</xsl:text>
         <xsl:text> cannot proceed.</xsl:text>

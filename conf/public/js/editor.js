@@ -1,13 +1,15 @@
 var editor = ace.edit("editor");
 editor.renderer.setScrollMargin(10, 0, 10, 0);
 var modelist = ace.require("ace/ext/modelist");
+var range = ace.require("ace/range");
+var TokenIterator = ace.require("ace/token_iterator").TokenIterator;
 editor.renderer.setShowGutter(false);
 editor.setHighlightActiveLine(false);
 editor.getSession().setMode("ace/mode/asciidoc");
 editor.getSession().setUseWrapMode(true);
 editor.setShowPrintMargin(false);
 editor.setBehavioursEnabled(true);
-editor.session.setFoldStyle("manual");
+setFoldStyle("default");
 editor.setOptions({
     enableSnippets: true,
     dragEnabled: true
@@ -25,48 +27,19 @@ var updateDelay = 100;
 //afx.onscroll(editor.getSession().getScrollTop(), maxTop);
 
 
-function updateHtmlScroll(){
+function updateHtmlScroll() {
     var row = editor.renderer.getFirstFullyVisibleRow();
     afx.scrollByLine(row + "");
 }
 
-function updateMarkupScroll() {
-
-    var row = editor.renderer.getFirstFullyVisibleRow();
+function updateMarkupScroll(row) {
 
     if (lastEditorRow == row)
         return;
 
-    for (var i = 0; i < 10; i++) { // try ten times
-        var trimmed = editor.session.getLine(row).trim();
-        if ((trimmed == "") || (trimmed.match(/\(\(\(.*?\)\)\)/)) || (trimmed.match(/'''/)) || (trimmed.match(/\[\[.*?\]\]/))) {
-            row++;
-        }
-        else {
-            break;
-        }
-    }
+    afx.scrollByLine(row + "");
 
-    var range = sketch.searchBlockPosition(row);
-    if (range) {
-
-        if (lastEditorRow == range.start.row)
-            return;
-        lastEditorRow = range.start.row;
-
-        var blockText = editor.session.getTextRange(range);
-        afx.scrollByPosition(blockText);
-    }
-    else {
-        lastEditorRow = row;
-
-        var lineText = editor.session.getLine(row);
-
-        if (lineText.trim() == "")
-            return;
-
-        afx.scrollByPosition(lineText);
-    }
+    lastEditorRow = row;
 };
 
 editor.getSession().on('changeScrollTop', function (scroll) {
@@ -89,12 +62,15 @@ editor.getSession().on('changeScrollTop', function (scroll) {
         clearInterval(interval);
 
         if (mode == "asciidoc" || mode == "markdown") {
-            updateMarkupScroll();
+            var row = editor.renderer.getFirstFullyVisibleRow();
+            updateMarkupScroll(row);
         }
         else if (mode == "html") {
             updateHtmlScroll();
         }
     }, 50);
+
+    checkSpelling();
 });
 
 var updateStatusAction = new BufferedAction();
@@ -120,46 +96,66 @@ editor.getSession().selection.on('changeCursor', function (e) {
 
     updateStatusBox();
 
-    if (lastEditorRow == row)
-        return;
+    updateMarkupScroll(row);
 
-    var range = sketch.searchBlockPosition(row);
-    if (range) {
-
-        if (lastEditorRow == range.start.row)
-            return;
-        lastEditorRow = range.start.row;
-
-        var blockText = editor.session.getTextRange(range);
-        afx.scrollByLine(blockText);
-    }
-    else {
-        lastEditorRow = row;
-
-        var lineText = editor.session.getLine(row);
-
-        if (lineText.trim() == "")
-            return;
-
-        afx.scrollByLine(lineText);
-    }
 });
 
-var constructListAction = new BufferedAction();
 var renderAction = new BufferedAction();
 var editorChangeListener = function (obj) {
 
     if (afterFirstChange)
-        afx.appendWildcard();
+        editorPane.appendWildcard();
 
     renderAction.buff(function () {
         afx.textListener(editor.getValue(), editorMode());
     }, 100);
 
-    constructListAction.buff(function () {
-        sketch.refreshConstructList();
-    }, 1000);
+    checkSpelling();
+
 };
+
+function clearTypoMarkers() {
+    if (markers.length) {
+        var marker = markers.pop();
+        while (marker) {
+            editor.getSession().removeMarker(marker);
+            marker = markers.pop();
+        }
+    }
+}
+
+var spellcheckAction = new BufferedAction();
+function checkSpelling() {
+
+    clearTypoMarkers();
+    spellcheckAction.buff(function () {
+        afx.processTokens();
+    }, 1000);
+}
+
+function getTokenList() {
+    var tokenit = new TokenIterator(editor.getSession(), editor.getFirstVisibleRow(), 0);
+    var currentToken = tokenit.getCurrentToken();
+
+    var allTokens = [];
+
+    while (currentToken) {
+        allTokens.push({
+            type: currentToken.type,
+            value: currentToken.value,
+            row: tokenit.getCurrentTokenRow(),
+            start: tokenit.getCurrentTokenColumn(),
+            end: tokenit.getCurrentTokenColumn() + currentToken.value.length
+        });
+
+        if (editor.getLastVisibleRow() < tokenit.getCurrentTokenRow()) {
+            break;
+        }
+
+        currentToken = tokenit.stepForward();
+    }
+    return allTokens;
+}
 
 function updateOptions() {
     var editorConfigBean = afx.getEditorConfigBean();
@@ -202,6 +198,18 @@ function setUseWrapMode(useWrapMode) {
 
 function setWrapLimitRange(wrapLimitRange) {
     editor.getSession().setWrapLimitRange(wrapLimitRange, wrapLimitRange);
+}
+
+function getSelectionOrAll() {
+    var min = arguments.length > 0 ? arguments[0] : 0;
+    var selection = editor.session.getTextRange(editor.getSelectionRange());
+
+    if (selection.length > min) {
+        return selection;
+    }
+    else {
+        return editor.session.getValue();
+    }
 }
 
 function setEditorValue(content) {
@@ -268,6 +276,7 @@ function rerender() {
         afx.textListener(editor.getValue(), editorMode());
         updateStatusBox();
     }, 100);
+    checkSpelling();
 }
 
 function editorMode() {
@@ -278,4 +287,69 @@ function editorMode() {
 function setInitialized() {
     editor.getSession().on('change', editorChangeListener);
     updateStatusBox();
+}
+
+function resetUndoManager() {
+    editor.getSession().setUndoManager(new ace.UndoManager());
+}
+
+var markers = [];
+function addTypo(row, start, end, tokenClass) {
+    var marker = editor.getSession().addMarker(
+        new range.Range(row, start, row, end), tokenClass, "typo"
+    );
+
+    markers.push(marker);
+}
+
+function checkWordSuggestions() {
+    var cursorPosition = editor.getCursorPosition();
+    var selectionIsEmpty = editor.selection.isEmpty();
+    if (selectionIsEmpty) {
+        editor.selection.selectWord();
+    }
+    var selectedText = editor.getSelectedText();
+    if (selectedText && "" != selectedText.trim()) {
+        afx.checkWordSuggestions(selectedText);
+    }
+
+    if (selectionIsEmpty) {
+        editor.selection.clearSelection();
+        editor.moveCursorToPosition(cursorPosition);
+    }
+
+}
+
+function replaceMisspelled(suggestion) {
+    var cursorPosition = editor.getCursorPosition();
+    var selectionIsEmpty = editor.selection.isEmpty();
+    if (selectionIsEmpty) {
+        editor.selection.selectWord();
+    }
+    editor.session.replace(editor.selection.getRange(), suggestion);
+    editor.selection.clearSelection();
+    if (selectionIsEmpty) {
+        editor.moveCursorToPosition(cursorPosition);
+    }
+
+}
+
+function setFoldStyle(style) {
+
+    if (!style || style == "" || style == "default") {
+        var mode = editorMode();
+        if (mode == "asciidoc" || mode == "markdown") {
+            setFoldStyle("manual");
+        }
+        else {
+            setFoldStyle("markbeginend");
+        }
+    }
+    else {
+        editor.session.setFoldStyle(style);
+    }
+}
+
+function getCursorCoordinates() {
+    return editor.renderer.textToScreenCoordinates(editor.getCursorPosition());
 }

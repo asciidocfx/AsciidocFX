@@ -19,9 +19,11 @@ package com.kodcu.boot;
 import com.kodcu.controller.ApplicationController;
 import jdk.nashorn.api.scripting.NashornScriptEngineFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.*;
+import org.springframework.boot.autoconfigure.websocket.WebSocketAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.boot.context.web.SpringBootServletInitializer;
+import org.springframework.boot.web.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.*;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;
@@ -33,9 +35,24 @@ import java.util.Base64;
 
 
 @Configuration
-@EnableAutoConfiguration
 @EnableWebSocket
 @ComponentScan(basePackages = "com.kodcu.**")
+//@EnableAutoConfiguration
+@Import({
+        DispatcherServletAutoConfiguration.class,
+        EmbeddedServletContainerAutoConfiguration.class,
+//        ErrorMvcAutoConfiguration.class,
+        HttpEncodingAutoConfiguration.class,
+        HttpMessageConvertersAutoConfiguration.class,
+//        JacksonAutoConfiguration.class,
+//        JmxAutoConfiguration.class,
+//        MultipartAutoConfiguration.class,
+        ServerPropertiesAutoConfiguration.class,
+        PropertyPlaceholderAutoConfiguration.class,
+//        ThymeleafAutoConfiguration.class,
+        WebMvcAutoConfiguration.class,
+        WebSocketAutoConfiguration.class,
+})
 public class SpringAppConfig extends SpringBootServletInitializer implements WebSocketConfigurer {
 
     @Autowired

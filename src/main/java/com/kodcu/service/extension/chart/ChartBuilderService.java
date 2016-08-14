@@ -41,10 +41,7 @@ public abstract class ChartBuilderService {
 
         current.getCache().put(imageTarget, hashCode);
 
-        if (!current.currentPath().isPresent())
-            controller.saveDoc();
-
-        currentRoot = current.currentPath().get().getParent();
+        currentRoot = current.currentTab().getParentOrWorkdir();
         imagePath = currentRoot.resolve(imageTarget);
 
     }

@@ -53,6 +53,10 @@
 <l:gentext key="copyright" text="autorska prava"/>
 <l:gentext key="Dedication" text="Posveta"/>
 <l:gentext key="dedication" text="posveta"/>
+<l:gentext key="Dialogue" text="Dialogue" lang="en"/>
+<l:gentext key="dialogue" text="Dialogue" lang="en"/>
+<l:gentext key="Drama" text="Drama" lang="en"/>
+<l:gentext key="drama" text="Drama" lang="en"/>
 <l:gentext key="Edition" text="Izdanje"/>
 <l:gentext key="edition" text="izdanje"/>
 <l:gentext key="Editor" text="Urednik"/>
@@ -88,6 +92,8 @@
 <l:gentext key="note" text="primedba"/>
 <l:gentext key="Part" text="Deo"/>
 <l:gentext key="part" text="deo"/>
+<l:gentext key="Poetry" text="Poetry" lang="en"/>
+<l:gentext key="poetry" text="Poetry" lang="en"/>
 <l:gentext key="Preface" text="Predgovor"/>
 <l:gentext key="preface" text="predgovor"/>
 <l:gentext key="Procedure" text="Postupak"/>
@@ -151,6 +157,7 @@
 <l:gentext key="and" text="i"/>
 <l:gentext key="or" text="or" lang="en"/>
 <l:gentext key="by" text="od"/>
+<l:gentext key="optional-step" text="(Optional) " lang="en"/>
 <l:gentext key="Edited" text="Uređeno"/>
 <l:gentext key="edited" text="uređeno"/>
 <l:gentext key="Editedby" text="Uredio(la)"/>
@@ -171,6 +178,8 @@
 <l:gentext key="unexpectedelementname" text="neočekivano ime elementa"/>
 <l:gentext key="unsupported" text="nije podržano"/>
 <l:gentext key="xrefto" text="unakrsna referenca na"/>
+<l:gentext key="video-unsupported" text="Your browser does not support the video tag" lang="en"/>
+<l:gentext key="audio-unsupported" text="Your browser does not support the audio tag" lang="en"/>
 <l:gentext key="Authors" text="Autori"/>
 <l:gentext key="copyeditor" text="Izdavački urednik"/>
 <l:gentext key="graphicdesigner" text="Grafički dizajner"/>
@@ -229,7 +238,7 @@
 <l:template name="insert" text="Ins" lang="en"/>
 <l:template name="left" text="←" lang="en"/>
 <l:template name="meta" text="Meta" lang="en"/>
-<l:template name="option" text="???" lang="en"/>
+<l:template name="option" text="⌥" lang="en"/>
 <l:template name="pagedown" text="Page ↓" lang="en"/>
 <l:template name="pageup" text="Page ↑" lang="en"/>
 <l:template name="right" text="→" lang="en"/>
@@ -347,6 +356,9 @@
 <l:template name="simplesect" text="%t"/>
 <l:template name="topic" text="%t" lang="en"/>
 <l:template name="part" text="%t"/>
+<l:template name="dialogue" text="%t" lang="en"/>
+<l:template name="drama" text="%t" lang="en"/>
+<l:template name="poetry" text="%t" lang="en"/>
 </l:context>
 <l:context name="title-numbered"><l:template name="appendix" text="Dodatak %n. %t"/>
 <l:template name="article/appendix" text="%n. %t"/>
@@ -402,6 +414,9 @@
 <l:template name="simplesect" text="%s"/>
 <l:template name="topic" text="%t" lang="en"/>
 <l:template name="toc" text="%s"/>
+<l:template name="dialogue" text="%s" lang="en"/>
+<l:template name="drama" text="%s" lang="en"/>
+<l:template name="poetry" text="%s" lang="en"/>
 </l:context>
 <l:context name="xref"><l:template name="abstract" text="%t"/>
 <l:template name="acknowledgements" text="%t" lang="en"/>
@@ -476,6 +491,9 @@
 <l:template name="pageabbrev" text="(str. %p)"/>
 <l:template name="Page" text="Strana %p"/>
 <l:template name="topic" text="%t" lang="en"/>
+<l:template name="dialogue" text="%t" lang="en"/>
+<l:template name="drama" text="%t" lang="en"/>
+<l:template name="poetry" text="%t" lang="en"/>
 <l:template name="bridgehead" text="odeljak pod imenom „%t“"/>
 <l:template name="refsection" text="odeljak pod imenom „%t“"/>
 <l:template name="refsect1" text="odeljak pod imenom „%t“"/>

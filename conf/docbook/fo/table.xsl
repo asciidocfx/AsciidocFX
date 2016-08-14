@@ -13,7 +13,7 @@
 <xsl:include href="../common/table.xsl"/>
 
 <!-- ********************************************************************
-     $Id: table.xsl 9666 2012-11-14 04:42:56Z bobstayton $
+     $Id: table.xsl 9819 2013-10-16 18:51:18Z mzjn $
      ********************************************************************
 
      This file is part of the XSL DocBook Stylesheet distribution.
@@ -27,7 +27,7 @@
   <info>
     <title>Formatting Object Table Reference</title>
     <releaseinfo role="meta">
-      $Id: table.xsl 9666 2012-11-14 04:42:56Z bobstayton $
+      $Id: table.xsl 9819 2013-10-16 18:51:18Z mzjn $
     </releaseinfo>
   </info>
   <partintro xml:id="partintro">
@@ -797,6 +797,7 @@
               <xsl:with-param name="spans" select="$spans"/>
             </xsl:call-template>
           </xsl:with-param>
+          <xsl:with-param name="browserows" select="$browserows"/>
         </xsl:apply-templates>
       </xsl:if>
     </xsl:otherwise>

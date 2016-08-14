@@ -4,7 +4,7 @@
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns="http://www.w3.org/1999/xhtml" version="1.0">
 
 <!-- ********************************************************************
-     $Id: titlepage.xsl 9360 2012-05-12 23:39:14Z bobstayton $
+     $Id: titlepage.xsl 9983 2015-09-16 20:58:50Z bobstayton $
      ********************************************************************
 
      This file is part of the XSL DocBook Stylesheet distribution.
@@ -108,6 +108,16 @@
 <xsl:attribute-set name="list.of.unknowns.titlepage.recto.style"/>
 <xsl:attribute-set name="list.of.unknowns.contents.titlepage.verso.style"/>
 
+<xsl:attribute-set name="dialogue.titlepage.recto.style"/>
+<xsl:attribute-set name="dialogue.titlepage.verso.style"/>
+
+<xsl:attribute-set name="drama.titlepage.recto.style"/>
+<xsl:attribute-set name="drama.titlepage.verso.style"/>
+
+<xsl:attribute-set name="poetry.titlepage.recto.style"/>
+<xsl:attribute-set name="poetry.titlepage.verso.style"/>
+
+
 <!-- ==================================================================== -->
 
 <xsl:template match="*" mode="titlepage.mode">
@@ -205,7 +215,7 @@
   <div>
     <xsl:apply-templates select="." mode="common.html.attributes"/>
     <xsl:call-template name="id.attribute"/>
-    <xsl:if test="self::editor[position()=1] and not($editedby.enabled = 0)">
+    <xsl:if test="self::editor and                    count(preceding-sibling::editor) = 0 and                    not($editedby.enabled = 0)">
       <h4 class="editedby"><xsl:call-template name="gentext.edited.by"/></h4>
     </xsl:if>
     <h3>

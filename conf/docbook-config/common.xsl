@@ -64,7 +64,7 @@
     <xsl:param name="ulink.footnotes" select="1"/>
 
     <!-- disable period at end of formal block title -->
-    <xsl:param name="runinhead.default.title.end.punct"/>
+    <xsl:param name="runinhead.default.title.break.after" select="1"/>
 
     <xsl:param name="chapter.autolabel">
         <xsl:choose>

@@ -195,17 +195,17 @@ public abstract class XYChartBuilderService extends ChartBuilderService {
             yAxis.setSide(Side.valueOf(optMap.get("y-side").toUpperCase()));
         }
 
-        xyChart.setLayoutX(-78000);
-        xyChart.setLayoutY(-78000);
+        xyChart.setLayoutX(-10000);
+        xyChart.setLayoutY(-10000);
 
         controller.getRootAnchor().getChildren().add(xyChart);
         WritableImage writableImage = xyChart.snapshot(new SnapshotParameters(), null);
-        controller.removeChildElement(xyChart);
+        controller.getRootAnchor().getChildren().remove(xyChart);
         BufferedImage bufferedImage = SwingFXUtils.fromFXImage(writableImage, null);
         IOHelper.createDirectories(currentRoot.resolve(imagesDir));
         IOHelper.imageWrite(bufferedImage, "png", imagePath.toFile());
         logger.debug("Chart extension is ended for {}", imageTarget);
-        controller.clearImageCache();
+        controller.clearImageCache(imagePath);
     }
 
     protected abstract XYChart createXYChart();

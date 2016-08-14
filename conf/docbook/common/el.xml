@@ -53,6 +53,10 @@
 <l:gentext key="copyright" text="πνευματικά Δικαιώματα"/>
 <l:gentext key="Dedication" text="Αφιέρωση"/>
 <l:gentext key="dedication" text="αφιέρωση"/>
+<l:gentext key="Dialogue" text="Dialogue" lang="en"/>
+<l:gentext key="dialogue" text="Dialogue" lang="en"/>
+<l:gentext key="Drama" text="Drama" lang="en"/>
+<l:gentext key="drama" text="Drama" lang="en"/>
 <l:gentext key="Edition" text="Έκδοση"/>
 <l:gentext key="edition" text="έκδοση"/>
 <l:gentext key="Editor" text="Εκδότης"/>
@@ -88,6 +92,8 @@
 <l:gentext key="note" text="σημείωση"/>
 <l:gentext key="Part" text="Μέρος"/>
 <l:gentext key="part" text="μέρος"/>
+<l:gentext key="Poetry" text="Poetry" lang="en"/>
+<l:gentext key="poetry" text="Poetry" lang="en"/>
 <l:gentext key="Preface" text="Εισαγωγή"/>
 <l:gentext key="preface" text="εισαγωγή"/>
 <l:gentext key="Procedure" text="Διαδικασία"/>
@@ -151,6 +157,7 @@
 <l:gentext key="and" text="και"/>
 <l:gentext key="or" text="ή"/>
 <l:gentext key="by" text="από"/>
+<l:gentext key="optional-step" text="(Optional) " lang="en"/>
 <l:gentext key="Edited" text="Επιμέλεια"/>
 <l:gentext key="edited" text="επιμέλεια"/>
 <l:gentext key="Editedby" text="Επιμέλεια από"/>
@@ -171,6 +178,8 @@
 <l:gentext key="unexpectedelementname" text="μη αναμενόμενο όνομα στοιχείου"/>
 <l:gentext key="unsupported" text="μη υποστηριζόμενο"/>
 <l:gentext key="xrefto" text="αντιπαραπομπή σε"/>
+<l:gentext key="video-unsupported" text="Your browser does not support the video tag" lang="en"/>
+<l:gentext key="audio-unsupported" text="Your browser does not support the audio tag" lang="en"/>
 <l:gentext key="Authors" text="Συγγραφείς"/>
 <l:gentext key="copyeditor" text="Συντάκτης"/>
 <l:gentext key="graphicdesigner" text="Σχεδιαστής γραφικών"/>
@@ -229,7 +238,7 @@
 <l:template name="insert" text="Ins" lang="en"/>
 <l:template name="left" text="←" lang="en"/>
 <l:template name="meta" text="Meta" lang="en"/>
-<l:template name="option" text="???" lang="en"/>
+<l:template name="option" text="⌥" lang="en"/>
 <l:template name="pagedown" text="Page ↓" lang="en"/>
 <l:template name="pageup" text="Page ↑" lang="en"/>
 <l:template name="right" text="→" lang="en"/>
@@ -347,6 +356,9 @@
 <l:template name="simplesect" text="%t"/>
 <l:template name="topic" text="%t" lang="en"/>
 <l:template name="part" text="%t" lang="en"/>
+<l:template name="dialogue" text="%t" lang="en"/>
+<l:template name="drama" text="%t" lang="en"/>
+<l:template name="poetry" text="%t" lang="en"/>
 </l:context>
 <l:context name="title-numbered"><l:template name="appendix" text="Παράρτημα %n. %t"/>
 <l:template name="article/appendix" text="%n. %t" lang="en"/>
@@ -402,6 +414,9 @@
 <l:template name="simplesect" text="%s"/>
 <l:template name="topic" text="%t" lang="en"/>
 <l:template name="toc" text="%s"/>
+<l:template name="dialogue" text="%s" lang="en"/>
+<l:template name="drama" text="%s" lang="en"/>
+<l:template name="poetry" text="%s" lang="en"/>
 </l:context>
 <l:context name="xref"><l:template name="abstract" text="%t"/>
 <l:template name="acknowledgements" text="%t" lang="en"/>
@@ -476,6 +491,9 @@
 <l:template name="pageabbrev" text="(p. %p)" lang="en"/>
 <l:template name="Page" text="Page %p" lang="en"/>
 <l:template name="topic" text="%t" lang="en"/>
+<l:template name="dialogue" text="%t" lang="en"/>
+<l:template name="drama" text="%t" lang="en"/>
+<l:template name="poetry" text="%t" lang="en"/>
 <l:template name="bridgehead" text="«%t»"/>
 <l:template name="refsection" text="«%t»"/>
 <l:template name="refsect1" text="«%t»"/>

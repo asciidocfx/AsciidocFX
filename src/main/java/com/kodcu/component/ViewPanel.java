@@ -28,6 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 
+import java.nio.file.Path;
 import java.util.Iterator;
 import java.util.Objects;
 import java.util.Optional;
@@ -58,6 +59,16 @@ public abstract class ViewPanel extends AnchorPane {
         this.getChildren().add(webView);
         initializeMargins();
         initializePreviewContextMenus();
+    }
+
+    public void enableScrollingAndJumping() {
+        stopScrolling.setValue(false);
+        stopJumping.setValue(false);
+    }
+
+    public void disableScrollingAndJumping() {
+        stopScrolling.setValue(true);
+        stopJumping.setValue(true);
     }
 
     private void initializePreviewContextMenus() {
@@ -129,21 +140,23 @@ public abstract class ViewPanel extends AnchorPane {
         VBox.setVgrow(webView, Priority.ALWAYS);
     }
 
-    public abstract void browse();
+    public void browse() {
+        threadService.runActionLater(() -> {
+            final String documentURI = webEngine().getDocument().getDocumentURI();
+            controller.browseInDesktop(documentURI);
+        });
+    }
+
+    ;
 
     public void onscroll(Object pos, Object max) {
 
         if (stopScrolling.get())
             return;
 
-        if (Platform.isFxApplicationThread()) {
+        threadService.runActionLater(() -> {
             runScrolling(pos, max);
-        } else {
-            Platform.runLater(() -> {
-                runScrolling(pos, max);
-            });
-        }
-
+        });
     }
 
     public abstract void runScroller(String text);
@@ -168,7 +181,6 @@ public abstract class ViewPanel extends AnchorPane {
     public void load(String url) {
         if (Objects.nonNull(url))
             Platform.runLater(() -> {
-                webEngine().getLoadWorker().cancel();
                 webEngine().load(url);
             });
         else
@@ -204,27 +216,25 @@ public abstract class ViewPanel extends AnchorPane {
     }
 
     public void loadJs(String... jsPaths) {
-        threadService.runTaskLater(() -> {
-            threadService.runActionLater(() -> {
-                for (String jsPath : jsPaths) {
-                    threadService.runActionLater(() -> {
-                        String format = String.format("var scriptEl = document.createElement('script');\n" +
-                                "scriptEl.setAttribute('src','" + genericUrl + "');\n" +
-                                "document.querySelector('body').appendChild(scriptEl);", controller.getPort(), jsPath);
-                        webEngine().executeScript(format);
-                    });
-                }
-            });
+        threadService.runActionLater(() -> {
+            for (String jsPath : jsPaths) {
+                String format = String.format("var scriptEl = document.createElement('script');\n" +
+                        "scriptEl.setAttribute('src','" + genericUrl + "');\n" +
+                        "document.querySelector('body').appendChild(scriptEl);", controller.getPort(), jsPath);
+                webEngine().executeScript(format);
+            }
         });
     }
 
     public void setOnSuccess(Runnable runnable) {
         threadService.runActionLater(() -> {
+            getWindow().setMember("afx", controller);
             Worker<Void> loadWorker = webEngine().getLoadWorker();
             ReadOnlyObjectProperty<Worker.State> stateProperty = loadWorker.stateProperty();
             stateProperty.addListener((observable, oldValue, newValue) -> {
-                if (newValue == Worker.State.SUCCEEDED)
+                if (newValue == Worker.State.SUCCEEDED) {
                     threadService.runActionLater(runnable);
+                }
             });
         });
     }
@@ -237,4 +247,22 @@ public abstract class ViewPanel extends AnchorPane {
     public abstract void scrollByPosition(String text);
 
     public abstract void scrollByLine(String text);
+
+    public void clearImageCache(Path imagePath) {
+
+        Optional.ofNullable(imagePath)
+                .map(Path::getFileName)
+                .map(Path::toString)
+                .ifPresent(this::clearImageCache);
+    }
+
+    ;
+
+    public void clearImageCache(String imagePath) {
+
+        threadService.runActionLater(() -> {
+            webEngine().executeScript(String.format("clearImageCache(\"%s\")", imagePath));
+        });
+
+    }
 }

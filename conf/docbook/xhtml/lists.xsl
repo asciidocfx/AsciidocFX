@@ -4,7 +4,7 @@
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns="http://www.w3.org/1999/xhtml" version="1.0">
 
 <!-- ********************************************************************
-     $Id: lists.xsl 9307 2012-04-28 03:55:07Z bobstayton $
+     $Id: lists.xsl 9792 2013-08-28 23:03:16Z bobstayton $
      ********************************************************************
 
      This file is part of the XSL DocBook Stylesheet distribution.
@@ -790,13 +790,13 @@
     <xsl:call-template name="anchor">
       <xsl:with-param name="conditional">
         <xsl:choose>
-          <xsl:when test="title">0</xsl:when>
+          <xsl:when test="title|info/title|blockinfo/title">0</xsl:when>
           <xsl:otherwise>1</xsl:otherwise>
         </xsl:choose>
       </xsl:with-param>
     </xsl:call-template>
 
-    <xsl:if test="(title or info/title) and $placement = 'before'">
+    <xsl:if test="(title or info/title or blockinfo/title) and $placement = 'before'">
       <xsl:call-template name="formal.object.heading"/>
     </xsl:if>
 
@@ -820,7 +820,7 @@
       </xsl:otherwise>
     </xsl:choose>
 
-    <xsl:if test="(title or info/title) and $placement != 'before'">
+    <xsl:if test="(title or info/title or blockinfo/title) and $placement != 'before'">
       <xsl:call-template name="formal.object.heading"/>
     </xsl:if>
   </div>

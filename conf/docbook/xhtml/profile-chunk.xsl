@@ -6,7 +6,7 @@
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:exsl="http://exslt.org/common" xmlns="http://www.w3.org/1999/xhtml" xmlns:exslt="http://exslt.org/common" xmlns:ng="http://docbook.org/docbook-ng" xmlns:db="http://docbook.org/ns/docbook" exslt:dummy="dummy" ng:dummy="dummy" db:dummy="dummy" extension-element-prefixes="exslt" version="1.0" exclude-result-prefixes="exsl exslt">
 
 <!-- ********************************************************************
-     $Id: chunk.xsl 6910 2007-06-28 23:23:30Z xmldoc $
+     $Id: chunk.xsl 9801 2013-09-06 19:23:43Z bobstayton $
      ********************************************************************
 
      This file is part of the XSL DocBook Stylesheet distribution.
@@ -16,6 +16,7 @@
      ******************************************************************** -->
 
 <!-- ==================================================================== -->
+
 
 <!-- First import the non-chunking templates that format elements
      within each chunk file. In a customization, you should
@@ -49,6 +50,6 @@
      customizations that use xsl:apply-imports to wrongly
      apply the chunking version instead of the original
      non-chunking version to format an element.  -->
-<xsl:include href="chunk-code.xsl"/>
+<xsl:include href="profile-chunk-code.xsl"/>
 
 </xsl:stylesheet>

@@ -1,8 +1,9 @@
 package com.kodcu.other;
 
+import com.kodcu.service.ThreadService;
+import org.apache.commons.io.FileDeleteStrategy;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.fop.apps.FopFactory;
 import org.joox.JOOX;
 import org.joox.Match;
 import org.slf4j.Logger;
@@ -21,6 +22,7 @@ import java.net.URLDecoder;
 import java.nio.charset.Charset;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.nio.file.attribute.FileAttribute;
 import java.nio.file.attribute.FileTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -98,17 +100,26 @@ public class IOHelper {
         return null;
     }
 
-    public static Path createTempFile(Path path, String suffix) {
+    public static Path createTempFile(Path path, String prefix, String suffix) {
+
         if (Objects.isNull(path)) {
             return createTempFile(suffix);
         }
         try {
-            return Files.createTempFile(path, "asciidoc-temp", suffix);
+            return Files.createTempFile(path, prefix, suffix);
         } catch (Exception e) {
             logger.error("Problem occured while creating temp file {}", path, e);
         }
 
         return null;
+    }
+
+    public static Path createTempFile(Path path, String suffix) {
+        if (Objects.isNull(path)) {
+            return createTempFile(suffix);
+        }
+
+        return createTempFile(path, "asciidoc-temp", suffix);
     }
 
     public static void copy(Path source, Path target, CopyOption... copyOptions) {
@@ -205,20 +216,15 @@ public class IOHelper {
         }
     }
 
-    public static void setUserConfig(FopFactory fopFactory, String configUri) {
-        try {
-            fopFactory.setUserConfig(configUri);
-        } catch (SAXException | IOException e) {
-            logger.error("Problem occured while setting {} as UserConfig", configUri, e);
-        }
-    }
-
-    public static void deleteIfExists(Path path) {
+    public static Optional<Exception> deleteIfExists(Path path) {
         try {
             Files.deleteIfExists(path);
         } catch (Exception e) {
             logger.error("Problem occured while deleting {}", path, e);
+            return Optional.ofNullable(e);
         }
+
+        return Optional.empty();
     }
 
     public static void copyDirectory(Path sourceDir, Path targetDir) {
@@ -273,10 +279,88 @@ public class IOHelper {
 
     public static void deleteDirectory(Path path) {
         try {
-            FileUtils.deleteDirectory(path.toFile());
+            // Firstly try forced delete
+            Optional<Exception> forceDelete = IOHelper.forceDelete(path);
+
+            if (!forceDelete.isPresent()) {
+                return;
+            }
+
+            // if forced delete failed, try recursively delete dir
+            Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
+                @Override
+                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                    Optional<Exception> exception = IOHelper
+                            .forceDelete(file)
+                            .flatMap(e -> {
+                                ThreadService.sleep(100);
+                                return IOHelper.forceDelete(file);
+                            });
+
+                    if (exception.isPresent()) {
+                        throw new IOException(exception.get());
+                    }
+
+                    return FileVisitResult.CONTINUE;
+                }
+
+                @Override
+                public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException {
+                    Optional<Exception> exception = IOHelper
+                            .forceDelete(file)
+                            .flatMap(e -> {
+                                ThreadService.sleep(100);
+                                return IOHelper.forceDelete(file);
+                            });
+
+                    if (exception.isPresent()) {
+                        throw new IOException(exception.get());
+                    }
+
+                    return FileVisitResult.CONTINUE;
+                }
+
+                @Override
+                public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
+                    if (exc == null) {
+                        Optional<Exception> exception = IOHelper
+                                .forceDelete(dir)
+                                .flatMap(e -> {
+                                    ThreadService.sleep(100);
+                                    return IOHelper.forceDelete(dir);
+                                });
+
+                        if (exception.isPresent()) {
+                            throw new IOException(exception.get());
+                        }
+                        return FileVisitResult.CONTINUE;
+                    } else {
+                        throw exc;
+                    }
+                }
+            });
         } catch (Exception e) {
             logger.error("Problem occured while deleting {} path", path, e);
         }
+    }
+
+    private static Optional<Exception> forceDelete(Path path) {
+
+        try {
+            Objects.requireNonNull(path);
+
+            if (Files.notExists(path)) {
+                return Optional.empty();
+            }
+
+            FileUtils.forceDelete(path.toFile());
+        } catch (FileNotFoundException fnx) {
+            return Optional.empty();
+        } catch (Exception e) {
+            logger.error("Problem occured while deleting {}", path, e);
+            return Optional.ofNullable(e);
+        }
+        return Optional.empty();
     }
 
     public static List<String> readAllLines(Path path) {
@@ -288,9 +372,10 @@ public class IOHelper {
         return new ArrayList<>();
     }
 
-    public static FileReader fileReader(Path path) {
+    public static Reader fileReader(Path path) {
         try {
-            return new FileReader(path.toFile());
+            FileInputStream fileInputStream = new FileInputStream(path.toFile());
+            return new InputStreamReader(fileInputStream, "UTF-8");
         } catch (Exception e) {
             logger.error("Problem occured while creating FileReader for {} path", path, e);
         }
@@ -324,5 +409,47 @@ public class IOHelper {
 //            e.printStackTrace();
         }
         return uri;
+    }
+
+    public static Path createTempDirectory(Path path, String prefix, FileAttribute<?>... attrs) {
+        try {
+            return Files.createTempDirectory(path, prefix, attrs);
+        } catch (Exception e) {
+            logger.error("Problem occured while creating temp directory");
+        }
+
+        return null;
+    }
+
+    public static String getPathCleanName(Path object) {
+        return object.getFileName().toString().replaceAll("\\..*", "");
+    }
+
+    public static <T> T readFile(Path path, Class<T> clazz) {
+
+        if (clazz.isAssignableFrom(byte[].class)) {
+            return clazz.cast(readAllBytes(path));
+        } else {
+            return clazz.cast(readFile(path));
+        }
+
+    }
+
+    public static boolean isEmptyDir(Path path) {
+        try (DirectoryStream<Path> dirStream = Files.newDirectoryStream(path)) {
+            return !dirStream.iterator().hasNext();
+        } catch (Exception e) {
+//            logger.warn("Problem occured while checking is directory empty {}", path);
+        }
+        return false;
+    }
+
+    public static WatchService newWatchService() {
+        try {
+            return FileSystems.getDefault().newWatchService();
+        } catch (Exception e) {
+            logger.warn("Problem occured while creating new watch service");
+        }
+        return null;
     }
 }

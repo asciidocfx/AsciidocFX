@@ -6,6 +6,7 @@
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
                 xmlns:fo="http://www.w3.org/1999/XSL/Format"
                 xmlns:rx="http://www.renderx.com/XSL/Extensions"
+                xmlns:xlink='http://www.w3.org/1999/xlink'
                 xmlns:axf="http://www.antennahouse.com/names/XSL/Extensions"
                 xmlns:exslt="http://exslt.org/common"
                 extension-element-prefixes="exslt"
@@ -13,7 +14,7 @@
                 version="1.0">
 
 <!-- ********************************************************************
-     $Id: autoidx.xsl 9647 2012-10-26 17:42:03Z bobstayton $
+     $Id: autoidx.xsl 9856 2014-01-20 22:42:16Z bobstayton $
      ********************************************************************
 
      This file is part of the DocBook XSL Stylesheet distribution.
@@ -39,6 +40,10 @@
 <xsl:key name="primary"
          match="indexterm"
          use="&primary;"/>
+
+<xsl:key name="primaryonly"
+         match="indexterm"
+         use="normalize-space(primary)"/>
 
 <xsl:key name="secondary"
          match="indexterm"
@@ -290,6 +295,11 @@
   </xsl:variable>
 
   <fo:block>
+    <xsl:if test="$autolink.index.see != 0">
+      <xsl:attribute name="id">
+        <xsl:value-of select="concat('ientry-', generate-id())"/>
+      </xsl:attribute>
+    </xsl:if>
     <xsl:if test="$axf.extensions != 0">
       <xsl:attribute name="axf:suppress-duplicate-page-number">true</xsl:attribute>
     </xsl:if>
@@ -759,19 +769,62 @@
 </xsl:template>
 
 <xsl:template match="indexterm" mode="index-see">
-   <xsl:param name="scope" select="."/>
+  <xsl:param name="scope" select="."/>
   <xsl:param name="role" select="''"/>
   <xsl:param name="type" select="''"/>
 
-   <fo:inline>
-     <xsl:text> (</xsl:text>
-     <xsl:call-template name="gentext">
-       <xsl:with-param name="key" select="'see'"/>
-     </xsl:call-template>
-     <xsl:text> </xsl:text>
-     <xsl:value-of select="see"/>
-     <xsl:text>)</xsl:text>
-   </fo:inline>
+  <xsl:variable name="see" select="normalize-space(see)"/>
+
+  <!-- can only link to primary, which should appear before comma
+  in see "primary, secondary" entry -->
+  <xsl:variable name="seeprimary">
+    <xsl:choose>
+      <xsl:when test="contains($see, ',')">
+        <xsl:value-of select="substring-before($see, ',')"/>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:value-of select="$see"/>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:variable> 
+
+  <xsl:variable name="seetarget" select="key('primaryonly', $seeprimary)[1]"/>
+
+  <xsl:variable name="linkend">
+    <xsl:if test="$seetarget">
+      <xsl:value-of select="concat('ientry-', generate-id($seetarget))"/>
+    </xsl:if>
+  </xsl:variable>
+  
+  <fo:inline>
+    <xsl:text> (</xsl:text>
+    <xsl:call-template name="gentext">
+      <xsl:with-param name="key" select="'see'"/>
+    </xsl:call-template>
+    <xsl:text> </xsl:text>
+    <xsl:choose>
+      <!-- manual links have precedence -->
+      <xsl:when test="see/@linkend or see/@xlink:href">
+        <xsl:call-template name="simple.xlink">
+          <xsl:with-param name="node" select="see"/>
+          <xsl:with-param name="content" select="$see"/>
+        </xsl:call-template>
+      </xsl:when>
+      <xsl:when test="$autolink.index.see = 0">
+         <xsl:value-of select="$see"/>
+      </xsl:when>
+      <xsl:when test="$seetarget">
+        <fo:basic-link internal-destination="{$linkend}"
+                       xsl:use-attribute-sets="xref.properties">
+          <xsl:value-of select="$see"/>
+        </fo:basic-link>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:value-of select="$see"/>
+      </xsl:otherwise>
+    </xsl:choose>
+    <xsl:text>)</xsl:text>
+  </fo:inline>
 </xsl:template>
 
 <xsl:template match="indexterm" mode="index-seealso">
@@ -781,15 +834,60 @@
 
   <xsl:for-each select="seealso">
     <xsl:sort select="translate(., &lowercase;, &uppercase;)"/>
+
+    <xsl:variable name="seealso" select="normalize-space(.)"/>
+
+    <!-- can only link to primary, which should appear before comma
+    in seealso "primary, secondary" entry -->
+    <xsl:variable name="seealsoprimary">
+      <xsl:choose>
+        <xsl:when test="contains($seealso, ',')">
+          <xsl:value-of select="substring-before($seealso, ',')"/>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:value-of select="$seealso"/>
+        </xsl:otherwise>
+      </xsl:choose>
+    </xsl:variable> 
+
+    <xsl:variable name="seealsotarget" select="key('primaryonly', $seealsoprimary)[1]"/>
+
+    <xsl:variable name="linkend">
+      <xsl:if test="$seealsotarget">
+        <xsl:value-of select="concat('ientry-', generate-id($seealsotarget))"/>
+      </xsl:if>
+    </xsl:variable>
+
     <fo:block>
       <xsl:text>(</xsl:text>
       <xsl:call-template name="gentext">
         <xsl:with-param name="key" select="'seealso'"/>
       </xsl:call-template>
       <xsl:text> </xsl:text>
-      <xsl:value-of select="."/>
+      <xsl:choose>
+        <!-- manual links have precedence -->
+        <xsl:when test="@linkend or @xlink:href">
+          <xsl:call-template name="simple.xlink">
+            <xsl:with-param name="node" select="."/>
+            <xsl:with-param name="content" select="$seealso"/>
+          </xsl:call-template>
+        </xsl:when>
+        <xsl:when test="$autolink.index.see = 0">
+          <xsl:value-of select="$seealso"/>
+        </xsl:when>
+        <xsl:when test="$seealsotarget">
+          <fo:basic-link internal-destination="{$linkend}"
+                         xsl:use-attribute-sets="xref.properties">
+            <xsl:value-of select="$seealso"/>
+          </fo:basic-link>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:value-of select="$seealso"/>
+        </xsl:otherwise>
+      </xsl:choose>
       <xsl:text>)</xsl:text>
     </fo:block>
+
   </xsl:for-each>
 
 </xsl:template>

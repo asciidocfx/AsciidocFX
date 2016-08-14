@@ -4,9 +4,11 @@ import com.kodcu.config.StoredConfigBean;
 import com.kodcu.controller.ApplicationController;
 import com.kodcu.other.ExtensionFilters;
 import com.kodcu.other.IOHelper;
+import com.kodcu.other.Item;
 import com.kodcu.service.DirectoryService;
 import com.kodcu.service.ThreadService;
 import com.kodcu.service.shortcut.AsciidocShortcutService;
+import com.kodcu.service.shortcut.HtmlShortcutService;
 import com.kodcu.service.shortcut.MarkdownShortcutService;
 import com.kodcu.service.shortcut.NoneShortcutService;
 import com.kodcu.service.ui.TabService;
@@ -30,7 +32,6 @@ import java.nio.file.Path;
 import java.nio.file.attribute.FileTime;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
 
 import static java.nio.file.StandardOpenOption.*;
 
@@ -48,7 +49,6 @@ public class MyTab extends Tab {
     private final TabService tabService;
     private final ApplicationController controller;
     private final ThreadService threadService;
-    private final BooleanProperty changedProperty = new SimpleBooleanProperty(false);
 
     private final Logger logger = LoggerFactory.getLogger(MyTab.class);
 
@@ -60,7 +60,8 @@ public class MyTab extends Tab {
         this.tabService = tabService;
         this.controller = controller;
         this.threadService = threadService;
-        this.changedProperty.addListener((observable, oldValue, newValue) -> {
+        changedPropertyProperty().addListener((observable, oldValue, newValue) -> {
+
             if (newValue) {
                 if (!getStyleClass().contains("mytab-changed"))
                     getStyleClass().add("mytab-changed");
@@ -103,7 +104,7 @@ public class MyTab extends Tab {
 
     public boolean isSaved() {
 //        return !this.getTabText().contains(" *");
-        return !changedProperty.get();
+        return !this.editorPane.getChangedProperty();
     }
 
     public ButtonType close() {
@@ -157,7 +158,7 @@ public class MyTab extends Tab {
     public boolean isChanged() {
 //        String tabText = getTabText();
 //        return tabText.contains(" *");
-        return changedProperty.get();
+        return this.editorPane.getChangedProperty();
     }
 
     public synchronized void reload() {
@@ -185,36 +186,17 @@ public class MyTab extends Tab {
                 });
     }
 
-    public void load() {
+    public synchronized void load() {
         FileTime latestModifiedTime = IOHelper.getLastModifiedTime(getPath());
         setLastModifiedTime(latestModifiedTime);
         String content = IOHelper.readFile(getPath());
-        threadService.runActionLater(() -> {
-            editorPane.setEditorValue(content);
-            this.select();
-            setTabText(getPath().getFileName().toString());
-        });
+        editorPane.setEditorValue(content);
+        this.select();
+        setTabText(getPath().getFileName().toString());
+        setChangedProperty(false);
     }
 
-    public synchronized void saveDoc() {
-
-        if (!Platform.isFxApplicationThread()) {
-            CompletableFuture completableFuture = new CompletableFuture();
-
-            completableFuture.runAsync(() -> {
-                Platform.runLater(() -> {
-                    try {
-                        saveDoc();
-                        completableFuture.complete(null);
-                    } catch (Exception e) {
-                        completableFuture.completeExceptionally(e);
-                    }
-                });
-            }, threadService.executor());
-
-            completableFuture.join();
-            return;
-        }
+    private synchronized void save() {
 
         FileTime latestModifiedTime = IOHelper.getLastModifiedTime(getPath());
 
@@ -244,6 +226,10 @@ public class MyTab extends Tab {
             fileChooser.getExtensionFilters().addAll(ExtensionFilters.MARKDOWN);
             fileChooser.getExtensionFilters().addAll(ExtensionFilters.ALL);
             File file = fileChooser.showSaveDialog(null);
+
+            if (Objects.isNull(file))
+                return;
+
             setPath(file.toPath());
             setTabText(file.toPath().getFileName().toString());
         }
@@ -261,13 +247,17 @@ public class MyTab extends Tab {
 
         setLastModifiedTime(IOHelper.getLastModifiedTime(getPath()));
 
-        changedProperty.set(false);
+        setChangedProperty(false);
 
-        ObservableList<String> recentFiles = storedConfigBean.getRecentFiles();
-        recentFiles.remove(getPath().toString());
-        recentFiles.add(0, getPath().toString());
+        ObservableList<Item> recentFiles = storedConfigBean.getRecentFiles();
+        recentFiles.remove(new Item(getPath()));
+        recentFiles.add(0, new Item(getPath()));
 
         directoryService.setInitialDirectory(Optional.ofNullable(getPath().toFile()));
+    }
+
+    public void saveDoc() {
+        threadService.runActionLater(this::save);
     }
 
 
@@ -280,14 +270,14 @@ public class MyTab extends Tab {
     }
 
     private void closeIt() {
-        Platform.runLater(() -> {
+        threadService.runActionLater(() -> {
             tabService.getClosedPaths().add(Optional.ofNullable(getPath()));
             this.getTabPane().getTabs().remove(this); // keep it here
             ObservableList<Tab> tabs = controller.getTabPane().getTabs();
             if (tabs.isEmpty()) {
                 tabService.newDoc();
             }
-        });
+        }, true);
     }
 
     @Override
@@ -300,6 +290,8 @@ public class MyTab extends Tab {
             return AsciidocShortcutService.class;
         } else if (isMarkdown()) {
             return MarkdownShortcutService.class;
+        } else if (isHTML()) {
+            return HtmlShortcutService.class;
         }
 
         return NoneShortcutService.class;
@@ -307,6 +299,10 @@ public class MyTab extends Tab {
 
     public boolean isMarkdown() {
         return editorPane.isMarkdown();
+    }
+
+    public boolean isHTML() {
+        return editorPane.isHTML();
     }
 
 
@@ -337,14 +333,18 @@ public class MyTab extends Tab {
     }
 
     public boolean getChangedProperty() {
-        return changedProperty.get();
+        return this.editorPane.getChangedProperty();
     }
 
     public BooleanProperty changedPropertyProperty() {
-        return changedProperty;
+        return this.editorPane.changedPropertyProperty();
     }
 
     public void setChangedProperty(boolean changedProperty) {
-        this.changedProperty.set(changedProperty);
+        this.editorPane.setChangedProperty(changedProperty);
+    }
+
+    public Path getParentOrWorkdir() {
+        return Optional.ofNullable(getPath()).map(Path::getParent).orElse(directoryService.workingDirectory());
     }
 }

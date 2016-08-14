@@ -6,7 +6,9 @@ import com.kodcu.other.IOHelper;
 import com.kodcu.other.TrimWhite;
 import com.kodcu.other.Tuple;
 import com.kodcu.service.ThreadService;
+import com.kodcu.service.cache.BinaryCacheService;
 import com.kodcu.service.ui.AwesomeService;
+import javafx.concurrent.Worker;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.Node;
 import javafx.scene.SnapshotParameters;
@@ -42,221 +44,188 @@ public class TreeService {
     private ApplicationController controller;
     private ThreadService threadService;
     private AwesomeService awesomeService;
+    private final BinaryCacheService binaryCacheService;
 
     @Value("${application.treeview.url}")
     private String treeviewUrl;
+    private TreeView fileView;
+    private WebView treeview;
+    private boolean initialized;
 
     @Autowired
     public TreeService(final Current current, final ApplicationController controller, final ThreadService threadService,
-                       final AwesomeService awesomeService) {
+                       final AwesomeService awesomeService, BinaryCacheService binaryCacheService) {
         this.current = current;
         this.controller = controller;
         this.threadService = threadService;
         this.awesomeService = awesomeService;
+        this.binaryCacheService = binaryCacheService;
     }
 
-    public void createFileTree(String tree, String type, String imagesDir, String imageTarget, String width, String height) {
+    public void createFileTree(String tree, String type, String imagesDir, String imageTarget, String nodename) {
 
         Objects.requireNonNull(imageTarget);
 
-        if (!imageTarget.endsWith(".png") && !"ascii".equalsIgnoreCase(type))
+        boolean cachedResource = imageTarget.contains("/afx/cache");
+
+        if (!imageTarget.endsWith(".png") && !cachedResource)
             return;
-
-        if ("ascii".equalsIgnoreCase(type)) {
-            return;
-        }
-        // default: png
-        else {
-
-            Path path = current.currentPath().get().getParent();
-            Path treePath = path.resolve(imageTarget);
-
-            if (!current.currentPath().isPresent())
-                controller.saveDoc();
-
-            Integer cacheHit = current.getCache().get(imageTarget);
-
-            int hashCode = (imageTarget + imagesDir + type + tree + width + height).hashCode();
-            if (Objects.isNull(cacheHit) || hashCode != cacheHit) {
-
-                logger.debug("Tree extension is started for {}", imageTarget);
-
-                TreeView<Tuple<Integer, String>> fileView = new TreeView<>();
-
-                fileView.getStyleClass().add("file-tree");
-                fileView.setLayoutX(-99999);
-                fileView.setLayoutY(-99999);
-
-                try {
-                    List<String> strings = Arrays.asList(tree.split("\n"));
-                    List<TreeItem<Tuple<Integer, String>>> treeItems = strings.stream()
-                            .map(s -> {
-                                int level = StringUtils.countOccurrencesOf(s, "#");
-                                String value = s.replace(" ", "").replace("#", "");
-                                return new Tuple<Integer, String>(level, value);
-                            })
-                            .map(t -> {
-                                Node icon = awesomeService.getIcon(Paths.get(t.getValue()));
-                                TreeItem<Tuple<Integer, String>> treeItem = new TreeItem<>(t, icon);
-                                treeItem.setExpanded(true);
-
-                                return treeItem;
-                            })
-                            .collect(Collectors.toList());
-
-                    for (int index = 0; index < treeItems.size(); index++) {
-
-                        TreeItem<Tuple<Integer, String>> currentItem = treeItems.get(index);
-                        Tuple<Integer, String> currentItemValue = currentItem.getValue();
-
-                        if (Objects.isNull(fileView.getRoot())) {
-
-                            fileView.setRoot(currentItem);
-
-                            continue;
-                        }
-
-                        TreeItem<Tuple<Integer, String>> lastItem = treeItems.get(index - 1);
-                        int lastPos = lastItem.getValue().getKey();
-
-                        if (currentItemValue.getKey() > lastPos) {
-
-                            lastItem.getChildren().add(currentItem);
-                            continue;
-                        }
-
-                        if (currentItemValue.getKey() == lastPos) {
-
-                            TreeItem<Tuple<Integer, String>> parent = lastItem.getParent();
-                            if (Objects.isNull(parent))
-                                parent = fileView.getRoot();
-                            parent.getChildren().add(currentItem);
-                            continue;
-                        }
-
-                        if (currentItemValue.getKey() < lastPos) {
-
-                            List<TreeItem<Tuple<Integer, String>>> collect = treeItems.stream()
-                                    .filter(t -> t.getValue().getKey() == currentItemValue.getKey())
-                                    .collect(Collectors.toList());
-
-                            if (collect.size() > 0) {
-
-                                TreeItem<Tuple<Integer, String>> parent = fileView.getRoot();
-
-                                try {
-                                    TreeItem<Tuple<Integer, String>> treeItem = collect.get(collect.indexOf(currentItem) - 1);
-                                    parent = treeItem.getParent();
-                                } catch (RuntimeException e) {
-                                    logger.info(e.getMessage(), e);
-                                }
-
-                                parent.getChildren().add(currentItem);
-                            }
-                            continue;
-                        }
-
-                    }
-                    fileView.setMaxHeight(2500);
-                    fileView.setPrefWidth(250);
-                    fileView.setPrefHeight(treeItems.size() * 24);
-
-                    try {
-                        Double value = Double.valueOf(width);
-
-                        if (width.contains("+") || width.contains("-"))
-                            fileView.setPrefWidth(fileView.getPrefWidth() + value);
-                        else
-                            fileView.setPrefWidth(value);
-                    } catch (Exception e) {
-                    }
-
-                    try {
-                        Double value = Double.valueOf(height);
-
-                        if (height.contains("+") || height.contains("-"))
-                            fileView.setPrefHeight(fileView.getPrefHeight() + value);
-                        else
-                            fileView.setPrefHeight(value);
-                    } catch (Exception e) {
-                    }
-
-                    threadService.runActionLater(() -> {
-                        controller.getRootAnchor().getChildren().add(fileView);
-                        WritableImage writableImage = fileView.snapshot(new SnapshotParameters(), null);
-
-                        BufferedImage bufferedImage = SwingFXUtils.fromFXImage(writableImage, null);
-
-                        IOHelper.createDirectories(path.resolve(imagesDir));
-                        IOHelper.imageWrite(bufferedImage, "png", treePath.toFile());
-
-                        logger.debug("Tree extension is ended for {}", imageTarget);
-
-                        controller.clearImageCache();
-
-                        controller.getRootAnchor().getChildren().remove(fileView);
-                    });
-
-                } catch (Exception e) {
-                    logger.error("Problem occured while generating Filesystem Tree", e);
-                }
-            }
-
-            current.getCache().put(imageTarget, hashCode);
-        }
-    }
-
-    public void createHighlightFileTree(String tree, String type, String imagesDir, String imageTarget, String width, String height) {
-        Objects.requireNonNull(imageTarget);
-
-        if (!imageTarget.endsWith(".png"))
-            return;
-
-        Path path = current.currentPath().get().getParent();
-        Path treePath = path.resolve(imageTarget);
-
-        if (!current.currentPath().isPresent())
-            controller.saveDoc();
 
         Integer cacheHit = current.getCache().get(imageTarget);
 
-        int hashCode = (imageTarget + imagesDir + type + tree + width + height).hashCode();
+        int hashCode = (imageTarget + imagesDir + type + tree).hashCode();
         if (Objects.isNull(cacheHit) || hashCode != cacheHit) {
+
+            logger.debug("Tree extension is started for {}", imageTarget);
+
+            try {
+                List<String> strings = Arrays.asList(tree.split("\\r?\\n"));
+                List<TreeItem<Tuple<Integer, String>>> treeItems = strings.stream()
+                        .map(s -> {
+                            int level = StringUtils.countOccurrencesOf(s, "#");
+                            String value = s.replace(" ", "").replace("#", "");
+                            return new Tuple<Integer, String>(level, value);
+                        })
+                        .map(t -> {
+                            Node icon = awesomeService.getIcon(Paths.get(t.getValue()));
+                            TreeItem<Tuple<Integer, String>> treeItem = new TreeItem<>(t, icon);
+                            treeItem.setExpanded(true);
+
+                            return treeItem;
+                        })
+                        .collect(Collectors.toList());
+
+                for (int index = 0; index < treeItems.size(); index++) {
+
+                    TreeItem<Tuple<Integer, String>> currentItem = treeItems.get(index);
+                    Tuple<Integer, String> currentItemValue = currentItem.getValue();
+
+                    this.fileView = getSnaphotTreeView();
+
+                    if (index == 0) {
+                        fileView.setRoot(currentItem);
+                        continue;
+                    }
+
+                    TreeItem<Tuple<Integer, String>> lastItem = treeItems.get(index - 1);
+                    int lastPos = lastItem.getValue().getKey();
+
+                    if (currentItemValue.getKey() > lastPos) {
+
+                        lastItem.getChildren().add(currentItem);
+                        continue;
+                    }
+
+                    if (currentItemValue.getKey() == lastPos) {
+
+                        TreeItem<Tuple<Integer, String>> parent = lastItem.getParent();
+                        if (Objects.isNull(parent))
+                            parent = fileView.getRoot();
+                        parent.getChildren().add(currentItem);
+                        continue;
+                    }
+
+                    if (currentItemValue.getKey() < lastPos) {
+
+                        List<TreeItem<Tuple<Integer, String>>> collect = treeItems.stream()
+                                .filter(t -> t.getValue().getKey() == currentItemValue.getKey())
+                                .collect(Collectors.toList());
+
+                        if (collect.size() > 0) {
+
+                            TreeItem<Tuple<Integer, String>> parent = fileView.getRoot();
+
+                            try {
+                                TreeItem<Tuple<Integer, String>> treeItem = collect.get(collect.indexOf(currentItem) - 1);
+                                parent = treeItem.getParent();
+                            } catch (RuntimeException e) {
+                                logger.info(e.getMessage(), e);
+                            }
+
+                            parent.getChildren().add(currentItem);
+                        }
+                        continue;
+                    }
+
+                }
+
+                fileView.setMaxHeight(2500);
+                fileView.setPrefWidth(250);
+                fileView.setPrefHeight(treeItems.size() * 24);
+
+                Path path = current.currentTab().getParentOrWorkdir();
+
+                threadService.runActionLater(() -> {
+                    controller.getRootAnchor().getChildren().add(fileView);
+                    WritableImage writableImage = getSnaphotTreeView().snapshot(new SnapshotParameters(), null);
+                    BufferedImage bufferedImage = SwingFXUtils.fromFXImage(writableImage, null);
+
+                    if (!cachedResource) {
+
+                        Path treePath = path.resolve(imageTarget);
+                        IOHelper.createDirectories(path.resolve(imagesDir));
+                        IOHelper.imageWrite((BufferedImage) bufferedImage, "png", treePath.toFile());
+                        controller.clearImageCache(treePath);
+
+                    } else {
+                        binaryCacheService.putBinary(imageTarget, (BufferedImage) bufferedImage);
+                        controller.clearImageCache(imageTarget);
+                    }
+
+                    logger.debug("Tree extension is ended for {}", imageTarget);
+
+                    controller.getRootAnchor().getChildren().remove(fileView);
+                });
+
+            } catch (Exception e) {
+                logger.error("Problem occured while generating Filesystem Tree", e);
+            }
+        }
+
+        current.getCache().put(imageTarget, hashCode);
+    }
+
+    private TreeView getSnaphotTreeView() {
+        if (Objects.isNull(fileView)) {
+            fileView = new TreeView();
+            fileView.getStyleClass().add("file-tree");
+            fileView.setLayoutX(-13000);
+            fileView.setLayoutY(-13000);
+        }
+        return fileView;
+    }
+
+
+    public void createHighlightFileTree(String tree, String type, String imagesDir, String imageTarget, String nodename) {
+        Objects.requireNonNull(imageTarget);
+
+        boolean cachedResource = imageTarget.contains("/afx/cache");
+
+        if (!imageTarget.endsWith(".png") && !cachedResource)
+            return;
+
+        Integer cacheHit = current.getCache().get(imageTarget);
+
+        int hashCode = (imageTarget + imagesDir + type + tree).hashCode();
+        if (Objects.isNull(cacheHit) || hashCode != cacheHit) {
+
+            Path path = current.currentTab().getParentOrWorkdir();
 
             threadService.runActionLater(() -> {
 
                 WebView treeview = new WebView();
-                treeview.setMaxHeight(5000);
-                treeview.setMaxWidth(5000);
-                treeview.setPrefWidth(5000);
-                treeview.setPrefHeight(5000);
-                treeview.setLayoutX(-89999);
-                treeview.setLayoutY(-89999);
+                treeview.setMaxHeight(2000);
+                treeview.setPrefHeight(2000);
+                treeview.setMaxWidth(500);
+                treeview.setPrefWidth(500);
+                treeview.setLayoutX(-16000);
+                treeview.setLayoutY(-16000);
 
-                try {
-                    Double value = Double.valueOf(width);
-
-                    if (width.contains("+") || width.contains("-"))
-                        treeview.setPrefWidth(treeview.getPrefWidth() + value);
-                    else
-                        treeview.setPrefWidth(value);
-                } catch (Exception e) {
-                }
-
-                try {
-                    Double value = Double.valueOf(height);
-
-                    if (height.contains("+") || height.contains("-"))
-                        treeview.setPrefHeight(treeview.getPrefHeight() + value);
-                    else
-                        treeview.setPrefHeight(value);
-                } catch (Exception e) {
-                }
+                controller.getRootAnchor().getChildren().add(treeview);
 
                 threadService.runActionLater(() -> {
                     treeview.getEngine().load(String.format(treeviewUrl, controller.getPort()));
                 });
-                controller.getRootAnchor().getChildren().add(treeview);
 
                 treeview.getEngine().setOnAlert(event -> {
                     String data = event.getData();
@@ -271,10 +240,19 @@ public class TreeService {
                         threadService.runTaskLater(() -> {
                             TrimWhite trimWhite = new TrimWhite();
                             BufferedImage trimmed = trimWhite.trim(bufferedImage);
-                            IOHelper.createDirectories(path.resolve(imagesDir));
-                            IOHelper.imageWrite(trimmed, "png", treePath.toFile());
+
+                            if (!cachedResource) {
+
+                                Path treePath = path.resolve(imageTarget);
+                                IOHelper.createDirectories(path.resolve(imagesDir));
+                                IOHelper.imageWrite(trimmed, "png", treePath.toFile());
+                                controller.clearImageCache(treePath);
+                            } else {
+                                binaryCacheService.putBinary(imageTarget, trimmed);
+                                controller.clearImageCache(imageTarget);
+                            }
+
                             threadService.runActionLater(() -> {
-                                controller.clearImageCache();
                                 controller.getRootAnchor().getChildren().remove(treeview);
                             });
                         });

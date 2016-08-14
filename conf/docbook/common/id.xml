@@ -53,6 +53,10 @@
 <l:gentext key="copyright" text="hak cipta"/>
 <l:gentext key="Dedication" text="Dedikasi"/>
 <l:gentext key="dedication" text="dedikasi"/>
+<l:gentext key="Dialogue" text="Dialogue" lang="en"/>
+<l:gentext key="dialogue" text="Dialogue" lang="en"/>
+<l:gentext key="Drama" text="Drama" lang="en"/>
+<l:gentext key="drama" text="Drama" lang="en"/>
 <l:gentext key="Edition" text="Edisi"/>
 <l:gentext key="edition" text="edisi"/>
 <l:gentext key="Editor" text="Penyunting"/>
@@ -88,6 +92,8 @@
 <l:gentext key="note" text="catatan"/>
 <l:gentext key="Part" text="Bagian"/>
 <l:gentext key="part" text="bagian"/>
+<l:gentext key="Poetry" text="Poetry" lang="en"/>
+<l:gentext key="poetry" text="Poetry" lang="en"/>
 <l:gentext key="Preface" text="Kata Pengantar"/>
 <l:gentext key="preface" text="kata pengantar"/>
 <l:gentext key="Procedure" text="Prosedur"/>
@@ -151,6 +157,7 @@
 <l:gentext key="and" text="dan"/>
 <l:gentext key="or" text="atau"/>
 <l:gentext key="by" text="oleh"/>
+<l:gentext key="optional-step" text="(Optional) " lang="en"/>
 <l:gentext key="Edited" text="Disunting"/>
 <l:gentext key="edited" text="disunting"/>
 <l:gentext key="Editedby" text="Disunting oleh"/>
@@ -171,6 +178,8 @@
 <l:gentext key="unexpectedelementname" text="Nama elemen tak terduga"/>
 <l:gentext key="unsupported" text="tidak didukung"/>
 <l:gentext key="xrefto" text="xref ke"/>
+<l:gentext key="video-unsupported" text="Your browser does not support the video tag" lang="en"/>
+<l:gentext key="audio-unsupported" text="Your browser does not support the audio tag" lang="en"/>
 <l:gentext key="Authors" text="Penulis"/>
 <l:gentext key="copyeditor" text="Pemeriksa Naskah"/>
 <l:gentext key="graphicdesigner" text="Perancang Grafis"/>
@@ -229,7 +238,7 @@
 <l:template name="insert" text="Ins" lang="en"/>
 <l:template name="left" text="←" lang="en"/>
 <l:template name="meta" text="Meta" lang="en"/>
-<l:template name="option" text="???" lang="en"/>
+<l:template name="option" text="⌥" lang="en"/>
 <l:template name="pagedown" text="Page ↓" lang="en"/>
 <l:template name="pageup" text="Page ↑" lang="en"/>
 <l:template name="right" text="→" lang="en"/>
@@ -347,6 +356,9 @@
 <l:template name="simplesect" text="%t"/>
 <l:template name="topic" text="%t" lang="en"/>
 <l:template name="part" text="%t"/>
+<l:template name="dialogue" text="%t" lang="en"/>
+<l:template name="drama" text="%t" lang="en"/>
+<l:template name="poetry" text="%t" lang="en"/>
 </l:context>
 <l:context name="title-numbered"><l:template name="appendix" text="Lampiran %n. %t"/>
 <l:template name="article/appendix" text="%n. %t"/>
@@ -402,6 +414,9 @@
 <l:template name="simplesect" text="%s"/>
 <l:template name="topic" text="%t" lang="en"/>
 <l:template name="toc" text="%s"/>
+<l:template name="dialogue" text="%s" lang="en"/>
+<l:template name="drama" text="%s" lang="en"/>
+<l:template name="poetry" text="%s" lang="en"/>
 </l:context>
 <l:context name="xref"><l:template name="abstract" text="%t"/>
 <l:template name="acknowledgements" text="%t" lang="en"/>
@@ -476,6 +491,9 @@
 <l:template name="pageabbrev" text="(h. %p)"/>
 <l:template name="Page" text="Halaman %p"/>
 <l:template name="topic" text="%t" lang="en"/>
+<l:template name="dialogue" text="%t" lang="en"/>
+<l:template name="drama" text="%t" lang="en"/>
+<l:template name="poetry" text="%t" lang="en"/>
 <l:template name="bridgehead" text="bagian bernama “%t”"/>
 <l:template name="refsection" text="bagian bernama “%t”"/>
 <l:template name="refsect1" text="bagian bernama “%t”"/>

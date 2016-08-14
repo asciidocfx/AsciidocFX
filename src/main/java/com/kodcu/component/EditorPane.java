@@ -1,20 +1,30 @@
 package com.kodcu.component;
 
+import com.kodcu.config.EditorConfigBean;
+import com.kodcu.config.FoldStyle;
+import com.kodcu.config.SpellcheckConfigBean;
 import com.kodcu.controller.ApplicationController;
+import com.kodcu.keyboard.KeyHelper;
 import com.kodcu.other.IOHelper;
+import com.kodcu.service.DirectoryService;
 import com.kodcu.service.ParserService;
 import com.kodcu.service.ThreadService;
 import com.kodcu.service.convert.markdown.MarkdownService;
 import com.kodcu.service.extension.AsciiTreeGenerator;
 import com.kodcu.service.shortcut.ShortcutProvider;
 import com.kodcu.service.ui.TabService;
-import javafx.application.Platform;
+import com.kodcu.spell.dictionary.Token;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.scene.control.ContextMenu;
-import javafx.scene.control.MenuItem;
-import javafx.scene.input.Dragboard;
-import javafx.scene.input.MouseButton;
+import javafx.event.*;
+import javafx.geometry.Bounds;
+import javafx.scene.control.*;
+import javafx.scene.input.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
@@ -25,6 +35,7 @@ import netscape.javascript.JSObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -33,9 +44,8 @@ import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.FileTime;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Created by usta on 09.04.2015.
@@ -47,29 +57,54 @@ public class EditorPane extends AnchorPane {
     private final WebView webView;
     private final Logger logger = LoggerFactory.getLogger(EditorPane.class);
     private final ApplicationController controller;
+    private final EditorConfigBean editorConfigBean;
     private final ThreadService threadService;
     private final ShortcutProvider shortcutProvider;
     private final ApplicationContext applicationContext;
     private final TabService tabService;
     private final AsciiTreeGenerator asciiTreeGenerator;
     private final ParserService parserService;
+    private final SpellcheckConfigBean spellcheckConfigBean;
     private final ObservableList<Runnable> handleReadyTasks;
     private String mode = "ace/mode/asciidoc";
     private String initialEditorValue = "";
     private Path path;
     private FileTime lastModifiedTime;
+    private static String lastInterPath;
+    private final String escapeBackSlash = "(?<!\\\\)"; // ignores if word started with \
+    private final String ignoreSuffix = "(?<!\\\\)"; // ignores if word started with \
+    private final BooleanProperty ready = new SimpleBooleanProperty(false);
+    private final ObjectProperty<Path> spellLanguage = new SimpleObjectProperty<>();
+    private final AtomicBoolean contextOpen = new AtomicBoolean(false);
+
+    private final BooleanProperty changedProperty = new SimpleBooleanProperty(false);
+
+    @Value("${application.live.url}")
+    private String liveUrl;
+
+    @Value("${application.preview.url}")
+    private String previewUrl;
+
+    private final DirectoryService directoryService;
+    private ContextMenu contextMenu;
+    private Number pageX;
+    private Number pageY;
 
     @Autowired
-    public EditorPane(ApplicationController controller, ThreadService threadService, ShortcutProvider shortcutProvider, ApplicationContext applicationContext, TabService tabService, AsciiTreeGenerator asciiTreeGenerator, ParserService parserService) {
+    public EditorPane(ApplicationController controller, EditorConfigBean editorConfigBean, ThreadService threadService, ShortcutProvider shortcutProvider, ApplicationContext applicationContext, TabService tabService, AsciiTreeGenerator asciiTreeGenerator, ParserService parserService, SpellcheckConfigBean spellcheckConfigBean, DirectoryService directoryService) {
         this.controller = controller;
+        this.editorConfigBean = editorConfigBean;
         this.threadService = threadService;
         this.shortcutProvider = shortcutProvider;
         this.applicationContext = applicationContext;
         this.tabService = tabService;
         this.asciiTreeGenerator = asciiTreeGenerator;
+        this.spellcheckConfigBean = spellcheckConfigBean;
+        this.directoryService = directoryService;
         this.handleReadyTasks = FXCollections.observableArrayList();
         this.parserService = parserService;
         this.webView = new WebView();
+        this.ready.addListener(this::afterEditorReady);
         webEngine().setConfirmHandler(this::handleConfirm);
         initializeMargins();
         initializeEditorContextMenus();
@@ -77,17 +112,14 @@ public class EditorPane extends AnchorPane {
 
     private Boolean handleConfirm(String param) {
         if ("command:ready".equals(param)) {
-            handleEditorReady();
-            for (Runnable handleReadyTask : handleReadyTasks) {
-                handleReadyTask.run();
-            }
-            handleReadyTasks.clear();
+            afterEditorLoaded();
         }
         return false;
     }
 
-    private void handleEditorReady() {
+    private void afterEditorLoaded() {
         getWindow().setMember("afx", controller);
+        getWindow().setMember("editorPane", this);
         updateOptions();
 
         if (Objects.nonNull(path)) {
@@ -98,15 +130,60 @@ public class EditorPane extends AnchorPane {
                     changeEditorMode();
                     setInitialized();
                     setEditorValue(content);
+                    resetUndoManager();
+                    ready.setValue(true);
                 });
             });
         } else {
             setInitialized();
             setEditorValue(initialEditorValue);
+            resetUndoManager();
+            ready.setValue(true);
         }
 
         this.getChildren().add(webView);
         webView.requestFocus();
+    }
+
+    private void afterEditorReady(ObservableValue observable, boolean oldValue, boolean newValue) {
+        if (newValue) {
+            ObservableList<Runnable> runnables = FXCollections.observableArrayList(handleReadyTasks);
+            handleReadyTasks.clear();
+            for (Runnable runnable : runnables) {
+                runnable.run();
+            }
+
+            updatePreviewUrl();
+        }
+    }
+
+    public void updatePreviewUrl() {
+        final String interPath = directoryService.interPath();
+
+        final boolean isSameInterPath = Optional.ofNullable(interPath)
+                .filter(i -> !i.isEmpty())
+                .filter(i -> i.equals(lastInterPath))
+                .isPresent();
+
+        if (Objects.isNull(lastInterPath)) {
+            lastInterPath = interPath;
+            return;
+        }
+
+        if (isSameInterPath) {
+            this.rerender();
+            return;
+        }
+
+        threadService.runActionLater(() -> {
+            if (is("asciidoc") || is("markdown")) {
+                applicationContext.getBean(HtmlPane.class)
+                        .load(String.format(previewUrl, controller.getPort(), lastInterPath = interPath));
+            } else if (is("html")) {
+                applicationContext.getBean(LiveReloadPane.class)
+                        .load(String.format(liveUrl, controller.getPort(), lastInterPath = interPath));
+            }
+        }, true);
     }
 
     private void updateOptions() {
@@ -115,6 +192,10 @@ public class EditorPane extends AnchorPane {
 
     private void setInitialized() {
         webEngine().executeScript("setInitialized()");
+    }
+
+    private void resetUndoManager() {
+        webEngine().executeScript("resetUndoManager()");
     }
 
     private void initializeMargins() {
@@ -132,9 +213,9 @@ public class EditorPane extends AnchorPane {
 
     public void load(String url) {
         if (Objects.nonNull(url))
-            Platform.runLater(() -> {
+            threadService.runActionLater(() -> {
                 webEngine().load(url);
-            });
+            }, true);
         else
             logger.error("Url is not loaded. Reason: null reference");
     }
@@ -172,15 +253,26 @@ public class EditorPane extends AnchorPane {
             getWindow().setMember("editorValue", value);
             webEngine().executeScript("setEditorValue(editorValue)");
             getWebView().requestFocus();
+            updateFoldStyle();
         });
+
+
     }
 
     public void switchMode(Object... args) {
-        this.call("switchMode", args);
+        threadService.runActionLater(() -> {
+            this.call("switchMode", args);
+        });
+
+        updateFoldStyle();
     }
 
     public void rerender(Object... args) {
-        this.call("rerender", args);
+        try {
+            webEngine().executeScript("rerender()");
+        } catch (Exception e) {
+            // no-op
+        }
     }
 
     public void focus() {
@@ -188,21 +280,36 @@ public class EditorPane extends AnchorPane {
     }
 
     public void moveCursorTo(Integer lineno) {
+
         if (Objects.nonNull(lineno)) {
-            webEngine().executeScript(String.format("editor.gotoLine(%d,3,false)", (lineno)));
-            webEngine().executeScript(String.format("editor.scrollToLine(%d,false,false,function(){})", (lineno - 1)));
+
+            final Optional<ViewPanel> viewPanelOptional = controller.getRightShowerHider().getShowing();
+
+            viewPanelOptional.ifPresent(ViewPanel::disableScrollingAndJumping);
+
+
+            try {
+                webEngine().executeScript(String.format("editor.gotoLine(%d,3,false)", (lineno)));
+                webEngine().executeScript(String.format("editor.scrollToLine(%d,false,false,function(){})", (lineno - 1)));
+            } catch (Exception e) {
+                logger.error("Error occured while moving cursor to line {}", lineno);
+            }
+
+            viewPanelOptional.ifPresent(ViewPanel::enableScrollingAndJumping);
+
         }
     }
 
     public void changeEditorMode() {
         if (Objects.nonNull(path)) {
-            String mode = (String) webEngine().executeScript(String.format("changeEditorMode('%s')", path.toUri().toString()));
+            String mode = (String) webEngine().executeScript(String.format("changeEditorMode(\"%s\")", path.toUri().toString()));
             setMode(mode);
         }
+        updateFoldStyle();
     }
 
     public String editorMode() {
-        return (String) this.call("editorMode", new Object[]{});
+        return (String) webEngine().executeScript("editorMode()");
     }
 
     public void fillModeList(ObservableList modeList) {
@@ -275,8 +382,7 @@ public class EditorPane extends AnchorPane {
     public void initializeEditorContextMenus() {
 
         webView.setContextMenuEnabled(false);
-
-        ContextMenu menu = new ContextMenu();
+        contextMenu = new ContextMenu();
 
         MenuItem cut = MenuItemBuilt.item("Cut").click(e -> {
             controller.cutCopy(editorSelection());
@@ -294,6 +400,10 @@ public class EditorPane extends AnchorPane {
         MenuItem indexSelection = MenuItemBuilt.item("Index selection").click(e -> {
             shortcutProvider.getProvider().addIndexSelection();
         });
+        MenuItem includeAsSubDocument = MenuItemBuilt.item("Include selection").click(e -> {
+            shortcutProvider.getProvider().includeAsSubdocument();
+        });
+        MenuItem replacements = MenuItemBuilt.item("Apply Replacements").click(this::replaceSubs);
         MenuItem markdownToAsciidoc = MenuItemBuilt.item("Markdown to Asciidoc").click(e -> {
             MarkdownService markdownService = applicationContext.getBean(MarkdownService.class);
             markdownService.convertToAsciidoc(getEditorValue(),
@@ -302,22 +412,133 @@ public class EditorPane extends AnchorPane {
                     }));
         });
 
+
+        final Menu editorLanguage = new Menu("Editor language");
+        final Menu defaultLanguage = new Menu("Default language");
+
+        ToggleGroup editorLanguageGroup = new ToggleGroup();
+        ToggleGroup defaultLanguageGroup = new ToggleGroup();
+
+        final RadioMenuItem disableSpeller = CheckItemBuilt.check("Disable spell check", false)
+                .bindBi(spellcheckConfigBean.disableSpellCheckProperty())
+                .click(e -> {
+                    checkSpelling();
+                })
+                .build();
+
+        Menu languageMenu = new Menu("Spell Checker");
+        languageMenu.getItems().addAll(editorLanguage, defaultLanguage, disableSpeller);
+
+        EventHandler<Event> contextMenuRequested = event -> {
+
+            final ObservableList<MenuItem> contextMenuItems = contextMenu.getItems();
+
+            final List<MenuItem> menuItems = Arrays.asList(cut, copy, paste, pasteRaw,
+                    markdownToAsciidoc,
+                    replacements,
+                    indexSelection,
+                    includeAsSubDocument,
+                    languageMenu);
+
+            for (MenuItem menuItem : menuItems) {
+                if (!contextMenuItems.contains(menuItem)) {
+                    contextMenuItems.add(menuItem);
+                }
+            }
+
+            if (editorLanguage.getItems().isEmpty()) {
+
+                editorLanguage.getItems().add(CheckItemBuilt.check("Use default language", true)
+                        .click(e -> {
+                            setSpellLanguage(null);
+                            checkSpelling();
+                        })
+                        .group(editorLanguageGroup)
+                        .build());
+
+                final ObservableList<Path> languages = spellcheckConfigBean.getLanguages();
+
+                for (Path language : languages) {
+                    final String pathCleanName = IOHelper.getPathCleanName(language);
+                    editorLanguage.getItems()
+                            .add(CheckItemBuilt.check(pathCleanName, false)
+                                    .click(e -> {
+                                        setSpellLanguage(language);
+                                        checkSpelling();
+                                    })
+                                    .group(editorLanguageGroup)
+                                    .build());
+
+
+                    defaultLanguage.getItems()
+                            .add(CheckItemBuilt.check(pathCleanName, spellcheckConfigBean.defaultLanguageProperty().isEqualTo(language).get())
+                                    .click(e -> {
+                                        spellcheckConfigBean.setDefaultLanguage(language);
+                                        checkSpelling();
+                                    })
+                                    .group(defaultLanguageGroup)
+                                    .build());
+                }
+
+            }
+
+            if (contextMenu.isShowing()) {
+                contextMenu.hide();
+            }
+
+            markdownToAsciidoc.setVisible(isMarkdown());
+            indexSelection.setVisible(isAsciidoc());
+
+            if (event instanceof MouseEvent) {
+                MouseEvent mouseEvent = (MouseEvent) event;
+                contextMenu.show(getWebView(), mouseEvent.getSceneX(), mouseEvent.getSceneY() + 20);
+                contextOpen.set(true);
+            } else {
+                updateCursorCoordinates();
+                Bounds bounds = getWebView().localToScene(getWebView().getLayoutBounds());
+
+                contextMenu.show(getWebView(), pageX.doubleValue() + bounds.getMinX(), pageY.doubleValue() + bounds.getMinY() + 35);
+                contextOpen.set(true);
+            }
+
+            checkWordSuggestions();
+
+        };
+
+        getWebView().addEventHandler(KeyEvent.KEY_PRESSED, event -> {
+            if (KeyHelper.isContextMenu(event)) {
+                event.consume();
+                contextMenuRequested.handle(event);
+                return;
+            }
+
+            if (contextMenu.isShowing()) {
+                contextMenu.hide();
+            }
+        });
+
+        getWebView().addEventFilter(KeyEvent.ANY, event -> {
+            if (contextOpen.get()) {
+                if (KeyHelper.isEnter(event)) {
+                    event.consume();
+                }
+            }
+        });
+
+        contextMenu.setOnHidden(event -> {
+            threadService.runActionLater(() -> {
+                contextOpen.set(false);
+            }, true);
+        });
+
         getWebView().setOnMouseClicked(event -> {
-
-            if (menu.getItems().size() == 0) {
-                menu.getItems().addAll(cut, copy, paste, pasteRaw,
-                        markdownToAsciidoc,
-                        indexSelection
-                );
-            }
-
-            if (menu.isShowing()) {
-                menu.hide();
-            }
             if (event.getButton() == MouseButton.SECONDARY) {
-                markdownToAsciidoc.setVisible(isMarkdown());
-                indexSelection.setVisible(isAsciidoc());
-                menu.show(getWebView(), event.getScreenX(), event.getScreenY());
+                event.consume();
+                contextMenuRequested.handle(event);
+            } else {
+                if (contextMenu.isShowing()) {
+                    contextMenu.hide();
+                }
             }
         });
 
@@ -380,6 +601,42 @@ public class EditorPane extends AnchorPane {
         });
     }
 
+    private void checkWordSuggestions() {
+        webEngine().executeScript("checkWordSuggestions()");
+    }
+
+    private void checkSpelling() {
+        webEngine().executeScript("checkSpelling()");
+    }
+
+    private String getSelectionOrAll() {
+        return (String) webEngine().executeScript("getSelectionOrAll()");
+    }
+
+    private void replaceSubs(Event event) {
+
+        String selection = getSelectionOrAll();
+
+        threadService.runTaskLater(() -> {
+            String result = controller.applyReplacements(selection);
+
+            if (Objects.equals(selection, result))
+                return;
+
+            threadService.runActionLater(() -> {
+                setEditorValue(getEditorValue().replace(selection, result));
+            });
+        });
+
+    }
+
+    @WebkitCall(from = "editor")
+    public void appendWildcard() {
+        threadService.runActionLater(() -> {
+            setChangedProperty(true);
+        });
+    }
+
     public ObservableList<Runnable> getHandleReadyTasks() {
         return handleReadyTasks;
     }
@@ -410,5 +667,114 @@ public class EditorPane extends AnchorPane {
 
     public void setLastModifiedTime(FileTime lastModifiedTime) {
         this.lastModifiedTime = lastModifiedTime;
+    }
+
+    public boolean isHTML() {
+        return is("html");
+    }
+
+    public boolean getReady() {
+        return ready.get();
+    }
+
+    public BooleanProperty readyProperty() {
+        return ready;
+    }
+
+    public Path getSpellLanguage() {
+        return spellLanguage.get();
+    }
+
+    public ObjectProperty<Path> spellLanguageProperty() {
+        return spellLanguage;
+    }
+
+    public void setSpellLanguage(Path spellLanguage) {
+        this.spellLanguage.set(spellLanguage);
+    }
+
+    public void removeToLineStart() {
+        webEngine().executeScript("editor.removeToLineStart()");
+    }
+
+    public void addTypo(Token token) {
+        String tokenClass = token.isEmptySuggestion() ? "misspelled" : "misspelled-strong";
+
+        webEngine().executeScript(String.format("addTypo(%d,%d,%d,\"%s\")",
+                token.getRow(),
+                token.getStart(),
+                token.getEnd(),
+                tokenClass));
+    }
+
+    public void showSuggestions(List<String> suggestions) {
+        final ObservableList<MenuItem> contextMenuItems = contextMenu.getItems();
+
+        contextMenuItems.removeIf(m -> m.getStyleClass().contains("spell-suggestion"));
+
+        if (suggestions.isEmpty()) {
+            return;
+        }
+
+        final List<MenuItem> spells = new ArrayList<>();
+
+        for (String suggestion : suggestions) {
+            final MenuItem menuItem = MenuItemBuilt.item(suggestion)
+                    .clazz("spell-suggestion").click(event -> {
+                        this.replaceMisspelled(suggestion);
+                    });
+
+            spells.add(menuItem);
+        }
+
+        final SeparatorMenuItem menuItem = new SeparatorMenuItem();
+        menuItem.getStyleClass().add("spell-suggestion");
+        spells.add(menuItem);
+
+        contextMenuItems.addAll(0, spells);
+    }
+
+    private void replaceMisspelled(String suggestion) {
+        webEngine().executeScript(String.format("replaceMisspelled(\"%s\")", suggestion));
+    }
+
+    public String tokenList() {
+        return (String) webEngine().executeScript("JSON.stringify(getTokenList())");
+    }
+
+    public void updateFoldStyle() {
+        FoldStyle foldStyle = editorConfigBean.getFoldStyle();
+        setFoldStyle(foldStyle);
+    }
+
+    public void setFoldStyle(FoldStyle style) {
+
+        if (Objects.isNull(style)) {
+            return;
+        }
+
+        threadService.runActionLater(() -> {
+            this.call("setFoldStyle", style.name().toLowerCase(Locale.ENGLISH));
+        });
+    }
+
+    public void updateCursorCoordinates() {
+        if (ready.get()) {
+            JSObject coordinates = (JSObject) this.call("getCursorCoordinates");
+            this.pageX = (Number) coordinates.getMember("pageX");
+            this.pageY = (Number) coordinates.getMember("pageY");
+        }
+    }
+
+    public boolean getChangedProperty() {
+        return changedProperty.get();
+    }
+
+    public BooleanProperty changedPropertyProperty() {
+        return changedProperty;
+    }
+
+    public void setChangedProperty(boolean changedProperty) {
+        this.changedProperty.set(changedProperty);
     }
 }

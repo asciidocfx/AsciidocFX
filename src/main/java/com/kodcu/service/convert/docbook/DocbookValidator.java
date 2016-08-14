@@ -1,5 +1,6 @@
 package com.kodcu.service.convert.docbook;
 
+import com.kodcu.config.EditorConfigBean;
 import com.kodcu.controller.ApplicationController;
 import com.kodcu.other.Current;
 import com.kodcu.other.IOHelper;
@@ -30,19 +31,28 @@ public class DocbookValidator {
     private final TabService tabService;
     private final Current current;
     private final IndikatorService indikatorService;
+    private final EditorConfigBean editorConfigBean;
 
     private Logger logger = LoggerFactory.getLogger(DocbookValidator.class);
 
 
     @Autowired
-    public DocbookValidator(ApplicationController controller, TabService tabService, Current current, IndikatorService indikatorService) {
+    public DocbookValidator(ApplicationController controller, TabService tabService, Current current, IndikatorService indikatorService, EditorConfigBean editorConfigBean) {
         this.controller = controller;
         this.tabService = tabService;
         this.current = current;
         this.indikatorService = indikatorService;
+        this.editorConfigBean = editorConfigBean;
     }
 
     public boolean validateDocbook(String rendered) {
+
+        final boolean validateDocbook = editorConfigBean.getValidateDocbook();
+
+        if (!validateDocbook) {
+            return true;
+        }
+
         try {
             SchemaFactory schemaFactory = SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema");
 

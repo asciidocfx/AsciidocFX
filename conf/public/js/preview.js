@@ -1,20 +1,21 @@
-var imageCacheNumber = Math.floor(Math.random() * (999999999999 - 2)) + 1;
+var $placeholder = $("#placeholder");
 
-function clearImageCache() {
-    imageCacheNumber = Math.floor(Math.random() * (999999999999 - 2)) + 1;
-
-    var content = $("#placeholder");
-    content.find("img").each(function () {
-        var srcAttr = $(this).attr("src");
-        if (srcAttr)
-            $(this).attr("src", srcAttr.split("?")[0]);
-    });
-    refreshUI(content.html());
+var clearCacheAction = new BufferedAction();
+function clearImageCache(imageName) {
+    clearCacheAction.buff(function () {
+        $placeholder.find("img").each(function () {
+            var image = $(this);
+            var srcAttr = image.attr("src");
+            if (srcAttr) {
+                    image.attr("src", srcAttr);
+            }
+        });
+    }, 500);
 }
 
 function imageToBase64Url() {
 
-    window.clonedContent = $("#placeholder").clone();
+    window.clonedContent = $placeholder.clone();
     clonedContent.find("img").each(function (index) {
         afx.imageToBase64Url(this.src, index);
     });
@@ -27,25 +28,24 @@ function updateBase64Url(index, base64) {
     afx.cutCopy(clonedContent.html());
 }
 
-var hljsAction = new BufferedAction();
+var sourceHighlightAction = new BufferedAction();
+
 function refreshUI(data) {
 
-    var $data = $("<div></div>").append(data);
-    $data.find("img").each(function () {
-        var $image = $(this);
-        var attr = $image.attr("src");
-        if (attr)
-            $image.attr("src", attr + "?cache=" + imageCacheNumber + "&parent=" + (attr.match(/\.\./g) || []).length);
-    });
+    if (data.lastIndexOf("<!DOCTYPE html>", 0) === 0) {
+        data = "<p>You sent full DOCTYPE!</p>";
+    }
 
-    $("#placeholder").html($data.html());
+    $placeholder.html(data);
 
-    hljsAction.buff(function () {
-        $('pre').children("code").each(function () {
+    sourceHighlightAction.buff(function () {
+        $placeholder.find('pre.highlightjs').children("code").each(function () {
             if (!$(this).hasClass("hljs")) {
                 hljs.highlightBlock(this);
             }
         });
+
+        prettyPrint();
     }, 1000);
 
 }

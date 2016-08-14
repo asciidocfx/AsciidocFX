@@ -14,7 +14,7 @@
   exclude-result-prefixes="exsl stbl xtbl lxslt ptbl"
   version="1.0">
 
-<!-- $Id: html5-element-mods.xsl,v 1.2 2011-09-18 17:47:28 bobs Exp $ -->
+<!-- $I html5-element-mods.xsl,v 1.2 2011-09-18 17:47:28 bobs Exp $ -->
 
 <!--==============================================================-->
 <!--  DocBook XSL Parameter settings                              -->
@@ -344,14 +344,24 @@
       <xsl:choose>
         <!-- width and height attributes are ok for img element -->
         <xsl:when test="local-name() = 'width' and $element != 'img'">
+          <xsl:variable name="attvalue" select="normalize-space(.)"/>
           <xsl:text>width: </xsl:text>
-          <xsl:value-of select="."/>
+          <xsl:value-of select="$attvalue"/>
+          <!-- if integer value, add px unit -->
+          <xsl:if test="floor($attvalue) = $attvalue">
+            <xsl:text>px</xsl:text>
+          </xsl:if>
           <xsl:text>; </xsl:text>
         </xsl:when>
 
         <xsl:when test="local-name() = 'height' and $element != 'img'">
-          <xsl:text>height </xsl:text>
-          <xsl:value-of select="."/>
+          <xsl:variable name="attvalue" select="normalize-space(.)"/>
+          <xsl:text>height: </xsl:text>
+          <xsl:value-of select="$attvalue"/>
+          <!-- if integer value, add px unit -->
+          <xsl:if test="floor($attvalue) = $attvalue">
+            <xsl:text>px</xsl:text>
+          </xsl:if>
           <xsl:text>; </xsl:text>
         </xsl:when>
 
@@ -376,12 +386,14 @@
         <xsl:when test="local-name() = 'cellspacing'">
           <xsl:text>border-spacing: </xsl:text>
           <xsl:value-of select="."/>
+          <xsl:text>px</xsl:text>
           <xsl:text>; </xsl:text>
         </xsl:when>
 
         <xsl:when test="local-name() = 'cellpadding'">
           <xsl:text>padding: </xsl:text>
           <xsl:value-of select="."/>
+          <xsl:text>px</xsl:text>
           <xsl:text>; </xsl:text>
         </xsl:when>
       </xsl:choose>
@@ -634,56 +646,105 @@
   </li>
 </xsl:template>
 
-<xsl:template match="audiodata">
-  <xsl:variable name="filename">
-    <xsl:call-template name="mediaobject.filename">
-      <xsl:with-param name="object" select=".."/>
-    </xsl:call-template>
-  </xsl:variable>
+<!-- output html5 video and source elements -->
+<xsl:template match="videoobject">
+  <video>
+    <xsl:call-template name="common.html.attributes"/>
+    <xsl:call-template name="video.poster"/>
+    <!-- copy videodata attributes from first videodata child only -->
+    <xsl:apply-templates select="videodata[1]/@*" mode="video.attribute"/>
+    <xsl:apply-templates select="videodata[1]/multimediaparam" mode="video.attribute"/>
 
+    <!-- generate <source> element for each videodata element -->
+    <xsl:apply-templates select="videodata"/>
+
+    <!-- add any fallback content -->
+    <xsl:call-template name="video.fallback"/>
+
+  </video>
+</xsl:template>
+
+<!-- output html5 audio and source elements -->
+<xsl:template match="audioobject">
   <audio>
     <xsl:call-template name="common.html.attributes"/>
 
-    <xsl:attribute name="src">
-      <xsl:value-of select="$filename"/>
-    </xsl:attribute>
+    <!-- copy audiodata attributes from first audiodata child only -->
+    <xsl:apply-templates select="audiodata[1]/@*" mode="audio.attribute"/>
+    <xsl:apply-templates select="audiodata[1]/multimediaparam" mode="audio.attribute"/>
 
-    <xsl:apply-templates select="@*"/>
-    <xsl:apply-templates select="../multimediaparam"/>
+    <!-- generate <source> element for each videodata element -->
+    <xsl:apply-templates select="audiodata"/>
 
     <!-- add any fallback content -->
     <xsl:call-template name="audio.fallback"/>
+
   </audio>
 </xsl:template>
 
-<!-- generate <video> element for html5 -->
 <xsl:template match="videodata">
+
   <xsl:variable name="filename">
     <xsl:call-template name="mediaobject.filename">
-      <xsl:with-param name="object" select=".."/>
+      <!-- Call it with the videodata as the object -->
+      <xsl:with-param name="object" select="."/>
     </xsl:call-template>
   </xsl:variable>
 
-  <video>
+  <source>
     <xsl:call-template name="common.html.attributes"/>
 
     <xsl:attribute name="src">
       <xsl:value-of select="$filename"/>
     </xsl:attribute>
 
-    <xsl:call-template name="video.poster"/>
+    <xsl:apply-templates select="@format" mode="source.attribute"/>
 
-    <xsl:apply-templates select="@*[local-name() != 'fileref']"/>
-    <xsl:apply-templates select="../multimediaparam"/>
+    <xsl:apply-templates select="multimediaparam" mode="source.attribute"/>
     
-    <!-- add any fallback content -->
-    <xsl:call-template name="video.fallback"/>
-  </video>
+  </source>
+</xsl:template>
+
+<xsl:template match="audiodata">
+
+  <xsl:variable name="filename">
+    <xsl:call-template name="mediaobject.filename">
+      <!-- Call it with the videodata as the object -->
+      <xsl:with-param name="object" select="."/>
+    </xsl:call-template>
+  </xsl:variable>
+
+  <source>
+    <xsl:call-template name="common.html.attributes"/>
+
+    <xsl:attribute name="src">
+      <xsl:value-of select="$filename"/>
+    </xsl:attribute>
+
+    <xsl:apply-templates select="@format" mode="source.attribute"/>
+
+    <xsl:apply-templates select="multimediaparam" mode="source.attribute"/>
+    
+  </source>
+</xsl:template>
+
+<!-- attributes handled in modes, so default is off -->
+<xsl:template match="@*" mode="source.attribute"/>
+<xsl:template match="@*" mode="video.attribute"/>
+<xsl:template match="@*" mode="audio.attribute"/>
+
+<xsl:template match="@format" mode="source.attribute">
+  <xsl:attribute name="type">
+    <xsl:value-of select="normalize-space(.)"/>
+  </xsl:attribute>
 </xsl:template>
 
 <!-- use only an imageobject with @role = 'poster' -->
 <xsl:template name="video.poster">
-  <xsl:variable name="imageobject" select="../../imageobject[@role = 'poster'][1]"/>
+  <!-- context is videoobject -->
+  <xsl:variable name="imageobject" 
+                select="../../imageobject[@role = 'poster'][1] | 
+                           ../imageobject[@role = 'poster'][1]"/>
   <xsl:if test="$imageobject">
     <xsl:attribute name="poster">
       <xsl:value-of select="$imageobject/imagedata/@fileref"/>
@@ -691,55 +752,80 @@
   </xsl:if>
 </xsl:template>
 
-<xsl:template match="videodata/@fileref">
-  <!-- already handled by videodata template -->
+<xsl:template match="videodata/@fileref" mode="source.attribute">
+  <!-- process in normal mode -->
+  <xsl:apply-templates select="."/>
 </xsl:template>
 
-<xsl:template match="audiodata/@fileref">
-  <!-- already handled by audiodata template -->
+<xsl:template match="videodata/@fileref" mode="video.attribute"/>
+
+<xsl:template match="audiodata/@fileref" mode="source.attribute">
+  <!-- process in normal mode -->
+  <xsl:apply-templates select="."/>
 </xsl:template>
 
-<xsl:template match="videodata/@contentwidth">
+<xsl:template match="audiodata/@fileref" mode="audio.attribute"/>
+
+<xsl:template match="videodata/@contentwidth | videodata/@width" 
+              mode="video.attribute">
   <xsl:attribute name="width">
     <xsl:value-of select="."/>
   </xsl:attribute>
 </xsl:template>
 
-<xsl:template match="videodata/@contentdepth">
+<xsl:template match="videodata/@contentdepth | videodata/@depth"
+              mode="video.attribute">
   <xsl:attribute name="height">
     <xsl:value-of select="."/>
   </xsl:attribute>
 </xsl:template>
 
-<xsl:template match="videodata/@depth">
-  <xsl:attribute name="height">
-    <xsl:value-of select="."/>
-  </xsl:attribute>
-</xsl:template>
+<xsl:template match="multimediaparam" mode="source.attribute"/>
+<xsl:template match="multimediaparam" mode="video.attribute"/>
 
-<!-- pass through these attributes -->
-<xsl:template match="videodata/@autoplay |
-                     videodata/@controls |
-                     audiodata/@autoplay |
-                     audiodata/@controls">
-  <xsl:copy-of select="."/>
-</xsl:template>
-
-<xsl:template match="videodata/@*" priority="-1">
-  <!-- Do nothing with the rest of the attributes -->
-</xsl:template>
-
-<xsl:template match="audiodata/@*" priority="-1">
-  <!-- Do nothing with the rest of the attributes -->
-</xsl:template>
-
-<xsl:template match="multimediaparam">
+<xsl:template match="multimediaparam[@name = 'autoplay' or
+                                       @name = 'controls' or
+                                       @name = 'height' or
+                                       @name = 'loop' or
+                                       @name = 'muted' or
+                                       @name = 'preload' or
+                                       @name = 'width']"
+             mode="video.attribute">
   <xsl:call-template name="process.multimediaparam">
     <xsl:with-param name="object" select=".."/>
     <xsl:with-param name="param.name" select="@name"/>
     <xsl:with-param name="param.value" select="@value"/>
   </xsl:call-template>
 </xsl:template>
+
+<xsl:template match="multimediaparam[@name = 'autoplay' or
+                                       @name = 'controls' or
+                                       @name = 'loop' or
+                                       @name = 'muted' or
+                                       @name = 'preload']"
+             mode="audio.attribute">
+  <xsl:call-template name="process.multimediaparam">
+    <xsl:with-param name="object" select=".."/>
+    <xsl:with-param name="param.name" select="@name"/>
+    <xsl:with-param name="param.value" select="@value"/>
+  </xsl:call-template>
+</xsl:template>
+
+<xsl:template match="multimediaparam[not(@name = 'autoplay' or
+                                       @name = 'controls' or
+                                       @name = 'height' or
+                                       @name = 'loop' or
+                                       @name = 'muted' or
+                                       @name = 'preload' or
+                                       @name = 'width')]"
+             mode="source.attribute">
+  <xsl:call-template name="process.multimediaparam">
+    <xsl:with-param name="object" select=".."/>
+    <xsl:with-param name="param.name" select="@name"/>
+    <xsl:with-param name="param.value" select="@value"/>
+  </xsl:call-template>
+</xsl:template>
+
 
 <!-- Determines the best value of a media attribute from the
   attributes and multimediaparam elements -->
@@ -764,17 +850,44 @@
 </xsl:template>
 
 <xsl:template name="video.fallback">
-  <xsl:param name="videodata" select="."/>
-  <xsl:variable name="textobject" select="$videodata/../../textobject"/>
+  <xsl:param name="videoobject" select="."/>
+  <xsl:variable name="textobject" select="$videoobject/../textobject"/>
 
-  <xsl:apply-templates select="$textobject" mode="fallback"/>
+  <xsl:choose>
+    <xsl:when test="$textobject">
+      <xsl:apply-templates select="$textobject" mode="fallback"/>
+    </xsl:when>
+    <xsl:otherwise>
+      <xsl:call-template name="video.fallback.text"/>
+    </xsl:otherwise>
+  </xsl:choose>
+</xsl:template>
+
+<xsl:template name="video.fallback.text">
+  <xsl:call-template name="gentext">
+    <xsl:with-param name="key" select="'video-unsupported'"/>
+  </xsl:call-template>
 </xsl:template>
 
 <xsl:template name="audio.fallback">
   <xsl:param name="audiodata" select="."/>
   <xsl:variable name="textobject" select="$audiodata/../../textobject"/>
 
-  <xsl:apply-templates select="$textobject" mode="fallback"/>
+  <xsl:choose>
+    <xsl:when test="$textobject">
+      <xsl:apply-templates select="$textobject" mode="fallback"/>
+    </xsl:when>
+    <xsl:otherwise>
+      <xsl:call-template name="audio.fallback.text"/>
+    </xsl:otherwise>
+  </xsl:choose>
+
+</xsl:template>
+
+<xsl:template name="audio.fallback.text">
+  <xsl:call-template name="gentext">
+    <xsl:with-param name="key" select="'audio-unsupported'"/>
+  </xsl:call-template>
 </xsl:template>
 
 <xsl:template match="textobject" mode="fallback">

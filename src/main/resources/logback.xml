@@ -9,7 +9,7 @@
     <logger name="org.jboss" level="ERROR"/>
     <logger name="com.dooapp" level="ERROR"/>
 
-    <property resource="application.properties" />
+    <property resource="application.properties"/>
 
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
 
@@ -18,6 +18,7 @@
         </filter>
 
         <encoder>
+            <charset>utf-8</charset>
             <pattern>%-4relative [%thread] %-5level %logger{35} - %msg %n</pattern>
         </encoder>
     </appender>
@@ -27,6 +28,7 @@
             <level>DEBUG</level>
         </filter>
         <encoder>
+            <charset>utf-8</charset>
             <pattern>%-4relative [%thread] %-5level %logger{35} - %msg %n</pattern>
         </encoder>
     </appender>
@@ -44,6 +46,7 @@
         </filter>
 
         <encoder>
+            <charset>utf-8</charset>
             <pattern>%-4relative [%thread] %-5level %logger{35} - %msg%n</pattern>
         </encoder>
     </appender>
