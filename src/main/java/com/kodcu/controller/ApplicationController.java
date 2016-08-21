@@ -2574,9 +2574,9 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
                 threadService.runTaskLater(() -> {
                     IOHelper.createDirectories(folderPath);
-                    threadService.runActionLater(() -> {
-                        directoryService.changeWorkigDir(folderPath);
-                    });
+//                    threadService.runActionLater(() -> {
+//                        directoryService.changeWorkigDir(folderPath);
+//                    });
                 });
             }
         };
