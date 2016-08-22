@@ -106,6 +106,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -132,7 +133,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     public VBox rightTooglesBox;
     public VBox configBox;
     public ToggleGroup rightToggleGroup;
-    public MenuButton donateButton;
     public ToggleButton toggleConfigButton;
     public Label basicSearch;
     private Logger logger = LoggerFactory.getLogger(ApplicationController.class);
@@ -565,11 +565,12 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     @Override
     public void initialize(URL url, ResourceBundle rb) {
 
+
         initializePaths();
+        checkDuplicatedJars();
 //        initializePosixPermissions();
         initializeNashornConverter();
         initializeTerminal();
-        initializeDonation();
 
         terminalTabPane.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             Optional.ofNullable(newValue)
@@ -971,6 +972,51 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         tabService.initializeTabChangeListener(tabPane);
     }
 
+    private void checkDuplicatedJars() {
+
+        threadService.runTaskLater(() -> {
+            try {
+                Path lib = installationPath.resolve("lib");
+//            Path lib = Paths.get("C:\\Program Files\\AsciidocFX\\lib");
+
+                if (Files.notExists(lib)) {
+                    return;
+                }
+
+                Map<String, List<Path>> dependencies = IOHelper.list(lib)
+                        .collect(Collectors.groupingBy(path -> {
+                            Path fileName = path.getFileName();
+                            String name = fileName.toString();
+
+                            LinkedList<String> nameParts = new LinkedList<String>(Arrays.asList(name.split("-")));
+//                        String lastPart = nameParts.get(nameParts.size() - 1);
+//                        String version = lastPart.replaceAll("\\p{Alpha}", "");
+                            nameParts.removeLast();
+                            return String.join("-", nameParts);
+                        }));
+
+                List<String> duplicatePaths = dependencies
+                        .entrySet()
+                        .stream()
+                        .filter(e -> e.getValue().size() > 1)
+                        .map(e -> e.getValue())
+                        .map(e -> {
+                            return String.join("\n", e.stream().map(Path::toString).collect(Collectors.toList())) + "\n";
+                        })
+                        .collect(Collectors.toList());
+
+                if (duplicatePaths.size() > 0) {
+                    threadService.runActionLater(() -> {
+                        AlertHelper.showDuplicateWarning(duplicatePaths, lib);
+                    });
+                }
+            } catch (Exception e) {
+
+            }
+        });
+
+    }
+
     private void deleteSelectedItems(Event event) {
         List<TreeItem<Item>> selectedItems = fileSystemView
                 .getSelectionModel()
@@ -1033,40 +1079,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             }
 
         });
-    }
-
-    private void initializeDonation() {
-        donateButton.setGraphic(AwesomeDude.createIconLabel(AwesomeIcon.PAYPAL, "14.0"));
-        Tooltip.install(donateButton, new Tooltip("Donate to AsciidocFX project"));
-
-        IntStream.of(10, 25, 50, 100)
-                .forEach(unit -> {
-                    final MenuItem menuItem = MenuItemBuilt.item("€ " + unit)
-                            .click(event -> {
-                                browseInDesktop(String.format(donationUrl, unit));
-                            });
-                    donateButton.getItems().add(menuItem);
-                });
-
-        donateButton.getItems().add(MenuItemBuilt.item("× Close")
-                .click(event -> {
-                    if (!toggleConfigButton.isSelected()) {
-                        toggleConfigButton.fire();
-                    }
-
-                    if (Objects.nonNull(configToggleGroup)) {
-                        final ObservableList<Toggle> toggles = configToggleGroup.getToggles();
-                        if (!toggles.isEmpty()) {
-                            ((ToggleButton) toggles.get(0)).fire();
-                        }
-                    }
-
-                    threadService.schedule(() -> {
-                        threadService.runActionLater(() -> {
-                            editorConfigBean.showDonateProperty().setValue(false);
-                        });
-                    }, 2, TimeUnit.SECONDS);
-                }));
     }
 
     public void openInDesktop(Path path) {
@@ -1283,9 +1295,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                 }
             }
         });*/
-
-        donateButton.managedProperty().bind(donateButton.visibleProperty());
-        editorConfigBean.showDonateProperty().bindBidirectional(donateButton.visibleProperty());
 
         locationConfigBean.mathjaxProperty().addListener((observable, oldValue, newValue) -> {
             if (Objects.nonNull(newValue)) {
@@ -2644,7 +2653,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             consumer.accept(editor.getText());
         });
 
-        if(!Files.isDirectory(path)){
+        if (!Files.isDirectory(path)) {
             int extensionIndex = editor.getText().lastIndexOf(".");
             if (extensionIndex > 0) {
                 threadService.runActionLater(() -> {
@@ -3016,5 +3025,9 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                 }, addedSubList);
             });
         });
+    }
+
+    public int getHangFileSizeLimit() {
+        return editorConfigBean.getHangFileSizeLimit();
     }
 }

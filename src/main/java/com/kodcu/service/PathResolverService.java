@@ -26,7 +26,7 @@ public class PathResolverService {
     private final PathMatcher imageMatcher = FileSystems.getDefault().getPathMatcher("glob:**.{png,svg,jpg,jpeg,bmp,gif}");
     private final PathMatcher pptMatcher = FileSystems.getDefault().getPathMatcher("glob:**.{ppt,pptx,odp,fodp}");
     private final PathMatcher excelMatcher = FileSystems.getDefault().getPathMatcher("glob:**.{xls,xlsx,ods,fods}");
-    private final PathMatcher archieveMatcher = FileSystems.getDefault().getPathMatcher("glob:**.{zip,jar,tar,rar,tar.gz,gz,epub,ear}");
+    private final PathMatcher archieveMatcher = FileSystems.getDefault().getPathMatcher("glob:**.{zip,jar,tar,rar,tar.gz,gz,epub,ear,war}");
     private final PathMatcher videoMatcher = FileSystems.getDefault().getPathMatcher("glob:**.{cda,avi,flv,mkv,mov,mp4,mpeg,mpg,ogv,webm,divx,wmv}");
     private final PathMatcher cssMatcher = FileSystems.getDefault().getPathMatcher("glob:**.{css,css3,scss,less}");
     private final PathMatcher terminalMatcher = FileSystems.getDefault().getPathMatcher("glob:**.{bat,sh,cmd,exe,msi,dmg}");
@@ -76,6 +76,10 @@ public class PathResolverService {
                 || isHTML(path)
                 || isXML(path)
                 || isMarkdown(path);
+    }
+
+    public boolean isOffice(Path path){
+        return isWord(path) || isExcel(path) || isPPT(path);
     }
 
 
