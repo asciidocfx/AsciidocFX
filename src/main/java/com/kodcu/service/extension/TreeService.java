@@ -150,7 +150,7 @@ public class TreeService {
                 }
 
                 fileView.setMaxHeight(2500);
-                fileView.setPrefWidth(250);
+                fileView.setPrefWidth(500);
                 fileView.setPrefHeight(treeItems.size() * 24);
 
                 Path path = current.currentTab().getParentOrWorkdir();
