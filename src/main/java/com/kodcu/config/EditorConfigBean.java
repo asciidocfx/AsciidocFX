@@ -63,13 +63,13 @@ public class EditorConfigBean extends ConfigurationBase {
     private StringProperty terminalCharset = new SimpleStringProperty("UTF-8");
     private StringProperty terminalWinCommand = new SimpleStringProperty("cmd.exe");
     private StringProperty terminalNixCommand = new SimpleStringProperty("/bin/bash");
-    private BooleanProperty showDonate = new SimpleBooleanProperty(true);
     private BooleanProperty validateDocbook = new SimpleBooleanProperty(true);
     private StringProperty clipboardImageFilePattern = new SimpleStringProperty("'Image'-ddMMyy-hhmmss.SSS'.png'");
     private DoubleProperty screenX = new SimpleDoubleProperty(0);
     private DoubleProperty screenY = new SimpleDoubleProperty(0);
     private DoubleProperty screenWidth = new SimpleDoubleProperty();
     private DoubleProperty screenHeight = new SimpleDoubleProperty();
+    private ObjectProperty<Integer> hangFileSizeLimit = new SimpleObjectProperty<>(3);
     public ObjectProperty<FoldStyle> foldStyle = new SimpleObjectProperty<>(FoldStyle.DEFAULT);
 
     private Logger logger = LoggerFactory.getLogger(EditorConfigBean.class);
@@ -258,18 +258,6 @@ public class EditorConfigBean extends ConfigurationBase {
         this.terminalWinCommand.set(terminalWinCommand);
     }
 
-    public boolean getShowDonate() {
-        return showDonate.get();
-    }
-
-    public BooleanProperty showDonateProperty() {
-        return showDonate;
-    }
-
-    public void setShowDonate(boolean showDonate) {
-        this.showDonate.set(showDonate);
-    }
-
     public boolean getValidateDocbook() {
         return validateDocbook.get();
     }
@@ -354,6 +342,18 @@ public class EditorConfigBean extends ConfigurationBase {
         this.foldStyle.set(foldStyle);
     }
 
+    public Integer getHangFileSizeLimit() {
+        return hangFileSizeLimit.get();
+    }
+
+    public ObjectProperty<Integer> hangFileSizeLimitProperty() {
+        return hangFileSizeLimit;
+    }
+
+    public void setHangFileSizeLimit(Integer hangFileSizeLimit) {
+        this.hangFileSizeLimit.set(hangFileSizeLimit);
+    }
+
     @Override
     public String formName() {
         return "Editor Settings";
@@ -366,7 +366,7 @@ public class EditorConfigBean extends ConfigurationBase {
                 .resourceBundle(ResourceBundle.getBundle("editorConfig"))
                 .includeAndReorder("showDonate", "validateDocbook", "editorTheme", "fontFamily", "fontSize",
                         "scrollSpeed", "useWrapMode", "wrapLimit", "foldStyle", "showGutter", "defaultLanguage", "autoUpdate",
-                        "terminalWinCommand", "terminalNixCommand", "terminalCharset", "clipboardImageFilePattern")
+                        "terminalWinCommand", "terminalNixCommand", "terminalCharset", "clipboardImageFilePattern", "hangFileSizeLimit")
                 .build();
 
         DefaultFactoryProvider editorConfigFormProvider = new DefaultFactoryProvider();
@@ -376,6 +376,7 @@ public class EditorConfigBean extends ConfigurationBase {
         editorConfigFormProvider.addFactory(new NamedFieldHandler("scrollSpeed"), new SliderFactory(SliderBuilt.create(0.0, 1, 0.1).step(0.1)));
         editorConfigFormProvider.addFactory(new NamedFieldHandler("fontSize"), new SpinnerFactory(new Spinner(8, 32, 14)));
         editorConfigFormProvider.addFactory(new NamedFieldHandler("wrapLimit"), new SpinnerFactory(new Spinner(0, 500, 0)));
+        editorConfigFormProvider.addFactory(new NamedFieldHandler("hangFileSizeLimit"), new SpinnerFactory(new Spinner(0, Integer.MAX_VALUE, 3)));
         FileChooserEditableFactory fileChooserEditableFactory = new FileChooserEditableFactory();
         editorConfigForm.setEditorFactoryProvider(editorConfigFormProvider);
 
@@ -424,10 +425,10 @@ public class EditorConfigBean extends ConfigurationBase {
         String terminalWinCommand = jsonObject.getString("terminalWinCommand", "cmd.exe");
         String terminalNixCommand = jsonObject.getString("terminalNixCommand", "/bin/bash");
         String terminalCharset = jsonObject.getString("terminalCharset", "UTF-8");
-        boolean showDonate = jsonObject.getBoolean("showDonate", true);
         final boolean validateDocbook = jsonObject.getBoolean("validateDocbook", true);
         String clipboardImageFilePattern = jsonObject.getString("clipboardImageFilePattern", "'Image'-ddMMyy-hhmmss.SSS'.png'");
         String foldStyle = jsonObject.getString("foldStyle", "default");
+        int hangFileSizeLimit = jsonObject.getInt("hangFileSizeLimit", 3);
 
 
         IOHelper.close(jsonReader, fileReader);
@@ -444,9 +445,9 @@ public class EditorConfigBean extends ConfigurationBase {
             this.setTerminalWinCommand(terminalWinCommand);
             this.setTerminalNixCommand(terminalNixCommand);
             this.setTerminalCharset(terminalCharset);
-            this.setShowDonate(showDonate);
             this.setValidateDocbook(validateDocbook);
             this.setClipboardImageFilePattern(clipboardImageFilePattern);
+            this.setHangFileSizeLimit(hangFileSizeLimit);
 
             if (FoldStyle.contains(foldStyle)) {
                 this.setFoldStyle(FoldStyle.valueOf(foldStyle));
@@ -549,14 +550,14 @@ public class EditorConfigBean extends ConfigurationBase {
                 .add("terminalCharset", getTerminalCharset())
                 .add("terminalWinCommand", getTerminalWinCommand())
                 .add("terminalNixCommand", getTerminalNixCommand())
-                .add("showDonate", getShowDonate())
                 .add("validateDocbook", getValidateDocbook())
                 .add("clipboardImageFilePattern", getClipboardImageFilePattern())
                 .add("screenX", getScreenX())
                 .add("screenY", getScreenY())
                 .add("screenWidth", getScreenWidth())
                 .add("screenHeight", getScreenHeight())
-                .add("foldStyle", getFoldStyle().name());
+                .add("foldStyle", getFoldStyle().name())
+                .add("hangFileSizeLimit", getHangFileSizeLimit());
 
         return objectBuilder.build();
     }

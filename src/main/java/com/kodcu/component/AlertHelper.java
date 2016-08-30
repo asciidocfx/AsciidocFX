@@ -1,10 +1,8 @@
 package com.kodcu.component;
 
 import javafx.collections.ObservableList;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.DialogPane;
-import javafx.scene.control.ListView;
+import javafx.scene.control.*;
+import javafx.scene.layout.VBox;
 
 import java.nio.file.Path;
 import java.util.List;
@@ -19,6 +17,9 @@ public final class AlertHelper {
 
     public static final ButtonType LOAD_FILE_SYSTEM_CHANGES = new ButtonType("Load File System Changes");
     public static final ButtonType KEEP_MEMORY_CHANGES = new ButtonType("Keep Memory Changes");
+
+    public static final ButtonType OPEN_IN_APP = new ButtonType("Open anyway");
+    public static final ButtonType OPEN_EXTERNAL = new ButtonType("Open external");
 
     public static Optional<ButtonType> deleteAlert(List<Path> pathsLabel) {
         Alert deleteAlert = new Alert(Alert.AlertType.WARNING, null, ButtonType.YES, ButtonType.CANCEL);
@@ -78,5 +79,45 @@ public final class AlertHelper {
         alert.getButtonTypes().clear();
         alert.getButtonTypes().addAll(LOAD_FILE_SYSTEM_CHANGES, KEEP_MEMORY_CHANGES, ButtonType.CANCEL);
         return alert.showAndWait();
+    }
+
+    public static Optional<ButtonType> sizeHangAlert(Path path, int hangFileSizeLimit) {
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.setTitle(String.format("File size > %dMB", hangFileSizeLimit));
+        alert.setHeaderText(String.format("It may cause application being unresponsive", path));
+        alert.getButtonTypes().clear();
+        alert.getButtonTypes().addAll(OPEN_IN_APP, OPEN_EXTERNAL, ButtonType.CANCEL);
+        return alert.showAndWait();
+    }
+
+    public static Optional<ButtonType> nosizeAlert(Path path, int hangFileSizeLimit) {
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.setTitle("No file size");
+        alert.setHeaderText(String.format("It may cause application being unresponsive if it's real size > %dMB", path, hangFileSizeLimit));
+        alert.getButtonTypes().clear();
+        alert.getButtonTypes().addAll(OPEN_IN_APP, OPEN_EXTERNAL, ButtonType.CANCEL);
+        return alert.showAndWait();
+    }
+
+    public static void showDuplicateWarning(List<String> duplicatePaths, Path lib) {
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+
+        DialogPane dialogPane = alert.getDialogPane();
+
+        ListView listView = new ListView();
+        listView.getStyleClass().clear();
+        ObservableList items = listView.getItems();
+        items.addAll(duplicatePaths);
+        listView.setEditable(false);
+
+        dialogPane.setContent(listView);
+
+        alert.setTitle("Duplicate JARs found");
+        alert.setHeaderText(String.format("Duplicate JARs found, it may cause unexpected behaviours.\n\n" +
+                "Please remove the older versions from these pair(s) manually. \n" +
+                "JAR files are located at %s directory.", lib));
+        alert.getButtonTypes().clear();
+        alert.getButtonTypes().addAll(ButtonType.OK);
+        alert.showAndWait();
     }
 }

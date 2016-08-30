@@ -452,4 +452,14 @@ public class IOHelper {
         }
         return null;
     }
+
+    public static Optional<Long> size(Path path) {
+        try {
+            long size = Files.size(path);
+            return Optional.of(size);
+        } catch (Exception e) {
+            logger.warn("Problem occured while getting size info of {}", path);
+        }
+        return Optional.empty();
+    }
 }

@@ -1,9 +1,7 @@
 package com.kodcu.service.ui;
 
-import com.kodcu.component.EditorPane;
-import com.kodcu.component.ImageTab;
-import com.kodcu.component.MenuItemBuilt;
-import com.kodcu.component.MyTab;
+import com.kodcu.component.*;
+import com.kodcu.config.EditorConfigBean;
 import com.kodcu.config.StoredConfigBean;
 import com.kodcu.controller.ApplicationController;
 import com.kodcu.other.Current;
@@ -16,7 +14,6 @@ import com.kodcu.service.shortcut.ShortcutProvider;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.value.ObservableObjectValue;
 import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.control.*;
@@ -26,7 +23,6 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.FileChooser;
-import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -102,7 +98,7 @@ public class TabService {
 
         ObservableList<Tab> tabs = controller.getTabPane().getTabs();
         for (Tab tab : tabs) {
-            if(tab instanceof MyTab){
+            if (tab instanceof MyTab) {
                 MyTab myTab = (MyTab) tab;
                 Path currentPath = myTab.getPath();
                 if (Objects.nonNull(currentPath))
@@ -230,7 +226,7 @@ public class TabService {
             blackList.remove(tab);
 
             blackList.stream()
-                    .filter(t-> t instanceof MyTab)
+                    .filter(t -> t instanceof MyTab)
                     .map(t -> (MyTab) t).sorted((mo1, mo2) -> {
                 if (mo1.isNew() && !mo2.isNew())
                     return -1;
@@ -361,23 +357,38 @@ public class TabService {
             }
         } else if (pathResolver.isImage(path)) {
             addImageTab(path);
-        } else if (pathResolver.isHTML(path) || pathResolver.isAsciidoc(path) || pathResolver.isMarkdown(path)) {
-            addTab(path);
         } else if (pathResolver.isEpub(path)) {
             current.setCurrentEpubPath(path);
             controller.browseInDesktop(String.format(epubUrl, controller.getPort()));
+        } else if (pathResolver.isPDF(path) || pathResolver.isArchive(path) || pathResolver.isVideo(path) || pathResolver.isOffice(path)) {
+            controller.openInDesktop(path);
         } else {
-            List<String> supportedModes = controller.getSupportedModes();
-            String extension = FilenameUtils.getExtension(path.toString());
 
-            if ("".equals(extension) || supportedModes.contains(extension)) {
-                addTab(path);
-//                controller.hidePreviewPanel();
+            Optional<Long> size = IOHelper.size(path);
+
+            int hangFileSizeLimit = controller.getHangFileSizeLimit();
+
+            if (size.isPresent()) {
+                if (size.get() > hangFileSizeLimit * 1024 * 1024) {
+                    processHangAlert(AlertHelper.sizeHangAlert(path, hangFileSizeLimit), path);
+                } else {
+                    addTab(path);
+                }
             } else {
-                controller.openInDesktop(path);
+                processHangAlert(AlertHelper.nosizeAlert(path, hangFileSizeLimit), path);
             }
         }
 
+    }
+
+    private void processHangAlert(Optional<ButtonType> buttonType, Path path) {
+        ButtonType btnType = buttonType.orElse(ButtonType.CANCEL);
+        if (btnType == AlertHelper.OPEN_IN_APP) {
+            controller.saveAllTabs();
+            addTab(path);
+        } else if (btnType == AlertHelper.OPEN_EXTERNAL) {
+            controller.openInDesktop(path);
+        }
     }
 
     public void addImageTab(Path imagePath) {
@@ -430,7 +441,7 @@ public class TabService {
         tabPane.setOnMouseReleased(event -> {
             Optional.ofNullable(itemProperty)
                     .map(ObservableObjectValue::get)
-                    .filter(e-> e instanceof MyTab)
+                    .filter(e -> e instanceof MyTab)
                     .map(e -> (MyTab) e)
                     .map(MyTab::getEditorPane)
                     .ifPresent(EditorPane::focus);
@@ -438,7 +449,7 @@ public class TabService {
 
         itemProperty.addListener((observable, oldValue, selectedTab) -> {
             Optional.ofNullable(selectedTab)
-                    .filter(e-> e instanceof MyTab)
+                    .filter(e -> e instanceof MyTab)
                     .map(e -> (MyTab) e)
                     .map(MyTab::getEditorPane)
                     .filter(EditorPane::getReady)

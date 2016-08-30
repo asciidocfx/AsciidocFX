@@ -174,7 +174,7 @@ public class FileBrowseService {
                 threadService.runActionLater(() -> {
 
                     saveTreeSelectionState();
-
+                    boolean treeViewFocused = treeView.isFocused();
                     treeItem.getChildren().clear();
                     treeView.getSelectionModel().clearSelection();
 
@@ -182,7 +182,9 @@ public class FileBrowseService {
 
                     restoreTreeSelectionState();
                     restoreTreeScrollState();
-                    treeView.requestFocus();
+                    if (treeViewFocused) {
+                        treeView.requestFocus();
+                    }
 
                     fileWatchService.registerPathWatcher(path);
                 });
