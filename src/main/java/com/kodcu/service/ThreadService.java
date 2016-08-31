@@ -26,7 +26,7 @@ public class ThreadService {
         final int availableProcessors = Runtime.getRuntime().availableProcessors();
         final int corePoolSize = (availableProcessors * 2 >= 4) ? availableProcessors * 2 : 4;
         threadPollWorker = Executors.newScheduledThreadPool(corePoolSize);
-        uiSemaphore = new Semaphore(corePoolSize, true);
+        uiSemaphore = new Semaphore(250, true);
     }
 
     public ScheduledFuture<?> schedule(Runnable runnable, long delay, TimeUnit timeUnit) {
