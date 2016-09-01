@@ -142,14 +142,9 @@
             </exclusions>
         </dependency>
         <dependency>
-            <groupId>net.java.dev.jna</groupId>
-            <artifactId>jna</artifactId>
-            <version>4.1.1</version>
-        </dependency>
-        <dependency>
-            <groupId>net.java.dev.jna</groupId>
-            <artifactId>jna-platform</artifactId>
-            <version>4.1.1</version>
+            <groupId>com.asciidocfx.pty4j</groupId>
+            <artifactId>pty4j</artifactId>
+            <version>0.7.1</version>
         </dependency>
     </dependencies>
 
@@ -261,6 +256,15 @@
                 <updatePolicy>always</updatePolicy>
             </releases>
             <url>http://asciidocfx.com/build</url>
+        </repository>
+        <repository>
+            <id>javacomm-repo</id>
+            <releases>
+                <enabled>true</enabled>
+                <checksumPolicy>warn</checksumPolicy>
+                <updatePolicy>always</updatePolicy>
+            </releases>
+            <url>http://www.sparetimelabs.com/maven2</url>
         </repository>
     </repositories>
 
