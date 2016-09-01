@@ -144,7 +144,7 @@
         <dependency>
             <groupId>com.asciidocfx.pty4j</groupId>
             <artifactId>pty4j</artifactId>
-            <version>0.7.1</version>
+            <version>0.7.2</version>
         </dependency>
     </dependencies>
 
