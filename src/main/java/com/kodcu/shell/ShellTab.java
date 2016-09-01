@@ -168,9 +168,9 @@ public class ShellTab extends Tab {
     private void initializeProcess() throws Exception {
 
         if (OSHelper.isWindows()) {
-            this.termCommand = editorConfigBean.getTerminalWinCommand().split("\\|");
+            this.termCommand = editorConfigBean.getTerminalWinCommand().split("\\s+");
         } else {
-            this.termCommand = editorConfigBean.getTerminalNixCommand().split("\\|");
+            this.termCommand = editorConfigBean.getTerminalNixCommand().split("\\s+");
         }
 
         Map<String, String> envs = new HashMap<>(System.getenv());
