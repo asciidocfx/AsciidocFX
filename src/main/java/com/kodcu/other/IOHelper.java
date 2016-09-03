@@ -388,7 +388,7 @@ public class IOHelper {
             try {
                 closeable.close();
             } catch (Exception e) {
-                logger.error("Problem occured while closing resource");
+//                logger.error("Problem occured while closing resource");
             }
         }
     }
