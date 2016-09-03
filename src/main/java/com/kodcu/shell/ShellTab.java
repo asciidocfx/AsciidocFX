@@ -3,6 +3,7 @@ package com.kodcu.shell;
 import com.kodcu.component.WebkitCall;
 import com.kodcu.config.EditorConfigBean;
 import com.kodcu.controller.ApplicationController;
+import com.kodcu.other.IOHelper;
 import com.kodcu.other.OSHelper;
 import com.kodcu.service.DirectoryService;
 import com.kodcu.service.ThreadService;
@@ -24,7 +25,6 @@ import org.springframework.stereotype.Component;
 
 import java.io.*;
 import java.nio.CharBuffer;
-import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
@@ -44,6 +44,8 @@ public class ShellTab extends Tab {
 
     private WebView webView;
 
+    private int columns = 150;
+    private int rows = 15;
     private final ApplicationController controller;
     private final ThreadService threadService;
     private final DirectoryService directoryService;
@@ -107,10 +109,11 @@ public class ShellTab extends Tab {
 
     @WebkitCall
     public void resizeTerminal(int columns, int rows) {
+        this.columns = columns;
+        this.rows = rows;
         if (Objects.nonNull(process)) {
             threadService.runActionLater(() -> {
                 process.setWinSize(new WinSize(columns, rows));
-                process.setWinSize(new WinSize(columns, rows, (int) webView.getWidth(), (int) webView.getHeight()));
             }, true);
         }
     }
@@ -160,6 +163,7 @@ public class ShellTab extends Tab {
     private JSObject getTerminal() {
         return (JSObject) webEngine().executeScript("t");
     }
+
     private JSObject getTerminalIO() {
         return (JSObject) webEngine().executeScript("t.io");
     }
@@ -186,7 +190,7 @@ public class ShellTab extends Tab {
             this.process = PtyProcess.exec(termCommand, envs);
         }
 
-        process.setWinSize(new WinSize(100, 20));
+        process.setWinSize(new WinSize(columns, rows));
         this.inputReader = new BufferedReader(new InputStreamReader(process.getInputStream()));
         this.errorReader = new BufferedReader(new InputStreamReader(process.getErrorStream()));
         this.outputWriter = new BufferedWriter(new OutputStreamWriter(process.getOutputStream(), charset));
@@ -248,6 +252,7 @@ public class ShellTab extends Tab {
     public void destroy() {
         threadService.start(() -> {
             process.destroy();
+            IOHelper.close(inputReader, errorReader, outputWriter);
         });
     }
 
