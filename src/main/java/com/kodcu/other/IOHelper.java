@@ -462,4 +462,15 @@ public class IOHelper {
         }
         return Optional.empty();
     }
+
+    public static boolean contains(Path root, Path inside) {
+
+        if (inside == null)
+            return false;
+
+        if (inside.equals(root))
+            return true;
+
+        return contains(root, inside.getParent());
+    }
 }
