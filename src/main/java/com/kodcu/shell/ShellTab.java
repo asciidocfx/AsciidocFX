@@ -222,7 +222,7 @@ public class ShellTab extends Tab {
     private void printReader(BufferedReader bufferedReader) {
         try {
             int nRead;
-            char[] data = new char[2 * 1024];
+            char[] data = new char[1 * 1024];
 
             while ((nRead = bufferedReader.read(data, 0, data.length)) != -1) {
                 StringBuilder builder = new StringBuilder(nRead);
