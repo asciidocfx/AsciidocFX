@@ -145,11 +145,9 @@ public class ShellTab extends Tab {
         });
     }
 
-    public void print(String... texts) {
+    public void print(String text) {
         threadService.runActionLater(() -> {
-            for (String text : texts) {
-                getTerminalIO().call("print", text);
-            }
+            getTerminalIO().call("print", text);
         });
 
     }
@@ -224,15 +222,12 @@ public class ShellTab extends Tab {
     private void printReader(BufferedReader bufferedReader) {
         try {
             int nRead;
-            char[] data = new char[10];
+            char[] data = new char[2 * 1024];
 
             while ((nRead = bufferedReader.read(data, 0, data.length)) != -1) {
-                String[] strings = CharBuffer.wrap(data)
-                        .chars()
-                        .limit(nRead)
-                        .mapToObj(e -> String.valueOf((char) e))
-                        .toArray(size -> new String[size]);
-                print(strings);
+                StringBuilder builder = new StringBuilder(nRead);
+                builder.append(data, 0, nRead);
+                print(builder.toString());
             }
 
         } catch (Exception e) {
