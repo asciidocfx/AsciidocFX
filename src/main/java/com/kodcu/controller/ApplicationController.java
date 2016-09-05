@@ -532,7 +532,15 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     @FXML
     public void refreshWorkingDir() {
-        current.currentPath().map(Path::getParent).ifPresent(directoryService::changeWorkigDir);
+
+        Optional<Path> currentPath = current.currentPath().map(Path::getParent);
+
+        if (currentPath.isPresent()) {
+            directoryService.changeWorkigDir(currentPath.get());
+        } else {
+            fileBrowser.refresh();
+        }
+
     }
 
     @FXML
