@@ -2,45 +2,61 @@ package com.kodcu.controller;
 
 import com.kodcu.other.Current;
 import com.kodcu.service.DirectoryService;
-import com.kodcu.service.ThreadService;
-import com.kodcu.service.ui.TabService;
+import com.kodcu.service.convert.slide.SlideConverter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.nio.file.Path;
+import java.util.Objects;
+
+import static org.springframework.web.bind.annotation.RequestMethod.*;
 
 /**
  * Created by usta on 05.09.2015.
  */
-@Component
+@Controller
 public class JadeResource {
 
     private final Current current;
-    private final TabService tabService;
     private final DirectoryService directoryService;
     private final FileService fileService;
-    private final ThreadService threadService;
+    private final CommonResource commonResource;
     private final ApplicationController controller;
 
     @Autowired
-    public JadeResource(Current current, TabService tabService, DirectoryService directoryService, FileService fileService, ThreadService threadService, ApplicationController controller) {
+    public JadeResource(Current current, DirectoryService directoryService, FileService fileService, CommonResource commonResource, ApplicationController controller) {
         this.current = current;
-        this.tabService = tabService;
         this.directoryService = directoryService;
         this.fileService = fileService;
-        this.threadService = threadService;
+        this.commonResource = commonResource;
         this.controller = controller;
     }
 
-    public void executeJadeResource(AllController.Payload payload) {
+    @RequestMapping(value = {"/afx/jade", "/afx/jade/**", "/afx/jade/*.*"}, method = {GET, HEAD, OPTIONS, POST}, produces = "*/*", consumes = "*/*")
+    @ResponseBody
+    public void onrequest(HttpServletRequest request, HttpServletResponse response,
+                          @RequestParam(value = "p", required = false) String p) {
 
-        String finalURI = payload.getFinalURI();
-        if (payload.getRequestURI().endsWith(".jade")) {
-            final String template = controller.getTemplate(payload.getFinalURI());
-            payload.write(template);
+        Payload payload = new Payload(request, response);
+        payload.setPattern("/afx/jade/");
+
+        if (Objects.nonNull(p)) {
+
+            if (p.endsWith(".jade")) {
+                final String template = controller.getTemplate(p);
+                payload.write(template);
+            } else {
+                Path path = directoryService.findPathInPublic(p);
+                fileService.processFile(request, response, path);
+            }
         } else {
-            Path path = directoryService.findPathInConfigOrCurrentOrWorkDir(finalURI);
-            fileService.processFile(payload, path);
+
+            commonResource.processPayload(payload);
         }
     }
 }

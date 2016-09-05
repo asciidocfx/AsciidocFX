@@ -43,7 +43,7 @@ public class FileService {
         return contentMethods.contains(request.getMethod());
     }
 
-    public void processFile(AllController.Payload payload, Path path) {
+    public void processFile(Payload payload, Path path) {
 
         HttpServletRequest request = payload.getRequest();
         HttpServletResponse response = payload.getResponse();

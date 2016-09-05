@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.client.RestTemplate;
 
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Base64;
 import java.util.Objects;
 
@@ -55,7 +56,9 @@ public class DataUriController {
 
             dataUri = String.format(dataFormat, mimetype, encoding, getImageContent(imageUri));
         } catch (Exception e) {
-            logger.warn("image to embed not found or not readable: {}", imageUri);
+            if (imageUri.startsWith("http")) {
+                logger.warn("image to embed not found or not readable: {}", imageUri);
+            }
         }
 
         return dataUri;
@@ -67,7 +70,7 @@ public class DataUriController {
         if (isExternalUri(imageUri)) {
             bytes = restTemplate.getForObject(imageUri, byte[].class);
         } else {
-            final Path path = directoryService.findPathInCurrentOrWorkDir(imageUri);
+            final Path path = directoryService.findPathInWorkdirOrLookup(Paths.get(imageUri));
             Objects.requireNonNull(path, "No such file or directory: " + imageUri);
             bytes = IOHelper.readFile(path, byte[].class);
         }

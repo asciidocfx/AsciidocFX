@@ -4,40 +4,62 @@ import com.kodcu.other.Current;
 import com.kodcu.service.DirectoryService;
 import com.kodcu.service.ThreadService;
 import com.kodcu.service.ui.TabService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.nio.file.Path;
+import java.util.Objects;
+
+import static org.springframework.web.bind.annotation.RequestMethod.*;
 
 /**
- * Created by usta on 05.09.2015.
+ * Created by usta on 02.09.2015.
  */
-@Component
+@Controller
 public class GeneralResource {
 
-    private final Current current;
-    private final TabService tabService;
-    private final DirectoryService directoryService;
     private final FileService fileService;
+    private final DirectoryService directoryService;
+    private final Current current;
     private final ThreadService threadService;
-    private final ApplicationController controller;
+    private final TabService tabService;
+
+    private final CommonResource commonResource;
+
+    private Logger logger = LoggerFactory.getLogger(GeneralResource.class);
 
     @Autowired
-    public GeneralResource(Current current, TabService tabService, DirectoryService directoryService, FileService fileService, ThreadService threadService, ApplicationController controller) {
-        this.current = current;
-        this.tabService = tabService;
-        this.directoryService = directoryService;
+    public GeneralResource(FileService fileService, DirectoryService directoryService, Current current, ThreadService threadService, TabService tabService, CommonResource commonResource) {
         this.fileService = fileService;
+        this.directoryService = directoryService;
+        this.current = current;
         this.threadService = threadService;
-        this.controller = controller;
+        this.tabService = tabService;
+        this.commonResource = commonResource;
     }
 
+    @RequestMapping(value = {"/afx/resource", "/afx/resource/**", "/afx/resource/*.*"}, method = {GET, HEAD, OPTIONS, POST}, produces = "*/*", consumes = "*/*")
+    @ResponseBody
+    public void onrequest(HttpServletRequest request, HttpServletResponse response,
+                          @RequestParam(value = "p", required = false) String p) {
 
-    public void executeAfxResource(AllController.Payload payload) {
+        Payload payload = new Payload(request, response);
+        payload.setPattern("/afx/resource/");
 
         String finalURI = payload.getFinalURI();
-        if (finalURI.matches(".*\\.(asc|asciidoc|ad|adoc|md|markdown)$")) {
+
+        if (Objects.nonNull(p)) {
+            Path path = directoryService.findPathInPublic(p);
+            fileService.processFile(request, response, path);
+        } else if (finalURI.matches(".*\\.(asc|asciidoc|ad|adoc|md|markdown)$")) {
 
             current.currentPath().ifPresent(path -> {
 
@@ -49,15 +71,11 @@ public class GeneralResource {
 
             });
             payload.setStatus(HttpStatus.NO_CONTENT);
-        } else if (payload.getRequestURI().endsWith("preview.html")) {
-            Path path = directoryService.findPathInConfigOrCurrentOrWorkDir("preview.html");
-            fileService.processFile(payload, path);
-        } else if (payload.getRequestURI().endsWith("index.html")) {
-            Path path = directoryService.findPathInConfigOrCurrentOrWorkDir("index.html");
-            fileService.processFile(payload, path);
         } else {
-            Path path = directoryService.findPathInConfigOrCurrentOrWorkDir(finalURI);
-            fileService.processFile(payload, path);
+            commonResource.processPayload(payload);
         }
+
+
     }
+
 }

@@ -85,7 +85,8 @@ public class ShellTab extends Tab {
         });
 
         threadService.runActionLater(() -> {
-            webEngine().load(String.format("http://localhost:%d/afx/resource/hterm.html", controller.getPort()));
+            String format = String.format("http://localhost:%d/afx/resource/?p=hterm.html", controller.getPort());
+            webEngine().load(format);
         });
 
         VBox box = new VBox(webView);

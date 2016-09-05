@@ -19,7 +19,7 @@
 <body>
 <div id="terminal"></div>
 
-<script src="/afx/resource/js/hterm_all.js"></script>
+<script src="/afx/resource/?p=js/hterm_all.js"></script>
 <script>
     hterm.defaultStorage = new lib.Storage.Memory();
     var t = new hterm.Terminal("myterm");
@@ -35,7 +35,7 @@
     t.getPrefs().set("foreground-color", "black");
     t.getPrefs().set("cursor-blink", false);
     t.getPrefs().set("scrollbar-visible", true);
-    t.getPrefs().set("user-css", "/afx/resource/css/hterm.css");
+    t.getPrefs().set("user-css", "/afx/resource/?p=css/hterm.css");
 
     t.onTerminalReady = function () {
 

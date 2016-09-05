@@ -256,7 +256,7 @@ function initializeEmmet(mode) {
 
     ace.require("ace/ext/emmet");
 
-    ["js/emmet.js", "ace/src/ext-emmet.js"].forEach(function (path, index) {
+    ["/afx/resource/?p=js/emmet.js", "/afx/resource/?p=ace/src/ext-emmet.js"].forEach(function (path, index) {
         var script = document.createElement("script");
         script.src = path;
         document.querySelector("body").appendChild(script);
