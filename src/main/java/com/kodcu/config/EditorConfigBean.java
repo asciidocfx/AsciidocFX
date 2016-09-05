@@ -62,7 +62,7 @@ public class EditorConfigBean extends ConfigurationBase {
     private BooleanProperty autoUpdate = new SimpleBooleanProperty(true);
     private StringProperty terminalCharset = new SimpleStringProperty("UTF-8");
     private StringProperty terminalWinCommand = new SimpleStringProperty("cmd.exe");
-    private StringProperty terminalNixCommand = new SimpleStringProperty("/bin/bash");
+    private StringProperty terminalNixCommand = new SimpleStringProperty("/bin/bash -i");
     private BooleanProperty validateDocbook = new SimpleBooleanProperty(true);
     private StringProperty clipboardImageFilePattern = new SimpleStringProperty("'Image'-ddMMyy-hhmmss.SSS'.png'");
     private DoubleProperty screenX = new SimpleDoubleProperty(0);
@@ -423,7 +423,7 @@ public class EditorConfigBean extends ConfigurationBase {
         int wrapLimit = jsonObject.getInt("wrapLimit", 0);
         boolean autoUpdate = jsonObject.getBoolean("autoUpdate", true);
         String terminalWinCommand = jsonObject.getString("terminalWinCommand", "cmd.exe");
-        String terminalNixCommand = jsonObject.getString("terminalNixCommand", "/bin/bash");
+        String terminalNixCommand = jsonObject.getString("terminalNixCommand", "/bin/bash -i");
         String terminalCharset = jsonObject.getString("terminalCharset", "UTF-8");
         final boolean validateDocbook = jsonObject.getBoolean("validateDocbook", true);
         String clipboardImageFilePattern = jsonObject.getString("clipboardImageFilePattern", "'Image'-ddMMyy-hhmmss.SSS'.png'");

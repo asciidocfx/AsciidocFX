@@ -7,16 +7,25 @@ import com.kodcu.service.ui.TabService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.client.RestTemplate;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Objects;
 import java.util.Optional;
+
+import static org.springframework.web.bind.annotation.RequestMethod.*;
 
 /**
  * Created by usta on 05.09.2015.
  */
-@Component
+@Controller
 public class WebWorkerResource {
 
     private final Current current;
@@ -27,11 +36,12 @@ public class WebWorkerResource {
     private final ApplicationController controller;
     private final DataUriController dataUriService;
     private final RestTemplate restTemplate;
+    private final CommonResource commonResource;
 
     private Logger logger = LoggerFactory.getLogger(WebWorkerResource.class);
 
     @Autowired
-    public WebWorkerResource(Current current, TabService tabService, DirectoryService directoryService, FileService fileService, ThreadService threadService, ApplicationController controller, DataUriController dataUriService, RestTemplate restTemplate) {
+    public WebWorkerResource(Current current, TabService tabService, DirectoryService directoryService, FileService fileService, ThreadService threadService, ApplicationController controller, DataUriController dataUriService, RestTemplate restTemplate, CommonResource commonResource) {
         this.current = current;
         this.tabService = tabService;
         this.directoryService = directoryService;
@@ -40,18 +50,28 @@ public class WebWorkerResource {
         this.controller = controller;
         this.dataUriService = dataUriService;
         this.restTemplate = restTemplate;
+        this.commonResource = commonResource;
     }
 
+    @RequestMapping(value = {"/afx/worker/", "/afx/worker/**", "/afx/worker/*.*"}, method = {GET, HEAD, OPTIONS, POST}, produces = "*/*", consumes = "*/*")
+    @ResponseBody
+    public void onrequest(HttpServletRequest request, HttpServletResponse response,
+                          @RequestParam(value = "p", required = false) String p) {
 
-    public void executeWorkerResource(AllController.Payload payload) {
+        Payload payload = new Payload(request, response);
+        payload.setPattern("/afx/worker/");
 
-        Optional.ofNullable(payload.getRequestURI())
-                .filter(e -> e.endsWith("resource.afx"))
-                .ifPresent(e -> {
-                    payload.setFinalURI(payload.param("path"));
-                });
+//        String p = payload.param("p");
 
         String finalURI = payload.getFinalURI();
+
+        Optional<String> optional = Optional.ofNullable(payload.getRequestURI())
+                .filter(e -> e.endsWith("resource.afx"));
+
+        if (optional.isPresent()) {
+            finalURI = payload.param("path");
+        }
+
         if (finalURI.matches(".*\\.(asc|asciidoc|ad|adoc|md|markdown)$")) {
 
             if (controller.getIncludeAsciidocResource()) {
@@ -78,18 +98,27 @@ public class WebWorkerResource {
                 return;
             }
 
-            Path path = directoryService.findPathInConfigOrCurrentOrWorkDir(finalURI);
-            fileService.processFile(payload, path);
-
-        } else if (payload.getRequestURI().endsWith("webworker.js")) {
-            Path path = directoryService.findPathInConfigOrCurrentOrWorkDir("js/webworker.js");
-            fileService.processFile(payload, path);
-        } else if (payload.getRequestURI().endsWith("asciidoctor-default.css")) {
-            final String stylesheet = controller.readDefaultStylesheet();
-            payload.write(stylesheet);
-        } else {
-            Path path = directoryService.findPathInConfigOrCurrentOrWorkDir(finalURI);
-            fileService.processFile(payload, path);
         }
+
+        if (optional.isPresent()) {
+            Path found = directoryService.findPathInWorkdirOrLookup(Paths.get(finalURI));
+
+            if (Objects.nonNull(found)) {
+                fileService.processFile(request, response, found);
+            } else {
+                Path path = directoryService.findPathInPublic(finalURI);
+                fileService.processFile(request, response, path);
+            }
+
+            return;
+        }
+
+        if (Objects.nonNull(p)) {
+            Path path = directoryService.findPathInPublic(p);
+            fileService.processFile(request, response, path);
+        } else {
+            commonResource.processPayload(payload);
+        }
+
     }
 }

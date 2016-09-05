@@ -37,9 +37,9 @@ public class SlidePane extends ViewPanel {
         if (newValue == Worker.State.SUCCEEDED) {
             getWindow().setMember("afx", controller);
             if ("revealjs".equals(backend))
-                this.loadJs("js/jquery.js", "js/reveal-extensions.js");
+                this.loadJs("/afx/worker/?p=js/jquery.js", "/afx/worker/?p=js/reveal-extensions.js");
             if ("deckjs".equals(backend))
-                this.loadJs("js/deck-extensions.js");
+                this.loadJs("/afx/worker/?p=js/deck-extensions.js");
         }
     }
 

@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        #terminal {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+<div id="terminal"></div>
+
+<script src="/afx/resource/?p=js/hterm_all.js"></script>
+<script>
+    hterm.defaultStorage = new lib.Storage.Memory();
+    var t = new hterm.Terminal("myterm");
+    t.getPrefs().set("send-encoding", "raw");
+    t.getPrefs().set("use-default-window-copy", true);
+    t.getPrefs().set("clear-selection-after-copy", true);
+    t.getPrefs().set("copy-on-select", false);
+    t.getPrefs().set("ctrl-c-copy", true);
+    t.getPrefs().set("ctrl-v-paste", true);
+    t.getPrefs().set("cursor-color", "black");
+    t.getPrefs().set("background-color", "white");
+    t.getPrefs().set("font-size", 12);
+    t.getPrefs().set("foreground-color", "black");
+    t.getPrefs().set("cursor-blink", false);
+    t.getPrefs().set("scrollbar-visible", true);
+    t.getPrefs().set("user-css", "/afx/resource/?p=css/hterm.css");
+
+    t.onTerminalReady = function () {
+
+        var io = t.io.push();
+
+        io.onVTKeystroke = function (str) {
+            app.command(str);
+        };
+
+        io.sendString = io.onVTKeystroke;
+
+        io.onTerminalResize = function (columns, rows) {
+            app.resizeTerminal(columns, rows);
+        };
+
+        t.installKeyboard();
+        app.onTerminalReady();
+
+    };
+
+    t.decorate(document.querySelector('#terminal'));
+</script>
+</body>
+</html>

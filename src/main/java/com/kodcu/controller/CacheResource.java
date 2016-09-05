@@ -11,6 +11,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
@@ -24,10 +26,12 @@ import java.util.List;
 import java.util.Objects;
 import java.util.zip.GZIPOutputStream;
 
+import static org.springframework.web.bind.annotation.RequestMethod.*;
+
 /**
  * Created by usta on 05.09.2015.
  */
-@Component
+@Controller
 public class CacheResource {
 
     private int DEFAULT_BUFFER_SIZE = 10240; // ..bytes = 10KB.
@@ -57,7 +61,10 @@ public class CacheResource {
         this.binaryCacheService = binaryCacheService;
     }
 
-    public void executeCachedResource(AllController.Payload payload) {
+    @RequestMapping(value = {"/afx/cache", "/afx/cache/**", "/afx/cache/*.*"}, method = {GET, HEAD, OPTIONS, POST}, produces = "*/*", consumes = "*/*")
+    public void executeCachedResource(HttpServletRequest request, HttpServletResponse response) {
+        Payload payload = new Payload(request, response);
+        payload.setPattern("/afx/cache/");
 
         try {
             processCachedResource(payload, hasContent(payload.getRequest()));
@@ -71,7 +78,7 @@ public class CacheResource {
         return contentMethods.contains(request.getMethod());
     }
 
-    private void processCachedResource(AllController.Payload payload, boolean content) throws Exception {
+    private void processCachedResource(Payload payload, boolean content) throws Exception {
 
         String requestURI = payload.getRequestURI();
         HttpServletResponse response = payload.getResponse();

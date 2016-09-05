@@ -1,5 +1,6 @@
 package com.kodcu.service;
 
+import com.kodcu.component.EditorPane;
 import com.kodcu.config.StoredConfigBean;
 import com.kodcu.controller.ApplicationController;
 import com.kodcu.other.Current;
@@ -19,6 +20,7 @@ import java.nio.file.Paths;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
@@ -178,7 +180,7 @@ public class DirectoryService {
     }
 
     public String interPath() {
-        return interPath(workingDirectory());
+        return interPath(currentParentOrWorkdir());
     }
 
     public String interPath(Path path) {
@@ -267,55 +269,43 @@ public class DirectoryService {
 
     }
 
-    public Path findPathInConfigOrCurrentOrWorkDir(String uri) {
-
-        Path configPath = controller.getConfigPath();
-
-        Optional<Path> inConfig = Optional.empty();
-        Optional<Path> inCurrentParent = Optional.empty();
-        Optional<Path> inRoot = Optional.empty();
-
-        try {
-            inConfig = Optional.ofNullable(configPath.resolve("public"));
-        } catch (Exception e) {
-            //no-op
-        }
-
-        try {
-            inCurrentParent = Optional.ofNullable(current.currentTab().getPath().getParent());
-        } catch (Exception e) {
-            //no-op
-        }
-
-        try {
-            if (inCurrentParent.isPresent()) {
-                inRoot = inCurrentParent.map(Path::getRoot);
-            } else {
-                inRoot = workingDirectory.map(Path::getRoot);
-            }
-        } catch (Exception e) {
-            //no-op
-        }
-
-        return Stream.<Optional<Path>>of(inConfig, inCurrentParent, workingDirectory, inRoot)
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .map(path -> path.resolve(uri))
-                .filter(Files::exists)
-                .findFirst()
-                .orElseGet(() -> null);
-
+    public Path findPathInPublic(String uri) {
+        Path configPath = controller.getConfigPath().resolve("public");
+        return configPath.resolve(uri);
     }
 
-    public Path findPathInRoot(String uri) {
+    public Path findPathInWorkdirOrLookup(Path uri) {
+        Path workingDirectory = workingDirectory();
+        Path resolve = workingDirectory.resolve(uri);
 
-        return Stream.<Optional<Path>>of(current.currentPath(), workingDirectory)
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .map(Path::getRoot)
-                .map(path -> path.resolve(uri))
-                .findFirst()
-                .orElseGet(() -> null);
+        if (Files.exists(resolve)) {
+            return resolve;
+        }
+
+        Optional<Path> optional = current.currentPath().map(Path::getParent);
+
+        if (optional.isPresent()) {
+            Path currentParent = optional.get();
+
+            while (true) {
+
+                if (Objects.nonNull(currentParent)) {
+                    Path candidate = currentParent.resolve(uri);
+                    if (Files.exists(candidate)) {
+                        return candidate;
+                    } else {
+                        currentParent = currentParent.getParent();
+                    }
+                } else {
+                    break;
+                }
+
+            }
+
+        }
+
+        return null;
+
     }
 
     public Path currentParentOrWorkdir() {

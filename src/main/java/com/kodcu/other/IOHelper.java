@@ -388,7 +388,7 @@ public class IOHelper {
             try {
                 closeable.close();
             } catch (Exception e) {
-                logger.error("Problem occured while closing resource");
+//                logger.error("Problem occured while closing resource");
             }
         }
     }
@@ -461,5 +461,16 @@ public class IOHelper {
             logger.warn("Problem occured while getting size info of {}", path);
         }
         return Optional.empty();
+    }
+
+    public static boolean contains(Path root, Path inside) {
+
+        if (inside == null)
+            return false;
+
+        if (inside.equals(root))
+            return true;
+
+        return contains(root, inside.getParent());
     }
 }

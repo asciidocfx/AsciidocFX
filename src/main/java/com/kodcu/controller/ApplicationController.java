@@ -106,10 +106,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static java.nio.file.StandardOpenOption.*;
@@ -575,7 +573,8 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         terminalTabPane.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             Optional.ofNullable(newValue)
                     .map(e -> ((ShellTab) e))
-                    .ifPresent(ShellTab::focusCommandInput);
+                    .filter(ShellTab::isReady)
+                    .ifPresent(ShellTab::focusCursor);
         });
 
 
@@ -1134,23 +1133,23 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         terminalTabPane.getTabs().add(shellTab);
         terminalTabPane.getSelectionModel().select(shellTab);
 
-        Path terminalPath = Optional.ofNullable(path).filter(e -> e.length > 0).map(e -> e[0]).orElse(null);
-        shellTab.initialize(terminalPath);
-
+        Path terminalPath = Optional.ofNullable(path).filter(e -> e.length > 0).map(e -> e[0]).orElse(directoryService.workingDirectory());
+        shellTab.setTerminalPath(terminalPath);
+        shellTab.initialize();
 
     }
 
     @FXML
     public void closeTerminal(ActionEvent actionEvent) {
         ShellTab shellTab = (ShellTab) terminalTabPane.getSelectionModel().getSelectedItem();
-        Optional.ofNullable(shellTab).ifPresent(ShellTab::destroy);
+        Optional.ofNullable(shellTab).ifPresent(ShellTab::closeTab);
     }
 
     public void closeAllTerminal(ActionEvent actionEvent) {
         ObservableList<Tab> tabs = FXCollections.observableArrayList(terminalTabPane.getTabs());
 
         for (Tab tab : tabs) {
-            ((ShellTab) tab).destroy();
+            ((ShellTab) tab).closeTab();
         }
     }
 
@@ -1159,7 +1158,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         tabs.remove(terminalTabPane.getSelectionModel().getSelectedItem());
 
         for (Tab tab : tabs) {
-            ((ShellTab) tab).destroy();
+            ((ShellTab) tab).closeTab();
         }
     }
 

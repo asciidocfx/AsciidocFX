@@ -105,7 +105,7 @@ public class BinaryCacheService {
         threadService.runActionLater(() -> {
             Path tempFile = IOHelper.createTempFile(current.currentPath().get().getParent(), ".png");
 
-            System.out.println(tempFile.getParent());
+//            System.out.println(tempFile.getParent());
             IOHelper.writeToFile(tempFile, bytes, StandardOpenOption.CREATE);
 
             Optional.ofNullable(cache.get(key))
