@@ -164,6 +164,9 @@ public class FileBrowseService {
                                     if (newValue) {
                                         addPathToTree(childItem.getValue().getPath(), childItem);
                                     }
+
+                                    // fixes not expand issue
+                                    treeView.refresh();
                                 });
                             }
                             pathItemMap.put(p, childItem);
