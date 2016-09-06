@@ -68,6 +68,12 @@ public class PlantUmlService {
             }
         }
 
+        if (uml.contains("@startdot")) {
+            if (!uml.contains("dpi")) {
+                uml = uml.replaceFirst("\\{", "{\ndpi=300;\n");
+            }
+        }
+
         Integer cacheHit = current.getCache().get(imageTarget);
 
         int hashCode = (imageTarget + imagesDir + type + uml + nodename).hashCode();

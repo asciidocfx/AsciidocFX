@@ -74,6 +74,8 @@ public class PieChartBuilderService extends ChartBuilderService {
         }
 
         PieChart pieChart = new PieChart(datas);
+        pieChart.setScaleX(3);
+        pieChart.setScaleY(3);
 
         for (int i = 0; i < datas.size(); i++) {
             PieChart.Data data = datas.get(i);

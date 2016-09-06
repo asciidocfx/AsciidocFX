@@ -21,6 +21,9 @@
             hljs.highlightBlock(item);
         });
         setTimeout(function () {
+            var width = view.offsetWidth;
+            var height = view.offsetHeight;
+            window.resizeTo(width*3, height*3);
             alert("RENDERED");
         }, 500);
     }
@@ -31,5 +34,6 @@
 
 
 </script>
+<!--<script src="/afx/resource/?p=js/firebug-import.js"></script>-->
 </body>
 </html>
