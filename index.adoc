@@ -1,5 +1,6 @@
 = Asciidoc Book Editor based on JavaFX 8
 :experimental:
+:data-uri:
 :toc:
 :toc-placement: left
 :asciidocfx-version: 1.4.8
