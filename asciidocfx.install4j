@@ -48,11 +48,12 @@
       </java>
       <includedFiles />
       <unextractableFiles />
-      <vmOptionsFile mode="content" overwriteMode="0" fileMode="755">
+      <vmOptionsFile mode="content" overwriteMode="1" fileMode="755">
         <content># Enter one VM parameter per line
 
 -Duser.language=en
 -Duser.country=US
+-Dfile.encoding=UTF-8
 -Xmx1024M
 -XX:+UseG1GC
 -Djava.awt.headless=false</content>

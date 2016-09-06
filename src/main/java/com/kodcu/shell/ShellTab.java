@@ -181,7 +181,7 @@ public class ShellTab extends Tab {
 
         System.setProperty("PTY_LIB_FOLDER", controller.getConfigPath().resolve("libpty").toString());
 
-        String charset = detectTerminalCharacter();
+//        String charset = detectTerminalCharacter();
 
         if (Objects.nonNull(terminalPath) && Files.exists(terminalPath)) {
             this.process = PtyProcess.exec(termCommand, envs, terminalPath.toString());
@@ -192,7 +192,7 @@ public class ShellTab extends Tab {
         process.setWinSize(new WinSize(columns, rows));
         this.inputReader = new BufferedReader(new InputStreamReader(process.getInputStream()));
         this.errorReader = new BufferedReader(new InputStreamReader(process.getErrorStream()));
-        this.outputWriter = new BufferedWriter(new OutputStreamWriter(process.getOutputStream(), charset));
+        this.outputWriter = new BufferedWriter(new OutputStreamWriter(process.getOutputStream()));
 
         threadService.start(() -> {
             printReader(inputReader);
