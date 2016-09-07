@@ -28,20 +28,19 @@ public final class AlertHelper {
         DialogPane dialogPane = deleteAlert.getDialogPane();
 
         ListView listView = new ListView();
+        listView.setMinHeight(40);
         listView.getStyleClass().clear();
         ObservableList items = listView.getItems();
         items.addAll(pathsLabel);
         listView.setEditable(false);
         dialogPane.setContent(listView);
 
-        Platform.runLater(()->{
-            listView.setPrefHeight(Optional.ofNullable(pathsLabel)
-                    .map(List::size)
-                    .map(e -> e * 40)
-                    .filter(e -> e <= 300 && e >= 40)
-                    .orElse(300));
-            listView.refresh();
-        });
+        listView.setPrefHeight(Optional.ofNullable(pathsLabel)
+                .map(List::size)
+                .map(e -> e * 40)
+                .filter(e -> e <= 300 && e >= 40)
+                .orElse(300));
+        listView.refresh();
 
         return deleteAlert.showAndWait();
     }
