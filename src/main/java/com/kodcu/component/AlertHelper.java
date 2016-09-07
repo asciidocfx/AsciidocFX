@@ -1,5 +1,6 @@
 package com.kodcu.component;
 
+import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
@@ -33,11 +34,14 @@ public final class AlertHelper {
         listView.setEditable(false);
         dialogPane.setContent(listView);
 
-        listView.setPrefHeight(Optional.ofNullable(pathsLabel)
-                .map(List::size)
-                .map(e -> e * 40)
-                .filter(e -> e <= 300 && e >= 40)
-                .orElse(300));
+        Platform.runLater(()->{
+            listView.setPrefHeight(Optional.ofNullable(pathsLabel)
+                    .map(List::size)
+                    .map(e -> e * 40)
+                    .filter(e -> e <= 300 && e >= 40)
+                    .orElse(300));
+            listView.refresh();
+        });
 
         return deleteAlert.showAndWait();
     }
