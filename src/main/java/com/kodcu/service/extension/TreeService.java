@@ -253,7 +253,7 @@ public class TreeService implements DefaultSettings {
                 treeview.setLayoutY(-16000);
                 treeview.setMinSize(0, 0);
                 treeview.setPrefSize(3000, 6000);
-                treeview.setZoom(3);
+                treeview.setZoom(2);
 
                 controller.getRootAnchor().getChildren().add(treeview);
 

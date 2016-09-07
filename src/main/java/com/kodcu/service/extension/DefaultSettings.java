@@ -16,7 +16,7 @@ public interface DefaultSettings {
                 put("addh", 0);
                 put("minh", 0);
                 put("seth", 0);
-                put("scale", 3);
+                put("scale", 2);
 
             }
         };
