@@ -108,7 +108,7 @@
         <dependency>
             <groupId>net.sourceforge.plantuml</groupId>
             <artifactId>plantuml</artifactId>
-            <version>8047</version>
+            <version>8048</version>
         </dependency>
         <dependency>
             <groupId>org.apache.xmlgraphics</groupId>
