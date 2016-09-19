@@ -1,2 +1,5 @@
 **/conf/*** linguist-language=JAVA
 **/ace/*** linguist-language=JAVA
+
+*.xml linguist-vendored=true
+*.xslt linguist-vendored=true
