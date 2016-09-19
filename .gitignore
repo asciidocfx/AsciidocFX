@@ -42,6 +42,3 @@ asciidocfx.install4j~
 log
 
 nashorn_code_cache
-
-*.xml linguist-vendored=true
-*.xslt linguist-vendored=true
