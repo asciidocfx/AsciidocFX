@@ -1,2 +1,2 @@
-*.xml linguist-language=Java
-*.xslt linguist-language=Java
+*.xml linguist-vendored=false
+*.xslt linguist-vendored=false
