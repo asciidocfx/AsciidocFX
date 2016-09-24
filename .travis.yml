@@ -8,7 +8,7 @@ addons:
   apt:
     packages:
       - oracle-java8-installer
-script: mvn install -Pinstall-runtime
+script: mvn clean install -Pinstall-runtime
 before_script:
 - wget http://download-aws.ej-technologies.com/install4j/install4j_unix_6_1_3.tar.gz
 - tar zxvf install4j_unix_6_1_3.tar.gz
