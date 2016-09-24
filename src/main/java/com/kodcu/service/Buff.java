@@ -11,11 +11,12 @@ import java.util.concurrent.atomic.AtomicReference;
 public class Buff {
 
     private final ThreadService threadService;
-    private AtomicReference<Runnable> runnable = new AtomicReference<>();
+    private AtomicReference<Runnable> runnable;
     private ScheduledFuture<?> schedule;
 
     public Buff(ThreadService threadService) {
         this.threadService = threadService;
+        runnable = new AtomicReference<>();
     }
 
     public void schedule(Runnable runnable, int delay, TimeUnit timeUnit) {

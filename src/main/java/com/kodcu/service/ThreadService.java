@@ -17,20 +17,23 @@ import java.util.function.Consumer;
 @Component
 public class ThreadService {
 
-    private final ScheduledExecutorService threadPollWorker;
-    private final ConcurrentHashMap<String, Buff> buffMap = new ConcurrentHashMap<>();
+    private final ExecutorService threadPollWorker;
+    private final ScheduledExecutorService scheduledWorker;
+    private final ConcurrentHashMap<String, Buff> buffMap;
     private final Semaphore uiSemaphore;
+    private final ExecutorService singleExecutor;
 
 
     public ThreadService() {
-        final int availableProcessors = Runtime.getRuntime().availableProcessors();
-        final int corePoolSize = (availableProcessors * 2 >= 4) ? availableProcessors * 2 : 4;
-        threadPollWorker = Executors.newScheduledThreadPool(corePoolSize);
+        scheduledWorker = Executors.newSingleThreadScheduledExecutor();
+        threadPollWorker = Executors.newWorkStealingPool(16);
+        singleExecutor = Executors.newSingleThreadExecutor();
         uiSemaphore = new Semaphore(1);
+        buffMap = new ConcurrentHashMap<>();
     }
 
     public ScheduledFuture<?> schedule(Runnable runnable, long delay, TimeUnit timeUnit) {
-        return threadPollWorker.schedule(runnable, delay, timeUnit);
+        return scheduledWorker.schedule(runnable, delay, timeUnit);
     }
 
     // Runs Task in background thread pool
@@ -45,7 +48,7 @@ public class ThreadService {
         };
 
         task.exceptionProperty().addListener((observable, oldValue, newValue) -> {
-            if(Objects.nonNull(newValue)){
+            if (Objects.nonNull(newValue)) {
                 newValue.printStackTrace();
             }
         });
@@ -71,17 +74,23 @@ public class ThreadService {
                 Platform.runLater(() -> {
                     try {
                         runnable.run();
-                        uiSemaphore.release();
+                        releaseUiSemaphore();
                     } catch (Exception e) {
-                        uiSemaphore.release();
+                        releaseUiSemaphore();
                         throw new RuntimeException(e);
                     }
                 });
             } catch (Exception e) {
-                uiSemaphore.release();
+                releaseUiSemaphore();
                 throw new RuntimeException(e);
             }
         }
+    }
+
+    private void releaseUiSemaphore() {
+        singleExecutor.submit(() -> {
+            uiSemaphore.release();
+        });
     }
 
     public void runActionLater(Runnable runnable, boolean force) {
