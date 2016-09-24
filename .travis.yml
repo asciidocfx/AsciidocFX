@@ -19,7 +19,7 @@ before_script:
 - mvn install4j:install-license
 deploy:
 - provider: releases
-  skip_cleanup: false
+  skip_cleanup: true
   api_key:
     secure: L4y+3fi/yVR7guv7cynzrTOjRbE4+JTK79Fv5J8IQFwtzTP4V2GeW5ZjTdZXAlsFRvak5zhxY4OEYbYI2/riMib5Ea/K28Fd0F/nK8bUDddzxyXPc8zj6VrQINJX8Na2KfPvXT2UR+LtUWkK5HjeR+O/YQPTO4M+7SDGx5P+gog=
   file:
@@ -37,7 +37,7 @@ deploy:
     all_branches: true
     repo: asciidocfx/AsciidocFX
 - provider: s3
-  skip_cleanup: false
+  skip_cleanup: true
   access_key_id: AKIAIHHVKYJLE6JUVEMA
   secret_access_key:
     secure: u3AfnEBb4o1boHzYsbPBlYqsxkKKWd4e02sabTLB7RRojgW1PpvGpvMCEZQ7EdziAfqJV2qZAI4ayYen36t2S0P9LMtt8NbnSO9RSF41Na+cGlsetbHgbejjK3QC5wM18j263gaxlM6uKD9wbO9VYaujYE6r66UUGdrQkNZh9xc=
