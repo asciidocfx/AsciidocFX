@@ -5,7 +5,7 @@
 
     <groupId>com.kodcu</groupId>
     <artifactId>AsciidocFX</artifactId>
-    <version>1.4.9</version>
+    <version>1.4.10</version>
     <packaging>jar</packaging>
 
     <name>AsciidocFX</name>
@@ -27,7 +27,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>1.4.0.RELEASE</version>
+        <version>1.4.1.RELEASE</version>
     </parent>
 
     <dependencies>
@@ -179,7 +179,7 @@
                             <id>asciidocfx</id>
                         </program>
                     </programs>
-                    <extraJvmArguments>-Duser.language=en -Duser.country=US -XX:+UseG1GC</extraJvmArguments>
+                    <extraJvmArguments>-Dfile.encoding=UTF-8 -Duser.language=en -Duser.country=US -XX:+UseG1GC -Djava.awt.headless=false</extraJvmArguments>
                     <repositoryLayout>flat</repositoryLayout>
                     <useWildcardClassPath>true</useWildcardClassPath>
                     <binFileExtensions>
