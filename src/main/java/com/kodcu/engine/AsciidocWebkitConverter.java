@@ -154,7 +154,7 @@ public class AsciidocWebkitConverter extends ViewPanel implements AsciidocConver
             this.setMember("editorValue", asciidoc);
             this.setMember("editorOptions", conf);
             try {
-                webEngine().executeScript(String.format("if ((typeof %s)!== undefined){ %s(taskId,editorValue,editorOptions) }", functionName, functionName));
+                webEngine().executeScript(String.format("if ((typeof %s)!== \"undefined\"){ %s(taskId,editorValue,editorOptions) }", functionName, functionName));
             } catch (Exception e) {
                 completableFuture.completeExceptionally(e);
             }
