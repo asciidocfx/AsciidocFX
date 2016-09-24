@@ -68,9 +68,12 @@ public class TableViewLogAppender extends UnsynchronizedAppenderBase<ILoggingEve
         }
 
         final String finalMessage = message;
-        threadService.runActionLater(() -> {
-            logShortMessage.setText(finalMessage);
-        });
+        threadService.buff("logMessager").schedule(() -> {
+            threadService.runActionLater(() -> {
+                logShortMessage.setText(finalMessage);
+            });
+        }, 1, TimeUnit.SECONDS);
+
 
         IThrowableProxy tp = event.getThrowableProxy();
         if (Objects.nonNull(tp) && event.getLevel() == Level.ERROR) {
