@@ -40,24 +40,24 @@ console.info = function (msg) {
 
 var afx = {};
 
-importScripts("/afx/resource/?p=js/buffhelper.js");
-importScripts("/afx/resource/?p=js/ajax.js");
-importScripts("/afx/resource/?p=js/jade.js");
-importScripts("/afx/resource/?p=js/md5.js");
-importScripts("/afx/resource/?p=js/prototypes.js");
-importScripts("/afx/resource/?p=js/asciidoctor-all.js");
-importScripts("/afx/resource/?p=js/asciidoctor-docbook.js");
-importScripts("/afx/resource/?p=js/asciidoctor-data-line.js");
-importScripts("/afx/resource/?p=js/asciidoctor-data-uri.js");
-importScripts("/afx/resource/?p=js/asciidoctor-chart-block.js");
-importScripts("/afx/resource/?p=js/asciidoctor-extension-helpers.js");
-importScripts("/afx/resource/?p=js/asciidoctor-block-extensions.js");
-importScripts("/afx/resource/?p=js/asciidoctor-block-macro-extensions.js");
-importScripts("/afx/resource/?p=js/asciidoctor-inline-macro-extensions.js");
-importScripts("/afx/resource/?p=js/asciidoctor-reveal.js");
-importScripts("/afx/resource/?p=js/asciidoctor-deck.js");
-importScripts("/afx/resource/?p=js/outliner.js");
-importScripts("/afx/resource/?p=js/webworker-converters.js");
+importScripts("/afx/resource/js/?p=js/buffhelper.js");
+importScripts("/afx/resource/js/?p=js/ajax.js");
+importScripts("/afx/resource/js/?p=js/jade.js");
+importScripts("/afx/resource/js/?p=js/md5.js");
+importScripts("/afx/resource/js/?p=js/prototypes.js");
+importScripts("/afx/resource/js/?p=js/asciidoctor-all.js");
+importScripts("/afx/resource/js/?p=js/asciidoctor-docbook.js");
+importScripts("/afx/resource/js/?p=js/asciidoctor-data-line.js");
+importScripts("/afx/resource/js/?p=js/asciidoctor-data-uri.js");
+importScripts("/afx/resource/js/?p=js/asciidoctor-chart-block.js");
+importScripts("/afx/resource/js/?p=js/asciidoctor-extension-helpers.js");
+importScripts("/afx/resource/js/?p=js/asciidoctor-block-extensions.js");
+importScripts("/afx/resource/js/?p=js/asciidoctor-block-macro-extensions.js");
+importScripts("/afx/resource/js/?p=js/asciidoctor-inline-macro-extensions.js");
+importScripts("/afx/resource/js/?p=js/asciidoctor-reveal.js");
+importScripts("/afx/resource/js/?p=js/asciidoctor-deck.js");
+importScripts("/afx/resource/js/?p=js/outliner.js");
+importScripts("/afx/resource/js/?p=js/webworker-converters.js");
 
 self.onerror = function (e) {
     console.error(e);
@@ -80,7 +80,11 @@ self.onmessage = function (e) {
         lastTaskId = taskId || "";
 
         if (func && func in self) {
-            self[func](taskId, content, options);
+            var self2 = self[func];
+            if(self2){
+                self2(taskId, content, options);
+            }
+
         }
 
     }

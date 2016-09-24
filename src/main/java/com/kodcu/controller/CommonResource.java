@@ -7,6 +7,8 @@ import org.springframework.stereotype.Controller;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -24,19 +26,37 @@ public class CommonResource {
         this.directoryService = directoryService;
     }
 
-    public void processPayload(Payload payload, String finalUri) {
+
+    public void processPayload(Payload payload) {
+
+        String p = payload.param("p");
+        String finalUri = payload.getFinalURI();
+
+        if (Objects.nonNull(p)) {
+            Path inPublic = directoryService.findPathInPublic(p);
+            if (Objects.nonNull(inPublic)) {
+                fileService.processFile(payload, inPublic);
+                return;
+            }
+        }
+
         Optional<Path> resolvedUri = payload.resolveUri(finalUri);
 
         if (resolvedUri.isPresent()) {
             Path path = directoryService.findPathInWorkdirOrLookup(resolvedUri.get());
-            fileService.processFile(payload, path);
-        } else {
-            Path path = directoryService.findPathInCurrentOrWorkDir(finalUri);
-            fileService.processFile(payload, path);
+            if (Objects.nonNull(path)) {
+                fileService.processFile(payload, path);
+                return;
+            }
         }
-    }
 
-    public void processPayload(Payload payload) {
-        processPayload(payload, payload.getFinalURI());
+        Path path = directoryService.findPathInCurrentOrWorkDir(finalUri);
+        if (Objects.nonNull(path)) {
+            fileService.processFile(payload, path);
+            return;
+        }
+
+        Path inPublic = directoryService.findPathInPublic(finalUri);
+        fileService.processFile(payload, inPublic);
     }
 }

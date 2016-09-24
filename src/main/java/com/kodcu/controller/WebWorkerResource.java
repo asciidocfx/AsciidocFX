@@ -61,8 +61,6 @@ public class WebWorkerResource {
         Payload payload = new Payload(request, response);
         payload.setPattern("/afx/worker/");
 
-//        String p = payload.param("p");
-
         String finalURI = payload.getFinalURI();
 
         Optional<String> optional = Optional.ofNullable(payload.getRequestURI())
@@ -113,12 +111,7 @@ public class WebWorkerResource {
             return;
         }
 
-        if (Objects.nonNull(p)) {
-            Path path = directoryService.findPathInPublic(p);
-            fileService.processFile(request, response, path);
-        } else {
-            commonResource.processPayload(payload);
-        }
+        commonResource.processPayload(payload);
 
     }
 }

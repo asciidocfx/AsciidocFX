@@ -47,13 +47,10 @@ public class LiveResource {
             if (p.contains("live.html")) {
                 payload.getResponse().setContentType("text/html;charset=UTF-8");
                 payload.write(current.currentEditorValue());
-            } else {
-                Path path = directoryService.findPathInPublic(p);
-                fileService.processFile(request, response, path);
+                return;
             }
-        } else {
-
-            commonResource.processPayload(payload);
         }
+
+        commonResource.processPayload(payload);
     }
 }

@@ -50,13 +50,10 @@ public class JadeResource {
             if (p.endsWith(".jade")) {
                 final String template = controller.getTemplate(p);
                 payload.write(template);
-            } else {
-                Path path = directoryService.findPathInPublic(p);
-                fileService.processFile(request, response, path);
+                return;
             }
-        } else {
-
-            commonResource.processPayload(payload);
         }
+
+        commonResource.processPayload(payload);
     }
 }
