@@ -1,2 +1,2 @@
 *.xml linguist-vendored=true
-*.xslt linguist-vendored=true
+*.xsl linguist-vendored=true
