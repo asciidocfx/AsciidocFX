@@ -1,2 +1,3 @@
 *.xml linguist-vendored=true
 *.xsl linguist-vendored=true
+conf/public/ace/src/*.js linguist-vendored=true
