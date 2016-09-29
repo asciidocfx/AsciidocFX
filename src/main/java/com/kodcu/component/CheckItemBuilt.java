@@ -59,6 +59,7 @@ public class CheckItemBuilt {
                 return getText() != null ? getText().hashCode() : 0;
             }
         };
+        item.setMnemonicParsing(false);
         item.setSelected(checked);
         item.setText(name);
         final CheckItemBuilt checkItemBuilt = new CheckItemBuilt(item);
