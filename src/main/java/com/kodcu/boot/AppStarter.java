@@ -91,10 +91,10 @@ public class AppStarter extends Application {
         InputStream logoStream = getClass().getResourceAsStream("/logo.png");
         stage.getIcons().add(new Image(logoStream));
 
-        rememberStageScreenState();
-
         stage.setScene(scene);
         stage.show();
+
+        rememberStageScreenState();
 
         IOUtils.closeQuietly(sceneStream);
         IOUtils.closeQuietly(logoStream);
