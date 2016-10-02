@@ -85,7 +85,7 @@ public class AppStarter extends Application {
 
         Scene scene = new Scene(root);
 
-        scene.getStylesheets().add("/styles/Styles.css");
+//        scene.getStylesheets().add("/styles/Styles.css");
         stage.setMaximized(true);
         stage.setTitle("AsciidocFX");
         InputStream logoStream = getClass().getResourceAsStream("/logo.png");
@@ -132,6 +132,7 @@ public class AppStarter extends Application {
 
         controller.setStage(stage);
         controller.setScene(scene);
+        controller.loadStyleSheet();
         controller.setAsciidocTableAnchor(asciidocTableAnchor);
         controller.setMarkdownTableAnchor(markdownTableAnchor);
         controller.setAsciidocTableStage(asciidocTableStage);
@@ -145,6 +146,7 @@ public class AppStarter extends Application {
         scene.getAccelerators().put(new KeyCodeCombination(KeyCode.N, SHORTCUT_DOWN), controller::newDoc);
         scene.getAccelerators().put(new KeyCodeCombination(KeyCode.O, SHORTCUT_DOWN), controller::openDoc);
         scene.getAccelerators().put(new KeyCodeCombination(KeyCode.W, SHORTCUT_DOWN), controller::saveAndCloseCurrentTab);
+        scene.getAccelerators().put(new KeyCodeCombination(KeyCode.R, SHORTCUT_DOWN), controller::loadStyleSheet);
 //        scene.getAccelerators().put(new KeyCodeCombination(KeyCode.F4, SHORTCUT_DOWN), controller::showSettings);
 
         final ThreadService threadService = context.getBean(ThreadService.class);

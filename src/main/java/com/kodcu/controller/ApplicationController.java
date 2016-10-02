@@ -3037,4 +3037,12 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     public int getHangFileSizeLimit() {
         return editorConfigBean.getHangFileSizeLimit();
     }
+
+    public void loadStyleSheet() {
+        ObservableList<String> stylesheets = scene.get()
+                .getStylesheets();
+        stylesheets.clear();
+//        stylesheets.add(installationPath.resolve("conf/themes/Shared.css").toUri().toString());
+        stylesheets.add(installationPath.resolve("conf/themes/dark/Style.css").toUri().toString());
+    }
 }

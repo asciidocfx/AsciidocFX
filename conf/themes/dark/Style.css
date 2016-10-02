@@ -1,0 +1,81 @@
+@import '../Shared.css';
+
+.root-container {
+    -fx-base: rgb(50, 50, 50);
+    -fx-background: rgb(50, 50, 50);
+    -fx-control-inner-background: rgb(50, 50, 50);
+}
+
+/* Buttons */
+
+.button,
+.menu-button,
+.number-button,
+.toggle-button,
+.choice-box {
+    -fx-background-color: derive(-fx-base, 20%);
+    -fx-border-radius: 3;
+    -fx-background-radius: 3;
+    -fx-border-color: derive(-fx-base, 60%);
+    -fx-border-width: 0.5;
+}
+
+.button:hover,
+.menu-button:hover,
+.toggle-button:hover,
+.toggle-button:selected,
+.toggle-button:focused,
+.choice-box:hover {
+    -fx-background-color: derive(-fx-hover-base, 20%);
+}
+
+/* Tabs */
+.tab-close-button {
+    -fx-background-color: #676768;
+}
+
+.tab-close-button:hover {
+    -fx-background-color: #bbbbbb;
+}
+
+/* Scroll Bar */
+.scroll-bar:vertical .thumb, .scroll-bar:horizontal .thumb {
+    -fx-background-color: #676767;
+}
+
+.scroll-bar:vertical .thumb:hover, .scroll-bar:horizontal .thumb:hover {
+    -fx-background-color: #aaaaaa;
+}
+
+.scroll-bar:vertical .increment-button, .scroll-bar:vertical .decrement-button {
+    -fx-background-color: #3b3b3b;
+}
+
+.scroll-bar:vertical .increment-arrow,
+.scroll-bar:vertical .decrement-arrow,
+.scroll-bar:horizontal .increment-arrow,
+.scroll-bar:horizontal .decrement-arrow {
+    -fx-background-color: #aaaaaa;
+}
+
+/* Editor Top */
+.top-menu .top-label, #showHideLogs * {
+    -fx-text-fill: derive(-fx-base, 95%);
+}
+
+.top-menu .top-label:hover, #showHideLogs *:hover {
+    -fx-text-fill: -fx-text-background-color;
+}
+
+
+.text-input {
+    -fx-prompt-text-fill: derive(-fx-control-inner-background, 100%);
+}
+
+/* Tooltip */
+.tooltip {
+    -fx-border-color: rgb(175, 175, 175);
+    -fx-background-color: rgb(244, 244, 244);
+    -fx-text-fill: -fx-base;
+}
+
