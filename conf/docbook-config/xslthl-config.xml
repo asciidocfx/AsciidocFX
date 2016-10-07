@@ -42,9 +42,28 @@ Several of the lesser used languages have been removed.
     <highlighter id="ruby" file="./xslthl/ruby-hl.xml"/>
     <highlighter id="perl" file="./xslthl/perl-hl.xml"/>
     <highlighter id="javascript" file="./xslthl/javascript-hl.xml"/>
+    <highlighter id="js" file="./xslthl/javascript-hl.xml"/>
     <highlighter id="bash" file="./xslthl/bourne-hl.xml"/>
-    <highlighter id="css" file="./xslthl/css-hl.xml"/>
     <highlighter id="sql" file="./xslthl/sql2003-hl.xml"/>
     <highlighter id="asciidoc" file="./xslthl/asciidoc-hl.xml"/>
+
+    <highlighter id="delphi" file="./xslthl/delphi-hl.xml" />
+    <highlighter id="pascal" file="./xslthl/delphi-hl.xml" />
+    <highlighter id="myxml" file="./xslthl/myxml-hl.xml" />
+    <highlighter id="m2" file="./xslthl/m2-hl.xml" />
+    <highlighter id="tcl" file="./xslthl/tcl-hl.xml" />
+    <highlighter id="bourne" file="./xslthl/bourne-hl.xml" />
+    <highlighter id="css" file="./xslthl/css21-hl.xml" />
+    <highlighter id="css21" file="./xslthl/css21-hl.xml" />
+    <highlighter id="cmake" file="./xslthl/cmake-hl.xml" />
+    <highlighter id="upc" file="./xslthl/upc-hl.xml" />
+    <highlighter id="lua" file="./xslthl/lua-hl.xml" />
+    <highlighter id="sql92" file="./xslthl/sql92-hl.xml" />
+    <highlighter id="sql1999" file="./xslthl/sql1999-hl.xml" />
+    <highlighter id="sql2003" file="./xslthl/sql2003-hl.xml" />
+    <highlighter id="yaml" file="./xslthl/yaml-hl.xml" />
+    <highlighter id="json" file="./xslthl/json-hl.xml" />
+    <highlighter id="properties" file="./xslthl/properties-hl.xml" />
     <namespace prefix="xslthl" uri="http://xslthl.sf.net"/>
+
 </xslthl-config>
