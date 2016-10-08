@@ -163,7 +163,7 @@ function updateOptions() {
         fontFamily: editorConfigBean.getFontFamily(),
         fontSize: editorConfigBean.getFontSize()
     });
-    var themes = editorConfigBean.getEditorTheme();
+    var themes = editorConfigBean.getAceTheme();
     if (themes.size() > 0) {
         changeTheme(themes.get(0));
     }
@@ -353,3 +353,9 @@ function setFoldStyle(style) {
 function getCursorCoordinates() {
     return editor.renderer.textToScreenCoordinates(editor.getCursorPosition());
 }
+
+var onThemeLoaded = function () {
+    editorPane.onThemeLoaded();
+};
+
+editor.renderer.on("themeLoaded", onThemeLoaded);

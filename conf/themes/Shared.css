@@ -107,7 +107,7 @@
 
 .tooltip {
     -fx-border-radius: 0.5em;
-    -fx-font-size: 1.1em;
+    -fx-font-size: 12px;
 }
 
 .top-menu {
@@ -278,4 +278,15 @@
 /* file icons */
 .tree-view .label, .tree-view * {
     -fx-text-fill: -fx-text-base-color;
+}
+
+.button,
+.menu-button,
+.number-button,
+.toggle-button,
+.choice-box {
+    -fx-border-radius: 3;
+    -fx-background-radius: 3;
+    -fx-border-width: 0;
+    -fx-border-style: solid;
 }

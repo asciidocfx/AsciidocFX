@@ -13,6 +13,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
+
 /**
  * Created by usta on 09.04.2015.
  */
@@ -27,10 +29,16 @@ public class SlidePane extends ViewPanel {
     public SlidePane(ThreadService threadService, ApplicationController controller, Current current, AsciidocWebkitConverter asciidocWebkitConverter) {
         super(threadService, controller, current);
         this.asciidocWebkitConverter = asciidocWebkitConverter;
-        getWindow().setMember("afx", controller);
-        Worker<Void> loadWorker = webEngine().getLoadWorker();
-        ReadOnlyObjectProperty<Worker.State> stateProperty = loadWorker.stateProperty();
-        stateProperty.addListener(this::stateListener);
+
+    }
+
+    @PostConstruct
+    public void afterInit() {
+        threadService.runActionLater(() -> {
+            getWindow().setMember("afx", controller);
+            ReadOnlyObjectProperty<Worker.State> stateProperty = webEngine().getLoadWorker().stateProperty();
+            stateProperty.addListener(this::stateListener);
+        });
     }
 
     private void stateListener(ObservableValue<? extends Worker.State> observable, Worker.State oldValue, Worker.State newValue) {
@@ -87,7 +95,7 @@ public class SlidePane extends ViewPanel {
 
     @Override
     public void browse() {
-      super.browse();
+        super.browse();
     }
 
     public void setBackend(String backend) {

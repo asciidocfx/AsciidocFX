@@ -5,13 +5,9 @@
 }
 
 .button, .menu-button, .toggle-button, .choice-box {
-    -fx-background-color: linear-gradient(#eeeeee, #d2d2d2);;
+    -fx-background-color: linear-gradient(rgb(238, 238, 238), rgb(210, 210, 210));
     -fx-text-fill: black;
-    -fx-border-radius: 3;
-    -fx-background-radius: 3;
-    -fx-border-color: #d2d2d2;
-    -fx-border-width: 0;
-    -fx-border-style: solid;
+    -fx-border-color: rgb(210, 210, 210);
 
 }
 
@@ -21,8 +17,7 @@
 .toggle-button:selected,
 .toggle-button:focused,
 .choice-box:hover {
-    -fx-background-color: #cccccc;
-    -fx-text-fill: black;
+    -fx-background-color: rgb(204, 204, 204);
 }
 
 .scroll-bar {
@@ -41,7 +36,6 @@
 .top-menu .top-label, #showHideLogs * {
     -fx-text-fill: #7c7c7c;
     -fx-fill: -fx-text-fill;
-    -fx-cursor: hand;
 }
 
 .top-menu .top-label:hover, #showHideLogs *:hover {

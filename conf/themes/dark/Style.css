@@ -13,11 +13,8 @@
 .number-button,
 .toggle-button,
 .choice-box {
-    -fx-background-color: derive(-fx-base, 20%);
-    -fx-border-radius: 3;
-    -fx-background-radius: 3;
-    -fx-border-color: derive(-fx-base, 60%);
-    -fx-border-width: 0.5;
+    -fx-background-color: linear-gradient(rgb(123, 123, 123), rgb(95, 95, 95));
+    -fx-border-color: rgb(95, 95, 95);
 }
 
 .button:hover,
@@ -26,7 +23,7 @@
 .toggle-button:selected,
 .toggle-button:focused,
 .choice-box:hover {
-    -fx-background-color: derive(-fx-hover-base, 20%);
+    -fx-background-color: rgb(89, 89, 89);
 }
 
 /* Tabs */
@@ -66,7 +63,6 @@
 .top-menu .top-label:hover, #showHideLogs *:hover {
     -fx-text-fill: -fx-text-background-color;
 }
-
 
 .text-input {
     -fx-prompt-text-fill: derive(-fx-control-inner-background, 100%);

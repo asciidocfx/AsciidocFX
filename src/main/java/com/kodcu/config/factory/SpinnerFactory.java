@@ -16,7 +16,6 @@ import javafx.util.Callback;
 public class SpinnerFactory<T> implements Callback<Void, FXFormNode> {
 
     private final Spinner<T> spinner;
-    private final ObjectProperty<T> objectProperty = new SimpleObjectProperty<>();
 
     public SpinnerFactory(Spinner<T> spinner) {
         this.spinner = spinner;

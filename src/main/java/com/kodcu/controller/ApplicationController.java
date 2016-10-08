@@ -36,6 +36,7 @@ import com.kodcu.service.ui.TabService;
 import com.kodcu.service.ui.TooltipTimeFixService;
 import com.kodcu.shell.ShellTab;
 import com.kodcu.spell.dictionary.DictionaryService;
+import com.sun.javafx.collections.NonIterableChange;
 import com.sun.javafx.stage.StageHelper;
 import de.jensd.fx.fontawesome.AwesomeDude;
 import de.jensd.fx.fontawesome.AwesomeIcon;
@@ -68,6 +69,7 @@ import javafx.scene.layout.*;
 import javafx.scene.text.Text;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import netscape.javascript.JSObject;
@@ -90,6 +92,7 @@ import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -296,10 +299,10 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     private Stage stage;
     private List<WebSocketSession> sessionList = new ArrayList<>();
-    private ObjectProperty<Scene> scene = new SimpleObjectProperty<>();
+    private Scene scene;
     private AnchorPane asciidocTableAnchor;
     private Stage asciidocTableStage;
-    private final Clipboard clipboard = Clipboard.getSystemClipboard();
+
     private int port = 8080;
     private Path configPath;
 
@@ -363,6 +366,8 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     @Value("${application.donation}")
     private String donationUrl;
     private ToggleGroup configToggleGroup;
+    private Scene asciidocTableScene;
+    private Scene markdownTableScene;
 
     public void createAsciidocTable() {
         asciidocTableStage.showAndWait();
@@ -571,10 +576,13 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     @Override
     public void initialize(URL url, ResourceBundle rb) {
 
+    }
 
-        initializePaths();
+    public void initializeApp() {
+
+        port = server.getEmbeddedServletContainer().getPort();
+
         checkDuplicatedJars();
-//        initializePosixPermissions();
         initializeNashornConverter();
         initializeTerminal();
 
@@ -597,13 +605,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                 }
             }
         });
-
-        threadService.runTaskLater(() -> {
-            bindConfigurations();
-            configurationService.loadConfigurations(this::checkNewVersion);
-        });
-
-        port = server.getEmbeddedServletContainer().getPort();
 
         progressBar.prefWidthProperty().bind(rightShowerHider.widthProperty());
 
@@ -977,13 +978,15 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         });
 
         tabService.initializeTabChangeListener(tabPane);
+
+        this.checkNewVersion();
     }
 
     private void checkDuplicatedJars() {
 
         threadService.runTaskLater(() -> {
             try {
-                Path lib = installationPath.resolve("lib");
+                Path lib = getInstallationPath().resolve("lib");
 //            Path lib = Paths.get("C:\\Program Files\\AsciidocFX\\lib");
 
                 if (Files.notExists(lib)) {
@@ -1182,30 +1185,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         return stopRendering;
     }
 
-
-    private void initializePosixPermissions() {
-
-        try {
-            PosixFileAttributeView fileAttributeView = Files.getFileAttributeView(configPath, PosixFileAttributeView.class);
-            if (Objects.nonNull(fileAttributeView)) {
-                HashSet<PosixFilePermission> perms = new HashSet<>();
-                perms.add(PosixFilePermission.GROUP_WRITE);
-                perms.add(PosixFilePermission.OTHERS_WRITE);
-                perms.add(PosixFilePermission.OWNER_WRITE);
-                perms.add(PosixFilePermission.GROUP_READ);
-                perms.add(PosixFilePermission.OTHERS_READ);
-                perms.add(PosixFilePermission.OWNER_READ);
-                perms.add(PosixFilePermission.GROUP_EXECUTE);
-                perms.add(PosixFilePermission.OTHERS_EXECUTE);
-                perms.add(PosixFilePermission.OWNER_EXECUTE);
-
-                Files.setPosixFilePermissions(configPath, perms);
-            }
-        } catch (Exception e) {
-            logger.error("Problem occured while setting write permissions to {}", configPath, e);
-        }
-    }
-
     public void saveAllTabs() {
 
         tabPane.getTabs()
@@ -1249,115 +1228,46 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     }
 
-/*    public void initializeAutoSaver() {
+    public void applyInitialConfigurations() {
 
-        final AtomicReference<Instant> currentTime = new AtomicReference<>(Instant.now());
+        Double screenX = editorConfigBean.getScreenX();
+        Double screenY = editorConfigBean.getScreenY();
+        Double screenWidth = editorConfigBean.getScreenWidth();
+        Double screenHeight = editorConfigBean.getScreenHeight();
 
-        stage.addEventFilter(EventType.ROOT, event -> {
-            currentTime.set(Instant.now());
-        });
+        if (Objects.nonNull(screenX)) {
+            stage.setX(screenX);
+        }
 
-        Timer timer = new Timer();
-        timer.scheduleAtFixedRate(new TimerTask() {
-            @Override
-            public void run() {
-                if (currentTime.get().plusSeconds(3).isBefore(Instant.now())) {
-                    currentTime.set(Instant.now());
+        if (Objects.nonNull(screenY)) {
+            stage.setY(screenY);
+        }
 
-                    if (!stage.isFocused()) {
-                        return;
-                    }
+        if (Objects.nonNull(screenWidth)) {
+            stage.setWidth(screenWidth);
+        }
 
-                    saveAllTabs();
-                }
-            }
-        }, 0, 500);
-    }*/
-
-    private void bindConfigurations() {
-
-        /*ObjectProperty<Color> colorProperty = editorConfigBean.backgroundColorProperty();
-        ObjectProperty<Color> innerColorProperty = editorConfigBean.innerBackgroundColorProperty();
-
-        colorProperty.addListener((observable, oldValue, newValue) -> {
-            if (Objects.nonNull(newValue)) {
-                String backgroundColor = Integer.toHexString(newValue.hashCode());
-                if (Objects.isNull(innerColorProperty.get())) {
-                    rootAnchor.setStyle(String.format("-fx-base: #%s;", backgroundColor));
-                } else {
-                    String innerBackgroundColor = Integer.toHexString(innerColorProperty.get().hashCode());
-                    rootAnchor.setStyle(String.format("-fx-base: #%s;-fx-control-inner-background: #%s", backgroundColor, innerBackgroundColor));
-                }
-            }
-        });
-
-        innerColorProperty.addListener((observable, oldValue, newValue) -> {
-            if (Objects.nonNull(newValue)) {
-                String innerBackgroundColor = Integer.toHexString(newValue.hashCode());
-                if (Objects.isNull(colorProperty.get())) {
-                    rootAnchor.setStyle(String.format("-fx-control-inner-background: #%s;", innerBackgroundColor));
-                } else {
-                    String backgroundColor = Integer.toHexString(colorProperty.get().hashCode());
-                    rootAnchor.setStyle(String.format("-fx-base: #%s;-fx-control-inner-background: #%s", backgroundColor, innerBackgroundColor));
-                }
-            }
-        });*/
-
-        locationConfigBean.mathjaxProperty().addListener((observable, oldValue, newValue) -> {
-            if (Objects.nonNull(newValue)) {
-                if (!newValue.equals(oldValue)) {
-                    mathJaxService.reload();
-                }
-            }
-        });
+        if (Objects.nonNull(screenHeight)) {
+            stage.setHeight(screenHeight);
+        }
 
         ObservableList<SplitPane.Divider> dividers = splitPane.getDividers();
+        dividers.get(0).setPosition(editorConfigBean.getFirstSplitter());
+        dividers.get(1).setPosition(editorConfigBean.getSecondSplitter());
 
-        dividers.get(0).positionProperty().bindBidirectional(editorConfigBean.firstSplitterProperty());
-        dividers.get(1).positionProperty().bindBidirectional(editorConfigBean.secondSplitterProperty());
-
-        editorConfigBean.showGutterProperty().addListener((observable, oldValue, newValue) -> {
-            if (Objects.nonNull(newValue)) {
-                applyForAllEditorPanes(editorPane -> editorPane.setShowGutter(newValue));
-            }
+        editorConfigBean.getEditorTheme().stream().findFirst().ifPresent(theme -> {
+            applyTheme(theme);
         });
 
-        editorConfigBean.useWrapModeProperty().addListener((observable, oldValue, newValue) -> {
-            if (Objects.nonNull(newValue)) {
-                applyForAllEditorPanes(editorPane -> editorPane.setUseWrapMode(newValue));
-            }
+        editorConfigBean.getAceTheme().stream().findFirst().ifPresent(ace -> {
+            applyForAllEditorPanes(editorPane -> editorPane.setTheme(ace));
         });
 
-        editorConfigBean.wrapLimitProperty().addListener((observable, oldValue, newValue) -> {
-            if (Objects.nonNull(newValue)) {
-                applyForAllEditorPanes(editorPane -> editorPane.setWrapLimitRange(newValue));
-            }
-        });
-
-        ListChangeListener<String> themeChangeListener = c -> {
-            c.next();
-            if (c.wasAdded()) {
-                String theme = c.getList().get(0);
-                applyForAllEditorPanes(editorPane -> editorPane.setTheme(theme));
-            }
-        };
-
-        editorConfigBean.editorThemeProperty().addListener((observable, oldValue, newValue) -> {
-            if (Objects.nonNull(newValue)) {
-                newValue.addListener(themeChangeListener);
-            }
-            if (Objects.nonNull(oldValue)) {
-                oldValue.removeListener(themeChangeListener);
-            }
-        });
-
-        editorConfigBean.fontSizeProperty().addListener((observable, oldValue, newValue) -> {
-            applyForAllEditorPanes(editorPane -> editorPane.setFontSize(newValue.intValue()));
-        });
-
-        editorConfigBean.foldStyleProperty().addListener((observable, oldValue, newValue) -> {
-            applyForAllEditorPanes(editorPane -> editorPane.setFoldStyle(newValue));
-        });
+        applyForAllEditorPanes(editorPane -> editorPane.setShowGutter(editorConfigBean.getShowGutter()));
+        applyForAllEditorPanes(editorPane -> editorPane.setUseWrapMode(editorConfigBean.getUseWrapMode()));
+        applyForAllEditorPanes(editorPane -> editorPane.setWrapLimitRange(editorConfigBean.getWrapLimit()));
+        applyForAllEditorPanes(editorPane -> editorPane.setFontSize(editorConfigBean.getFontSize()));
+        applyForAllEditorPanes(editorPane -> editorPane.setFoldStyle(editorConfigBean.getFoldStyle()));
 
         ObservableList<Item> recentFilesList = storedConfigBean.getRecentFiles();
         ObservableList<String> favoriteDirectories = storedConfigBean.getFavoriteDirectories();
@@ -1411,10 +1321,99 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             if (empty) this.includeClearAllToFavoriteDir();
         });
 
+        // TODO: Lazy initial ?
+        mathJaxService.reload();
+
+        String workingDirectory = storedConfigBean.getWorkingDirectory();
+
+        if (Objects.nonNull(workingDirectory)) {
+            directoryService.changeWorkigDir(Paths.get(workingDirectory));
+        }
+
+    }
+
+    public void bindConfigurations() {
+
+        editorConfigBean.getEditorTheme().addListener(new ListChangeListener<EditorConfigBean.Theme>() {
+            @Override
+            public void onChanged(Change<? extends EditorConfigBean.Theme> c) {
+                c.next();
+                if (c.wasAdded()) {
+                    applyTheme(c.getList().get(0));
+                }
+            }
+        });
+
+        editorConfigBean.getAceTheme().addListener(new ListChangeListener<String>() {
+            @Override
+            public void onChanged(Change<? extends String> c) {
+                c.next();
+                if (c.wasAdded()) {
+                    applyForAllEditorPanes(editorPane -> editorPane.setTheme(c.getList().get(0)));
+                }
+            }
+        });
+
+        locationConfigBean.mathjaxProperty().addListener((observable, oldValue, newValue) -> {
+            if (Objects.nonNull(newValue)) {
+                if (!newValue.equals(oldValue)) {
+                    mathJaxService.reload();
+                }
+            }
+        });
+
+        ObservableList<SplitPane.Divider> dividers = splitPane.getDividers();
+
+        dividers.get(0).positionProperty().bindBidirectional(editorConfigBean.firstSplitterProperty());
+        dividers.get(1).positionProperty().bindBidirectional(editorConfigBean.secondSplitterProperty());
+
+        editorConfigBean.showGutterProperty().addListener((observable, oldValue, newValue) -> {
+            if (Objects.nonNull(newValue)) {
+                applyForAllEditorPanes(editorPane -> editorPane.setShowGutter(newValue));
+            }
+        });
+
+        editorConfigBean.useWrapModeProperty().addListener((observable, oldValue, newValue) -> {
+            if (Objects.nonNull(newValue)) {
+                applyForAllEditorPanes(editorPane -> editorPane.setUseWrapMode(newValue));
+            }
+        });
+
+        editorConfigBean.wrapLimitProperty().addListener((observable, oldValue, newValue) -> {
+            if (Objects.nonNull(newValue)) {
+                applyForAllEditorPanes(editorPane -> editorPane.setWrapLimitRange(newValue));
+            }
+        });
+
+        editorConfigBean.fontSizeProperty().addListener((observable, oldValue, newValue) -> {
+            applyForAllEditorPanes(editorPane -> editorPane.setFontSize(newValue.intValue()));
+        });
+
+        editorConfigBean.foldStyleProperty().addListener((observable, oldValue, newValue) -> {
+            applyForAllEditorPanes(editorPane -> editorPane.setFoldStyle(newValue));
+        });
+
+
         storedConfigBean.workingDirectoryProperty().addListener((observable, oldValue, newValue) -> {
             if (Objects.nonNull(newValue) && Objects.isNull(oldValue)) {
                 directoryService.changeWorkigDir(Paths.get(newValue));
             }
+        });
+
+        stage.xProperty().addListener((observable, oldValue, newValue) -> {
+            editorConfigBean.setScreenX(newValue.doubleValue());
+        });
+
+        stage.yProperty().addListener((observable, oldValue, newValue) -> {
+            editorConfigBean.setScreenY(newValue.doubleValue());
+        });
+
+        stage.widthProperty().addListener((observable, oldValue, newValue) -> {
+            editorConfigBean.setScreenWidth(newValue.doubleValue());
+        });
+
+        stage.heightProperty().addListener((observable, oldValue, newValue) -> {
+            editorConfigBean.setScreenHeight(newValue.doubleValue());
         });
 
     }
@@ -1565,7 +1564,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
         try {
             ObjectMapper mapper = new ObjectMapper();
-            Object readValue = mapper.readValue(configPath.resolve("ace_doctypes.json").toFile(), new TypeReference<List<DocumentMode>>() {
+            Object readValue = mapper.readValue(getConfigPath().resolve("ace_doctypes.json").toFile(), new TypeReference<List<DocumentMode>>() {
             });
             modeList.addAll((Collection) readValue);
 
@@ -1582,20 +1581,30 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         }
     }
 
-    private void initializePaths() {
+    public Path getInstallationPath() {
 
-        try {
-            String homeProp = System.getProperty("asciidocfx.home");
-            if (homeProp != null) {
-                installationPath = new File(homeProp).toPath();
-            } else {
-                //guess installation path
-                CodeSource codeSource = ApplicationController.class.getProtectionDomain().getCodeSource();
-                File jarFile = new File(codeSource.getLocation().toURI().getPath());
-                installationPath = jarFile.toPath().getParent().getParent();
+        if (Objects.isNull(installationPath)) {
+            try {
+                String homeProp = System.getProperty("asciidocfx.home");
+                if (homeProp != null) {
+                    installationPath = new File(homeProp).toPath();
+                } else {
+                    //guess installation path
+                    CodeSource codeSource = ApplicationController.class.getProtectionDomain().getCodeSource();
+                    File jarFile = new File(codeSource.getLocation().toURI().getPath());
+                    installationPath = jarFile.toPath().getParent().getParent();
+                }
+            } catch (Exception e) {
+                logger.error("Problem occured while resolving conf and log paths", e);
             }
-            configPath = installationPath.resolve("conf");
+        }
 
+        return installationPath;
+    }
+
+    public String getLogPath() {
+
+        if (Objects.isNull(logPath)) {
             Optional<String> linuxHome = Optional.ofNullable(System.getenv("HOME"));
             Optional<String> windowsHome = Optional.ofNullable(System.getenv("USERPROFILE"));
 
@@ -1605,11 +1614,9 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                     .map(Paths::get)
                     .findFirst()
                     .ifPresent(path -> logPath = path.resolve(configDirName).resolve("log").toString());
-
-        } catch (Exception e) {
-            logger.error("Problem occured while resolving conf and log paths", e);
         }
 
+        return logPath;
     }
 
     @WebkitCall
@@ -1636,7 +1643,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             ClipboardContent clipboardContent = new ClipboardContent();
             clipboardContent.putString(clipboardString.toString());
 
-            clipboard.setContent(clipboardContent);
+            Clipboard.getSystemClipboard().setContent(clipboardContent);
         }));
 
         logViewer.setContextMenu(logViewerContextMenu);
@@ -2268,7 +2275,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     public void cutCopy(String data) {
         ClipboardContent clipboardContent = new ClipboardContent();
         clipboardContent.putString(data);
-        clipboard.setContent(clipboardContent);
+        Clipboard.getSystemClipboard().setContent(clipboardContent);
     }
 
     public void copyFiles(List<Path> paths) {
@@ -2281,7 +2288,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                             .stream()
                             .map(Path::toFile)
                             .collect(Collectors.toList()));
-                    clipboard.setContent(clipboardContent);
+                    Clipboard.getSystemClipboard().setContent(clipboardContent);
                 });
     }
 
@@ -2293,7 +2300,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                 .map(Paths::get)
                 .filter(Files::exists);
 
-        Path path = optional.orElse(configPath.resolve("public/css/asciidoctor-default.css"));
+        Path path = optional.orElse(getConfigPath().resolve("public/css/asciidoctor-default.css"));
 
         return IOHelper.readFile(path);
     }
@@ -2316,23 +2323,24 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     @WebkitCall
     public String clipboardValue() {
-        return clipboard.getString();
+        return Clipboard.getSystemClipboard().getString();
     }
 
     @WebkitCall
     public void pasteRaw() {
 
         EditorPane editorPane = current.currentEditor();
-        if (clipboard.hasFiles()) {
-            Optional<String> block = parserService.toImageBlock(clipboard.getFiles());
+        Clipboard systemClipboard = Clipboard.getSystemClipboard();
+        if (systemClipboard.hasFiles()) {
+            Optional<String> block = parserService.toImageBlock(systemClipboard.getFiles());
             if (block.isPresent()) {
                 editorPane.insert(block.get());
                 return;
             }
         }
 
-        if (clipboard.hasImage()) {
-            Image image = clipboard.getImage();
+        if (systemClipboard.hasImage()) {
+            Image image = systemClipboard.getImage();
             Optional<String> block = parserService.toImageBlock(image);
             if (block.isPresent()) {
                 editorPane.insert(block.get());
@@ -2348,16 +2356,17 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
         EditorPane editorPane = current.currentEditor();
 
-        if (clipboard.hasFiles()) {
-            Optional<String> block = parserService.toImageBlock(clipboard.getFiles());
+        Clipboard systemClipboard = Clipboard.getSystemClipboard();
+        if (systemClipboard.hasFiles()) {
+            Optional<String> block = parserService.toImageBlock(systemClipboard.getFiles());
             if (block.isPresent()) {
                 editorPane.insert(block.get());
                 return;
             }
         }
 
-        if (clipboard.hasImage()) {
-            Image image = clipboard.getImage();
+        if (systemClipboard.hasImage()) {
+            Image image = systemClipboard.getImage();
             Optional<String> block = parserService.toImageBlock(image);
             if (block.isPresent()) {
                 editorPane.insert(block.get());
@@ -2367,8 +2376,8 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
         try {
 
-            if (clipboard.hasHtml() || asciidocWebkitConverter.isHtml(clipboard.getString())) {
-                String content = Optional.ofNullable(clipboard.getHtml()).orElse(clipboard.getString());
+            if (systemClipboard.hasHtml() || asciidocWebkitConverter.isHtml(systemClipboard.getString())) {
+                String content = Optional.ofNullable(systemClipboard.getHtml()).orElse(systemClipboard.getString());
                 if (current.currentTab().isAsciidoc() || current.currentTab().isMarkdown())
                     content = (String) asciidocWebkitConverter.call(current.currentTab().htmlToMarkupFunction(), content);
                 editorPane.insert(content);
@@ -2435,15 +2444,11 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     }
 
     public Scene getScene() {
-        return scene.get();
-    }
-
-    public ObjectProperty<Scene> sceneProperty() {
         return scene;
     }
 
     public void setScene(Scene scene) {
-        this.scene.set(scene);
+        this.scene = scene;
     }
 
     public void setAsciidocTableAnchor(AnchorPane asciidocTableAnchor) {
@@ -2487,6 +2492,11 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     }
 
     public Path getConfigPath() {
+
+        if (Objects.isNull(configPath)) {
+            configPath = getInstallationPath().resolve("conf");
+        }
+
         return configPath;
     }
 
@@ -2516,7 +2526,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     @FXML
     public void generateCheatSheet(ActionEvent actionEvent) {
-        Path cheatsheetPath = configPath.resolve("cheatsheet/cheatsheet.adoc");
+        Path cheatsheetPath = getConfigPath().resolve("cheatsheet/cheatsheet.adoc");
 
         Path tempSheetPath = IOHelper.createTempDirectory(directoryService.workingDirectory(), "cheatsheet")
                 .resolve("cheatsheet.adoc");
@@ -2770,7 +2780,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                 threadService.runTaskLater(() -> {
                     IOHelper.createDirectories(folderPath);
                     indikatorService.startProgressBar();
-                    IOHelper.copyDirectory(configPath.resolve("slide/frameworks"), folderPath);
+                    IOHelper.copyDirectory(getConfigPath().resolve("slide/frameworks"), folderPath);
                     indikatorService.stopProgressBar();
                     threadService.runActionLater(() -> {
                         tabService.addTab(folderPath.resolve("slide.adoc"));
@@ -3038,11 +3048,79 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         return editorConfigBean.getHangFileSizeLimit();
     }
 
-    public void loadStyleSheet() {
-        ObservableList<String> stylesheets = scene.get()
-                .getStylesheets();
-        stylesheets.clear();
-//        stylesheets.add(installationPath.resolve("conf/themes/Shared.css").toUri().toString());
-        stylesheets.add(installationPath.resolve("conf/themes/dark/Style.css").toUri().toString());
+    public void applyCurrentTheme(Scene... scenes) {
+
+        EditorConfigBean.Theme theme = editorConfigBean.getEditorTheme().get(0);
+        String themeUri = theme.themeUri();
+
+        if (Objects.isNull(themeUri)) {
+            return;
+        }
+
+        threadService.runActionLater(() -> {
+            try {
+
+                String aceTheme = theme.getAceTheme();
+                editorConfigBean.getAceTheme().remove(aceTheme);
+                editorConfigBean.getAceTheme().add(0, aceTheme);
+
+                for (Scene scene : scenes) {
+                    if (Objects.nonNull(scene)) {
+                        ObservableList<String> stylesheets = scene.getStylesheets();
+                        stylesheets.clear();
+                        stylesheets.add(themeUri);
+                    }
+                }
+
+            } catch (Exception e) {
+                logger.error("Error occured while setting new theme {}", theme);
+            }
+        });
+    }
+
+    public void applyTheme(EditorConfigBean.Theme theme) {
+        String themeUri = theme.themeUri();
+
+        if (Objects.isNull(themeUri)) {
+            return;
+        }
+
+        threadService.runActionLater(() -> {
+            try {
+
+                Scene[] scenes = {scene};
+
+                for (Scene scene : scenes) {
+                    if (Objects.nonNull(scene)) {
+                        ObservableList<String> stylesheets = scene.getStylesheets();
+                        stylesheets.clear();
+                        stylesheets.add(themeUri);
+                    }
+                }
+
+                String aceTheme = theme.getAceTheme();
+                editorConfigBean.getAceTheme().remove(aceTheme);
+                editorConfigBean.getAceTheme().add(0, aceTheme);
+
+            } catch (Exception e) {
+                logger.error("Error occured while setting new theme {}", theme);
+            }
+        });
+    }
+
+    public void setAsciidocTableScene(Scene asciidocTableScene) {
+        this.asciidocTableScene = asciidocTableScene;
+    }
+
+    public Scene getAsciidocTableScene() {
+        return asciidocTableScene;
+    }
+
+    public void setMarkdownTableScene(Scene markdownTableScene) {
+        this.markdownTableScene = markdownTableScene;
+    }
+
+    public Scene getMarkdownTableScene() {
+        return markdownTableScene;
     }
 }
