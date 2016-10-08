@@ -1,7 +1,6 @@
 package com.kodcu.other;
 
 import com.kodcu.service.ThreadService;
-import org.apache.commons.io.FileDeleteStrategy;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.joox.JOOX;
@@ -472,5 +471,14 @@ public class IOHelper {
             return true;
 
         return contains(root, inside.getParent());
+    }
+
+    public static Stream<Path> walk(Path path, int deepth) {
+        try {
+            return Files.walk(path,deepth);
+        } catch (Exception e) {
+            logger.warn("Problem occured while walking path {}", path);
+        }
+        return Stream.empty();
     }
 }
