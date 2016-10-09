@@ -100,6 +100,8 @@ editor.getSession().selection.on('changeCursor', function (e) {
 
 });
 
+// editor.on("guttermousedown", onGutterMouseDown);
+
 var renderAction = new BufferedAction();
 var editorChangeListener = function (obj) {
 
@@ -352,4 +354,35 @@ function setFoldStyle(style) {
 
 function getCursorCoordinates() {
     return editor.renderer.textToScreenCoordinates(editor.getCursorPosition());
+}
+
+function onGutterMouseDown(e) {
+    console.log("onGutterMouseDown");
+
+    var target = e.domEvent.target;
+
+    if (target.className.indexOf("ace_gutter-cell") == -1) {
+        return;
+    }
+
+    if (!editor.isFocused()) {
+        return;
+    }
+
+    if (e.clientX > 25 + target.getBoundingClientRect().left) {
+        return;
+    }
+
+    var row = e.getDocumentPosition().row;
+
+    var breakpoints = e.editor.session.getBreakpoints(row, 0);
+
+    if (breakpoints[row]) {
+        e.editor.session.clearBreakpoint(row);
+    }
+    else {
+        e.editor.session.setBreakpoint(row);
+    }
+
+    e.stop();
 }
