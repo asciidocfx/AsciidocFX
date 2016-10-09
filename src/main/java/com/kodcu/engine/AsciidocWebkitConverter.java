@@ -57,10 +57,6 @@ public class AsciidocWebkitConverter extends ViewPanel implements AsciidocConver
         this.directoryService = directoryService;
     }
 
-    public WebView getWebView() {
-        return webView;
-    }
-
     public String getTemplate(String templateDir) {
 
         Path path = controller.getConfigPath().resolve("slide/templates").resolve(templateDir);

@@ -10,10 +10,7 @@ import com.kodcu.service.ThreadService;
 import com.kodcu.service.convert.DocumentConverter;
 import com.kodcu.service.convert.docbook.DocBookConverter;
 import com.kodcu.service.ui.IndikatorService;
-import org.apache.fop.apps.FOUserAgent;
-import org.apache.fop.apps.Fop;
-import org.apache.fop.apps.FopFactory;
-import org.apache.fop.apps.MimeConstants;
+import org.apache.fop.apps.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,10 +22,11 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.sax.SAXResult;
 import javax.xml.transform.stream.StreamSource;
-import java.io.FileOutputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Iterator;
+import java.util.List;
 import java.util.function.Consumer;
 
 import static java.nio.file.StandardOpenOption.*;
@@ -83,7 +81,7 @@ public class PdfBookConverter implements DocumentConverter<String> {
                 final Path docbookTempfile = IOHelper.createTempFile(currentTabPathDir, ".xml");
                 IOHelper.writeToFile(docbookTempfile, docbook, CREATE, WRITE, TRUNCATE_EXISTING);
 
-                try (OutputStream outputStream = new FileOutputStream(pdfPath.toFile());) {
+                try (OutputStream outputStream = new BufferedOutputStream(new FileOutputStream(pdfPath.toFile()));) {
                     // Setup XSLT
                     TransformerFactory factory = TransformerFactory.newInstance();
                     Transformer transformer = factory.newTransformer(new StreamSource(configPath.resolve("docbook-config/fo-pdf.xsl").toFile()));
@@ -92,21 +90,34 @@ public class PdfBookConverter implements DocumentConverter<String> {
                     transformer.setParameter("admon.graphics.path", configPath.resolve("docbook/images/").toUri().toASCIIString());
                     transformer.setParameter("callout.graphics.path", configPath.resolve("docbook/images/callouts/").toUri().toASCIIString());
 
-                    FopFactory fopFactory = FopFactory.newInstance(configPath.resolve("docbook-config/fop.xconf.xml").toFile());
+                    try (BufferedInputStream configStream = new BufferedInputStream(new FileInputStream(configPath.resolve("docbook-config/fop.xconf.xml").toFile()));) {
+                        FopFactory fopFactory = FopFactory.newInstance(docbookTempfile.getParent().toUri(), configStream);
+                        FOUserAgent foUserAgent = fopFactory.newFOUserAgent();
 
-                    FOUserAgent foUserAgent = fopFactory.newFOUserAgent();
-                    Fop fop = fopFactory.newFop(MimeConstants.MIME_PDF, foUserAgent, outputStream);
+                        Fop fop = fopFactory.newFop(MimeConstants.MIME_PDF, foUserAgent, outputStream);
 
-                    // Setup input for XSLT transformation
-                    Source src = new StreamSource(docbookTempfile.toFile());
+                        try (BufferedInputStream inputStream = new BufferedInputStream(new FileInputStream(docbookTempfile.toFile()));) {
 
-                    // Resulting SAX events (the generated FO) must be piped through to FOP
-                    Result res = new SAXResult(fop.getDefaultHandler());
+                            // Setup input for XSLT transformation
+                            Source src = new StreamSource(inputStream);
 
-                    // Step 6: Start XSLT transformation and FOP processing
-                    transformer.transform(src, res);
+                            // Resulting SAX events (the generated FO) must be piped through to FOP
+                            Result res = new SAXResult(fop.getDefaultHandler());
 
-                    Files.deleteIfExists(docbookTempfile);
+                            // Step 6: Start XSLT transformation and FOP processing
+                            transformer.transform(src, res);
+
+                            Files.deleteIfExists(docbookTempfile);
+
+                            // Result processing
+                            FormattingResults foResults = fop.getResults();
+
+                            logger.info("Generated {} pages in total.", foResults.getPageCount());
+
+                        }
+
+                    }
+
 
                 } catch (Exception e) {
                     logger.error("Problem occured while converting to PDF", e);

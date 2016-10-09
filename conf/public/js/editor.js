@@ -165,7 +165,7 @@ function updateOptions() {
         fontFamily: editorConfigBean.getFontFamily(),
         fontSize: editorConfigBean.getFontSize()
     });
-    var themes = editorConfigBean.getEditorTheme();
+    var themes = editorConfigBean.getAceTheme();
     if (themes.size() > 0) {
         changeTheme(themes.get(0));
     }
@@ -356,7 +356,7 @@ function getCursorCoordinates() {
     return editor.renderer.textToScreenCoordinates(editor.getCursorPosition());
 }
 
-function onGutterMouseDown(e) {
+/*function onGutterMouseDown(e) {
     console.log("onGutterMouseDown");
 
     var target = e.domEvent.target;
@@ -385,4 +385,10 @@ function onGutterMouseDown(e) {
     }
 
     e.stop();
-}
+}*/
+
+var onThemeLoaded = function () {
+    editorPane.onThemeLoaded();
+};
+
+editor.renderer.on("themeLoaded", onThemeLoaded);

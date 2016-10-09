@@ -54,7 +54,6 @@ public class LanguageSpeller {
         try {
             return mapper.readValue(jsonToken, mapper.getTypeFactory().constructCollectionType(List.class, Token.class));
         } catch (Exception e) {
-            logger.debug(e.getMessage(), e);
             return new ArrayList<>();
         }
     }

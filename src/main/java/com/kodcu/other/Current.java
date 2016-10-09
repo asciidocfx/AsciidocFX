@@ -41,7 +41,7 @@ public class Current {
     }
 
     public Optional<Path> currentPath() {
-        return Optional.ofNullable(currentTab().getPath());
+        return Optional.ofNullable(currentTab()).map(MyTab::getPath);
     }
 
     public WebView currentWebView() {

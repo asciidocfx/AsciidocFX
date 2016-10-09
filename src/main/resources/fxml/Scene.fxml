@@ -5,7 +5,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.*?>
 <?import javafx.scene.layout.*?>
-<AnchorPane id="AnchorPane" fx:id="rootAnchor" styleClass="rootAnchor"
+<AnchorPane id="AnchorPane" fx:id="rootAnchor" styleClass="root-container"
             xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.kodcu.controller.ApplicationController"
             xmlns="http://javafx.com/javafx/8">
     <children>
@@ -327,14 +327,14 @@
                                                                            prefHeight="20.0" prefWidth="20.0"
                                                                            progress="-1.0"
                                                                            visible="false"/>
-                                                        <Label fx:id="htmlPro" minWidth="-Infinity" styleClass="html"
+                                                        <Label fx:id="htmlPro" minWidth="-Infinity" styleClass="output-button,html"
                                                                text="HTML"/>
-                                                        <Label fx:id="pdfPro" minWidth="-Infinity" styleClass="pdf"
+                                                        <Label fx:id="pdfPro" minWidth="-Infinity" styleClass="output-button,pdf"
                                                                text="PDF"/>
-                                                        <Label fx:id="ebookPro" minWidth="-Infinity" styleClass="ebook"
+                                                        <Label fx:id="ebookPro" minWidth="-Infinity" styleClass="output-button,ebook"
                                                                text="Ebook"/>
                                                         <Label fx:id="docbookPro" minWidth="-Infinity"
-                                                               styleClass="docbook"
+                                                               styleClass="output-button,docbook"
                                                                text="Docbook"/>
                                                         <!--<Label fx:id="odfPro" minWidth="-Infinity" styleClass="docbook"-->
                                                                <!--text="Odt"/>-->
@@ -347,7 +347,7 @@
                                                     </HBox.margin>
                                                 </Pane>
                                                 <Label fx:id="browserPro" alignment="TOP_RIGHT" minWidth="-Infinity"
-                                                       styleClass="browser" text="Browser" textAlignment="LEFT"/>
+                                                       styleClass="output-button,browser" text="Browser" textAlignment="LEFT"/>
                                             </children>
                                             <padding>
                                                 <Insets bottom="5.0" left="15.0" right="15.0" top="5.0"/>
@@ -375,9 +375,9 @@
                             <slaves>
                                 <HBox fx:id="terminalHBox" minHeight="0">
                                     <children>
-                                        <VBox fx:id="terminalLeftBox" minHeight="0" spacing="5"/>
+                                        <VBox fx:id="terminalLeftBox" styleClass="terminal-left-box" minHeight="0" spacing="5"/>
                                         <TabPane fx:id="terminalTabPane" focusTraversable="false" minHeight="0"
-                                                 styleClass="floating" tabClosingPolicy="UNAVAILABLE"
+                                                 styleClass="floating terminal-tab-pane" tabClosingPolicy="UNAVAILABLE"
                                                  HBox.hgrow="ALWAYS"/>
                                     </children>
                                 </HBox>

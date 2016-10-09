@@ -1,0 +1,6 @@
+{
+  "enabled": true,
+  "theme-name": "Dark",
+  "root-css": "./Style.css",
+  "ace-theme": "tomorrow_night"
+}

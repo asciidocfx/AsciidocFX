@@ -5,11 +5,15 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
+import javafx.scene.Scene;
+import javafx.scene.web.WebView;
 import org.springframework.stereotype.Component;
 
 import java.util.Objects;
 import java.util.concurrent.*;
 import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 /**
  * Created by usta on 25.12.2014.
@@ -124,4 +128,30 @@ public class ThreadService {
         return buffMap.get(id);
     }
 
+    public <T> T supply(Supplier<T> supplier) {
+
+        if (Platform.isFxApplicationThread()) {
+            return supplier.get();
+        }
+
+        final CompletableFuture<T> completableFuture = new CompletableFuture<T>();
+        completableFuture.runAsync(() -> {
+            runActionLater(() -> {
+                try {
+                    T t = supplier.get();
+                    completableFuture.complete(t);
+                } catch (Exception e) {
+                    completableFuture.completeExceptionally(e);
+                }
+            });
+        }, threadPollWorker);
+
+        return completableFuture.join();
+    }
+
+    public <T> void runActionLater(Consumer<T> consumer, T t) {
+        runActionLater(() -> {
+            consumer.accept(t);
+        });
+    }
 }
