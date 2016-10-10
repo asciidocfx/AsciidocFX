@@ -85,11 +85,6 @@
             <artifactId>spring-boot-starter-undertow</artifactId>
         </dependency>
         <dependency>
-            <groupId>de.jensd</groupId>
-            <artifactId>fontawesomefx</artifactId>
-            <version>8.0.10</version>
-        </dependency>
-        <dependency>
             <groupId>org.jooq</groupId>
             <artifactId>joox</artifactId>
             <version>1.4.0</version>
@@ -151,6 +146,21 @@
             <artifactId>xslthl</artifactId>
             <version>2.1.0</version>
             <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.kordamp.ikonli</groupId>
+            <artifactId>ikonli-core</artifactId>
+            <version>1.7.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.kordamp.ikonli</groupId>
+            <artifactId>ikonli-javafx</artifactId>
+            <version>1.7.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.kordamp.ikonli</groupId>
+            <artifactId>ikonli-fontawesome-pack</artifactId>
+            <version>1.7.0</version>
         </dependency>
     </dependencies>
 
@@ -273,6 +283,11 @@
                 <updatePolicy>always</updatePolicy>
             </releases>
             <url>http://www.sparetimelabs.com/maven2</url>
+        </repository>
+        <repository>
+            <id>jcenter-central</id>
+            <name>jcenter</name>
+            <url>http://jcenter.bintray.com</url>
         </repository>
     </repositories>
 

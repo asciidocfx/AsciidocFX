@@ -158,4 +158,8 @@ public class ThreadService {
             consumer.accept(t);
         });
     }
+
+    public ScheduledFuture<?> scheduleWithDelay(Runnable runnable, int timeBetweenFramesMS, TimeUnit milliseconds) {
+        return scheduleWithDelay(runnable, 0, timeBetweenFramesMS, milliseconds);
+    }
 }

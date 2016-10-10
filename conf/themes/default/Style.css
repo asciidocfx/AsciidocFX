@@ -1,6 +1,6 @@
 @import '../Shared.css';
 
-.root-container {
+.root {
     -fx-base: #ececec;
 }
 
@@ -33,14 +33,16 @@
     -fx-background-color: #000000;
 }
 
-.top-menu .top-label, #showHideLogs * {
+.top-menu .top-label, .top-menu .top-label *, #showHideLogs * {
     -fx-text-fill: #7c7c7c;
     -fx-fill: -fx-text-fill;
+    -fx-icon-color: -fx-text-fill;
 }
 
-.top-menu .top-label:hover, #showHideLogs *:hover {
+.top-menu .top-label:hover, .top-menu .top-label *:hover, #showHideLogs *:hover {
     -fx-text-fill: #1e1e1e;
     -fx-fill: -fx-text-fill;
+    -fx-icon-color: -fx-text-fill;
     -fx-background-color: rgba(255, 255, 255, 0.10);
 }
 

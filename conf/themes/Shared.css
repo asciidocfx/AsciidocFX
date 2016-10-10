@@ -17,8 +17,13 @@
     -fx-effect: null;
 }
 
-.root-container {
+.root {
     -fx-font-size: 1em;
+}
+
+.ikonli-font-icon {
+    -fx-icon-color: -fx-text-base-color;
+    -fx-font-size: 1.4em;
 }
 
 .split-pane .split-pane-divider {
@@ -237,47 +242,58 @@
 
 .output-button.browser *, .output-button.browser {
     -fx-text-fill: rgba(205, 199, 120, 0.83);
+    -fx-icon-color: -fx-text-fill;
 }
 
 .output-button.browser *:hover, .output-button.browser:hover {
     -fx-text-fill: rgb(189, 183, 107);
+    -fx-icon-color: -fx-text-fill;
 }
 
 .output-button.pdf *, .output-button.pdf {
     -fx-text-fill: rgba(255, 0, 0, 0.43);
+    -fx-icon-color: -fx-text-fill;
 }
 
 .output-button.pdf *:hover, .output-button.pdf:hover {
     -fx-text-fill: rgba(255, 0, 0, 0.68);
+    -fx-icon-color: -fx-text-fill;
 }
 
 .output-button.html *, .output-button.html {
     -fx-text-fill: rgb(209, 209, 209);
+    -fx-icon-color: -fx-text-fill;
 }
 
 .output-button.html *:hover, .output-button.html:hover {
     -fx-text-fill: rgb(176, 176, 176);
+    -fx-icon-color: -fx-text-fill;
 }
 
 .output-button.ebook *, .output-button.ebook {
     -fx-text-fill: rgba(160, 205, 219, 0.82);
+    -fx-icon-color: -fx-text-fill;
 }
 
 .output-button.ebook *:hover, .label.ebook:hover {
     -fx-text-fill: #87acba;
+    -fx-icon-color: -fx-text-fill;
 }
 
 .output-button.docbook *, .output-button.docbook {
     -fx-text-fill: rgba(108, 209, 130, 0.65);
+    -fx-icon-color: -fx-text-fill;
 }
 
 .output-button.docbook *:hover, .output-button.docbook:hover {
     -fx-text-fill: rgba(90, 180, 106, 0.82);
+    -fx-icon-color: -fx-text-fill;
 }
 
 /* file icons */
 .tree-view .label, .tree-view * {
     -fx-text-fill: -fx-text-base-color;
+    -fx-icon-color: -fx-text-fill;
 }
 
 .button,

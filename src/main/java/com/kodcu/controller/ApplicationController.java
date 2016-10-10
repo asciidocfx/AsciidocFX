@@ -4,6 +4,7 @@ package com.kodcu.controller;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.install4j.api.launcher.ApplicationLauncher;
+import com.kodcu.animation.GifExporterFX;
 import com.kodcu.component.*;
 import com.kodcu.config.*;
 import com.kodcu.engine.AsciidocConverterProvider;
@@ -36,10 +37,7 @@ import com.kodcu.service.ui.TabService;
 import com.kodcu.service.ui.TooltipTimeFixService;
 import com.kodcu.shell.ShellTab;
 import com.kodcu.spell.dictionary.DictionaryService;
-import com.sun.javafx.collections.NonIterableChange;
 import com.sun.javafx.stage.StageHelper;
-import de.jensd.fx.fontawesome.AwesomeDude;
-import de.jensd.fx.fontawesome.AwesomeIcon;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
@@ -69,10 +67,11 @@ import javafx.scene.layout.*;
 import javafx.scene.text.Text;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import netscape.javascript.JSObject;
+import org.kordamp.ikonli.fontawesome.FontAwesome;
+import org.kordamp.ikonli.javafx.FontIcon;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -92,16 +91,16 @@ import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.attribute.PosixFileAttributeView;
-import java.nio.file.attribute.PosixFilePermission;
 import java.security.CodeSource;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -136,6 +135,9 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     public ToggleGroup rightToggleGroup;
     public ToggleButton toggleConfigButton;
     public Label basicSearch;
+    public Button newTerminalButton;
+    public Button closeTerminalButton;
+    public Button recordTerminalButton;
     private Logger logger = LoggerFactory.getLogger(ApplicationController.class);
     public Label odfPro = new Label();
     public VBox logVBox;
@@ -627,23 +629,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
         tooltipTimeFixService.fix();
 
-        // Convert menu label icons
-        AwesomeDude.setIcon(htmlPro, AwesomeIcon.HTML5);
-        AwesomeDude.setIcon(pdfPro, AwesomeIcon.FILE_PDF_ALT);
-        AwesomeDude.setIcon(ebookPro, AwesomeIcon.BOOK);
-        AwesomeDude.setIcon(docbookPro, AwesomeIcon.CODE);
-        AwesomeDude.setIcon(odfPro, AwesomeIcon.FILE_WORD_ALT);
-        AwesomeDude.setIcon(browserPro, AwesomeIcon.FLASH);
-
-
-        // Left menu label icons
-
-        AwesomeDude.setIcon(workingDirButton, AwesomeIcon.FOLDER_ALT, "14.0");
-        AwesomeDude.setIcon(refreshLabel, AwesomeIcon.REFRESH, "14.0");
-        AwesomeDude.setIcon(goUpLabel, AwesomeIcon.LEVEL_UP, "14.0");
-
-        AwesomeDude.setIcon(basicSearch, AwesomeIcon.SEARCH, "14.00");
-
         basicSearch.visibleProperty().bind(fileSystemView.focusedProperty().and(basicSearch.textProperty().isNotEmpty()));
         basicSearch.visibleProperty().addListener((observable, oldValue, newValue) -> {
             if (!newValue) {
@@ -729,7 +714,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
         });
 
-        leftButton.setGraphic(AwesomeDude.createIconLabel(AwesomeIcon.ELLIPSIS_H, "14.0"));
         afxVersionItem.setText(String.join(" ", "Version", version));
 
         ContextMenu htmlProMenu = new ContextMenu();
@@ -1108,22 +1092,60 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         }
     }
 
+    private ScheduledFuture<?> scheduledFuture = null;
+
     private void initializeTerminal() {
-        Button newTerminalButton = AwesomeDude.createIconButton(AwesomeIcon.PLUS);
-        Button closeTerminalButton = AwesomeDude.createIconButton(AwesomeIcon.CLOSE);
 
-        terminalLeftBox.getChildren().add(newTerminalButton);
-        terminalLeftBox.getChildren().add(closeTerminalButton);
+        terminalTabPane.getTabs().addListener(new ListChangeListener<Tab>() {
+            @Override
+            public void onChanged(Change<? extends Tab> c) {
 
-        Tooltip.install(newTerminalButton, new Tooltip("New Terminal"));
-        Tooltip.install(closeTerminalButton, new Tooltip("Close Terminal"));
+                while (c.next()) {
+                    recordTerminalButton.setDisable(c.getList().isEmpty());
+                }
+
+            }
+        });
+
+        recordTerminalButton.setOnAction(e -> {
+            if (Objects.isNull(scheduledFuture)) {
+                Tooltip.install(recordTerminalButton, new Tooltip("Stop"));
+                recordTerminalButton.setGraphic(new FontIcon(FontAwesome.STOP_CIRCLE_O));
+                scheduledFuture = this.recordTerminal(e);
+            } else {
+                Tooltip.install(recordTerminalButton, new Tooltip("Record"));
+                recordTerminalButton.setGraphic(new FontIcon(FontAwesome.PLAY_CIRCLE));
+                scheduledFuture.cancel(false);
+                scheduledFuture = null;
+            }
+        });
 
         newTerminalButton.setOnAction(this::newTerminal);
         closeTerminalButton.setOnAction(this::closeTerminal);
 
-        closeTerminalButton.setFocusTraversable(false);
-        newTerminalButton.setFocusTraversable(false);
+    }
 
+    private ScheduledFuture<?> recordTerminal(ActionEvent actionEvent) {
+
+        Tab tab = terminalTabPane.getSelectionModel().getSelectedItem();
+
+        if (Objects.isNull(tab)) {
+            return null;
+        }
+
+        GifExporterFX gifExporterFX = applicationContext.getBean(GifExporterFX.class);
+
+        try {
+            String gifName = LocalDateTime.now().format(DateTimeFormatter.ofPattern("'Image'-ddMMyy-hhmmss.SSS'.gif'"));
+            ScheduledFuture<?> scheduledFuture = gifExporterFX
+                    .captureNow(tab.getContent(), directoryService.workingDirectory().resolve(gifName), 120, true);
+
+            return scheduledFuture;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     private AtomicInteger terminalNumber = new AtomicInteger();

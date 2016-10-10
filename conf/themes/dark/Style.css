@@ -1,6 +1,6 @@
 @import '../Shared.css';
 
-.root-container {
+.root {
     -fx-base: rgb(50, 50, 50);
     -fx-background: rgb(50, 50, 50);
     -fx-control-inner-background: rgb(50, 50, 50);
@@ -56,12 +56,14 @@
 }
 
 /* Editor Top */
-.top-menu .top-label, #showHideLogs * {
+.top-menu .top-label, .top-menu .top-label *, #showHideLogs * {
     -fx-text-fill: derive(-fx-base, 95%);
+    -fx-icon-color: -fx-text-fill;
 }
 
-.top-menu .top-label:hover, #showHideLogs *:hover {
+.top-menu .top-label:hover, .top-menu .top-label *:hover, #showHideLogs *:hover {
     -fx-text-fill: -fx-text-background-color;
+    -fx-icon-color: -fx-text-fill;
 }
 
 .text-input {
@@ -74,4 +76,3 @@
     -fx-background-color: rgb(244, 244, 244);
     -fx-text-fill: -fx-base;
 }
-

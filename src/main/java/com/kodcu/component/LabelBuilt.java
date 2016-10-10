@@ -1,10 +1,12 @@
 package com.kodcu.component;
 
-import de.jensd.fx.fontawesome.AwesomeDude;
-import de.jensd.fx.fontawesome.AwesomeIcon;
+import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
+import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tooltip;
+import org.kordamp.ikonli.Ikon;
+import org.kordamp.ikonli.javafx.FontIcon;
 
 /**
  * Created by usta on 01.02.2015.
@@ -17,8 +19,9 @@ public class LabelBuilt {
         this.label = label;
     }
 
-    public static LabelBuilt icon(AwesomeIcon awesomeIcon, String iconSize, double minSize) {
-        Label iconLabel = AwesomeDude.createIconLabel(awesomeIcon, iconSize);
+    public static LabelBuilt icon(Ikon ikon, double minSize) {
+        Label iconLabel = new Label();
+        iconLabel.setGraphic(new FontIcon(ikon));
         iconLabel.setMinWidth(minSize);
         return new LabelBuilt(iconLabel);
     }

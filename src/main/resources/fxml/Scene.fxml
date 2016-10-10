@@ -5,6 +5,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.*?>
 <?import javafx.scene.layout.*?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
 <AnchorPane id="AnchorPane" fx:id="rootAnchor" styleClass="root-container"
             xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.kodcu.controller.ApplicationController"
             xmlns="http://javafx.com/javafx/8">
@@ -149,7 +150,11 @@
                                                         HBox.hgrow="NEVER">
                                                     <graphic>
                                                         <Label fx:id="workingDirButton" minWidth="-Infinity"
-                                                               mnemonicParsing="false" text=""/>
+                                                               mnemonicParsing="false" text="">
+                                                            <graphic>
+                                                                <FontIcon iconLiteral="fa-folder-open-o"/>
+                                                            </graphic>
+                                                        </Label>
                                                     </graphic>
                                                     <tooltip>
                                                         <Tooltip text="Change Workdir"/>
@@ -158,7 +163,11 @@
                                                 <Button minWidth="-Infinity" mnemonicParsing="false" onAction="#goUp"
                                                         text="">
                                                     <graphic>
-                                                        <Label fx:id="goUpLabel" text=""/>
+                                                        <Label fx:id="goUpLabel" text="">
+                                                            <graphic>
+                                                                <FontIcon iconLiteral="fa-level-up"/>
+                                                            </graphic>
+                                                        </Label>
                                                     </graphic>
                                                     <tooltip>
                                                         <Tooltip text="Go Up"/>
@@ -167,7 +176,11 @@
                                                 <Button minWidth="-Infinity" mnemonicParsing="false"
                                                         onAction="#refreshWorkingDir" text="">
                                                     <graphic>
-                                                        <Label fx:id="refreshLabel" text=""/>
+                                                        <Label fx:id="refreshLabel" text="">
+                                                            <graphic>
+                                                                <FontIcon iconLiteral="fa-refresh"/>
+                                                            </graphic>
+                                                        </Label>
                                                     </graphic>
                                                     <tooltip>
                                                         <Tooltip text="Refresh"/>
@@ -175,6 +188,9 @@
                                                 </Button>
                                                 <MenuButton fx:id="leftButton" minWidth="-Infinity"
                                                             mnemonicParsing="false" text="" HBox.hgrow="NEVER">
+                                                    <graphic>
+                                                        <FontIcon iconLiteral="fa-ellipsis-h"/>
+                                                    </graphic>
                                                     <items>
                                                         <MenuItem mnemonicParsing="false" onAction="#generateCheatSheet"
                                                                   text="Asciidoc Cheatsheet"/>
@@ -287,9 +303,11 @@
                                                         </ListView>
                                                     </slaves>
                                                 </ShowerHider>
-                                                <Label fx:id="basicSearch" text=""
-                                                       StackPane.alignment="TOP_RIGHT"
+                                                <Label fx:id="basicSearch" text="" StackPane.alignment="TOP_RIGHT"
                                                        styleClass="basic-search">
+                                                    <graphic>
+                                                        <FontIcon iconLiteral="fa-search"/>
+                                                    </graphic>
                                                     <StackPane.margin>
                                                         <Insets left="5.0" right="10.0"/>
                                                     </StackPane.margin>
@@ -327,17 +345,32 @@
                                                                            prefHeight="20.0" prefWidth="20.0"
                                                                            progress="-1.0"
                                                                            visible="false"/>
-                                                        <Label fx:id="htmlPro" minWidth="-Infinity" styleClass="output-button,html"
-                                                               text="HTML"/>
-                                                        <Label fx:id="pdfPro" minWidth="-Infinity" styleClass="output-button,pdf"
-                                                               text="PDF"/>
-                                                        <Label fx:id="ebookPro" minWidth="-Infinity" styleClass="output-button,ebook"
-                                                               text="Ebook"/>
+                                                        <Label fx:id="htmlPro" minWidth="-Infinity"
+                                                               styleClass="output-button,html" text="HTML">
+                                                            <graphic>
+                                                                <FontIcon iconLiteral="fa-html5"/>
+                                                            </graphic>
+                                                        </Label>
+                                                        <Label fx:id="pdfPro" minWidth="-Infinity"
+                                                               styleClass="output-button,pdf" text="PDF">
+                                                            <graphic>
+                                                                <FontIcon iconLiteral="fa-file-pdf-o"/>
+                                                            </graphic>
+                                                        </Label>
+                                                        <Label fx:id="ebookPro" minWidth="-Infinity"
+                                                               styleClass="output-button,ebook" text="Ebook">
+                                                            <graphic>
+                                                                <FontIcon iconLiteral="fa-book"/>
+                                                            </graphic>
+                                                        </Label>
                                                         <Label fx:id="docbookPro" minWidth="-Infinity"
-                                                               styleClass="output-button,docbook"
-                                                               text="Docbook"/>
+                                                               styleClass="output-button,docbook" text="Docbook">
+                                                            <graphic>
+                                                                <FontIcon iconLiteral="fa-file-word-o"/>
+                                                            </graphic>
+                                                        </Label>
                                                         <!--<Label fx:id="odfPro" minWidth="-Infinity" styleClass="docbook"-->
-                                                               <!--text="Odt"/>-->
+                                                        <!--text="Odt"/>-->
                                                     </children>
                                                 </FlowPane>
                                                 <Pane maxWidth="1.7976931348623157E308" prefHeight="1.0" prefWidth="1.0"
@@ -347,7 +380,12 @@
                                                     </HBox.margin>
                                                 </Pane>
                                                 <Label fx:id="browserPro" alignment="TOP_RIGHT" minWidth="-Infinity"
-                                                       styleClass="output-button,browser" text="Browser" textAlignment="LEFT"/>
+                                                       styleClass="output-button,browser" text="Browser"
+                                                       textAlignment="LEFT">
+                                                    <graphic>
+                                                        <FontIcon iconLiteral="fa-flash"/>
+                                                    </graphic>
+                                                </Label>
                                             </children>
                                             <padding>
                                                 <Insets bottom="5.0" left="15.0" right="15.0" top="5.0"/>
@@ -375,7 +413,35 @@
                             <slaves>
                                 <HBox fx:id="terminalHBox" minHeight="0">
                                     <children>
-                                        <VBox fx:id="terminalLeftBox" styleClass="terminal-left-box" minHeight="0" spacing="5"/>
+                                        <VBox fx:id="terminalLeftBox" styleClass="terminal-left-box" minHeight="0"
+                                              spacing="5">
+                                            <children>
+                                                <Button fx:id="newTerminalButton" focusTraversable="false">
+                                                    <graphic>
+                                                        <FontIcon iconLiteral="fa-plus"/>
+                                                    </graphic>
+                                                    <tooltip>
+                                                        <Tooltip text="New Terminal"/>
+                                                    </tooltip>
+                                                </Button>
+                                                <Button fx:id="closeTerminalButton" focusTraversable="false">
+                                                    <graphic>
+                                                        <FontIcon iconLiteral="fa-close"/>
+                                                    </graphic>
+                                                    <tooltip>
+                                                        <Tooltip text="Close Terminal"/>
+                                                    </tooltip>
+                                                </Button>
+                                                <Button fx:id="recordTerminalButton" focusTraversable="false">
+                                                    <graphic>
+                                                        <FontIcon iconLiteral="fa-play-circle"/>
+                                                    </graphic>
+                                                    <tooltip>
+                                                        <Tooltip text="Record"/>
+                                                    </tooltip>
+                                                </Button>
+                                            </children>
+                                        </VBox>
                                         <TabPane fx:id="terminalTabPane" focusTraversable="false" minHeight="0"
                                                  styleClass="floating terminal-tab-pane" tabClosingPolicy="UNAVAILABLE"
                                                  HBox.hgrow="ALWAYS"/>

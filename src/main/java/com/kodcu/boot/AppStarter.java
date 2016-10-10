@@ -51,6 +51,7 @@ public class AppStarter extends Application {
 
         // http://bit.ly/1Euk8hh
         System.setProperty("jsse.enableSNIExtension", "false");
+//        System.setProperty("https.protocols", "SSLv3");
 
         final CmdlineConfig config = new CmdlineConfig();
         final CmdlineParser cp = new CmdlineParser(config);
