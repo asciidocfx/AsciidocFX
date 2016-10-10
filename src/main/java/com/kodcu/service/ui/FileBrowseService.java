@@ -444,7 +444,7 @@ public class FileBrowseService {
 
         threadService.runTaskLater(() -> {
 
-            List<TreeItem<Item>> foundItems = searchItems(text);
+            List<TreeItem<Item>> foundItems = searchItems(text.trim());
 
             if (foundItems.isEmpty()) {
                 return;

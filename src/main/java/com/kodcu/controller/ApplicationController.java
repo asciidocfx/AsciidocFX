@@ -696,10 +696,14 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                             String character = event.getCharacter();
                             char[] chars = character.toCharArray();
                             if (chars.length > 0) {
-                                if (chars[0] == '\u0000') {
-                                    return "";
+                                String text = new String(chars);
+                                if (chars.length == 1) {
+                                    if (chars[0] == ' ') {
+                                        return text;
+                                    }
+                                    return text.trim();
                                 } else {
-                                    return new String(chars);
+                                    return text;
                                 }
                             }
                             return character;
