@@ -16,6 +16,8 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 import java.awt.image.BufferedImage;
+import java.awt.image.DataBuffer;
+import java.awt.image.DataBufferInt;
 import java.io.*;
 import java.net.URLDecoder;
 import java.nio.charset.Charset;
@@ -23,10 +25,7 @@ import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileAttribute;
 import java.nio.file.attribute.FileTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.BiPredicate;
 import java.util.stream.Stream;
 
@@ -475,10 +474,41 @@ public class IOHelper {
 
     public static Stream<Path> walk(Path path, int deepth) {
         try {
-            return Files.walk(path,deepth);
+            return Files.walk(path, deepth);
         } catch (Exception e) {
             logger.warn("Problem occured while walking path {}", path);
         }
         return Stream.empty();
+    }
+
+    public static boolean isSameImage(BufferedImage firstImage, BufferedImage secondImage) {
+
+        if (Objects.isNull(firstImage)) {
+            return false;
+        }
+
+        if (Objects.isNull(secondImage)) {
+            return false;
+        }
+
+        // The images must be the same size.
+        if (firstImage.getWidth() == secondImage.getWidth() && firstImage.getHeight() == secondImage.getHeight()) {
+            int width = firstImage.getWidth();
+            int height = firstImage.getHeight();
+
+            // Loop over every pixel.
+            for (int y = 0; y < height; y++) {
+                for (int x = 0; x < width; x++) {
+                    // Compare the pixels for equality.
+                    if (firstImage.getRGB(x, y) != secondImage.getRGB(x, y)) {
+                        return false;
+                    }
+                }
+            }
+        } else {
+            return false;
+        }
+
+        return true;
     }
 }
