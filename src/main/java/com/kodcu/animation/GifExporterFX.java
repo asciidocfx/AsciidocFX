@@ -17,6 +17,7 @@ import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.Node;
 import javafx.scene.image.WritableImage;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import javax.imageio.stream.FileImageOutputStream;
@@ -26,6 +27,7 @@ import javax.imageio.stream.ImageOutputStream;
  * @author william
  */
 @Component
+@Lazy
 public class GifExporterFX {
 
     private final ThreadService threadService;
