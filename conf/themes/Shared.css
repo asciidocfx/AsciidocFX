@@ -240,6 +240,10 @@
 
 /* Output Buttons */
 
+.output-button{
+    -fx-font-size: 1.3em !important;
+}
+
 .output-button.browser *, .output-button.browser {
     -fx-text-fill: rgba(205, 199, 120, 0.83);
     -fx-icon-color: -fx-text-fill;
