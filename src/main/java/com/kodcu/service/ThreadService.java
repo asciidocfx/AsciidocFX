@@ -40,6 +40,10 @@ public class ThreadService {
         return scheduledWorker.schedule(runnable, delay, timeUnit);
     }
 
+    public ScheduledFuture<?> scheduleWithDelay(Runnable runnable, long initialDelay, long delay, TimeUnit timeUnit) {
+        return scheduledWorker.scheduleWithFixedDelay(runnable, initialDelay, delay, timeUnit);
+    }
+
     // Runs Task in background thread pool
     public <T> Future<?> runTaskLater(Runnable runnable) {
 
