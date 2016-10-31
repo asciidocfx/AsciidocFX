@@ -162,6 +162,11 @@
             <artifactId>ikonli-fontawesome-pack</artifactId>
             <version>1.7.0</version>
         </dependency>
+        <dependency>
+            <groupId>com.asciidocfx</groupId>
+            <artifactId>terminalfx</artifactId>
+            <version>1.2</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -267,13 +272,8 @@
             </releases>
         </repository>
         <repository>
-            <id>rahmanusta-releases</id>
-            <releases>
-                <enabled>true</enabled>
-                <checksumPolicy>warn</checksumPolicy>
-                <updatePolicy>always</updatePolicy>
-            </releases>
-            <url>http://asciidocfx.com/build</url>
+            <id>terminalfx-repo</id>
+            <url>https://github.com/rahmanusta/terminalfx/raw/master/releases</url>
         </repository>
         <repository>
             <id>javacomm-repo</id>
@@ -288,6 +288,15 @@
             <id>jcenter-central</id>
             <name>jcenter</name>
             <url>http://jcenter.bintray.com</url>
+        </repository>
+        <repository>
+            <id>rahmanusta-releases</id>
+            <releases>
+                <enabled>true</enabled>
+                <checksumPolicy>warn</checksumPolicy>
+                <updatePolicy>always</updatePolicy>
+            </releases>
+            <url>http://asciidocfx.com/build</url>
         </repository>
     </repositories>
 

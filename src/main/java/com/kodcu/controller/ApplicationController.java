@@ -35,13 +35,16 @@ import com.kodcu.service.ui.FileBrowseService;
 import com.kodcu.service.ui.IndikatorService;
 import com.kodcu.service.ui.TabService;
 import com.kodcu.service.ui.TooltipTimeFixService;
-import com.kodcu.shell.ShellTab;
 import com.kodcu.spell.dictionary.DictionaryService;
 import com.sun.javafx.stage.StageHelper;
+import com.terminalfx.TerminalBuilder;
+import com.terminalfx.TerminalTab;
+import com.terminalfx.config.TerminalConfig;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
 import javafx.application.HostServices;
+import javafx.application.Platform;
 import javafx.beans.property.*;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -64,6 +67,7 @@ import javafx.scene.control.cell.TextFieldTreeCell;
 import javafx.scene.image.Image;
 import javafx.scene.input.*;
 import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
@@ -91,6 +95,7 @@ import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -207,6 +212,9 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     @Autowired
     private EditorConfigBean editorConfigBean;
+
+    @Autowired
+    private TerminalConfigBean terminalConfigBean;
 
     @Autowired
     private LocationConfigBean locationConfigBean;
@@ -590,9 +598,9 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
         terminalTabPane.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             Optional.ofNullable(newValue)
-                    .map(e -> ((ShellTab) e))
-                    .filter(ShellTab::isReady)
-                    .ifPresent(ShellTab::focusCursor);
+                    .map(e -> ((TerminalTab) e))
+                    .filter(TerminalTab::isReady)
+                    .ifPresent(TerminalTab::focusCursor);
         });
 
 
@@ -1152,8 +1160,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         return null;
     }
 
-    private AtomicInteger terminalNumber = new AtomicInteger();
-
     @FXML
     public void newTerminal(ActionEvent actionEvent, Path... path) {
 
@@ -1161,32 +1167,31 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             terminalToggleButton.fire();
         }
 
-        if (terminalTabPane.getTabs().isEmpty()) {
-            terminalNumber.set(0);
-        }
+        TerminalConfig terminalConfig = terminalConfigBean.createTerminalConfig();
 
-        ShellTab shellTab = applicationContext.getBean(ShellTab.class);
-        shellTab.setText(String.format("Terminal#%d", terminalNumber.incrementAndGet()));
-        terminalTabPane.getTabs().add(shellTab);
-        terminalTabPane.getSelectionModel().select(shellTab);
+        TerminalBuilder terminalBuilder = new TerminalBuilder(terminalConfig);
 
         Path terminalPath = Optional.ofNullable(path).filter(e -> e.length > 0).map(e -> e[0]).orElse(directoryService.workingDirectory());
-        shellTab.setTerminalPath(terminalPath);
-        shellTab.initialize();
+        terminalBuilder.setTerminalPath(terminalPath);
+
+        TerminalTab terminalTab = terminalBuilder.newTerminal();
+
+        terminalTabPane.getTabs().add(terminalTab);
+        terminalTabPane.getSelectionModel().select(terminalTab);
 
     }
 
     @FXML
     public void closeTerminal(ActionEvent actionEvent) {
-        ShellTab shellTab = (ShellTab) terminalTabPane.getSelectionModel().getSelectedItem();
-        Optional.ofNullable(shellTab).ifPresent(ShellTab::closeTab);
+        TerminalTab shellTab = (TerminalTab) terminalTabPane.getSelectionModel().getSelectedItem();
+        Optional.ofNullable(shellTab).ifPresent(TerminalTab::closeTerminal);
     }
 
     public void closeAllTerminal(ActionEvent actionEvent) {
         ObservableList<Tab> tabs = FXCollections.observableArrayList(terminalTabPane.getTabs());
 
         for (Tab tab : tabs) {
-            ((ShellTab) tab).closeTab();
+            ((TerminalTab) tab).closeTerminal();
         }
     }
 
@@ -1195,7 +1200,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         tabs.remove(terminalTabPane.getSelectionModel().getSelectedItem());
 
         for (Tab tab : tabs) {
-            ((ShellTab) tab).closeTab();
+            ((TerminalTab) tab).closeTerminal();
         }
     }
 
@@ -1380,6 +1385,10 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             }
         });
 
+        terminalConfigBean.setOnConfigChanged(() -> {
+            applyForEachTerminal(terminalTab -> terminalTab.updatePrefs(terminalConfigBean.createTerminalConfig()));
+        });
+
         locationConfigBean.mathjaxProperty().addListener((observable, oldValue, newValue) -> {
             if (Objects.nonNull(newValue)) {
                 if (!newValue.equals(oldValue)) {
@@ -1520,6 +1529,13 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                 MyTab myTab = (MyTab) tab;
                 editorPaneConsumer.accept(myTab.getEditorPane());
             }
+        }
+    }
+
+    private void applyForEachTerminal(Consumer<TerminalTab> terminalTabConsumer) {
+        ObservableList<Tab> tabs = terminalTabPane.getTabs();
+        for (Tab tab : tabs) {
+            terminalTabConsumer.accept(((TerminalTab) tab));
         }
     }
 
@@ -3098,6 +3114,8 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                     }
                 }
 
+                terminalConfigBean.changeTheme(theme);
+
             } catch (Exception e) {
                 logger.error("Error occured while setting new theme {}", theme);
             }
@@ -3127,6 +3145,8 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                 String aceTheme = theme.getAceTheme();
                 editorConfigBean.getAceTheme().remove(aceTheme);
                 editorConfigBean.getAceTheme().add(0, aceTheme);
+
+                terminalConfigBean.changeTheme(theme);
 
             } catch (Exception e) {
                 logger.error("Error occured while setting new theme {}", theme);
