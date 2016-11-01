@@ -2,5 +2,5 @@
   "enabled": true,
   "theme-name": "Default",
   "root-css": "./Style.css",
-  "ace-theme": "github"
+  "ace-theme": "xcode"
 }
