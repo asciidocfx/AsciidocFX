@@ -1,7 +1,7 @@
 
 {
     "fontFamily":"'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace",
-    "fontSize":14,
+    "fontSize":16,
     "scrollSpeed":0.1,
     "useWrapMode":true,
     "wrapLimit":0,

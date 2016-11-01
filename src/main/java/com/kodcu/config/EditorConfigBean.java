@@ -53,7 +53,7 @@ public class EditorConfigBean extends ConfigurationBase {
     private DoubleProperty firstSplitter = new SimpleDoubleProperty(0.17551963048498845);
     private DoubleProperty secondSplitter = new SimpleDoubleProperty(0.5996920708237106);
     private StringProperty fontFamily = new SimpleStringProperty("'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace");
-    private ObjectProperty<Integer> fontSize = new SimpleObjectProperty(14);
+    private ObjectProperty<Integer> fontSize = new SimpleObjectProperty(16);
     private DoubleProperty scrollSpeed = new SimpleDoubleProperty(0.1);
     private BooleanProperty useWrapMode = new SimpleBooleanProperty(true);
     private ObjectProperty<Integer> wrapLimit = new SimpleObjectProperty<>(0);
