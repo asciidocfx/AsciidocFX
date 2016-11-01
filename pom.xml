@@ -137,11 +137,6 @@
             </exclusions>
         </dependency>
         <dependency>
-            <groupId>com.asciidocfx.pty4j</groupId>
-            <artifactId>pty4j</artifactId>
-            <version>0.7.2</version>
-        </dependency>
-        <dependency>
             <groupId>net.sf.xslthl</groupId>
             <artifactId>xslthl</artifactId>
             <version>2.1.0</version>
