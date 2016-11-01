@@ -33,6 +33,7 @@ image::images/asciidocfx.png[]
 * Deck.js Converter
 * Nashorn support
 * Pseudo Terminal Emulator
+* Themeing (Dark & White) _New _
 
 == Pseudo Terminal Emulator
 
