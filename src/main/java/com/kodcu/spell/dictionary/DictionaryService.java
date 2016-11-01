@@ -58,9 +58,9 @@ public class DictionaryService {
         } catch (NullPointerException e) {
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
-        } finally {
-            return null;
         }
+
+        return null;
     }
 
 
