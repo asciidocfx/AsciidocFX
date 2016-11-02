@@ -22,11 +22,12 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.sax.SAXResult;
 import javax.xml.transform.stream.StreamSource;
-import java.io.*;
+import java.io.BufferedOutputStream;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Iterator;
-import java.util.List;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 import static java.nio.file.StandardOpenOption.*;
@@ -46,6 +47,7 @@ public class PdfBookConverter implements DocumentConverter<String> {
     private final DirectoryService directoryService;
     private final Current current;
     private final PathResolverService pathResolverService;
+    private FopFactory fopFactory;
 
     @Autowired
     public PdfBookConverter(final ApplicationController asciiDocController, final DocBookConverter docBookConverter,
@@ -67,7 +69,6 @@ public class PdfBookConverter implements DocumentConverter<String> {
         final Path currentTabPath = current.currentPath().get();
         final Path currentTabPathDir = currentTabPath.getParent();
         final Path configPath = asciiDocController.getConfigPath();
-        final String tabText = current.getCurrentTabText().replace("*", "").trim();
 
         threadService.runActionLater(() -> {
 
@@ -85,39 +86,31 @@ public class PdfBookConverter implements DocumentConverter<String> {
                     // Setup XSLT
                     TransformerFactory factory = TransformerFactory.newInstance();
                     Transformer transformer = factory.newTransformer(new StreamSource(configPath.resolve("docbook-config/fo-pdf.xsl").toFile()));
-//                        transformer.setParameter("versionParam", "1.0");
                     transformer.setParameter("highlight.xslthl.config", configPath.resolve("docbook-config/xslthl-config.xml").toUri().toASCIIString());
                     transformer.setParameter("admon.graphics.path", configPath.resolve("docbook/images/").toUri().toASCIIString());
                     transformer.setParameter("callout.graphics.path", configPath.resolve("docbook/images/callouts/").toUri().toASCIIString());
 
-                    try (BufferedInputStream configStream = new BufferedInputStream(new FileInputStream(configPath.resolve("docbook-config/fop.xconf.xml").toFile()));) {
-                        FopFactory fopFactory = FopFactory.newInstance(docbookTempfile.getParent().toUri(), configStream);
-                        FOUserAgent foUserAgent = fopFactory.newFOUserAgent();
-
-                        Fop fop = fopFactory.newFop(MimeConstants.MIME_PDF, foUserAgent, outputStream);
-
-                        try (BufferedInputStream inputStream = new BufferedInputStream(new FileInputStream(docbookTempfile.toFile()));) {
-
-                            // Setup input for XSLT transformation
-                            Source src = new StreamSource(inputStream);
-
-                            // Resulting SAX events (the generated FO) must be piped through to FOP
-                            Result res = new SAXResult(fop.getDefaultHandler());
-
-                            // Step 6: Start XSLT transformation and FOP processing
-                            transformer.transform(src, res);
-
-                            Files.deleteIfExists(docbookTempfile);
-
-                            // Result processing
-                            FormattingResults foResults = fop.getResults();
-
-                            logger.info("Generated {} pages in total.", foResults.getPageCount());
-
-                        }
-
+                    if (Objects.isNull(fopFactory)) {
+                        fopFactory = FopFactory.newInstance(configPath.resolve("docbook-config/fop.xconf.xml").toFile());
                     }
 
+                    Fop fop = fopFactory.newFop(MimeConstants.MIME_PDF, outputStream);
+
+                    // Setup input for XSLT transformation
+                    Source src = new StreamSource(docbookTempfile.toFile());
+
+                    // Resulting SAX events (the generated FO) must be piped through to FOP
+                    Result res = new SAXResult(fop.getDefaultHandler());
+
+                    // Step 6: Start XSLT transformation and FOP processing
+                    transformer.transform(src, res);
+
+                    Files.deleteIfExists(docbookTempfile);
+
+                    // Result processing
+                    FormattingResults foResults = fop.getResults();
+
+                    logger.info("Generated {} pages in total.", foResults.getPageCount());
 
                 } catch (Exception e) {
                     logger.error("Problem occured while converting to PDF", e);
@@ -130,16 +123,5 @@ public class PdfBookConverter implements DocumentConverter<String> {
             });
         });
 
-//            final Vector<String> params = new Vector<>();
-//            params.add("body.font.family");
-//            params.add("Arial");
-//            params.add("title.font.family");
-//            params.add("Arial");
-//            params.add("highlight.xslthl.config");
-//            params.add(configPath.resolve("docbook-config/xslthl-config.xml").toUri().toASCIIString());
-//            params.add("admon.graphics.path");
-//            params.add(configPath.resolve("docbook/images/").toUri().toASCIIString());
-//            params.add("callout.graphics.path");
-//            params.add(configPath.resolve("docbook/images/callouts/").toUri().toASCIIString());
     }
 }
