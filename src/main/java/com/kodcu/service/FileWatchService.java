@@ -142,7 +142,13 @@ public class FileWatchService {
             }
 
             if (updateFsView) {
-                fileBrowseService.refreshPathToTree(path);
+                Path changedPath = null;
+
+                if (watchEvents.size() == 1) {
+                    WatchEvent<Path> ev = (WatchEvent<Path>) watchEvents.get(0);
+                    changedPath = path.resolve(ev.context());
+                }
+                fileBrowseService.refreshPathToTree(path,changedPath);
             }
 
         }

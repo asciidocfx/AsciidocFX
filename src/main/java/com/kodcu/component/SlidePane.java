@@ -13,6 +13,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
+
 /**
  * Created by usta on 09.04.2015.
  */
@@ -27,19 +29,25 @@ public class SlidePane extends ViewPanel {
     public SlidePane(ThreadService threadService, ApplicationController controller, Current current, AsciidocWebkitConverter asciidocWebkitConverter) {
         super(threadService, controller, current);
         this.asciidocWebkitConverter = asciidocWebkitConverter;
-        getWindow().setMember("afx", controller);
-        Worker<Void> loadWorker = webEngine().getLoadWorker();
-        ReadOnlyObjectProperty<Worker.State> stateProperty = loadWorker.stateProperty();
-        stateProperty.addListener(this::stateListener);
+
+    }
+
+    @PostConstruct
+    public void afterInit() {
+        threadService.runActionLater(() -> {
+            getWindow().setMember("afx", controller);
+            ReadOnlyObjectProperty<Worker.State> stateProperty = webEngine().getLoadWorker().stateProperty();
+            stateProperty.addListener(this::stateListener);
+        });
     }
 
     private void stateListener(ObservableValue<? extends Worker.State> observable, Worker.State oldValue, Worker.State newValue) {
         if (newValue == Worker.State.SUCCEEDED) {
             getWindow().setMember("afx", controller);
             if ("revealjs".equals(backend))
-                this.loadJs("/afx/worker/?p=js/jquery.js", "/afx/worker/?p=js/reveal-extensions.js");
+                this.loadJs("/afx/worker/js/?p=js/jquery.js", "/afx/worker/js/?p=js/reveal-extensions.js");
             if ("deckjs".equals(backend))
-                this.loadJs("/afx/worker/?p=js/deck-extensions.js");
+                this.loadJs("/afx/worker/js/?p=js/deck-extensions.js");
         }
     }
 
@@ -87,7 +95,7 @@ public class SlidePane extends ViewPanel {
 
     @Override
     public void browse() {
-      super.browse();
+        super.browse();
     }
 
     public void setBackend(String backend) {

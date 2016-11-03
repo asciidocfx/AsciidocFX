@@ -1,4 +1,4 @@
-var myWorker = new Worker("/afx/worker/?p=js/webworker.js");
+var myWorker = new Worker("/afx/worker/js/?p=js/webworker.js");
 myWorker.onmessage = function (e) {
 
     var data = (typeof e.data) == "string" ? JSON.parse(e.data) : e.data;

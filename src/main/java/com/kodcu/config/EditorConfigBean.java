@@ -35,10 +35,9 @@ import org.springframework.stereotype.Component;
 
 import javax.json.*;
 import java.io.Reader;
+import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.List;
-import java.util.Objects;
-import java.util.ResourceBundle;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -48,21 +47,18 @@ import java.util.stream.Stream;
 @Component
 public class EditorConfigBean extends ConfigurationBase {
 
-
-    private ObjectProperty<ObservableList<String>> editorTheme = new SimpleObjectProperty<>(FXCollections.observableArrayList());
+    private ObjectProperty<ObservableList<String>> aceTheme = new SimpleObjectProperty<>(FXCollections.observableArrayList());
+    private ObjectProperty<ObservableList<Theme>> editorTheme = new SimpleObjectProperty<>(FXCollections.observableArrayList());
+    private ObjectProperty<ObservableList<String>> defaultLanguage = new SimpleObjectProperty<>(FXCollections.observableArrayList());
     private DoubleProperty firstSplitter = new SimpleDoubleProperty(0.17551963048498845);
     private DoubleProperty secondSplitter = new SimpleDoubleProperty(0.5996920708237106);
     private StringProperty fontFamily = new SimpleStringProperty("'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace");
-    private ObjectProperty<Integer> fontSize = new SimpleObjectProperty(14);
+    private ObjectProperty<Integer> fontSize = new SimpleObjectProperty(16);
     private DoubleProperty scrollSpeed = new SimpleDoubleProperty(0.1);
     private BooleanProperty useWrapMode = new SimpleBooleanProperty(true);
     private ObjectProperty<Integer> wrapLimit = new SimpleObjectProperty<>(0);
     private BooleanProperty showGutter = new SimpleBooleanProperty(false);
-    private ObjectProperty<ObservableList<String>> defaultLanguage = new SimpleObjectProperty<>(FXCollections.observableArrayList());
     private BooleanProperty autoUpdate = new SimpleBooleanProperty(true);
-    private StringProperty terminalCharset = new SimpleStringProperty("UTF-8");
-    private StringProperty terminalWinCommand = new SimpleStringProperty("cmd.exe");
-    private StringProperty terminalNixCommand = new SimpleStringProperty("/bin/bash -i");
     private BooleanProperty validateDocbook = new SimpleBooleanProperty(true);
     private StringProperty clipboardImageFilePattern = new SimpleStringProperty("'Image'-ddMMyy-hhmmss.SSS'.png'");
     private DoubleProperty screenX = new SimpleDoubleProperty(0);
@@ -126,16 +122,16 @@ public class EditorConfigBean extends ConfigurationBase {
         this.useWrapMode.set(useWrapMode);
     }
 
-    public ObservableList<String> getEditorTheme() {
-        return editorTheme.get();
+    public ObservableList<String> getAceTheme() {
+        return aceTheme.get();
     }
 
-    public ObjectProperty<ObservableList<String>> editorThemeProperty() {
-        return editorTheme;
+    public ObjectProperty<ObservableList<String>> aceThemeProperty() {
+        return aceTheme;
     }
 
-    public void setEditorTheme(ObservableList<String> editorTheme) {
-        this.editorTheme.set(editorTheme);
+    public void setAceTheme(ObservableList<String> aceTheme) {
+        this.aceTheme.set(aceTheme);
     }
 
     public String getFontFamily() {
@@ -222,42 +218,6 @@ public class EditorConfigBean extends ConfigurationBase {
         this.autoUpdate.set(autoUpdate);
     }
 
-    public String getTerminalCharset() {
-        return terminalCharset.get();
-    }
-
-    public StringProperty terminalCharsetProperty() {
-        return terminalCharset;
-    }
-
-    public void setTerminalCharset(String terminalCharset) {
-        this.terminalCharset.set(terminalCharset);
-    }
-
-    public String getTerminalNixCommand() {
-        return terminalNixCommand.get();
-    }
-
-    public StringProperty terminalNixCommandProperty() {
-        return terminalNixCommand;
-    }
-
-    public void setTerminalNixCommand(String terminalNixCommand) {
-        this.terminalNixCommand.set(terminalNixCommand);
-    }
-
-    public String getTerminalWinCommand() {
-        return terminalWinCommand.get();
-    }
-
-    public StringProperty terminalWinCommandProperty() {
-        return terminalWinCommand;
-    }
-
-    public void setTerminalWinCommand(String terminalWinCommand) {
-        this.terminalWinCommand.set(terminalWinCommand);
-    }
-
     public boolean getValidateDocbook() {
         return validateDocbook.get();
     }
@@ -282,8 +242,8 @@ public class EditorConfigBean extends ConfigurationBase {
         this.clipboardImageFilePattern.set(clipboardImageFilePattern);
     }
 
-    public double getScreenY() {
-        return screenY.get();
+    public Double getScreenY() {
+        return screenY.getValue();
     }
 
     public DoubleProperty screenYProperty() {
@@ -294,8 +254,8 @@ public class EditorConfigBean extends ConfigurationBase {
         this.screenY.set(screenY);
     }
 
-    public double getScreenX() {
-        return screenX.get();
+    public Double getScreenX() {
+        return screenX.getValue();
     }
 
     public DoubleProperty screenXProperty() {
@@ -306,8 +266,8 @@ public class EditorConfigBean extends ConfigurationBase {
         this.screenX.set(screenX);
     }
 
-    public double getScreenWidth() {
-        return screenWidth.get();
+    public Double getScreenWidth() {
+        return screenWidth.getValue();
     }
 
     public DoubleProperty screenWidthProperty() {
@@ -318,8 +278,8 @@ public class EditorConfigBean extends ConfigurationBase {
         this.screenWidth.set(screenWidth);
     }
 
-    public double getScreenHeight() {
-        return screenHeight.get();
+    public Double getScreenHeight() {
+        return screenHeight.getValue();
     }
 
     public DoubleProperty screenHeightProperty() {
@@ -354,6 +314,18 @@ public class EditorConfigBean extends ConfigurationBase {
         this.hangFileSizeLimit.set(hangFileSizeLimit);
     }
 
+    public ObservableList<Theme> getEditorTheme() {
+        return editorTheme.get();
+    }
+
+    public ObjectProperty<ObservableList<Theme>> editorThemeProperty() {
+        return editorTheme;
+    }
+
+    public void setEditorTheme(ObservableList<Theme> editorTheme) {
+        this.editorTheme.set(editorTheme);
+    }
+
     @Override
     public String formName() {
         return "Editor Settings";
@@ -364,15 +336,16 @@ public class EditorConfigBean extends ConfigurationBase {
 
         FXForm editorConfigForm = new FXFormBuilder<>()
                 .resourceBundle(ResourceBundle.getBundle("editorConfig"))
-                .includeAndReorder("showDonate", "validateDocbook", "editorTheme", "fontFamily", "fontSize",
+                .includeAndReorder("editorTheme", "aceTheme", "validateDocbook", "fontFamily", "fontSize",
                         "scrollSpeed", "useWrapMode", "wrapLimit", "foldStyle", "showGutter", "defaultLanguage", "autoUpdate",
-                        "terminalWinCommand", "terminalNixCommand", "terminalCharset", "clipboardImageFilePattern", "hangFileSizeLimit")
+                        "clipboardImageFilePattern", "hangFileSizeLimit")
                 .build();
 
         DefaultFactoryProvider editorConfigFormProvider = new DefaultFactoryProvider();
 
-        editorConfigFormProvider.addFactory(new NamedFieldHandler("editorTheme"), new ListChoiceBoxFactory(new ChoiceBox()));
-        editorConfigFormProvider.addFactory(new NamedFieldHandler("defaultLanguage"), new ListChoiceBoxFactory(new ChoiceBox()));
+        editorConfigFormProvider.addFactory(new NamedFieldHandler("aceTheme"), new ListChoiceBoxFactory());
+        editorConfigFormProvider.addFactory(new NamedFieldHandler("editorTheme"), new ListChoiceBoxFactory());
+        editorConfigFormProvider.addFactory(new NamedFieldHandler("defaultLanguage"), new ListChoiceBoxFactory());
         editorConfigFormProvider.addFactory(new NamedFieldHandler("scrollSpeed"), new SliderFactory(SliderBuilt.create(0.0, 1, 0.1).step(0.1)));
         editorConfigFormProvider.addFactory(new NamedFieldHandler("fontSize"), new SpinnerFactory(new Spinner(8, 32, 14)));
         editorConfigFormProvider.addFactory(new NamedFieldHandler("wrapLimit"), new SpinnerFactory(new Spinner(0, 500, 0)));
@@ -406,7 +379,7 @@ public class EditorConfigBean extends ConfigurationBase {
 
         fadeOut(infoLabel, "Loading...");
 
-        List<String> aceThemeList = IOHelper.readAllLines(getConfigDirectory().resolve("ace_themes.txt"));
+        List<String> aceThemeList = new LinkedList<>(IOHelper.readAllLines(getConfigDirectory().resolve("ace_themes.txt")));
         List<String> languageList = this.languageList();
 
         Reader fileReader = IOHelper.fileReader(getConfigPath());
@@ -416,35 +389,62 @@ public class EditorConfigBean extends ConfigurationBase {
 
         String fontFamily = jsonObject.getString("fontFamily", "'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace");
         int fontSize = jsonObject.getInt("fontSize", 14);
-        String theme = jsonObject.getString("editorTheme", "xcode");
+        String aceTheme = jsonObject.getString("aceTheme", "xcode");
         String defaultLanguage = jsonObject.getString("defaultLanguage", "en");
         boolean useWrapMode = jsonObject.getBoolean("useWrapMode", true);
         boolean showGutter = jsonObject.getBoolean("showGutter", false);
         int wrapLimit = jsonObject.getInt("wrapLimit", 0);
         boolean autoUpdate = jsonObject.getBoolean("autoUpdate", true);
-        String terminalWinCommand = jsonObject.getString("terminalWinCommand", "cmd.exe");
-        String terminalNixCommand = jsonObject.getString("terminalNixCommand", "/bin/bash -i");
-        String terminalCharset = jsonObject.getString("terminalCharset", "UTF-8");
         final boolean validateDocbook = jsonObject.getBoolean("validateDocbook", true);
         String clipboardImageFilePattern = jsonObject.getString("clipboardImageFilePattern", "'Image'-ddMMyy-hhmmss.SSS'.png'");
         String foldStyle = jsonObject.getString("foldStyle", "default");
         int hangFileSizeLimit = jsonObject.getInt("hangFileSizeLimit", 3);
+        String editorTheme = jsonObject.getString("editorTheme");
 
+        // Editor themes
+        Stream<Path> themeStream = IOHelper.walk(getConfigDirectory().resolve("themes"), Integer.MAX_VALUE);
+
+        List<Path> themeConfigs = themeStream.filter(p -> p.endsWith("theme.json")).collect(Collectors.toList());
+
+        List<Theme> themeList = new LinkedList<>();
+
+        for (Path themeConfig : themeConfigs) {
+            try (JsonReader themeReader = Json.createReader(IOHelper.fileReader(themeConfig));) {
+                Theme theme = new Theme(themeReader.readObject());
+                if (theme.isEnabled()) {
+                    theme.setConfigPath(themeConfig);
+                    themeList.add(theme);
+                }
+            }
+        }
+
+        Optional<Theme> themeOptional = themeList.stream().filter(e -> e.getThemeName().equals(editorTheme)).findFirst();
+        themeOptional.ifPresent(t -> {
+            themeList.remove(t);
+            themeList.add(0, t);
+        });
+
+//      Ace set first theme
+        aceThemeList.remove(aceTheme);
+        aceThemeList.add(0, aceTheme);
+
+//      Set language
+        languageList.remove(defaultLanguage);
+        languageList.add(0, defaultLanguage);
 
         IOHelper.close(jsonReader, fileReader);
 
         threadService.runActionLater(() -> {
-            this.setEditorTheme(FXCollections.observableList(aceThemeList));
-            this.setDefaultLanguage(FXCollections.observableList(languageList));
+            getEditorTheme().addAll(themeList);
+            getAceTheme().addAll(aceThemeList);
+            getDefaultLanguage().addAll(languageList);
+
             this.setFontFamily(fontFamily);
             this.setFontSize(fontSize);
             this.setUseWrapMode(useWrapMode);
             this.setShowGutter(showGutter);
             this.setWrapLimit(wrapLimit);
             this.setAutoUpdate(autoUpdate);
-            this.setTerminalWinCommand(terminalWinCommand);
-            this.setTerminalNixCommand(terminalNixCommand);
-            this.setTerminalCharset(terminalCharset);
             this.setValidateDocbook(validateDocbook);
             this.setClipboardImageFilePattern(clipboardImageFilePattern);
             this.setHangFileSizeLimit(hangFileSizeLimit);
@@ -486,9 +486,6 @@ public class EditorConfigBean extends ConfigurationBase {
                 double screenHeight = jsonObject.getJsonNumber("screenHeight").doubleValue();
                 this.setScreenHeight(screenHeight);
             }
-
-            this.getEditorTheme().set(0, theme);
-            this.getDefaultLanguage().set(0, defaultLanguage);
 
             fadeOut(infoLabel, "Loaded...");
 
@@ -542,14 +539,12 @@ public class EditorConfigBean extends ConfigurationBase {
                 .add("useWrapMode", getUseWrapMode())
                 .add("wrapLimit", getWrapLimit())
                 .add("showGutter", getShowGutter())
-                .add("editorTheme", getEditorTheme().get(0))
+                .add("aceTheme", getAceTheme().get(0))
+                .add("editorTheme", getEditorTheme().get(0).getThemeName())
                 .add("defaultLanguage", getDefaultLanguage().get(0))
                 .add("firstSplitter", getFirstSplitter())
                 .add("secondSplitter", getSecondSplitter())
                 .add("autoUpdate", getAutoUpdate())
-                .add("terminalCharset", getTerminalCharset())
-                .add("terminalWinCommand", getTerminalWinCommand())
-                .add("terminalNixCommand", getTerminalNixCommand())
                 .add("validateDocbook", getValidateDocbook())
                 .add("clipboardImageFilePattern", getClipboardImageFilePattern())
                 .add("screenX", getScreenX())
@@ -560,5 +555,75 @@ public class EditorConfigBean extends ConfigurationBase {
                 .add("hangFileSizeLimit", getHangFileSizeLimit());
 
         return objectBuilder.build();
+    }
+
+    public class Theme {
+        private final boolean enabled;
+        private final String themeName;
+        private final String rootCss;
+        private final String aceTheme;
+        private Path configPath;
+
+        public Theme(JsonObject jsonObject) {
+            this.themeName = jsonObject.getString("theme-name");
+            Objects.requireNonNull(themeName, "Theme Name must nut be null");
+            this.rootCss = jsonObject.getString("root-css");
+            Objects.requireNonNull(rootCss, "Root css must nut be null");
+            this.aceTheme = jsonObject.getString("ace-theme");
+            Objects.requireNonNull(aceTheme, "Ace theme must nut be null");
+            this.enabled = jsonObject.getBoolean("enabled", true);
+        }
+
+        public String getThemeName() {
+            return themeName;
+        }
+
+        public String getRootCss() {
+            return rootCss;
+        }
+
+        public String getAceTheme() {
+            return aceTheme;
+        }
+
+        public boolean isEnabled() {
+            return enabled;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            Theme theme = (Theme) o;
+            return Objects.equals(themeName, theme.themeName);
+        }
+
+        public String themeUri() {
+            String themeUri = null;
+            try {
+                themeUri = getConfigPath().getParent().resolve(getRootCss()).normalize().toUri().toString();
+            } catch (Exception e) {
+                logger.warn("Theme uri wrong {}", e);
+            }
+            return themeUri;
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(themeName);
+        }
+
+        @Override
+        public String toString() {
+            return getThemeName();
+        }
+
+        public void setConfigPath(Path configPath) {
+            this.configPath = configPath;
+        }
+
+        public Path getConfigPath() {
+            return configPath;
+        }
     }
 }

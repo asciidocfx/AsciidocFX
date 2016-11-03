@@ -52,6 +52,8 @@ public abstract class XYChartBuilderService extends ChartBuilderService {
         List colors = new ArrayList<>();
 
         XYChart xyChart = createXYChart();
+        xyChart.setScaleX(2);
+        xyChart.setScaleY(2);
         XYChart.Series series = new XYChart.Series();
 
         Axis xAxis = xyChart.getXAxis();

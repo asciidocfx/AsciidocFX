@@ -28,6 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 
+import javax.annotation.PostConstruct;
 import java.nio.file.Path;
 import java.util.Iterator;
 import java.util.Objects;
@@ -43,7 +44,7 @@ public abstract class ViewPanel extends AnchorPane {
     protected final ThreadService threadService;
     protected final ApplicationController controller;
     protected final Current current;
-    protected final WebView webView;
+    protected WebView webView;
 
     protected final BooleanProperty stopScrolling = new SimpleBooleanProperty(false);
     protected final BooleanProperty stopJumping = new SimpleBooleanProperty(false);
@@ -55,10 +56,15 @@ public abstract class ViewPanel extends AnchorPane {
         this.threadService = threadService;
         this.controller = controller;
         this.current = current;
-        this.webView = new WebView();
-        this.getChildren().add(webView);
-        initializeMargins();
-        initializePreviewContextMenus();
+    }
+
+    @PostConstruct
+    public void afterInit() {
+        threadService.runActionLater(() -> {
+            this.getChildren().add(getWebView());
+            initializeMargins();
+            initializePreviewContextMenus();
+        });
     }
 
     public void enableScrollingAndJumping() {
@@ -135,11 +141,11 @@ public abstract class ViewPanel extends AnchorPane {
         AnchorPane.setLeftAnchor(this, 0D);
         AnchorPane.setRightAnchor(this, 0D);
         VBox.setVgrow(this, Priority.ALWAYS);
-        AnchorPane.setBottomAnchor(webView, 0D);
-        AnchorPane.setTopAnchor(webView, 0D);
-        AnchorPane.setLeftAnchor(webView, 0D);
-        AnchorPane.setRightAnchor(webView, 0D);
-        VBox.setVgrow(webView, Priority.ALWAYS);
+        AnchorPane.setBottomAnchor(getWebView(), 0D);
+        AnchorPane.setTopAnchor(getWebView(), 0D);
+        AnchorPane.setLeftAnchor(getWebView(), 0D);
+        AnchorPane.setRightAnchor(getWebView(), 0D);
+        VBox.setVgrow(getWebView(), Priority.ALWAYS);
     }
 
     public void browse() {
@@ -177,7 +183,7 @@ public abstract class ViewPanel extends AnchorPane {
 
 
     public WebEngine webEngine() {
-        return webView.getEngine();
+        return getWebView().getEngine();
     }
 
     public void load(String url) {
@@ -214,6 +220,11 @@ public abstract class ViewPanel extends AnchorPane {
     }
 
     public WebView getWebView() {
+
+        if (Objects.isNull(webView)) {
+            webView = threadService.supply(WebView::new);
+        }
+
         return webView;
     }
 

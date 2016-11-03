@@ -55,11 +55,15 @@ public class DynamicResource {
             if (p.contains("asciidoctor-default.css")) {
                 Optional<String> stylesheetDefault = Optional.ofNullable(locationConfigBean.getStylesheetDefault());
                 processResource(payload, stylesheetDefault);
+                return;
             } else if (p.contains("asciidoctor-default-overrides.css")) {
                 Optional<String> stylesheetDefault = Optional.ofNullable(locationConfigBean.getStylesheetOverrides());
                 processResource(payload, stylesheetDefault);
+                return;
             }
-        } else if (payload.getFinalURI().contains("MathJax.js")) {
+        }
+
+        if (payload.getFinalURI().contains("MathJax.js")) {
             Optional<String> mathjax = Optional.ofNullable(locationConfigBean.getMathjax());
             processResource(payload, mathjax);
         } else {

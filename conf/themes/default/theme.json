@@ -1,0 +1,6 @@
+{
+  "enabled": true,
+  "theme-name": "Default",
+  "root-css": "./Style.css",
+  "ace-theme": "xcode"
+}

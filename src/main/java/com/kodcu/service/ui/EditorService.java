@@ -8,12 +8,12 @@ import com.kodcu.controller.ApplicationController;
 import com.kodcu.other.Current;
 import com.kodcu.other.DocumentMode;
 import com.kodcu.service.shortcut.ShortcutProvider;
-import de.jensd.fx.fontawesome.AwesomeIcon;
 import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
+import org.kordamp.ikonli.fontawesome.FontAwesome;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -47,88 +47,88 @@ public class EditorService {
         double minSize = 14.01;
 
 
-        final Label saveLabel = LabelBuilt.icon(AwesomeIcon.SAVE, iconSize, minSize)
+        final Label saveLabel = LabelBuilt.icon(FontAwesome.SAVE, minSize)
                 .clazz("top-label")
                 .tip("Save").click(controller::saveDoc).build();
 
-        final Label newLabel = LabelBuilt.icon(AwesomeIcon.FILE_TEXT_ALT, iconSize, minSize)
+        final Label newLabel = LabelBuilt.icon(FontAwesome.FILE_TEXT_O, minSize)
                 .clazz("top-label").tip("New File").click(controller::newDoc).build();
 
-        final Label openLabel = LabelBuilt.icon(AwesomeIcon.FOLDER_ALTPEN_ALT, iconSize, minSize)
+        final Label openLabel = LabelBuilt.icon(FontAwesome.FOLDER_OPEN_O, minSize)
                 .clazz("top-label").tip("Open File").click(controller::openDoc).build();
 
-        final Label boldLabel = LabelBuilt.icon(AwesomeIcon.BOLD, iconSize, minSize)
+        final Label boldLabel = LabelBuilt.icon(FontAwesome.BOLD, minSize)
                 .clazz("top-label").tip("Bold").click(event -> {
                     shortcutProvider.getProvider().addBold();
                 }).build();
 
-        final Label italicLabel = LabelBuilt.icon(AwesomeIcon.ITALIC, iconSize, minSize)
+        final Label italicLabel = LabelBuilt.icon(FontAwesome.ITALIC, minSize)
                 .clazz("top-label").tip("Italic").click(event -> {
                     shortcutProvider.getProvider().addItalic();
                 }).build();
 
-        final Label headerLabel = LabelBuilt.icon(AwesomeIcon.HEADER, iconSize, minSize)
+        final Label headerLabel = LabelBuilt.icon(FontAwesome.HEADER, minSize)
                 .clazz("top-label").tip("Headings").click(event -> {
                     shortcutProvider.getProvider().addHeading();
                 }).build();
 
-        final Label codeLabel = LabelBuilt.icon(AwesomeIcon.CODE, iconSize, minSize)
+        final Label codeLabel = LabelBuilt.icon(FontAwesome.CODE, minSize)
                 .clazz("top-label").tip("Code Snippet").click(event -> {
                     shortcutProvider.getProvider().addCode("");
                 }).build();
 
-        final Label ulListLabel = LabelBuilt.icon(AwesomeIcon.LIST_UL, iconSize, minSize)
+        final Label ulListLabel = LabelBuilt.icon(FontAwesome.LIST_UL, minSize)
                 .clazz("top-label").tip("Bulleted List").click(event -> {
                     shortcutProvider.getProvider().addUnorderedList();
                 }).build();
 
-        final Label olListLabel = LabelBuilt.icon(AwesomeIcon.LIST_ALTL, iconSize, minSize)
+        final Label olListLabel = LabelBuilt.icon(FontAwesome.LIST_ALT, minSize)
                 .clazz("top-label").tip("Numbered List").click(event -> {
                     shortcutProvider.getProvider().addOrderedList();
                 }).build();
 
-        final Label tableLabel = LabelBuilt.icon(AwesomeIcon.TABLE, iconSize, minSize)
+        final Label tableLabel = LabelBuilt.icon(FontAwesome.TABLE, minSize)
                 .clazz("top-label").tip("Table").click(event -> {
                     shortcutProvider.getProvider().addTable();
                     ;
                 }).build();
 
-        final Label imageLabel = LabelBuilt.icon(AwesomeIcon.IMAGE, iconSize, minSize)
+        final Label imageLabel = LabelBuilt.icon(FontAwesome.IMAGE, minSize)
                 .clazz("top-label").tip("Image").click(event -> {
                     shortcutProvider.getProvider().addImage();
                 }).build();
 
-        final Label subscriptLabel = LabelBuilt.icon(AwesomeIcon.SUBSCRIPT, iconSize, minSize)
+        final Label subscriptLabel = LabelBuilt.icon(FontAwesome.SUBSCRIPT, minSize)
                 .clazz("top-label").tip("Subscript").click(event -> {
                     shortcutProvider.getProvider().addSubscript();
                 }).build();
 
-        final Label superScriptLabel = LabelBuilt.icon(AwesomeIcon.SUPERSCRIPT, iconSize, minSize)
+        final Label superScriptLabel = LabelBuilt.icon(FontAwesome.SUPERSCRIPT, minSize)
                 .clazz("top-label").tip("Superscript").click(event -> {
                     shortcutProvider.getProvider().addSuperscript();
                 }).build();
 
-        final Label underlineLabel = LabelBuilt.icon(AwesomeIcon.UNDERLINE, iconSize, minSize)
+        final Label underlineLabel = LabelBuilt.icon(FontAwesome.UNDERLINE, minSize)
                 .clazz("top-label").tip("Underline").click(event -> {
                     shortcutProvider.getProvider().addUnderline();
                 }).build();
 
-        final Label hyperlinkLabel = LabelBuilt.icon(AwesomeIcon.LINK, iconSize, minSize)
+        final Label hyperlinkLabel = LabelBuilt.icon(FontAwesome.LINK, minSize)
                 .clazz("top-label").tip("Hyperlink").click(event -> {
                     shortcutProvider.getProvider().addHyperlink();
                 }).build();
 
-        final Label strikethroughLabel = LabelBuilt.icon(AwesomeIcon.STRIKETHROUGH, iconSize, minSize)
+        final Label strikethroughLabel = LabelBuilt.icon(FontAwesome.STRIKETHROUGH, minSize)
                 .clazz("top-label").tip("Strikethrough").click(event -> {
                     shortcutProvider.getProvider().addStrike();
                 }).build();
 
-        final Label quoteLabel = LabelBuilt.icon(AwesomeIcon.QUOTE_LEFT, iconSize, minSize)
+        final Label quoteLabel = LabelBuilt.icon(FontAwesome.QUOTE_LEFT, minSize)
                 .clazz("top-label").tip("Blockquote").click(event -> {
                     shortcutProvider.getProvider().addQuote();
                 }).build();
 
-        final Label openMenuLabel = LabelBuilt.icon(AwesomeIcon.CHEVRON_CIRCLE_DOWN, iconSize, minSize)
+        final Label openMenuLabel = LabelBuilt.icon(FontAwesome.CHEVRON_CIRCLE_DOWN, minSize)
                 .clazz("top-label").tip("More...").build();
 
         Pane placeholderPane = new Pane();

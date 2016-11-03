@@ -26,123 +26,13 @@
     <!-- Enable extensions for FOP version 0.90 and later -->
     <xsl:param name="fop1.extensions">1</xsl:param>
 
-    <xsl:template name="header.content">
-        <xsl:param name="pageclass" select="''"/>
-        <xsl:param name="sequence" select="''"/>
-        <xsl:param name="position" select="''"/>
-        <xsl:param name="gentext-key" select="''"/>
-
-        <fo:block>
-
-            <!-- sequence can be odd, even, first, blank -->
-            <!-- position can be left, center, right -->
-            <xsl:choose>
-                <xsl:when test="$sequence = 'blank'">
-                    <!-- nothing -->
-                </xsl:when>
-
-                <xsl:when test="$sequence='even' and $position='left'">
-                    <xsl:if test="$pageclass != 'titlepage'">
-                        <xsl:choose>
-                            <xsl:when test="ancestor::book and ($double.sided != 0)">
-                                <fo:inline font-weight="bold">
-                                    <fo:page-number/>
-                                </fo:inline>
-                                <xsl:text>&#160;&#160;&#160;</xsl:text>
-                                <xsl:text>Java EE WebSocket</xsl:text>
-                            </xsl:when>
-                            <xsl:otherwise>
-                                <xsl:apply-templates select="." mode="titleabbrev.markup"/>
-                            </xsl:otherwise>
-                        </xsl:choose>
-                    </xsl:if>
-                </xsl:when>
-
-                <xsl:when test="$sequence='odd' and $position='right'">
-                    <xsl:if test="$pageclass != 'titlepage'">
-                        <xsl:choose>
-                            <xsl:when test="ancestor::book and ($double.sided != 0)">
-                                <xsl:apply-templates select="." mode="title.markup"/>
-                                <xsl:text>&#160;&#160;&#160;</xsl:text>
-                                <fo:inline font-weight="bold">
-                                    <fo:page-number/>
-                                </fo:inline>
-                            </xsl:when>
-                            <xsl:otherwise>
-                                <xsl:apply-templates select="." mode="titleabbrev.markup"/>
-                            </xsl:otherwise>
-                        </xsl:choose>
-                    </xsl:if>
-                </xsl:when>
-
-                <xsl:when test="$position='center'">
-                    <!-- nothing for empty and blank sequences -->
-                </xsl:when>
-
-                <xsl:when test="$sequence='even' and  $position='left'">
-                    <!-- Same for odd, even, empty, and blank sequences -->
-                    <!--<xsl:call-template name="draft.text"/>-->
-                    <fo:page-number/>
-                </xsl:when>
-
-                <xsl:when test="$sequence='odd' and $position='right'">
-                    <!-- Same for odd, even, empty, and blank sequences -->
-                    <!--<xsl:call-template name="draft.text"/>-->
-                    <fo:page-number/>
-                </xsl:when>
-
-                <xsl:when test="$sequence = 'first'">
-                    <!-- nothing for first pages -->
-                </xsl:when>
-
-                <xsl:when test="$sequence = 'blank'">
-                    <!-- nothing for blank pages -->
-                </xsl:when>
-            </xsl:choose>
-        </fo:block>
-    </xsl:template>
-
-    <xsl:template name="head.sep.rule"/>
-    <xsl:template name="foot.sep.rule"/>
-
-
-    <xsl:template name="footer.content">
-        <xsl:param name="pageclass" select="''"/>
-        <xsl:param name="sequence" select="''"/>
-        <xsl:param name="position" select="''"/>
-        <xsl:param name="gentext-key" select="''"/>
-
-        <fo:block>
-            <!-- pageclass can be front, body, back -->
-            <!-- sequence can be odd, even, first, blank -->
-            <!-- position can be left, center, right -->
-            <xsl:choose>
-
-                <xsl:when
-                        test="$double.sided != 0 and $sequence = 'even' and $position='right'">
-                    <xsl:text>Papatya Yayıncılık Eğitim</xsl:text>
-                </xsl:when>
-
-                <xsl:when
-                        test="$double.sided != 0 and ($pageclass = 'lot' or $pageclass = 'back' or $pageclass = 'front') and $position='center'">
-                    <fo:page-number/>
-                </xsl:when>
-
-                <xsl:otherwise>
-                    <!-- nop -->
-                </xsl:otherwise>
-            </xsl:choose>
-        </fo:block>
-    </xsl:template>
-
-
     <xsl:attribute-set name="header.content.properties">
-        <xsl:attribute name="font-family">Arial</xsl:attribute>
+        <xsl:attribute name="font-family">Sans-serif,Arial</xsl:attribute>
         <xsl:attribute name="font-size">8pt</xsl:attribute>
     </xsl:attribute-set>
 
     <xsl:attribute-set name="footer.content.properties">
-        <xsl:attribute name="font-family">Arial</xsl:attribute>
+        <xsl:attribute name="font-family">Sans-serif,Arial</xsl:attribute>
         <xsl:attribute name="font-size">8pt</xsl:attribute>
     </xsl:attribute-set>
 
@@ -169,11 +59,11 @@
     -->
 
     <xsl:template name="pickfont-sans">
-        <xsl:text>Times New Roman,Arial,Arial Unicode MS,Lucida Sans Unicode,Helvetica,sans-serif</xsl:text>
+        <xsl:text>Sans-serif,Arial,Arial Unicode MS,Helvetica,serif,Georgia,Times New Roman</xsl:text>
     </xsl:template>
 
     <xsl:template name="pickfont-serif">
-        <xsl:text>Times New Roman,Arial,Arial Unicode MS,Lucida Sans Unicode,Georgia,serif</xsl:text>
+        <xsl:text>Sans-serif,Arial,Arial Unicode MS,Helvetica,serif,Georgia,Times New Roman</xsl:text>
     </xsl:template>
 
     <xsl:template name="pickfont-mono">
@@ -189,7 +79,7 @@
     </xsl:template>
 
     <xsl:template name="pickfont-math">
-        <xsl:text>Liberation Serif,Times-Roman</xsl:text>
+        <xsl:text>Liberation Serif,Sans-serif,serif,Times-Roman</xsl:text>
     </xsl:template>
 
     <!--
@@ -236,7 +126,7 @@
     -->
     <xsl:param name="alignment">justify</xsl:param>
     <xsl:param name="line-height">1.5</xsl:param>
-    <xsl:param name="body.font.master">10.5</xsl:param>
+    <xsl:param name="body.font.master">10</xsl:param>
     <xsl:param name="body.font.size">
         <xsl:value-of select="$body.font.master"/><xsl:text>pt</xsl:text>
     </xsl:param>
@@ -295,7 +185,7 @@
         <xsl:attribute name="border-bottom-style">solid</xsl:attribute>
         <xsl:attribute name="border-left-style">solid</xsl:attribute>
         <xsl:attribute name="border-right-style">solid</xsl:attribute>
-        <xsl:attribute name="border-width">0.1pt</xsl:attribute>
+        <xsl:attribute name="border-width">0.5pt</xsl:attribute>
         <xsl:attribute name="border-color">#BFBFBF</xsl:attribute>
         <xsl:attribute name="background-color">#BFBFBF</xsl:attribute>
         <xsl:attribute name="space-before.minimum">0</xsl:attribute>
@@ -1060,6 +950,16 @@
             </xsl:if>
         </xsl:variable>
 
+<!--        <fo:inline font-weight="bold"
+                   color="{$caption.color}"
+                   keep-with-next.within-line="always">
+            <xsl:copy-of select="$titleStr"/>
+            <xsl:if test="$lastChar != ''
+                    and not(contains($runinhead.title.end.punct, $lastChar))">
+                <xsl:value-of select="$runinhead.default.title.end.punct"/>
+            </xsl:if>
+        </fo:inline>-->
+
         <xsl:if test="$runinhead.default.title.break.after = '1'">
             <fo:block font-weight="bold" color="{$caption.color}">
                 <xsl:copy-of select="$titleStr"/>
@@ -1191,7 +1091,7 @@
     </xsl:attribute-set>
 
     <xsl:attribute-set name="chapter.titlepage.label.properties">
-        <xsl:attribute name="font-size">60pt</xsl:attribute>
+        <xsl:attribute name="font-size">48pt</xsl:attribute>
     </xsl:attribute-set>
     <xsl:attribute-set name="chapter.titlepage.title.properties">
         <xsl:attribute name="font-size">20pt</xsl:attribute>
@@ -1380,7 +1280,7 @@
             </xsl:choose>
         </xsl:attribute>
         <xsl:attribute name="font-size">
-            <xsl:value-of select="$body.font.master - 2.5"/>
+            <xsl:value-of select="8"/>
             <xsl:text>pt</xsl:text>
         </xsl:attribute>
         <!--<xsl:attribute name="keep-with-next.within-column">always</xsl:attribute>-->

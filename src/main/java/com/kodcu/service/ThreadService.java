@@ -5,11 +5,15 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
+import javafx.scene.Scene;
+import javafx.scene.web.WebView;
 import org.springframework.stereotype.Component;
 
 import java.util.Objects;
 import java.util.concurrent.*;
 import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 /**
  * Created by usta on 25.12.2014.
@@ -17,20 +21,27 @@ import java.util.function.Consumer;
 @Component
 public class ThreadService {
 
-    private final ScheduledExecutorService threadPollWorker;
-    private final ConcurrentHashMap<String, Buff> buffMap = new ConcurrentHashMap<>();
+    private final ExecutorService threadPollWorker;
+    private final ScheduledExecutorService scheduledWorker;
+    private final ConcurrentHashMap<String, Buff> buffMap;
     private final Semaphore uiSemaphore;
+    private final ExecutorService singleExecutor;
 
 
     public ThreadService() {
-        final int availableProcessors = Runtime.getRuntime().availableProcessors();
-        final int corePoolSize = (availableProcessors * 2 >= 4) ? availableProcessors * 2 : 4;
-        threadPollWorker = Executors.newScheduledThreadPool(corePoolSize);
-        uiSemaphore = new Semaphore(250, true);
+        scheduledWorker = Executors.newSingleThreadScheduledExecutor();
+        threadPollWorker = Executors.newWorkStealingPool(16);
+        singleExecutor = Executors.newSingleThreadExecutor();
+        uiSemaphore = new Semaphore(1);
+        buffMap = new ConcurrentHashMap<>();
     }
 
     public ScheduledFuture<?> schedule(Runnable runnable, long delay, TimeUnit timeUnit) {
-        return threadPollWorker.schedule(runnable, delay, timeUnit);
+        return scheduledWorker.schedule(runnable, delay, timeUnit);
+    }
+
+    public ScheduledFuture<?> scheduleWithDelay(Runnable runnable, long initialDelay, long delay, TimeUnit timeUnit) {
+        return scheduledWorker.scheduleWithFixedDelay(runnable, initialDelay, delay, timeUnit);
     }
 
     // Runs Task in background thread pool
@@ -45,7 +56,7 @@ public class ThreadService {
         };
 
         task.exceptionProperty().addListener((observable, oldValue, newValue) -> {
-            if(Objects.nonNull(newValue)){
+            if (Objects.nonNull(newValue)) {
                 newValue.printStackTrace();
             }
         });
@@ -71,17 +82,23 @@ public class ThreadService {
                 Platform.runLater(() -> {
                     try {
                         runnable.run();
-                        uiSemaphore.release();
+                        releaseUiSemaphore();
                     } catch (Exception e) {
-                        uiSemaphore.release();
+                        releaseUiSemaphore();
                         throw new RuntimeException(e);
                     }
                 });
             } catch (Exception e) {
-                uiSemaphore.release();
+                releaseUiSemaphore();
                 throw new RuntimeException(e);
             }
         }
+    }
+
+    private void releaseUiSemaphore() {
+        singleExecutor.submit(() -> {
+            uiSemaphore.release();
+        });
     }
 
     public void runActionLater(Runnable runnable, boolean force) {
@@ -115,4 +132,34 @@ public class ThreadService {
         return buffMap.get(id);
     }
 
+    public <T> T supply(Supplier<T> supplier) {
+
+        if (Platform.isFxApplicationThread()) {
+            return supplier.get();
+        }
+
+        final CompletableFuture<T> completableFuture = new CompletableFuture<T>();
+        completableFuture.runAsync(() -> {
+            runActionLater(() -> {
+                try {
+                    T t = supplier.get();
+                    completableFuture.complete(t);
+                } catch (Exception e) {
+                    completableFuture.completeExceptionally(e);
+                }
+            });
+        }, threadPollWorker);
+
+        return completableFuture.join();
+    }
+
+    public <T> void runActionLater(Consumer<T> consumer, T t) {
+        runActionLater(() -> {
+            consumer.accept(t);
+        });
+    }
+
+    public ScheduledFuture<?> scheduleWithDelay(Runnable runnable, int timeBetweenFramesMS, TimeUnit milliseconds) {
+        return scheduleWithDelay(runnable, 0, timeBetweenFramesMS, milliseconds);
+    }
 }

@@ -32,10 +32,11 @@ public class ConfigurationService {
     private final StoredConfigBean storedConfigBean;
     private final ThreadService threadService;
     private final SpellcheckConfigBean spellcheckConfigBean;
+    private final TerminalConfigBean terminalConfigBean;
     private VBox configBox;
 
     @Autowired
-    public ConfigurationService(LocationConfigBean locationConfigBean, EditorConfigBean editorConfigBean, PreviewConfigBean previewConfigBean, HtmlConfigBean htmlConfigBean, OdfConfigBean odfConfigBean, DocbookConfigBean docbookConfigBean, ApplicationController controller, StoredConfigBean storedConfigBean, ThreadService threadService, SpellcheckConfigBean spellcheckConfigBean) {
+    public ConfigurationService(LocationConfigBean locationConfigBean, EditorConfigBean editorConfigBean, PreviewConfigBean previewConfigBean, HtmlConfigBean htmlConfigBean, OdfConfigBean odfConfigBean, DocbookConfigBean docbookConfigBean, ApplicationController controller, StoredConfigBean storedConfigBean, ThreadService threadService, SpellcheckConfigBean spellcheckConfigBean, TerminalConfigBean terminalConfigBean) {
         this.locationConfigBean = locationConfigBean;
         this.editorConfigBean = editorConfigBean;
         this.previewConfigBean = previewConfigBean;
@@ -46,6 +47,7 @@ public class ConfigurationService {
         this.storedConfigBean = storedConfigBean;
         this.threadService = threadService;
         this.spellcheckConfigBean = spellcheckConfigBean;
+        this.terminalConfigBean = terminalConfigBean;
     }
 
     public void loadConfigurations(Runnable... runnables) {
@@ -58,8 +60,11 @@ public class ConfigurationService {
         odfConfigBean.load();
         docbookConfigBean.load();
         spellcheckConfigBean.load();
+        terminalConfigBean.load();
 
-        List<ConfigurationBase> configBeanList = Arrays.asList(editorConfigBean,
+        List<ConfigurationBase> configBeanList = Arrays.asList(
+                editorConfigBean,
+                terminalConfigBean,
                 locationConfigBean,
                 previewConfigBean,
                 htmlConfigBean,
@@ -73,7 +78,7 @@ public class ConfigurationService {
         ToggleGroup toggleGroup = new ToggleGroup();
         controller.setConfigToggleGroup(toggleGroup);
         FlowPane flowPane = new FlowPane(5, 5);
-        flowPane.setPadding(new Insets(5,0,0,0));
+        flowPane.setPadding(new Insets(5, 0, 0, 0));
 
         List<ToggleButton> toggleButtons = new ArrayList<>();
         VBox editorConfigForm = null;

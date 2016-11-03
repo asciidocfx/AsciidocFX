@@ -100,6 +100,8 @@ editor.getSession().selection.on('changeCursor', function (e) {
 
 });
 
+// editor.on("guttermousedown", onGutterMouseDown);
+
 var renderAction = new BufferedAction();
 var editorChangeListener = function (obj) {
 
@@ -163,7 +165,7 @@ function updateOptions() {
         fontFamily: editorConfigBean.getFontFamily(),
         fontSize: editorConfigBean.getFontSize()
     });
-    var themes = editorConfigBean.getEditorTheme();
+    var themes = editorConfigBean.getAceTheme();
     if (themes.size() > 0) {
         changeTheme(themes.get(0));
     }
@@ -256,7 +258,7 @@ function initializeEmmet(mode) {
 
     ace.require("ace/ext/emmet");
 
-    ["/afx/resource/?p=js/emmet.js", "/afx/resource/?p=ace/src/ext-emmet.js"].forEach(function (path, index) {
+    ["/afx/resource/js/?p=js/emmet.js", "/afx/resource/ace/src/?p=ace/src/ext-emmet.js"].forEach(function (path, index) {
         var script = document.createElement("script");
         script.src = path;
         document.querySelector("body").appendChild(script);
@@ -353,3 +355,40 @@ function setFoldStyle(style) {
 function getCursorCoordinates() {
     return editor.renderer.textToScreenCoordinates(editor.getCursorPosition());
 }
+
+/*function onGutterMouseDown(e) {
+    console.log("onGutterMouseDown");
+
+    var target = e.domEvent.target;
+
+    if (target.className.indexOf("ace_gutter-cell") == -1) {
+        return;
+    }
+
+    if (!editor.isFocused()) {
+        return;
+    }
+
+    if (e.clientX > 25 + target.getBoundingClientRect().left) {
+        return;
+    }
+
+    var row = e.getDocumentPosition().row;
+
+    var breakpoints = e.editor.session.getBreakpoints(row, 0);
+
+    if (breakpoints[row]) {
+        e.editor.session.clearBreakpoint(row);
+    }
+    else {
+        e.editor.session.setBreakpoint(row);
+    }
+
+    e.stop();
+}*/
+
+var onThemeLoaded = function () {
+    editorPane.onThemeLoaded();
+};
+
+editor.renderer.on("themeLoaded", onThemeLoaded);

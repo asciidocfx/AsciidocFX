@@ -47,11 +47,7 @@ public class EpubResource {
 
         if (payload.getFinalURI().endsWith("booki.epub")) {
             fileService.processFile(payload, current.getCurrentEpubPath());
-        } else if (Objects.nonNull(p)) {
-            Path path = directoryService.findPathInPublic(p);
-            fileService.processFile(request, response, path);
         } else {
-
             commonResource.processPayload(payload);
         }
     }

@@ -1,0 +1,1 @@
+javapackager -createbss -srcfiles Style.css -outdir .

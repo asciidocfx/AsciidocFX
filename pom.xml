@@ -5,7 +5,7 @@
 
     <groupId>com.kodcu</groupId>
     <artifactId>AsciidocFX</artifactId>
-    <version>1.4.7</version>
+    <version>1.5.2</version>
     <packaging>jar</packaging>
 
     <name>AsciidocFX</name>
@@ -27,7 +27,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>1.4.0.RELEASE</version>
+        <version>1.4.1.RELEASE</version>
     </parent>
 
     <dependencies>
@@ -85,11 +85,6 @@
             <artifactId>spring-boot-starter-undertow</artifactId>
         </dependency>
         <dependency>
-            <groupId>de.jensd</groupId>
-            <artifactId>fontawesomefx</artifactId>
-            <version>8.0.10</version>
-        </dependency>
-        <dependency>
             <groupId>org.jooq</groupId>
             <artifactId>joox</artifactId>
             <version>1.4.0</version>
@@ -108,7 +103,7 @@
         <dependency>
             <groupId>net.sourceforge.plantuml</groupId>
             <artifactId>plantuml</artifactId>
-            <version>8046</version>
+            <version>8048</version>
         </dependency>
         <dependency>
             <groupId>org.apache.xmlgraphics</groupId>
@@ -133,7 +128,7 @@
         <dependency>
             <groupId>org.carrot2</groupId>
             <artifactId>morfologik-speller</artifactId>
-            <version>2.1.0</version>
+            <version>2.1.1</version>
             <exclusions>
                 <exclusion>
                     <artifactId>morfologik-polish</artifactId>
@@ -142,9 +137,30 @@
             </exclusions>
         </dependency>
         <dependency>
-            <groupId>com.asciidocfx.pty4j</groupId>
-            <artifactId>pty4j</artifactId>
-            <version>0.7.2</version>
+            <groupId>net.sf.xslthl</groupId>
+            <artifactId>xslthl</artifactId>
+            <version>2.1.0</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.kordamp.ikonli</groupId>
+            <artifactId>ikonli-core</artifactId>
+            <version>1.7.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.kordamp.ikonli</groupId>
+            <artifactId>ikonli-javafx</artifactId>
+            <version>1.7.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.kordamp.ikonli</groupId>
+            <artifactId>ikonli-fontawesome-pack</artifactId>
+            <version>1.7.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.asciidocfx</groupId>
+            <artifactId>terminalfx</artifactId>
+            <version>1.2</version>
         </dependency>
     </dependencies>
 
@@ -194,7 +210,9 @@
                             <id>asciidocfx</id>
                         </program>
                     </programs>
-                    <extraJvmArguments>-Duser.language=en -Duser.country=US -XX:+UseG1GC</extraJvmArguments>
+                    <extraJvmArguments>-Dfile.encoding=UTF-8 -Duser.language=en -Duser.country=US -XX:+UseG1GC
+                        -Djava.awt.headless=false
+                    </extraJvmArguments>
                     <repositoryLayout>flat</repositoryLayout>
                     <useWildcardClassPath>true</useWildcardClassPath>
                     <binFileExtensions>
@@ -264,13 +282,8 @@
             </releases>
         </repository>
         <repository>
-            <id>rahmanusta-releases</id>
-            <releases>
-                <enabled>true</enabled>
-                <checksumPolicy>warn</checksumPolicy>
-                <updatePolicy>always</updatePolicy>
-            </releases>
-            <url>http://asciidocfx.com/build</url>
+            <id>terminalfx-repo</id>
+            <url>https://github.com/rahmanusta/terminalfx/raw/master/releases</url>
         </repository>
         <repository>
             <id>javacomm-repo</id>
@@ -280,6 +293,20 @@
                 <updatePolicy>always</updatePolicy>
             </releases>
             <url>http://www.sparetimelabs.com/maven2</url>
+        </repository>
+        <repository>
+            <id>jcenter-central</id>
+            <name>jcenter</name>
+            <url>http://jcenter.bintray.com</url>
+        </repository>
+        <repository>
+            <id>rahmanusta-releases</id>
+            <releases>
+                <enabled>true</enabled>
+                <checksumPolicy>warn</checksumPolicy>
+                <updatePolicy>always</updatePolicy>
+            </releases>
+            <url>http://asciidocfx.com/build</url>
         </repository>
     </repositories>
 

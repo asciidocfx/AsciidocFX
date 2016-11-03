@@ -38,7 +38,6 @@ public class AllController {
 
     }
 
-
     class Router {
 
         private final Payload payload;

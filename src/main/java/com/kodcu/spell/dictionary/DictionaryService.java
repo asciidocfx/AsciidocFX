@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
@@ -54,17 +55,28 @@ public class DictionaryService {
             languageSpeller.setEncoding(dictionary.metadata.getEncoding());
             languageSpellerMap.putIfAbsent(defaultLanguage, languageSpeller);
             return languageSpellerMap.get(defaultLanguage);
+        } catch (NullPointerException e) {
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
-            return null;
         }
+
+        return null;
     }
 
 
     public void processTokens(EditorPane editorPane, String jsonToken, String mode) {
 
-        final Path language = Optional.ofNullable(editorPane.getSpellLanguage()).orElse(spellcheckConfigBean.getDefaultLanguage());
+        final Path language = Optional.ofNullable(editorPane.getSpellLanguage()).orElseGet(spellcheckConfigBean::getDefaultLanguage);
+
+        if (Objects.isNull(language)) {
+            return;
+        }
+
         final LanguageSpeller languageSpeller = getLanguageSpeller(language);
+
+        if (Objects.isNull(languageSpeller)) {
+            return;
+        }
 
         final List<Token> tokenList = languageSpeller.getTokenList(jsonToken);
 

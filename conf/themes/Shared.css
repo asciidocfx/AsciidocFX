@@ -1,0 +1,312 @@
+/* ====   REMOVE ALL EFFECTS   ================================================= */
+.slider .thumb,
+.scroll-bar:horizontal > .decrement-button > .decrement-arrow,
+.scroll-bar:horizontal > .increment-button > .increment-arrow,
+.scroll-bar:vertical > .decrement-button > .decrement-arrow,
+.scroll-bar:vertical > .increment-button > .increment-arrow,
+.context-menu,
+.menu-up-arrow,
+.menu-down-arrow,
+.tab-pane > .tab-header-area > .headers-region > .tab > .tab-container > .tab-close-button,
+.combo-box-popup > .list-view,
+.titled-pane:focused > .title > .arrow-button > .arrow,
+.color-palette,
+.custom-color-dialog > .color-rect-pane #color-rect-indicator,
+.custom-color-dialog > .color-rect-pane > .color-bar > #color-bar-indicator,
+.tooltip {
+    -fx-effect: null;
+}
+
+.root {
+    -fx-font-size: 1em;
+}
+
+.ikonli-font-icon {
+    -fx-icon-color: -fx-text-base-color;
+    -fx-font-size: 1.4em;
+}
+
+.split-pane .split-pane-divider {
+    -fx-padding: 0 1 0 1;
+    -fx-background-color: transparent;
+}
+
+.tab-pane {
+    -fx-open-tab-animation: NONE;
+    -fx-close-tab-animation: NONE;
+}
+
+.tab-header-background, .tab-header-area {
+    -fx-background-color: null;
+}
+
+.tab-pane.floating > .tab-content-area {
+    -fx-background-color: -fx-outer-border, -fx-background;
+    -fx-background-insets: 0.5;
+    -fx-background-radius: 2;
+    -fx-padding: 0;
+}
+
+.scroll-bar:horizontal .track,
+.scroll-bar:vertical .track {
+    -fx-background-radius: 0em;
+}
+
+.scroll-bar:vertical .track-background,
+.scroll-bar:horizontal .track-background {
+    -fx-background-insets: 0;
+    -fx-background-radius: 0em;
+}
+
+.scroll-bar:horizontal .thumb {
+    -fx-background-insets: 2 0 2 0;
+    -fx-background-radius: 0em;
+}
+
+.scroll-bar:vertical .thumb {
+    -fx-background-insets: 0 2 0 2;
+    -fx-background-radius: 0em;
+}
+
+.scroll-bar:vertical .increment-button, .scroll-bar:vertical .decrement-button {
+    -fx-background-radius: 0em;
+    -fx-padding: 3 3 3 3;
+}
+
+.scroll-bar:horizontal .increment-button, .scroll-bar:horizontal .decrement-button {
+    -fx-background-radius: 0em;
+    -fx-padding: 3 3 3 3;
+}
+
+.scroll-bar:horizontal .increment-arrow {
+    -fx-shape: "M4,17v-2.889l4.124-3.86l4.125,3.86V17l-4.125-3.375L4,17z";
+    -fx-padding: 0.25em;
+    -fx-rotate: 90;
+}
+
+.scroll-bar:vertical .increment-arrow {
+    -fx-shape: "M4,17v-2.889l4.124-3.86l4.125,3.86V17l-4.125-3.375L4,17z";
+    -fx-padding: 0.25em;
+    -fx-rotate: 180;
+}
+
+.scroll-bar:horizontal .decrement-arrow {
+    -fx-shape: "M4,17v-2.889l4.124-3.86l4.125,3.86V17l-4.125-3.375L4,17z";
+    -fx-padding: 0.25em;
+    -fx-rotate: -90;
+}
+
+.scroll-bar:vertical .decrement-arrow {
+    -fx-shape: "M4,17v-2.889l4.124-3.86l4.125,3.86V17l-4.125-3.375L4,17z";
+    -fx-padding: 0.25em;
+}
+
+.table-view .arrow {
+    -fx-padding: 0.2em;
+    -fx-shape: "M4,17v-2.889l4.124-3.86l4.125,3.86V17l-4.125-3.375L4,17z";
+}
+
+.list-cell {
+    -fx-padding: 0.5em;
+}
+
+.tooltip {
+    -fx-border-radius: 0.5em;
+    -fx-font-size: 12px;
+}
+
+.top-menu {
+    -fx-padding: 0.5em 1em 0.5em 1em;
+}
+
+.progress-bar .bar {
+    -fx-padding: 0.08em;
+    -fx-background-insets: 0;
+    -fx-background-radius: 0;
+    -fx-border-radius: 0;
+}
+
+.mytab-changed .tab-label {
+    -fx-font-weight: bold;
+}
+
+.tree-view, .list-view {
+    -fx-background-insets: 0;
+    -fx-padding: 0;
+    -fx-border-width: 0;
+}
+
+.tree-cell {
+    -fx-padding: 0.25em; /* 3 */
+    -fx-indent: 20;
+}
+
+.tree-cell > .tree-disclosure-node > .arrow {
+    -fx-padding: 0.333333em; /* 4 */
+    -fx-shape: "M6 4l20 12-20 12z";
+}
+
+.basic-search {
+    -fx-padding: 0.4em;
+    -fx-background-radius: 0 0 0 0.4em;
+}
+
+#mainVerticalSplitPane {
+    -fx-padding: 0;
+}
+
+.table-cell {
+    -fx-padding: 0.2em;
+}
+
+.terminal-left-box {
+    -fx-padding: 0.5em;
+}
+
+.terminal-tab-pane {
+    -fx-padding: 0.5em 0.5em 0.5em 0;
+}
+
+.output-button {
+    -fx-cursor: hand;
+    -fx-font-size: 1.1em;
+    -fx-font-weight: bold;
+}
+
+.scroll-pane, .table-view {
+    /*-fx-border-color: -fx-base !important;*/
+    /*-fx-focus-color:  -fx-base !important;*/
+    /*-fx-faint-focus-color:  -fx-base !important;*/
+}
+
+.basic-search {
+    -fx-text-fill: -fx-text-background-color;
+    -fx-background-color: -fx-base;
+    -fx-font-size: 1.2em;
+}
+
+.scroll-pane, .split-pane, .tab-pane, .anchor, .anchor-pane, .pane, .flow-pane, .hbox, .vbox, .border-pane, .table-view, .tree-view, .list-view {
+    -fx-background-insets: 0 !important;
+    -fx-border-width: 0 !important;
+    -fx-padding: 0 !important;
+}
+
+.corner-toggle-button {
+    -fx-border-radius: 0 !important;
+    -fx-background-radius: 0 !important;
+    -fx-border-style: solid;
+    -fx-background-color: -fx-base !important;
+}
+
+.corner-bottom-half, .corner-right-half {
+    -fx-border-width: 0 !important;
+}
+
+.corner-toggle-button:hover,
+.corner-toggle-button:selected,
+.corner-toggle-button:selected:focused {
+    -fx-background-color: -fx-hover-base !important;
+}
+
+/* Log Colors*/
+.log-viewer .ERROR .level-column * {
+    -fx-text-fill: #ff3224;
+    -fx-fill: #ff3224;
+    -fx-font-weight: bold;
+}
+
+.log-viewer .DEBUG .level-column * {
+    -fx-text-fill: #33a4ff;
+    -fx-fill: -fx-text-fill;
+    -fx-font-weight: bold;
+}
+
+.log-viewer .INFO .level-column * {
+    -fx-text-fill: #ffd172;
+    -fx-fill: -fx-text-fill;
+    -fx-font-weight: bold;
+}
+
+.log-viewer .WARN .level-column * {
+    -fx-text-fill: #ffae5d;
+    -fx-fill: -fx-text-fill;
+    -fx-font-weight: bold;
+}
+
+.red-label, .red-label * {
+    -fx-text-fill: #ff452c !important;
+    -fx-fill: #ff452c !important;
+}
+
+/* Output Buttons */
+
+.output-button{
+    -fx-font-size: 1.3em !important;
+}
+
+.output-button.browser *, .output-button.browser {
+    -fx-text-fill: rgba(205, 199, 120, 0.83);
+    -fx-icon-color: -fx-text-fill;
+}
+
+.output-button.browser *:hover, .output-button.browser:hover {
+    -fx-text-fill: rgb(189, 183, 107);
+    -fx-icon-color: -fx-text-fill;
+}
+
+.output-button.pdf *, .output-button.pdf {
+    -fx-text-fill: rgba(255, 0, 0, 0.43);
+    -fx-icon-color: -fx-text-fill;
+}
+
+.output-button.pdf *:hover, .output-button.pdf:hover {
+    -fx-text-fill: rgba(255, 0, 0, 0.68);
+    -fx-icon-color: -fx-text-fill;
+}
+
+.output-button.html *, .output-button.html {
+    -fx-text-fill: rgb(209, 209, 209);
+    -fx-icon-color: -fx-text-fill;
+}
+
+.output-button.html *:hover, .output-button.html:hover {
+    -fx-text-fill: rgb(176, 176, 176);
+    -fx-icon-color: -fx-text-fill;
+}
+
+.output-button.ebook *, .output-button.ebook {
+    -fx-text-fill: rgba(160, 205, 219, 0.82);
+    -fx-icon-color: -fx-text-fill;
+}
+
+.output-button.ebook *:hover, .label.ebook:hover {
+    -fx-text-fill: #87acba;
+    -fx-icon-color: -fx-text-fill;
+}
+
+.output-button.docbook *, .output-button.docbook {
+    -fx-text-fill: rgba(108, 209, 130, 0.65);
+    -fx-icon-color: -fx-text-fill;
+}
+
+.output-button.docbook *:hover, .output-button.docbook:hover {
+    -fx-text-fill: rgba(90, 180, 106, 0.82);
+    -fx-icon-color: -fx-text-fill;
+}
+
+/* file icons */
+.tree-view .label, .tree-view * {
+    -fx-text-fill: -fx-text-base-color;
+    -fx-icon-color: -fx-text-fill;
+}
+
+.button,
+.menu-button,
+.number-button,
+.toggle-button,
+.choice-box {
+    -fx-border-radius: 3;
+    -fx-background-radius: 3;
+    -fx-border-width: 0;
+    -fx-border-style: solid;
+}

@@ -2,7 +2,7 @@
 :experimental:
 :toc:
 :toc-placement: preamble
-:asciidocfx-version: 1.4.7
+:asciidocfx-version: 1.5.2
 :download-root: https://github.com/asciidocfx/AsciidocFX/releases/download/v{asciidocfx-version}/
 
 image:https://api.travis-ci.org/asciidocfx/AsciidocFX.svg?branch=master[Build Status,link="https://travis-ci.org/asciidocfx/AsciidocFX"]
@@ -32,6 +32,12 @@ image::images/asciidocfx.png[]
 * Reveal.js Converter
 * Deck.js Converter
 * Nashorn support
+* Pseudo Terminal Emulator
+* Themeing (Dark & White) _New _
+
+== Pseudo Terminal Emulator
+
+image::http://i.giphy.com/l3vR4SlEtY3juZfXy.gif[Pseudo Terminal Emulator]
 
 == How to Install AsciidocFX
 

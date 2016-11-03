@@ -1,10 +1,10 @@
 package com.kodcu.service.ui;
 
 import com.kodcu.service.PathResolverService;
-import de.jensd.fx.fontawesome.AwesomeDude;
-import de.jensd.fx.fontawesome.AwesomeIcon;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
+import org.kordamp.ikonli.fontawesome.FontAwesome;
+import org.kordamp.ikonli.javafx.FontIcon;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -26,38 +26,35 @@ public class AwesomeService {
 
     public Node getIcon(final Path path) {
 
-        AwesomeIcon awesomeIcon = AwesomeIcon.FILE_ALT;
+        FontIcon fontIcon = new FontIcon(FontAwesome.FILE_O);
 
         if (Files.isDirectory(path)) {
-            awesomeIcon = AwesomeIcon.FOLDER_ALT;
+            fontIcon.setIconCode(FontAwesome.FOLDER_O);
         } else {
             if (pathResolver.isAsciidoc(path) || pathResolver.isMarkdown(path))
-                awesomeIcon = AwesomeIcon.FILE_TEXT_ALT;
+                fontIcon.setIconCode(FontAwesome.FILE_TEXT_O);
             if (pathResolver.isXML(path) || pathResolver.isCode(path))
-                awesomeIcon = AwesomeIcon.FILE_CODE_ALT;
+                fontIcon.setIconCode(FontAwesome.FILE_CODE_O);
             if (pathResolver.isImage(path))
-                awesomeIcon = AwesomeIcon.FILE_PICTURE_ALT;
+                fontIcon.setIconCode(FontAwesome.FILE_PICTURE_O);
             if (pathResolver.isPDF(path))
-                awesomeIcon = AwesomeIcon.FILE_PDF_ALT;
+                fontIcon.setIconCode(FontAwesome.FILE_PDF_O);
             if (pathResolver.isHTML(path))
-                awesomeIcon = AwesomeIcon.HTML5;
+                fontIcon.setIconCode(FontAwesome.HTML5);
             if (pathResolver.isArchive(path))
-                awesomeIcon = AwesomeIcon.FILE_ZIP_ALT;
+                fontIcon.setIconCode(FontAwesome.FILE_ZIP_O);
             if (pathResolver.isExcel(path))
-                awesomeIcon = AwesomeIcon.FILE_EXCEL_ALT;
+                fontIcon.setIconCode(FontAwesome.FILE_EXCEL_O);
             if (pathResolver.isVideo(path))
-                awesomeIcon = AwesomeIcon.FILE_VIDEO_ALT;
+                fontIcon.setIconCode(FontAwesome.FILE_VIDEO_O);
             if (pathResolver.isWord(path))
-                awesomeIcon = AwesomeIcon.FILE_WORD_ALT;
+                fontIcon.setIconCode(FontAwesome.FILE_WORD_O);
             if (pathResolver.isPPT(path))
-                awesomeIcon = AwesomeIcon.FILE_POWERPOINT_ALT;
-            if (pathResolver.isVideo(path))
-                awesomeIcon = AwesomeIcon.FILE_VIDEO_ALT;
+                fontIcon.setIconCode(FontAwesome.FILE_POWERPOINT_O);
             if (pathResolver.isBash(path))
-                awesomeIcon = AwesomeIcon.TERMINAL;
+                fontIcon.setIconCode(FontAwesome.TERMINAL);
         }
 
-        final Label iconLabel = AwesomeDude.createIconLabel(awesomeIcon, "14.0");
-        return iconLabel;
+        return new Label(null, fontIcon);
     }
 }

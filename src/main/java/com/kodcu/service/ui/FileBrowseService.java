@@ -94,7 +94,7 @@ public class FileBrowseService {
             treeView.setRoot(rootItem);
             rootItem.setExpanded(true);
 
-            this.addPathToTree(path, rootItem);
+            this.addPathToTree(path, rootItem, null);
 
             logger.info("File browser relisted for {}", path);
 
@@ -123,7 +123,7 @@ public class FileBrowseService {
         });
     }
 
-    public void addPathToTree(Path path, final TreeItem<Item> treeItem) {
+    public void addPathToTree(Path path, final TreeItem<Item> treeItem, Path changedPath) {
 
         threadService.runTaskLater((() -> {
 
@@ -162,8 +162,11 @@ public class FileBrowseService {
                                 childItem.setExpanded(false);
                                 childItem.expandedProperty().addListener((observable, oldValue, newValue) -> {
                                     if (newValue) {
-                                        addPathToTree(childItem.getValue().getPath(), childItem);
+                                        addPathToTree(childItem.getValue().getPath(), childItem, null);
                                     }
+
+                                    // fixes not expand issue
+                                    treeView.refresh();
                                 });
                             }
                             pathItemMap.put(p, childItem);
@@ -184,6 +187,22 @@ public class FileBrowseService {
                     restoreTreeScrollState();
                     if (treeViewFocused) {
                         treeView.requestFocus();
+                    }
+
+                    if (Objects.nonNull(changedPath)) {
+                        TreeItem<Item> item = pathItemMap.get(changedPath);
+                        if (Objects.nonNull(item)) {
+                            treeView.getSelectionModel().clearSelection();
+                            treeView.getSelectionModel().select(item);
+                            treeView.scrollTo(findIndex(item));
+
+                            TreeItem<Item> parent = item.getParent();
+                            if (Objects.nonNull(parent)) {
+                                if (!parent.isExpanded()) {
+                                    parent.setExpanded(true);
+                                }
+                            }
+                        }
                     }
 
                     fileWatchService.registerPathWatcher(path);
@@ -240,10 +259,10 @@ public class FileBrowseService {
         }
     }
 
-    public void refreshPathToTree(Path path) {
+    public void refreshPathToTree(Path path, Path changedPath) {
 
         TreeItem<Item> item = directoryItemMap.get(path);
-        addPathToTree(path, item);
+        addPathToTree(path, item, changedPath);
 
     }
 
@@ -347,10 +366,19 @@ public class FileBrowseService {
             threadService.runActionLater(() -> {
 
                 fileSystemView.getSelectionModel().clearSelection();
+
                 int selectedIndex = findIndex(searchFoundItem);
 
-                fileSystemView.scrollTo(selectedIndex);
                 fileSystemView.getSelectionModel().select(searchFoundItem);
+
+                fileSystemView.scrollTo(selectedIndex);
+
+                TreeItem<Item> parent = searchFoundItem.getParent();
+                if (Objects.nonNull(parent)) {
+                    if (!parent.isExpanded()) {
+                        parent.setExpanded(true);
+                    }
+                }
             }, true);
         }
     }
@@ -394,20 +422,29 @@ public class FileBrowseService {
                 .collect(Collectors.toList());
     }
 
-    public int findIndex(TreeItem<Item> treeItem) {
+    public int findIndex(TreeItem<Item> changedItem) {
 
-        return Optional.ofNullable(treeItem)
-                .map(TreeItem::getParent)
-                .map(TreeItem::getChildren)
-                .map(c -> c.indexOf(treeItem))
-                .orElse(-1);
+        TreeItem<Item> item = changedItem;
+        int result = 0;
+        while (true) {
+            TreeItem<Item> parent = item.getParent();
+            if (Objects.isNull(parent)) {
+                break;
+            }
+
+            int index = parent.getChildren().indexOf(item);
+            result += index;
+            item = parent;
+        }
+
+        return result;
     }
 
     public void searchAndSelect(String text) {
 
         threadService.runTaskLater(() -> {
 
-            List<TreeItem<Item>> foundItems = searchItems(text);
+            List<TreeItem<Item>> foundItems = searchItems(text.trim());
 
             if (foundItems.isEmpty()) {
                 return;

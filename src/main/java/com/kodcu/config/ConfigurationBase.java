@@ -6,6 +6,7 @@ import com.kodcu.service.ThreadService;
 import javafx.animation.FadeTransition;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
@@ -21,11 +22,13 @@ import javax.json.JsonWriter;
 import javax.json.stream.JsonGenerator;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
+import java.lang.reflect.Field;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Created by usta on 19.07.2015.
@@ -124,4 +127,24 @@ public abstract class ConfigurationBase {
     public abstract void save(ActionEvent... actionEvent);
 
     public abstract JsonObject getJSON();
+
+    public void setOnConfigChanged(Runnable runnable){
+        Field[] fields = this.getClass().getDeclaredFields();
+        for (Field field : fields) {
+            try{
+                field.setAccessible(true);
+                Object value = field.get(this);
+
+                if(value instanceof ObservableValue){
+                    ((ObservableValue)value).addListener((observable, oldValue, newValue) -> {
+                        if (Objects.nonNull(newValue)) {
+                            runnable.run();
+                        }
+                    });
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
 }

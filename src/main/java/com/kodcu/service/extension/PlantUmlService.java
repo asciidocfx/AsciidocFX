@@ -64,7 +64,25 @@ public class PlantUmlService {
 
         if (nodename.contains("uml")) {
             if (!uml.contains("skinparam") && !uml.contains("dpi")) {
-                uml = uml.replaceFirst("@startuml", "@startuml\nskinparam dpi 300\n");
+                uml = uml.replaceFirst("@startuml", "@startuml\nskinparam dpi 200\n");
+            }
+        }
+
+        if (uml.contains("@startdot")) {
+            if (!uml.contains("dpi=")) {
+                uml = uml.replaceFirst("\\{", "{\ndpi=200;\n");
+            }
+        }
+
+        if (nodename.contains("ditaa")) {
+            if (!uml.contains("scale=")) {
+                uml = uml.replaceFirst("@startditaa", "@startditaa(scale=2)");
+            }
+        }
+
+        if (uml.contains("@startditaa")) {
+            if (!uml.contains("scale=")) {
+                uml = uml.replaceFirst("@startditaa", "@startditaa(scale=2)");
             }
         }
 

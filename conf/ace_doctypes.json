@@ -754,45 +754,77 @@
     "caption": "Log",
     "mode": "ace/mode/text",
     "extensions": "log"
-  },{
+  },
+  {
     "name": "fortran",
     "caption": "Fortran",
     "mode": "ace/mode/fortran",
     "extensions": "f|for|f90"
-  },{
+  },
+  {
     "name": "gobstones",
     "caption": "Gobstones",
     "mode": "ace/mode/gobstones",
     "extensions": "gobstones"
-  },{
+  },
+  {
     "name": "nsis",
     "caption": "Nsis",
     "mode": "ace/mode/nsis",
     "extensions": "nsis"
-  },{
+  },
+  {
     "name": "razor",
     "caption": "Razor",
     "mode": "ace/mode/razor",
     "extensions": "cshtml|vbhtml"
-  },{
+  },
+  {
     "name": "rst",
     "caption": "reStructuredText",
     "mode": "ace/mode/rst",
     "extensions": "rst"
-  },{
+  },
+  {
     "name": "wollok",
     "caption": "Wollok",
     "mode": "ace/mode/wollok",
     "extensions": "wlk"
-  },{
+  },
+  {
     "name": "puml",
     "caption": "PlantUML",
     "mode": "ace/mode/puml",
     "extensions": "puml"
-  },{
+  },
+  {
     "name": "ditaa",
     "caption": "Ditaa",
     "mode": "ace/mode/ditaa",
     "extensions": "ditaa"
+  },
+  {
+    "name": "drools",
+    "caption": "Drools",
+    "mode": "ace/mode/drools",
+    "extensions": "drl"
+  },
+  {
+    "name": "kotlin",
+    "caption": "Kotlin",
+    "mode": "ace/mode/kotlin",
+    "extensions": "kt|kts"
+  },
+  {
+    "name": "haskel_cabal",
+    "caption": "Haskel Cabal",
+    "mode": "ace/mode/haskel_cabal",
+    "extensions": "cabal"
+  },
+  {
+    "name": "tsx",
+    "caption": "TSX",
+    "mode": "ace/mode/tsx",
+    "extensions": "tsx"
   }
 ]

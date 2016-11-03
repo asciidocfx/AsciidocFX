@@ -125,6 +125,7 @@ public class MathJaxService {
             webView.setPrefWidth(1000);
             webView.setLayoutX(-22000);
             webView.setLayoutY(-22000);
+            webView.setZoom(2);
             controller.getRootAnchor().getChildren().add(webView);
         }
         return webView;

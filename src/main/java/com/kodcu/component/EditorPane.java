@@ -14,6 +14,7 @@ import com.kodcu.service.extension.AsciiTreeGenerator;
 import com.kodcu.service.shortcut.ShortcutProvider;
 import com.kodcu.service.ui.TabService;
 import com.kodcu.spell.dictionary.Token;
+import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -94,6 +95,7 @@ public class EditorPane extends AnchorPane {
 
     @Autowired
     public EditorPane(ApplicationController controller, EditorConfigBean editorConfigBean, ThreadService threadService, ShortcutProvider shortcutProvider, ApplicationContext applicationContext, TabService tabService, AsciiTreeGenerator asciiTreeGenerator, ParserService parserService, SpellcheckConfigBean spellcheckConfigBean, DirectoryService directoryService) {
+        this.setVisible(false);
         this.controller = controller;
         this.editorConfigBean = editorConfigBean;
         this.threadService = threadService;
@@ -259,6 +261,14 @@ public class EditorPane extends AnchorPane {
         });
 
 
+    }
+
+    @WebkitCall(from = "editor")
+    public void onThemeLoaded() {
+        if (!isVisible()) {
+            setVisible(true);
+            getWebView().requestFocus();
+        }
     }
 
     public void switchMode(Object... args) {
