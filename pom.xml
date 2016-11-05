@@ -5,7 +5,7 @@
 
     <groupId>com.kodcu</groupId>
     <artifactId>AsciidocFX</artifactId>
-    <version>1.5.2</version>
+    <version>1.5.3</version>
     <packaging>jar</packaging>
 
     <name>AsciidocFX</name>
@@ -103,7 +103,7 @@
         <dependency>
             <groupId>net.sourceforge.plantuml</groupId>
             <artifactId>plantuml</artifactId>
-            <version>8048</version>
+            <version>8049</version>
         </dependency>
         <dependency>
             <groupId>org.apache.xmlgraphics</groupId>
