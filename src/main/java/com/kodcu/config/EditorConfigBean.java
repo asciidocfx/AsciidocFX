@@ -60,7 +60,7 @@ public class EditorConfigBean extends ConfigurationBase {
     private ObjectProperty<Integer> wrapLimit = new SimpleObjectProperty<>(0);
     private BooleanProperty showGutter = new SimpleBooleanProperty(false);
     private BooleanProperty autoUpdate = new SimpleBooleanProperty(true);
-    private BooleanProperty validateDocbook = new SimpleBooleanProperty(true);
+    private BooleanProperty validateDocbook = new SimpleBooleanProperty(false);
     private StringProperty clipboardImageFilePattern = new SimpleStringProperty("'Image'-ddMMyy-hhmmss.SSS'.png'");
     private DoubleProperty screenX = new SimpleDoubleProperty(0);
     private DoubleProperty screenY = new SimpleDoubleProperty(0);
@@ -408,7 +408,7 @@ public class EditorConfigBean extends ConfigurationBase {
         boolean showGutter = jsonObject.getBoolean("showGutter", false);
         int wrapLimit = jsonObject.getInt("wrapLimit", 0);
         boolean autoUpdate = jsonObject.getBoolean("autoUpdate", true);
-        final boolean validateDocbook = jsonObject.getBoolean("validateDocbook", true);
+        final boolean validateDocbook = jsonObject.getBoolean("validateDocbook", false);
         String clipboardImageFilePattern = jsonObject.getString("clipboardImageFilePattern", "'Image'-ddMMyy-hhmmss.SSS'.png'");
         String foldStyle = jsonObject.getString("foldStyle", "default");
         int hangFileSizeLimit = jsonObject.getInt("hangFileSizeLimit", 3);
