@@ -1157,6 +1157,8 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         return null;
     }
 
+    TerminalBuilder terminalBuilder = new TerminalBuilder();
+
     @FXML
     public void newTerminal(ActionEvent actionEvent, Path... path) {
 
@@ -1165,16 +1167,17 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         }
 
         TerminalConfig terminalConfig = terminalConfigBean.createTerminalConfig();
-
-        TerminalBuilder terminalBuilder = new TerminalBuilder(terminalConfig);
+        terminalBuilder.setTerminalConfig(terminalConfig);
 
         Path terminalPath = Optional.ofNullable(path).filter(e -> e.length > 0).map(e -> e[0]).orElse(directoryService.workingDirectory());
         terminalBuilder.setTerminalPath(terminalPath);
 
         TerminalTab terminalTab = terminalBuilder.newTerminal();
 
-        terminalTabPane.getTabs().add(terminalTab);
-        terminalTabPane.getSelectionModel().select(terminalTab);
+        threadService.runActionLater(() -> {
+            terminalTabPane.getTabs().add(terminalTab);
+            terminalTabPane.getSelectionModel().select(terminalTab);
+        }, true);
 
     }
 
@@ -1400,7 +1403,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         dividers.get(1).positionProperty().bindBidirectional(editorConfigBean.secondSplitterProperty());
 
         SplitPane.Divider verticalDivider = mainVerticalSplitPane.getDividers().get(0);
-        mainVerticalSplitPane.addEventFilter(MouseEvent.MOUSE_RELEASED,event -> {
+        mainVerticalSplitPane.addEventFilter(MouseEvent.MOUSE_RELEASED, event -> {
             double position = verticalDivider.getPosition();
             if (position > 0.1 && position < 0.9) {
                 editorConfigBean.setVerticalSplitter(position);
