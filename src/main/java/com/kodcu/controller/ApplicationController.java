@@ -1275,11 +1275,15 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         }
 
         if (Objects.nonNull(screenWidth)) {
-            stage.setWidth(screenWidth);
+            if (screenWidth != 0) {
+                stage.setWidth(screenWidth);
+            }
         }
 
         if (Objects.nonNull(screenHeight)) {
-            stage.setHeight(screenHeight);
+            if (screenHeight != 0) {
+                stage.setHeight(screenHeight);
+            }
         }
 
         ObservableList<SplitPane.Divider> dividers = splitPane.getDividers();
