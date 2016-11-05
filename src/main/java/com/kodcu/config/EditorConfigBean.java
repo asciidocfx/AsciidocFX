@@ -52,6 +52,7 @@ public class EditorConfigBean extends ConfigurationBase {
     private ObjectProperty<ObservableList<String>> defaultLanguage = new SimpleObjectProperty<>(FXCollections.observableArrayList());
     private DoubleProperty firstSplitter = new SimpleDoubleProperty(0.17551963048498845);
     private DoubleProperty secondSplitter = new SimpleDoubleProperty(0.5996920708237106);
+    private DoubleProperty verticalSplitter = new SimpleDoubleProperty(0.5);
     private StringProperty fontFamily = new SimpleStringProperty("'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace");
     private ObjectProperty<Integer> fontSize = new SimpleObjectProperty(16);
     private DoubleProperty scrollSpeed = new SimpleDoubleProperty(0.1);
@@ -326,6 +327,18 @@ public class EditorConfigBean extends ConfigurationBase {
         this.editorTheme.set(editorTheme);
     }
 
+    public double getVerticalSplitter() {
+        return verticalSplitter.get();
+    }
+
+    public DoubleProperty verticalSplitterProperty() {
+        return verticalSplitter;
+    }
+
+    public void setVerticalSplitter(double verticalSplitter) {
+        this.verticalSplitter.set(verticalSplitter);
+    }
+
     @Override
     public String formName() {
         return "Editor Settings";
@@ -467,6 +480,11 @@ public class EditorConfigBean extends ConfigurationBase {
                 this.setSecondSplitter(secondSplitter.doubleValue());
             }
 
+            if (jsonObject.containsKey("verticalSplitter")) {
+                JsonNumber secondSplitter = jsonObject.getJsonNumber("verticalSplitter");
+                this.setVerticalSplitter(secondSplitter.doubleValue());
+            }
+
             if (jsonObject.containsKey("screenX")) {
                 double screenX = jsonObject.getJsonNumber("screenX").doubleValue();
                 this.setScreenX(screenX);
@@ -544,6 +562,7 @@ public class EditorConfigBean extends ConfigurationBase {
                 .add("defaultLanguage", getDefaultLanguage().get(0))
                 .add("firstSplitter", getFirstSplitter())
                 .add("secondSplitter", getSecondSplitter())
+                .add("verticalSplitter", getVerticalSplitter())
                 .add("autoUpdate", getAutoUpdate())
                 .add("validateDocbook", getValidateDocbook())
                 .add("clipboardImageFilePattern", getClipboardImageFilePattern())

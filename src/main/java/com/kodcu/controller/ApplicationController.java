@@ -44,8 +44,8 @@ import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
 import javafx.application.HostServices;
-import javafx.application.Platform;
-import javafx.beans.property.*;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -67,7 +67,6 @@ import javafx.scene.control.cell.TextFieldTreeCell;
 import javafx.scene.image.Image;
 import javafx.scene.input.*;
 import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
@@ -95,7 +94,6 @@ import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -109,7 +107,6 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
@@ -1401,6 +1398,14 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
         dividers.get(0).positionProperty().bindBidirectional(editorConfigBean.firstSplitterProperty());
         dividers.get(1).positionProperty().bindBidirectional(editorConfigBean.secondSplitterProperty());
+
+        SplitPane.Divider verticalDivider = mainVerticalSplitPane.getDividers().get(0);
+        mainVerticalSplitPane.addEventFilter(MouseEvent.MOUSE_RELEASED,event -> {
+            double position = verticalDivider.getPosition();
+            if (position > 0.1 && position < 0.9) {
+                editorConfigBean.setVerticalSplitter(position);
+            }
+        });
 
         editorConfigBean.showGutterProperty().addListener((observable, oldValue, newValue) -> {
             if (Objects.nonNull(newValue)) {
@@ -3024,7 +3029,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
         source.getStyleClass().remove("red-label");
 
-        mainVerticalSplitPane.setDividerPosition(0, source.isSelected() ? 0.40 : 1);
+        mainVerticalSplitPane.setDividerPosition(0, source.isSelected() ? editorConfigBean.getVerticalSplitter() : 1);
 
         if (source.isSelected()) {
             bottomShowerHider.showNode(logVBox);
@@ -3038,7 +3043,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
         final ToggleButton source = (ToggleButton) actionEvent.getSource();
 
-        mainVerticalSplitPane.setDividerPosition(0, source.isSelected() ? 0.40 : 1);
+        mainVerticalSplitPane.setDividerPosition(0, source.isSelected() ? editorConfigBean.getVerticalSplitter() : 1);
 
         if (source.isSelected()) {
             bottomShowerHider.showNode(terminalHBox);

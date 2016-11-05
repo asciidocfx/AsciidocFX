@@ -58,9 +58,8 @@ public class TerminalConfigBean extends ConfigurationBase {
     private StringProperty fontFamily = new SimpleStringProperty("'DejaVu Sans Mono', 'Everson Mono', FreeMono, 'Menlo', 'Terminal', monospace");
     private IntegerProperty fontSize = new SimpleIntegerProperty(14);
     private DoubleProperty scrollWhellMoveMultiplier = new SimpleDoubleProperty(0.1);
-    private StringProperty terminalCharset = new SimpleStringProperty("UTF-8");
-    private StringProperty receiveEncoding = new SimpleStringProperty("UTF-8");
-    private StringProperty sendEncoding = new SimpleStringProperty("UTF-8");
+    private StringProperty receiveEncoding = new SimpleStringProperty("utf-8");
+    private StringProperty sendEncoding = new SimpleStringProperty("raw");
     private StringProperty userCss = new SimpleStringProperty("data:text/plain;base64,eC1zY3JlZW4geyBjdXJzb3I6IGF1dG87IH0=");
 
     public String getTerminalWinCommand() {
@@ -255,18 +254,6 @@ public class TerminalConfigBean extends ConfigurationBase {
         this.scrollWhellMoveMultiplier.set(scrollWhellMoveMultiplier);
     }
 
-    public String getTerminalCharset() {
-        return terminalCharset.getValue();
-    }
-
-    public StringProperty terminalCharsetProperty() {
-        return terminalCharset;
-    }
-
-    public void setTerminalCharset(String terminalCharset) {
-        this.terminalCharset.set(terminalCharset);
-    }
-
     public String getReceiveEncoding() {
         return receiveEncoding.getValue();
     }
@@ -349,7 +336,6 @@ public class TerminalConfigBean extends ConfigurationBase {
                         "fontFamily",
                         "fontSize",
                         "scrollWhellMoveMultiplier",
-                        "terminalCharset",
                         "receiveEncoding",
                         "sendEncoding",
                         "userCss")
@@ -408,7 +394,6 @@ public class TerminalConfigBean extends ConfigurationBase {
         Boolean useDefaultWindowCopy = jsonObject.getBoolean("useDefaultWindowCopy", this.useDefaultWindowCopy.getValue());
         String fontFamily = jsonObject.getString("fontFamily", this.fontFamily.getValue());
         Integer fontSize = jsonObject.getInt("fontSize", this.fontSize.getValue());
-        String terminalCharset = jsonObject.getString("terminalCharset", this.terminalCharset.getValue());
         String receiveEncoding = jsonObject.getString("receiveEncoding", this.receiveEncoding.getValue());
         String sendEncoding = jsonObject.getString("sendEncoding", this.sendEncoding.getValue());
         String userCss = jsonObject.getString("userCss", this.userCss.getValue());
@@ -432,7 +417,6 @@ public class TerminalConfigBean extends ConfigurationBase {
             this.setUseDefaultWindowCopy(useDefaultWindowCopy);
             this.setFontFamily(fontFamily);
             this.setFontSize(fontSize);
-            this.setTerminalCharset(terminalCharset);
             this.setReceiveEncoding(receiveEncoding);
             this.setSendEncoding(sendEncoding);
             this.setUserCss(userCss);
@@ -475,7 +459,6 @@ public class TerminalConfigBean extends ConfigurationBase {
                 .add("fontFamily", getFontFamily())
                 .add("fontSize", getFontSize())
                 .add("scrollWhellMoveMultiplier", getScrollWhellMoveMultiplier())
-                .add("terminalCharset", getTerminalCharset())
                 .add("receiveEncoding", getReceiveEncoding())
                 .add("sendEncoding", getSendEncoding())
                 .add("userCss", getUserCss());
