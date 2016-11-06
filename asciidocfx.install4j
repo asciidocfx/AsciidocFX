@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <install4j version="6.1.3" transformSequenceNumber="5">
   <directoryPresets config="outputs" />
-  <application name="AsciidocFX" distributionSourceDir="" applicationId="7853-9376-5862-1224" mediaDir="target" mediaFilePattern="${compiler:sys.shortName}_${compiler:sys.platform}_${compiler:sys.version}" compression="4" lzmaCompression="true" pack200Compression="true" excludeSignedFromPacking="false" commonExternalFiles="false" createMd5Sums="true" shrinkRuntime="true" shortName="AsciidocFX" publisher="AsciidocFX" publisherWeb="http://asciidocfx.com" version="1.5.3" allPathsRelative="false" backupOnSave="false" autoSave="false" convertDotsToUnderscores="true" macSignature="????" macVolumeId="b98c377570068f5e" javaMinVersion="1.8" javaMaxVersion="" allowBetaVM="true" jdkMode="runtimeJre" jdkName="">
+  <application name="AsciidocFX" distributionSourceDir="" applicationId="7853-9376-5862-1224" mediaDir="target" mediaFilePattern="${compiler:sys.shortName}_${compiler:sys.platform}_${compiler:sys.version}" compression="4" lzmaCompression="true" pack200Compression="true" excludeSignedFromPacking="false" commonExternalFiles="false" createMd5Sums="true" shrinkRuntime="true" shortName="AsciidocFX" publisher="AsciidocFX" publisherWeb="http://asciidocfx.com" version="1.5.4" allPathsRelative="false" backupOnSave="false" autoSave="false" convertDotsToUnderscores="true" macSignature="????" macVolumeId="b98c377570068f5e" javaMinVersion="1.8" javaMaxVersion="" allowBetaVM="true" jdkMode="runtimeJre" jdkName="">
     <languages skipLanguageSelection="false" languageSelectionInPrincipalLanguage="false">
       <principalLanguage id="en" customLocalizationFile="" />
       <additionalLanguages />
@@ -101,10 +101,20 @@
             <preActivation />
             <postActivation />
             <actions>
-              <action name="" id="701" customizedId="" beanClass="com.install4j.runtime.beans.actions.misc.RequestPrivilegesAction" enabled="true" commentSet="false" comment="" actionElevationType="none" rollbackBarrier="false" multiExec="false" failureStrategy="1" errorMessage="Please increase privilege level">
+              <action name="" id="701" customizedId="" beanClass="com.install4j.runtime.beans.actions.misc.RequestPrivilegesAction" enabled="true" commentSet="false" comment="" actionElevationType="none" rollbackBarrier="false" multiExec="false" failureStrategy="1" errorMessage="Please give full privilege to the installer">
                 <serializedBean>
                   <java class="java.beans.XMLDecoder">
-                    <object class="com.install4j.runtime.beans.actions.misc.RequestPrivilegesAction" />
+                    <object class="com.install4j.runtime.beans.actions.misc.RequestPrivilegesAction">
+                      <void property="obtainIfAdminMac">
+                        <boolean>true</boolean>
+                      </void>
+                      <void property="obtainIfNormalMac">
+                        <boolean>true</boolean>
+                      </void>
+                      <void property="obtainIfNormalWin">
+                        <boolean>true</boolean>
+                      </void>
+                    </object>
                   </java>
                 </serializedBean>
                 <condition />
@@ -252,6 +262,9 @@
                             </object>
                           </void>
                         </array>
+                      </void>
+                      <void property="recursive">
+                        <boolean>true</boolean>
                       </void>
                     </object>
                   </java>
