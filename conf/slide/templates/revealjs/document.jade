@@ -1,7 +1,8 @@
 doctype html
-html(lang=node.document.$attr("lang", "tr") )
+html(lang=node.document.$attr("lang", "en") )
   head
     meta(charset="UTF-8")
+    - revealjsdir = node.$attr('revealjsdir', 'reveal.js')
     each key in ["description","keywords","author","copyright"]
       if node.$attr(key, false)
         meta(name=key,content=node.$attr(key))
@@ -10,21 +11,20 @@ html(lang=node.document.$attr("lang", "tr") )
     meta(content="black-translucent",name="apple-mobile-web-app-status-bar-style")
     meta(content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui",name="viewport")
     link(href="//maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css",rel="stylesheet")
-    link(href="reveal.js/css/reveal.css",rel="stylesheet")
+    link(href="#{revealjsdir}/css/reveal.css",rel="stylesheet")
     if node.$attr("revealjs_customtheme", false)
       link(rel='stylesheet',href="#{node.$attr('revealjs_customtheme')}",id='theme')
     else
-      link(rel='stylesheet',href='reveal.js/css/theme/serif.css',id='theme')
-    link(href="reveal.js/lib/css/zenburn.css",rel="stylesheet")
+      link(rel='stylesheet',href='#{revealjsdir}/css/theme/serif.css',id='theme')
+    link(href="#{revealjsdir}/lib/css/zenburn.css",rel="stylesheet")
     script(src = "http://getfirebug.com/firebug-lite.js#startOpened=false")
     script(type='text/javascript').
-      document.write('<link rel="stylesheet" href="reveal.js/css/print/' + ( window.location.search.match(/print-pdf/gi) ? 'pdf' : 'paper' ) + '.css" type="text/css" media="print">');
+      document.write('<link rel="stylesheet" href="#{revealjsdir}/css/print/' + ( window.location.search.match(/print-pdf/gi) ? 'pdf' : 'paper' ) + '.css" type="text/css" media="print">');
   body
     .reveal
-      .slides
-        !{node.$content()}
-    script(src = "reveal.js/lib/js/head.min.js")
-    script(src = "reveal.js/js/reveal.js")
+      .slides !{node.$content()}
+    script(src = "#{revealjsdir}/lib/js/head.min.js")
+    script(src = "#{revealjsdir}/js/reveal.js")
     script(type='text/javascript').
       function initializeReveal() {
         // See https://github.com/hakimel/reveal.js#configuration for a full list of configuration options
@@ -83,20 +83,19 @@ html(lang=node.document.$attr("lang", "tr") )
           // Optional libraries used to extend on reveal.js
           dependencies: [
             {
-              src: 'reveal.js/lib/js/classList.js', condition: function () {
-              return !document.body.classList;
-            }
+              src: '#{revealjsdir}/lib/js/classList.js',
+              condition: function () { return !document.body.classList; }
             },
-            #{(node.$attr('source-highlighter') == 'highlight.js') ? "{ src: 'reveal.js/plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } }" : "{}"},
+            #{(node.$attr('source-highlighter') == 'highlight.js') ? "{ src: '#{revealjsdir}/plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } }," : ""}
             {
-              src: 'reveal.js/plugin/zoom-js/zoom.js', async: true, condition: function () {
-              return !!document.body.classList;
-            }
+              src: '#{revealjsdir}/plugin/zoom-js/zoom.js',
+              async: true,
+              condition: function () { return !!document.body.classList; }
             },
             {
-              src: 'reveal.js/plugin/notes/notes.js', async: true, condition: function () {
-              return !!document.body.classList;
-            }
+              src: '#{revealjsdir}/plugin/notes/notes.js',
+              async: true,
+              condition: function () { return !!document.body.classList; }
             }
           ]
         });

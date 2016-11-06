@@ -11,7 +11,7 @@ else
             img(src=node.$icon_uri(node.$attr('name')),alt=node.$caption())
           else
             div.title
-              !{node.$caption()}
+              | !{node.$caption()}
           if node.$title() != false
             div.title !{node.$title()}
-          !{node.$content()}
+          | !{node.$content()}

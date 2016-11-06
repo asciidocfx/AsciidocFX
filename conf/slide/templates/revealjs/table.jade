@@ -27,7 +27,7 @@ table(id=node.$id(),class=["table-block", "frame-#{ node.$attr('frame', 'all') }
                   #{tblsec == "$head" ? "th" : "td"}(class=['tableblock', "halign-#{cell.$attr('halign')}", "valign-#{cell.$attr('valign')}"],
                   colspan=cell.$colspan(), rowspan=cell.$rowspan(),style=node.document.$attr("cellbgcolor", false) ? "background-color:#{node.document.$attr('cellbgcolor')}" : "")
                     if tblsec == "$head"
-                      !{cell_content}
+                      | !{cell_content}
                     else
                       case cell.$style()
                         when "asciidoc"
