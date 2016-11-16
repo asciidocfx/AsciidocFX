@@ -63,6 +63,10 @@ public class TableViewLogAppender extends UnsynchronizedAppenderBase<ILoggingEve
         String message = event.getFormattedMessage();
         String level = event.getLevel().toString();
 
+        if (Objects.isNull(message)) {
+            return;
+        }
+
         if (event.getLevel() == Level.ERROR) {
             logShowHider.getStyleClass().add("red-label");
         }
@@ -81,8 +85,10 @@ public class TableViewLogAppender extends UnsynchronizedAppenderBase<ILoggingEve
             message += "\n" + tpMessage;
         }
 
-        MyLog myLog = new MyLog(level, message);
-        buffer.add(myLog);
+        if (!message.isEmpty()) {
+            MyLog myLog = new MyLog(level, message);
+            buffer.add(myLog);
+        }
 
         threadService.buff("logAppender").schedule(() -> {
             final List<MyLog> clone = new LinkedList<>(buffer);
