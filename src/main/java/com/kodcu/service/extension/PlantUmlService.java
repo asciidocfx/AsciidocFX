@@ -1,5 +1,6 @@
 package com.kodcu.service.extension;
 
+import com.kodcu.config.ExtensionConfigBean;
 import com.kodcu.controller.ApplicationController;
 import com.kodcu.other.Current;
 import com.kodcu.other.IOHelper;
@@ -34,15 +35,17 @@ public class PlantUmlService {
     private final ApplicationController controller;
     private final ThreadService threadService;
     private final BinaryCacheService binaryCacheService;
+    private final ExtensionConfigBean extensionConfigBean;
 
     private final DirectoryService directoryService;
 
     @Autowired
-    public PlantUmlService(final Current current, final ApplicationController controller, final ThreadService threadService, BinaryCacheService binaryCacheService, DirectoryService directoryService) {
+    public PlantUmlService(final Current current, final ApplicationController controller, final ThreadService threadService, BinaryCacheService binaryCacheService, ExtensionConfigBean extensionConfigBean, DirectoryService directoryService) {
         this.current = current;
         this.controller = controller;
         this.threadService = threadService;
         this.binaryCacheService = binaryCacheService;
+        this.extensionConfigBean = extensionConfigBean;
         this.directoryService = directoryService;
     }
 
@@ -51,7 +54,7 @@ public class PlantUmlService {
 
         boolean cachedResource = imageTarget.contains("/afx/cache");
 
-        if (!imageTarget.endsWith(".png") && !imageTarget.endsWith(".svg")  && !cachedResource)
+        if (!imageTarget.endsWith(".png") && !imageTarget.endsWith(".svg") && !cachedResource)
             return;
 
         StringBuffer stringBuffer = new StringBuffer(uml);
@@ -64,25 +67,25 @@ public class PlantUmlService {
 
         if (nodename.contains("uml")) {
             if (!uml.contains("skinparam") && !uml.contains("dpi")) {
-                uml = uml.replaceFirst("@startuml", "@startuml\nskinparam dpi 200\n");
+                uml = uml.replaceFirst("@startuml", String.format("@startuml\nskinparam dpi %d\n", extensionConfigBean.getDefaultImageDpi()));
             }
         }
 
         if (uml.contains("@startdot")) {
             if (!uml.contains("dpi=")) {
-                uml = uml.replaceFirst("\\{", "{\ndpi=200;\n");
+                uml = uml.replaceFirst("\\{", String.format("{\ndpi=%d;\n", extensionConfigBean.getDefaultImageDpi()));
             }
         }
 
         if (nodename.contains("ditaa")) {
             if (!uml.contains("scale=")) {
-                uml = uml.replaceFirst("@startditaa", "@startditaa(scale=2)");
+                uml = uml.replaceFirst("@startditaa", String.format("@startditaa(scale=%d)", extensionConfigBean.getDefaultImageScale()));
             }
         }
 
         if (uml.contains("@startditaa")) {
             if (!uml.contains("scale=")) {
-                uml = uml.replaceFirst("@startditaa", "@startditaa(scale=2)");
+                uml = uml.replaceFirst("@startditaa", String.format("@startditaa(scale=%d)", extensionConfigBean.getDefaultImageScale()));
             }
         }
 

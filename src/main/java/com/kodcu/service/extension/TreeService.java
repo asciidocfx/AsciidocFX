@@ -1,5 +1,6 @@
 package com.kodcu.service.extension;
 
+import com.kodcu.config.ExtensionConfigBean;
 import com.kodcu.controller.ApplicationController;
 import com.kodcu.other.Current;
 import com.kodcu.other.IOHelper;
@@ -44,6 +45,7 @@ public class TreeService implements DefaultSettings {
     private ThreadService threadService;
     private AwesomeService awesomeService;
     private final BinaryCacheService binaryCacheService;
+    private final ExtensionConfigBean extensionConfigBean;
 
     Pattern pattern = Pattern.compile("^(addw|minw|setw|addh|minh|seth|scale):\\s*(\\d+)$");
 
@@ -54,12 +56,13 @@ public class TreeService implements DefaultSettings {
 
     @Autowired
     public TreeService(final Current current, final ApplicationController controller, final ThreadService threadService,
-                       final AwesomeService awesomeService, BinaryCacheService binaryCacheService) {
+                       final AwesomeService awesomeService, BinaryCacheService binaryCacheService, ExtensionConfigBean extensionConfigBean) {
         this.current = current;
         this.controller = controller;
         this.threadService = threadService;
         this.awesomeService = awesomeService;
         this.binaryCacheService = binaryCacheService;
+        this.extensionConfigBean = extensionConfigBean;
     }
 
     public void createFileTree(String tree, String type, String imagesDir, String imageTarget, String nodename) {
@@ -118,8 +121,14 @@ public class TreeService implements DefaultSettings {
                         .collect(Collectors.toList());
 
                 TreeView fileView = getSnaphotTreeView();
-                fileView.setScaleX(settings.get("scale"));
-                fileView.setScaleY(settings.get("scale"));
+                Integer scale = settings.get("scale");
+
+                if (Objects.isNull(scale)) {
+                    scale = extensionConfigBean.getDefaultImageScale();
+                }
+
+                fileView.setScaleX(scale);
+                fileView.setScaleY(scale);
 
                 for (int index = 0; index < treeItems.size(); index++) {
 
@@ -190,7 +199,7 @@ public class TreeService implements DefaultSettings {
                     if (settings.get("seth") > 0) {
                         fileView.setPrefHeight(settings.get("seth"));
                     } else {
-                        fileView.setPrefHeight((treeItems.size() * 24) + 30 + changeHeight);
+                        fileView.setPrefHeight((treeItems.size() * 24) + 10 + changeHeight);
                     }
 
                     WritableImage writableImage = fileView.snapshot(new SnapshotParameters(), null);
@@ -224,7 +233,7 @@ public class TreeService implements DefaultSettings {
 
     private TreeView getSnaphotTreeView() {
         TreeView fileView = new TreeView();
-        fileView.getStyleClass().add("file-tree");
+        fileView.getStyleClass().add("tree-extension");
         fileView.setLayoutX(-13000);
         fileView.setLayoutY(-13000);
         fileView.setMinSize(0, 0);
@@ -252,8 +261,11 @@ public class TreeService implements DefaultSettings {
                 treeview.setLayoutX(-16000);
                 treeview.setLayoutY(-16000);
                 treeview.setMinSize(0, 0);
+
+                int zoom = extensionConfigBean.getDefaultImageZoom();
+
                 treeview.setPrefSize(3000, 6000);
-                treeview.setZoom(2);
+                treeview.setZoom(zoom);
 
                 controller.getRootAnchor().getChildren().add(treeview);
 

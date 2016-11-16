@@ -49,13 +49,17 @@ public abstract class ChartBuilderService {
     protected XYChart<String, Number> createLineChart() {
         final CategoryAxis xAxis = new CategoryAxis();
         final NumberAxis yAxis = new NumberAxis();
-        return new LineChart<String, Number>(xAxis, yAxis);
+        LineChart<String, Number> chart = new LineChart<>(xAxis, yAxis);
+        chart.getStyleClass().add("chart-extension");
+        return chart;
     }
 
     protected XYChart<String, Number> createAreaChart() {
         final CategoryAxis xAxis = new CategoryAxis();
         final NumberAxis yAxis = new NumberAxis();
-        return new AreaChart<String, Number>(xAxis, yAxis);
+        AreaChart<String, Number> chart = new AreaChart<>(xAxis, yAxis);
+        chart.getStyleClass().add("chart-extension");
+        return chart;
     }
 
 

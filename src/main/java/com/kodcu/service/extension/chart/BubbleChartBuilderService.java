@@ -1,5 +1,6 @@
 package com.kodcu.service.extension.chart;
 
+import com.kodcu.config.ExtensionConfigBean;
 import com.kodcu.controller.ApplicationController;
 import com.kodcu.other.Current;
 import com.kodcu.service.ThreadService;
@@ -15,23 +16,17 @@ import org.springframework.stereotype.Component;
 @Component("bubble-bean")
 public class BubbleChartBuilderService extends XYChartBuilderService {
 
-    private final ThreadService threadService;
-    private final Current current;
-    private final ApplicationController controller;
-
-    @Autowired
-    public BubbleChartBuilderService(ThreadService threadService, Current current, ApplicationController controller) {
-        super(threadService, current, controller);
-        this.threadService = threadService;
-        this.current = current;
-        this.controller = controller;
+    public BubbleChartBuilderService(ThreadService threadService, Current current, ApplicationController controller, ExtensionConfigBean extensionConfigBean) {
+        super(threadService, current, controller, extensionConfigBean);
     }
 
     @Override
     protected XYChart<Number, Number> createXYChart() {
         final NumberAxis xAxis = new NumberAxis();
         final NumberAxis yAxis = new NumberAxis();
-        return new BubbleChart<Number, Number>(xAxis, yAxis);
+        BubbleChart<Number, Number> chart = new BubbleChart<>(xAxis, yAxis);
+        chart.getStyleClass().add("chart-extension");
+        return chart;
     }
 
 

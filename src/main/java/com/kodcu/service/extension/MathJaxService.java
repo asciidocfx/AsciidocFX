@@ -1,5 +1,6 @@
 package com.kodcu.service.extension;
 
+import com.kodcu.config.ExtensionConfigBean;
 import com.kodcu.controller.ApplicationController;
 import com.kodcu.other.Current;
 import com.kodcu.other.IOHelper;
@@ -13,28 +14,15 @@ import javafx.scene.image.WritableImage;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import netscape.javascript.JSObject;
-import org.apache.batik.anim.dom.SAXSVGDocumentFactory;
-import org.apache.batik.transcoder.TranscoderInput;
-import org.apache.batik.transcoder.TranscoderOutput;
-import org.apache.batik.transcoder.image.PNGTranscoder;
-import org.apache.batik.util.XMLResourceDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import org.w3c.dom.svg.SVGDocument;
 
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.StringReader;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Objects;
-
-import static java.nio.file.StandardOpenOption.*;
 
 /**
  * Created by usta on 25.12.2014.
@@ -48,6 +36,7 @@ public class MathJaxService {
     private final Current current;
     private final ThreadService threadService;
     private final BinaryCacheService binaryCacheService;
+    private final ExtensionConfigBean extensionConfigBean;
     private WebView webView;
     private boolean initialized;
 
@@ -55,11 +44,12 @@ public class MathJaxService {
     private String mathjaxUrl;
 
     @Autowired
-    public MathJaxService(final ApplicationController controller, final Current current, ThreadService threadService, BinaryCacheService binaryCacheService) {
+    public MathJaxService(final ApplicationController controller, final Current current, ThreadService threadService, BinaryCacheService binaryCacheService, ExtensionConfigBean extensionConfigBean) {
         this.controller = controller;
         this.current = current;
         this.threadService = threadService;
         this.binaryCacheService = binaryCacheService;
+        this.extensionConfigBean = extensionConfigBean;
     }
 
     private void initialize(Runnable... runnable) {
@@ -125,7 +115,7 @@ public class MathJaxService {
             webView.setPrefWidth(1000);
             webView.setLayoutX(-22000);
             webView.setLayoutY(-22000);
-            webView.setZoom(2);
+            webView.setZoom(extensionConfigBean.getDefaultImageZoom());
             controller.getRootAnchor().getChildren().add(webView);
         }
         return webView;

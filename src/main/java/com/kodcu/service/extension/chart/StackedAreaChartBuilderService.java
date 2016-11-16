@@ -1,5 +1,6 @@
 package com.kodcu.service.extension.chart;
 
+import com.kodcu.config.ExtensionConfigBean;
 import com.kodcu.controller.ApplicationController;
 import com.kodcu.other.Current;
 import com.kodcu.service.ThreadService;
@@ -16,24 +17,17 @@ import org.springframework.stereotype.Component;
 @Component("stacked-area-bean")
 public class StackedAreaChartBuilderService extends XYChartBuilderService {
 
-    private final ThreadService threadService;
-    private final Current current;
-    private final ApplicationController controller;
-
-    @Autowired
-    public StackedAreaChartBuilderService(ThreadService threadService, Current current, ApplicationController controller) {
-        super(threadService, current, controller);
-        this.threadService = threadService;
-        this.current = current;
-        this.controller = controller;
+    public StackedAreaChartBuilderService(ThreadService threadService, Current current, ApplicationController controller, ExtensionConfigBean extensionConfigBean) {
+        super(threadService, current, controller, extensionConfigBean);
     }
 
     @Override
     protected XYChart<String, Number> createXYChart() {
         final CategoryAxis xAxis = new CategoryAxis();
         final NumberAxis yAxis = new NumberAxis();
-        final XYChart<String, Number> lineChart = new StackedAreaChart<String, Number>(xAxis, yAxis);
-        return lineChart;
+        final XYChart<String, Number> chart = new StackedAreaChart<String, Number>(xAxis, yAxis);
+        chart.getStyleClass().add("chart-extension");
+        return chart;
     }
 
 

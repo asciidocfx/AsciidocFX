@@ -69,6 +69,7 @@ public class EditorConfigBean extends ConfigurationBase {
     private ObjectProperty<Integer> hangFileSizeLimit = new SimpleObjectProperty<>(3);
     public ObjectProperty<FoldStyle> foldStyle = new SimpleObjectProperty<>(FoldStyle.DEFAULT);
 
+
     private Logger logger = LoggerFactory.getLogger(EditorConfigBean.class);
 
     private final ApplicationController controller;
@@ -351,7 +352,7 @@ public class EditorConfigBean extends ConfigurationBase {
                 .resourceBundle(ResourceBundle.getBundle("editorConfig"))
                 .includeAndReorder("editorTheme", "aceTheme", "validateDocbook", "fontFamily", "fontSize",
                         "scrollSpeed", "useWrapMode", "wrapLimit", "foldStyle", "showGutter", "defaultLanguage", "autoUpdate",
-                        "clipboardImageFilePattern", "hangFileSizeLimit")
+                        "clipboardImageFilePattern", "hangFileSizeLimit", "extensionImageScale")
                 .build();
 
         DefaultFactoryProvider editorConfigFormProvider = new DefaultFactoryProvider();
@@ -363,6 +364,7 @@ public class EditorConfigBean extends ConfigurationBase {
         editorConfigFormProvider.addFactory(new NamedFieldHandler("fontSize"), new SpinnerFactory(new Spinner(8, 32, 14)));
         editorConfigFormProvider.addFactory(new NamedFieldHandler("wrapLimit"), new SpinnerFactory(new Spinner(0, 500, 0)));
         editorConfigFormProvider.addFactory(new NamedFieldHandler("hangFileSizeLimit"), new SpinnerFactory(new Spinner(0, Integer.MAX_VALUE, 3)));
+        editorConfigFormProvider.addFactory(new NamedFieldHandler("extensionImageScale"), new SpinnerFactory(new Spinner(0, Integer.MAX_VALUE, 2)));
         FileChooserEditableFactory fileChooserEditableFactory = new FileChooserEditableFactory();
         editorConfigForm.setEditorFactoryProvider(editorConfigFormProvider);
 
@@ -412,6 +414,7 @@ public class EditorConfigBean extends ConfigurationBase {
         String clipboardImageFilePattern = jsonObject.getString("clipboardImageFilePattern", "'Image'-ddMMyy-hhmmss.SSS'.png'");
         String foldStyle = jsonObject.getString("foldStyle", "default");
         int hangFileSizeLimit = jsonObject.getInt("hangFileSizeLimit", 3);
+        int extensionImageScale = jsonObject.getInt("extensionImageScale", 2);
         String editorTheme = jsonObject.getString("editorTheme");
 
         // Editor themes

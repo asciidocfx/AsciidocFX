@@ -240,7 +240,7 @@
 
 /* Output Buttons */
 
-.output-button{
+.output-button {
     -fx-font-size: 1.3em !important;
 }
 
@@ -309,4 +309,14 @@
     -fx-background-radius: 3;
     -fx-border-width: 0;
     -fx-border-style: solid;
+}
+
+.chart-extension {
+    -fx-base: #ececec;
+    -fx-background: derive(-fx-base, 26.4%);
+}
+
+.tree-extension, .tree-extension * {
+    -fx-base: #ececec;
+    -fx-background: derive(-fx-base, 26.4%);
 }
