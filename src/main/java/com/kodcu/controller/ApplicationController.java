@@ -2328,7 +2328,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     public void cutCopy(String data) {
         ClipboardContent clipboardContent = new ClipboardContent();
-        clipboardContent.putString(data);
+        clipboardContent.putString(data.replaceAll("\\R","\n"));
         Clipboard.getSystemClipboard().setContent(clipboardContent);
     }
 
