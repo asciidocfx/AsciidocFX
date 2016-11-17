@@ -1290,8 +1290,11 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         dividers.get(0).setPosition(editorConfigBean.getFirstSplitter());
         dividers.get(1).setPosition(editorConfigBean.getSecondSplitter());
 
+        String aceTheme = editorConfigBean.getAceTheme().get(0);
+
         editorConfigBean.getEditorTheme().stream().findFirst().ifPresent(theme -> {
             applyTheme(theme);
+            editorConfigBean.updateAceTheme(aceTheme);
         });
 
         editorConfigBean.getAceTheme().stream().findFirst().ifPresent(ace -> {
@@ -2328,7 +2331,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     public void cutCopy(String data) {
         ClipboardContent clipboardContent = new ClipboardContent();
-        clipboardContent.putString(data.replaceAll("\\R","\n"));
+        clipboardContent.putString(data.replaceAll("\\R", "\n"));
         Clipboard.getSystemClipboard().setContent(clipboardContent);
     }
 
@@ -3115,8 +3118,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             try {
 
                 String aceTheme = theme.getAceTheme();
-                editorConfigBean.getAceTheme().remove(aceTheme);
-                editorConfigBean.getAceTheme().add(0, aceTheme);
+//                editorConfigBean.updateAceTheme(aceTheme);
 
                 for (Scene scene : scenes) {
                     if (Objects.nonNull(scene)) {
@@ -3155,8 +3157,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                 }
 
                 String aceTheme = theme.getAceTheme();
-                editorConfigBean.getAceTheme().remove(aceTheme);
-                editorConfigBean.getAceTheme().add(0, aceTheme);
+                editorConfigBean.updateAceTheme(aceTheme);
 
                 terminalConfigBean.changeTheme(theme);
 

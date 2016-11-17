@@ -21,7 +21,6 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;
-import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Spinner;
 import javafx.scene.layout.HBox;
@@ -35,7 +34,6 @@ import org.springframework.stereotype.Component;
 
 import javax.json.*;
 import java.io.Reader;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -404,7 +402,7 @@ public class EditorConfigBean extends ConfigurationBase {
 
         String fontFamily = jsonObject.getString("fontFamily", "'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace");
         int fontSize = jsonObject.getInt("fontSize", 14);
-        String aceTheme = jsonObject.getString("aceTheme", "xcode");
+        String aceTheme = jsonObject.getString("aceTheme", "tomorrow_night");
         String defaultLanguage = jsonObject.getString("defaultLanguage", "en");
         boolean useWrapMode = jsonObject.getBoolean("useWrapMode", true);
         boolean showGutter = jsonObject.getBoolean("showGutter", false);
@@ -414,7 +412,6 @@ public class EditorConfigBean extends ConfigurationBase {
         String clipboardImageFilePattern = jsonObject.getString("clipboardImageFilePattern", "'Image'-ddMMyy-hhmmss.SSS'.png'");
         String foldStyle = jsonObject.getString("foldStyle", "default");
         int hangFileSizeLimit = jsonObject.getInt("hangFileSizeLimit", 3);
-        int extensionImageScale = jsonObject.getInt("extensionImageScale", 2);
         String editorTheme = jsonObject.getString("editorTheme");
 
         // Editor themes
@@ -577,6 +574,11 @@ public class EditorConfigBean extends ConfigurationBase {
                 .add("hangFileSizeLimit", getHangFileSizeLimit());
 
         return objectBuilder.build();
+    }
+
+    public void updateAceTheme(String aceTheme) {
+        getAceTheme().remove(aceTheme);
+        getAceTheme().add(0, aceTheme);
     }
 
     public class Theme {
