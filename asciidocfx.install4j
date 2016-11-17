@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <install4j version="6.1.3" transformSequenceNumber="5">
   <directoryPresets config="outputs" />
-  <application name="AsciidocFX" distributionSourceDir="" applicationId="7853-9376-5862-1224" mediaDir="target" mediaFilePattern="${compiler:sys.shortName}_${compiler:sys.platform}_${compiler:sys.version}" compression="4" lzmaCompression="true" pack200Compression="true" excludeSignedFromPacking="false" commonExternalFiles="false" createMd5Sums="true" shrinkRuntime="true" shortName="AsciidocFX" publisher="AsciidocFX" publisherWeb="http://asciidocfx.com" version="1.5.4" allPathsRelative="false" backupOnSave="false" autoSave="false" convertDotsToUnderscores="true" macSignature="????" macVolumeId="b98c377570068f5e" javaMinVersion="1.8" javaMaxVersion="1.8" allowBetaVM="true" jdkMode="runtimeJre" jdkName="">
+  <application name="AsciidocFX" distributionSourceDir="" applicationId="7853-9376-5862-1224" mediaDir="target" mediaFilePattern="${compiler:sys.shortName}_${compiler:sys.platform}_${compiler:sys.version}" compression="4" lzmaCompression="true" pack200Compression="true" excludeSignedFromPacking="false" commonExternalFiles="false" createMd5Sums="true" shrinkRuntime="true" shortName="AsciidocFX" publisher="AsciidocFX" publisherWeb="http://asciidocfx.com" version="1.5.5" allPathsRelative="false" backupOnSave="false" autoSave="false" convertDotsToUnderscores="true" macSignature="????" macVolumeId="b98c377570068f5e" javaMinVersion="1.8" javaMaxVersion="1.8" allowBetaVM="true" jdkMode="runtimeJre" jdkName="">
     <languages skipLanguageSelection="false" languageSelectionInPrincipalLanguage="false">
       <principalLanguage id="en" customLocalizationFile="" />
       <additionalLanguages />
@@ -30,7 +30,7 @@
   </files>
   <launchers>
     <launcher name="AsciidocFX" id="24" customizedId="" external="false" excludeFromMenu="false" unixMode="755" unixAutoStart="true" menuName="" icnsFile="" customMacBundleIdentifier="false" macBundleIdentifier="" swtApp="false" fileset="" macBundleBinary="JavaApplicationStub" addMacEntitlements="false" macEntitlementsFile="" useCustomMacosExecutableName="false" customMacosExecutableName="" useJavaMinVersionOverride="false" javaMinVersionOverride="" useJavaMaxVersionOverride="false" javaMaxVersionOverride="">
-      <executable name="AsciidocFX" type="1" iconSet="true" iconFile="" executableDir="" redirectStderr="true" stderrFile="log/asciidocfx.log" stderrMode="append" redirectStdout="false" stdoutFile="log/asciidocfx.log" stdoutMode="append" failOnStderrOutput="true" executableMode="1" changeWorkingDirectory="true" workingDirectory="." singleInstance="true" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="" executionLevel="asInvoker" checkConsoleParameter="false" globalSingleInstance="false" singleInstanceActivate="true" dpiAware="true">
+      <executable name="AsciidocFX" type="1" iconSet="true" iconFile="" executableDir="" redirectStderr="true" stderrFile="log/asciidocfx.log" stderrMode="append" redirectStdout="true" stdoutFile="log/asciidocfx.log" stdoutMode="append" failOnStderrOutput="true" executableMode="1" changeWorkingDirectory="true" workingDirectory="." singleInstance="true" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="" executionLevel="asInvoker" checkConsoleParameter="false" globalSingleInstance="false" singleInstanceActivate="true" dpiAware="true">
         <versionInfo include="false" fileVersion="" fileDescription="" legalCopyright="" internalName="" productName="" />
       </executable>
       <splashScreen show="false" width="0" height="0" bitmapFile="E:/asciidoc-fx-editor.png" windowsNative="true" textOverlay="false">
@@ -54,6 +54,7 @@
 -Duser.language=en
 -Duser.country=US
 -Dfile.encoding=UTF-8
+-Xms512M
 -Xmx1024M
 -XX:+UseG1GC
 -Djava.awt.headless=false</content>
@@ -104,17 +105,7 @@
               <action name="" id="701" customizedId="" beanClass="com.install4j.runtime.beans.actions.misc.RequestPrivilegesAction" enabled="true" commentSet="false" comment="" actionElevationType="none" rollbackBarrier="false" multiExec="false" failureStrategy="1" errorMessage="Please give full privilege to the installer">
                 <serializedBean>
                   <java class="java.beans.XMLDecoder">
-                    <object class="com.install4j.runtime.beans.actions.misc.RequestPrivilegesAction">
-                      <void property="obtainIfAdminMac">
-                        <boolean>true</boolean>
-                      </void>
-                      <void property="obtainIfNormalMac">
-                        <boolean>true</boolean>
-                      </void>
-                      <void property="obtainIfNormalWin">
-                        <boolean>true</boolean>
-                      </void>
-                    </object>
+                    <object class="com.install4j.runtime.beans.actions.misc.RequestPrivilegesAction" />
                   </java>
                 </serializedBean>
                 <condition />
@@ -1465,9 +1456,10 @@ return true;</string>
         <customAttributes />
       </autoUpdate>
     </windows>
-    <macos name="Mac OS X Single Bundle" id="108" customizedId="" mediaFileName="AsciidocFX_Mac" installDir="${compiler:sys.fullName}" overridePrincipalLanguage="false" jreBitType="all" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" downloadURL="" includeAllDownloadableComponents="false" includedJRE="macosx-amd64-1.8.0_112" manualJREEntry="false" bundleType="1" jreURL="" jreShared="false" directDownload="false" installOnlyIfNecessary="false" appleJre="false" requiredVmIdPrefix="" customInstallBaseDir="" contentFilesType="1" installerName="${i18n:InstallerName(${compiler:sys.fullName})}" volumeName="${compiler:sys.shortName}" compressDmg="false" launcherId="24">
+    <macosFolder name="Mac OS X Folder" id="921" customizedId="" mediaFileName="" installDir="${compiler:sys.fullName}" overridePrincipalLanguage="false" jreBitType="all" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" downloadURL="" includeAllDownloadableComponents="false" includedJRE="macosx-amd64-1.8.0_112" manualJREEntry="false" bundleType="1" jreURL="" jreShared="false" directDownload="false" installOnlyIfNecessary="false" appleJre="false" requiredVmIdPrefix="" customInstallBaseDir="" contentFilesType="1" installerName="${i18n:InstallerName(${compiler:sys.fullName})}" volumeName="${compiler:sys.shortName}" compressDmg="false" signLaunchers="false">
       <excludedComponents />
       <includedDownloadableComponents />
+      <excludedLaunchers />
       <excludedBeans />
       <overriddenPrincipalLanguage id="en" customLocalizationFile="" />
       <exclude />
@@ -1477,7 +1469,7 @@ return true;</string>
         <customAttributes />
       </autoUpdate>
       <topLevelFiles />
-    </macos>
+    </macosFolder>
     <windowsArchive name="Windows Archive" id="223" customizedId="" mediaFileName="AsciidocFX_Windows" installDir="${compiler:sys.shortName}" overridePrincipalLanguage="false" jreBitType="64" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" downloadURL="" includeAllDownloadableComponents="true" includedJRE="windows-amd64-1.8.0_112" manualJREEntry="false">
       <excludedComponents />
       <includedDownloadableComponents />
@@ -1545,7 +1537,7 @@ return true;</string>
     </windowsArchive>
   </mediaSets>
   <buildIds buildAll="true">
-    <mediaSet refId="416" />
+    <mediaSet refId="407" />
   </buildIds>
   <buildOptions verbose="false" faster="false" disableSigning="false" disableJreBundling="false" debug="false" />
 </install4j>

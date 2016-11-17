@@ -2,7 +2,7 @@
 :experimental:
 :toc:
 :toc-placement: preamble
-:asciidocfx-version: 1.5.4
+:asciidocfx-version: 1.5.5
 :download-root: https://github.com/asciidocfx/AsciidocFX/releases/download/v{asciidocfx-version}/
 
 image:https://api.travis-ci.org/asciidocfx/AsciidocFX.svg?branch=master[Build Status,link="https://travis-ci.org/asciidocfx/AsciidocFX"]
