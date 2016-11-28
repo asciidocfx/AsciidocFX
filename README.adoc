@@ -521,6 +521,8 @@ AFX supports this ace shortcuts https://github.com/ajaxorg/ace/wiki/Default-Keyb
 |kbd:[tree + Tab] |Generates Tree block
 |kbd:[quote + Tab] |Generates Quote block
 |kbd:[Ctrl+B] |Bolds selection
+|kbd:[Ctrl+F] |Find Text
+|kbd:[Ctrl+F] , kbd:[Ctrl+F] |Find and Replace Text
 |kbd:[Ctrl+I] |Italices selection
 |kbd:[Ctrl+U] |Underlines selection
 |kbd:[Ctrl+H] |Highlights selection
