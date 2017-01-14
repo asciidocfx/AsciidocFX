@@ -6,4 +6,4 @@ div.olist(id=node.$id(),class=[node.$style(), node.$role()])
       li(class=[(node['$option?']('step') || node['$has_role?']('step')) ? "fragment" : ""])
         p !{item.$text()}
         if item['$blocks?']()
-          !{item.$content()}
+          | !{item.$content()}

@@ -21,7 +21,6 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;
-import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Spinner;
 import javafx.scene.layout.HBox;
@@ -35,7 +34,6 @@ import org.springframework.stereotype.Component;
 
 import javax.json.*;
 import java.io.Reader;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -52,6 +50,7 @@ public class EditorConfigBean extends ConfigurationBase {
     private ObjectProperty<ObservableList<String>> defaultLanguage = new SimpleObjectProperty<>(FXCollections.observableArrayList());
     private DoubleProperty firstSplitter = new SimpleDoubleProperty(0.17551963048498845);
     private DoubleProperty secondSplitter = new SimpleDoubleProperty(0.5996920708237106);
+    private DoubleProperty verticalSplitter = new SimpleDoubleProperty(0.5);
     private StringProperty fontFamily = new SimpleStringProperty("'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace");
     private ObjectProperty<Integer> fontSize = new SimpleObjectProperty(16);
     private DoubleProperty scrollSpeed = new SimpleDoubleProperty(0.1);
@@ -59,7 +58,7 @@ public class EditorConfigBean extends ConfigurationBase {
     private ObjectProperty<Integer> wrapLimit = new SimpleObjectProperty<>(0);
     private BooleanProperty showGutter = new SimpleBooleanProperty(false);
     private BooleanProperty autoUpdate = new SimpleBooleanProperty(true);
-    private BooleanProperty validateDocbook = new SimpleBooleanProperty(true);
+    private BooleanProperty validateDocbook = new SimpleBooleanProperty(false);
     private StringProperty clipboardImageFilePattern = new SimpleStringProperty("'Image'-ddMMyy-hhmmss.SSS'.png'");
     private DoubleProperty screenX = new SimpleDoubleProperty(0);
     private DoubleProperty screenY = new SimpleDoubleProperty(0);
@@ -67,6 +66,7 @@ public class EditorConfigBean extends ConfigurationBase {
     private DoubleProperty screenHeight = new SimpleDoubleProperty();
     private ObjectProperty<Integer> hangFileSizeLimit = new SimpleObjectProperty<>(3);
     public ObjectProperty<FoldStyle> foldStyle = new SimpleObjectProperty<>(FoldStyle.DEFAULT);
+
 
     private Logger logger = LoggerFactory.getLogger(EditorConfigBean.class);
 
@@ -326,6 +326,18 @@ public class EditorConfigBean extends ConfigurationBase {
         this.editorTheme.set(editorTheme);
     }
 
+    public double getVerticalSplitter() {
+        return verticalSplitter.get();
+    }
+
+    public DoubleProperty verticalSplitterProperty() {
+        return verticalSplitter;
+    }
+
+    public void setVerticalSplitter(double verticalSplitter) {
+        this.verticalSplitter.set(verticalSplitter);
+    }
+
     @Override
     public String formName() {
         return "Editor Settings";
@@ -338,7 +350,7 @@ public class EditorConfigBean extends ConfigurationBase {
                 .resourceBundle(ResourceBundle.getBundle("editorConfig"))
                 .includeAndReorder("editorTheme", "aceTheme", "validateDocbook", "fontFamily", "fontSize",
                         "scrollSpeed", "useWrapMode", "wrapLimit", "foldStyle", "showGutter", "defaultLanguage", "autoUpdate",
-                        "clipboardImageFilePattern", "hangFileSizeLimit")
+                        "clipboardImageFilePattern", "hangFileSizeLimit", "extensionImageScale")
                 .build();
 
         DefaultFactoryProvider editorConfigFormProvider = new DefaultFactoryProvider();
@@ -350,6 +362,7 @@ public class EditorConfigBean extends ConfigurationBase {
         editorConfigFormProvider.addFactory(new NamedFieldHandler("fontSize"), new SpinnerFactory(new Spinner(8, 32, 14)));
         editorConfigFormProvider.addFactory(new NamedFieldHandler("wrapLimit"), new SpinnerFactory(new Spinner(0, 500, 0)));
         editorConfigFormProvider.addFactory(new NamedFieldHandler("hangFileSizeLimit"), new SpinnerFactory(new Spinner(0, Integer.MAX_VALUE, 3)));
+        editorConfigFormProvider.addFactory(new NamedFieldHandler("extensionImageScale"), new SpinnerFactory(new Spinner(0, Integer.MAX_VALUE, 2)));
         FileChooserEditableFactory fileChooserEditableFactory = new FileChooserEditableFactory();
         editorConfigForm.setEditorFactoryProvider(editorConfigFormProvider);
 
@@ -389,13 +402,13 @@ public class EditorConfigBean extends ConfigurationBase {
 
         String fontFamily = jsonObject.getString("fontFamily", "'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace");
         int fontSize = jsonObject.getInt("fontSize", 14);
-        String aceTheme = jsonObject.getString("aceTheme", "xcode");
+        String aceTheme = jsonObject.getString("aceTheme", "tomorrow_night");
         String defaultLanguage = jsonObject.getString("defaultLanguage", "en");
         boolean useWrapMode = jsonObject.getBoolean("useWrapMode", true);
         boolean showGutter = jsonObject.getBoolean("showGutter", false);
         int wrapLimit = jsonObject.getInt("wrapLimit", 0);
         boolean autoUpdate = jsonObject.getBoolean("autoUpdate", true);
-        final boolean validateDocbook = jsonObject.getBoolean("validateDocbook", true);
+        final boolean validateDocbook = jsonObject.getBoolean("validateDocbook", false);
         String clipboardImageFilePattern = jsonObject.getString("clipboardImageFilePattern", "'Image'-ddMMyy-hhmmss.SSS'.png'");
         String foldStyle = jsonObject.getString("foldStyle", "default");
         int hangFileSizeLimit = jsonObject.getInt("hangFileSizeLimit", 3);
@@ -465,6 +478,11 @@ public class EditorConfigBean extends ConfigurationBase {
             if (jsonObject.containsKey("secondSplitter")) {
                 JsonNumber secondSplitter = jsonObject.getJsonNumber("secondSplitter");
                 this.setSecondSplitter(secondSplitter.doubleValue());
+            }
+
+            if (jsonObject.containsKey("verticalSplitter")) {
+                JsonNumber secondSplitter = jsonObject.getJsonNumber("verticalSplitter");
+                this.setVerticalSplitter(secondSplitter.doubleValue());
             }
 
             if (jsonObject.containsKey("screenX")) {
@@ -544,6 +562,7 @@ public class EditorConfigBean extends ConfigurationBase {
                 .add("defaultLanguage", getDefaultLanguage().get(0))
                 .add("firstSplitter", getFirstSplitter())
                 .add("secondSplitter", getSecondSplitter())
+                .add("verticalSplitter", getVerticalSplitter())
                 .add("autoUpdate", getAutoUpdate())
                 .add("validateDocbook", getValidateDocbook())
                 .add("clipboardImageFilePattern", getClipboardImageFilePattern())
@@ -555,6 +574,11 @@ public class EditorConfigBean extends ConfigurationBase {
                 .add("hangFileSizeLimit", getHangFileSizeLimit());
 
         return objectBuilder.build();
+    }
+
+    public void updateAceTheme(String aceTheme) {
+        getAceTheme().remove(aceTheme);
+        getAceTheme().add(0, aceTheme);
     }
 
     public class Theme {

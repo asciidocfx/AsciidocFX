@@ -1157,6 +1157,8 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         return null;
     }
 
+    TerminalBuilder terminalBuilder = new TerminalBuilder();
+
     @FXML
     public void newTerminal(ActionEvent actionEvent, Path... path) {
 
@@ -1165,16 +1167,17 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         }
 
         TerminalConfig terminalConfig = terminalConfigBean.createTerminalConfig();
-
-        TerminalBuilder terminalBuilder = new TerminalBuilder(terminalConfig);
+        terminalBuilder.setTerminalConfig(terminalConfig);
 
         Path terminalPath = Optional.ofNullable(path).filter(e -> e.length > 0).map(e -> e[0]).orElse(directoryService.workingDirectory());
         terminalBuilder.setTerminalPath(terminalPath);
 
         TerminalTab terminalTab = terminalBuilder.newTerminal();
 
-        terminalTabPane.getTabs().add(terminalTab);
-        terminalTabPane.getSelectionModel().select(terminalTab);
+        threadService.runActionLater(() -> {
+            terminalTabPane.getTabs().add(terminalTab);
+            terminalTabPane.getSelectionModel().select(terminalTab);
+        }, true);
 
     }
 
@@ -1274,19 +1277,26 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         }
 
         if (Objects.nonNull(screenWidth)) {
-            stage.setWidth(screenWidth);
+            if (screenWidth != 0) {
+                stage.setWidth(screenWidth);
+            }
         }
 
         if (Objects.nonNull(screenHeight)) {
-            stage.setHeight(screenHeight);
+            if (screenHeight != 0) {
+                stage.setHeight(screenHeight);
+            }
         }
 
         ObservableList<SplitPane.Divider> dividers = splitPane.getDividers();
         dividers.get(0).setPosition(editorConfigBean.getFirstSplitter());
         dividers.get(1).setPosition(editorConfigBean.getSecondSplitter());
 
+        String aceTheme = editorConfigBean.getAceTheme().get(0);
+
         editorConfigBean.getEditorTheme().stream().findFirst().ifPresent(theme -> {
             applyTheme(theme);
+            editorConfigBean.updateAceTheme(aceTheme);
         });
 
         editorConfigBean.getAceTheme().stream().findFirst().ifPresent(ace -> {
@@ -1400,6 +1410,14 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
         dividers.get(0).positionProperty().bindBidirectional(editorConfigBean.firstSplitterProperty());
         dividers.get(1).positionProperty().bindBidirectional(editorConfigBean.secondSplitterProperty());
+
+        SplitPane.Divider verticalDivider = mainVerticalSplitPane.getDividers().get(0);
+        mainVerticalSplitPane.addEventFilter(MouseEvent.MOUSE_RELEASED, event -> {
+            double position = verticalDivider.getPosition();
+            if (position > 0.1 && position < 0.9) {
+                editorConfigBean.setVerticalSplitter(position);
+            }
+        });
 
         editorConfigBean.showGutterProperty().addListener((observable, oldValue, newValue) -> {
             if (Objects.nonNull(newValue)) {
@@ -2315,7 +2333,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     public void cutCopy(String data) {
         ClipboardContent clipboardContent = new ClipboardContent();
-        clipboardContent.putString(data);
+        clipboardContent.putString(data.replaceAll("\\R", "\n"));
         Clipboard.getSystemClipboard().setContent(clipboardContent);
     }
 
@@ -3023,7 +3041,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
         source.getStyleClass().remove("red-label");
 
-        mainVerticalSplitPane.setDividerPosition(0, source.isSelected() ? 0.40 : 1);
+        mainVerticalSplitPane.setDividerPosition(0, source.isSelected() ? editorConfigBean.getVerticalSplitter() : 1);
 
         if (source.isSelected()) {
             bottomShowerHider.showNode(logVBox);
@@ -3037,7 +3055,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
         final ToggleButton source = (ToggleButton) actionEvent.getSource();
 
-        mainVerticalSplitPane.setDividerPosition(0, source.isSelected() ? 0.40 : 1);
+        mainVerticalSplitPane.setDividerPosition(0, source.isSelected() ? editorConfigBean.getVerticalSplitter() : 1);
 
         if (source.isSelected()) {
             bottomShowerHider.showNode(terminalHBox);
@@ -3102,8 +3120,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             try {
 
                 String aceTheme = theme.getAceTheme();
-                editorConfigBean.getAceTheme().remove(aceTheme);
-                editorConfigBean.getAceTheme().add(0, aceTheme);
+//                editorConfigBean.updateAceTheme(aceTheme);
 
                 for (Scene scene : scenes) {
                     if (Objects.nonNull(scene)) {
@@ -3142,8 +3159,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                 }
 
                 String aceTheme = theme.getAceTheme();
-                editorConfigBean.getAceTheme().remove(aceTheme);
-                editorConfigBean.getAceTheme().add(0, aceTheme);
+                editorConfigBean.updateAceTheme(aceTheme);
 
                 terminalConfigBean.changeTheme(theme);
 

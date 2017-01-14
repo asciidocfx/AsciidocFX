@@ -33,10 +33,11 @@ public class ConfigurationService {
     private final ThreadService threadService;
     private final SpellcheckConfigBean spellcheckConfigBean;
     private final TerminalConfigBean terminalConfigBean;
+    private final ExtensionConfigBean extensionConfigBean;
     private VBox configBox;
 
     @Autowired
-    public ConfigurationService(LocationConfigBean locationConfigBean, EditorConfigBean editorConfigBean, PreviewConfigBean previewConfigBean, HtmlConfigBean htmlConfigBean, OdfConfigBean odfConfigBean, DocbookConfigBean docbookConfigBean, ApplicationController controller, StoredConfigBean storedConfigBean, ThreadService threadService, SpellcheckConfigBean spellcheckConfigBean, TerminalConfigBean terminalConfigBean) {
+    public ConfigurationService(LocationConfigBean locationConfigBean, EditorConfigBean editorConfigBean, PreviewConfigBean previewConfigBean, HtmlConfigBean htmlConfigBean, OdfConfigBean odfConfigBean, DocbookConfigBean docbookConfigBean, ApplicationController controller, StoredConfigBean storedConfigBean, ThreadService threadService, SpellcheckConfigBean spellcheckConfigBean, TerminalConfigBean terminalConfigBean, ExtensionConfigBean extensionConfigBean) {
         this.locationConfigBean = locationConfigBean;
         this.editorConfigBean = editorConfigBean;
         this.previewConfigBean = previewConfigBean;
@@ -48,6 +49,7 @@ public class ConfigurationService {
         this.threadService = threadService;
         this.spellcheckConfigBean = spellcheckConfigBean;
         this.terminalConfigBean = terminalConfigBean;
+        this.extensionConfigBean = extensionConfigBean;
     }
 
     public void loadConfigurations(Runnable... runnables) {
@@ -61,6 +63,7 @@ public class ConfigurationService {
         docbookConfigBean.load();
         spellcheckConfigBean.load();
         terminalConfigBean.load();
+        extensionConfigBean.load();
 
         List<ConfigurationBase> configBeanList = Arrays.asList(
                 editorConfigBean,
@@ -69,7 +72,8 @@ public class ConfigurationService {
                 previewConfigBean,
                 htmlConfigBean,
                 docbookConfigBean,
-                odfConfigBean
+//                odfConfigBean,
+                extensionConfigBean
 //                ,spellcheckConfigBean
         );
 

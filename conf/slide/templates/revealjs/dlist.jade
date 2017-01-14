@@ -14,7 +14,7 @@ if node.$style() == 'qanda'
               if answer['$text?']()
                 p= answer.$text()
               if answer['$blocks?']()
-                !{answer.$content()}
+                | !{answer.$content()}
 else if node.$style() == 'horizontal'
   .hdlist(id=node.$id(),class=node.$role())
     if node['$title?']()
@@ -32,7 +32,7 @@ else if node.$style() == 'horizontal'
             - terms = [].concat(terms)
             - last_term = terms.$last()
             each dt in terms
-              !{dt.$text()}
+              | !{dt.$text()}
               if dt != last_term
                 br
           td.hdlist2
@@ -40,7 +40,7 @@ else if node.$style() == 'horizontal'
               if dd['$text?']()
                 p= dd.$text()
               if dd['$blocks?']()
-                !{dd.$content()}
+                | !{dd.$content()}
 else
   .dlist(id=node.$id(),class=[node.$style(), node.$role()])
     if node['$title?']()
@@ -51,10 +51,10 @@ else
         - dd = item[1]
         each dt in [].concat(terms)
           dt(class=node.$style() == false ? 'hdlist1' : '')
-            !{dt.$text()}
+            | !{dt.$text()}
           unless dd['$nil?']()
             dd
               if dd['$text?']()
                 p= dd.$text()
               if dd['$blocks?']()
-                !{dd.$content()}
+                | !{dd.$content()}

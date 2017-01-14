@@ -1,5 +1,6 @@
 package com.kodcu.service.extension.chart;
 
+import com.kodcu.config.ExtensionConfigBean;
 import com.kodcu.controller.ApplicationController;
 import com.kodcu.other.Current;
 import com.kodcu.other.IOHelper;
@@ -27,13 +28,15 @@ public abstract class XYChartBuilderService extends ChartBuilderService {
     private final ThreadService threadService;
     private final Current current;
     private final ApplicationController controller;
+    private final ExtensionConfigBean extensionConfigBean;
     private final Logger logger = LoggerFactory.getLogger(XYChartBuilderService.class);
 
-    public XYChartBuilderService(ThreadService threadService, Current current, ApplicationController controller) {
+    public XYChartBuilderService(ThreadService threadService, Current current, ApplicationController controller, ExtensionConfigBean extensionConfigBean) {
         super(threadService, current, controller);
         this.threadService = threadService;
         this.current = current;
         this.controller = controller;
+        this.extensionConfigBean = extensionConfigBean;
     }
 
     @Override
@@ -52,8 +55,12 @@ public abstract class XYChartBuilderService extends ChartBuilderService {
         List colors = new ArrayList<>();
 
         XYChart xyChart = createXYChart();
-        xyChart.setScaleX(2);
-        xyChart.setScaleY(2);
+
+        int scale = extensionConfigBean.getDefaultImageScale();
+
+        xyChart.setScaleX(scale);
+        xyChart.setScaleY(scale);
+        xyChart.setScaleZ(scale);
         XYChart.Series series = new XYChart.Series();
 
         Axis xAxis = xyChart.getXAxis();

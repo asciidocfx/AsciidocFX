@@ -1,5 +1,6 @@
 package com.kodcu.service.extension.chart;
 
+import com.kodcu.config.ExtensionConfigBean;
 import com.kodcu.controller.ApplicationController;
 import com.kodcu.other.Current;
 import com.kodcu.other.IOHelper;
@@ -27,13 +28,15 @@ public class PieChartBuilderService extends ChartBuilderService {
     private final ThreadService threadService;
     private final Current current;
     private final ApplicationController controller;
+    private final ExtensionConfigBean extensionConfigBean;
 
     @Autowired
-    public PieChartBuilderService(ThreadService threadService, Current current, ApplicationController controller) {
+    public PieChartBuilderService(ThreadService threadService, Current current, ApplicationController controller, ExtensionConfigBean extensionConfigBean) {
         super(threadService, current, controller);
         this.threadService = threadService;
         this.current = current;
         this.controller = controller;
+        this.extensionConfigBean = extensionConfigBean;
     }
 
     @Override
@@ -74,8 +77,11 @@ public class PieChartBuilderService extends ChartBuilderService {
         }
 
         PieChart pieChart = new PieChart(datas);
-        pieChart.setScaleX(2);
-        pieChart.setScaleY(2);
+        pieChart.getStyleClass().add("chart-extension");
+        int scale = extensionConfigBean.getDefaultImageScale();
+        pieChart.setScaleX(scale);
+        pieChart.setScaleY(scale);
+        pieChart.setScaleZ(scale);
 
         for (int i = 0; i < datas.size(); i++) {
             PieChart.Data data = datas.get(i);

@@ -23,7 +23,8 @@ Opal.modules["image-data-line-treeprocessor/extension"] = function (Opal) {
                 try {
                     document.$find_by().forEach(function (node) {
                         node._line_number(function (lineno) {
-                            node._set_attribute("role", "data-line-" + lineno);
+                            node['$add_role']("data-line-" + lineno);
+                            //node._set_attribute("role", "data-line-" + lineno);
                         });
                     });
                 }

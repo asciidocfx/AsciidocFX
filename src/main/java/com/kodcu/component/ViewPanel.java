@@ -33,6 +33,8 @@ import java.nio.file.Path;
 import java.util.Iterator;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Created by usta on 15.06.2015.
@@ -59,7 +61,7 @@ public abstract class ViewPanel extends AnchorPane {
     }
 
     @PostConstruct
-    public void afterInit() {
+    public void afterViewInit() {
         threadService.runActionLater(() -> {
             this.getChildren().add(getWebView());
             initializeMargins();

@@ -412,6 +412,8 @@ AsciidocFX bazı özel kısayollara sahiptir. Eğer başka kısayol isteği öne
 |kbd:[*tree* + Tab] |Tree blok oluşturur
 |kbd:[*quote* + Tab] |Quote blok oluşturur
 |kbd:[Ctrl+B] |Seçimi kalın (bold) yapar
+|kbd:[Ctrl+F] |Metin Bul
+|kbd:[Ctrl+F] , kbd:[Ctrl+F] |Metni Bul ve Değiştir
 |kbd:[Ctrl+I] |Seçimi eğik (italic) yapar
 |kbd:[Ctrl+U] |Seçimin altını çizer (underline)
 |kbd:[Ctrl+H] |Seçimi vurgulu yapar (highlight)
