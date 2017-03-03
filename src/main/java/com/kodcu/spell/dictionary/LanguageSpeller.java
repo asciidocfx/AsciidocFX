@@ -6,6 +6,7 @@ import morfologik.stemming.Dictionary;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.nio.BufferUnderflowException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -70,9 +71,11 @@ public class LanguageSpeller {
             resultList.addAll(runOnWords);
             resultList.addAll(replacements);
             return resultList;
+        } catch (BufferUnderflowException bufex) {
+            logger.debug(bufex.getMessage(), bufex);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
-            return resultList;
         }
+        return resultList;
     }
 }

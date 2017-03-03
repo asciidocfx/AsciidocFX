@@ -7,6 +7,10 @@ import com.kodcu.service.ThreadService;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Worker;
+import javafx.scene.Scene;
+import javafx.scene.image.Image;
+import javafx.scene.web.WebView;
+import javafx.stage.Stage;
 import netscape.javascript.JSObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+import java.io.InputStream;
 
 /**
  * Created by usta on 09.04.2015.
@@ -37,6 +42,19 @@ public class SlidePane extends ViewPanel {
         threadService.runActionLater(() -> {
             getWindow().setMember("afx", controller);
             ReadOnlyObjectProperty<Worker.State> stateProperty = webEngine().getLoadWorker().stateProperty();
+            WebView popupView = new WebView();
+            Stage stage = new Stage();
+            stage.setScene(new Scene(popupView));
+            stage.setTitle("AsciidocFX");
+            InputStream logoStream = getClass().getResourceAsStream("/logo.png");
+            stage.getIcons().add(new Image(logoStream));
+            webEngine().setCreatePopupHandler(param -> {
+                if (!stage.isShowing()) {
+                    stage.show();
+                    popupView.requestFocus();
+                }
+                return popupView.getEngine();
+            });
             stateProperty.addListener(this::stateListener);
         });
     }

@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.nio.file.Path;
 import java.util.Objects;
 
 import static org.springframework.web.bind.annotation.RequestMethod.*;
@@ -40,7 +39,7 @@ public class SlideResource {
     @RequestMapping(value = {"/afx/slide", "/afx/slide/**", "/afx/slide/*.*"}, method = {GET, HEAD, OPTIONS, POST}, produces = "*/*", consumes = "*/*")
     @ResponseBody
     public void onrequest(HttpServletRequest request, HttpServletResponse response,
-                          @RequestParam(value = "p", required = false) String p) {
+                          @RequestParam(value = "p", required = false) String p, @RequestParam(value = "receiver", required = false) String receiver) {
 
         Payload payload = new Payload(request, response);
         payload.setPattern("/afx/slide/");
@@ -48,12 +47,19 @@ public class SlideResource {
         if (Objects.nonNull(p)) {
 
             if (p.contains("slide.html")) {
-                payload.getResponse().setContentType("text/html;charset=UTF-8");
-                payload.write(slideConverter.getRendered());
+                sendSlide(payload);
                 return;
             }
+        } else if (Objects.nonNull(receiver)) {
+            sendSlide(payload);
+            return;
         }
 
         commonResource.processPayload(payload);
+    }
+
+    private void sendSlide(Payload payload) {
+        payload.getResponse().setContentType("text/html;charset=UTF-8");
+        payload.write(slideConverter.getRendered());
     }
 }
