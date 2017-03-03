@@ -27,7 +27,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>1.4.2.RELEASE</version>
+        <version>1.5.1.RELEASE</version>
     </parent>
 
     <dependencies>
@@ -39,7 +39,7 @@
         <dependency>
             <groupId>com.dooapp.fxform2</groupId>
             <artifactId>core</artifactId>
-            <version>8.0.18</version>
+            <version>8.0.19-SNAPSHOT</version>
             <exclusions>
                 <exclusion>
                     <artifactId>validation-api</artifactId>
@@ -83,6 +83,16 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-undertow</artifactId>
+            <exclusions>
+                <exclusion>
+                    <artifactId>jboss-annotations-api_1.2_spec</artifactId>
+                    <groupId>org.jboss.spec.javax.annotation</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>jboss-websocket-api_1.1_spec</artifactId>
+                    <groupId>org.jboss.spec.javax.websocket</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.jooq</groupId>
@@ -94,6 +104,17 @@
             <groupId>org.apache.xmlgraphics</groupId>
             <artifactId>fop</artifactId>
             <version>2.1</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>xalan</artifactId>
+                    <groupId>xalan</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>xalan</groupId>
+            <artifactId>xalan</artifactId>
+            <version>2.7.2</version>
         </dependency>
         <dependency>
             <groupId>org.zeroturnaround</groupId>
@@ -103,7 +124,7 @@
         <dependency>
             <groupId>net.sourceforge.plantuml</groupId>
             <artifactId>plantuml</artifactId>
-            <version>8049</version>
+            <version>8057</version>
         </dependency>
         <dependency>
             <groupId>org.apache.xmlgraphics</groupId>
@@ -124,6 +145,12 @@
             <groupId>org.apache.odftoolkit</groupId>
             <artifactId>simple-odf</artifactId>
             <version>0.7-incubating</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>xercesImpl</artifactId>
+                    <groupId>xerces</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.carrot2</groupId>
@@ -145,17 +172,17 @@
         <dependency>
             <groupId>org.kordamp.ikonli</groupId>
             <artifactId>ikonli-core</artifactId>
-            <version>1.7.0</version>
+            <version>1.9.0</version>
         </dependency>
         <dependency>
             <groupId>org.kordamp.ikonli</groupId>
             <artifactId>ikonli-javafx</artifactId>
-            <version>1.7.0</version>
+            <version>1.9.0</version>
         </dependency>
         <dependency>
             <groupId>org.kordamp.ikonli</groupId>
             <artifactId>ikonli-fontawesome-pack</artifactId>
-            <version>1.7.0</version>
+            <version>1.9.0</version>
         </dependency>
         <dependency>
             <groupId>com.asciidocfx</groupId>
@@ -169,9 +196,22 @@
 
         <plugins>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.0.2</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <mainClass>${mainClass}</mainClass>
+                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
+            <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-                <version>1.4.0.RELEASE</version>
+                <!--<version>1.4.0.RELEASE</version>-->
                 <executions>
                     <execution>
                         <goals>
@@ -180,13 +220,21 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <jvmArguments>-Djava.awt.headless=false
-                        -XaddExports:javafx.graphics/com.sun.javafx.stage=ALL-UNNAMED -addmods ALL-DEFAULT,java.se.ee
-						-XaddExports:javafx.base/com.sun.javafx.collections=ALL-UNNAMED
-    -XaddExports:javafx.base/com.sun.javafx.property=ALL-UNNAMED
-    -XaddExports:javafx.base/com.sun.javafx=ALL-UNNAMED
-    -XaddExports:javafx.base/com.sun.javafx.event=ALL-UNNAMED
-	-addmods javafx.deploy,ALL-SYSTEM
+                    <jvmArguments>-Duser.language=en
+                        -Duser.country=US
+                        -Dfile.encoding=UTF-8
+                        -XX:+UseG1GC
+                        -Xmx1G
+                        -Djava.awt.headless=false
+                        --add-exports=javafx.graphics/com.sun.javafx.stage=ALL-UNNAMED
+                        --add-modules ALL-DEFAULT,java.se.ee
+                        --add-exports=javafx.base/com.sun.javafx.collections=ALL-UNNAMED
+                        --add-exports=javafx.base/com.sun.javafx.property=ALL-UNNAMED
+                        --add-exports=javafx.base/com.sun.javafx=ALL-UNNAMED
+                        --add-exports=javafx.base/com.sun.javafx.event=ALL-UNNAMED
+                        --add-modules javafx.deploy,ALL-SYSTEM
+                        --add-opens java.base/java.lang=ALL-UNNAMED
+                        --add-opens javafx.controls/javafx.scene.control=ALL-UNNAMED
                     </jvmArguments>
                     <mainClass>com.kodcu.boot.AppStarter</mainClass>
                 </configuration>
@@ -280,6 +328,16 @@
                 <enabled>true</enabled>
                 <checksumPolicy>warn</checksumPolicy>
             </releases>
+        </repository>
+        <repository>
+            <id>snapshots-repo</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
         </repository>
         <repository>
             <id>terminalfx-repo</id>

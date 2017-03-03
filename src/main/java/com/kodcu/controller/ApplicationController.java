@@ -23,7 +23,6 @@ import com.kodcu.service.convert.ebook.EpubConverter;
 import com.kodcu.service.convert.ebook.MobiConverter;
 import com.kodcu.service.convert.html.HtmlBookConverter;
 import com.kodcu.service.convert.markdown.MarkdownService;
-import com.kodcu.service.convert.odf.ODFConverter;
 import com.kodcu.service.convert.slide.SlideConverter;
 import com.kodcu.service.extension.MathJaxService;
 import com.kodcu.service.extension.PlantUmlService;
@@ -237,8 +236,8 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     @Autowired
     private TabService tabService;
 
-    @Autowired
-    private ODFConverter odfConverter;
+//    @Autowired
+//    private ODFConverter odfConverter;
 
     @Autowired
     private PlantUmlService plantUmlService;
@@ -1610,7 +1609,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             this.saveDoc();
 
         threadService.runTaskLater(() -> {
-            odfConverter.generateODFDocument(askPath);
+//            odfConverter.generateODFDocument(askPath);
         });
 
     }
@@ -2323,7 +2322,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     @WebkitCall(from = "asciidoctor-odf.js")
     public synchronized void convertToOdf(String name, Object obj) throws Exception {
         JSObject jObj = (JSObject) obj;
-        odfConverter.buildDocument(name, jObj);
+//        odfConverter.buildDocument(name, jObj);
     }
 
     @WebkitCall

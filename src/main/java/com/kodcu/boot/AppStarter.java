@@ -137,10 +137,10 @@ public class AppStarter extends Application {
         asciidocTableLoader.setControllerFactory(context::getBean);
         markdownTableLoader.setControllerFactory(context::getBean);
 
-        InputStream asciidocTableStream = getClass().getResourceAsStream("/fxml/AsciidocTablePopup.fxml");
+        InputStream asciidocTableStream = getClass().getResourceAsStream("/fxml-ui/AsciidocTablePopup.fxml");
         AnchorPane asciidocTableAnchor = asciidocTableLoader.load(asciidocTableStream);
 
-        InputStream markdownTableStream = getClass().getResourceAsStream("/fxml/MarkdownTablePopup.fxml");
+        InputStream markdownTableStream = getClass().getResourceAsStream("/fxml-ui/MarkdownTablePopup.fxml");
         AnchorPane markdownTableAnchor = markdownTableLoader.load(markdownTableStream);
 
         Stage asciidocTableStage = threadService.supply(Stage::new);

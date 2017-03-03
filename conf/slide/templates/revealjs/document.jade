@@ -86,7 +86,7 @@ html(lang=node.document.$attr("lang", "en") )
               src: '#{revealjsdir}/lib/js/classList.js',
               condition: function () { return !document.body.classList; }
             },
-            #{(node.$attr('source-highlighter') == 'highlight.js') ? "{ src: '#{revealjsdir}/plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } }," : ""}
+            { src: '#{revealjsdir}/plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
             {
               src: '#{revealjsdir}/plugin/zoom-js/zoom.js',
               async: true,
