@@ -86,6 +86,11 @@ Download executable/installer and run it.
 
 Download the `.dmg` and run it.
 
+or 
+
+Use https://caskroom.github.io/[Homebrew-cask] to install it with one command: `brew cask install asciidocfx`
+
+
 === Installation Notes
 
 There are two AsciidocFX package flavors, you can download it with JRE 8 out-of-box or if you have already installed JRE 8 (Update 40 or above), you can download *No_JRE builds
