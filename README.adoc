@@ -5,6 +5,8 @@
 :asciidocfx-version: 1.5.5
 :download-root: https://github.com/asciidocfx/AsciidocFX/releases/download/v{asciidocfx-version}/
 
+image:https://opencollective.com/AsciidocFX/backers/badge.svg["Backers on Open Collective", link="#backers"]
+image:https://opencollective.com/AsciidocFX/sponsors/badge.svg["Sponsors on Open Collective", link="#sponsors"]
 image:https://api.travis-ci.org/asciidocfx/AsciidocFX.svg?branch=master[Build Status,link="https://travis-ci.org/asciidocfx/AsciidocFX"]
 image:https://badges.gitter.im/Join%20Chat.svg["Gitter", link="https://gitter.im/asciidocfx/AsciidocFX"]
 
@@ -567,3 +569,31 @@ To see what has changed in recent versions of AsciidocFX, see the https://github
 == Support
 
 Support AsciidocFX with pull requests or open an issue for bug & feature requests. You can make discussions in https://groups.google.com/d/forum/asciidocfx-discuss[mail group] or in the chat room at https://gitter.im/asciidocfx/AsciidocFX[Gitter.im].
+
+
+== Contributors
+
+Thank you to all the people who have already contributed to AsciidocFX!
+image:https://opencollective.com/AsciidocFX/contributors.svg?width=890["Contributors", link="graphs/contributors"]
+
+
+== Backers
+
+Thank you to all our backers! [https://opencollective.com/AsciidocFX#backer[Become a backer]]
+
+image:https://opencollective.com/AsciidocFX/backers.svg?width=890["Backers on Open Collective", link="https://opencollective.com/AsciidocFX#backers"]
+
+== Sponsors
+
+Thank you to all our sponsors! (please ask your company to also support this open source project by https://opencollective.com/AsciidocFX#sponsor[becoming a sponsor])
+
+image:https://opencollective.com/AsciidocFX/sponsor/0/avatar.svg[link="https://opencollective.com/AsciidocFX/sponsor/0/website", target="_blank"]
+image:https://opencollective.com/AsciidocFX/sponsor/1/avatar.svg[link="https://opencollective.com/AsciidocFX/sponsor/1/website", target="_blank"]
+image:https://opencollective.com/AsciidocFX/sponsor/2/avatar.svg[link="https://opencollective.com/AsciidocFX/sponsor/2/website", target="_blank"]
+image:https://opencollective.com/AsciidocFX/sponsor/3/avatar.svg[link="https://opencollective.com/AsciidocFX/sponsor/3/website", target="_blank"]
+image:https://opencollective.com/AsciidocFX/sponsor/4/avatar.svg[link="https://opencollective.com/AsciidocFX/sponsor/4/website", target="_blank"]
+image:https://opencollective.com/AsciidocFX/sponsor/5/avatar.svg[link="https://opencollective.com/AsciidocFX/sponsor/5/website", target="_blank"]
+image:https://opencollective.com/AsciidocFX/sponsor/6/avatar.svg[link="https://opencollective.com/AsciidocFX/sponsor/6/website", target="_blank"]
+image:https://opencollective.com/AsciidocFX/sponsor/7/avatar.svg[link="https://opencollective.com/AsciidocFX/sponsor/7/website", target="_blank"]
+image:https://opencollective.com/AsciidocFX/sponsor/8/avatar.svg[link="https://opencollective.com/AsciidocFX/sponsor/8/website", target="_blank"]
+image:https://opencollective.com/AsciidocFX/sponsor/9/avatar.svg[link="https://opencollective.com/AsciidocFX/sponsor/9/website", target="_blank"]
