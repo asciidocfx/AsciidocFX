@@ -36,7 +36,6 @@ import com.kodcu.service.ui.IndikatorService;
 import com.kodcu.service.ui.TabService;
 import com.kodcu.service.ui.TooltipTimeFixService;
 import com.kodcu.spell.dictionary.DictionaryService;
-import com.sun.javafx.stage.StageHelper;
 import com.terminalfx.TerminalBuilder;
 import com.terminalfx.TerminalTab;
 import com.terminalfx.config.TerminalConfig;
@@ -71,6 +70,7 @@ import javafx.scene.text.Text;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 import javafx.util.Duration;
 import netscape.javascript.JSObject;
 import org.kordamp.ikonli.fontawesome.FontAwesome;
@@ -1241,7 +1241,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
             Node focusOwner = stage.getScene().getFocusOwner();
 
-            if (StageHelper.getStages().size() == 1) {
+            if (Window.getWindows().size() == 1) {
                 if (!newValue) {
                     saveAllTabs();
                 } else {
