@@ -826,5 +826,29 @@
     "caption": "TSX",
     "mode": "ace/mode/tsx",
     "extensions": "tsx"
+  },
+  {
+    "name": "bro",
+    "caption": "Bro",
+    "mode": "ace/snippets/bro",
+    "extensions": "bro"
+  },
+  {
+    "name": "gql",
+    "caption": "GraphQLSchema",
+    "mode": "ace/snippets/graphqlschema",
+    "extensions": "gql"
+  },
+  {
+    "name": "hjson",
+    "caption": "Hjson",
+    "mode": "ace/snippets/hjson",
+    "extensions": "hjson"
+  },
+  {
+    "name": "pig",
+    "caption": "Pig",
+    "mode": "ace/snippets/pig",
+    "extensions": "pig"
   }
 ]
