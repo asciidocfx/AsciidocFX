@@ -3,20 +3,15 @@ package com.kodcu.component;
 import com.kodcu.controller.ApplicationController;
 import com.kodcu.other.Current;
 import com.kodcu.service.ThreadService;
-import com.sun.javafx.scene.control.skin.ContextMenuContent;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Worker;
-import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.CheckMenuItem;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
-import javafx.scene.control.Separator;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
@@ -33,8 +28,6 @@ import java.nio.file.Path;
 import java.util.Iterator;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.concurrent.Semaphore;
-import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Created by usta on 15.06.2015.
@@ -103,33 +96,15 @@ public abstract class ViewPanel extends AnchorPane {
 
         getWebView().setOnContextMenuRequested(event -> {
 
-            @SuppressWarnings("deprecation")
-            final Iterator<Window> windows = Window.impl_getWindows();
+            ObservableList<Window> windows = Window.getWindows();
 
-            while (windows.hasNext()) {
-                final Window window = windows.next();
-
+            for (Window window : windows) {
                 if (window instanceof ContextMenu) {
 
-                    Optional<Node> nodeOptional = Optional.ofNullable(window)
-                            .map(Window::getScene)
-                            .map(Scene::getRoot)
-                            .map(Parent::getChildrenUnmodifiable)
-                            .filter((nodes) -> !nodes.isEmpty())
-                            .map(e -> e.get(0))
-                            .map(e -> e.lookup(".context-menu"));
-
-                    if (nodeOptional.isPresent()) {
-                        ObservableList<Node> childrenUnmodifiable = ((Parent) nodeOptional.get())
-                                .getChildrenUnmodifiable();
-                        ContextMenuContent cmc = (ContextMenuContent) childrenUnmodifiable.get(0);
-
-                        // add new item:
-                        cmc.getItemsContainer().getChildren().add(new Separator());
-                        cmc.getItemsContainer().getChildren().add(cmc.new MenuItemContainer(stopRenderingItem));
-                        cmc.getItemsContainer().getChildren().add(cmc.new MenuItemContainer(stopScrollingItem));
-                        cmc.getItemsContainer().getChildren().add(cmc.new MenuItemContainer(stopJumpingItem));
-                    }
+                    ContextMenu c = (ContextMenu) window;
+                    c.getItems().add(stopRenderingItem);
+                    c.getItems().add(stopScrollingItem);
+                    c.getItems().add(stopJumpingItem);
                 }
             }
         });
