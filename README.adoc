@@ -574,7 +574,7 @@ Support AsciidocFX with pull requests or open an issue for bug & feature request
 == Contributors
 
 Thank you to all the people who have already contributed to AsciidocFX!
-image:https://opencollective.com/AsciidocFX/contributors.svg?width=890["Contributors", link="graphs/contributors"]
+image:https://opencollective.com/AsciidocFX/contributors.svg?width=890["Contributors", link="../../graphs/contributors"]
 
 
 == Backers
