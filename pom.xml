@@ -12,9 +12,9 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <java.version>1.8</java.version>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
+        <java.version>1.9</java.version>
+        <maven.compiler.source>1.9</maven.compiler.source>
+        <maven.compiler.target>1.9</maven.compiler.target>
         <mainClass>com.kodcu.boot.AppStarter</mainClass>
         <install4j.home>/home/travis/build/asciidocfx/AsciidocFX/install4j6</install4j.home>
         <install4j.licenseKey>${env.CI_LICENSE_KEY}</install4j.licenseKey>

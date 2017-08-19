@@ -4,6 +4,7 @@ import com.install4j.api.launcher.StartupNotification;
 import com.kodcu.config.ConfigurationService;
 import com.kodcu.config.EditorConfigBean;
 import com.kodcu.controller.ApplicationController;
+import com.kodcu.service.FileOpenListener;
 import com.kodcu.service.ThreadService;
 import com.kodcu.service.ui.TabService;
 import de.tototec.cmdoption.CmdlineParser;
@@ -29,7 +30,12 @@ import org.springframework.context.ConfigurableApplicationContext;
 
 import java.io.File;
 import java.io.InputStream;
+import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import static javafx.scene.input.KeyCombination.SHORTCUT_DOWN;
 
@@ -210,19 +216,9 @@ public class AppStarter extends Application {
 
         final ThreadService threadService = context.getBean(ThreadService.class);
         final TabService tabService = context.getBean(TabService.class);
+        final FileOpenListener fileOpenListener = context.getBean(FileOpenListener.class);
 
-        StartupNotification.registerStartupListener(parameters -> {
-
-            threadService.runActionLater(() -> {
-
-                String[] files = parameters.split(" ");
-
-                for (String file : files) {
-                    file = file.replace("\"", "");
-                    tabService.addTab(Paths.get(file).toAbsolutePath());
-                }
-            });
-        });
+        StartupNotification.registerStartupListener(fileOpenListener);
 
         if (!config.files.isEmpty()) {
             threadService.runActionLater(() -> {
