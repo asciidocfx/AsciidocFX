@@ -3,7 +3,7 @@ pipeline {
   stages {
     stage('error') {
       steps {
-        sh 'mvn clean install'
+        sh '/opt/apache-maven-3.3.9/bin/mvn clean install'
       }
     }
   }
