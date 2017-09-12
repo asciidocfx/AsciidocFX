@@ -1,6 +1,6 @@
 
 {
-    "jsPlatform":"Webkit",
+    "jsPlatform":"AsciidoctorJ",
     "safe":"safe",
     "sourcemap":true,
     "attributes":{

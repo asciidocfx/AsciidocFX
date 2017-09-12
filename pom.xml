@@ -5,7 +5,7 @@
 
     <groupId>com.kodcu</groupId>
     <artifactId>AsciidocFX</artifactId>
-    <version>1.5.5</version>
+    <version>1.5.6</version>
     <packaging>jar</packaging>
 
     <name>AsciidocFX</name>
@@ -162,6 +162,28 @@
             <artifactId>terminalfx</artifactId>
             <version>1.3</version>
         </dependency>
+        <dependency>
+            <groupId>org.asciidoctor</groupId>
+            <artifactId>asciidoctorj</artifactId>
+            <version>1.5.6</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>jruby-complete</artifactId>
+                    <groupId>org.jruby</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <artifactId>jruby-complete</artifactId>
+            <groupId>org.jruby</groupId>
+            <version>9.1.8.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.asciidoctor</groupId>
+            <artifactId>asciidoctorj-pdf</artifactId>
+            <version>1.5.0-alpha.16</version>
+        </dependency>
+
     </dependencies>
 
     <build>
@@ -208,8 +230,10 @@
                         -XX:+UseG1GC
                         -Xmx1G
                         -Djava.awt.headless=false
-                        --add-opens javafx.base/com.sun.javafx.collections=javafx.web
-                        --add-exports javafx.controls/com.sun.javafx.scene.control=ALL-UNNAMED
+                        --add-opens
+                        javafx.base/com.sun.javafx.collections=javafx.web
+                        --add-exports
+                        javafx.controls/com.sun.javafx.scene.control=ALL-UNNAMED
                     </extraJvmArguments>
                     <repositoryLayout>flat</repositoryLayout>
                     <useWildcardClassPath>true</useWildcardClassPath>

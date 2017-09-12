@@ -6,7 +6,8 @@ package com.kodcu.config;
 public enum JSPlatform {
 
     Webkit("webkit"),
-    Nashorn("nashorn"),;
+    Nashorn("nashorn"),
+    AsciidoctorJ("AsciidoctorJ");
 
     private final String value;
 

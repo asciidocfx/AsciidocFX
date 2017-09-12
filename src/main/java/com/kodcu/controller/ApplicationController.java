@@ -253,7 +253,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     private HtmlBookConverter htmlBookService;
 
     @Autowired
-    @Qualifier("pdfBookConverter")
+    @Qualifier("newPdfConverter")
     private DocumentConverter pdfBookConverter;
 
     @Autowired
@@ -2290,9 +2290,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     @WebkitCall(from = "editor")
     public void textListener(String text, String mode) {
         latestTupleReference.set(new Tuple<>(text, mode));
-        if (renderLoopSemaphore.hasQueuedThreads()) {
-            renderLoopSemaphore.release();
-        }
+        renderLoopSemaphore.release();
     }
 
     @WebkitCall(from = "editor")
