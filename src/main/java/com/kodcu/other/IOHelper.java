@@ -16,8 +16,6 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 import java.awt.image.BufferedImage;
-import java.awt.image.DataBuffer;
-import java.awt.image.DataBufferInt;
 import java.io.*;
 import java.net.URLDecoder;
 import java.nio.charset.Charset;
@@ -472,9 +470,18 @@ public class IOHelper {
         return contains(root, inside.getParent());
     }
 
-    public static Stream<Path> walk(Path path, int deepth) {
+    public static Stream<Path> walk(Path path) {
         try {
-            return Files.walk(path, deepth);
+            return Files.walk(path);
+        } catch (Exception e) {
+            logger.warn("Problem occured while walking path {}", path);
+        }
+        return Stream.empty();
+    }
+
+    public static Stream<Path> walk(Path path, int depth) {
+        try {
+            return Files.walk(path, depth);
         } catch (Exception e) {
             logger.warn("Problem occured while walking path {}", path);
         }
@@ -510,5 +517,17 @@ public class IOHelper {
         }
 
         return true;
+    }
+
+    public static Path getPath(String path) {
+        try {
+            Path getPath = Paths.get(path);
+            return getPath;
+        } catch (NullPointerException nlp) {
+            throw nlp;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }
