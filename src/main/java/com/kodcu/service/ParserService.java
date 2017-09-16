@@ -71,7 +71,7 @@ public class ParserService {
 
         List<String> buffer = new LinkedList<>();
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(asciiDocController.getClipboardImageFilePattern());
-        Path path = Paths.get(dateTimeFormatter.format(LocalDateTime.now()));
+        Path path = IOHelper.getPath(dateTimeFormatter.format(LocalDateTime.now()));
 
         Path targetImage = currentPath.resolve("images").resolve(path.getFileName());
 

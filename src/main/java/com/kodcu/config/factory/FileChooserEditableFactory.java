@@ -2,6 +2,7 @@ package com.kodcu.config.factory;
 
 import com.dooapp.fxform.view.FXFormNode;
 import com.dooapp.fxform.view.FXFormNodeWrapper;
+import com.kodcu.other.IOHelper;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.control.Button;
@@ -44,7 +45,7 @@ public class FileChooserEditableFactory implements Callback<Void, FXFormNode> {
         editButton.setOnAction(event -> {
             String first = property.get();
             if (Objects.nonNull(first)) {
-                onEditConsumer.accept(Paths.get(first));
+                onEditConsumer.accept(IOHelper.getPath(first));
             }
         });
     }

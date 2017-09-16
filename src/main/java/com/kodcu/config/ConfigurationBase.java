@@ -49,7 +49,7 @@ public abstract class ConfigurationBase {
 
         String userHome = System.getProperty("user.home");
 
-        Path userHomeConfigPath = Paths.get(userHome).resolve(userHomeConfigFolder);
+        Path userHomeConfigPath = IOHelper.getPath(userHome).resolve(userHomeConfigFolder);
 
         IOHelper.createDirectories(userHomeConfigPath);
 

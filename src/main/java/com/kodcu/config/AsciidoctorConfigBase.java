@@ -228,10 +228,16 @@ public abstract class AsciidoctorConfigBase extends ConfigurationBase {
         ObservableList<AttributesTable> attributes = getAttributes();
 
         for (AttributesTable attribute : attributes) {
-            if ("false".equalsIgnoreCase(attribute.getValue())) {
+            String value = attribute.getValue();
+            if ("false".equalsIgnoreCase(value)) {
                 continue;
             }
-            attributesObject.add(attribute.getAttribute(), attribute.getValue());
+            String key = attribute.getAttribute();
+
+            if(Objects.nonNull(key) || Objects.nonNull(value)){
+                attributesObject.add(key, value);
+            }
+
         }
 
         JsonObjectBuilder objectBuilder = Json.createObjectBuilder();

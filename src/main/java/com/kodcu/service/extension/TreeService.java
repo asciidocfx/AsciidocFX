@@ -112,7 +112,7 @@ public class TreeService implements DefaultSettings {
                         })
                         .filter(Objects::nonNull)
                         .map(t -> {
-                            Node icon = awesomeService.getIcon(Paths.get(t.getValue()));
+                            Node icon = awesomeService.getIcon(IOHelper.getPath(t.getValue()));
                             TreeItem<Tuple<Integer, String>> treeItem = new TreeItem<>(t, icon);
                             treeItem.setExpanded(true);
 

@@ -106,7 +106,7 @@ public class StoredConfigBean extends ConfigurationBase {
 
             if (Objects.nonNull(recentFiles)) {
                 recentFiles.stream().map(e -> (JsonString) e).map(e -> e.getString())
-                        .map(e -> new Item(Paths.get(e)))
+                        .map(e -> new Item(IOHelper.getPath(e)))
                         .forEach(this.recentFiles::add);
             }
             if (Objects.nonNull(favoriteDirectories)) {

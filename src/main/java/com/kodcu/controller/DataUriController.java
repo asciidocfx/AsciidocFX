@@ -70,7 +70,7 @@ public class DataUriController {
         if (isExternalUri(imageUri)) {
             bytes = restTemplate.getForObject(imageUri, byte[].class);
         } else {
-            final Path path = directoryService.findPathInWorkdirOrLookup(Paths.get(imageUri));
+            final Path path = directoryService.findPathInWorkdirOrLookup(IOHelper.getPath(imageUri));
             Objects.requireNonNull(path, "No such file or directory: " + imageUri);
             bytes = IOHelper.readFile(path, byte[].class);
         }

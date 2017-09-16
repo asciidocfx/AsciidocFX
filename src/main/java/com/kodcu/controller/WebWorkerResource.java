@@ -1,6 +1,7 @@
 package com.kodcu.controller;
 
 import com.kodcu.other.Current;
+import com.kodcu.other.IOHelper;
 import com.kodcu.service.DirectoryService;
 import com.kodcu.service.ThreadService;
 import com.kodcu.service.ui.TabService;
@@ -99,7 +100,7 @@ public class WebWorkerResource {
         }
 
         if (optional.isPresent()) {
-            Path found = directoryService.findPathInWorkdirOrLookup(Paths.get(finalURI));
+            Path found = directoryService.findPathInWorkdirOrLookup(IOHelper.getPath(finalURI));
 
             if (Objects.nonNull(found)) {
                 fileService.processFile(request, response, found);

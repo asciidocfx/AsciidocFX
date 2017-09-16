@@ -68,7 +68,7 @@ public class MobiConverter implements DocumentConverter<String> {
 
             final ProcessExecutor processExecutor = new ProcessExecutor();
             processExecutor.readOutput(true);
-            Path kindleGenPath = Paths.get(locationConfigBean.getKindlegen());
+            Path kindleGenPath = IOHelper.getPath(locationConfigBean.getKindlegen());
 
             try {
                 final String message = processExecutor

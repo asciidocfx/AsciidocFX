@@ -45,7 +45,7 @@ public class DefaultSpellCheckLanguageFactory implements Callback<Void, FXFormNo
 
             @Override
             public Path fromString(String string) {
-                return Paths.get(string);
+                return IOHelper.getPath(string);
             }
         }));
 

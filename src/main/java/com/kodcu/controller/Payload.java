@@ -123,6 +123,6 @@ public class Payload {
     public Optional<Path> resolveUri(String requestURI) {
         return getCleanReferer()
                 .map(Paths::get)
-                .map(e -> e.relativize(Paths.get(requestURI)));
+                .map(e -> e.relativize(IOHelper.getPath(requestURI)));
     }
 }

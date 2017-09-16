@@ -403,10 +403,10 @@ public class EditorPane extends AnchorPane {
         MenuItem copy = MenuItemBuilt.item("Copy").click(e -> {
             controller.cutCopy(editorSelection());
         });
-        MenuItem paste = MenuItemBuilt.item("Paste").click(e -> {
+        MenuItem pasteConverted = MenuItemBuilt.item("Paste converted").click(e -> {
             controller.paste();
         });
-        MenuItem pasteRaw = MenuItemBuilt.item("Paste raw").click(e -> {
+        MenuItem paste = MenuItemBuilt.item("Paste").click(e -> {
             controller.pasteRaw();
         });
         MenuItem indexSelection = MenuItemBuilt.item("Index selection").click(e -> {
@@ -445,7 +445,7 @@ public class EditorPane extends AnchorPane {
 
             final ObservableList<MenuItem> contextMenuItems = contextMenu.getItems();
 
-            final List<MenuItem> menuItems = Arrays.asList(cut, copy, paste, pasteRaw,
+            final List<MenuItem> menuItems = Arrays.asList(cut, copy,paste, pasteConverted,
                     markdownToAsciidoc,
                     replacements,
                     indexSelection,
