@@ -6,7 +6,7 @@
 <?import java.lang.String?>
 <AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
             prefHeight="198.0" prefWidth="341.0" xmlns:fx="http://javafx.com/fxml/1"
-            xmlns="http://javafx.com/javafx/2.2" fx:controller="com.kodcu.ConfigController">
+            xmlns="http://javafx.com/javafx/2.2" fx:controller="com.kodedu.ConfigController">
     <children>
         <Button fx:id="saveConfig" layoutX="240.0" layoutY="148.0" mnemonicParsing="false" onAction="#saveConfig"
                 prefHeight="28.0" prefWidth="65.0" text="Save"/>

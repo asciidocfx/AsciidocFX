@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import com.kodcu.component.ShowerHider?>
+<?import com.kodedu.component.ShowerHider?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.*?>
 <?import javafx.scene.layout.*?>
 <?import org.kordamp.ikonli.javafx.FontIcon?>
 <AnchorPane id="AnchorPane" fx:id="rootAnchor" styleClass="root-container"
-            xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.kodcu.controller.ApplicationController"
+            xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.kodedu.controller.ApplicationController"
             xmlns="http://javafx.com/javafx/8">
     <children>
         <BorderPane AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0"

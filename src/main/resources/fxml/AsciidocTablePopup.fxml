@@ -8,7 +8,7 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane styleClass="root-container" id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" opacity="1.0" prefHeight="240.0" prefWidth="314.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="com.kodcu.service.table.AsciidocTableController">
+<AnchorPane styleClass="root-container" id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" opacity="1.0" prefHeight="240.0" prefWidth="314.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="com.kodedu.service.table.AsciidocTableController">
   <children>
     <CheckBox fx:id="tablePopupHeader" layoutX="33.0" layoutY="102.0" mnemonicParsing="false" selected="true" text="Header" />
     <CheckBox fx:id="tablePopupFooter" layoutX="104.0" layoutY="102.0" mnemonicParsing="false" selected="true" text="Footer" />
