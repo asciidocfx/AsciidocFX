@@ -12,6 +12,7 @@ function addNewCommand(key, value) {
         readOnly: true
     });
 }
+
 // default keys https://searchcode.com/codesearch/view/58959997/
 editor.commands.addCommand({
     name: 'cut-1',
@@ -53,7 +54,7 @@ editor.commands.addCommand({
 
 editor.commands.addCommand({
     name: 'paste-1',
-    bindKey: {win: 'Ctrl-V', mac: 'Command-V'},
+    bindKey: {win: 'Ctrl-Shift-V', mac: 'Command-Shift-V'},
     exec: function (editor) {
 
         afx.paste();
@@ -65,7 +66,7 @@ editor.commands.addCommand({
 
 editor.commands.addCommand({
     name: 'paste-raw-1',
-    bindKey: {win: 'Ctrl-Shift-V', mac: 'Command-Shift-V'},
+    bindKey: {win: 'Ctrl-V', mac: 'Command-V'},
     exec: function (editor) {
         //afx.pasteRaw();
         var text = afx.clipboardValue();
@@ -276,13 +277,17 @@ var editorMenu = {
             var cursorPosition = editor.getCursorPosition();
             cursorPosition.column = 0;
             var session = editor.getSession();
-            session.insert(cursorPosition, "1. ");
+            var line = session.getLine(cursorPosition.row);
+            var first = line[0] || "";
+            session.insert(cursorPosition, first == "." ? "." : ". ");
         },
         addUlList: function () {
             var cursorPosition = editor.getCursorPosition();
             cursorPosition.column = 0;
             var session = editor.getSession();
-            session.insert(cursorPosition, "* ");
+            var line = session.getLine(cursorPosition.row);
+            var first = line[0] || "";
+            session.insert(cursorPosition, first == "*" ? "*" : "* ");
         },
         addAdmonition: function (type) {
             var range = editor.getSelectionRange();
@@ -387,7 +392,7 @@ var editorMenu = {
             var range = editor.getSelectionRange();
             editor.removeToLineStart();
             editor.insert("[ditaa,,png]\n--\n\n--");
-            editor.gotoLine(range.end.row +1, 7, true);
+            editor.gotoLine(range.end.row + 1, 7, true);
         },
         addTreeBlock: function () {
             var range = editor.getSelectionRange();
