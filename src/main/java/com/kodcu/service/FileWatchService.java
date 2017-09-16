@@ -19,7 +19,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
 
 import static java.nio.file.StandardWatchEventKinds.*;
 
@@ -42,11 +41,13 @@ public class FileWatchService {
     private ApplicationContext applicationContext;
 
     private Map<WatchKey, Path> watchKeys = new ConcurrentHashMap<>();
+    private final PathMapper pathMapper;
 
     @Autowired
-    public FileWatchService(ApplicationController controller, ThreadService threadService) {
+    public FileWatchService(ApplicationController controller, ThreadService threadService, PathMapper pathMapper) {
         this.controller = controller;
         this.threadService = threadService;
+        this.pathMapper = pathMapper;
     }
 
     @PostConstruct
@@ -147,8 +148,11 @@ public class FileWatchService {
                 if (watchEvents.size() == 1) {
                     WatchEvent<Path> ev = (WatchEvent<Path>) watchEvents.get(0);
                     changedPath = path.resolve(ev.context());
+                    pathMapper.addPath(changedPath);
+                } else {
+                    pathMapper.addRootPath(path);
                 }
-                fileBrowseService.refreshPathToTree(path,changedPath);
+                fileBrowseService.refreshPathToTree(path, changedPath);
             }
 
         }

@@ -1,9 +1,9 @@
 package com.kodcu.service;
 
-import com.kodcu.component.EditorPane;
 import com.kodcu.config.StoredConfigBean;
 import com.kodcu.controller.ApplicationController;
 import com.kodcu.other.Current;
+import com.kodcu.other.IOHelper;
 import com.kodcu.service.ui.FileBrowseService;
 import javafx.application.Platform;
 import javafx.stage.DirectoryChooser;
@@ -20,7 +20,6 @@ import java.nio.file.Paths;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
@@ -38,16 +37,17 @@ public class DirectoryService {
 
     private final Logger logger = LoggerFactory.getLogger(DirectoryService.class);
 
-    private Optional<Path> workingDirectory = Optional.of(Paths.get(System.getProperty("user.home")));
+    private Optional<Path> workingDirectory = Optional.of(IOHelper.getPath(System.getProperty("user.home")));
     private Optional<File> initialDirectory = Optional.empty();
 
     private Supplier<Path> pathSaveSupplier;
     private final FileWatchService fileWatchService;
     private final ThreadService threadService;
+    private final PathMapper pathMapper;
 
 
     @Autowired
-    public DirectoryService(final ApplicationController controller, final FileBrowseService fileBrowser, final Current current, PathResolverService pathResolver, StoredConfigBean storedConfigBean, FileWatchService fileWatchService, ThreadService threadService) {
+    public DirectoryService(final ApplicationController controller, final FileBrowseService fileBrowser, final Current current, PathResolverService pathResolver, StoredConfigBean storedConfigBean, FileWatchService fileWatchService, ThreadService threadService, PathMapper pathMapper) {
         this.controller = controller;
         this.fileBrowser = fileBrowser;
         this.current = current;
@@ -55,6 +55,7 @@ public class DirectoryService {
         this.storedConfigBean = storedConfigBean;
         this.fileWatchService = fileWatchService;
         this.threadService = threadService;
+        this.pathMapper = pathMapper;
 
         pathSaveSupplier = () -> {
             final FileChooser chooser = newFileChooser("Save Document");
@@ -162,6 +163,8 @@ public class DirectoryService {
         if (Objects.isNull(path))
             return;
 
+        pathMapper.addRootPath(path);
+
         storedConfigBean.setWorkingDirectory(path.toString());
 
         this.setWorkingDirectory(Optional.of(path));
@@ -240,6 +243,12 @@ public class DirectoryService {
 
     public Path findPathInCurrentOrWorkDir(String uri) {
 
+        Optional<Path> lookUpFile = pathMapper.lookUpFile(uri);
+
+        if (lookUpFile.isPresent()) {
+            return lookUpFile.get();
+        }
+
         Optional<Path> inCurrentParent = Optional.empty();
         Optional<Path> inRoot = Optional.empty();
 
@@ -275,6 +284,13 @@ public class DirectoryService {
     }
 
     public Path findPathInWorkdirOrLookup(Path uri) {
+
+        Optional<Path> lookUpFile = pathMapper.lookUpFile(uri);
+
+        if (lookUpFile.isPresent()) {
+            return lookUpFile.get();
+        }
+
         Path workingDirectory = workingDirectory();
         Path resolve = workingDirectory.resolve(uri);
 

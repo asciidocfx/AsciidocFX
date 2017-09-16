@@ -36,6 +36,7 @@ import com.kodcu.service.ui.IndikatorService;
 import com.kodcu.service.ui.TabService;
 import com.kodcu.service.ui.TooltipTimeFixService;
 import com.kodcu.spell.dictionary.DictionaryService;
+import com.sun.javafx.stage.StageHelper;
 import com.terminalfx.TerminalBuilder;
 import com.terminalfx.TerminalTab;
 import com.terminalfx.config.TerminalConfig;
@@ -184,7 +185,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     private Stage markdownTableStage;
     public TreeView<Section> outlineTreeView;
 
-    private Path userHome = Paths.get(System.getProperty("user.home"));
+    private Path userHome = IOHelper.getPath(System.getProperty("user.home"));
 
     private TreeSet<Section> outlineList = new TreeSet<>();
     private ObservableList<DocumentMode> modeList = FXCollections.observableArrayList();
@@ -486,7 +487,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     private void convertMobi(boolean askPath) {
 
         if (Objects.nonNull(locationConfigBean.getKindlegen())) {
-            if (!Files.exists(Paths.get(locationConfigBean.getKindlegen()))) {
+            if (!Files.exists(IOHelper.getPath(locationConfigBean.getKindlegen()))) {
                 locationConfigBean.setKindlegen(null);
             }
         }
@@ -980,7 +981,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         threadService.runTaskLater(() -> {
             try {
                 Path lib = getInstallationPath().resolve("lib");
-//            Path lib = Paths.get("C:\\Program Files\\AsciidocFX\\lib");
+//            Path lib = IOHelper.getPath("C:\\Program Files\\AsciidocFX\\lib");
 
                 if (Files.notExists(lib)) {
                     return;
@@ -1241,7 +1242,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
             Node focusOwner = stage.getScene().getFocusOwner();
 
-            if (Window.getWindows().size() == 1) {
+            if (StageHelper.getStages().size() == 1) {
                 if (!newValue) {
                     saveAllTabs();
                 } else {
@@ -1365,7 +1366,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         String workingDirectory = storedConfigBean.getWorkingDirectory();
 
         if (Objects.nonNull(workingDirectory)) {
-            directoryService.changeWorkigDir(Paths.get(workingDirectory));
+            directoryService.changeWorkigDir(IOHelper.getPath(workingDirectory));
         }
 
     }
@@ -1446,7 +1447,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
         storedConfigBean.workingDirectoryProperty().addListener((observable, oldValue, newValue) -> {
             if (Objects.nonNull(newValue) && Objects.isNull(oldValue)) {
-                directoryService.changeWorkigDir(Paths.get(newValue));
+                directoryService.changeWorkigDir(IOHelper.getPath(newValue));
             }
         });
 
@@ -1576,7 +1577,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                 .item(path)
                 .tip("Go to favorite dir")
                 .click(event -> {
-                    directoryService.changeWorkigDir(Paths.get(path));
+                    directoryService.changeWorkigDir(IOHelper.getPath(path));
                 }));
     }
 
@@ -1799,7 +1800,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
         Button browseLogsButton = new Button("Browse");
         browseLogsButton.setOnAction(e -> {
-            openInDesktop(Paths.get(logPath));
+            openInDesktop(IOHelper.getPath(logPath));
         });
 
         TextField searchLogField = new TextField();
