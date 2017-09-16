@@ -23,7 +23,7 @@
         </encoder>
     </appender>
 
-    <appender name="TABLE" class="com.kodcu.logging.TableViewLogAppender">
+    <appender name="TABLE" class="com.kodedu.logging.TableViewLogAppender">
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
             <level>DEBUG</level>
         </filter>
