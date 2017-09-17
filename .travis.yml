@@ -10,11 +10,11 @@ addons:
     - oracle-java8-installer
 script: mvn clean install -Pinstall-runtime
 before_script:
-- wget http://download-aws.ej-technologies.com/install4j/install4j_unix_7_0_1.tar.gz
-- tar zxvf install4j_unix_7_0_1.tar.gz
-- wget -O /home/travis/build/asciidocfx/AsciidocFX/install4j7.0.1/jres/linux-amd64-1.8.0_112.tar.gz http://kodedu.com/asciidocfx/jres/linux-amd64-1.8.0_112.tar.gz
-- wget -O /home/travis/build/asciidocfx/AsciidocFX/install4j7.0.1/jres/macosx-amd64-1.8.0_144.tar.gz http://kodedu.com/asciidocfx/jres/macosx-amd64-1.8.0_144.tar.gz
-- wget -O /home/travis/build/asciidocfx/AsciidocFX/install4j7.0.1/jres/windows-amd64-1.8.0_144.tar.gz http://kodedu.com/asciidocfx/jres/windows-amd64-1.8.0_144.tar.gz
+- wget http://download-aws.ej-technologies.com/install4j/install4j_unix_6_1_6.tar.gz
+- tar zxvf install4j_unix_6_1_6.tar.gz
+- wget -O /home/travis/build/asciidocfx/AsciidocFX/install4j6.1.6/jres/linux-amd64-1.8.0_112.tar.gz http://kodedu.com/asciidocfx/jres/linux-amd64-1.8.0_112.tar.gz
+- wget -O /home/travis/build/asciidocfx/AsciidocFX/install4j6.1.6/jres/macosx-amd64-1.8.0_144.tar.gz http://kodedu.com/asciidocfx/jres/macosx-amd64-1.8.0_144.tar.gz
+- wget -O /home/travis/build/asciidocfx/AsciidocFX/install4j6.1.6/jres/windows-amd64-1.8.0_144.tar.gz http://kodedu.com/asciidocfx/jres/windows-amd64-1.8.0_144.tar.gz
 - mvn clean
 - mvn install4j:install-license
 deploy:
