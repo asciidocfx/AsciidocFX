@@ -121,8 +121,8 @@ public class BinaryCacheService {
                 .ifPresent(CacheData::removeFromDisk);
 
         Optional.ofNullable(cache.get(key))
-                .filter(e->e.inMemory())
-                .map(e->e.length())
+                .filter(e -> e.inMemory())
+                .map(e -> e.length())
                 .ifPresent(aLong -> totalSize.addAndGet(-aLong));
 
         cache.put(key, new InMemoryDAta(key, bytes));

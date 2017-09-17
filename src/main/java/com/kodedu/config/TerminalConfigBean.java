@@ -31,10 +31,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import javax.json.*;
+import javax.json.Json;
+import javax.json.JsonObject;
+import javax.json.JsonObjectBuilder;
+import javax.json.JsonReader;
 import java.io.Reader;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.ResourceBundle;
 
 /**
  * Created by usta on 17.07.2015.

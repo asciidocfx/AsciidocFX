@@ -38,7 +38,7 @@ public class FileOpenListener implements StartupNotification.Listener {
             String group = matcher.group();
             group = group.replaceAll("\"", "");
             group = group.trim();
-            if(!group.isEmpty()){
+            if (!group.isEmpty()) {
                 Path path = IOHelper.getPath(group).toAbsolutePath();
                 if (!pathList.contains(path)) {
                     pathList.add(path);

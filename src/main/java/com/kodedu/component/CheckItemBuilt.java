@@ -42,7 +42,7 @@ public class CheckItemBuilt {
     }
 
     public static CheckItemBuilt check(String name, boolean checked) {
-        RadioMenuItem item = new RadioMenuItem(){
+        RadioMenuItem item = new RadioMenuItem() {
             @Override
             public boolean equals(Object o) {
                 if (this == o) return true;

@@ -234,7 +234,7 @@ public abstract class AsciidoctorConfigBase extends ConfigurationBase {
             }
             String key = attribute.getAttribute();
 
-            if(Objects.nonNull(key) || Objects.nonNull(value)){
+            if (Objects.nonNull(key) || Objects.nonNull(value)) {
                 attributesObject.add(key, value);
             }
 

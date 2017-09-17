@@ -123,8 +123,9 @@ public class AsciidocNashornConverter implements AsciidocConvertible {
 
     public void initialize() {
 
-        if(true) // Don't use nashorn until bugfix
-            return;;
+        if (true) // Don't use nashorn until bugfix
+            return;
+        ;
 
         completableFuture.runAsync(() -> {
             try {
@@ -141,7 +142,7 @@ public class AsciidocNashornConverter implements AsciidocConvertible {
                 for (String script : scripts) {
 
                     Path resolve = configPath.resolve("public/js").resolve(script);
-                    scriptEngine.eval(String.format("load(\"%s\")", "conf/public/js/"+ script));
+                    scriptEngine.eval(String.format("load(\"%s\")", "conf/public/js/" + script));
 //                    try (FileInputStream fileInputStream = new FileInputStream(resolve.toFile());
 //                         InputStreamReader is = new InputStreamReader(fileInputStream, "UTF-8");) {
 //                        scriptEngine.eval(is);
