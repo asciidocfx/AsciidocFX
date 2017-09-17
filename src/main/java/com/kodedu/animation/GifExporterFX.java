@@ -4,13 +4,6 @@ package com.kodedu.animation;
  * Created by usta on 10.10.2016.
  */
 
-import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.nio.file.Path;
-import java.util.concurrent.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import com.kodedu.other.IOHelper;
 import com.kodedu.service.ThreadService;
 import javafx.embed.swing.SwingFXUtils;
@@ -22,6 +15,14 @@ import org.springframework.stereotype.Component;
 
 import javax.imageio.stream.FileImageOutputStream;
 import javax.imageio.stream.ImageOutputStream;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * @author william

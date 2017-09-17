@@ -101,8 +101,7 @@ public abstract class ViewPanel extends AnchorPane {
 
         getWebView().setOnContextMenuRequested(event -> {
 
-            @SuppressWarnings("deprecation")
-            final Iterator<Window> windows = Window.impl_getWindows();
+            @SuppressWarnings("deprecation") final Iterator<Window> windows = Window.impl_getWindows();
 
             while (windows.hasNext()) {
                 final Window window = windows.next();

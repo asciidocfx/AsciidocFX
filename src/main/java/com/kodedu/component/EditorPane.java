@@ -21,10 +21,14 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.*;
+import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
 import javafx.scene.control.*;
-import javafx.scene.input.*;
+import javafx.scene.input.Dragboard;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
@@ -442,7 +446,7 @@ public class EditorPane extends AnchorPane {
 
             final ObservableList<MenuItem> contextMenuItems = contextMenu.getItems();
 
-            final List<MenuItem> menuItems = Arrays.asList(cut, copy,paste, pasteConverted,
+            final List<MenuItem> menuItems = Arrays.asList(cut, copy, paste, pasteConverted,
                     markdownToAsciidoc,
                     replacements,
                     indexSelection,

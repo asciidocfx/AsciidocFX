@@ -52,8 +52,7 @@ public class Payload {
             String requestURI = getRequestURI();
             if (requestURI.contains(pattern)) {
                 setFinalURI(requestURI.replace(pattern, ""));
-            }
-            else {
+            } else {
                 setFinalURI(requestURI);
             }
         }

@@ -5,13 +5,15 @@ package com.kodedu.animation;
  */
 
 import javax.imageio.*;
-import javax.imageio.metadata.*;
-import javax.imageio.stream.*;
-import java.awt.image.*;
-import java.io.*;
+import javax.imageio.metadata.IIOMetadata;
+import javax.imageio.metadata.IIOMetadataNode;
+import javax.imageio.stream.ImageOutputStream;
+import java.awt.image.RenderedImage;
+import java.io.Closeable;
+import java.io.IOException;
 import java.util.Iterator;
 
-public class GifSequenceWriter  implements Closeable{
+public class GifSequenceWriter implements Closeable {
 
 
     protected ImageWriter gifWriter;

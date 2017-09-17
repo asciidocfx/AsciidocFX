@@ -78,7 +78,7 @@ public class PathResolverService {
                 || isMarkdown(path);
     }
 
-    public boolean isOffice(Path path){
+    public boolean isOffice(Path path) {
         return isWord(path) || isExcel(path) || isPPT(path);
     }
 

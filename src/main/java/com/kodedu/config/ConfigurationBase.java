@@ -127,15 +127,15 @@ public abstract class ConfigurationBase {
 
     public abstract JsonObject getJSON();
 
-    public void setOnConfigChanged(Runnable runnable){
+    public void setOnConfigChanged(Runnable runnable) {
         Field[] fields = this.getClass().getDeclaredFields();
         for (Field field : fields) {
-            try{
+            try {
                 field.setAccessible(true);
                 Object value = field.get(this);
 
-                if(value instanceof ObservableValue){
-                    ((ObservableValue)value).addListener((observable, oldValue, newValue) -> {
+                if (value instanceof ObservableValue) {
+                    ((ObservableValue) value).addListener((observable, oldValue, newValue) -> {
                         if (Objects.nonNull(newValue)) {
                             runnable.run();
                         }
