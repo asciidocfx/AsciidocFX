@@ -58,13 +58,13 @@ public final class AlertHelper {
 		
 		double prefWidth = paths.stream()
 	  			.map(String::valueOf)
-	  			.mapToDouble(s->s.length() * 6)
+	  			.mapToDouble(s->s.length() * 7)
 	  			.max()
 	  			.orElse(maxWidth);
         
 		double minHeight = IntStream.of(paths.size())
-			.map(e -> e * 40)
-			.filter(e -> e <= 300 && e >= 40)
+			.map(e -> e * 70)
+			.filter(e -> e <= 300 && e >= 70)
 			.findFirst()
 			.orElse(200);
 		
