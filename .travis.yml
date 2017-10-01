@@ -1,62 +1,7 @@
 language: java
 
-sudo: false   # Linux OS: run in container
-
-matrix:
-  include:
-    - os: linux
-      dist: precise
-      jdk: oraclejdk8
-    - os: linux
-      dist: trusty
-      jdk: oraclejdk8
-
-     # Headless Build: `sudo xvfb` + TestFX does not work on Travis OSX environments (as of 2017-05-24)
-     # See https://github.com/TestFX/TestFX/issues/396 for more info
-    - os: osx
-      osx_image: xcode8.2
-      env: _JAVA_OPTIONS="-Djava.awt.headless=true -Dtestfx.robot=glass -Dtestfx.headless=true -Dprism.order=sw -Dprism.text=t2k -Dtestfx.setup.timeout=2500"
-
-# enable Java 8u45+, see https://github.com/travis-ci/travis-ci/issues/4042
-addons:
-  apt:
-    packages:
-      - oracle-java8-installer
-
-before_install:
-  - chmod +x .ci/before_install.sh
-  - .ci/before_install.sh
-
-# skip install
-install: true
-
-before_script:
-  # Linux OS: Use framebuffer for UI
-  # See https://docs.travis-ci.com/user/gui-and-headless-browsers/#Using-xvfb-to-Run-Tests-That-Require-a-GUI
-  # Note: exporting DISPLAY in a separate shell file will not grant the script shell file access to it.
-  #       To insure it has access, just use the following line.
-  - if [[ "${TRAVIS_OS_NAME}" == linux ]]; then export DISPLAY=:99.0; sh -e /etc/init.d/xvfb start; fi
-
-# By default, Travis calls `gradle check` and `gradle check` in its script phase. 
-# By listing them here, one can quickly add additional debugging flags
-script:
-  - gradle assemble
-  - gradle check # for better debug output, use "--debug --stacktrace" flags on this line
-
-# If your JVM crashes and you want to debug it, use these lines instead and "script.sh"
-#script:
-#  - chmod +x .ci/script.sh
-#  - .ci/script.sh
-
-
-# See https://docs.travis-ci.com/user/languages/java/#Caching
-before_cache:
-  - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
-  - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
-cache:
-  directories:
-    - $HOME/.gradle/caches/
-    - $HOME/.gradle/wrapper/
+jdk:
+  - oraclejdk8
 
 after_success:
 - bash <(curl -s https://codecov.io/bash)
