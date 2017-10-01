@@ -1,14 +1,19 @@
 package com.kodedu.component;
 
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.DialogPane;
 import javafx.scene.control.ListView;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Priority;
+import javafx.stage.Screen;
 
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.IntStream;
 
 import static javafx.scene.control.Alert.AlertType;
 
@@ -23,27 +28,55 @@ public final class AlertHelper {
     public static final ButtonType OPEN_IN_APP = new ButtonType("Open anyway");
     public static final ButtonType OPEN_EXTERNAL = new ButtonType("Open external");
 
-    public static Optional<ButtonType> deleteAlert(List<Path> pathsLabel) {
-        Alert deleteAlert = new Alert(Alert.AlertType.WARNING, null, ButtonType.YES, ButtonType.CANCEL);
+    static Alert buildDeleteAlertDialog(List<Path> pathsLabel) {
+    	Alert deleteAlert = new Alert(Alert.AlertType.WARNING, null, ButtonType.YES, ButtonType.CANCEL);
         deleteAlert.setHeaderText("Do you want to delete selected path(s)?");
         DialogPane dialogPane = deleteAlert.getDialogPane();
-
-        ListView listView = new ListView();
-        listView.setMinHeight(40);
-        listView.getStyleClass().clear();
-        ObservableList items = listView.getItems();
-        items.addAll(pathsLabel);
-        listView.setEditable(false);
-        dialogPane.setContent(listView);
-
-        listView.setPrefHeight(Optional.ofNullable(pathsLabel)
-                .map(List::size)
-                .map(e -> e * 40)
-                .filter(e -> e <= 300 && e >= 40)
-                .orElse(300));
-        listView.refresh();
-
-        return deleteAlert.showAndWait();
+                
+        ObservableList<Path> paths = Optional.ofNullable(pathsLabel)
+        		.map(FXCollections::observableList)
+        		.orElse(FXCollections.emptyObservableList());
+        
+        if (paths.isEmpty()) {
+        	dialogPane.setContentText("There are no files selected.");
+        	deleteAlert.getButtonTypes().clear();
+        	deleteAlert.getButtonTypes().add(ButtonType.CANCEL);
+        	return deleteAlert;
+        } 
+        
+        ListView<Path> listView = new ListView<>(paths);
+        listView.setId("listOfPaths");
+        
+        GridPane gridPane = new GridPane();
+        gridPane.addRow(0, listView);
+        GridPane.setHgrow(listView, Priority.ALWAYS);
+        
+		double minWidth = 200.0;
+		double maxWidth = Screen.getScreens().stream()
+				.mapToDouble(s -> s.getBounds().getWidth()/3)
+				.min().orElse(minWidth);
+		
+		double prefWidth = paths.stream()
+	  			.map(String::valueOf)
+	  			.mapToDouble(s->s.length() * 6)
+	  			.max()
+	  			.orElse(maxWidth);
+        
+		double minHeight = IntStream.of(paths.size())
+			.map(e -> e * 40)
+			.filter(e -> e <= 300 && e >= 40)
+			.findFirst()
+			.orElse(200);
+		
+		gridPane.setMinWidth(minWidth);
+		gridPane.setPrefWidth(prefWidth);
+		gridPane.setPrefHeight(minHeight);
+		dialogPane.setContent(gridPane);
+		return deleteAlert;
+    }
+    
+    public static Optional<ButtonType> deleteAlert(List<Path> pathsLabel) {
+        return buildDeleteAlertDialog(pathsLabel).showAndWait();
     }
 
     public static Optional<ButtonType> showAlert(String alertMessage) {
