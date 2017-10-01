@@ -1,64 +1,7 @@
-sudo: false
 language: java
+
 jdk:
-- oraclejdk8
-os:
-- linux
-addons:
-  apt:
-    packages:
-    - oracle-java8-installer
-script: mvn clean install -Pinstall-runtime
-before_script:
-- wget http://download-aws.ej-technologies.com/install4j/install4j_unix_6_1_6.tar.gz
-- tar zxvf install4j_unix_6_1_6.tar.gz
-- wget -O /home/travis/build/asciidocfx/AsciidocFX/install4j6.1.6/jres/linux-amd64-1.8.0_112.tar.gz http://kodedu.com/asciidocfx/jres/linux-amd64-1.8.0_112.tar.gz
-- wget -O /home/travis/build/asciidocfx/AsciidocFX/install4j6.1.6/jres/macosx-amd64-1.8.0_144.tar.gz http://kodedu.com/asciidocfx/jres/macosx-amd64-1.8.0_144.tar.gz
-- wget -O /home/travis/build/asciidocfx/AsciidocFX/install4j6.1.6/jres/windows-amd64-1.8.0_144.tar.gz http://kodedu.com/asciidocfx/jres/windows-amd64-1.8.0_144.tar.gz
-- mvn clean
-- mvn install4j:install-license
-deploy:
-- provider: releases
-  skip_cleanup: true
-  api_key:
-    secure: L4y+3fi/yVR7guv7cynzrTOjRbE4+JTK79Fv5J8IQFwtzTP4V2GeW5ZjTdZXAlsFRvak5zhxY4OEYbYI2/riMib5Ea/K28Fd0F/nK8bUDddzxyXPc8zj6VrQINJX8Na2KfPvXT2UR+LtUWkK5HjeR+O/YQPTO4M+7SDGx5P+gog=
-  file:
-  - "/home/travis/build/asciidocfx/AsciidocFX/target/media/AsciidocFX_Mac.dmg"
-  - "/home/travis/build/asciidocfx/AsciidocFX/target/media/AsciidocFX_Linux.tar.gz"
-  - "/home/travis/build/asciidocfx/AsciidocFX/target/media/AsciidocFX_Linux_No_JRE.tar.gz"
-  - "/home/travis/build/asciidocfx/AsciidocFX/target/media/AsciidocFX_Windows.exe"
-  - "/home/travis/build/asciidocfx/AsciidocFX/target/media/AsciidocFX_Windows_No_JRE.exe"
-  - "/home/travis/build/asciidocfx/AsciidocFX/target/media/AsciidocFX_Windows.zip"
-  - "/home/travis/build/asciidocfx/AsciidocFX/target/media/AsciidocFX_Windows_No_JRE.zip"
-  - "/home/travis/build/asciidocfx/AsciidocFX/target/asciidocfx-1.5.6.zip"
-  - "/home/travis/build/asciidocfx/AsciidocFX/target/media/updates.xml"
-  on:
-    tags: true
-    all_branches: true
-    repo: asciidocfx/AsciidocFX
-- provider: s3
-  skip_cleanup: true
-  access_key_id: AKIAIHHVKYJLE6JUVEMA
-  secret_access_key:
-    secure: u3AfnEBb4o1boHzYsbPBlYqsxkKKWd4e02sabTLB7RRojgW1PpvGpvMCEZQ7EdziAfqJV2qZAI4ayYen36t2S0P9LMtt8NbnSO9RSF41Na+cGlsetbHgbejjK3QC5wM18j263gaxlM6uKD9wbO9VYaujYE6r66UUGdrQkNZh9xc=
-  bucket: asciidoc-fx
-  acl: public_read
-  local_dir: "/home/travis/build/asciidocfx/AsciidocFX/target/media"
-  file:
-  - "/home/travis/build/asciidocfx/AsciidocFX/target/media/AsciidocFX_Mac.dmg"
-  - "/home/travis/build/asciidocfx/AsciidocFX/target/media/AsciidocFX_Linux.tar.gz"
-  - "/home/travis/build/asciidocfx/AsciidocFX/target/media/AsciidocFX_Linux_No_JRE.tar.gz"
-  - "/home/travis/build/asciidocfx/AsciidocFX/target/media/AsciidocFX_Windows.exe"
-  - "/home/travis/build/asciidocfx/AsciidocFX/target/media/AsciidocFX_Windows_No_JRE.exe"
-  - "/home/travis/build/asciidocfx/AsciidocFX/target/media/AsciidocFX_Windows.zip"
-  - "/home/travis/build/asciidocfx/AsciidocFX/target/media/AsciidocFX_Windows_No_JRE.zip"
-  - "/home/travis/build/asciidocfx/AsciidocFX/target/asciidocfx-1.5.6.zip"
-  - "/home/travis/build/asciidocfx/AsciidocFX/target/media/updates.xml"
-  on:
-    tags: true
-    all_branches: true
-    repo: asciidocfx/AsciidocFX
-env:
-  global:
-  - secure: x4NoL51Uq5eGy+qYR3R5ca5J16lXN+45EwcRTE3FBxzxN91vK6GrKW8sbjZLTXeEIjhn9X1IEe8A2ljh4fnkOtIGl2bVHm8KJPNWa/EKmCLZ7KjCzXtyI5743pb+IJpIyCaevwasTBGFvsrs3NOsV/zipk0nEu08VdqEvp7AsXE=
-  - secure: xfIJj1AUhUgXfrMZStwGv0njAc8eSPe38M+QOyApgl1LriEc2WX0vdf/zQhcELHmuAidkDV6t4KCQ6IavzylvYHbrSL3Ki7uTIf1qWKPkJKJq0yhOON4Qw44sziM9ePAMLu09C6sOzXkcIYw8VJGQA4Dh8OxiKUePX0wqUw9zIY=
+  - oraclejdk8
+
+after_success:
+- bash <(curl -s https://codecov.io/bash)
