@@ -5,7 +5,7 @@
 
     <groupId>com.kodedu</groupId>
     <artifactId>AsciidocFX</artifactId>
-    <version>1.5.6</version>
+    <version>1.5.8</version>
     <packaging>jar</packaging>
 
     <name>AsciidocFX</name>
@@ -28,19 +28,19 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>1.5.7.RELEASE</version>
+        <version>1.5.9.RELEASE</version>
     </parent>
 
     <dependencies>
         <dependency>
             <groupId>org.glassfish</groupId>
             <artifactId>javax.json</artifactId>
-            <version>1.1</version>
+            <version>1.1.2</version>
         </dependency>
         <dependency>
             <groupId>com.dooapp.fxform2</groupId>
             <artifactId>core</artifactId>
-            <version>8.1.1</version>
+            <version>8.1.5</version>
             <exclusions>
                 <exclusion>
                     <artifactId>validation-api</artifactId>
@@ -146,23 +146,24 @@
         <dependency>
             <groupId>org.kordamp.ikonli</groupId>
             <artifactId>ikonli-core</artifactId>
-            <version>1.9.0</version>
+            <version>2.1.0</version>
         </dependency>
         <dependency>
             <groupId>org.kordamp.ikonli</groupId>
             <artifactId>ikonli-javafx</artifactId>
-            <version>1.9.0</version>
+            <version>2.1.0</version>
         </dependency>
         <dependency>
             <groupId>org.kordamp.ikonli</groupId>
             <artifactId>ikonli-fontawesome-pack</artifactId>
-            <version>1.9.0</version>
+            <version>2.1.0</version>
         </dependency>
         <dependency>
-            <groupId>com.asciidocfx</groupId>
+            <groupId>com.kodedu.terminalfx</groupId>
             <artifactId>terminalfx</artifactId>
-            <version>1.3</version>
+            <version>1.0.4</version>
         </dependency>
+
     </dependencies>
 
     <build>
@@ -282,7 +283,12 @@
         </repository>
         <repository>
             <id>terminalfx-repo</id>
-            <url>https://github.com/rahmanusta/terminalfx/raw/master/releases</url>
+            <releases>
+                <enabled>true</enabled>
+                <checksumPolicy>warn</checksumPolicy>
+                <updatePolicy>always</updatePolicy>
+            </releases>
+            <url>https://github.com/javaterminal/TerminalFX/raw/master/releases</url>
         </repository>
         <repository>
             <id>javacomm-repo</id>
@@ -301,15 +307,6 @@
         <repository>
             <id>ej-technologies</id>
             <url>http://maven.ej-technologies.com/repository</url>
-        </repository>
-        <repository>
-            <id>rahmanusta-releases</id>
-            <releases>
-                <enabled>true</enabled>
-                <checksumPolicy>warn</checksumPolicy>
-                <updatePolicy>always</updatePolicy>
-            </releases>
-            <url>http://asciidocfx.com/build</url>
         </repository>
     </repositories>
 

@@ -90,13 +90,13 @@ public class AppStarter extends Application {
         final FXMLLoader parentLoader = new FXMLLoader();
         parentLoader.setControllerFactory(context::getBean);
 
-        InputStream sceneStream = getClass().getResourceAsStream("/fxml/Scene.fxml");
+        InputStream sceneStream = AppStarter.class.getResourceAsStream("/fxml/AsciidocFX_Scene.fxml");
         Parent root = parentLoader.load(sceneStream);
 
         Scene scene = new Scene(root);
 
         stage.setTitle("AsciidocFX");
-        InputStream logoStream = getClass().getResourceAsStream("/logo.png");
+        InputStream logoStream = AppStarter.class.getResourceAsStream("/logo.png");
         stage.getIcons().add(new Image(logoStream));
 
         threadService.runActionLater(stage::setScene, scene);
@@ -137,10 +137,10 @@ public class AppStarter extends Application {
         asciidocTableLoader.setControllerFactory(context::getBean);
         markdownTableLoader.setControllerFactory(context::getBean);
 
-        InputStream asciidocTableStream = getClass().getResourceAsStream("/fxml/AsciidocTablePopup.fxml");
+        InputStream asciidocTableStream = AppStarter.class.getResourceAsStream("/fxml/AsciidocTablePopup.fxml");
         AnchorPane asciidocTableAnchor = asciidocTableLoader.load(asciidocTableStream);
 
-        InputStream markdownTableStream = getClass().getResourceAsStream("/fxml/MarkdownTablePopup.fxml");
+        InputStream markdownTableStream = AppStarter.class.getResourceAsStream("/fxml/MarkdownTablePopup.fxml");
         AnchorPane markdownTableAnchor = markdownTableLoader.load(markdownTableStream);
 
         Stage asciidocTableStage = threadService.supply(Stage::new);

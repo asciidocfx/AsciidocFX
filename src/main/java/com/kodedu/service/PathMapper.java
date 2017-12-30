@@ -125,6 +125,12 @@ public class PathMapper {
         pathList.removeIf(Files::notExists);
 
         if (pathList.size() > 1) {
+            for (Path path : pathList) {
+
+                if (IOHelper.contains(path, file)) {
+                    return Optional.ofNullable(path);
+                }
+            }
             return Optional.empty();
         }
 

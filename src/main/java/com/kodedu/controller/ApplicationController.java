@@ -36,10 +36,10 @@ import com.kodedu.service.ui.IndikatorService;
 import com.kodedu.service.ui.TabService;
 import com.kodedu.service.ui.TooltipTimeFixService;
 import com.kodedu.spell.dictionary.DictionaryService;
+import com.kodedu.terminalfx.TerminalBuilder;
+import com.kodedu.terminalfx.TerminalTab;
+import com.kodedu.terminalfx.config.TerminalConfig;
 import com.sun.javafx.stage.StageHelper;
-import com.terminalfx.TerminalBuilder;
-import com.terminalfx.TerminalTab;
-import com.terminalfx.config.TerminalConfig;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
@@ -596,7 +596,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         terminalTabPane.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             Optional.ofNullable(newValue)
                     .map(e -> ((TerminalTab) e))
-                    .filter(TerminalTab::isReady)
+                    .filter(TerminalTab::isTerminalReady)
                     .ifPresent(TerminalTab::focusCursor);
         });
 

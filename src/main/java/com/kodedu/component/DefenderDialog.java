@@ -18,7 +18,7 @@ interface DefenderDialog {
 
     default void setDefaultIcon(DialogPane dialog) {
         Stage stage = (Stage) dialog.getScene().getWindow();
-        try (InputStream logoStream = getClass().getResourceAsStream("/logo.png")) {
+        try (InputStream logoStream = DefenderDialog.class.getResourceAsStream("/logo.png")) {
             stage.getIcons().add(new Image(logoStream));
         } catch (IOException e) {
             logger.error("logo.png is not found", e);
