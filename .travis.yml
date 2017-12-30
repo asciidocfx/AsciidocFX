@@ -13,8 +13,8 @@ before_script:
 - wget http://download-aws.ej-technologies.com/install4j/install4j_unix_6_1_6.tar.gz
 - tar zxvf install4j_unix_6_1_6.tar.gz
 - wget -O /home/travis/build/asciidocfx/AsciidocFX/install4j6.1.6/jres/linux-amd64-1.8.0_112.tar.gz http://kodedu.com/asciidocfx/jres/linux-amd64-1.8.0_112.tar.gz
-- wget -O /home/travis/build/asciidocfx/AsciidocFX/install4j6.1.6/jres/macosx-amd64-1.8.0_144.tar.gz http://kodedu.com/asciidocfx/jres/macosx-amd64-1.8.0_144.tar.gz
-- wget -O /home/travis/build/asciidocfx/AsciidocFX/install4j6.1.6/jres/windows-amd64-1.8.0_144.tar.gz http://kodedu.com/asciidocfx/jres/windows-amd64-1.8.0_144.tar.gz
+- wget -O /home/travis/build/asciidocfx/AsciidocFX/install4j6.1.6/jres/macosx-amd64-1.8.0_152.tar.gz http://kodedu.com/asciidocfx/jres/macosx-amd64-1.8.0_152.tar.gz
+- wget -O /home/travis/build/asciidocfx/AsciidocFX/install4j6.1.6/jres/windows-amd64-1.8.0_152.tar.gz http://kodedu.com/asciidocfx/jres/windows-amd64-1.8.0_152.tar.gz
 - mvn clean
 - mvn install4j:install-license
 deploy:
@@ -30,7 +30,7 @@ deploy:
   - "/home/travis/build/asciidocfx/AsciidocFX/target/media/AsciidocFX_Windows_No_JRE.exe"
   - "/home/travis/build/asciidocfx/AsciidocFX/target/media/AsciidocFX_Windows.zip"
   - "/home/travis/build/asciidocfx/AsciidocFX/target/media/AsciidocFX_Windows_No_JRE.zip"
-  - "/home/travis/build/asciidocfx/AsciidocFX/target/asciidocfx-1.5.6.zip"
+  - "/home/travis/build/asciidocfx/AsciidocFX/target/asciidocfx-1.5.8.zip"
   - "/home/travis/build/asciidocfx/AsciidocFX/target/media/updates.xml"
   on:
     tags: true
@@ -52,7 +52,7 @@ deploy:
   - "/home/travis/build/asciidocfx/AsciidocFX/target/media/AsciidocFX_Windows_No_JRE.exe"
   - "/home/travis/build/asciidocfx/AsciidocFX/target/media/AsciidocFX_Windows.zip"
   - "/home/travis/build/asciidocfx/AsciidocFX/target/media/AsciidocFX_Windows_No_JRE.zip"
-  - "/home/travis/build/asciidocfx/AsciidocFX/target/asciidocfx-1.5.6.zip"
+  - "/home/travis/build/asciidocfx/AsciidocFX/target/asciidocfx-1.5.8.zip"
   - "/home/travis/build/asciidocfx/AsciidocFX/target/media/updates.xml"
   on:
     tags: true

@@ -23,10 +23,7 @@ import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileAttribute;
 import java.nio.file.attribute.FileTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.BiPredicate;
 import java.util.stream.Stream;
 
@@ -462,15 +459,26 @@ public class IOHelper {
         return Optional.empty();
     }
 
-    public static boolean contains(Path root, Path inside) {
+    public static boolean contains(Path root, Path subPath) {
 
-        if (inside == null)
+        if (root == null || subPath == null)
             return false;
 
-        if (inside.equals(root))
-            return true;
+        Iterator<Path> realPathIterator = root.normalize().iterator();
+        Iterator<Path> subPathIterator = subPath.normalize().iterator();
 
-        return contains(root, inside.getParent());
+        while (realPathIterator.hasNext()) {
+            Path realPathSegment = realPathIterator.next();
+            if (subPathIterator.hasNext()) {
+                Path subPathSegment = subPathIterator.next();
+                if (!Objects.equals(realPathSegment, subPathSegment)) {
+                    subPathIterator = subPath.normalize().iterator();
+                }
+            } else {
+                break;
+            }
+        }
+        return !subPathIterator.hasNext();
     }
 
     public static Stream<Path> walk(Path path) {

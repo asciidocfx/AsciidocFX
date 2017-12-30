@@ -46,7 +46,7 @@ public class SlidePane extends ViewPanel {
             Stage stage = new Stage();
             stage.setScene(new Scene(popupView));
             stage.setTitle("AsciidocFX");
-            InputStream logoStream = getClass().getResourceAsStream("/logo.png");
+            InputStream logoStream = SlidePane.class.getResourceAsStream("/logo.png");
             stage.getIcons().add(new Image(logoStream));
             webEngine().setCreatePopupHandler(param -> {
                 if (!stage.isShowing()) {
