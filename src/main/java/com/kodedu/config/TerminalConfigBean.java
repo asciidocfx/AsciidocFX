@@ -488,6 +488,8 @@ public class TerminalConfigBean extends ConfigurationBase {
         terminalConfig.setReceiveEncoding(getReceiveEncoding());
         terminalConfig.setSendEncoding(getSendEncoding());
         terminalConfig.setUserCss(getUserCss());
+        terminalConfig.setWindowsTerminalStarter(getTerminalWinCommand());
+        terminalConfig.setUnixTerminalStarter(getTerminalNixCommand());
 
         return terminalConfig;
     }
