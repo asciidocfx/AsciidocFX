@@ -1172,9 +1172,8 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         Path terminalPath = Optional.ofNullable(path).filter(e -> e.length > 0).map(e -> e[0]).orElse(directoryService.workingDirectory());
         terminalBuilder.setTerminalPath(terminalPath);
 
-        TerminalTab terminalTab = terminalBuilder.newTerminal();
-
         threadService.runActionLater(() -> {
+            TerminalTab terminalTab = terminalBuilder.newTerminal();
             terminalTabPane.getTabs().add(terminalTab);
             terminalTabPane.getSelectionModel().select(terminalTab);
         }, true);

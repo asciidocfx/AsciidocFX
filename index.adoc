@@ -3,7 +3,7 @@
 :data-uri:
 :toc:
 :toc-placement: left
-:asciidocfx-version: 1.5.8
+:asciidocfx-version: 1.5.9
 :download-root: https://github.com/asciidocfx/AsciidocFX/releases/download/v{asciidocfx-version}/
 
 image:https://api.travis-ci.org/asciidocfx/AsciidocFX.svg?branch=master[Build Status,link="https://travis-ci.org/asciidocfx/AsciidocFX"]
@@ -42,6 +42,13 @@ image::images/asciidocfx.png[]
 * Source Code Highlighter
 * Reveal.js Converter
 * Deck.js Converter
+* Nashorn support
+* Pseudo Terminal Emulator
+* Themeing (Dark & White) _New _
+
+== Pseudo Terminal Emulator
+
+image::http://i.giphy.com/l3vR4SlEtY3juZfXy.gif[Pseudo Terminal Emulator]
 
 == How to Install AsciidocFX
 
@@ -52,17 +59,17 @@ NOTE: The latest releases are available from the https://github.com/asciidocfx/A
 <<Supported_OS>> shows the list of available builds with links for reference. If you are looking for the very latest version, visit the link in the note above to be guaranteed of downloading the latest and greatest version of AsciidocFX.
 
 [[Supported_OS]]
-.Supported Operating Systems and Builds 
+.Supported Operating Systems and Builds
 [width="100%",options="header"]
 |====================
-| OS | JRE included? | Filename 
-^.^| Mac | Yes | {download-root}AsciidocFX_Mac.dmg[AsciidocFX_Mac.dmg] 
-.4+^.^| Windows | Yes | {download-root}AsciidocFX_Windows.exe[AsciidocFX_Windows.exe] 
-| Yes | {download-root}AsciidocFX_Windows.zip[AsciidocFX_Windows.zip] 
-| No | {download-root}AsciidocFX_Windows_No_JRE.exe[AsciidocFX_Windows_No_JRE.exe] 
-| No | {download-root}AsciidocFX_Windows_No_JRE.zip[AsciidocFX_Windows_No_JRE.zip] 
-.2+^.^| Linux | Yes | {download-root}AsciidocFX_Linux.tar.gz[AsciidocFX_Linux.tar.gz] 
-| No | {download-root}AsciidocFX_Linux_No_JRE.tar.gz[AsciidocFX_Linux_No_JRE.tar.gz] 
+| OS | JRE included? | Filename
+^.^| Mac | Yes | {download-root}AsciidocFX_Mac.dmg[AsciidocFX_Mac.dmg]
+.4+^.^| Windows | Yes | {download-root}AsciidocFX_Windows.exe[AsciidocFX_Windows.exe]
+| Yes | {download-root}AsciidocFX_Windows.zip[AsciidocFX_Windows.zip]
+| No | {download-root}AsciidocFX_Windows_No_JRE.exe[AsciidocFX_Windows_No_JRE.exe]
+| No | {download-root}AsciidocFX_Windows_No_JRE.zip[AsciidocFX_Windows_No_JRE.zip]
+.2+^.^| Linux | Yes | {download-root}AsciidocFX_Linux.tar.gz[AsciidocFX_Linux.tar.gz]
+| No | {download-root}AsciidocFX_Linux_No_JRE.tar.gz[AsciidocFX_Linux_No_JRE.tar.gz]
 |====================
 
 === Install on Linux
@@ -70,7 +77,7 @@ NOTE: The latest releases are available from the https://github.com/asciidocfx/A
 After the download is completed, untar the package in your preferred directory.
 
 [source,bash]
-$ cd /bin
+$ cd bin
 $ ./AsciidocFX.sh
 
 ////
@@ -89,6 +96,11 @@ Download executable/installer and run it.
 === Install on Mac
 
 Download the `.dmg` and run it.
+
+or
+
+Use https://caskroom.github.io/[Homebrew-cask] to install it with one command: `brew cask install asciidocfx`
+
 
 === Installation Notes
 
@@ -190,7 +202,7 @@ NOTE: In some UML elements, PlantUML needs to work with Graphviz. Because of thi
 
 == ditaa Extension
 
-AsciidocFX supports ditaa diagrams. 
+AsciidocFX supports ditaa diagrams.
 
 http://ditaa.sourceforge.net/[ditaa] is a component that converts diagrams drawn in ascii art to bitmap graphics.
 
@@ -448,19 +460,6 @@ For other charts and available options, look at https://github.com/asciidocfx/As
 NOTE: We are generating builts with *Travis-CI* automatically.
 NOTE: All builds x64 based. If you want to use in x86 systems, build AsciidocFX yourself.
 
-=== Build on Linux (Ubuntu/Mint)
-
-. Install Oracle JDK 8.
-** http://tecadmin.net/install-oracle-java-8-jdk-8-ubuntu-via-ppa/
-. Install Maven
-** sudo apt-get install maven
-. Install Git
-** sudo apt-get install git
-. Clone the AsciidocFX repository from Github.
-. Navigate to the *AsciidocFX* directory and run $ `mvn clean install`
-. Navigate to the *target/appassembler/bin* directory and run $ `./asciidocfx.sh` to start AsciidocFX.
-
-
 == Books Written with AsciidocFX
 
 Java 8 Ebook::
@@ -470,6 +469,11 @@ Java 8 Ebook::
 AspectJ Ebook::
 * https://github.com/ozlerhakan/aspectj-ebook[Github]
 * http://kodcu.com/aspectj-ebook/[ePub + Kindle + PDF]
+
+Mastering Cloudforms Automation::
+* https://github.com/pemcg/manageiq-automation-howto-guide[Older version on GitHub]
+https://www.gitbook.com/book/pemcg/introduction-to-cloudforms-automation/details[and GitBook]
+* https://access.redhat.com/mastering-cloudforms-automation[ePub + Kindle + PDF]
 
 == Slides (Reveal.js and Deck.js)
 
@@ -533,6 +537,8 @@ AFX supports this ace shortcuts https://github.com/ajaxorg/ace/wiki/Default-Keyb
 |kbd:[tree + Tab] |Generates Tree block
 |kbd:[quote + Tab] |Generates Quote block
 |kbd:[Ctrl+B] |Bolds selection
+|kbd:[Ctrl+F] |Find Text
+|kbd:[Ctrl+F] , kbd:[Ctrl+F] |Find and Replace Text
 |kbd:[Ctrl+I] |Italices selection
 |kbd:[Ctrl+U] |Underlines selection
 |kbd:[Ctrl+H] |Highlights selection
@@ -558,7 +564,7 @@ Mac QWERTY Keyboard Bug::
   This means, that on a German "QWERTZ" layout the shortcuts for `undo` and `redo` are swapped.
 Text Artifacts (Rainbowing) on Text::
   If you are being distracted by rainbow text artifacts on text, you can work around the issue by passing some VM options in `[Install_Dir]/AsciidocFX.vmoptions`, as shared in https://github.com/TomasMikula/RichTextFX/issues/145[this RichTextFX bug].
-  
+
   . Open `AsciidocFX.vmoptions`.
   . Add `-Dprism.text=t2k` and `-Dprism.lcdtext=false` to the file.
   . Save and close.
@@ -572,6 +578,34 @@ To see what has changed in recent versions of AsciidocFX, see the https://github
 == Support
 
 Support AsciidocFX with pull requests or open an issue for bug & feature requests. You can make discussions in https://groups.google.com/d/forum/asciidocfx-discuss[mail group] or in the chat room at https://gitter.im/asciidocfx/AsciidocFX[Gitter.im].
+
+
+== Contributors
+
+Thank you to all the people who have already contributed to AsciidocFX!
+image:https://opencollective.com/AsciidocFX/contributors.svg?width=890["Contributors", link="../../graphs/contributors"]
+
+
+== Backers
+
+Thank you to all our backers! [https://opencollective.com/AsciidocFX#backer[Become a backer]]
+
+image:https://opencollective.com/AsciidocFX/backers.svg?width=890["Backers on Open Collective", link="https://opencollective.com/AsciidocFX#backers"]
+
+== Sponsors
+
+Thank you to all our sponsors! (please ask your company to also support this open source project by https://opencollective.com/AsciidocFX#sponsor[becoming a sponsor])
+
+image:https://opencollective.com/AsciidocFX/sponsor/0/avatar.svg[link="https://opencollective.com/AsciidocFX/sponsor/0/website", target="_blank"]
+image:https://opencollective.com/AsciidocFX/sponsor/1/avatar.svg[link="https://opencollective.com/AsciidocFX/sponsor/1/website", target="_blank"]
+image:https://opencollective.com/AsciidocFX/sponsor/2/avatar.svg[link="https://opencollective.com/AsciidocFX/sponsor/2/website", target="_blank"]
+image:https://opencollective.com/AsciidocFX/sponsor/3/avatar.svg[link="https://opencollective.com/AsciidocFX/sponsor/3/website", target="_blank"]
+image:https://opencollective.com/AsciidocFX/sponsor/4/avatar.svg[link="https://opencollective.com/AsciidocFX/sponsor/4/website", target="_blank"]
+image:https://opencollective.com/AsciidocFX/sponsor/5/avatar.svg[link="https://opencollective.com/AsciidocFX/sponsor/5/website", target="_blank"]
+image:https://opencollective.com/AsciidocFX/sponsor/6/avatar.svg[link="https://opencollective.com/AsciidocFX/sponsor/6/website", target="_blank"]
+image:https://opencollective.com/AsciidocFX/sponsor/7/avatar.svg[link="https://opencollective.com/AsciidocFX/sponsor/7/website", target="_blank"]
+image:https://opencollective.com/AsciidocFX/sponsor/8/avatar.svg[link="https://opencollective.com/AsciidocFX/sponsor/8/website", target="_blank"]
+image:https://opencollective.com/AsciidocFX/sponsor/9/avatar.svg[link="https://opencollective.com/AsciidocFX/sponsor/9/website", target="_blank"]
 
 
 ++++
