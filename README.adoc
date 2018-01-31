@@ -68,8 +68,7 @@ NOTE: The latest releases are available from the https://github.com/asciidocfx/A
 After the download is completed, untar the package in your preferred directory.
 
 [source,bash]
-$ cd bin
-$ ./AsciidocFX.sh
+$ sh AsciidocFX
 
 ////
 === Install on Arch Linux
