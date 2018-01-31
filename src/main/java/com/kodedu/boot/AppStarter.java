@@ -53,6 +53,8 @@ public class AppStarter extends Application {
         System.setProperty("jsse.enableSNIExtension", "false");
 //        System.setProperty("https.protocols", "SSLv3");
 
+        System.setProperty("sun.net.http.allowRestrictedHeaders", "true");
+
         final CmdlineConfig config = new CmdlineConfig();
         final CmdlineParser cp = new CmdlineParser(config);
 
