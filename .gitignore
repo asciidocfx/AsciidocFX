@@ -42,3 +42,8 @@ asciidocfx.install4j~
 log
 
 nashorn_code_cache
+/bin/
+
+#Eclipse
+.project
+.settings
