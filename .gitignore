@@ -44,6 +44,6 @@ log
 nashorn_code_cache
 /bin/
 
-#Eclipse
+# Eclipse
 .project
 .settings
