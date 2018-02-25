@@ -365,7 +365,7 @@ NOTE: Tüm derlemeler x64 dayalıdır. Eğer x86 sistemlerde kullanmak istiyorsa
 
 Java 8 Ebook::
 * https://github.com/rahmanusta/java8-ebook[Github]
-* http://kodcu.com/java-8-ebook/[ePub + Kindle + PDF]
+* http://kodedu.com/java-8-ebook/[ePub + Kindle + PDF]
 
 AspectJ Ebook::
 * https://github.com/ozlerhakan/aspectj-ebook[Github]

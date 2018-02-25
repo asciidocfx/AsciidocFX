@@ -91,11 +91,11 @@ You can declare images with `image::` prefix and `[]` suffix. Path may be _relat
 
 === Basit
 
-image::http://kodcu.com/wp/wp-content/uploads/2014/11/logo-kodcu-com5.png[]
+image::https://kodedu.com/wp-content/uploads/2017/02/kodedu-logo-e1487527571657.png[]
 
 === Detaylı
 
-image::http://kodcu.com/wp/wp-content/uploads/2014/11/logo-kodcu-com5.png[caption="Şekil 1. ",title="Kodcu.com",alt="Kodcu.com"]
+image::https://kodedu.com/wp-content/uploads/2017/02/kodedu-logo-e1487527571657.png[caption="Şekil 1. ",title="kodedu.com",alt="kodedu.com"]
 
 '''
 
@@ -423,7 +423,7 @@ MathJAX matematiksel kompleks formüllerin, metinsel olarak ifade edildiği çe�
 
 
 .Filesystem Tree
-[tree,file="filesystem-tree-viewer.png",height="+30",width="+100"]
+[tree,file="filesystem-tree-viewer.png"]
 --
 #booksample
 ##asciidoctor.css
