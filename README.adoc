@@ -454,7 +454,7 @@ NOTE: All builds x64 based. If you want to use in x86 systems, build AsciidocFX 
 
 Java 8 Ebook::
 * https://github.com/rahmanusta/java8-ebook[Github]
-* http://kodcu.com/java-8-ebook/[ePub + Kindle + PDF]
+* http://kodedu.com/java-8-ebook/[ePub + Kindle + PDF]
 
 AspectJ Ebook::
 * https://github.com/ozlerhakan/aspectj-ebook[Github]
