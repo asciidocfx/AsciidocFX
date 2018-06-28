@@ -76,12 +76,20 @@ public abstract class ViewPanel extends AnchorPane {
         stopScrolling.setValue(true);
         stopJumping.setValue(true);
     }
-
+    
+    private BooleanProperty detachPreview = new SimpleBooleanProperty(false);
+    
+    public BooleanProperty detachPreviewProperty() {
+        return detachPreview;
+    }
+    public CheckMenuItem detachPreviewItem;
     private void initializePreviewContextMenus() {
 
         CheckMenuItem stopRenderingItem = new CheckMenuItem("Stop rendering");
         CheckMenuItem stopScrollingItem = new CheckMenuItem("Stop scrolling");
         CheckMenuItem stopJumpingItem = new CheckMenuItem("Stop jumping");
+        detachPreviewItem = new CheckMenuItem("Detach preview");
+        
 
         stopRenderingItem.selectedProperty().addListener((observable, oldValue, newValue) -> {
             controller.stopRenderingProperty().setValue(newValue);
@@ -93,6 +101,11 @@ public abstract class ViewPanel extends AnchorPane {
 
         stopJumpingItem.selectedProperty().addListener((observable, oldValue, newValue) -> {
             stopJumping.setValue(newValue);
+        });
+        detachPreviewItem.selectedProperty().addListener((observable, oldValue, newValue)->{
+            logger.debug("newValue:{}",newValue);
+            logger.debug("newValue");
+            detachPreview.setValue(newValue);
         });
 
         MenuItem refresh = MenuItemBuilt.item("Clear image cache").click(e -> {
@@ -126,6 +139,7 @@ public abstract class ViewPanel extends AnchorPane {
                         cmc.getItemsContainer().getChildren().add(cmc.new MenuItemContainer(stopRenderingItem));
                         cmc.getItemsContainer().getChildren().add(cmc.new MenuItemContainer(stopScrollingItem));
                         cmc.getItemsContainer().getChildren().add(cmc.new MenuItemContainer(stopJumpingItem));
+                        cmc.getItemsContainer().getChildren().add(cmc.new MenuItemContainer(detachPreviewItem));
                     }
                 }
             }
