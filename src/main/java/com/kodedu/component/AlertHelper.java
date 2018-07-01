@@ -29,52 +29,52 @@ public final class AlertHelper {
     public static final ButtonType OPEN_EXTERNAL = new ButtonType("Open external");
 
     static Alert buildDeleteAlertDialog(List<Path> pathsLabel) {
-    	Alert deleteAlert = new Alert(Alert.AlertType.WARNING, null, ButtonType.YES, ButtonType.CANCEL);
+        Alert deleteAlert = new Alert(Alert.AlertType.WARNING, null, ButtonType.YES, ButtonType.CANCEL);
         deleteAlert.setHeaderText("Do you want to delete selected path(s)?");
         DialogPane dialogPane = deleteAlert.getDialogPane();
-                
+
         ObservableList<Path> paths = Optional.ofNullable(pathsLabel)
-        		.map(FXCollections::observableList)
-        		.orElse(FXCollections.emptyObservableList());
-        
+                .map(FXCollections::observableList)
+                .orElse(FXCollections.emptyObservableList());
+
         if (paths.isEmpty()) {
-        	dialogPane.setContentText("There are no files selected.");
-        	deleteAlert.getButtonTypes().clear();
-        	deleteAlert.getButtonTypes().add(ButtonType.CANCEL);
-        	return deleteAlert;
-        } 
-        
+            dialogPane.setContentText("There are no files selected.");
+            deleteAlert.getButtonTypes().clear();
+            deleteAlert.getButtonTypes().add(ButtonType.CANCEL);
+            return deleteAlert;
+        }
+
         ListView<Path> listView = new ListView<>(paths);
         listView.setId("listOfPaths");
-        
+
         GridPane gridPane = new GridPane();
         gridPane.addRow(0, listView);
         GridPane.setHgrow(listView, Priority.ALWAYS);
-        
-		double minWidth = 200.0;
-		double maxWidth = Screen.getScreens().stream()
-				.mapToDouble(s -> s.getBounds().getWidth()/3)
-				.min().orElse(minWidth);
-		
-		double prefWidth = paths.stream()
-	  			.map(String::valueOf)
-	  			.mapToDouble(s->s.length() * 7)
-	  			.max()
-	  			.orElse(maxWidth);
-        
-		double minHeight = IntStream.of(paths.size())
-			.map(e -> e * 70)
-			.filter(e -> e <= 300 && e >= 70)
-			.findFirst()
-			.orElse(200);
-		
-		gridPane.setMinWidth(minWidth);
-		gridPane.setPrefWidth(prefWidth);
-		gridPane.setPrefHeight(minHeight);
-		dialogPane.setContent(gridPane);
-		return deleteAlert;
+
+        double minWidth = 200.0;
+        double maxWidth = Screen.getScreens().stream()
+                .mapToDouble(s -> s.getBounds().getWidth() / 3)
+                .min().orElse(minWidth);
+
+        double prefWidth = paths.stream()
+                .map(String::valueOf)
+                .mapToDouble(s -> s.length() * 7)
+                .max()
+                .orElse(maxWidth);
+
+        double minHeight = IntStream.of(paths.size())
+                .map(e -> e * 70)
+                .filter(e -> e <= 300 && e >= 70)
+                .findFirst()
+                .orElse(200);
+
+        gridPane.setMinWidth(minWidth);
+        gridPane.setPrefWidth(prefWidth);
+        gridPane.setPrefHeight(minHeight);
+        dialogPane.setContent(gridPane);
+        return deleteAlert;
     }
-    
+
     public static Optional<ButtonType> deleteAlert(List<Path> pathsLabel) {
         return buildDeleteAlertDialog(pathsLabel).showAndWait();
     }

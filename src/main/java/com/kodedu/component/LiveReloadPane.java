@@ -1,5 +1,6 @@
 package com.kodedu.component;
 
+import com.kodedu.config.EditorConfigBean;
 import com.kodedu.controller.ApplicationController;
 import com.kodedu.other.Current;
 import com.kodedu.other.IOHelper;
@@ -28,8 +29,8 @@ public class LiveReloadPane extends ViewPanel {
     private BooleanProperty ready = new SimpleBooleanProperty(false);
 
     @Autowired
-    public LiveReloadPane(ThreadService threadService, ApplicationController controller, Current current) {
-        super(threadService, controller, current);
+    public LiveReloadPane(ThreadService threadService, ApplicationController controller, Current current, EditorConfigBean editorConfigBean) {
+        super(threadService, controller, current, editorConfigBean);
 
         setOnSuccess(() -> {
             this.setMember("afx", this);

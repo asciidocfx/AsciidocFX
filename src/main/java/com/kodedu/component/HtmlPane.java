@@ -1,9 +1,6 @@
 package com.kodedu.component;
 
-import com.kodedu.config.DocbookConfigBean;
-import com.kodedu.config.HtmlConfigBean;
-import com.kodedu.config.OdfConfigBean;
-import com.kodedu.config.PreviewConfigBean;
+import com.kodedu.config.*;
 import com.kodedu.controller.ApplicationController;
 import com.kodedu.engine.AsciidocWebkitConverter;
 import com.kodedu.other.Current;
@@ -35,8 +32,8 @@ public class HtmlPane extends ViewPanel {
     private final DirectoryService directoryService;
 
     @Autowired
-    public HtmlPane(ThreadService threadService, ApplicationController controller, Current current, PreviewConfigBean previewConfigBean, OdfConfigBean odfConfigBean, DocbookConfigBean docbookConfigBean, HtmlConfigBean htmlConfigBean, AsciidocWebkitConverter asciidocWebkitConverter, DirectoryService directoryService) {
-        super(threadService, controller, current);
+    public HtmlPane(ThreadService threadService, ApplicationController controller, Current current, PreviewConfigBean previewConfigBean, OdfConfigBean odfConfigBean, DocbookConfigBean docbookConfigBean, HtmlConfigBean htmlConfigBean, EditorConfigBean editorConfigBean, AsciidocWebkitConverter asciidocWebkitConverter, DirectoryService directoryService) {
+        super(threadService, controller, current, editorConfigBean);
         this.previewConfigBean = previewConfigBean;
         this.odfConfigBean = odfConfigBean;
         this.docbookConfigBean = docbookConfigBean;

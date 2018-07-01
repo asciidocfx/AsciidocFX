@@ -1,5 +1,6 @@
 package com.kodedu.component;
 
+import com.kodedu.config.EditorConfigBean;
 import com.kodedu.controller.ApplicationController;
 import com.kodedu.engine.AsciidocWebkitConverter;
 import com.kodedu.other.Current;
@@ -31,8 +32,8 @@ public class SlidePane extends ViewPanel {
     private final AsciidocWebkitConverter asciidocWebkitConverter;
 
     @Autowired
-    public SlidePane(ThreadService threadService, ApplicationController controller, Current current, AsciidocWebkitConverter asciidocWebkitConverter) {
-        super(threadService, controller, current);
+    public SlidePane(ThreadService threadService, ApplicationController controller, Current current, AsciidocWebkitConverter asciidocWebkitConverter, EditorConfigBean editorConfigBean) {
+        super(threadService, controller, current, editorConfigBean);
         this.asciidocWebkitConverter = asciidocWebkitConverter;
 
     }

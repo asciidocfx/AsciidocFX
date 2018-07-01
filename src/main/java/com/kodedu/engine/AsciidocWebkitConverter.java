@@ -46,8 +46,8 @@ public class AsciidocWebkitConverter extends ViewPanel implements AsciidocConver
     private final DirectoryService directoryService;
 
     @Autowired
-    public AsciidocWebkitConverter(ThreadService threadService, ApplicationController controller, Current current, PreviewConfigBean previewConfigBean, OdfConfigBean odfConfigBean, DocbookConfigBean docbookConfigBean, HtmlConfigBean htmlConfigBean, AsciidocConfigMerger configMerger, DirectoryService directoryService) {
-        super(threadService, controller, current);
+    public AsciidocWebkitConverter(ThreadService threadService, ApplicationController controller, Current current, EditorConfigBean editorConfigBean, PreviewConfigBean previewConfigBean, OdfConfigBean odfConfigBean, DocbookConfigBean docbookConfigBean, HtmlConfigBean htmlConfigBean, AsciidocConfigMerger configMerger, DirectoryService directoryService) {
+        super(threadService, controller, current, editorConfigBean);
         this.previewConfigBean = previewConfigBean;
         this.odfConfigBean = odfConfigBean;
         this.docbookConfigBean = docbookConfigBean;

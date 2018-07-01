@@ -1,5 +1,6 @@
 package com.kodedu.component;
 
+import com.kodedu.config.EditorConfigBean;
 import com.kodedu.controller.ApplicationController;
 import com.kodedu.other.Current;
 import com.kodedu.service.ThreadService;
@@ -34,6 +35,8 @@ import java.util.Iterator;
 import java.util.Objects;
 import java.util.Optional;
 
+import static java.util.Objects.nonNull;
+
 /**
  * Created by usta on 15.06.2015.
  */
@@ -44,18 +47,20 @@ public abstract class ViewPanel extends AnchorPane {
     protected final ThreadService threadService;
     protected final ApplicationController controller;
     protected final Current current;
+    protected final EditorConfigBean editorConfigBean;
     protected WebView webView;
 
-    protected final BooleanProperty stopScrolling = new SimpleBooleanProperty(false);
-    protected final BooleanProperty stopJumping = new SimpleBooleanProperty(false);
+    protected static final BooleanProperty stopScrolling = new SimpleBooleanProperty(false);
+    protected static final BooleanProperty stopJumping = new SimpleBooleanProperty(false);
 
     @Value("${application.generic.url}")
     private String genericUrl;
 
-    protected ViewPanel(ThreadService threadService, ApplicationController controller, Current current) {
+    protected ViewPanel(ThreadService threadService, ApplicationController controller, Current current, EditorConfigBean editorConfigBean) {
         this.threadService = threadService;
         this.controller = controller;
         this.current = current;
+        this.editorConfigBean = editorConfigBean;
     }
 
     @PostConstruct
@@ -77,11 +82,15 @@ public abstract class ViewPanel extends AnchorPane {
         stopJumping.setValue(true);
     }
 
+    private static CheckMenuItem detachPreviewItem;
+
     private void initializePreviewContextMenus() {
 
         CheckMenuItem stopRenderingItem = new CheckMenuItem("Stop rendering");
         CheckMenuItem stopScrollingItem = new CheckMenuItem("Stop scrolling");
         CheckMenuItem stopJumpingItem = new CheckMenuItem("Stop jumping");
+        detachPreviewItem = new CheckMenuItem("Detach preview");
+
 
         stopRenderingItem.selectedProperty().addListener((observable, oldValue, newValue) -> {
             controller.stopRenderingProperty().setValue(newValue);
@@ -94,6 +103,8 @@ public abstract class ViewPanel extends AnchorPane {
         stopJumpingItem.selectedProperty().addListener((observable, oldValue, newValue) -> {
             stopJumping.setValue(newValue);
         });
+
+        detachPreviewItem.selectedProperty().bindBidirectional(editorConfigBean.detachedPreviewProperty());
 
         MenuItem refresh = MenuItemBuilt.item("Clear image cache").click(e -> {
             webEngine().executeScript("clearImageCache()");
@@ -126,6 +137,7 @@ public abstract class ViewPanel extends AnchorPane {
                         cmc.getItemsContainer().getChildren().add(cmc.new MenuItemContainer(stopRenderingItem));
                         cmc.getItemsContainer().getChildren().add(cmc.new MenuItemContainer(stopScrollingItem));
                         cmc.getItemsContainer().getChildren().add(cmc.new MenuItemContainer(stopJumpingItem));
+                        cmc.getItemsContainer().getChildren().add(cmc.new MenuItemContainer(detachPreviewItem));
                     }
                 }
             }
@@ -152,7 +164,9 @@ public abstract class ViewPanel extends AnchorPane {
         });
     }
 
-    ;
+    public static CheckMenuItem getDetachPreviewItem() {
+        return detachPreviewItem;
+    }
 
     public void onscroll(Object pos, Object max) {
 
@@ -184,7 +198,7 @@ public abstract class ViewPanel extends AnchorPane {
     }
 
     public void load(String url) {
-        if (Objects.nonNull(url))
+        if (nonNull(url))
             Platform.runLater(() -> {
                 webEngine().load(url);
             });
@@ -274,5 +288,11 @@ public abstract class ViewPanel extends AnchorPane {
             webEngine().executeScript(String.format("clearImageCache(\"%s\")", imagePath));
         });
 
+    }
+
+    public static void setMarkDetached() {
+        if (nonNull(detachPreviewItem)) {
+            detachPreviewItem.selectedProperty().setValue(Boolean.FALSE);
+        }
     }
 }
