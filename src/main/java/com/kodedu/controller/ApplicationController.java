@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.install4j.api.launcher.ApplicationLauncher;
 import com.kodedu.animation.GifExporterFX;
+import com.kodedu.boot.AppStarter;
 import com.kodedu.component.*;
 import com.kodedu.config.*;
 import com.kodedu.engine.AsciidocConverterProvider;
@@ -69,9 +70,11 @@ import javafx.scene.layout.*;
 import javafx.scene.text.Text;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import netscape.javascript.JSObject;
+import org.apache.commons.io.IOUtils;
 import org.kordamp.ikonli.fontawesome.FontAwesome;
 import org.kordamp.ikonli.javafx.FontIcon;
 import org.slf4j.Logger;
@@ -79,8 +82,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.context.embedded.EmbeddedWebApplicationContext;
 import org.springframework.context.ApplicationContext;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.socket.TextMessage;
@@ -93,6 +96,7 @@ import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -114,6 +118,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.nio.file.StandardOpenOption.*;
+import static java.util.Objects.nonNull;
 
 @Component
 public class ApplicationController extends TextWebSocketHandler implements Initializable {
@@ -176,6 +181,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     public Label ebookPro;
     public Label docbookPro;
     public Label browserPro;
+    public VBox previewBox;
     public SeparatorMenuItem renameSeparator;
     public SeparatorMenuItem addToFavSeparator;
     private AnchorPane markdownTableAnchor;
@@ -273,7 +279,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     private SampleBookService sampleBookService;
 
     @Autowired
-    private EmbeddedWebApplicationContext server;
+    private Environment environment;
 
     @Autowired
     private ParserService parserService;
@@ -485,7 +491,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     private void convertMobi(boolean askPath) {
 
-        if (Objects.nonNull(locationConfigBean.getKindlegen())) {
+        if (nonNull(locationConfigBean.getKindlegen())) {
             if (!Files.exists(IOHelper.getPath(locationConfigBean.getKindlegen()))) {
                 locationConfigBean.setKindlegen(null);
             }
@@ -589,7 +595,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     public void initializeApp() {
 
-        port = server.getEmbeddedServletContainer().getPort();
+        port = Integer.parseInt(environment.getProperty("local.server.port"));
 
         checkDuplicatedJars();
         initializeNashornConverter();
@@ -878,7 +884,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         openFolderTreeItem.setOnAction(event -> {
             Path path = tabService.getSelectedTabPath();
             path = Files.isDirectory(path) ? path : path.getParent();
-            if (Objects.nonNull(path)) {
+            if (nonNull(path)) {
                 openInDesktop(path);
             }
         });
@@ -886,7 +892,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         openFolderListItem.setOnAction(event -> {
             Path path = recentListView.getSelectionModel().getSelectedItem().getPath();
             path = Files.isDirectory(path) ? path : path.getParent();
-            if (Objects.nonNull(path)) {
+            if (nonNull(path)) {
                 openInDesktop(path);
             }
         });
@@ -970,12 +976,8 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                 }
                 ObservableList<String> favoriteDirectories = storedConfigBean.getFavoriteDirectories();
                 if (favoriteDirectories.size() > 0) {
-                    boolean has = favoriteDirectories.contains(path.toString());
-                    if (has) {
-                        addToFavoriteDir.setDisable(true);
-                    } else {
-                        addToFavoriteDir.setDisable(false);
-                    }
+                    boolean inFavorite = favoriteDirectories.contains(path.toString());
+                    addToFavoriteDir.setDisable(inFavorite);
                 }
             }
         });
@@ -983,32 +985,48 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         tabService.initializeTabChangeListener(tabPane);
         threadService.runActionLater(() -> {
             detachStage = new Stage();
+            detachStage.setTitle("AsciidocFX Preview");
+            detachStage.initModality(Modality.WINDOW_MODAL);
+            InputStream logoStream = AppStarter.class.getResourceAsStream("/logo.png");
+            detachStage.getIcons().add(new Image(logoStream));
+            IOUtils.closeQuietly(logoStream);
             detachStage.setOnCloseRequest(e -> {
-                htmlPane.detachPreviewItem.selectedProperty().setValue(Boolean.FALSE);
+                if (stage.isShowing()) {
+                    ViewPanel.setMarkDetached();
+                    e.consume();
+                }
             });
+
+            editorConfigBean.detachedPreviewProperty().addListener((observable, oldValue, newValue) -> {
+                if (newValue) {
+                    detachPreview();
+                } else {
+                    attachPreview();
+                }
+            });
+
+            if (editorConfigBean.isDetachedPreview()) {
+                detachPreview();
+            }
+
         }, true);
 
-        htmlPane.detachPreviewProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue) {
-                detachPreview();
-            } else {
-                attachPreview();
-            }
-        });
         this.checkNewVersion();
     }
 
     private Stage detachStage;
 
-    private void detachPreview() {
+    public void detachPreview() {
         if (detachStage != null) {
             if (!detachStage.isShowing()) {
-                ObservableList<Node> list = splitPane.getItems();
-                Node node = list.get(2);
-                list.remove(2);
-                HBox hbox = new HBox();
-                hbox.getChildren().add(node);
-                detachStage.setScene(new Scene(hbox));
+                splitPane.getItems().remove(previewBox);
+                AnchorPane anchorPane = new AnchorPane();
+                fitToParent(anchorPane);
+                anchorPane.getChildren().add(previewBox);
+                Scene scene = new Scene(anchorPane);
+                detachStage.setScene(scene);
+                applyCurrentTheme(detachStage);
+                applyDetachedStagePosition(detachStage);
                 detachStage.show();
             } else {
                 logger.debug("Already detached");
@@ -1021,8 +1039,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     private void attachPreview() {
         if (detachStage != null) {
             if (detachStage.isShowing()) {
-                HBox hbox = (HBox) detachStage.getScene().getRoot();
-                splitPane.getItems().add(hbox.getChildren().get(0));
+                splitPane.getItems().add(previewBox);
                 detachStage.close();
                 detachStage.hide();
             } else {
@@ -1032,6 +1049,35 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             logger.error("Detach stage is not created yet");
         }
     }
+
+    private void applyDetachedStagePosition(Stage stage) {
+        double screenX = editorConfigBean.getPreviewScreenX();
+        double screenY = editorConfigBean.getPreviewScreenY();
+        double screenHeight = editorConfigBean.getPreviewScreenHeight();
+        double screenWidth = editorConfigBean.getPreviewScreenWidth();
+
+        if (nonNull(screenX)) {
+            stage.setX(screenX);
+        }
+
+        if (nonNull(screenY)) {
+            stage.setY(screenY);
+        }
+
+        if (nonNull(screenWidth)) {
+            if (screenWidth != 0) {
+                stage.setWidth(screenWidth);
+            }
+        }
+
+        if (nonNull(screenHeight)) {
+            if (screenHeight != 0) {
+                stage.setHeight(screenHeight);
+            }
+        }
+
+    }
+
 
     private void checkDuplicatedJars() {
 
@@ -1306,7 +1352,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             }
 
             if (newValue) {
-                if (Objects.nonNull(focusOwner)) {
+                if (nonNull(focusOwner)) {
 //                    logger.info("Focus owner changed {}", focusOwner);
                     focusOwner.requestFocus();
                 }
@@ -1322,21 +1368,21 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         Double screenWidth = editorConfigBean.getScreenWidth();
         Double screenHeight = editorConfigBean.getScreenHeight();
 
-        if (Objects.nonNull(screenX)) {
+        if (nonNull(screenX)) {
             stage.setX(screenX);
         }
 
-        if (Objects.nonNull(screenY)) {
+        if (nonNull(screenY)) {
             stage.setY(screenY);
         }
 
-        if (Objects.nonNull(screenWidth)) {
+        if (nonNull(screenWidth)) {
             if (screenWidth != 0) {
                 stage.setWidth(screenWidth);
             }
         }
 
-        if (Objects.nonNull(screenHeight)) {
+        if (nonNull(screenHeight)) {
             if (screenHeight != 0) {
                 stage.setHeight(screenHeight);
             }
@@ -1344,12 +1390,14 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
         ObservableList<SplitPane.Divider> dividers = splitPane.getDividers();
         dividers.get(0).setPosition(editorConfigBean.getFirstSplitter());
-        dividers.get(1).setPosition(editorConfigBean.getSecondSplitter());
+        if (dividers.size() > 1) {
+            dividers.get(1).setPosition(editorConfigBean.getSecondSplitter());
+        }
 
         String aceTheme = editorConfigBean.getAceTheme().get(0);
 
         editorConfigBean.getEditorTheme().stream().findFirst().ifPresent(theme -> {
-            applyTheme(theme);
+            applyTheme(theme, getAllStages());
             editorConfigBean.updateAceTheme(aceTheme);
         });
 
@@ -1371,7 +1419,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                 @Override
                 protected void updateItem(Item item, boolean empty) {
                     super.updateItem(item, empty);
-                    if (Objects.nonNull(item)) {
+                    if (nonNull(item)) {
                         setTooltip(new Tooltip(item.getPath().toString()));
                         setText(item.toString());
                     }
@@ -1425,31 +1473,29 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
         String workingDirectory = storedConfigBean.getWorkingDirectory();
 
-        if (Objects.nonNull(workingDirectory)) {
+        if (nonNull(workingDirectory)) {
             directoryService.changeWorkigDir(IOHelper.getPath(workingDirectory));
         }
 
     }
 
+    private Stage[] getAllStages() {
+        return new Stage[]{stage, detachStage, asciidocTableStage, markdownTableStage};
+    }
+
     public void bindConfigurations() {
 
-        editorConfigBean.getEditorTheme().addListener(new ListChangeListener<EditorConfigBean.Theme>() {
-            @Override
-            public void onChanged(Change<? extends EditorConfigBean.Theme> c) {
-                c.next();
-                if (c.wasAdded()) {
-                    applyTheme(c.getList().get(0));
-                }
+        editorConfigBean.getEditorTheme().addListener((ListChangeListener<EditorConfigBean.Theme>) c -> {
+            c.next();
+            if (c.wasAdded()) {
+                applyTheme(c.getList().get(0), getAllStages());
             }
         });
 
-        editorConfigBean.getAceTheme().addListener(new ListChangeListener<String>() {
-            @Override
-            public void onChanged(Change<? extends String> c) {
-                c.next();
-                if (c.wasAdded()) {
-                    applyForAllEditorPanes(editorPane -> editorPane.setTheme(c.getList().get(0)));
-                }
+        editorConfigBean.getAceTheme().addListener((ListChangeListener<String>) c -> {
+            c.next();
+            if (c.wasAdded()) {
+                applyForAllEditorPanes(editorPane -> editorPane.setTheme(c.getList().get(0)));
             }
         });
 
@@ -1458,7 +1504,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         });
 
         locationConfigBean.mathjaxProperty().addListener((observable, oldValue, newValue) -> {
-            if (Objects.nonNull(newValue)) {
+            if (nonNull(newValue)) {
                 if (!newValue.equals(oldValue)) {
                     mathJaxService.reload();
                 }
@@ -1468,7 +1514,9 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         ObservableList<SplitPane.Divider> dividers = splitPane.getDividers();
 
         dividers.get(0).positionProperty().bindBidirectional(editorConfigBean.firstSplitterProperty());
-        dividers.get(1).positionProperty().bindBidirectional(editorConfigBean.secondSplitterProperty());
+        if (dividers.size() > 1) {
+            dividers.get(1).positionProperty().bindBidirectional(editorConfigBean.secondSplitterProperty());
+        }
 
         SplitPane.Divider verticalDivider = mainVerticalSplitPane.getDividers().get(0);
         mainVerticalSplitPane.addEventFilter(MouseEvent.MOUSE_RELEASED, event -> {
@@ -1479,19 +1527,19 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         });
 
         editorConfigBean.showGutterProperty().addListener((observable, oldValue, newValue) -> {
-            if (Objects.nonNull(newValue)) {
+            if (nonNull(newValue)) {
                 applyForAllEditorPanes(editorPane -> editorPane.setShowGutter(newValue));
             }
         });
 
         editorConfigBean.useWrapModeProperty().addListener((observable, oldValue, newValue) -> {
-            if (Objects.nonNull(newValue)) {
+            if (nonNull(newValue)) {
                 applyForAllEditorPanes(editorPane -> editorPane.setUseWrapMode(newValue));
             }
         });
 
         editorConfigBean.wrapLimitProperty().addListener((observable, oldValue, newValue) -> {
-            if (Objects.nonNull(newValue)) {
+            if (nonNull(newValue)) {
                 applyForAllEditorPanes(editorPane -> editorPane.setWrapLimitRange(newValue));
             }
         });
@@ -1505,7 +1553,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         });
 
         storedConfigBean.workingDirectoryProperty().addListener((observable, oldValue, newValue) -> {
-            if (Objects.nonNull(newValue) && Objects.isNull(oldValue)) {
+            if (nonNull(newValue) && Objects.isNull(oldValue)) {
                 directoryService.changeWorkigDir(IOHelper.getPath(newValue));
             }
         });
@@ -1525,6 +1573,25 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         stage.heightProperty().addListener((observable, oldValue, newValue) -> {
             editorConfigBean.setScreenHeight(newValue.doubleValue());
         });
+
+
+        if (nonNull(detachStage)) {
+            detachStage.xProperty().addListener((observable, oldValue, newValue) -> {
+                editorConfigBean.setPreviewScreenX(newValue.doubleValue());
+            });
+
+            detachStage.yProperty().addListener((observable, oldValue, newValue) -> {
+                editorConfigBean.setPreviewScreenY(newValue.doubleValue());
+            });
+
+            detachStage.widthProperty().addListener((observable, oldValue, newValue) -> {
+                editorConfigBean.setPreviewScreenWidth(newValue.doubleValue());
+            });
+
+            detachStage.heightProperty().addListener((observable, oldValue, newValue) -> {
+                editorConfigBean.setPreviewScreenHeight(newValue.doubleValue());
+            });
+        }
 
     }
 
@@ -1653,14 +1720,14 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                 }
 
                 ApplicationLauncher.launchApplication("504", null, false, new ApplicationLauncher.Callback() {
-                    public void exited(int exitValue) {
-                        //TODO add your code here (not invoked on event dispatch thread)
-                    }
+                            public void exited(int exitValue) {
+                                //TODO add your code here (not invoked on event dispatch thread)
+                            }
 
-                    public void prepareShutdown() {
-                        //TODO add your code here (not invoked on event dispatch thread)
-                    }
-                }
+                            public void prepareShutdown() {
+                                //TODO add your code here (not invoked on event dispatch thread)
+                            }
+                        }
                 );
             } catch (Exception e) {
                 // logger.error("Problem occured while checking new version", e);
@@ -1833,7 +1900,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
         final EventHandler<ActionEvent> filterByLogLevel = event -> {
             ToggleButton logLevelItem = (ToggleButton) event.getTarget();
-            if (Objects.nonNull(logLevelItem)) {
+            if (nonNull(logLevelItem)) {
                 logFilteredList.setPredicate(myLog -> {
                     String text = logLevelItem.getText();
                     return text.equals("All") || text.equalsIgnoreCase(myLog.getLevel());
@@ -1885,7 +1952,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                 final AtomicBoolean result = new AtomicBoolean(false);
 
                 String message = myLog.getMessage();
-                if (Objects.nonNull(message)) {
+                if (nonNull(message)) {
                     if (!result.get()) {
                         result.set(message.toLowerCase().contains(newValue.toLowerCase()));
                     }
@@ -1895,7 +1962,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                 String toggleText = ((ToggleButton) toggleGroup.getSelectedToggle()).getText();
                 boolean inputContains = level.toLowerCase().contains(newValue.toLowerCase());
 
-                if (Objects.nonNull(level)) {
+                if (nonNull(level)) {
                     if (!result.get()) {
                         result.set(inputContains);
                     }
@@ -1948,7 +2015,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             converterProvider.get(previewConfigBean).fillOutlines(doc);
         }
 
-        if (Objects.nonNull(outlineTabChangeListener)) {
+        if (nonNull(outlineTabChangeListener)) {
             outlineTreeView.visibleProperty().removeListener(outlineTabChangeListener);
         }
 
@@ -2217,7 +2284,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     private Map<String, String> parseChartOptions(String options) {
         Map<String, String> optMap = new HashMap<>();
-        if (Objects.nonNull(options)) {
+        if (nonNull(options)) {
             String[] optPart = options.split(",");
 
             for (String opt : optPart) {
@@ -2526,11 +2593,11 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
         final Toggle selectedToggle1 = leftToggleGroup.getSelectedToggle();
         final Toggle selectedToggle2 = rightToggleGroup.getSelectedToggle();
-        if (Objects.nonNull(selectedToggle1)) {
+        if (nonNull(selectedToggle1)) {
             ((ToggleButton) selectedToggle1).fire();
         }
 
-        if (Objects.nonNull(selectedToggle2)) {
+        if (nonNull(selectedToggle2)) {
             ((ToggleButton) selectedToggle2).fire();
         }
 
@@ -3015,12 +3082,18 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                 event.consume();
             }
         });
+
+        if (!event.isConsumed()) {
+            if (nonNull(detachStage)) {
+                detachStage.close();
+            }
+        }
     }
 
     public void openTerminalItem(ActionEvent actionEvent) {
         Path selectedTabPath = tabService.getSelectedTabPath();
 
-        if (Objects.nonNull(selectedTabPath)) {
+        if (nonNull(selectedTabPath)) {
             if (!Files.isDirectory(selectedTabPath)) {
                 selectedTabPath = selectedTabPath.getParent();
             }
@@ -3182,9 +3255,15 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         return editorConfigBean.getHangFileSizeLimit();
     }
 
-    public void applyCurrentTheme(Scene... scenes) {
+    public void applyCurrentTheme(Stage... stages) {
 
-        EditorConfigBean.Theme theme = editorConfigBean.getEditorTheme().get(0);
+        ObservableList<EditorConfigBean.Theme> editorTheme = editorConfigBean.getEditorTheme();
+
+        if (editorTheme.isEmpty()) {
+            return;
+        }
+
+        EditorConfigBean.Theme theme = editorTheme.get(0);
         String themeUri = theme.themeUri();
 
         if (Objects.isNull(themeUri)) {
@@ -3197,9 +3276,9 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                 String aceTheme = theme.getAceTheme();
 //                editorConfigBean.updateAceTheme(aceTheme);
 
-                for (Scene scene : scenes) {
-                    if (Objects.nonNull(scene)) {
-                        ObservableList<String> stylesheets = scene.getStylesheets();
+                for (Stage stage : stages) {
+                    if (nonNull(stage) && nonNull(stage.getScene())) {
+                        ObservableList<String> stylesheets = stage.getScene().getStylesheets();
                         stylesheets.clear();
                         stylesheets.add(themeUri);
                     }
@@ -3213,7 +3292,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         });
     }
 
-    public void applyTheme(EditorConfigBean.Theme theme) {
+    public void applyTheme(EditorConfigBean.Theme theme, Stage... stages) {
         String themeUri = theme.themeUri();
 
         if (Objects.isNull(themeUri)) {
@@ -3223,11 +3302,9 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         threadService.runActionLater(() -> {
             try {
 
-                Scene[] scenes = {scene};
-
-                for (Scene scene : scenes) {
-                    if (Objects.nonNull(scene)) {
-                        ObservableList<String> stylesheets = scene.getStylesheets();
+                for (Stage stage : stages) {
+                    if (nonNull(stage) && nonNull(stage.getScene())) {
+                        ObservableList<String> stylesheets = stage.getScene().getStylesheets();
                         stylesheets.clear();
                         stylesheets.add(themeUri);
                     }

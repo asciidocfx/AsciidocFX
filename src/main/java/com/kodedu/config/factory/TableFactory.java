@@ -1,5 +1,6 @@
 package com.kodedu.config.factory;
 
+import com.dooapp.fxform.AbstractFXForm;
 import com.dooapp.fxform.model.Element;
 import com.dooapp.fxform.reflection.ReflectionUtils;
 import com.dooapp.fxform.view.FXFormNode;
@@ -38,8 +39,10 @@ public class TableFactory implements Callback<Void, FXFormNode> {
         tableView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 
         return new FXFormNodeWrapper(new VBox(3, tableView, new HBox(5, addButton, removeButton)), tableView.itemsProperty()) {
+
             @Override
-            public void init(Element element) {
+            public void init(Element element, AbstractFXForm fxForm) {
+                super.init(element, fxForm);
                 Class wrappedType = element.getWrappedType();
                 List<Field> fields = ReflectionUtils.listFields(wrappedType);
                 for (Field field : fields) {

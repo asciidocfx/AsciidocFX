@@ -169,7 +169,7 @@ public class AppStarter extends Application {
         controller.setMarkdownTableStage(markdownTableStage);
         controller.setMarkdownTableScene(markdownTableStage.getScene());
 
-        controller.applyCurrentTheme(asciidocTableStage.getScene(), markdownTableStage.getScene());
+        controller.applyCurrentTheme(asciidocTableStage, markdownTableStage);
 
         controller.initializeSaveOnBlur();
 

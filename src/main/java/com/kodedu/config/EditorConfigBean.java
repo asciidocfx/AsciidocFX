@@ -59,11 +59,18 @@ public class EditorConfigBean extends ConfigurationBase {
     private BooleanProperty showGutter = new SimpleBooleanProperty(false);
     private BooleanProperty autoUpdate = new SimpleBooleanProperty(true);
     private BooleanProperty validateDocbook = new SimpleBooleanProperty(false);
+    private BooleanProperty detachedPreview = new SimpleBooleanProperty(false);
     private StringProperty clipboardImageFilePattern = new SimpleStringProperty("'Image'-ddMMyy-hhmmss.SSS'.png'");
     private DoubleProperty screenX = new SimpleDoubleProperty(0);
     private DoubleProperty screenY = new SimpleDoubleProperty(0);
     private DoubleProperty screenWidth = new SimpleDoubleProperty();
     private DoubleProperty screenHeight = new SimpleDoubleProperty();
+
+    private DoubleProperty previewScreenX = new SimpleDoubleProperty(0);
+    private DoubleProperty previewScreenY = new SimpleDoubleProperty(0);
+    private DoubleProperty previewScreenWidth = new SimpleDoubleProperty();
+    private DoubleProperty previewScreenHeight = new SimpleDoubleProperty();
+
     private ObjectProperty<Integer> hangFileSizeLimit = new SimpleObjectProperty<>(3);
     public ObjectProperty<FoldStyle> foldStyle = new SimpleObjectProperty<>(FoldStyle.DEFAULT);
 
@@ -84,6 +91,66 @@ public class EditorConfigBean extends ConfigurationBase {
         this.controller = controller;
         this.threadService = threadService;
         this.tabService = tabService;
+    }
+
+    public boolean isDetachedPreview() {
+        return detachedPreview.get();
+    }
+
+    public BooleanProperty detachedPreviewProperty() {
+        return detachedPreview;
+    }
+
+    public void setDetachedPreview(boolean detachedPreview) {
+        this.detachedPreview.set(detachedPreview);
+    }
+
+    public double getPreviewScreenX() {
+        return previewScreenX.get();
+    }
+
+    public DoubleProperty previewScreenXProperty() {
+        return previewScreenX;
+    }
+
+    public void setPreviewScreenX(double previewScreenX) {
+        this.previewScreenX.set(previewScreenX);
+    }
+
+    public double getPreviewScreenY() {
+        return previewScreenY.get();
+    }
+
+    public DoubleProperty previewScreenYProperty() {
+        return previewScreenY;
+    }
+
+    public void setPreviewScreenY(double previewScreenY) {
+        this.previewScreenY.set(previewScreenY);
+    }
+
+    public double getPreviewScreenWidth() {
+        return previewScreenWidth.get();
+    }
+
+    public DoubleProperty previewScreenWidthProperty() {
+        return previewScreenWidth;
+    }
+
+    public void setPreviewScreenWidth(double previewScreenWidth) {
+        this.previewScreenWidth.set(previewScreenWidth);
+    }
+
+    public double getPreviewScreenHeight() {
+        return previewScreenHeight.get();
+    }
+
+    public DoubleProperty previewScreenHeightProperty() {
+        return previewScreenHeight;
+    }
+
+    public void setPreviewScreenHeight(double previewScreenHeight) {
+        this.previewScreenHeight.set(previewScreenHeight);
     }
 
     public Integer getWrapLimit() {
@@ -348,7 +415,7 @@ public class EditorConfigBean extends ConfigurationBase {
 
         FXForm editorConfigForm = new FXFormBuilder<>()
                 .resourceBundle(ResourceBundle.getBundle("editorConfig"))
-                .includeAndReorder("editorTheme", "aceTheme", "validateDocbook", "fontFamily", "fontSize",
+                .includeAndReorder("editorTheme", "aceTheme", "detachedPreview", "validateDocbook", "fontFamily", "fontSize",
                         "scrollSpeed", "useWrapMode", "wrapLimit", "foldStyle", "showGutter", "defaultLanguage", "autoUpdate",
                         "clipboardImageFilePattern", "hangFileSizeLimit", "extensionImageScale")
                 .build();
@@ -400,12 +467,16 @@ public class EditorConfigBean extends ConfigurationBase {
 
         JsonObject jsonObject = jsonReader.readObject();
 
+        setMainStagePositions(jsonObject);
+        setDetachedStagePositions(jsonObject);
+
         String fontFamily = jsonObject.getString("fontFamily", "'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace");
         int fontSize = jsonObject.getInt("fontSize", 14);
         String aceTheme = jsonObject.getString("aceTheme", "tomorrow_night");
         String defaultLanguage = jsonObject.getString("defaultLanguage", "en");
         boolean useWrapMode = jsonObject.getBoolean("useWrapMode", true);
         boolean showGutter = jsonObject.getBoolean("showGutter", false);
+        boolean detachedPreview = jsonObject.getBoolean("detachedPreview", false);
         int wrapLimit = jsonObject.getInt("wrapLimit", 0);
         boolean autoUpdate = jsonObject.getBoolean("autoUpdate", true);
         final boolean validateDocbook = jsonObject.getBoolean("validateDocbook", false);
@@ -456,6 +527,7 @@ public class EditorConfigBean extends ConfigurationBase {
             this.setFontSize(fontSize);
             this.setUseWrapMode(useWrapMode);
             this.setShowGutter(showGutter);
+            this.setDetachedPreview(detachedPreview);
             this.setWrapLimit(wrapLimit);
             this.setAutoUpdate(autoUpdate);
             this.setValidateDocbook(validateDocbook);
@@ -485,29 +557,53 @@ public class EditorConfigBean extends ConfigurationBase {
                 this.setVerticalSplitter(secondSplitter.doubleValue());
             }
 
-            if (jsonObject.containsKey("screenX")) {
-                double screenX = jsonObject.getJsonNumber("screenX").doubleValue();
-                this.setScreenX(screenX);
-            }
-
-            if (jsonObject.containsKey("screenY")) {
-                double screenY = jsonObject.getJsonNumber("screenY").doubleValue();
-                this.setScreenY(screenY);
-            }
-
-            if (jsonObject.containsKey("screenWidth")) {
-                double screenWidth = jsonObject.getJsonNumber("screenWidth").doubleValue();
-                this.setScreenWidth(screenWidth);
-            }
-
-            if (jsonObject.containsKey("screenHeight")) {
-                double screenHeight = jsonObject.getJsonNumber("screenHeight").doubleValue();
-                this.setScreenHeight(screenHeight);
-            }
-
             fadeOut(infoLabel, "Loaded...");
 
         });
+    }
+
+    private void setMainStagePositions(JsonObject jsonObject) {
+        if (jsonObject.containsKey("screenX")) {
+            double screenX = jsonObject.getJsonNumber("screenX").doubleValue();
+            this.setScreenX(screenX);
+        }
+
+        if (jsonObject.containsKey("screenY")) {
+            double screenY = jsonObject.getJsonNumber("screenY").doubleValue();
+            this.setScreenY(screenY);
+        }
+
+        if (jsonObject.containsKey("screenWidth")) {
+            double screenWidth = jsonObject.getJsonNumber("screenWidth").doubleValue();
+            this.setScreenWidth(screenWidth);
+        }
+
+        if (jsonObject.containsKey("screenHeight")) {
+            double screenHeight = jsonObject.getJsonNumber("screenHeight").doubleValue();
+            this.setScreenHeight(screenHeight);
+        }
+    }
+
+    private void setDetachedStagePositions(JsonObject jsonObject) {
+        if (jsonObject.containsKey("previewScreenX")) {
+            double screenX = jsonObject.getJsonNumber("previewScreenX").doubleValue();
+            this.setPreviewScreenX(screenX);
+        }
+
+        if (jsonObject.containsKey("previewScreenY")) {
+            double screenY = jsonObject.getJsonNumber("previewScreenY").doubleValue();
+            this.setPreviewScreenY(screenY);
+        }
+
+        if (jsonObject.containsKey("previewScreenWidth")) {
+            double screenWidth = jsonObject.getJsonNumber("previewScreenWidth").doubleValue();
+            this.setPreviewScreenWidth(screenWidth);
+        }
+
+        if (jsonObject.containsKey("previewScreenHeight")) {
+            double screenHeight = jsonObject.getJsonNumber("previewScreenHeight").doubleValue();
+            this.setPreviewScreenHeight(screenHeight);
+        }
     }
 
     private List<String> languageList() {
@@ -557,6 +653,7 @@ public class EditorConfigBean extends ConfigurationBase {
                 .add("useWrapMode", getUseWrapMode())
                 .add("wrapLimit", getWrapLimit())
                 .add("showGutter", getShowGutter())
+                .add("detachedPreview", isDetachedPreview())
                 .add("aceTheme", getAceTheme().get(0))
                 .add("editorTheme", getEditorTheme().get(0).getThemeName())
                 .add("defaultLanguage", getDefaultLanguage().get(0))
@@ -570,6 +667,10 @@ public class EditorConfigBean extends ConfigurationBase {
                 .add("screenY", getScreenY())
                 .add("screenWidth", getScreenWidth())
                 .add("screenHeight", getScreenHeight())
+                .add("previewScreenX", getPreviewScreenX())
+                .add("previewScreenY", getPreviewScreenY())
+                .add("previewScreenWidth", getPreviewScreenWidth())
+                .add("previewScreenHeight", getPreviewScreenHeight())
                 .add("foldStyle", getFoldStyle().name())
                 .add("hangFileSizeLimit", getHangFileSizeLimit());
 

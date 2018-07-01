@@ -48,8 +48,8 @@ public class CellUtils {
      * *
      * General convenience                                                     *
      * *
-     **************************************************************************/    
-    
+     **************************************************************************/
+
     /*
      * Simple method to provide a StringConverter implementation in various cell
      * implementations.
@@ -60,7 +60,7 @@ public class CellUtils {
     }
 
     /*
-     * Simple method to provide a TreeItem-specific StringConverter 
+     * Simple method to provide a TreeItem-specific StringConverter
      * implementation in various cell implementations.
      */
     @SuppressWarnings("unchecked")
