@@ -26,6 +26,8 @@ import java.util.regex.PatternSyntaxException;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
+import static com.kodedu.other.IOHelper.isHidden;
+
 /**
  * Created by usta on 12.07.2014.
  */
@@ -151,6 +153,7 @@ public class FileBrowseService {
 
                 List<TreeItem<Item>> subItemList = StreamSupport
                         .stream(directoryStream.spliterator(), false)
+                        .filter(p -> !(controller.isSkipHiddenFiles() && isHidden(p)))
                         .sorted(pathOrder::comparePaths)
                         .map(p -> {
                             TreeItem<Item> childItem = new PathItem(new Item(p), awesomeService.getIcon(p));

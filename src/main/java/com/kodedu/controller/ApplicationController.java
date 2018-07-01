@@ -3336,4 +3336,8 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     public Scene getMarkdownTableScene() {
         return markdownTableScene;
     }
+
+    public boolean isSkipHiddenFiles() {
+        return editorConfigBean.isSkipHiddenFiles();
+    }
 }
