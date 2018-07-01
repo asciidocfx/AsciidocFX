@@ -5,7 +5,7 @@
 
     <groupId>com.kodedu</groupId>
     <artifactId>AsciidocFX</artifactId>
-    <version>1.5.9</version>
+    <version>1.6.0</version>
     <packaging>jar</packaging>
 
     <name>AsciidocFX</name>
@@ -28,7 +28,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>1.5.10.RELEASE</version>
+        <version>2.0.3.RELEASE</version>
     </parent>
 
     <dependencies>
@@ -40,7 +40,7 @@
         <dependency>
             <groupId>com.dooapp.fxform2</groupId>
             <artifactId>core</artifactId>
-            <version>8.1.5</version>
+            <version>8.2.4</version>
             <exclusions>
                 <exclusion>
                     <artifactId>validation-api</artifactId>
@@ -94,7 +94,7 @@
         <dependency>
             <groupId>org.apache.xmlgraphics</groupId>
             <artifactId>fop</artifactId>
-            <version>2.2</version>
+            <version>2.3</version>
         </dependency>
         <dependency>
             <groupId>org.zeroturnaround</groupId>
@@ -104,12 +104,12 @@
         <dependency>
             <groupId>net.sourceforge.plantuml</groupId>
             <artifactId>plantuml</artifactId>
-            <version>8059</version>
+            <version>1.2018.8</version>
         </dependency>
         <dependency>
             <groupId>org.apache.xmlgraphics</groupId>
             <artifactId>batik-codec</artifactId>
-            <version>1.9</version>
+            <version>1.10</version>
         </dependency>
         <dependency>
             <groupId>de.tototec</groupId>
@@ -129,7 +129,7 @@
         <dependency>
             <groupId>org.carrot2</groupId>
             <artifactId>morfologik-speller</artifactId>
-            <version>2.1.4</version>
+            <version>2.1.5</version>
             <exclusions>
                 <exclusion>
                     <artifactId>morfologik-polish</artifactId>
@@ -140,18 +140,18 @@
         <dependency>
             <groupId>net.sf.xslthl</groupId>
             <artifactId>xslthl</artifactId>
-            <version>2.1.0</version>
+            <version>2.1.3</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>org.kordamp.ikonli</groupId>
             <artifactId>ikonli-core</artifactId>
-            <version>2.1.0</version>
+            <version>2.3.0</version>
         </dependency>
         <dependency>
             <groupId>org.kordamp.ikonli</groupId>
             <artifactId>ikonli-javafx</artifactId>
-            <version>2.1.0</version>
+            <version>2.3.0</version>
         </dependency>
         <dependency>
             <groupId>org.kordamp.ikonli</groupId>

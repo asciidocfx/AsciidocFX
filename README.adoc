@@ -2,7 +2,7 @@
 :experimental:
 :toc:
 :toc-placement: preamble
-:asciidocfx-version: 1.5.9
+:asciidocfx-version: 1.6.0
 :download-root: https://github.com/asciidocfx/AsciidocFX/releases/download/v{asciidocfx-version}/
 
 image:https://opencollective.com/AsciidocFX/backers/badge.svg["Backers on Open Collective", link="#backers"]
