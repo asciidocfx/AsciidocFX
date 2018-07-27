@@ -504,11 +504,11 @@ public class EditorPane extends AnchorPane {
 
             if (event instanceof MouseEvent) {
                 MouseEvent mouseEvent = (MouseEvent) event;
-                contextMenu.show(getWebView(), mouseEvent.getSceneX(), mouseEvent.getSceneY() + 20);
+                contextMenu.show(getWebView(), mouseEvent.getScreenX(), mouseEvent.getScreenY() + 20);
                 contextOpen.set(true);
             } else {
                 updateCursorCoordinates();
-                Bounds bounds = getWebView().localToScene(getWebView().getLayoutBounds());
+                Bounds bounds = getWebView().localToScreen(getWebView().getLayoutBounds());
 
                 contextMenu.show(getWebView(), pageX.doubleValue() + bounds.getMinX(), pageY.doubleValue() + bounds.getMinY() + 35);
                 contextOpen.set(true);
