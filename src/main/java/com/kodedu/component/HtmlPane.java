@@ -17,7 +17,6 @@ import org.springframework.stereotype.Component;
 public class HtmlPane extends ViewPanel {
 
     private final PreviewConfigBean previewConfigBean;
-    private final OdfConfigBean odfConfigBean;
     private final DocbookConfigBean docbookConfigBean;
     private final HtmlConfigBean htmlConfigBean;
     private final ThreadService threadService;
@@ -32,10 +31,9 @@ public class HtmlPane extends ViewPanel {
     private final DirectoryService directoryService;
 
     @Autowired
-    public HtmlPane(ThreadService threadService, ApplicationController controller, Current current, PreviewConfigBean previewConfigBean, OdfConfigBean odfConfigBean, DocbookConfigBean docbookConfigBean, HtmlConfigBean htmlConfigBean, EditorConfigBean editorConfigBean, AsciidocWebkitConverter asciidocWebkitConverter, DirectoryService directoryService) {
+    public HtmlPane(ThreadService threadService, ApplicationController controller, Current current, PreviewConfigBean previewConfigBean, DocbookConfigBean docbookConfigBean, HtmlConfigBean htmlConfigBean, EditorConfigBean editorConfigBean, AsciidocWebkitConverter asciidocWebkitConverter, DirectoryService directoryService) {
         super(threadService, controller, current, editorConfigBean);
         this.previewConfigBean = previewConfigBean;
-        this.odfConfigBean = odfConfigBean;
         this.docbookConfigBean = docbookConfigBean;
         this.htmlConfigBean = htmlConfigBean;
         this.threadService = threadService;

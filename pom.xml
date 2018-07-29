@@ -5,7 +5,7 @@
 
     <groupId>com.kodedu</groupId>
     <artifactId>AsciidocFX</artifactId>
-    <version>1.6.0</version>
+    <version>1.6.1</version>
     <packaging>jar</packaging>
 
     <name>AsciidocFX</name>
@@ -16,9 +16,8 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <mainClass>com.kodedu.boot.AppStarter</mainClass>
-        <install4j.home>/home/travis/build/asciidocfx/AsciidocFX/install4j6.1.6</install4j.home>
-        <!--<install4j.licenseKey>${env.INS_LICENSE}</install4j.licenseKey>-->
-        <install4j.licenseKey>${env.CI_LICENSE_KEY}</install4j.licenseKey>
+        <install4j.home>/home/travis/build/asciidocfx/AsciidocFX/install4j7.0.6</install4j.home>
+        <install4j.licenseKey>${env.LICENSE_KEY_7}</install4j.licenseKey>
     </properties>
 
     <organization>
@@ -104,7 +103,7 @@
         <dependency>
             <groupId>net.sourceforge.plantuml</groupId>
             <artifactId>plantuml</artifactId>
-            <version>1.2018.8</version>
+            <version>1.2018.9</version>
         </dependency>
         <dependency>
             <groupId>org.apache.xmlgraphics</groupId>
@@ -119,12 +118,7 @@
         <dependency>
             <groupId>com.install4j</groupId>
             <artifactId>install4j-runtime</artifactId>
-            <version>6.1.6</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.odftoolkit</groupId>
-            <artifactId>simple-odf</artifactId>
-            <version>0.7-incubating</version>
+            <version>7.0.6</version>
         </dependency>
         <dependency>
             <groupId>org.carrot2</groupId>
@@ -156,7 +150,7 @@
         <dependency>
             <groupId>org.kordamp.ikonli</groupId>
             <artifactId>ikonli-fontawesome-pack</artifactId>
-            <version>2.1.0</version>
+            <version>2.3.0</version>
         </dependency>
         <dependency>
             <groupId>com.kodedu.terminalfx</groupId>

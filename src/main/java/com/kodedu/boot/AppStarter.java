@@ -118,6 +118,7 @@ public class AppStarter extends Application {
 
         stage.setOnShown(e -> {
             controller.bindConfigurations();
+            controller.showConfigLoaderOnNewInstall();
         });
 
         threadService.runActionLater(() -> {

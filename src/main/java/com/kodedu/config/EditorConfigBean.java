@@ -61,6 +61,7 @@ public class EditorConfigBean extends ConfigurationBase {
     private BooleanProperty validateDocbook = new SimpleBooleanProperty(false);
     private BooleanProperty detachedPreview = new SimpleBooleanProperty(false);
     private BooleanProperty skipHiddenFiles = new SimpleBooleanProperty(true);
+    private ObjectProperty<Boolean> newInstall = new SimpleObjectProperty<>();
     private StringProperty clipboardImageFilePattern = new SimpleStringProperty("'Image'-ddMMyy-hhmmss.SSS'.png'");
     private DoubleProperty screenX = new SimpleDoubleProperty(0);
     private DoubleProperty screenY = new SimpleDoubleProperty(0);
@@ -92,6 +93,18 @@ public class EditorConfigBean extends ConfigurationBase {
         this.controller = controller;
         this.threadService = threadService;
         this.tabService = tabService;
+    }
+
+    public Boolean getNewInstall() {
+        return newInstall.get();
+    }
+
+    public ObjectProperty<Boolean> newInstallProperty() {
+        return newInstall;
+    }
+
+    public void setNewInstall(Boolean newInstall) {
+        this.newInstall.set(newInstall);
     }
 
     public boolean isSkipHiddenFiles() {
@@ -468,14 +481,14 @@ public class EditorConfigBean extends ConfigurationBase {
     }
 
     @Override
-    public void load(ActionEvent... actionEvent) {
+    public void load(Path configPath, ActionEvent... actionEvent) {
 
         fadeOut(infoLabel, "Loading...");
 
         List<String> aceThemeList = new LinkedList<>(IOHelper.readAllLines(getConfigDirectory().resolve("ace_themes.txt")));
         List<String> languageList = this.languageList();
 
-        Reader fileReader = IOHelper.fileReader(getConfigPath());
+        Reader fileReader = IOHelper.fileReader(configPath);
         JsonReader jsonReader = Json.createReader(fileReader);
 
         JsonObject jsonObject = jsonReader.readObject();
@@ -485,12 +498,13 @@ public class EditorConfigBean extends ConfigurationBase {
 
         String fontFamily = jsonObject.getString("fontFamily", "'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace");
         int fontSize = jsonObject.getInt("fontSize", 14);
-        String aceTheme = jsonObject.getString("aceTheme", "tomorrow_night");
+        String aceTheme = jsonObject.getString("aceTheme", "xcode");
         String defaultLanguage = jsonObject.getString("defaultLanguage", "en");
         boolean useWrapMode = jsonObject.getBoolean("useWrapMode", true);
         boolean showGutter = jsonObject.getBoolean("showGutter", false);
         boolean detachedPreview = jsonObject.getBoolean("detachedPreview", false);
         boolean skipHiddenFiles = jsonObject.getBoolean("skipHiddenFiles", true);
+        boolean newInstall = jsonObject.getBoolean("newInstall", true);
         int wrapLimit = jsonObject.getInt("wrapLimit", 0);
         boolean autoUpdate = jsonObject.getBoolean("autoUpdate", true);
         final boolean validateDocbook = jsonObject.getBoolean("validateDocbook", false);
@@ -533,9 +547,9 @@ public class EditorConfigBean extends ConfigurationBase {
         IOHelper.close(jsonReader, fileReader);
 
         threadService.runActionLater(() -> {
-            getEditorTheme().addAll(themeList);
-            getAceTheme().addAll(aceThemeList);
-            getDefaultLanguage().addAll(languageList);
+            getEditorTheme().setAll(themeList);
+            getAceTheme().setAll(aceThemeList);
+            getDefaultLanguage().setAll(languageList);
 
             this.setFontFamily(fontFamily);
             this.setFontSize(fontSize);
@@ -548,6 +562,10 @@ public class EditorConfigBean extends ConfigurationBase {
             this.setValidateDocbook(validateDocbook);
             this.setClipboardImageFilePattern(clipboardImageFilePattern);
             this.setHangFileSizeLimit(hangFileSizeLimit);
+
+            if(Objects.isNull(getNewInstall())){
+                this.setNewInstall(newInstall);
+            }
 
             if (FoldStyle.contains(foldStyle)) {
                 this.setFoldStyle(FoldStyle.valueOf(foldStyle));
@@ -677,6 +695,7 @@ public class EditorConfigBean extends ConfigurationBase {
                 .add("verticalSplitter", getVerticalSplitter())
                 .add("autoUpdate", getAutoUpdate())
                 .add("skipHiddenFiles", isSkipHiddenFiles())
+                .add("newInstall", getNewInstall())
                 .add("validateDocbook", getValidateDocbook())
                 .add("clipboardImageFilePattern", getClipboardImageFilePattern())
                 .add("screenX", getScreenX())

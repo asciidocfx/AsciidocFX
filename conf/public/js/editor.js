@@ -15,7 +15,7 @@ editor.setOptions({
     dragEnabled: true
 });
 editor.setScrollSpeed("0.1");
-editor.setTheme("ace/theme/tomorrow_night");
+editor.setTheme("ace/theme/xcode");
 
 var lastEditorRow = 0;
 var afterFirstChange = false;

@@ -39,11 +39,10 @@ public class AsciidocNashornConverter implements AsciidocConvertible {
     private Logger logger = LoggerFactory.getLogger(AsciidocNashornConverter.class);
     private final PreviewConfigBean previewConfigBean;
     private final HtmlConfigBean htmlConfigBean;
-    private final OdfConfigBean odfConfigBean;
     private final AsciidocConfigMerger configMerger;
 
     @Autowired
-    public AsciidocNashornConverter(ScriptEngine scriptEngine, ApplicationController controller, DocbookConfigBean docbookConfigBean, ThreadService threadService, EditorConfigBean editorConfigBean, PreviewConfigBean previewConfigBean, HtmlConfigBean htmlConfigBean, OdfConfigBean odfConfigBean, AsciidocConfigMerger configMerger) {
+    public AsciidocNashornConverter(ScriptEngine scriptEngine, ApplicationController controller, DocbookConfigBean docbookConfigBean, ThreadService threadService, EditorConfigBean editorConfigBean, PreviewConfigBean previewConfigBean, HtmlConfigBean htmlConfigBean, AsciidocConfigMerger configMerger) {
 
         this.scriptEngine = scriptEngine;
         this.controller = controller;
@@ -52,7 +51,6 @@ public class AsciidocNashornConverter implements AsciidocConvertible {
         this.editorConfigBean = editorConfigBean;
         this.previewConfigBean = previewConfigBean;
         this.htmlConfigBean = htmlConfigBean;
-        this.odfConfigBean = odfConfigBean;
         this.configMerger = configMerger;
 
     }
@@ -93,7 +91,7 @@ public class AsciidocNashornConverter implements AsciidocConvertible {
 
     @Override
     public void convertOdf(String asciidoc) {
-        convert("convertOdf", asciidoc, odfConfigBean.getJSON());
+
     }
 
     @Override

@@ -28,7 +28,6 @@ public class ConfigurationService {
     private final EditorConfigBean editorConfigBean;
     private final PreviewConfigBean previewConfigBean;
     private final HtmlConfigBean htmlConfigBean;
-    private final OdfConfigBean odfConfigBean;
     private final DocbookConfigBean docbookConfigBean;
     private final ApplicationController controller;
     private final StoredConfigBean storedConfigBean;
@@ -39,12 +38,11 @@ public class ConfigurationService {
     private VBox configBox;
 
     @Autowired
-    public ConfigurationService(LocationConfigBean locationConfigBean, EditorConfigBean editorConfigBean, PreviewConfigBean previewConfigBean, HtmlConfigBean htmlConfigBean, OdfConfigBean odfConfigBean, DocbookConfigBean docbookConfigBean, ApplicationController controller, StoredConfigBean storedConfigBean, ThreadService threadService, SpellcheckConfigBean spellcheckConfigBean, TerminalConfigBean terminalConfigBean, ExtensionConfigBean extensionConfigBean) {
+    public ConfigurationService(LocationConfigBean locationConfigBean, EditorConfigBean editorConfigBean, PreviewConfigBean previewConfigBean, HtmlConfigBean htmlConfigBean, DocbookConfigBean docbookConfigBean, ApplicationController controller, StoredConfigBean storedConfigBean, ThreadService threadService, SpellcheckConfigBean spellcheckConfigBean, TerminalConfigBean terminalConfigBean, ExtensionConfigBean extensionConfigBean) {
         this.locationConfigBean = locationConfigBean;
         this.editorConfigBean = editorConfigBean;
         this.previewConfigBean = previewConfigBean;
         this.htmlConfigBean = htmlConfigBean;
-        this.odfConfigBean = odfConfigBean;
         this.docbookConfigBean = docbookConfigBean;
         this.controller = controller;
         this.storedConfigBean = storedConfigBean;
@@ -61,7 +59,6 @@ public class ConfigurationService {
         editorConfigBean.load();
         previewConfigBean.load();
         htmlConfigBean.load();
-        odfConfigBean.load();
         docbookConfigBean.load();
         spellcheckConfigBean.load();
         terminalConfigBean.load();

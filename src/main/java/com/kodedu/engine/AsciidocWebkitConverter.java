@@ -32,7 +32,6 @@ import java.util.concurrent.TimeUnit;
 public class AsciidocWebkitConverter extends ViewPanel implements AsciidocConvertible {
 
     private final PreviewConfigBean previewConfigBean;
-    private final OdfConfigBean odfConfigBean;
     private final DocbookConfigBean docbookConfigBean;
     private final HtmlConfigBean htmlConfigBean;
     private final AsciidocConfigMerger configMerger;
@@ -46,10 +45,9 @@ public class AsciidocWebkitConverter extends ViewPanel implements AsciidocConver
     private final DirectoryService directoryService;
 
     @Autowired
-    public AsciidocWebkitConverter(ThreadService threadService, ApplicationController controller, Current current, EditorConfigBean editorConfigBean, PreviewConfigBean previewConfigBean, OdfConfigBean odfConfigBean, DocbookConfigBean docbookConfigBean, HtmlConfigBean htmlConfigBean, AsciidocConfigMerger configMerger, DirectoryService directoryService) {
+    public AsciidocWebkitConverter(ThreadService threadService, ApplicationController controller, Current current, EditorConfigBean editorConfigBean, PreviewConfigBean previewConfigBean, DocbookConfigBean docbookConfigBean, HtmlConfigBean htmlConfigBean, AsciidocConfigMerger configMerger, DirectoryService directoryService) {
         super(threadService, controller, current, editorConfigBean);
         this.previewConfigBean = previewConfigBean;
-        this.odfConfigBean = odfConfigBean;
         this.docbookConfigBean = docbookConfigBean;
         this.htmlConfigBean = htmlConfigBean;
         this.configMerger = configMerger;
@@ -183,7 +181,7 @@ public class AsciidocWebkitConverter extends ViewPanel implements AsciidocConver
 
     @Override
     public void convertOdf(String asciidoc) {
-        convert("convertOdf", asciidoc, updateConfig(asciidoc, odfConfigBean.getJSON()));
+
     }
 
     public Map<String, CompletableFuture<ConverterResult>> getWebWorkerTasks() {

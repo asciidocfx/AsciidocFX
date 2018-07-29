@@ -23,7 +23,6 @@ import com.kodedu.service.convert.ebook.EpubConverter;
 import com.kodedu.service.convert.ebook.MobiConverter;
 import com.kodedu.service.convert.html.HtmlBookConverter;
 import com.kodedu.service.convert.markdown.MarkdownService;
-import com.kodedu.service.convert.odf.ODFConverter;
 import com.kodedu.service.convert.slide.SlideConverter;
 import com.kodedu.service.extension.MathJaxService;
 import com.kodedu.service.extension.PlantUmlService;
@@ -118,6 +117,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.nio.file.StandardOpenOption.*;
+import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
 @Component
@@ -144,7 +144,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     public Button closeTerminalButton;
     public Button recordTerminalButton;
     private Logger logger = LoggerFactory.getLogger(ApplicationController.class);
-    public Label odfPro = new Label();
     public VBox logVBox;
     public Label statusText;
     public SplitPane editorSplitPane;
@@ -240,9 +239,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     @Autowired
     private TabService tabService;
-
-    @Autowired
-    private ODFConverter odfConverter;
 
     @Autowired
     private PlantUmlService plantUmlService;
@@ -379,6 +375,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     private ToggleGroup configToggleGroup;
     private Scene asciidocTableScene;
     private Scene markdownTableScene;
+    private String VERSION_PATTERN = "\\.AsciidocFX-\\d+\\.\\d+\\.\\d+";
 
     public void createAsciidocTable() {
         asciidocTableStage.showAndWait();
@@ -497,10 +494,10 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             }
         }
 
-        if (Objects.isNull(locationConfigBean.getKindlegen())) {
+        if (isNull(locationConfigBean.getKindlegen())) {
             FileChooser fileChooser = directoryService.newFileChooser("Select 'kindlegen' executable");
             File kindlegenFile = fileChooser.showOpenDialog(null);
-            if (Objects.isNull(kindlegenFile)) {
+            if (isNull(kindlegenFile)) {
                 return;
             }
 
@@ -686,7 +683,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                 event.consume();
                 TreeItem<Item> selectedItem = fileSystemView.getSelectionModel().getSelectedItem();
 
-                if (Objects.isNull(selectedItem)) {
+                if (isNull(selectedItem)) {
                     return;
                 }
 
@@ -805,24 +802,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
         ebookPro.setContextMenu(ebookProMenu);
 
-        ContextMenu odfProMenu = new ContextMenu();
-        odfProMenu.getStyleClass().add("build-menu");
-        odfProMenu.setAutoHide(true);
-        odfProMenu.getItems().add(MenuItemBuilt.item("Save").click(event -> {
-            odfProMenu.hide();
-            this.generateODFDocument();
-        }));
-        odfProMenu.getItems().add(MenuItemBuilt.item("Save as").click(event -> {
-            odfProMenu.hide();
-            this.generateODFDocument(true);
-        }));
-
-        odfPro.setContextMenu(odfProMenu);
-
-        odfPro.setOnMouseClicked(event -> {
-            odfProMenu.show(odfPro, event.getScreenX(), 50);
-        });
-
         browserPro.setOnMouseClicked(event -> {
             if (event.getButton() == MouseButton.PRIMARY) {
                 this.externalBrowse();
@@ -918,7 +897,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         fileSystemView.setOnMouseClicked(event -> {
             TreeItem<Item> selectedItem = fileSystemView.getSelectionModel().getSelectedItem();
 
-            if (Objects.isNull(selectedItem)) {
+            if (isNull(selectedItem)) {
                 return;
             }
 
@@ -936,7 +915,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
             ObservableList<TreeItem<Item>> selectedItems = fileSystemView.getSelectionModel().getSelectedItems();
 
-            if (Objects.isNull(selectedItems)) {
+            if (isNull(selectedItems)) {
                 return;
             }
 
@@ -1012,6 +991,45 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         }, true);
 
         this.checkNewVersion();
+    }
+
+    public void showConfigLoaderOnNewInstall() {
+
+        Boolean newInstall = editorConfigBean.getNewInstall();
+
+        if (isNull(newInstall) || !newInstall) {
+            return;
+        }
+
+        editorConfigBean.setNewInstall(false);
+
+        String userHome = System.getProperty("user.home");
+
+        threadService.runTaskLater(() -> {
+            List<String> pathList = IOHelper.find(Paths.get(userHome), 1, (path, atrr) -> {
+                String filename = path.getFileName().toString();
+                return Pattern.matches(VERSION_PATTERN, filename)
+                        && Files.isDirectory(path)
+                        && !filename.equals(configDirName);
+
+            }).map(Path::toString).collect(Collectors.toList());
+
+            if (pathList.isEmpty()) {
+                return;
+            }
+
+            threadService.runActionLater(() -> {
+                Optional<String> selectedConfiguration = AlertHelper.showOldConfiguration(pathList);
+
+                selectedConfiguration.ifPresent(configDir -> {
+                    Map<String, ConfigurationBase> beanMap = applicationContext.getBeansOfType(ConfigurationBase.class);
+                    for (ConfigurationBase configBean : beanMap.values()) {
+                        configBean.loadPreviousConfiguration(configDir);
+                    }
+                });
+            });
+        });
+
     }
 
     private Stage detachStage;
@@ -1220,7 +1238,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         });
 
         recordTerminalButton.setOnAction(e -> {
-            if (Objects.isNull(scheduledFuture)) {
+            if (isNull(scheduledFuture)) {
                 Tooltip.install(recordTerminalButton, new Tooltip("Stop"));
                 recordTerminalButton.setGraphic(new FontIcon(FontAwesome.STOP_CIRCLE_O));
                 scheduledFuture = this.recordTerminal(e);
@@ -1241,7 +1259,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
         Tab tab = terminalTabPane.getSelectionModel().getSelectedItem();
 
-        if (Objects.isNull(tab)) {
+        if (isNull(tab)) {
             return null;
         }
 
@@ -1553,7 +1571,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         });
 
         storedConfigBean.workingDirectoryProperty().addListener((observable, oldValue, newValue) -> {
-            if (nonNull(newValue) && Objects.isNull(oldValue)) {
+            if (nonNull(newValue) && isNull(oldValue)) {
                 directoryService.changeWorkigDir(IOHelper.getPath(newValue));
             }
         });
@@ -1613,7 +1631,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             logger.debug("Problem occured while getting parent path", e);
         }
 
-        if (Objects.isNull(parent)) {
+        if (isNull(parent)) {
             return;
         }
 
@@ -1735,22 +1753,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         }, 10, TimeUnit.SECONDS);
     }
 
-    private void generateODFDocument(boolean askPath) {
-
-        if (!current.currentPath().isPresent()) {
-            this.saveDoc();
-        }
-
-        threadService.runTaskLater(() -> {
-            odfConverter.generateODFDocument(askPath);
-        });
-
-    }
-
-    private void generateODFDocument() {
-        this.generateODFDocument(false);
-    }
-
     private void initializeDoctypes() {
 
         try {
@@ -1773,7 +1775,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     public Path getInstallationPath() {
 
-        if (Objects.isNull(installationPath)) {
+        if (isNull(installationPath)) {
             try {
                 String homeProp = System.getProperty("asciidocfx.home");
                 if (homeProp != null) {
@@ -1794,7 +1796,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     public String getLogPath() {
 
-        if (Objects.isNull(logPath)) {
+        if (isNull(logPath)) {
             Optional<String> linuxHome = Optional.ofNullable(System.getenv("HOME"));
             Optional<String> windowsHome = Optional.ofNullable(System.getenv("USERPROFILE"));
 
@@ -1939,7 +1941,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         searchLogField.setPromptText("Search in logs..");
         searchLogField.textProperty().addListener((observable, oldValue, newValue) -> {
 
-            if (Objects.isNull(newValue)) {
+            if (isNull(newValue)) {
                 return;
             }
 
@@ -2106,7 +2108,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         section.setLineno(Integer.valueOf(lineno));
         section.setId(id);
 
-        if (Objects.isNull(parentLineNo)) {
+        if (isNull(parentLineNo)) {
             outlineList.add(section);
         } else {
             Integer parentLine = Integer.valueOf(parentLineNo);
@@ -2241,7 +2243,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     public void chartBuildFromCsv(String csvFile, String imagesDir, String imageTarget, String chartType, String options) {
 
         threadService.runActionLater(() -> {
-            if (Objects.isNull(imageTarget) || Objects.isNull(chartType)) {
+            if (isNull(imageTarget) || isNull(chartType)) {
                 return;
             }
 
@@ -2267,7 +2269,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     @WebkitCall(from = "asciidoctor-chart")
     public void chartBuild(String chartContent, String imagesDir, String imageTarget, String chartType, String options) {
 
-        if (Objects.isNull(imageTarget) || Objects.isNull(chartType)) {
+        if (isNull(imageTarget) || isNull(chartType)) {
             return;
         }
 
@@ -2342,7 +2344,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
         Tuple<String, String> tuple = latestTupleReference.get();
 
-        if (Objects.isNull(tuple)) {
+        if (isNull(tuple)) {
             return;
         }
 
@@ -2455,12 +2457,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         threadService.runTaskLater(() -> {
             dictionaryService.processTokens(editorPane, tokenList, mode);
         });
-    }
-
-    @WebkitCall(from = "asciidoctor-odf.js")
-    public synchronized void convertToOdf(String name, Object obj) throws Exception {
-        JSObject jObj = (JSObject) obj;
-        odfConverter.buildDocument(name, jObj);
     }
 
     @WebkitCall
@@ -2601,7 +2597,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             ((ToggleButton) selectedToggle2).fire();
         }
 
-        if (Objects.isNull(selectedToggle1) && Objects.isNull(selectedToggle2)) {
+        if (isNull(selectedToggle1) && isNull(selectedToggle2)) {
             ((ToggleButton) leftToggleGroup.getToggles().get(0)).fire();
             ((ToggleButton) rightToggleGroup.getToggles().get(0)).fire();
         }
@@ -2690,7 +2686,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     public Path getConfigPath() {
 
-        if (Objects.isNull(configPath)) {
+        if (isNull(configPath)) {
             configPath = getInstallationPath().resolve("conf");
         }
 
@@ -2888,8 +2884,8 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         File asciibookRoot = null;
 
         BiPredicate<File, File> nullPathPredicate = (p1, p2)
-                -> Objects.isNull(p1)
-                || Objects.isNull(p2);
+                -> isNull(p1)
+                || isNull(p2);
 
         DirectoryChooser gitbookChooser = new DirectoryChooser();
         gitbookChooser.setTitle("Select Gitbook Root Directory");
@@ -3039,7 +3035,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     }
 
     public void addRemoveRecentList(Path path) {
-        if (Objects.isNull(path)) {
+        if (isNull(path)) {
             return;
         }
 
@@ -3266,7 +3262,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         EditorConfigBean.Theme theme = editorTheme.get(0);
         String themeUri = theme.themeUri();
 
-        if (Objects.isNull(themeUri)) {
+        if (isNull(themeUri)) {
             return;
         }
 
@@ -3295,7 +3291,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     public void applyTheme(EditorConfigBean.Theme theme, Stage... stages) {
         String themeUri = theme.themeUri();
 
-        if (Objects.isNull(themeUri)) {
+        if (isNull(themeUri)) {
             return;
         }
 

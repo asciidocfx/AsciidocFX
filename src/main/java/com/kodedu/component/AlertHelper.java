@@ -157,4 +157,32 @@ public final class AlertHelper {
         alert.getButtonTypes().addAll(ButtonType.OK);
         alert.showAndWait();
     }
+
+    public static Optional<String> showOldConfiguration(List<String> paths) {
+        Alert alert = new Alert(AlertType.INFORMATION);
+
+        DialogPane dialogPane = alert.getDialogPane();
+
+        ListView listView = new ListView();
+        listView.getStyleClass().clear();
+        ObservableList items = listView.getItems();
+        items.addAll(paths);
+        listView.setEditable(false);
+
+        dialogPane.setContent(listView);
+
+        alert.setTitle("Load previous configuration?");
+        alert.setHeaderText(String.format("You have configuration files from previous AsciidocFX versions\n\n" +
+                "Select the configuration which you want to load configuration \n" +
+                "or continue with fresh configuration"));
+        alert.getButtonTypes().clear();
+        alert.getButtonTypes().addAll(ButtonType.APPLY);
+        alert.getButtonTypes().addAll(ButtonType.CANCEL);
+        ButtonType buttonType = alert.showAndWait().orElse(ButtonType.CANCEL);
+
+        Object selectedItem = listView.getSelectionModel().getSelectedItem();
+        return (buttonType == ButtonType.APPLY) ?
+                Optional.ofNullable((String) selectedItem) :
+                Optional.empty();
+    }
 }

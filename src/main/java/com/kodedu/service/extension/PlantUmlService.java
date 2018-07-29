@@ -113,7 +113,7 @@ public class PlantUmlService {
             threadService.runTaskLater(() -> {
                 try {
 
-                    reader.generateImage(os, new FileFormatOption(fileType));
+                    reader.outputImage(os, new FileFormatOption(fileType));
 
                     if (!cachedResource) {
                         IOHelper.createDirectories(path.resolve(imagesDir));

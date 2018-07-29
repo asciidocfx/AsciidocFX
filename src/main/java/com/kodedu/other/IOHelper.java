@@ -27,6 +27,8 @@ import java.util.*;
 import java.util.function.BiPredicate;
 import java.util.stream.Stream;
 
+import static java.util.Objects.isNull;
+
 /**
  * Created by usta on 09.05.2014.
  */
@@ -98,7 +100,7 @@ public class IOHelper {
 
     public static Path createTempFile(Path path, String prefix, String suffix) {
 
-        if (Objects.isNull(path)) {
+        if (isNull(path)) {
             return createTempFile(suffix);
         }
         try {
@@ -111,7 +113,7 @@ public class IOHelper {
     }
 
     public static Path createTempFile(Path path, String suffix) {
-        if (Objects.isNull(path)) {
+        if (isNull(path)) {
             return createTempFile(suffix);
         }
 
@@ -231,9 +233,14 @@ public class IOHelper {
         }
     }
 
-    public static Stream<Path> find(Path start, int maxDepth, BiPredicate<Path, BasicFileAttributes> matcher, FileVisitOption... options) {
+    public static Stream<Path> find(Path start, Integer maxDepth, BiPredicate<Path, BasicFileAttributes> matcher, FileVisitOption... options) {
+
+        if (isNull(maxDepth)) {
+            maxDepth = Integer.MAX_VALUE;
+        }
+
         try {
-            return Files.find(start, Integer.MAX_VALUE, matcher, options);
+            return Files.find(start, maxDepth, matcher, options);
         } catch (Exception e) {
             logger.error("Problem occured while finding in path {}", start, e);
         }
@@ -501,11 +508,11 @@ public class IOHelper {
 
     public static boolean isSameImage(BufferedImage firstImage, BufferedImage secondImage) {
 
-        if (Objects.isNull(firstImage)) {
+        if (isNull(firstImage)) {
             return false;
         }
 
-        if (Objects.isNull(secondImage)) {
+        if (isNull(secondImage)) {
             return false;
         }
 

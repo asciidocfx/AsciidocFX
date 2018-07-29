@@ -25,6 +25,7 @@ import java.io.OutputStreamWriter;
 import java.lang.reflect.Field;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -121,7 +122,11 @@ public abstract class ConfigurationBase {
 
     public abstract Path getConfigPath();
 
-    public abstract void load(ActionEvent... actionEvent);
+    public abstract void load(Path configPath, ActionEvent... actionEvent);
+
+    public void load(ActionEvent... actionEvent) {
+        load(getConfigPath(), actionEvent);
+    }
 
     public abstract void save(ActionEvent... actionEvent);
 
@@ -145,5 +150,15 @@ public abstract class ConfigurationBase {
                 e.printStackTrace();
             }
         }
+    }
+
+    public void loadPreviousConfiguration(String configDir) {
+        Path defaultConfigPath = getConfigPath();
+        Path fileName = defaultConfigPath.getFileName();
+
+        String userHome = System.getProperty("user.home");
+        Path resolvedConfigPath = Paths.get(userHome).resolve(configDir).resolve(fileName);
+
+        load(resolvedConfigPath);
     }
 }

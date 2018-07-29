@@ -373,11 +373,11 @@ public class TerminalConfigBean extends ConfigurationBase {
     }
 
     @Override
-    public void load(ActionEvent... actionEvent) {
+    public void load(Path configPath, ActionEvent... actionEvent) {
 
         fadeOut(infoLabel, "Loading...");
 
-        Reader fileReader = IOHelper.fileReader(getConfigPath());
+        Reader fileReader = IOHelper.fileReader(configPath);
         JsonReader jsonReader = Json.createReader(fileReader);
 
         JsonObject jsonObject = jsonReader.readObject();
