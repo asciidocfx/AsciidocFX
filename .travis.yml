@@ -66,6 +66,7 @@ env:
   - secure: x4NoL51Uq5eGy+qYR3R5ca5J16lXN+45EwcRTE3FBxzxN91vK6GrKW8sbjZLTXeEIjhn9X1IEe8A2ljh4fnkOtIGl2bVHm8KJPNWa/EKmCLZ7KjCzXtyI5743pb+IJpIyCaevwasTBGFvsrs3NOsV/zipk0nEu08VdqEvp7AsXE=
   - secure: xfIJj1AUhUgXfrMZStwGv0njAc8eSPe38M+QOyApgl1LriEc2WX0vdf/zQhcELHmuAidkDV6t4KCQ6IavzylvYHbrSL3Ki7uTIf1qWKPkJKJq0yhOON4Qw44sziM9ePAMLu09C6sOzXkcIYw8VJGQA4Dh8OxiKUePX0wqUw9zIY=
   - secure: itDqULG69MoCnvLvMoFpBC8osAb/603jmc47hwC3qn1X+egKrT8kM/w8DC5fYgwp45LKBaxZhxY1q2twxvC6tW28/Zc31kR65RkfbRv5b2jqvb+PFtBSTvBDtKQxPf5DgK1yvqZYZ8r46uYEjepKwELhsYF05W+4irZqakd3aIo=
+  - secure: WkMoP05gwJ22HLx9c1Q4ZJWALfvZxfnxC1XUmZQ8D9zv1+pPBYmvYHvBGkFzhWIlVXweNU6yj7/qpUa8+gBizs6lKa+FVgNdelVN9RDP5zVy3b7u8w/FXVkEg/0ActWIi+tJlfFq3FEspnFQEgEx+LnMX6jiH+a0dxtC0MBKdZk=
 before_install:
 - openssl aes-256-cbc -K $encrypted_56a53bf9cdec_key -iv $encrypted_56a53bf9cdec_iv
   -in code_sign.p12.enc -out code_sign.p12 -d

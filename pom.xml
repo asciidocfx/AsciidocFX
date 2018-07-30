@@ -258,6 +258,7 @@
                         <configuration>
                             <projectFile>${project.basedir}/asciidocfx.install4j</projectFile>
                             <installDir>${install4j.home}</installDir>
+                            <macKeystorePassword>${env.MAC_KEYSTORE_PASSWORD}</macKeystorePassword>
                         </configuration>
                     </execution>
                 </executions>
