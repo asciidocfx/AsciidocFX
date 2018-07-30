@@ -66,7 +66,7 @@ env:
   - secure: x4NoL51Uq5eGy+qYR3R5ca5J16lXN+45EwcRTE3FBxzxN91vK6GrKW8sbjZLTXeEIjhn9X1IEe8A2ljh4fnkOtIGl2bVHm8KJPNWa/EKmCLZ7KjCzXtyI5743pb+IJpIyCaevwasTBGFvsrs3NOsV/zipk0nEu08VdqEvp7AsXE=
   - secure: xfIJj1AUhUgXfrMZStwGv0njAc8eSPe38M+QOyApgl1LriEc2WX0vdf/zQhcELHmuAidkDV6t4KCQ6IavzylvYHbrSL3Ki7uTIf1qWKPkJKJq0yhOON4Qw44sziM9ePAMLu09C6sOzXkcIYw8VJGQA4Dh8OxiKUePX0wqUw9zIY=
   - secure: itDqULG69MoCnvLvMoFpBC8osAb/603jmc47hwC3qn1X+egKrT8kM/w8DC5fYgwp45LKBaxZhxY1q2twxvC6tW28/Zc31kR65RkfbRv5b2jqvb+PFtBSTvBDtKQxPf5DgK1yvqZYZ8r46uYEjepKwELhsYF05W+4irZqakd3aIo=
-  - secure: FTKizeh88r30+tCXx/qViI8HpifiNBtPweeMsi6MPa99yNKUyJtwfaMRu79MXwJywHpn03lLrzVePow2mqjjYEtQ7Y0SVdW9ppIjmBzRHSsk9bpLLXR6+wRqxrtty4FrdI5qDupk3F5GqDKzZwLu09+2wHrR0IaMH9g4uZ9SeW4=
+  - secure: ug0A8Lwvb0P+HZWNpSPdur/XdHuGlp6VE7OhWcBWpI4bhbtlBRAbD5qpcyWK0MYuaSX3nHhKHaW+5xtLpV1eusIhfvFqxtaEWkIp7U0ovyzg7lvudt8hLowYVejntTdB+mg9aWT2PY+bnGLG15XwOCKqPxzFhmJU0/P4seVwLJY=
 before_install:
 - openssl aes-256-cbc -K $encrypted_56a53bf9cdec_key -iv $encrypted_56a53bf9cdec_iv
   -in code_sign.p12.enc -out code_sign.p12 -d
