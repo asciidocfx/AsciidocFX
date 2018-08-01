@@ -29,7 +29,7 @@ public final class AlertHelper {
     public static final ButtonType OPEN_EXTERNAL = new ButtonType("Open external");
 
     static Alert buildDeleteAlertDialog(List<Path> pathsLabel) {
-        Alert deleteAlert = new Alert(Alert.AlertType.WARNING, null, ButtonType.YES, ButtonType.CANCEL);
+        Alert deleteAlert = new WindowModalAlert(Alert.AlertType.WARNING, null, ButtonType.YES, ButtonType.CANCEL);
         deleteAlert.setHeaderText("Do you want to delete selected path(s)?");
         DialogPane dialogPane = deleteAlert.getDialogPane();
 
@@ -110,7 +110,7 @@ public final class AlertHelper {
     }
 
     public static Optional<ButtonType> conflictAlert(Path path) {
-        Alert alert = new Alert(Alert.AlertType.WARNING);
+        Alert alert = new WindowModalAlert(Alert.AlertType.WARNING);
         alert.setTitle("File Cache Conflict");
         alert.setHeaderText(String.format("Changes have been made to '%s' in memory and on disk", path));
         alert.getButtonTypes().clear();
@@ -119,7 +119,7 @@ public final class AlertHelper {
     }
 
     public static Optional<ButtonType> sizeHangAlert(Path path, int hangFileSizeLimit) {
-        Alert alert = new Alert(Alert.AlertType.WARNING);
+        Alert alert = new WindowModalAlert(Alert.AlertType.WARNING);
         alert.setTitle(String.format("File size > %dMB", hangFileSizeLimit));
         alert.setHeaderText(String.format("It may cause application being unresponsive", path));
         alert.getButtonTypes().clear();
@@ -128,7 +128,7 @@ public final class AlertHelper {
     }
 
     public static Optional<ButtonType> nosizeAlert(Path path, int hangFileSizeLimit) {
-        Alert alert = new Alert(Alert.AlertType.WARNING);
+        Alert alert = new WindowModalAlert(Alert.AlertType.WARNING);
         alert.setTitle("No file size");
         alert.setHeaderText(String.format("It may cause application being unresponsive if it's real size > %dMB", path, hangFileSizeLimit));
         alert.getButtonTypes().clear();
@@ -137,7 +137,7 @@ public final class AlertHelper {
     }
 
     public static void showDuplicateWarning(List<String> duplicatePaths, Path lib) {
-        Alert alert = new Alert(Alert.AlertType.WARNING);
+        Alert alert = new WindowModalAlert(Alert.AlertType.WARNING);
 
         DialogPane dialogPane = alert.getDialogPane();
 
@@ -159,7 +159,7 @@ public final class AlertHelper {
     }
 
     public static Optional<String> showOldConfiguration(List<String> paths) {
-        Alert alert = new Alert(AlertType.INFORMATION);
+        Alert alert = new WindowModalAlert(AlertType.INFORMATION);
 
         DialogPane dialogPane = alert.getDialogPane();
 
