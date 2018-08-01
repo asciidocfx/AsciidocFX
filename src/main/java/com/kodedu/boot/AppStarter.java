@@ -47,6 +47,8 @@ public class AppStarter extends Application {
     @Override
     public void start(final Stage stage) {
 
+        Thread.setDefaultUncaughtExceptionHandler((t, e) -> logger.error(e.getMessage(), e));
+
 //        System.setProperty("nashorn.typeInfo.maxFiles", "5");
 
         // http://bit.ly/1Euk8hh
