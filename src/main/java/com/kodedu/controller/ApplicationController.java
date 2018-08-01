@@ -94,8 +94,10 @@ import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.InetAddress;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -1737,6 +1739,10 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                     return;
                 }
 
+                if (!InetAddress.getByName("asciidocfx.com").isReachable(5000)) {
+                    return;
+                }
+
                 ApplicationLauncher.launchApplication("504", null, false, new ApplicationLauncher.Callback() {
                             public void exited(int exitValue) {
                                 //TODO add your code here (not invoked on event dispatch thread)
@@ -1747,8 +1753,9 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                             }
                         }
                 );
-            } catch (Exception e) {
-                // logger.error("Problem occured while checking new version", e);
+            }
+            catch (Exception e) {
+               // logger.warn("Problem occured while checking new version", e);
             }
         }, 10, TimeUnit.SECONDS);
     }
@@ -1934,7 +1941,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
         Button browseLogsButton = new Button("Browse");
         browseLogsButton.setOnAction(e -> {
-            openInDesktop(IOHelper.getPath(logPath));
+            openInDesktop(IOHelper.getPath(getLogPath()));
         });
 
         TextField searchLogField = new TextField();
