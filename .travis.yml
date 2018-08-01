@@ -33,7 +33,7 @@ deploy:
   - "/home/travis/build/asciidocfx/AsciidocFX/target/media/AsciidocFX_Windows_No_JRE.exe"
   - "/home/travis/build/asciidocfx/AsciidocFX/target/media/AsciidocFX_Windows.zip"
   - "/home/travis/build/asciidocfx/AsciidocFX/target/media/AsciidocFX_Windows_No_JRE.zip"
-  - "/home/travis/build/asciidocfx/AsciidocFX/target/asciidocfx-1.6.1.zip"
+  - "/home/travis/build/asciidocfx/AsciidocFX/target/asciidocfx-1.6.2.zip"
   - "/home/travis/build/asciidocfx/AsciidocFX/target/media/updates.xml"
   on:
     tags: true
@@ -55,7 +55,7 @@ deploy:
   - "/home/travis/build/asciidocfx/AsciidocFX/target/media/AsciidocFX_Windows_No_JRE.exe"
   - "/home/travis/build/asciidocfx/AsciidocFX/target/media/AsciidocFX_Windows.zip"
   - "/home/travis/build/asciidocfx/AsciidocFX/target/media/AsciidocFX_Windows_No_JRE.zip"
-  - "/home/travis/build/asciidocfx/AsciidocFX/target/asciidocfx-1.6.1.zip"
+  - "/home/travis/build/asciidocfx/AsciidocFX/target/asciidocfx-1.6.2.zip"
   - "/home/travis/build/asciidocfx/AsciidocFX/target/media/updates.xml"
   on:
     tags: true

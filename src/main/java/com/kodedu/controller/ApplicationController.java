@@ -1753,9 +1753,8 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                             }
                         }
                 );
-            }
-            catch (Exception e) {
-               // logger.warn("Problem occured while checking new version", e);
+            } catch (Exception e) {
+                // logger.warn("Problem occured while checking new version", e);
             }
         }, 10, TimeUnit.SECONDS);
     }
