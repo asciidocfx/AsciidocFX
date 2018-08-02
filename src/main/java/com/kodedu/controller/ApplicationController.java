@@ -67,10 +67,7 @@ import javafx.scene.image.Image;
 import javafx.scene.input.*;
 import javafx.scene.layout.*;
 import javafx.scene.text.Text;
-import javafx.stage.DirectoryChooser;
-import javafx.stage.FileChooser;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
+import javafx.stage.*;
 import javafx.util.Duration;
 import netscape.javascript.JSObject;
 import org.apache.commons.io.IOUtils;
@@ -94,7 +91,6 @@ import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
@@ -973,7 +969,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             IOUtils.closeQuietly(logoStream);
             detachStage.setOnCloseRequest(e -> {
                 if (stage.isShowing()) {
-                    ViewPanel.setMarkDetached();
+                    ViewPanel.setMarkReAtached();
                     e.consume();
                 }
             });
@@ -3341,5 +3337,22 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     public boolean isSkipHiddenFiles() {
         return editorConfigBean.isSkipHiddenFiles();
+    }
+
+    public void checkStageInsideScreens() {
+
+        if (stageNoteInScreens(stage)) {
+            logger.info("Main stage is not in visible part of any screen. It will be moved to x=0,y=0");
+            stage.setX(0);
+            stage.setY(0);
+            editorConfigBean.setScreenX(0);
+            editorConfigBean.setScreenY(0);
+        }
+    }
+
+    private boolean stageNoteInScreens(Stage stage) {
+        return Screen.getScreens().stream()
+                .map(Screen::getBounds)
+                .noneMatch(bounds -> bounds.contains(stage.getX(), stage.getY()));
     }
 }

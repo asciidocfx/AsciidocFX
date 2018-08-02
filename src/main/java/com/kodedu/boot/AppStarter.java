@@ -115,6 +115,7 @@ public class AppStarter extends Application {
 
             configurationService.loadConfigurations();
             controller.applyInitialConfigurations();
+            controller.checkStageInsideScreens();
 
         });
 
