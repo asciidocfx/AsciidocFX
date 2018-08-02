@@ -11,6 +11,7 @@ import javafx.concurrent.Worker;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.web.WebView;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import netscape.javascript.JSObject;
 import org.slf4j.Logger;
@@ -45,6 +46,7 @@ public class SlidePane extends ViewPanel {
             ReadOnlyObjectProperty<Worker.State> stateProperty = webEngine().getLoadWorker().stateProperty();
             WebView popupView = new WebView();
             Stage stage = new Stage();
+            stage.initModality(Modality.WINDOW_MODAL);
             stage.setScene(new Scene(popupView));
             stage.setTitle("AsciidocFX");
             InputStream logoStream = SlidePane.class.getResourceAsStream("/logo.png");
