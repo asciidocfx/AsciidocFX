@@ -290,7 +290,7 @@ public abstract class ViewPanel extends AnchorPane {
 
     }
 
-    public static void setMarkDetached() {
+    public static void setMarkReAtached() {
         if (nonNull(detachPreviewItem)) {
             detachPreviewItem.selectedProperty().setValue(Boolean.FALSE);
         }
