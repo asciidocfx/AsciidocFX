@@ -3,7 +3,7 @@
 :data-uri:
 :toc:
 :toc-placement: left
-:asciidocfx-version: 1.6.2
+:asciidocfx-version: 1.6.3
 :download-root: https://github.com/asciidocfx/AsciidocFX/releases/download/v{asciidocfx-version}/
 
 image:https://api.travis-ci.org/asciidocfx/AsciidocFX.svg?branch=master[Build Status,link="https://travis-ci.org/asciidocfx/AsciidocFX"]

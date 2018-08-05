@@ -12,8 +12,8 @@ script: mvn clean install -Pinstall-runtime
 before_script:
 - wget http://download-aws.ej-technologies.com/install4j/install4j_unix_7_0_6.tar.gz
 - tar zxvf install4j_unix_7_0_6.tar.gz
-- wget -O /home/travis/build/asciidocfx/AsciidocFX/install4j7.0.6/jres/linux-amd64-1.8.0_112.tar.gz
-  http://kodedu.com/asciidocfx/jres/linux-amd64-1.8.0_112.tar.gz
+- wget -O /home/travis/build/asciidocfx/AsciidocFX/install4j7.0.6/jres/linux-amd64-1.8.0_181.tar.gz
+  http://kodedu.com/asciidocfx/jres/linux-amd64-1.8.0_181.tar.gz
 - wget -O /home/travis/build/asciidocfx/AsciidocFX/install4j7.0.6/jres/macosx-amd64-1.8.0_181_unpacked.tar.gz
   http://kodedu.com/asciidocfx/jres/macosx-amd64-1.8.0_181_unpacked.tar.gz
 - wget -O /home/travis/build/asciidocfx/AsciidocFX/install4j7.0.6/jres/windows-amd64-1.8.0_181.tar.gz
@@ -33,7 +33,7 @@ deploy:
   - "/home/travis/build/asciidocfx/AsciidocFX/target/media/AsciidocFX_Windows_No_JRE.exe"
   - "/home/travis/build/asciidocfx/AsciidocFX/target/media/AsciidocFX_Windows.zip"
   - "/home/travis/build/asciidocfx/AsciidocFX/target/media/AsciidocFX_Windows_No_JRE.zip"
-  - "/home/travis/build/asciidocfx/AsciidocFX/target/asciidocfx-1.6.2.zip"
+  - "/home/travis/build/asciidocfx/AsciidocFX/target/asciidocfx-1.6.3.zip"
   - "/home/travis/build/asciidocfx/AsciidocFX/target/media/updates.xml"
   on:
     tags: true
@@ -55,7 +55,7 @@ deploy:
   - "/home/travis/build/asciidocfx/AsciidocFX/target/media/AsciidocFX_Windows_No_JRE.exe"
   - "/home/travis/build/asciidocfx/AsciidocFX/target/media/AsciidocFX_Windows.zip"
   - "/home/travis/build/asciidocfx/AsciidocFX/target/media/AsciidocFX_Windows_No_JRE.zip"
-  - "/home/travis/build/asciidocfx/AsciidocFX/target/asciidocfx-1.6.2.zip"
+  - "/home/travis/build/asciidocfx/AsciidocFX/target/asciidocfx-1.6.3.zip"
   - "/home/travis/build/asciidocfx/AsciidocFX/target/media/updates.xml"
   on:
     tags: true

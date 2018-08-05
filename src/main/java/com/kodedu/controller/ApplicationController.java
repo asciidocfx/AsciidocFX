@@ -1858,6 +1858,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         TableColumn<MyLog, String> levelColumn = new TableColumn<>("Level");
         levelColumn.getStyleClass().add("level-column");
         TableColumn<MyLog, String> messageColumn = new TableColumn<>("Message");
+        messageColumn.getStyleClass().add("message-column");
         levelColumn.setCellValueFactory(new PropertyValueFactory<MyLog, String>("level"));
         messageColumn.setCellValueFactory(new PropertyValueFactory<MyLog, String>("message"));
         messageColumn.prefWidthProperty().bind(logViewer.widthProperty().subtract(levelColumn.widthProperty()).subtract(5));
