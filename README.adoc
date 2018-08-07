@@ -570,6 +570,10 @@ To see what has changed in recent versions of AsciidocFX, see the https://github
 Support AsciidocFX with pull requests or open an issue for bug & feature requests. You can make discussions in https://groups.google.com/d/forum/asciidocfx-discuss[mail group] or in the chat room at https://gitter.im/asciidocfx/AsciidocFX[Gitter.im].
 
 
+////
+openssl sha -sha256 AsciidocFX_Mac.dmg
+////
+
 == Contributors
 
 Thank you to all the people who have already contributed to AsciidocFX!
