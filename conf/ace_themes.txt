@@ -32,3 +32,4 @@ tomorrow_night_bright
 tomorrow_night_eighties
 twilight
 vibrant_ink
+dracula

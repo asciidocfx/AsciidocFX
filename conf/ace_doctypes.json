@@ -850,5 +850,59 @@
     "caption": "Pig",
     "mode": "ace/snippets/pig",
     "extensions": "pig"
+  },
+  {
+    "name": "slim",
+    "caption": "Slim",
+    "mode": "ace/snippets/slim",
+    "extensions": "slim|skim"
+  },
+  {
+    "name": "terraform",
+    "caption": "Terraform",
+    "mode": "ace/snippets/terraform",
+    "extensions": "tf|tfvars|terragrunt"
+  },
+  {
+    "name": "red",
+    "caption": "Red",
+    "mode": "ace/snippets/red",
+    "extensions": "red|reds"
+  },
+  {
+    "name": "puppet",
+    "caption": "Puppet",
+    "mode": "ace/snippets/puppet",
+    "extensions": "epp|pp"
+  },
+  {
+    "name": "mixal",
+    "caption": "Mixal",
+    "mode": "ace/snippets/mixal",
+    "extensions": "mixal"
+  },
+  {
+    "name": "jssm",
+    "caption": "Jssm",
+    "mode": "ace/snippets/jssm",
+    "extensions": "jssm|jssm_state"
+  },
+  {
+    "name": "fsharp",
+    "caption": "Fsharp",
+    "mode": "ace/snippets/fsharp",
+    "extensions": "fsi|fs|ml|mli|fsx|fsscript"
+  },
+  {
+    "name": "edifact",
+    "caption": "Edifact",
+    "mode": "ace/snippets/edifact",
+    "extensions": "edi"
+  },
+  {
+    "name": "asl",
+    "caption": "Asl",
+    "mode": "ace/snippets/asl",
+    "extensions": "dsl|asl"
   }
 ]
