@@ -2221,25 +2221,25 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     @WebkitCall(from = "asciidoctor-uml")
     public void uml(String uml, String type, String imagesDir, String imageTarget, String nodename) throws IOException {
-        plantuml(uml, type, imagesDir, imageTarget, nodename);
+        plantuml(uml, type, imagesDir, imageTarget, nodename, null);
     }
 
     @WebkitCall(from = "asciidoctor-uml")
-    public void plantuml(String uml, String type, String imagesDir, String imageTarget, String nodename) throws IOException {
+    public void plantuml(String uml, String type, String imagesDir, String imageTarget, String nodename, String options) throws IOException {
 
         threadService.runTaskLater(() -> {
-            plantUmlService.plantUml(uml, type, imagesDir, imageTarget, nodename);
+            plantUmlService.plantUml(uml, type, imagesDir, imageTarget, nodename, options);
         });
     }
 
     @WebkitCall(from = "asciidoctor-uml")
     public void graphviz(String graphviz, String type, String imagesDir, String imageTarget, String nodename) throws IOException {
-        this.plantuml(graphviz, type, imagesDir, imageTarget, nodename);
+        this.plantuml(graphviz, type, imagesDir, imageTarget, nodename, null);
     }
 
     @WebkitCall(from = "asciidoctor-uml")
-    public void ditaa(String ditaa, String type, String imagesDir, String imageTarget, String nodename) throws IOException {
-        this.plantuml(ditaa, type, imagesDir, imageTarget, nodename);
+    public void ditaa(String ditaa, String type, String imagesDir, String imageTarget, String nodename, String options) throws IOException {
+        this.plantuml(ditaa, type, imagesDir, imageTarget, nodename, options);
     }
 
     @WebkitCall(from = "asciidoctor-chart")
