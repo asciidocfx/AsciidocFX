@@ -553,6 +553,12 @@ function showLineNumbers() {
     editor.renderer.getShowGutter() ? editor.renderer.setShowGutter(false) : editor.renderer.setShowGutter(true);
 }
 
+function gotoLine(line, column){
+    editor.resize(true);
+    editor.scrollToLine(line, true, true, function () {});
+    editor.gotoLine(line, column, true);
+}
+
 editor.commands.addCommand({
     name: 'underline-selected',
     bindKey: {win: 'Ctrl-U', mac: 'Command-U'},

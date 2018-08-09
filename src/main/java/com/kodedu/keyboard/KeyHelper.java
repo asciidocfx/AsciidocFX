@@ -14,6 +14,7 @@ public class KeyHelper {
     private static final KeyPairs CONTEXT_MENU = new KeyPairs(KeyCode.CONTEXT_MENU);
     private static final KeyPairs F2 = new KeyPairs(KeyCode.F2);
     private static final KeyPairs COPY = new KeyPairs(KeyCode.C, SHORTCUT_DOWN);
+    private static final KeyPairs CONTROL_G = new KeyPairs(KeyCode.G, SHORTCUT_DOWN);
     private static final KeyPairs DELETE = new KeyPairs(KeyCode.DELETE);
     private static final KeyPairs ENTER = new KeyPairs(KeyCode.ENTER);
     private static final KeyPairs UP = new KeyPairs(KeyCode.UP, KeyCode.KP_UP);
@@ -80,5 +81,9 @@ public class KeyHelper {
 
     public static boolean isF2(KeyEvent event) {
         return F2.match(event);
+    }
+
+    public static boolean isControlG( KeyEvent event) {
+        return CONTROL_G.match(event);
     }
 }

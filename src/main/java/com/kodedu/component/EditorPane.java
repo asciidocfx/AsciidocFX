@@ -530,6 +530,12 @@ public class EditorPane extends AnchorPane {
             if (contextMenu.isShowing()) {
                 contextMenu.hide();
             }
+
+            if (KeyHelper.isControlG(event)) {
+                DialogBuilder dialogBuilder = DialogBuilder.newJumpLineDialog();
+                dialogBuilder.showAndWait().ifPresent(this::jumpLine);
+            }
+
         });
 
         getWebView().addEventFilter(KeyEvent.ANY, event -> {
@@ -614,6 +620,14 @@ public class EditorPane extends AnchorPane {
             event.setDropCompleted(success);
             event.consume();
         });
+    }
+
+    private void jumpLine(String lineColumn) {
+        String[] split = lineColumn.split(":");
+        int line = Integer.parseInt(split[0]);
+        int column = Integer.parseInt(split[1]);
+
+        webEngine().executeScript(String.format("gotoLine(%d,%d)", line, column));
     }
 
     private void checkWordSuggestions() {
