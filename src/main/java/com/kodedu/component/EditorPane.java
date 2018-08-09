@@ -1,5 +1,6 @@
 package com.kodedu.component;
 
+import com.ibm.icu.text.CharsetDetector;
 import com.kodedu.config.EditorConfigBean;
 import com.kodedu.config.FoldStyle;
 import com.kodedu.config.SpellcheckConfigBean;
@@ -45,6 +46,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
+import java.nio.charset.CharsetDecoder;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.FileTime;

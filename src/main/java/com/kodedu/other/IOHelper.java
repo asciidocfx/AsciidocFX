@@ -1,8 +1,11 @@
 package com.kodedu.other;
 
+import com.ibm.icu.text.CharsetDetector;
+import com.ibm.icu.text.CharsetMatch;
 import com.kodedu.service.ThreadService;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.logging.log4j.util.Chars;
 import org.joox.JOOX;
 import org.joox.Match;
 import org.slf4j.Logger;
@@ -36,17 +39,18 @@ public class IOHelper {
 
     private static final Logger logger = LoggerFactory.getLogger(IOHelper.class);
 
-    public static void writeToFile(File file, String content, StandardOpenOption... openOption) {
-        writeToFile(file.toPath(), content, openOption);
-    }
+    private static final Map<Path, String> pathCharsetMap = new LRUMap();
 
     public static Optional<Exception> writeToFile(Path path, String content, StandardOpenOption... openOption) {
-        try {
-            Files.write(path, content.getBytes(Charset.forName("UTF-8")), openOption);
+        String charset = pathCharsetMap.getOrDefault(path, "UTF-8");
+        try (Writer out = new BufferedWriter(new OutputStreamWriter(Files.newOutputStream(path, openOption), charset));
+        ) {
+            out.write(content);
         } catch (Exception e) {
             logger.error("Problem occured while writing to {}", path, e);
             return Optional.of(e);
         }
+        pathCharsetMap.put(path, charset);
         return Optional.empty();
     }
 
@@ -58,25 +62,25 @@ public class IOHelper {
         }
     }
 
-    public static String readFile(InputStream inputStream) {
-        String content = "";
-        try {
-            content = IOUtils.toString(inputStream, "UTF-8");
-            IOUtils.closeQuietly(inputStream);
-        } catch (Exception e) {
-            logger.error("Problem occured while reading inputstream", e);
-        }
-        return content;
-    }
-
     public static String readFile(Path path) {
         String content = "";
-        try (InputStream is = Files.newInputStream(path, StandardOpenOption.READ, StandardOpenOption.SYNC)) {
-            content = IOUtils.toString(is, "UTF-8");
+        try (InputStream is = new BufferedInputStream(Files.newInputStream(path, StandardOpenOption.READ, StandardOpenOption.SYNC))) {
+            String charset = detectCharset(is);
+            pathCharsetMap.put(path, charset);
+            content = IOUtils.toString(is, charset);
         } catch (Exception e) {
             logger.error("Problem occured while reading file {}", path, e);
         }
         return content;
+    }
+
+    private static String detectCharset(InputStream is) {
+        String charset = Charset.defaultCharset().name();
+        try {
+            charset = new CharsetDetector().setText(is).detect().getName();
+        } catch (Exception e) {
+        }
+        return charset;
     }
 
     public static void createDirectories(Path path) {
@@ -547,5 +551,9 @@ public class IOHelper {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public static String getEncoding(Path path) {
+        return pathCharsetMap.get(path);
     }
 }

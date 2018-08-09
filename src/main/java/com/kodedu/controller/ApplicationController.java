@@ -1816,7 +1816,8 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     @WebkitCall
     public void updateStatusBox(long row, long column, long linecount, long wordcount) {
         threadService.runActionLater(() -> {
-            statusText.setText(String.format("(Characters: %d) (Lines: %d) (%d:%d)", wordcount, linecount, row, column));
+            String charset = getCurrent().currentPath().map(IOHelper::getEncoding).orElse("-");
+            statusText.setText(String.format("(Characters: %d) (Lines: %d) (%d:%d) | %s", wordcount, linecount, row, column, charset));
         });
     }
 

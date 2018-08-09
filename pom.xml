@@ -157,6 +157,11 @@
             <artifactId>terminalfx</artifactId>
             <version>1.0.6</version>
         </dependency>
+        <dependency>
+            <groupId>com.ibm.icu</groupId>
+            <artifactId>icu4j-charset</artifactId>
+            <version>62.1</version>
+        </dependency>
 
     </dependencies>
 
