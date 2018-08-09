@@ -110,3 +110,7 @@
     -fx-fill: -fx-text-fill;
     -fx-font-weight: bold;
 }
+
+.tab:selected {
+    -fx-background-color: linear-gradient(derive(-fx-base, 35%),-fx-base);
+}
