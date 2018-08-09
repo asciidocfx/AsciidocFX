@@ -657,6 +657,9 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                                 basicSearch.setText(s);
                                 fileBrowser.searchAndSelect(basicSearch.getText());
                             });
+                } else {
+                    event.consume();
+                    deleteSelectedItems(event);
                 }
             } else if (KeyHelper.isUp(event)) {
                 if (basicSearch.isVisible()) {
