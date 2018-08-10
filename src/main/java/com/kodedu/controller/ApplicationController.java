@@ -35,6 +35,7 @@ import com.kodedu.service.ui.IndikatorService;
 import com.kodedu.service.ui.TabService;
 import com.kodedu.service.ui.TooltipTimeFixService;
 import com.kodedu.spell.dictionary.DictionaryService;
+import com.kodedu.terminalfx.Terminal;
 import com.kodedu.terminalfx.TerminalBuilder;
 import com.kodedu.terminalfx.TerminalTab;
 import com.kodedu.terminalfx.config.TerminalConfig;
@@ -598,9 +599,10 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
         terminalTabPane.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             Optional.ofNullable(newValue)
-                    .map(e -> ((TerminalTab) e))
-                    .filter(TerminalTab::isTerminalReady)
-                    .ifPresent(TerminalTab::focusCursor);
+                    .map(e -> ((TerminalTab) e).getTerminal())
+                    .ifPresent(terminal -> terminal.onTerminalFxReady(() -> {
+                        terminal.focusCursor();
+                    }));
         });
 
         Arrays.asList(htmlPane, slidePane, liveReloadPane).forEach(viewPanel -> VBox.getVgrow(viewPanel));
@@ -1519,7 +1521,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         });
 
         terminalConfigBean.setOnConfigChanged(() -> {
-            applyForEachTerminal(terminalTab -> terminalTab.updatePrefs(terminalConfigBean.createTerminalConfig()));
+            applyForEachTerminal(terminalTab -> terminalTab.getTerminal().updatePrefs(terminalConfigBean.createTerminalConfig()));
         });
 
         locationConfigBean.mathjaxProperty().addListener((observable, oldValue, newValue) -> {

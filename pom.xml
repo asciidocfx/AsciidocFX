@@ -155,7 +155,7 @@
         <dependency>
             <groupId>com.kodedu.terminalfx</groupId>
             <artifactId>terminalfx</artifactId>
-            <version>1.0.6</version>
+            <version>1.0.7</version>
         </dependency>
         <dependency>
             <groupId>com.ibm.icu</groupId>
