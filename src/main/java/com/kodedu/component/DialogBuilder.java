@@ -9,7 +9,7 @@ public final class DialogBuilder extends TextDialog {
 
     public final static String FILE_NAME_REGEX = ".*\\S.*";
     public final static String FOLDER_NAME_REGEX = ".*\\S.*";
-    public final static String LINE_COLUMN_REGEX = "\\d.*:\\d.*";
+    public final static String LINE_COLUMN_REGEX = "\\d+:\\d+|\\d+";
 
     public DialogBuilder(String content, String title) {
         super(content, title);

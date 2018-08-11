@@ -624,8 +624,17 @@ public class EditorPane extends AnchorPane {
 
     private void jumpLine(String lineColumn) {
         String[] split = lineColumn.split(":");
-        int line = Integer.parseInt(split[0]);
-        int column = Integer.parseInt(split[1]);
+        int line = 0, column = 0;
+
+        try {
+            line = Integer.parseInt(split[0]);
+        } catch (Exception e) {
+        }
+
+        try {
+            column = Integer.parseInt(split[1]);
+        } catch (Exception e) {
+        }
 
         webEngine().executeScript(String.format("gotoLine(%d,%d)", line, column));
     }
