@@ -19,6 +19,7 @@ import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.text.Font;
 import javafx.stage.Modality;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
@@ -48,6 +49,8 @@ public class AppStarter extends Application {
     public void start(final Stage stage) {
 
         Thread.setDefaultUncaughtExceptionHandler((t, e) -> logger.error(e.getMessage(), e));
+
+        Font.loadFont(AppStarter.class.getResourceAsStream("/font/NotoSerif-Regular.ttf"), -1);
 
 //        System.setProperty("nashorn.typeInfo.maxFiles", "5");
 
