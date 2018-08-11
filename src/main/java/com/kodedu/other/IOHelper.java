@@ -42,7 +42,7 @@ public class IOHelper {
     private static final Map<Path, String> pathCharsetMap = new LRUMap();
 
     public static Optional<Exception> writeToFile(Path path, String content, StandardOpenOption... openOption) {
-        String charset = pathCharsetMap.getOrDefault(path, "UTF-8");
+        String charset = pathCharsetMap.getOrDefault(path, Charset.defaultCharset().name());
         try (Writer out = new BufferedWriter(new OutputStreamWriter(Files.newOutputStream(path, openOption), charset));
         ) {
             out.write(content);
@@ -77,7 +77,10 @@ public class IOHelper {
     private static String detectCharset(InputStream is) {
         String charset = Charset.defaultCharset().name();
         try {
-            charset = new CharsetDetector().setText(is).detect().getName();
+            CharsetMatch charsetMatch = new CharsetDetector().setText(is).detect();
+            if (charsetMatch.getConfidence() > 50) {
+                charset = charsetMatch.getName();
+            }
         } catch (Exception e) {
         }
         return charset;
