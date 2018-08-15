@@ -56,7 +56,7 @@ function process_block_extension(obj) {
 
     //afx[command].apply(afx,parameters);
 
-    if (["ditaa"].indexOf(name) != -1) {
+    if (["ditaa", "uml", "plantuml", "graphviz"].indexOf(name) != -1) {
         parameters.push(options + "");
     }
 

@@ -2226,8 +2226,8 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     }
 
     @WebkitCall(from = "asciidoctor-uml")
-    public void uml(String uml, String type, String imagesDir, String imageTarget, String nodename) throws IOException {
-        plantuml(uml, type, imagesDir, imageTarget, nodename, null);
+    public void uml(String uml, String type, String imagesDir, String imageTarget, String nodename,  String options) throws IOException {
+        plantuml(uml, type, imagesDir, imageTarget, nodename, options);
     }
 
     @WebkitCall(from = "asciidoctor-uml")
@@ -2239,8 +2239,8 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     }
 
     @WebkitCall(from = "asciidoctor-uml")
-    public void graphviz(String graphviz, String type, String imagesDir, String imageTarget, String nodename) throws IOException {
-        this.plantuml(graphviz, type, imagesDir, imageTarget, nodename, null);
+    public void graphviz(String graphviz, String type, String imagesDir, String imageTarget, String nodename, String options) throws IOException {
+        this.plantuml(graphviz, type, imagesDir, imageTarget, nodename, options);
     }
 
     @WebkitCall(from = "asciidoctor-uml")
