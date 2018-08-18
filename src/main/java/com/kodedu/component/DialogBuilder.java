@@ -1,6 +1,9 @@
 package com.kodedu.component;
 
+import javafx.scene.control.Alert;
+import javafx.scene.control.DialogPane;
 import javafx.scene.control.TextField;
+import javafx.stage.Stage;
 
 /**
  * Created by usta on 16.03.2015.
@@ -13,6 +16,7 @@ public final class DialogBuilder extends TextDialog {
 
     public DialogBuilder(String content, String title) {
         super(content, title);
+        showAlwaysOnTop(getDialogPane());
     }
 
     public static DialogBuilder newFileDialog() {
@@ -40,4 +44,13 @@ public final class DialogBuilder extends TextDialog {
         editor.requestFocus();
         return dialog;
     }
+
+    private static void showAlwaysOnTop(DialogPane dialogPane) {
+        ((Stage) dialogPane.getScene().getWindow()).setAlwaysOnTop(true);
+    }
+
+    private static void showAlwaysOnTop(Alert alert) {
+        showAlwaysOnTop(alert.getDialogPane());
+    }
+
 }

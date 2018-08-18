@@ -9,6 +9,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.stage.Screen;
+import javafx.stage.Stage;
 
 import java.nio.file.Path;
 import java.util.List;
