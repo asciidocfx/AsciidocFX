@@ -83,6 +83,7 @@ public class IOHelper {
 
         } catch (Exception e) {
             logger.error("Problem occured while reading file {}", path, e);
+            throw new RuntimeException(e);
         }
         return content;
     }
@@ -110,7 +111,7 @@ public class IOHelper {
             }
         }
 
-        throw new RuntimeException("Charset not found, can't open this file ");
+        throw new RuntimeException("Charset not detected, can't open this file ");
     }
 
     private static Charset detectCharset(File f, Charset charset, byte[] bytes) {
