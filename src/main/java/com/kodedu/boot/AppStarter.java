@@ -51,6 +51,9 @@ public class AppStarter extends Application {
         Thread.setDefaultUncaughtExceptionHandler((t, e) -> logger.error(e.getMessage(), e));
 
         Font.loadFont(AppStarter.class.getResourceAsStream("/font/NotoSerif-Regular.ttf"), -1);
+        Font.loadFont(AppStarter.class.getResourceAsStream("/font/NotoSerif-Italic.ttf"), -1);
+        Font.loadFont(AppStarter.class.getResourceAsStream("/font/NotoSerif-Bold.ttf"), -1);
+        Font.loadFont(AppStarter.class.getResourceAsStream("/font/NotoSerif-BoldItalic.ttf"), -1);
 
 //        System.setProperty("nashorn.typeInfo.maxFiles", "5");
 
