@@ -95,6 +95,7 @@ public class EditorPane extends AnchorPane {
     private ContextMenu contextMenu;
     private Number pageX;
     private Number pageY;
+    private MyTab myTab;
 
     @Autowired
     public EditorPane(ApplicationController controller, EditorConfigBean editorConfigBean, ThreadService threadService, ShortcutProvider shortcutProvider, ApplicationContext applicationContext, TabService tabService, AsciiTreeGenerator asciiTreeGenerator, ParserService parserService, SpellcheckConfigBean spellcheckConfigBean, DirectoryService directoryService) {
@@ -131,15 +132,20 @@ public class EditorPane extends AnchorPane {
 
         if (Objects.nonNull(path)) {
             threadService.runTaskLater(() -> {
-                final String content = IOHelper.readFile(path);
-                setLastModifiedTime(IOHelper.getLastModifiedTime(path));
-                threadService.runActionLater(() -> {
-                    changeEditorMode();
-                    setInitialized();
-                    setEditorValue(content);
-                    resetUndoManager();
-                    ready.setValue(true);
-                });
+                try {
+                    final String content = IOHelper.readFile(path);
+                    setLastModifiedTime(IOHelper.getLastModifiedTime(path));
+                    threadService.runActionLater(() -> {
+                        changeEditorMode();
+                        setInitialized();
+                        setEditorValue(content);
+                        resetUndoManager();
+                        ready.setValue(true);
+                    });
+                } catch (Exception e) {
+                    myTab.closeIt();
+                }
+
             });
         } else {
             setInitialized();
@@ -814,5 +820,13 @@ public class EditorPane extends AnchorPane {
 
     public void setChangedProperty(boolean changedProperty) {
         this.changedProperty.set(changedProperty);
+    }
+
+    public void closeTab(Runnable runnable) {
+        runnable.run();
+    }
+
+    public void setTab(MyTab myTab) {
+        this.myTab = myTab;
     }
 }

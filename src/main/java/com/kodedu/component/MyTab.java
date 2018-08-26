@@ -53,6 +53,7 @@ public class MyTab extends Tab {
     @Autowired
     public MyTab(EditorPane editorPane, StoredConfigBean storedConfigBean, DirectoryService directoryService, TabService tabService, ApplicationController controller, ThreadService threadService) {
         this.editorPane = editorPane;
+        this.editorPane.setTab(this);
         this.storedConfigBean = storedConfigBean;
         this.directoryService = directoryService;
         this.tabService = tabService;
@@ -267,7 +268,7 @@ public class MyTab extends Tab {
         this.getTabPane().getSelectionModel().select(this);
     }
 
-    private void closeIt() {
+    public void closeIt() {
         threadService.runActionLater(() -> {
             tabService.getClosedPaths().add(Optional.ofNullable(getPath()));
             this.getTabPane().getTabs().remove(this); // keep it here
