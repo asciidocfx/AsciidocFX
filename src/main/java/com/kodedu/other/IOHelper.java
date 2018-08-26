@@ -46,7 +46,7 @@ public class IOHelper {
     private static final Map<Path, String> pathCharsetMap = new LRUMap();
 
     public static Optional<Exception> writeToFile(Path path, String content, StandardOpenOption... openOption) {
-        String charset = pathCharsetMap.get(path);
+        String charset = pathCharsetMap.getOrDefault(path, "UTF-8");
 
         try (Writer out = new BufferedWriter(new OutputStreamWriter(Files.newOutputStream(path, openOption), charset));
         ) {
