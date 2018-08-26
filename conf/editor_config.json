@@ -1,6 +1,6 @@
 
 {
-    "fontFamily":"'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace",
+    "fontFamily":"'Dejavu Sans Mono'",
     "fontSize":16,
     "scrollSpeed":0.1,
     "useWrapMode":true,

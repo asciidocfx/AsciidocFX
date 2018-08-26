@@ -51,7 +51,7 @@ public class EditorConfigBean extends ConfigurationBase {
     private DoubleProperty firstSplitter = new SimpleDoubleProperty(0.17551963048498845);
     private DoubleProperty secondSplitter = new SimpleDoubleProperty(0.5996920708237106);
     private DoubleProperty verticalSplitter = new SimpleDoubleProperty(0.5);
-    private StringProperty fontFamily = new SimpleStringProperty("'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace");
+    private StringProperty fontFamily = new SimpleStringProperty("'Dejavu Sans Mono'");
     private ObjectProperty<Integer> fontSize = new SimpleObjectProperty(16);
     private DoubleProperty scrollSpeed = new SimpleDoubleProperty(0.1);
     private BooleanProperty useWrapMode = new SimpleBooleanProperty(true);
@@ -441,7 +441,7 @@ public class EditorConfigBean extends ConfigurationBase {
 
         FXForm editorConfigForm = new FXFormBuilder<>()
                 .resourceBundle(ResourceBundle.getBundle("editorConfig"))
-                .includeAndReorder("editorTheme", "aceTheme", "detachedPreview", "validateDocbook", "fontFamily", "fontSize",
+                .includeAndReorder("editorTheme", "aceTheme", "detachedPreview", "validateDocbook", "fontSize",
                         "scrollSpeed", "useWrapMode", "wrapLimit", "foldStyle", "showGutter", "defaultLanguage", "autoUpdate","skipHiddenFiles",
                         "clipboardImageFilePattern", "hangFileSizeLimit", "extensionImageScale")
                 .build();
@@ -496,7 +496,7 @@ public class EditorConfigBean extends ConfigurationBase {
         setMainStagePositions(jsonObject);
         setDetachedStagePositions(jsonObject);
 
-        String fontFamily = jsonObject.getString("fontFamily", "'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace");
+//        String fontFamily = jsonObject.getString("fontFamily", "'Dejavu Sans Mono'");
         int fontSize = jsonObject.getInt("fontSize", 14);
         String aceTheme = jsonObject.getString("aceTheme", "xcode");
         String defaultLanguage = jsonObject.getString("defaultLanguage", "en");
@@ -551,7 +551,7 @@ public class EditorConfigBean extends ConfigurationBase {
             getAceTheme().setAll(aceThemeList);
             getDefaultLanguage().setAll(languageList);
 
-            this.setFontFamily(fontFamily);
+//            this.setFontFamily(fontFamily);
             this.setFontSize(fontSize);
             this.setUseWrapMode(useWrapMode);
             this.setShowGutter(showGutter);

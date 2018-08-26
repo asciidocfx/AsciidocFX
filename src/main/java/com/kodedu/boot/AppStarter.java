@@ -50,10 +50,7 @@ public class AppStarter extends Application {
 
         Thread.setDefaultUncaughtExceptionHandler((t, e) -> logger.error(e.getMessage(), e));
 
-        Font.loadFont(AppStarter.class.getResourceAsStream("/font/NotoSerif-Regular.ttf"), -1);
-        Font.loadFont(AppStarter.class.getResourceAsStream("/font/NotoSerif-Italic.ttf"), -1);
-        Font.loadFont(AppStarter.class.getResourceAsStream("/font/NotoSerif-Bold.ttf"), -1);
-        Font.loadFont(AppStarter.class.getResourceAsStream("/font/NotoSerif-BoldItalic.ttf"), -1);
+        loadRequiredFonts();
 
 //        System.setProperty("nashorn.typeInfo.maxFiles", "5");
 
@@ -86,6 +83,16 @@ public class AppStarter extends Application {
             }
         }).start();
 
+    }
+
+    private void loadRequiredFonts() {
+        Font.loadFont(AppStarter.class.getResourceAsStream("/font/NotoSerif-Regular.ttf"), -1);
+        Font.loadFont(AppStarter.class.getResourceAsStream("/font/NotoSerif-Italic.ttf"), -1);
+        Font.loadFont(AppStarter.class.getResourceAsStream("/font/NotoSerif-Bold.ttf"), -1);
+        Font.loadFont(AppStarter.class.getResourceAsStream("/font/NotoSerif-BoldItalic.ttf"), -1);
+        Font.loadFont(AppStarter.class.getResourceAsStream("/font/DejaVuSansMono.ttf"), -1);
+        Font.loadFont(AppStarter.class.getResourceAsStream("/font/DejaVuSansMono-Bold.ttf"), -1);
+        Font.loadFont(AppStarter.class.getResourceAsStream("/font/DejaVuSansMono-Oblique.ttf"), -1);
     }
 
     private void startApp(final Stage stage, final CmdlineConfig config) throws Throwable {
