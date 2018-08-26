@@ -21,7 +21,10 @@ import javax.xml.transform.stream.StreamSource;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.URLDecoder;
+import java.nio.ByteBuffer;
+import java.nio.charset.CharacterCodingException;
 import java.nio.charset.Charset;
+import java.nio.charset.CharsetDecoder;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileAttribute;
@@ -31,6 +34,7 @@ import java.util.function.BiPredicate;
 import java.util.stream.Stream;
 
 import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 
 /**
  * Created by usta on 09.05.2014.
@@ -42,7 +46,8 @@ public class IOHelper {
     private static final Map<Path, String> pathCharsetMap = new LRUMap();
 
     public static Optional<Exception> writeToFile(Path path, String content, StandardOpenOption... openOption) {
-        String charset = pathCharsetMap.getOrDefault(path, Charset.defaultCharset().name());
+        String charset = pathCharsetMap.get(path);
+
         try (Writer out = new BufferedWriter(new OutputStreamWriter(Files.newOutputStream(path, openOption), charset));
         ) {
             out.write(content);
@@ -64,26 +69,73 @@ public class IOHelper {
 
     public static String readFile(Path path) {
         String content = "";
-        try (InputStream is = new BufferedInputStream(Files.newInputStream(path, StandardOpenOption.READ, StandardOpenOption.SYNC))) {
-            String charset = detectCharset(is);
-            pathCharsetMap.put(path, charset);
-            content = IOUtils.toString(is, charset);
+
+        try {
+
+            byte[] bytes = Files.readAllBytes(path);
+            String detectCharset = detectCharset(bytes);
+
+            String[] charsets = new String[]{"UTF-8", detectCharset, Charset.defaultCharset().name()};
+
+            Charset finalCharset = detectCharset(path.toFile(), charsets, bytes);
+            pathCharsetMap.put(path, finalCharset.name());
+            content = IOUtils.toString(bytes, finalCharset.name());
+
         } catch (Exception e) {
             logger.error("Problem occured while reading file {}", path, e);
         }
         return content;
     }
 
-    private static String detectCharset(InputStream is) {
-        String charset = Charset.defaultCharset().name();
+    private static String detectCharset(byte[] bytes) {
+        String charset = null;
         try {
-            CharsetMatch charsetMatch = new CharsetDetector().setText(is).detect();
-            if (charsetMatch.getConfidence() > 50) {
+            CharsetMatch charsetMatch = new CharsetDetector().setText(bytes).detect();
+            if (charsetMatch.getConfidence() > 70) {
                 charset = charsetMatch.getName();
             }
         } catch (Exception e) {
         }
         return charset;
+    }
+
+    private static Charset detectCharset(File f, String[] charsets, byte[] bytes) {
+
+        for (String charsetName : charsets) {
+            if (nonNull(charsetName)) {
+                Charset charset = detectCharset(f, Charset.forName(charsetName), bytes);
+                if (charset != null) {
+                    return charset;
+                }
+            }
+        }
+
+        throw new RuntimeException("Charset not found, can't open this file ");
+    }
+
+    private static Charset detectCharset(File f, Charset charset, byte[] bytes) {
+        try {
+
+            CharsetDecoder decoder = charset.newDecoder();
+            decoder.reset();
+
+            boolean identified = true;
+
+            try {
+                decoder.decode(ByteBuffer.wrap(bytes));
+            } catch (CharacterCodingException e) {
+                identified = false;
+            }
+
+            if (identified) {
+                return charset;
+            } else {
+                return null;
+            }
+
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     public static void createDirectories(Path path) {
