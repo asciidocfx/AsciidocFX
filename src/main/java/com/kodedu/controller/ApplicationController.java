@@ -188,7 +188,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     private Path userHome = IOHelper.getPath(System.getProperty("user.home"));
 
-    private TreeSet<Section> outlineList = new TreeSet<>();
+    private List<Section> outlineList = new ArrayList<>();
     private ObservableList<DocumentMode> modeList = FXCollections.observableArrayList();
 
     private final Pattern bookArticleHeaderRegex
@@ -969,6 +969,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             detachStage = new Stage();
             detachStage.setTitle("AsciidocFX Preview");
             detachStage.initModality(Modality.WINDOW_MODAL);
+            detachStage.setAlwaysOnTop(true);
             InputStream logoStream = AppStarter.class.getResourceAsStream("/logo.png");
             detachStage.getIcons().add(new Image(logoStream));
             IOUtils.closeQuietly(logoStream);
@@ -2041,7 +2042,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     @WebkitCall(from = "index")
     public void clearOutline() {
-        outlineList = new TreeSet<>();
+        outlineList = new ArrayList<>();
     }
 
     @WebkitCall(from = "index")
@@ -2108,6 +2109,9 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         }
     }
 
+    Section lastParent = null;
+    Section lastSection = null;
+
     @WebkitCall(from = "index")
     public void fillOutline(String parentLineNo, String level, String title, String lineno, String id) {
 
@@ -2119,32 +2123,21 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
         if (isNull(parentLineNo)) {
             outlineList.add(section);
+            lastParent = section;
         } else {
-            Integer parentLine = Integer.valueOf(parentLineNo);
-            Optional<Section> parentSection = outlineList.stream()
-                    .filter(e -> e.getLineno().equals(parentLine))
-                    .findFirst();
-
-            if (parentSection.isPresent()) {
-                parentSection.get().getSubsections().add(section);
+            if (lastSection.getLevel().compareTo(section.getLevel()) > 0) {
+                lastParent.getSubsections().add(section);
+                section.setParent(lastParent);
+            } else if (lastSection.getLevel().compareTo(section.getLevel()) < 0) {
+                lastSection.getSubsections().add(section);
+                section.setParent(lastSection);
             } else {
-                this.traverseEachSubSection(outlineList, parentLine, section);
+                lastSection.getParent().getSubsections().add(section);
+                section.setParent(lastSection.getParent());
             }
         }
-    }
 
-    private void traverseEachSubSection(TreeSet<Section> sections, Integer parentLine, Section section) {
-        sections.stream().forEach(s -> {
-            Optional<Section> subs = s.getSubsections().stream()
-                    .filter(e -> e.getLineno().equals(parentLine))
-                    .findFirst();
-
-            if (subs.isPresent()) {
-                subs.get().getSubsections().add(section);
-            } else {
-                this.traverseEachSubSection(s.getSubsections(), parentLine, section);
-            }
-        });
+        lastSection = section;
     }
 
     @FXML
@@ -2226,7 +2219,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     }
 
     @WebkitCall(from = "asciidoctor-uml")
-    public void uml(String uml, String type, String imagesDir, String imageTarget, String nodename,  String options) throws IOException {
+    public void uml(String uml, String type, String imagesDir, String imageTarget, String nodename, String options) throws IOException {
         plantuml(uml, type, imagesDir, imageTarget, nodename, options);
     }
 

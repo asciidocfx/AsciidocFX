@@ -1,10 +1,9 @@
 function fillOutlines(doc) {
-    //afx.clearOutline();
 
     postMessage(JSON.stringify({
-        type:"afx",
-        func:"clearOutline",
-        parameters :[]
+        type: "afx",
+        func: "clearOutline",
+        parameters: []
     }));
 
     var sections = doc.$sections();
@@ -14,24 +13,24 @@ function fillOutlines(doc) {
         var title = section.title;
         var lineno = section.$lineno();
         var id = section.$id();
-        var parentLineNo = lineno;
+        var parentLineNo = null;
 
-        //afx.fillOutline(null, level, title, lineno, id);
+        // var log=`Outline:: ${parentLineNo} ${level} ${title} ${lineno} ${id}`;
+        // console.log(log);
 
         postMessage(JSON.stringify({
-            type:"afx",
-            func:"fillOutline",
-            parameters :[null, level, title, lineno, id]
+            type: "afx",
+            func: "fillOutline",
+            parameters: [null, level, title, lineno, id]
         }));
 
         fillOutlinesSubSections(section);
 
     });
-    //afx.finishOutline();
     postMessage(JSON.stringify({
-        type:"afx",
-        func:"finishOutline",
-        parameters :[]
+        type: "afx",
+        func: "finishOutline",
+        parameters: []
     }));
 }
 
@@ -40,18 +39,24 @@ function fillOutlinesSubSections(section) {
     var parentLineNo = section.$lineno();
     sections.forEach(function (subsection, i) {
 
-        var level = subsection.$level();
-        var title = subsection.$title();
-        var lineno = subsection.$lineno();
-        var id = subsection.$id();
+        try {
+            var level = subsection.$level();
+            var title = subsection.$title();
+            var lineno = subsection.$lineno();
+            var id = subsection.$id();
 
-        //afx.fillOutline(parentLineNo, level, title, lineno, id);
+            // var log=`Outline:: ${parentLineNo} ${level} ${title} ${lineno} ${id}`;
+            // console.log(log);
 
-        postMessage(JSON.stringify({
-            type:"afx",
-            func:"fillOutline",
-            parameters :[parentLineNo, level, title, lineno, id]
-        }));
+            postMessage(JSON.stringify({
+                type: "afx",
+                func: "fillOutline",
+                parameters: [parentLineNo, level, title, lineno, id]
+            }));
+        }
+        catch (e) {
+
+        }
 
         fillOutlinesSubSections(subsection);
     });

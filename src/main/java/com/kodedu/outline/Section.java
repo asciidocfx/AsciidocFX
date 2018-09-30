@@ -1,5 +1,7 @@
 package com.kodedu.outline;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.TreeSet;
 
@@ -13,6 +15,7 @@ public class Section implements Comparable<Section> {
     private Integer lineno;
     private String id;
     private TreeSet<Section> subsections;
+    private Section parent;
 
     public Integer getLevel() {
         return level;
@@ -69,5 +72,13 @@ public class Section implements Comparable<Section> {
             return String.format("%s", title);
 
         return String.format("H%d - %s", level + 1, title);
+    }
+
+    public void setParent(Section parent) {
+        this.parent = parent;
+    }
+
+    public Section getParent() {
+        return parent;
     }
 }
