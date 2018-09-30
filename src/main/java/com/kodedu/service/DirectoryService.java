@@ -290,14 +290,22 @@ public class DirectoryService {
             return lookUpFile.get();
         }
 
+        Optional<Path> optional = current.currentPath().map(Path::getParent);
+
+        if (optional.isPresent()) {
+            Path resolve = optional.get().resolve(uri);
+
+            if (Files.exists(resolve)) {
+                return resolve;
+            }
+        }
+
         Path workingDirectory = workingDirectory();
         Path resolve = workingDirectory.resolve(uri);
 
         if (Files.exists(resolve)) {
             return resolve;
         }
-
-        Optional<Path> optional = current.currentPath().map(Path::getParent);
 
         if (optional.isPresent()) {
             Path currentParent = optional.get();
