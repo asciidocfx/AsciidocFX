@@ -3355,4 +3355,8 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                 .map(Screen::getBounds)
                 .noneMatch(bounds -> bounds.contains(stage.getX(), stage.getY()));
     }
+
+    public void openPaypal(ActionEvent actionEvent) {
+        getHostServices().showDocument("https://opencollective.com/AsciidocFX");
+    }
 }

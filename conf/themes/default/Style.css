@@ -60,3 +60,13 @@
     -fx-background-color: rgb(244, 244, 244);
     -fx-text-fill: -fx-text-base-color;
 }
+
+
+.paypal-button {
+    -fx-background-color: linear-gradient(rgb(227, 184, 103), rgb(190, 132, 66)) !important;
+    -fx-text-fill: rgb(214, 255, 96) !important;
+}
+
+.paypal-button:hover {
+    -fx-background-color: rgb(246, 185, 72) !important;
+}
