@@ -2124,8 +2124,8 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         if (isNull(parentLineNo)) {
             outlineList.add(section);
             lastParent = section;
-        } else {
-            if (lastSection.getLevel().compareTo(section.getLevel()) > 0) {
+        } else if (nonNull(lastSection)) {
+            if (nonNull(lastParent) && lastSection.getLevel().compareTo(section.getLevel()) > 0) {
                 lastParent.getSubsections().add(section);
                 section.setParent(lastParent);
             } else if (lastSection.getLevel().compareTo(section.getLevel()) < 0) {
