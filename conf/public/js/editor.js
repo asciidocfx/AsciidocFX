@@ -7,6 +7,7 @@ editor.renderer.setShowGutter(false);
 editor.setHighlightActiveLine(false);
 editor.getSession().setMode("ace/mode/asciidoc");
 editor.getSession().setUseWrapMode(true);
+editor.getSession().$selectLongWords = true;
 editor.setShowPrintMargin(false);
 editor.setBehavioursEnabled(true);
 setFoldStyle("default");
