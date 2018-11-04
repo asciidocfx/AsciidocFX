@@ -5,9 +5,7 @@ var range = ace.require("ace/range");
 var TokenIterator = ace.require("ace/token_iterator").TokenIterator;
 editor.renderer.setShowGutter(false);
 editor.setHighlightActiveLine(false);
-editor.getSession().setMode("ace/mode/asciidoc");
-editor.getSession().setUseWrapMode(true);
-editor.getSession().$selectLongWords = true;
+setupSession(editor.getSession());
 editor.setShowPrintMargin(false);
 editor.setBehavioursEnabled(true);
 setFoldStyle("default");
@@ -24,9 +22,49 @@ var renderTimeout;
 var refreshTimeout;
 var updateDelay = 100;
 
-//var maxTop = editor.renderer.layerConfig.maxHeight - editor.renderer.$size.scrollerHeight + editor.renderer.scrollMargin.bottom;
-//afx.onscroll(editor.getSession().getScrollTop(), maxTop);
+function setupSession(session){
+    session.setMode("ace/mode/asciidoc");
+    session.setUseWrapMode(true);
+    session.$selectLongWords = true;
+    session.on('changeScrollTop', function (scroll) {
+        var maxTop = editor.renderer.layerConfig.maxHeight - editor.renderer.$size.scrollerHeight + editor.renderer.scrollMargin.bottom;
+        var scrollTop = session.getScrollTop();
 
+        if (Math.abs(maxTop - scrollTop) < 10 || scrollTop < 10) {
+            afx.onscroll(scrollTop, maxTop);
+            return;
+        }
+
+        var mode = editorMode();
+
+        var firstly = editor.getFirstVisibleRow();
+
+        var interval = setInterval(function () {
+            if (firstly == editor.getFirstVisibleRow())
+                return;
+            clearInterval(interval);
+
+            if (mode == "asciidoc" || mode == "markdown") {
+                var row = editor.renderer.getFirstFullyVisibleRow();
+                updateMarkupScroll(row);
+            }
+            else if (mode == "html") {
+                updateHtmlScroll();
+            }
+        }, 50);
+
+        checkSpelling();
+    });
+    session.selection.on('changeCursor', function (e) {
+        var cursorPosition = editor.getCursorPosition();
+        var row = cursorPosition.row;
+
+        updateStatusBox();
+
+        updateMarkupScroll(row);
+
+    });
+}
 
 function updateHtmlScroll() {
     var row = editor.renderer.getFirstFullyVisibleRow();
@@ -42,37 +80,6 @@ function updateMarkupScroll(row) {
 
     lastEditorRow = row;
 };
-
-editor.getSession().on('changeScrollTop', function (scroll) {
-
-    var maxTop = editor.renderer.layerConfig.maxHeight - editor.renderer.$size.scrollerHeight + editor.renderer.scrollMargin.bottom;
-    var scrollTop = editor.getSession().getScrollTop();
-
-    if (Math.abs(maxTop - scrollTop) < 10 || scrollTop < 10) {
-        afx.onscroll(scrollTop, maxTop);
-        return;
-    }
-
-    var mode = editorMode();
-
-    var firstly = editor.getFirstVisibleRow();
-
-    var interval = setInterval(function () {
-        if (firstly == editor.getFirstVisibleRow())
-            return;
-        clearInterval(interval);
-
-        if (mode == "asciidoc" || mode == "markdown") {
-            var row = editor.renderer.getFirstFullyVisibleRow();
-            updateMarkupScroll(row);
-        }
-        else if (mode == "html") {
-            updateHtmlScroll();
-        }
-    }, 50);
-
-    checkSpelling();
-});
 
 var updateStatusAction = new BufferedAction();
 function updateStatusBox() {
@@ -90,18 +97,6 @@ function updateStatusBox() {
 
 }
 
-editor.getSession().selection.on('changeCursor', function (e) {
-
-    var cursorPosition = editor.getCursorPosition();
-    var row = cursorPosition.row;
-
-    updateStatusBox();
-
-    updateMarkupScroll(row);
-
-});
-
-// editor.on("guttermousedown", onGutterMouseDown);
 
 var renderAction = new BufferedAction();
 var editorChangeListener = function (obj) {
@@ -356,37 +351,6 @@ function setFoldStyle(style) {
 function getCursorCoordinates() {
     return editor.renderer.textToScreenCoordinates(editor.getCursorPosition());
 }
-
-/*function onGutterMouseDown(e) {
-    console.log("onGutterMouseDown");
-
-    var target = e.domEvent.target;
-
-    if (target.className.indexOf("ace_gutter-cell") == -1) {
-        return;
-    }
-
-    if (!editor.isFocused()) {
-        return;
-    }
-
-    if (e.clientX > 25 + target.getBoundingClientRect().left) {
-        return;
-    }
-
-    var row = e.getDocumentPosition().row;
-
-    var breakpoints = e.editor.session.getBreakpoints(row, 0);
-
-    if (breakpoints[row]) {
-        e.editor.session.clearBreakpoint(row);
-    }
-    else {
-        e.editor.session.setBreakpoint(row);
-    }
-
-    e.stop();
-}*/
 
 var onThemeLoaded = function () {
     editorPane.onThemeLoaded();
