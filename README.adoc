@@ -21,7 +21,7 @@ image::images/asciidocfx.png[]
 * Multi-platform (Windows, Mac, Linux)
 * Creating Asciidoc Books
 * Creating Markdown Books
-* Creating PDF, HTML, Epub, Mobi, Odt, Docbook
+* Creating PDF, HTML, Epub, Mobi, Docbook
 * Epub Viewer
 * External Browser Support
 * Table Generator
