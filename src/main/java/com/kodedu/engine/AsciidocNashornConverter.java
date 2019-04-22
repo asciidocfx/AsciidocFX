@@ -21,10 +21,12 @@ import java.util.concurrent.CompletableFuture;
 
 /**
  * Created by usta on 22.08.2015.
+ * Don't use it
  */
 //@Lazy
 @Component("NashornEngine")
 @Order(1)
+@Deprecated
 public class AsciidocNashornConverter implements AsciidocConvertible {
 
     private final ScriptEngine scriptEngine;
@@ -130,7 +132,7 @@ public class AsciidocNashornConverter implements AsciidocConvertible {
 
                 scriptEngine.put("afx", this.controller);
 
-                List<String> scripts = Arrays.asList("nashorn-shim.js", "jade.js", "asciidoctor-all.js", "asciidoctor-image-size-info.js",
+                List<String> scripts = Arrays.asList("nashorn-shim.js", "jade.js", "asciidoctor-browser.js", "asciidoctor-image-size-info.js",
                         "asciidoctor-data-line.js", "asciidoctor-block-extensions.js",
                         "asciidoctor-chart-block.js", "asciidoctor-docbook.js", "asciidoctor-reveal.js", "asciidoctor-deck.js",
                         "apply-replacements.js", "asciidoctor-odf.js", "buffhelper.js", "outliner.js", "converters.js");
