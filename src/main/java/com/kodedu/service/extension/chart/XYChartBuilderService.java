@@ -40,12 +40,12 @@ public abstract class XYChartBuilderService extends ChartBuilderService {
     }
 
     @Override
-    public void chartBuild(String chartContent, String imagesDir, String imageTarget, Map<String, String> optMap) throws Exception {
+    public boolean chartBuild(String chartContent, String imagesDir, String imageTarget, Map<String, String> optMap) {
 
-        try {
-            super.chartBuild(chartContent, imagesDir, imageTarget, optMap);
-        } catch (InterruptedException e) {
-            throw e;
+        boolean chartBuild = super.chartBuild(chartContent, imagesDir, imageTarget, optMap);
+
+        if (!chartBuild) {
+            return chartBuild;
         }
 
         logger.debug("Chart extension is started for {}", imageTarget);
@@ -215,6 +215,8 @@ public abstract class XYChartBuilderService extends ChartBuilderService {
         IOHelper.imageWrite(bufferedImage, "png", imagePath.toFile());
         logger.debug("Chart extension is ended for {}", imageTarget);
         controller.clearImageCache(imagePath);
+
+        return chartBuild;
     }
 
     protected abstract XYChart createXYChart();

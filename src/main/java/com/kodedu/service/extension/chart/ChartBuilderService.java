@@ -26,17 +26,18 @@ public abstract class ChartBuilderService {
         this.controller = controller;
     }
 
-    public void chartBuild(String chartContent, String imagesDir, String imageTarget, Map<String, String> optMap) throws Exception {
+    public boolean chartBuild(String chartContent, String imagesDir, String imageTarget, Map<String, String> optMap) {
 
-        if (!imageTarget.endsWith(".png"))
-            throw new InterruptedException();
+        if (!imageTarget.endsWith(".png")) {
+            return false;
+        }
 
         Integer cacheHit = current.getCache().get(imageTarget);
         int hashCode = (imageTarget + imagesDir + chartContent).hashCode() + optMap.hashCode();
 
         if (Objects.nonNull(cacheHit))
             if (hashCode == cacheHit) {
-                throw new InterruptedException();
+                return false;
             }
 
         current.getCache().put(imageTarget, hashCode);
@@ -44,6 +45,7 @@ public abstract class ChartBuilderService {
         currentRoot = current.currentTab().getParentOrWorkdir();
         imagePath = currentRoot.resolve(imageTarget);
 
+        return true;
     }
 
     protected XYChart<String, Number> createLineChart() {

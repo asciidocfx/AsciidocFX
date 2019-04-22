@@ -40,12 +40,12 @@ public class PieChartBuilderService extends ChartBuilderService {
     }
 
     @Override
-    public void chartBuild(String chartContent, String imagesDir, String imageTarget, Map<String, String> optMap) throws Exception {
+    public boolean chartBuild(String chartContent, String imagesDir, String imageTarget, Map<String, String> optMap) {
 
-        try {
-            super.chartBuild(chartContent, imagesDir, imageTarget, optMap);
-        } catch (InterruptedException e) {
-            throw e;
+        boolean chartBuild = super.chartBuild(chartContent, imagesDir, imageTarget, optMap);
+
+        if (!chartBuild) {
+            return chartBuild;
         }
 
         String[] split = chartContent.split("\\r?\\n");
@@ -133,6 +133,8 @@ public class PieChartBuilderService extends ChartBuilderService {
             controller.clearImageCache(imagePath);
 
         });
+
+        return chartBuild;
     }
 
 }
