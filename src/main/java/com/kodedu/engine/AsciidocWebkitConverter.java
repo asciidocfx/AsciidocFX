@@ -36,7 +36,7 @@ public class AsciidocWebkitConverter extends ViewPanel implements AsciidocConver
     private final HtmlConfigBean htmlConfigBean;
     private final AsciidocConfigMerger configMerger;
 
-    private final Map<String, CompletableFuture<ConverterResult>> webWorkerTasks = new ConcurrentHashMap();
+    private static final Map<String, CompletableFuture<ConverterResult>> webWorkerTasks = new ConcurrentHashMap();
 
     @Value("${application.index.url}")
     private String indexUrl;
