@@ -2,91 +2,91 @@
     display: none;
 }
 
-p, blockquote, dt, td.content {
-    font-size: 0.9rem;
-}
+/*p, blockquote, dt, td.content {*/
+    /*font-size: 0.9rem;*/
+/*}*/
 
-code, kbd, pre, samp {
-    font-size: 0.9em;
-}
+/*code, kbd, pre, samp {*/
+    /*font-size: 0.9em;*/
+/*}*/
 
-.sidebarblock p, .sidebarblock dt, .sidebarblock td.content, p.tableblock {
-    font-size: 0.9em;
-}
+/*.sidebarblock p, .sidebarblock dt, .sidebarblock td.content, p.tableblock {*/
+    /*font-size: 0.9em;*/
+/*}*/
 
-pre.highlightjs {
-    padding: 0px !important;
-}
+/*pre.highlightjs {*/
+    /*padding: 0px !important;*/
+/*}*/
 
-pre.highlightjs > code {
-    padding: 10px;
-    border-radius: 4px;
-}
+/*pre.highlightjs > code {*/
+    /*padding: 10px;*/
+    /*border-radius: 4px;*/
+/*}*/
 
-.imageblock > .title {
-    text-align: center;
-}
+/*.imageblock > .title {*/
+    /*text-align: center;*/
+/*}*/
 
-.imageblock {
-    text-align: center;
-}
+/*.imageblock {*/
+    /*text-align: center;*/
+/*}*/
 
-.imageblock img {
-    max-width: 80%;
-}
+/*.imageblock img {*/
+    /*max-width: 80%;*/
+/*}*/
 
-.columns > a {
-    padding-top: 10px;
-}
+/*.columns > a {*/
+    /*padding-top: 10px;*/
+/*}*/
 
-.container > svg {
-    display: block;
-    width: 100%;
-    height: 4px;
-}
+/*.container > svg {*/
+    /*display: block;*/
+    /*width: 100%;*/
+    /*height: 4px;*/
+/*}*/
 
-.container {
-    background-color: white;
-    position: fixed;
-    height: 4px;
-    width: 100%;
-    z-index: 1;
-    top: 0;
-}
+/*.container {*/
+    /*background-color: white;*/
+    /*position: fixed;*/
+    /*height: 4px;*/
+    /*width: 100%;*/
+    /*z-index: 1;*/
+    /*top: 0;*/
+/*}*/
 
-div#placeholder > :nth-child(1):not(h1) {
-    margin-top: 27px;
-}
+/*div#placeholder > :nth-child(1):not(h1) {*/
+    /*margin-top: 27px;*/
+/*}*/
 
-div#placeholder {
-    word-wrap: break-word;
-}
+/*div#placeholder {*/
+    /*word-wrap: break-word;*/
+/*}*/
 
-pre.highlightjs code {
-    background: #F0F0F0;
-    display: block;
-}
+/*pre.highlightjs code {*/
+    /*background: #F0F0F0;*/
+    /*display: block;*/
+/*}*/
 
-li.L0, li.L1, li.L2, li.L3, li.L5, li.L6, li.L7, li.L8 {
-    list-style-type: decimal;
-}
+/*li.L0, li.L1, li.L2, li.L3, li.L5, li.L6, li.L7, li.L8 {*/
+    /*list-style-type: decimal;*/
+/*}*/
 
-li.L0, li.L2, li.L4, li.L6, li.L8 {
-    background: #fff
-}
+/*li.L0, li.L2, li.L4, li.L6, li.L8 {*/
+    /*background: #fff*/
+/*}*/
 
-li.L1, li.L3, li.L5, li.L7, li.L9 {
-    background: #eee
-}
+/*li.L1, li.L3, li.L5, li.L7, li.L9 {*/
+    /*background: #eee*/
+/*}*/
 
-pre.prettyprint ol.linenums {
-    margin-left: 2.75em;
-}
+/*pre.prettyprint ol.linenums {*/
+    /*margin-left: 2.75em;*/
+/*}*/
 
-pre.prettyprint code {
-    background: transparent;
-}
+/*pre.prettyprint code {*/
+    /*background: transparent;*/
+/*}*/
 
-pre.prettyprint {
-    padding: 5px !important;
-}
+/*pre.prettyprint {*/
+    /*padding: 5px !important;*/
+/*}*/
