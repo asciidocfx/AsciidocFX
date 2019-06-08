@@ -1,6 +1,6 @@
 package com.kodedu.service;
 
-import com.kodedu.other.OSHelper;
+import com.kodedu.helper.OSHelper;
 import org.springframework.stereotype.Component;
 
 import java.nio.file.Path;

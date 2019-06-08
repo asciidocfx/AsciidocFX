@@ -579,7 +579,7 @@ editor.commands.addCommand({
 
 editor.commands.addCommand({
     name: 'add-heading',
-    bindKey: {win: 'Ctrl-H', mac: 'Command-H'},
+    bindKey: {win: 'Ctrl-H', mac: 'Ctrl-H'},
     exec: function () {
         afx.getShortcutProvider().getProvider().addHeading();
     },

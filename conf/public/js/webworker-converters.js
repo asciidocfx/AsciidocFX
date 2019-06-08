@@ -5,7 +5,7 @@ function getOption(options) {
 var fillOutAction = new BufferedAction();
 function convertBackend(taskId, content, options) {
 
-    var doc = Opal.Asciidoctor.$load(content, getOption(options));
+    var doc = asciidoctor.$load(content, getOption(options));
     var rendered = doc.$convert();
 
     self.postMessage(JSON.stringify({
@@ -41,5 +41,5 @@ function convertDocbook(taskId, content, options) {
 }
 
 function findRenderedSelection(content) {
-    return Opal.Asciidoctor.$render(content);
+    return asciidoctor.$render(content);
 }

@@ -1,5 +1,6 @@
 package com.kodedu.component;
 
+import com.kodedu.helper.StyleHelper;
 import javafx.event.EventHandler;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tooltip;
@@ -40,7 +41,7 @@ public class LabelBuilt {
     }
 
     public LabelBuilt clazz(String clazz) {
-        label.getStyleClass().add(clazz);
+        StyleHelper.addClass(label, clazz);
         return this;
     }
 }

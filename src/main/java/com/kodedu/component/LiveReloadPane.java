@@ -2,8 +2,8 @@ package com.kodedu.component;
 
 import com.kodedu.config.EditorConfigBean;
 import com.kodedu.controller.ApplicationController;
+import com.kodedu.helper.IOHelper;
 import com.kodedu.other.Current;
-import com.kodedu.other.IOHelper;
 import com.kodedu.other.PositionalXMLReader;
 import com.kodedu.service.ThreadService;
 import javafx.beans.property.BooleanProperty;
@@ -83,7 +83,11 @@ public class LiveReloadPane extends ViewPanel {
 
         Optional.ofNullable(xPath)
                 .ifPresent(xp -> {
-                    webEngine().executeScript(String.format("scrollByXPath(\"%s\",%s)", xp, lineno));
+                    try {
+                        webEngine().executeScript(String.format("scrollByXPath(\"%s\",%s)", xp, lineno));
+                    } catch (Exception e) {
+//                        e.printStackTrace();
+                    }
                 });
     }
 

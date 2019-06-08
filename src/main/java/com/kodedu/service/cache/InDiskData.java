@@ -1,6 +1,6 @@
 package com.kodedu.service.cache;
 
-import com.kodedu.other.IOHelper;
+import com.kodedu.helper.IOHelper;
 
 import java.io.IOException;
 import java.io.RandomAccessFile;

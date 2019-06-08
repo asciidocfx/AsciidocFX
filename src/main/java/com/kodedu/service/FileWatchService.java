@@ -2,7 +2,7 @@ package com.kodedu.service;
 
 import com.kodedu.component.MyTab;
 import com.kodedu.controller.ApplicationController;
-import com.kodedu.other.IOHelper;
+import com.kodedu.helper.IOHelper;
 import com.kodedu.service.ui.FileBrowseService;
 import com.kodedu.service.ui.TabService;
 import javafx.collections.ObservableList;

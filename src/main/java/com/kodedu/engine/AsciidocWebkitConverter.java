@@ -3,9 +3,9 @@ package com.kodedu.engine;
 import com.kodedu.component.ViewPanel;
 import com.kodedu.config.*;
 import com.kodedu.controller.ApplicationController;
+import com.kodedu.helper.IOHelper;
 import com.kodedu.other.ConverterResult;
 import com.kodedu.other.Current;
-import com.kodedu.other.IOHelper;
 import com.kodedu.service.DirectoryService;
 import com.kodedu.service.ThreadService;
 import javafx.application.Platform;
@@ -136,6 +136,19 @@ public class AsciidocWebkitConverter extends ViewPanel implements AsciidocConver
     }
 
     protected ConverterResult convert(String functionName, String asciidoc, JsonObject config) {
+        try {
+            return convertContent(functionName, asciidoc, config).get(5, TimeUnit.SECONDS);
+        } catch (Exception e1) {
+
+            try {
+                return convertContent(functionName, asciidoc, config).get(60, TimeUnit.SECONDS);
+            } catch (Exception e2) {
+                throw new RuntimeException(e2);
+            }
+        }
+    }
+
+    private CompletableFuture<ConverterResult> convertContent(String functionName, String asciidoc, JsonObject config) {
 
         final CompletableFuture<ConverterResult> completableFuture = new CompletableFuture();
         final String taskId = UUID.randomUUID().toString();
@@ -153,11 +166,7 @@ public class AsciidocWebkitConverter extends ViewPanel implements AsciidocConver
             }
         });
 
-        try {
-            return completableFuture.get(60, TimeUnit.SECONDS);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        return completableFuture;
     }
 
     private JsonObject updateConfig(String asciidoc, JsonObject config) {

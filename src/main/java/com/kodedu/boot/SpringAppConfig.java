@@ -17,18 +17,18 @@
 package com.kodedu.boot;
 
 import com.kodedu.controller.ApplicationController;
-import jdk.nashorn.api.scripting.NashornScriptEngineFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
-import org.springframework.context.annotation.*;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;
 import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
 import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
 
-import javax.script.ScriptEngine;
 import java.util.Base64;
 
 
@@ -44,23 +44,6 @@ public class SpringAppConfig extends SpringBootServletInitializer implements Web
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
         registry.addHandler(applicationController, "/ws", "/ws**", "/ws/**").withSockJS();
-    }
-
-    @Bean
-    @Lazy
-    public NashornScriptEngineFactory nashornScriptEngineFactory() {
-        NashornScriptEngineFactory nashornScriptEngineFactory = new NashornScriptEngineFactory();
-        return nashornScriptEngineFactory;
-    }
-
-    @Bean
-    @Scope("prototype")
-    @Lazy
-    public ScriptEngine scriptEngine() {
-        ScriptEngine scriptEngine = nashornScriptEngineFactory()
-                .getScriptEngine();
-//                .getScriptEngine(new String[]{"--persistent-code-cache", "--class-cache-size=50"});
-        return scriptEngine;
     }
 
     @Override

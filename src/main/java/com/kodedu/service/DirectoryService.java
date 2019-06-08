@@ -2,8 +2,8 @@ package com.kodedu.service;
 
 import com.kodedu.config.StoredConfigBean;
 import com.kodedu.controller.ApplicationController;
+import com.kodedu.helper.IOHelper;
 import com.kodedu.other.Current;
-import com.kodedu.other.IOHelper;
 import com.kodedu.service.ui.FileBrowseService;
 import javafx.application.Platform;
 import javafx.stage.DirectoryChooser;

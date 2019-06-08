@@ -2,8 +2,8 @@ package com.kodedu.service.extension.chart;
 
 import com.kodedu.config.ExtensionConfigBean;
 import com.kodedu.controller.ApplicationController;
+import com.kodedu.helper.IOHelper;
 import com.kodedu.other.Current;
-import com.kodedu.other.IOHelper;
 import com.kodedu.service.ThreadService;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.geometry.Side;

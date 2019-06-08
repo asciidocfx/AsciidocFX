@@ -1,8 +1,8 @@
 package com.kodedu.service.ui;
 
 import com.kodedu.controller.ApplicationController;
+import com.kodedu.helper.IOHelper;
 import com.kodedu.other.Current;
-import com.kodedu.other.IOHelper;
 import com.kodedu.other.Item;
 import com.kodedu.service.FileWatchService;
 import com.kodedu.service.PathOrderService;
@@ -26,7 +26,7 @@ import java.util.regex.PatternSyntaxException;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
-import static com.kodedu.other.IOHelper.isHidden;
+import static com.kodedu.helper.IOHelper.isHidden;
 
 /**
  * Created by usta on 12.07.2014.

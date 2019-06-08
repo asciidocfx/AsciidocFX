@@ -1,16 +1,15 @@
 package com.kodedu.component;
 
-import com.ibm.icu.text.CharsetDetector;
 import com.kodedu.config.EditorConfigBean;
 import com.kodedu.config.FoldStyle;
 import com.kodedu.config.SpellcheckConfigBean;
 import com.kodedu.controller.ApplicationController;
+import com.kodedu.helper.IOHelper;
+import com.kodedu.helper.StyleHelper;
 import com.kodedu.keyboard.KeyHelper;
-import com.kodedu.other.IOHelper;
 import com.kodedu.service.DirectoryService;
 import com.kodedu.service.ParserService;
 import com.kodedu.service.ThreadService;
-import com.kodedu.service.convert.markdown.MarkdownService;
 import com.kodedu.service.extension.AsciiTreeGenerator;
 import com.kodedu.service.shortcut.ShortcutProvider;
 import com.kodedu.service.ui.TabService;
@@ -46,7 +45,6 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
-import java.nio.charset.CharsetDecoder;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.FileTime;
@@ -425,14 +423,6 @@ public class EditorPane extends AnchorPane {
             shortcutProvider.getProvider().includeAsSubdocument();
         });
         MenuItem replacements = MenuItemBuilt.item("Apply Replacements").click(this::replaceSubs);
-        MenuItem markdownToAsciidoc = MenuItemBuilt.item("Markdown to Asciidoc").click(e -> {
-            MarkdownService markdownService = applicationContext.getBean(MarkdownService.class);
-            markdownService.convertToAsciidoc(getEditorValue(),
-                    content -> threadService.runActionLater(() -> {
-                        tabService.newDoc(content);
-                    }));
-        });
-
 
         final Menu editorLanguage = new Menu("Editor language");
         final Menu defaultLanguage = new Menu("Default language");
@@ -455,7 +445,6 @@ public class EditorPane extends AnchorPane {
             final ObservableList<MenuItem> contextMenuItems = contextMenu.getItems();
 
             final List<MenuItem> menuItems = Arrays.asList(cut, copy, paste, pasteConverted,
-                    markdownToAsciidoc,
                     replacements,
                     indexSelection,
                     includeAsSubDocument,
@@ -507,7 +496,6 @@ public class EditorPane extends AnchorPane {
                 contextMenu.hide();
             }
 
-            markdownToAsciidoc.setVisible(isMarkdown());
             indexSelection.setVisible(isAsciidoc());
 
             if (event instanceof MouseEvent) {
@@ -772,7 +760,7 @@ public class EditorPane extends AnchorPane {
         }
 
         final SeparatorMenuItem menuItem = new SeparatorMenuItem();
-        menuItem.getStyleClass().add("spell-suggestion");
+        StyleHelper.addClass(menuItem, "spell-suggestion");
         spells.add(menuItem);
 
         contextMenuItems.addAll(0, spells);

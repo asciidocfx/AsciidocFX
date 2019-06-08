@@ -8,8 +8,8 @@ import com.kodedu.boot.AppStarter;
 import com.kodedu.component.*;
 import com.kodedu.config.*;
 import com.kodedu.engine.AsciidocConverterProvider;
-import com.kodedu.engine.AsciidocNashornConverter;
 import com.kodedu.engine.AsciidocWebkitConverter;
+import com.kodedu.helper.IOHelper;
 import com.kodedu.keyboard.KeyHelper;
 import com.kodedu.logging.MyLog;
 import com.kodedu.logging.TableViewLogAppender;
@@ -17,12 +17,10 @@ import com.kodedu.other.*;
 import com.kodedu.outline.Section;
 import com.kodedu.service.*;
 import com.kodedu.service.convert.DocumentConverter;
-import com.kodedu.service.convert.GitbookToAsciibookService;
 import com.kodedu.service.convert.docbook.DocBookConverter;
 import com.kodedu.service.convert.ebook.EpubConverter;
 import com.kodedu.service.convert.ebook.MobiConverter;
 import com.kodedu.service.convert.html.HtmlBookConverter;
-import com.kodedu.service.convert.markdown.MarkdownService;
 import com.kodedu.service.convert.slide.SlideConverter;
 import com.kodedu.service.extension.MathJaxService;
 import com.kodedu.service.extension.PlantUmlService;
@@ -35,11 +33,9 @@ import com.kodedu.service.ui.IndikatorService;
 import com.kodedu.service.ui.TabService;
 import com.kodedu.service.ui.TooltipTimeFixService;
 import com.kodedu.spell.dictionary.DictionaryService;
-import com.kodedu.terminalfx.Terminal;
 import com.kodedu.terminalfx.TerminalBuilder;
 import com.kodedu.terminalfx.TerminalTab;
 import com.kodedu.terminalfx.config.TerminalConfig;
-import com.sun.javafx.stage.StageHelper;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
@@ -109,7 +105,6 @@ import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -359,9 +354,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     @Value("${application.mathjax.url}")
     private String mathjaxUrl;
-
-    @Autowired
-    private AsciidocNashornConverter nashornEngineConverter;
 
     @Value("${application.live.url}")
     private String liveUrl;
@@ -818,6 +810,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                 ClipboardContent content = new ClipboardContent();
                 content.putFiles(Arrays.asList(cell.getTreeItem().getValue().getPath().toFile()));
                 db.setContent(content);
+                current.currentWebView().requestFocus();
             });
             return cell;
         });
@@ -975,6 +968,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             IOUtils.closeQuietly(logoStream);
             detachStage.setOnCloseRequest(e -> {
                 if (stage.isShowing()) {
+                    detachStage.setFullScreen(false);
                     ViewPanel.setMarkReAtached();
                     e.consume();
                 }
@@ -1329,7 +1323,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     }
 
     private void initializeNashornConverter() {
-        nashornEngineConverter.initialize();
+//        nashornEngineConverter.initialize();
     }
 
     public boolean getStopRendering() {
@@ -1365,7 +1359,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
             Node focusOwner = stage.getScene().getFocusOwner();
 
-            if (StageHelper.getStages().size() == 1) {
+            if (Window.getWindows().size() == 1) {
                 if (!newValue) {
                     saveAllTabs();
                 } else {
@@ -1658,11 +1652,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                         JSObject object = (JSObject) info;
                         object.setMember("width", width);
                         object.setMember("height", height);
-                    } else if (info instanceof jdk.nashorn.api.scripting.JSObject) {
-                        jdk.nashorn.api.scripting.JSObject object = (jdk.nashorn.api.scripting.JSObject) info;
-                        object.setMember("width", width);
-                        object.setMember("height", height);
-                        ;
                     }
 
                     reader.dispose();
@@ -1684,8 +1673,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             threadService.runActionLater(() -> {
                 getImageSizeInfo(path, info);
             });
-        } else if (info instanceof jdk.nashorn.api.scripting.JSObject) {
-            getImageSizeInfo(path, info);
         }
     }
 
@@ -2364,18 +2351,26 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                     setIncludeAsciidocResource(true);
                 }
 
-                this.lastConverterResult = converterProvider.get(previewConfigBean).convertAsciidoc(text);
+                ConverterResult converterResult = converterProvider.get(previewConfigBean).convertAsciidoc(text);
 
                 setIncludeAsciidocResource(false);
 
-                if (lastConverterResult.isBackend("html5")) {
-                    updateRendered(lastConverterResult.getRendered());
+                if (lastConverterResult != null) {
+                    if (converterResult.getDateTime().isBefore(lastConverterResult.getDateTime())) {
+                        return;
+                    }
+                }
+
+                this.lastConverterResult = converterResult;
+
+                if (this.lastConverterResult.isBackend("html5")) {
+                    updateRendered(this.lastConverterResult.getRendered());
                     rightShowerHider.showNode(htmlPane);
                 }
 
-                if (lastConverterResult.isBackend("revealjs") || lastConverterResult.isBackend("deckjs")) {
-                    slidePane.setBackend(lastConverterResult.getBackend());
-                    slideConverter.convert(lastConverterResult.getRendered());
+                if (this.lastConverterResult.isBackend("revealjs") || this.lastConverterResult.isBackend("deckjs")) {
+                    slidePane.setBackend(this.lastConverterResult.getBackend());
+                    slideConverter.convert(this.lastConverterResult.getRendered());
                     rightShowerHider.showNode(slidePane);
                 }
 
@@ -2391,14 +2386,15 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
                 rightShowerHider.showNode(liveReloadPane);
 
-            } else if ("markdown".equalsIgnoreCase(mode)) {
-                MarkdownService markdownService = applicationContext.getBean(MarkdownService.class);
-                markdownService.convertToAsciidoc(text, asciidoc -> {
-                    ConverterResult result = converterProvider.get(previewConfigBean).convertAsciidoc(asciidoc);
-                    result.afterRender(this::updateRendered);
-                });
-                rightShowerHider.showNode(htmlPane);
             }
+//            else if ("plantuml".equalsIgnoreCase(mode)) {
+//                MarkdownService markdownService = applicationContext.getBean(MarkdownService.class);
+//                markdownService.convertToAsciidoc(text, asciidoc -> {
+//                    ConverterResult result = converterProvider.get(previewConfigBean).convertAsciidoc(asciidoc);
+//                    result.afterRender(this::updateRendered);
+//                });
+//                rightShowerHider.showNode(htmlPane);
+//            }
 
         } catch (Exception e) {
             setIncludeAsciidocResource(false);
@@ -2752,28 +2748,28 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     }
 
     @WebkitCall
-    public void log(Object object) {
-        debug(object);
+    public void log(String message) {
+        debug(message);
     }
 
     @WebkitCall
-    public void debug(Object object) {
-        logger.debug(object + "");
+    public void debug(String message) {
+        logger.debug(message.replace("\\\"","").replace("\"",""));
     }
 
     @WebkitCall
-    public void warn(Object object) {
-        logger.warn(object + "");
+    public void warn(String message) {
+        logger.warn(message.replace("\\\"","").replace("\"",""));
     }
 
     @WebkitCall
-    public void info(Object object) {
-        logger.info(object + "");
+    public void info(String message) {
+        logger.info(message.replace("\\\"","").replace("\"",""));
     }
 
     @WebkitCall
-    public void error(Object object) {
-        logger.error(object + "");
+    public void error(String message) {
+        logger.error(message.replace("\\\"","").replace("\"",""));
     }
 
     @FXML
@@ -2877,43 +2873,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         }
 
         dialog.showAndWait().ifPresent(consumer);
-    }
-
-    @FXML
-    public void gitbookToAsciibook(ActionEvent actionEvent) {
-
-        File gitbookRoot = null;
-        File asciibookRoot = null;
-
-        BiPredicate<File, File> nullPathPredicate = (p1, p2)
-                -> isNull(p1)
-                || isNull(p2);
-
-        DirectoryChooser gitbookChooser = new DirectoryChooser();
-        gitbookChooser.setTitle("Select Gitbook Root Directory");
-        gitbookRoot = gitbookChooser.showDialog(null);
-
-        DirectoryChooser asciibookChooser = new DirectoryChooser();
-        asciibookChooser.setTitle("Select Blank Asciibook Root Directory");
-        asciibookRoot = asciibookChooser.showDialog(null);
-
-        if (nullPathPredicate.test(gitbookRoot, asciibookRoot)) {
-            AlertHelper.nullDirectoryAlert();
-            return;
-        }
-
-        final File finalGitbookRoot = gitbookRoot;
-        final File finalAsciibookRoot = asciibookRoot;
-
-        threadService.runTaskLater(() -> {
-            logger.debug("Gitbook to Asciibook conversion started");
-            indikatorService.startProgressBar();
-            GitbookToAsciibookService toAsciiBook = applicationContext.getBean(GitbookToAsciibookService.class);
-            toAsciiBook.gitbookToAsciibook(finalGitbookRoot.toPath(), finalAsciibookRoot.toPath());
-            indikatorService.stopProgressBar();
-            logger.debug("Gitbook to Asciibook conversion ended");
-        });
-
     }
 
     /*
@@ -3186,7 +3145,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     public void toggleLogView(ActionEvent actionEvent) {
         final ToggleButton source = (ToggleButton) actionEvent.getSource();
 
-        source.getStyleClass().remove("red-label");
+        source.getStyleClass().removeIf("red-label"::equals);
 
         mainVerticalSplitPane.setDividerPosition(0, source.isSelected() ? editorConfigBean.getVerticalSplitter() : 1);
 

@@ -2,8 +2,9 @@ package com.kodedu.service.extension;
 
 import com.kodedu.config.ExtensionConfigBean;
 import com.kodedu.controller.ApplicationController;
+import com.kodedu.helper.IOHelper;
+import com.kodedu.helper.StyleHelper;
 import com.kodedu.other.Current;
-import com.kodedu.other.IOHelper;
 import com.kodedu.other.TrimWhite;
 import com.kodedu.other.Tuple;
 import com.kodedu.service.ThreadService;
@@ -201,7 +202,7 @@ public class TreeService implements DefaultSettings {
                     if (settings.get("seth") > 0) {
                         fileView.setPrefHeight(settings.get("seth"));
                     } else {
-                        fileView.setPrefHeight((treeItems.size() * 24) + 10 + changeHeight);
+                        fileView.setPrefHeight((treeItems.size() * 26) + 15 + changeHeight);
                     }
 
                     WritableImage writableImage = fileView.snapshot(new SnapshotParameters(), null);
@@ -235,7 +236,7 @@ public class TreeService implements DefaultSettings {
 
     private TreeView getSnaphotTreeView() {
         TreeView fileView = new TreeView();
-        fileView.getStyleClass().add("tree-extension");
+        StyleHelper.addClass(fileView, "tree-extension");
         fileView.setLayoutX(-13000);
         fileView.setLayoutY(-13000);
         fileView.setMinSize(0, 0);

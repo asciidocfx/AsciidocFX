@@ -4,7 +4,7 @@ package com.kodedu.animation;
  * Created by usta on 10.10.2016.
  */
 
-import com.kodedu.other.IOHelper;
+import com.kodedu.helper.IOHelper;
 import com.kodedu.service.ThreadService;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.Node;

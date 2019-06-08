@@ -2,9 +2,9 @@ package com.kodedu.service.convert.docbook;
 
 import com.kodedu.config.DocbookConfigBean;
 import com.kodedu.engine.AsciidocConverterProvider;
+import com.kodedu.helper.IOHelper;
+import com.kodedu.helper.XMLHelper;
 import com.kodedu.other.Current;
-import com.kodedu.other.IOHelper;
-import com.kodedu.other.XMLHelper;
 import com.kodedu.service.ThreadService;
 import com.kodedu.service.convert.DocumentConverter;
 import org.joox.Match;

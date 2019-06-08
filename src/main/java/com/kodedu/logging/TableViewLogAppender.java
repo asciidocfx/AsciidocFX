@@ -67,7 +67,10 @@ public class TableViewLogAppender extends UnsynchronizedAppenderBase<ILoggingEve
         }
 
         if (event.getLevel() == Level.ERROR) {
-            logShowHider.getStyleClass().add("red-label");
+            ObservableList<String> styleClass = logShowHider.getStyleClass();
+            if (!styleClass.contains("red-label")) {
+                styleClass.add("red-label");
+            }
         }
 
         final String finalMessage = message;

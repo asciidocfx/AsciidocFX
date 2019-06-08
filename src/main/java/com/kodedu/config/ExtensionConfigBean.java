@@ -7,7 +7,7 @@ import com.dooapp.fxform.builder.FXFormBuilder;
 import com.dooapp.fxform.view.factory.DefaultFactoryProvider;
 import com.kodedu.config.factory.FileChooserEditableFactory;
 import com.kodedu.controller.ApplicationController;
-import com.kodedu.other.IOHelper;
+import com.kodedu.helper.IOHelper;
 import com.kodedu.service.ThreadService;
 import com.kodedu.service.ui.TabService;
 import javafx.beans.property.IntegerProperty;

@@ -9,7 +9,7 @@ import com.dooapp.fxform.view.factory.DefaultFactoryProvider;
 import com.kodedu.config.factory.ListChoiceBoxFactory;
 import com.kodedu.config.factory.TableFactory;
 import com.kodedu.controller.ApplicationController;
-import com.kodedu.other.IOHelper;
+import com.kodedu.helper.IOHelper;
 import com.kodedu.service.ThreadService;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;

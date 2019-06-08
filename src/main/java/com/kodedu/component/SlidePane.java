@@ -78,7 +78,7 @@ public class SlidePane extends ViewPanel {
         try {
             ((JSObject) getWindow().eval(backendExt)).call("replaceSlides", rendered);
         } catch (Exception e) {
-            logger.debug("{} is not found while replacing slide, but don't worry.", backendExt, e);
+//            logger.debug("{} is not found while replacing slide, but don't worry.", backendExt, e);
         }
 
     }
@@ -89,7 +89,7 @@ public class SlidePane extends ViewPanel {
         try {
             ((JSObject) getWindow().eval(backendExt)).call("flipCurrentPage", text);
         } catch (Exception e) {
-            logger.debug("{} is not found while flipping page, but don't worry.", backendExt, e);
+//            logger.debug("{} is not found while flipping page, but don't worry.", backendExt, e);
         }
     }
 

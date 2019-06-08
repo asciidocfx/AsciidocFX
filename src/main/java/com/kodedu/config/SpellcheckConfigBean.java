@@ -3,7 +3,7 @@ package com.kodedu.config;
 //import com.dooapp.fxform.annotation.Accessor;
 
 import com.kodedu.controller.ApplicationController;
-import com.kodedu.other.IOHelper;
+import com.kodedu.helper.IOHelper;
 import com.kodedu.service.ThreadService;
 import com.kodedu.service.ui.TabService;
 import javafx.beans.property.BooleanProperty;

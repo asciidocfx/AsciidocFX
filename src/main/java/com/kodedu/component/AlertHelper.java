@@ -9,7 +9,6 @@ import javafx.scene.control.ListView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.stage.Screen;
-import javafx.stage.Stage;
 
 import java.nio.file.Path;
 import java.util.List;
@@ -82,6 +81,12 @@ public final class AlertHelper {
 
     public static Optional<ButtonType> showAlert(String alertMessage) {
         AlertDialog deleteAlert = new AlertDialog(AlertType.WARNING, null, ButtonType.YES, ButtonType.CANCEL);
+        deleteAlert.setHeaderText(alertMessage);
+        return deleteAlert.showAndWait();
+    }
+
+    public static Optional<ButtonType> showYesNoAlert(String alertMessage) {
+        AlertDialog deleteAlert = new AlertDialog(AlertType.WARNING, null, ButtonType.YES, ButtonType.NO);
         deleteAlert.setHeaderText(alertMessage);
         return deleteAlert.showAndWait();
     }

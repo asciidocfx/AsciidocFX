@@ -4,7 +4,7 @@ import com.kodedu.config.EditorConfigBean;
 import com.kodedu.controller.ApplicationController;
 import com.kodedu.other.Current;
 import com.kodedu.service.ThreadService;
-import com.sun.javafx.scene.control.skin.ContextMenuContent;
+import com.sun.javafx.scene.control.ContextMenuContent;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
@@ -31,7 +31,6 @@ import org.springframework.beans.factory.annotation.Value;
 
 import javax.annotation.PostConstruct;
 import java.nio.file.Path;
-import java.util.Iterator;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -112,11 +111,9 @@ public abstract class ViewPanel extends AnchorPane {
 
         getWebView().setOnContextMenuRequested(event -> {
 
-            @SuppressWarnings("deprecation") final Iterator<Window> windows = Window.impl_getWindows();
+            ObservableList<Window> windows = Window.getWindows();
 
-            while (windows.hasNext()) {
-                final Window window = windows.next();
-
+            for (Window window : windows) {
                 if (window instanceof ContextMenu) {
 
                     Optional<Node> nodeOptional = Optional.ofNullable(window)

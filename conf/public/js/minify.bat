@@ -1,6 +1,6 @@
 start uglifyjs --screw-ie8 -c -o buffhelper.js -- buffhelper.js
 start uglifyjs --screw-ie8 -c -o jade.js -- jade.js
-start uglifyjs --screw-ie8 -c -o asciidoctor-all.js -- asciidoctor-all.js
+start uglifyjs --screw-ie8 -c -o asciidoctor-browser.js -- asciidoctor-browser.js
 start uglifyjs --screw-ie8 -c -o asciidoctor-docbook.js -- asciidoctor-docbook.js
 start uglifyjs --screw-ie8 -c -o asciidoctor-data-line.js -- asciidoctor-data-line.js
 start uglifyjs --screw-ie8 -c -o asciidoctor-chart-block.js -- asciidoctor-chart-block.js

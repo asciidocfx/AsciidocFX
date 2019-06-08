@@ -1,5 +1,6 @@
 package com.kodedu.other;
 
+import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.function.Consumer;
 
@@ -7,6 +8,7 @@ import java.util.function.Consumer;
  * Created by usta on 20.06.2015.
  */
 public class ConverterResult {
+    private LocalDateTime dateTime = LocalDateTime.now();
     private String taskId;
     private String rendered;
     private String backend;
@@ -17,12 +19,6 @@ public class ConverterResult {
         this.rendered = fixLineEnding(rendered);
         this.backend = backend;
         this.doctype = doctype;
-    }
-
-    public ConverterResult(jdk.nashorn.api.scripting.JSObject jsObject) {
-        setRendered((String) jsObject.getMember("rendered"));
-        setBackend((String) jsObject.getMember("backend"));
-        setDoctype((String) jsObject.getMember("doctype"));
     }
 
     public void setRendered(String rendered) {
@@ -68,6 +64,10 @@ public class ConverterResult {
 
     public void setTaskId(String taskId) {
         this.taskId = taskId;
+    }
+
+    public LocalDateTime getDateTime() {
+        return dateTime;
     }
 
     public void afterRender(Consumer<String> consumer, Runnable... runnable) {

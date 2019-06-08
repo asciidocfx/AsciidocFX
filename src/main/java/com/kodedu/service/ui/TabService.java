@@ -3,9 +3,9 @@ package com.kodedu.service.ui;
 import com.kodedu.component.*;
 import com.kodedu.config.StoredConfigBean;
 import com.kodedu.controller.ApplicationController;
+import com.kodedu.helper.IOHelper;
 import com.kodedu.other.Current;
 import com.kodedu.other.ExtensionFilters;
-import com.kodedu.other.IOHelper;
 import com.kodedu.other.Item;
 import com.kodedu.service.DirectoryService;
 import com.kodedu.service.ParserService;
@@ -88,6 +88,15 @@ public class TabService {
         this.asciiTreeGenerator = asciiTreeGenerator;
     }
 
+    public void closeFirstNewTab(){
+        ObservableList<Tab> tabs = controller.getTabPane().getTabs();
+        if(!tabs.isEmpty()){
+            MyTab myTab = (MyTab)tabs.get(0);
+            if(myTab.isNew() && !myTab.isChanged()){
+                myTab.close();
+            }
+        }
+    }
 
     public void addTab(Path path, Runnable... runnables) {
 

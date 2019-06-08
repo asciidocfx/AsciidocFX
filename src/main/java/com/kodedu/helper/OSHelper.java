@@ -1,4 +1,4 @@
-package com.kodedu.other;
+package com.kodedu.helper;
 
 /**
  * Created by usta on 23.01.2015.

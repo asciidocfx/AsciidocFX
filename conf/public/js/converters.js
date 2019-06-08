@@ -1,4 +1,5 @@
 var myWorker = new Worker("/afx/worker/js/?p=js/webworker.js");
+var asciidoctor= Asciidoctor({runtime: {platform: 'browser'}});
 myWorker.onmessage = function (e) {
 
     var data = (typeof e.data) == "string" ? JSON.parse(e.data) : e.data;
@@ -22,7 +23,7 @@ myWorker.onmessage = function (e) {
 };
 
 myWorker.onerror = function (e) {
-    var data = (typeof e) == "string" ? e : JSON.stringify(e);
+    var data = (typeof e) == "string" ? e : e.message;
     afx["error"].call(afx, data);
 };
 
@@ -50,7 +51,7 @@ function convertAsciidoc(taskId, content, options) {
 }
 
 function convertOdf(taskId, content, options) {
-    var doc = Opal.Asciidoctor.$load(content, getOption(options));
+    var doc = asciidoctor.$load(content, getOption(options));
     var rendered = doc.$convert();
 
     afx.completeWebWorker(taskId, rendered, doc.$backend(), doc.doctype);
@@ -65,5 +66,5 @@ function convertDocbook(taskId, content, options) {
 }
 
 function findRenderedSelection(content) {
-    return Opal.Asciidoctor.$render(content);
+    return asciidoctor.$render(content);
 }

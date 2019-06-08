@@ -1,11 +1,11 @@
-package com.kodedu.other;
+package com.kodedu.helper;
 
 import com.ibm.icu.text.CharsetDetector;
 import com.ibm.icu.text.CharsetMatch;
+import com.kodedu.other.LRUMap;
 import com.kodedu.service.ThreadService;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.logging.log4j.util.Chars;
 import org.joox.JOOX;
 import org.joox.Match;
 import org.slf4j.Logger;

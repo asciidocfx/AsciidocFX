@@ -2,8 +2,8 @@ package com.kodedu.service.convert.docbook;
 
 import com.kodedu.config.EditorConfigBean;
 import com.kodedu.controller.ApplicationController;
+import com.kodedu.helper.IOHelper;
 import com.kodedu.other.Current;
-import com.kodedu.other.IOHelper;
 import com.kodedu.service.ui.IndikatorService;
 import com.kodedu.service.ui.TabService;
 import javafx.application.Platform;

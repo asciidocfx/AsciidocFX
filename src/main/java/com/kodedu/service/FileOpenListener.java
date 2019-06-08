@@ -1,8 +1,8 @@
 package com.kodedu.service;
 
-import com.install4j.api.launcher.StartupNotification;
-import com.kodedu.other.IOHelper;
+import com.kodedu.helper.IOHelper;
 import com.kodedu.service.ui.TabService;
+import javafx.application.Platform;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -16,18 +16,15 @@ import java.util.regex.Pattern;
  * Created by usta on 19.08.2017.
  */
 @Component
-public class FileOpenListener implements StartupNotification.Listener {
+public class FileOpenListener {
 
-    private final ThreadService threadService;
     private final TabService tabService;
 
     @Autowired
-    public FileOpenListener(ThreadService threadService, TabService tabService) {
-        this.threadService = threadService;
+    public FileOpenListener(TabService tabService) {
         this.tabService = tabService;
     }
 
-    @Override
     public void startupPerformed(String parameters) {
         Pattern pattern = Pattern.compile("\"([^\"]+)\"|.*");
         Matcher matcher = pattern.matcher(parameters);
@@ -44,24 +41,13 @@ public class FileOpenListener implements StartupNotification.Listener {
                     pathList.add(path);
                 }
             }
-
         }
-//
-//        List<Path> pathSet = matcher.results()
-//                .map(e -> e.group())
-//                .map(e -> e.replaceAll("\"", ""))
-//                .map(e -> e.trim())
-//                .filter(e -> !e.isEmpty())
-//                .map(Paths::get)
-//                .map(Path::toAbsolutePath)
-//                .distinct()
-//                .collect(Collectors.toList());
 
-        threadService.runActionLater(() -> {
-
+        Platform.runLater(() -> {
             for (Path path : pathList) {
                 tabService.addTab(path);
             }
+            tabService.closeFirstNewTab();
         });
     }
 

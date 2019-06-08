@@ -2,10 +2,8 @@
 <html>
 <head>
     <title></title>
-    <script src="js/asciidoctor-all.js"></script>
-    <!--<script src="js/asciidoctor-docbook.js"></script>-->
-
-    <script src="js/jquery.js"></script>
+    <script src="js/asciidoctor-browser.js"></script>
+    <script src="js/asciidoctor-docbook.js"></script>
 </head>
 <body>
 <textarea id="input" cols="30" rows="10">
@@ -14,10 +12,16 @@
 <textarea id="output" cols="30" rows="10"></textarea>
 <button onclick="convert()">Convert</button>
 <script>
-    function convert(){
-        var docbookOpts = Opal.hash2(['attributes','header_footer'], {'attributes': ['backend=docbook5', 'doctype=book'],'header_footer':true});
-        var result = Opal.Asciidoctor.$render($("#input").val(),docbookOpts);
-        $("#output").val(result);
+    var docbookOpts = Opal.hash2(['attributes', 'header_footer'], {
+        'attributes': ['backend=docbook5', 'doctype=book'],
+        'header_footer': true
+    });
+    var asciidoctor = Asciidoctor({runtime: {platform: 'browser'}});
+
+    function convert() {
+        var input = document.querySelector("#input");
+        var result = asciidoctor.$render(input.value, docbookOpts);
+        input.value = result;
     }
 </script>
 </body>

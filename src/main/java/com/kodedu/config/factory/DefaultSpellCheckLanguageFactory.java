@@ -3,7 +3,7 @@ package com.kodedu.config.factory;
 import com.dooapp.fxform.view.FXFormNode;
 import com.dooapp.fxform.view.FXFormNodeWrapper;
 import com.kodedu.config.SpellcheckConfigBean;
-import com.kodedu.other.IOHelper;
+import com.kodedu.helper.IOHelper;
 import javafx.event.ActionEvent;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.TextFieldListCell;

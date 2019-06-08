@@ -1,10 +1,10 @@
-Object.prototype._cached_image_uri = function (content) {
+function cachedImageUri(content) {
     var md5 = CryptoJS.MD5(content);
 
     return "/afx/cache/" + md5 + ".png";
 };
 
-Object.prototype._line_number = function (ifExist) {
+function lineNumber(ifExist) {
     var node = this;
     if (node && node.$source_location) {
         if (node.$source_location().lineno) {
@@ -16,7 +16,7 @@ Object.prototype._line_number = function (ifExist) {
     }
 };
 
-Object.prototype._set_attribute = function (name, value) {
+function setAttribute(name, value) {
     var node = this;
     if (node && node.$attributes) {
         node.$attributes()['$[]='](name, value);
@@ -27,7 +27,7 @@ Object.prototype._set_attribute = function (name, value) {
 
 };
 
-Object.prototype._is_nil = function (name) {
+function isNil(name) {
     var obj = this; // e.g document
     if (obj && obj.$attr) {
         return obj.$attr(name)['$nil?']();
@@ -35,7 +35,7 @@ Object.prototype._is_nil = function (name) {
     return true;
 };
 
-Object.prototype._to_string = function () {
+function toString() {
     var obj = this;
 
     var result = {};
@@ -49,7 +49,7 @@ Object.prototype._to_string = function () {
         var keys = [];
 
         try{
-           keys= Object.keys(obj);
+            keys= Object.keys(obj);
         }
         catch (e){
 

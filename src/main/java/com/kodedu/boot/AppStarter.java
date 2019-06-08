@@ -7,6 +7,7 @@ import com.kodedu.controller.ApplicationController;
 import com.kodedu.service.FileOpenListener;
 import com.kodedu.service.ThreadService;
 import com.kodedu.service.ui.TabService;
+import com.kodedu.terminalfx.helper.ThreadHelper;
 import de.tototec.cmdoption.CmdlineParser;
 import de.tototec.cmdoption.CmdlineParserException;
 import javafx.application.Application;
@@ -41,7 +42,7 @@ public class AppStarter extends Application {
     private static ApplicationController controller;
     private static ConfigurableApplicationContext context;
     private EditorConfigBean editorConfigBean;
-    private Stage stage;
+    private static Stage stage;
     private ThreadService threadService;
     private ConfigurationService configurationService;
 
@@ -59,6 +60,7 @@ public class AppStarter extends Application {
 //        System.setProperty("https.protocols", "SSLv3");
 
         System.setProperty("sun.net.http.allowRestrictedHeaders", "true");
+        System.setProperty("java.awt.headless", "false");
 
         final CmdlineConfig config = new CmdlineConfig();
         final CmdlineParser cp = new CmdlineParser(config);
@@ -85,6 +87,20 @@ public class AppStarter extends Application {
 
     }
 
+    static {
+        ThreadHelper.start(() -> {
+            StartupNotification.registerStartupListener(parameters -> {
+                ThreadHelper.start(() -> {
+                    while ((context == null && stage == null) || !stage.isShowing()) {
+                        ThreadHelper.sleep(10);
+                    }
+                    FileOpenListener fileOpenListener = context.getBean(FileOpenListener.class);
+                    fileOpenListener.startupPerformed(parameters);
+                });
+            });
+        });
+    }
+
     private void loadRequiredFonts() {
         Font.loadFont(AppStarter.class.getResourceAsStream("/font/NotoSerif-Regular.ttf"), -1);
         Font.loadFont(AppStarter.class.getResourceAsStream("/font/NotoSerif-Italic.ttf"), -1);
@@ -107,7 +123,7 @@ public class AppStarter extends Application {
         final FXMLLoader parentLoader = new FXMLLoader();
         parentLoader.setControllerFactory(context::getBean);
 
-        InputStream sceneStream = AppStarter.class.getResourceAsStream("/fxml/AsciidocFX_Scene.fxml");
+        InputStream sceneStream = AppStarter.class.getResourceAsStream("/scenes/AsciidocFX_Scene.fxml");
         Parent root = parentLoader.load(sceneStream);
 
         Scene scene = new Scene(root);
@@ -156,10 +172,10 @@ public class AppStarter extends Application {
         asciidocTableLoader.setControllerFactory(context::getBean);
         markdownTableLoader.setControllerFactory(context::getBean);
 
-        InputStream asciidocTableStream = AppStarter.class.getResourceAsStream("/fxml/AsciidocTablePopup.fxml");
+        InputStream asciidocTableStream = AppStarter.class.getResourceAsStream("/scenes/AsciidocTablePopup.fxml");
         AnchorPane asciidocTableAnchor = asciidocTableLoader.load(asciidocTableStream);
 
-        InputStream markdownTableStream = AppStarter.class.getResourceAsStream("/fxml/MarkdownTablePopup.fxml");
+        InputStream markdownTableStream = AppStarter.class.getResourceAsStream("/scenes/MarkdownTablePopup.fxml");
         AnchorPane markdownTableAnchor = markdownTableLoader.load(markdownTableStream);
 
         Stage asciidocTableStage = threadService.supply(Stage::new);
@@ -230,9 +246,6 @@ public class AppStarter extends Application {
 
         final ThreadService threadService = context.getBean(ThreadService.class);
         final TabService tabService = context.getBean(TabService.class);
-        final FileOpenListener fileOpenListener = context.getBean(FileOpenListener.class);
-
-        StartupNotification.registerStartupListener(fileOpenListener);
 
         if (!config.files.isEmpty()) {
             threadService.runActionLater(() -> {
