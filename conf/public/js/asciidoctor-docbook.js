@@ -1,2 +1,1189 @@
-Opal.modules["asciidoctor/converter/docbook5"]=function(a){function b(a,b){return"number"==typeof a&&"number"==typeof b?a*b:a["$*"](b)}function c(a,b){return"number"==typeof a&&"number"==typeof b?b>=a:a["$<="](b)}function d(a,b){return"number"==typeof a&&"number"==typeof b?a-b:a["$-"](b)}function e(a,b){return"number"==typeof a&&"number"==typeof b?a+b:a["$+"](b)}function f(a,b){return"number"==typeof a&&"number"==typeof b?a>b:a["$>"](b)}function g(a,b){return"number"==typeof a&&"number"==typeof b?b>a:a["$<"](b)}a.dynamic_require_severity="ignore";var h=a.top,i=a.nil,j=(a.breaker,a.slice,a.module),k=a.klass,l=a.hash2;return function(h){var m=j(h,"Asciidoctor"),n=(m.$$proto,m.$$scope);!function(h,j){function m(){}var n,o,p=m=k(h,j,"DocBook5Converter",m),q=p.$$proto,r=p.$$scope;return q.asciimath_loaded=i,q.$document=function(a){var c,d=this,e=i,f=i,g=i,h=i,j=i;return e=[],(f=a.$doctype())["$=="]("manpage")&&(f="refentry"),e["$<<"]('<?xml version="1.0" encoding="UTF-8"?>'),(c=g=d.$doctype_declaration(f))===i||c.$$is_boolean&&1!=c||e["$<<"](g),(c=a["$attr?"]("toc"))===i||c.$$is_boolean&&1!=c||((c=a["$attr?"]("toclevels"))===i||c.$$is_boolean&&1!=c?e["$<<"]("<?asciidoc-toc?>"):e["$<<"]('<?asciidoc-toc maxdepth="'+a.$attr("toclevels")+'"?>')),(c=a["$attr?"]("sectnums"))===i||c.$$is_boolean&&1!=c||((c=a["$attr?"]("sectnumlevels"))===i||c.$$is_boolean&&1!=c?e["$<<"]("<?asciidoc-numbered?>"):e["$<<"]('<?asciidoc-numbered maxdepth="'+a.$attr("sectnumlevels")+'"?>')),h=function(){return(c=a["$attr?"]("nolang"))===i||c.$$is_boolean&&1!=c?" "+d.$lang_attribute_name()+'="'+a.$attr("lang","en")+'"':i}(),e["$<<"]("<"+f+d.$document_ns_attributes(a)+h+">"),e["$<<"](d.$document_info_element(a,f)),(c=a["$blocks?"]())===i||c.$$is_boolean&&1!=c||e["$<<"](a.$content()),((c=(j=a.$docinfo("footer"))["$empty?"]())===i||c.$$is_boolean&&1!=c)&&e["$<<"](j),e["$<<"]("</"+f+">"),b(e,r.get("EOL"))},a.defn(p,"$embedded",q.$content),q.$section=function(a){var b,d,e=this,f=i,g=i;return f=a.$document().$doctype(),g=function(){return(b=a.$special())===i||b.$$is_boolean&&1!=b?(b=(d=f["$=="]("book"))?c(a.$level(),1):d)===i||b.$$is_boolean&&1!=b?"section":function(){return a.$level()["$=="](0)?"part":"chapter"}():c(a.$level(),1)?a.$sectname():"section"}(),f["$=="]("manpage")&&(g["$=="]("section")?g="refsection":g["$=="]("synopsis")&&(g="refsynopsisdiv")),"<"+g+e.$common_attributes(a.$id(),a.$role(),a.$reftext())+">\n<title>"+a.$title()+"</title>\n"+a.$content()+"\n</"+g+">"},q.$admonition=function(a){var b=this,c=i;return"<"+(c=a.$attr("name"))+b.$common_attributes(a.$id(),a.$role(),a.$reftext())+">\n"+b.$title_tag(a)+b.$resolve_content(a)+"\n</"+c+">"},a.defn(p,"$audio",q.$skip),q.$colist=function(a){var c,d,e,f=this,g=i;return g=[],g["$<<"]("<calloutlist"+f.$common_attributes(a.$id(),a.$role(),a.$reftext())+">"),(c=a["$title?"]())===i||c.$$is_boolean&&1!=c||g["$<<"]("<title>"+a.$title()+"</title>"),(c=(d=a.$items()).$each,c.$$p=(e=function(a){var b;e.$$s||this;return null==a&&(a=i),g["$<<"]('<callout arearefs="'+a.$attr("coids")+'">'),g["$<<"]("<para>"+a.$text()+"</para>"),(b=a["$blocks?"]())===i||b.$$is_boolean&&1!=b||g["$<<"](a.$content()),g["$<<"]("</callout>")},e.$$s=f,e),c).call(d),g["$<<"]("</calloutlist>"),b(g,r.get("EOL"))},n=[l(["list","entry","term","item"],{list:"variablelist",entry:"varlistentry",term:"term",item:"listitem"})],o=a.cdecl(r,"DLIST_TAGS",l(["labeled","qanda","glossary"],{labeled:l(["list","entry","term","item"],{list:"variablelist",entry:"varlistentry",term:"term",item:"listitem"}),qanda:l(["list","entry","label","term","item"],{list:"qandaset",entry:"qandaentry",label:"question",term:"simpara",item:"answer"}),glossary:l(["list","entry","term","item"],{list:i,entry:"glossentry",term:"glossterm",item:"glossdef"})})),o["$default="].apply(o,n),n[n.length-1],q.$dlist=function(a){var c,d,e,f,g,h=this,j=i,k=i,l=i,m=i,n=i,o=i,p=i,q=i;return j=[],a.$style()["$=="]("horizontal")?(j["$<<"]("<"+(k=function(){return(c=a["$title?"]())===i||c.$$is_boolean&&1!=c?"informaltable":"table"}())+h.$common_attributes(a.$id(),a.$role(),a.$reftext())+' tabstyle="horizontal" frame="none" colsep="0" rowsep="0">\n'+h.$title_tag(a)+'<tgroup cols="2">\n<colspec colwidth="'+a.$attr("labelwidth",15)+'*"/>\n<colspec colwidth="'+a.$attr("itemwidth",85)+'*"/>\n<tbody valign="top">'),(c=(d=a.$items()).$each,c.$$p=(e=function(a,b){var c,d,f,g=e.$$s||this;return null==a&&(a=i),null==b&&(b=i),j["$<<"]("<row>\n<entry>"),(c=(d=[].concat(a)).$each,c.$$p=(f=function(a){f.$$s||this;return null==a&&(a=i),j["$<<"]("<simpara>"+a.$text()+"</simpara>")},f.$$s=g,f),c).call(d),j["$<<"]("</entry>\n<entry>"),((c=b["$nil?"]())===i||c.$$is_boolean&&1!=c)&&((c=b["$text?"]())===i||c.$$is_boolean&&1!=c||j["$<<"]("<simpara>"+b.$text()+"</simpara>"),(c=b["$blocks?"]())===i||c.$$is_boolean&&1!=c||j["$<<"](b.$content())),j["$<<"]("</entry>\n</row>")},e.$$s=h,e),c).call(d),j["$<<"]("</tbody>\n</tgroup>\n</"+k+">")):(l=r.get("DLIST_TAGS")["$[]"](a.$style()),m=l["$[]"]("list"),n=l["$[]"]("entry"),o=l["$[]"]("label"),p=l["$[]"]("term"),q=l["$[]"]("item"),m!==!1&&m!==i&&(j["$<<"]("<"+m+h.$common_attributes(a.$id(),a.$role(),a.$reftext())+">"),(c=a["$title?"]())===i||c.$$is_boolean&&1!=c||j["$<<"]("<title>"+a.$title()+"</title>")),(c=(f=a.$items()).$each,c.$$p=(g=function(a,b){var c,d,e,f=g.$$s||this;return null==a&&(a=i),null==b&&(b=i),j["$<<"]("<"+n+">"),o!==!1&&o!==i&&j["$<<"]("<"+o+">"),(c=(d=[].concat(a)).$each,c.$$p=(e=function(a){e.$$s||this;return null==a&&(a=i),j["$<<"]("<"+p+">"+a.$text()+"</"+p+">")},e.$$s=f,e),c).call(d),o!==!1&&o!==i&&j["$<<"]("</"+o+">"),j["$<<"]("<"+q+">"),((c=b["$nil?"]())===i||c.$$is_boolean&&1!=c)&&((c=b["$text?"]())===i||c.$$is_boolean&&1!=c||j["$<<"]("<simpara>"+b.$text()+"</simpara>"),(c=b["$blocks?"]())===i||c.$$is_boolean&&1!=c||j["$<<"](b.$content())),j["$<<"]("</"+q+">"),j["$<<"]("</"+n+">")},g.$$s=h,g),c).call(f),m!==!1&&m!==i&&j["$<<"]("</"+m+">")),b(j,r.get("EOL"))},q.$example=function(a){var b,c=this;return(b=a["$title?"]())===i||b.$$is_boolean&&1!=b?"<informalexample"+c.$common_attributes(a.$id(),a.$role(),a.$reftext())+">\n"+c.$resolve_content(a)+"\n</informalexample>":"<example"+c.$common_attributes(a.$id(),a.$role(),a.$reftext())+">\n<title>"+a.$title()+"</title>\n"+c.$resolve_content(a)+"\n</example>"},q.$floating_title=function(a){var b=this;return"<bridgehead"+b.$common_attributes(a.$id(),a.$role(),a.$reftext())+' renderas="sect'+a.$level()+'">'+a.$title()+"</bridgehead>"},q.$image=function(a){var b,c=this,d=i,e=i,f=i,g=i,h=i,j=i;return d=function(){return(b=a["$attr?"]("width"))===i||b.$$is_boolean&&1!=b?i:' contentwidth="'+a.$attr("width")+'"'}(),e=function(){return(b=a["$attr?"]("height"))===i||b.$$is_boolean&&1!=b?i:' contentdepth="'+a.$attr("height")+'"'}(),f=function(){return(b=a["$attr?"]("scaledwidth"))===i||b.$$is_boolean&&1!=b?i:' width="'+a.$attr("scaledwidth")+'" scalefit="1"'}(),g=function(){return(b=a["$attr?"]("scale"))===i||b.$$is_boolean&&1!=b?i:' scale="'+a.$attr("scale")+'"'}(),h=function(){return(b=a["$attr?"]("align"))===i||b.$$is_boolean&&1!=b?i:' align="'+a.$attr("align")+'"'}(),j='<mediaobject>\n<imageobject>\n<imagedata fileref="'+a.$image_uri(a.$attr("target"))+'"'+d+e+f+g+h+"/>\n</imageobject>\n<textobject><phrase>"+a.$attr("alt")+"</phrase></textobject>\n</mediaobject>",(b=a["$title?"]())===i||b.$$is_boolean&&1!=b?"<informalfigure"+c.$common_attributes(a.$id(),a.$role(),a.$reftext())+">\n"+j+"\n</informalfigure>":"<figure"+c.$common_attributes(a.$id(),a.$role(),a.$reftext())+">\n<title>"+a.$title()+"</title>\n"+j+"\n</figure>"},q.$listing=function(a){var b,c,d=this,e=i,f=i,g=i,h=i;return e=a["$title?"]()["$!"](),f=d.$common_attributes(a.$id(),a.$role(),a.$reftext()),(b=(c=a.$style()["$=="]("source"))?a["$attr?"]("language"):c)===i||b.$$is_boolean&&1!=b?h="<screen"+function(){return e!==!1&&e!==i?f:i}()+">"+a.$content()+"</screen>":(g=function(){return(b=a["$attr?"]("linenums"))===i||b.$$is_boolean&&1!=b?"unnumbered":"numbered"}(),h="<programlisting"+function(){return e!==!1&&e!==i?f:i}()+' language="'+a.$attr("language",i,!1)+'" linenumbering="'+g+'">'+a.$content()+"</programlisting>"),e!==!1&&e!==i?h:"<formalpara"+f+">\n<title>"+a.$title()+"</title>\n<para>\n"+h+"\n</para>\n</formalpara>"},q.$literal=function(a){var b,c=this;return(b=a["$title?"]())===i||b.$$is_boolean&&1!=b?"<literallayout"+c.$common_attributes(a.$id(),a.$role(),a.$reftext())+' class="monospaced">'+a.$content()+"</literallayout>":"<formalpara"+c.$common_attributes(a.$id(),a.$role(),a.$reftext())+">\n<title>"+a.$title()+'</title>\n<para>\n<literallayout class="monospaced">'+a.$content()+"</literallayout>\n</para>\n</formalpara>"},q.$stem=function(b){var c,d,e,f,g,h=this,j=i,k=i,m=i;return(c=j=b.$subs().$index("specialcharacters"))===i||c.$$is_boolean&&1!=c||b.$subs().$delete("specialcharacters"),k=b.$content(),j!==!1&&j!==i&&b.$subs().$insert(j,"specialcharacters"),m=b.$style()["$=="]("latexmath")?"<alt><![CDATA["+k+"]]></alt>\n<mediaobject><textobject><phrase></phrase></textobject></mediaobject>":(c=(d=b.$style()["$=="]("asciimath"))?(e=null==a.Object.$$scope.AsciiMath?i:"constant")!==!1&&e!==i?e:function(){return(f=(g=h.asciimath_loaded,null!=g&&g!==i?"instance-variable":i)["$!"]())===i||f.$$is_boolean&&1!=f?h.asciimath_loaded:h.asciimath_loaded=r.get("Helpers").$require_library("asciimath",!0,"warn")}():d)===i||c.$$is_boolean&&1!=c?"<mediaobject><textobject><phrase><![CDATA["+k+"]]></phrase></textobject></mediaobject>":a.get("AsciiMath").$parse(k).$to_mathml("mml:",l(["xmlns:mml"],{"xmlns:mml":"http://www.w3.org/1998/Math/MathML"})),(c=b["$title?"]())===i||c.$$is_boolean&&1!=c?"<informalequation"+h.$common_attributes(b.$id(),b.$role(),b.$reftext())+">\n"+m+"\n</informalequation>":"<equation"+h.$common_attributes(b.$id(),b.$role(),b.$reftext())+">\n<title>"+b.$title()+"</title>\n"+m+"\n</equation>"},q.$olist=function(a){var c,d,e,f=this,g=i,h=i,j=i;return g=[],h=function(){return(c=a.$style())===i||c.$$is_boolean&&1!=c?i:' numeration="'+a.$style()+'"'}(),j=function(){return(c=a["$attr?"]("start"))===i||c.$$is_boolean&&1!=c?i:' startingnumber="'+a.$attr("start")+'"'}(),g["$<<"]("<orderedlist"+f.$common_attributes(a.$id(),a.$role(),a.$reftext())+h+j+">"),(c=a["$title?"]())===i||c.$$is_boolean&&1!=c||g["$<<"]("<title>"+a.$title()+"</title>"),(c=(d=a.$items()).$each,c.$$p=(e=function(a){var b;e.$$s||this;return null==a&&(a=i),g["$<<"]("<listitem>"),g["$<<"]("<simpara>"+a.$text()+"</simpara>"),(b=a["$blocks?"]())===i||b.$$is_boolean&&1!=b||g["$<<"](a.$content()),g["$<<"]("</listitem>")},e.$$s=f,e),c).call(d),g["$<<"]("</orderedlist>"),b(g,r.get("EOL"))},q.$open=function(a){var b,c,d,e=this,f=i;return function(){return f=a.$style(),"abstract"["$==="](f)?(b=(c=a.$parent()["$=="](a.$document()))?a.$document()["$attr?"]("doctype","book"):c)===i||b.$$is_boolean&&1!=b?"<abstract>\n"+e.$title_tag(a)+e.$resolve_content(a)+"\n</abstract>":(e.$warn("asciidoctor: WARNING: abstract block cannot be used in a document without a title when doctype is book. Excluding block content."),""):"partintro"["$==="](f)?(c=(d=a.$level()["$=="](0))?a.$parent().$context()["$=="]("section"):d,(b=c!==!1&&c!==i?a.$document().$doctype()["$=="]("book"):c)===i||b.$$is_boolean&&1!=b?(e.$warn("asciidoctor: ERROR: partintro block can only be used when doctype is book and it's a child of a part section. Excluding block content."),""):"<partintro"+e.$common_attributes(a.$id(),a.$role(),a.$reftext())+">\n"+e.$title_tag(a)+e.$resolve_content(a)+"\n</partintro>"):a.$content()}()},q.$page_break=function(a){return"<simpara><?asciidoc-pagebreak?></simpara>"},q.$paragraph=function(a){var b,c=this;return(b=a["$title?"]())===i||b.$$is_boolean&&1!=b?"<simpara"+c.$common_attributes(a.$id(),a.$role(),a.$reftext())+">"+a.$content()+"</simpara>":"<formalpara"+c.$common_attributes(a.$id(),a.$role(),a.$reftext())+">\n<title>"+a.$title()+"</title>\n<para>"+a.$content()+"</para>\n</formalpara>"},q.$preamble=function(a){var b=this;return a.$document().$doctype()["$=="]("book")?"<preface"+b.$common_attributes(a.$id(),a.$role(),a.$reftext())+">\n"+b.$title_tag(a,!1)+a.$content()+"\n</preface>":a.$content()},q.$quote=function(a){var c,d,e=this,f=i;return f=[],f["$<<"]("<blockquote"+e.$common_attributes(a.$id(),a.$role(),a.$reftext())+">"),(c=a["$title?"]())===i||c.$$is_boolean&&1!=c||f["$<<"]("<title>"+a.$title()+"</title>"),(c=(d=a["$attr?"]("attribution"))!==!1&&d!==i?d:a["$attr?"]("citetitle"))===i||c.$$is_boolean&&1!=c||(f["$<<"]("<attribution>"),(c=a["$attr?"]("attribution"))===i||c.$$is_boolean&&1!=c||f["$<<"](a.$attr("attribution")),(c=a["$attr?"]("citetitle"))===i||c.$$is_boolean&&1!=c||f["$<<"]("<citetitle>"+a.$attr("citetitle")+"</citetitle>"),f["$<<"]("</attribution>")),f["$<<"](e.$resolve_content(a)),f["$<<"]("</blockquote>"),b(f,r.get("EOL"))},q.$thematic_break=function(a){return"<simpara><?asciidoc-hr?></simpara>"},q.$sidebar=function(a){var b=this;return"<sidebar"+b.$common_attributes(a.$id(),a.$role(),a.$reftext())+">\n"+b.$title_tag(a)+b.$resolve_content(a)+"\n</sidebar>"},a.cdecl(r,"TABLE_PI_NAMES",["dbhtml","dbfo","dblatex"]),a.cdecl(r,"TABLE_SECTIONS",["head","foot","body"]),q.$table=function(a){var c,f,g,h,j,k,l,m,n,o,p=this,q=i,s=i,t=i,u=i,v=i;return q=!1,s=[],t=function(){return(c=a["$option?"]("pgwide"))===i||c.$$is_boolean&&1!=c?i:' pgwide="1"'}(),s["$<<"]("<"+(u=function(){return(c=a["$title?"]())===i||c.$$is_boolean&&1!=c?"informaltable":"table"}())+p.$common_attributes(a.$id(),a.$role(),a.$reftext())+t+' frame="'+a.$attr("frame","all")+'" rowsep="'+function(){return(c=["none","cols"]["$include?"](a.$attr("grid")))===i||c.$$is_boolean&&1!=c?1:0}()+'" colsep="'+function(){return(c=["none","rows"]["$include?"](a.$attr("grid")))===i||c.$$is_boolean&&1!=c?1:0}()+'">'),(c=a["$option?"]("unbreakable"))===i||c.$$is_boolean&&1!=c?(c=a["$option?"]("breakable"))===i||c.$$is_boolean&&1!=c||s["$<<"]('<?dbfo keep-together="auto"?>'):s["$<<"]('<?dbfo keep-together="always"?>'),u["$=="]("table")&&s["$<<"]("<title>"+a.$title()+"</title>"),(c=v=function(){return(f=a["$attr?"]("width"))===i||f.$$is_boolean&&1!=f?i:a.$attr("width")}())===i||c.$$is_boolean&&1!=c||(c=(f=r.get("TABLE_PI_NAMES")).$each,c.$$p=(g=function(a){g.$$s||this;return null==a&&(a=i),s["$<<"]("<?"+a+' table-width="'+v+'"?>')},g.$$s=p,g),c).call(f),s["$<<"]('<tgroup cols="'+a.$attr("colcount")+'">'),(c=(h=a.$columns()).$each,c.$$p=(j=function(a){j.$$s||this;return null==a&&(a=i),s["$<<"]('<colspec colname="col_'+a.$attr("colnumber")+'" colwidth="'+a.$attr(function(){return v!==!1&&v!==i?"colabswidth":"colpcwidth"}())+'*"/>')},j.$$s=p,j),c).call(h),(c=(k=(m=(n=r.get("TABLE_SECTIONS")).$select,m.$$p=(o=function(b){o.$$s||this;return null==b&&(b=i),a.$rows()["$[]"](b)["$empty?"]()["$!"]()},o.$$s=p,o),m).call(n)).$each,c.$$p=(l=function(b){var c,f,g,h=l.$$s||this;return null==b&&(b=i),b["$=="]("body")&&(q=!0),s["$<<"]("<t"+b+">"),(c=(f=a.$rows()["$[]"](b)).$each,c.$$p=(g=function(c){var f,h,j,k=g.$$s||this;return null==c&&(c=i),s["$<<"]("<row>"),(f=(h=c).$each,f.$$p=(j=function(c){var f,g,h,k,l,m=j.$$s||this,n=i,o=i,p=i,q=i,r=i,t=i,u=i,v=i,w=i;return null==c&&(c=i),n=function(){return(f=c["$attr?"]("halign"))===i||f.$$is_boolean&&1!=f?i:' align="'+c.$attr("halign")+'"'}(),o=function(){return(f=c["$attr?"]("valign"))===i||f.$$is_boolean&&1!=f?i:' valign="'+c.$attr("valign")+'"'}(),p=function(){return(f=c.$colspan())===i||f.$$is_boolean&&1!=f?i:' namest="col_'+(q=c.$column().$attr("colnumber"))+'" nameend="col_'+d(e(q,c.$colspan()),1)+'"'}(),r=function(){return(f=c.$rowspan())===i||f.$$is_boolean&&1!=f?i:' morerows="'+d(c.$rowspan(),1)+'"'}(),t="<entry"+n+o+p+r+">",u=function(){return b["$=="]("head")?c.$text():function(){return v=c.$style(),"asciidoc"["$==="](v)?c.$content():"verse"["$==="](v)?"<literallayout>"+c.$text()+"</literallayout>":"literal"["$==="](v)?'<literallayout class="monospaced">'+c.$text()+"</literallayout>":"header"["$==="](v)?(f=(g=c.$content()).$map,f.$$p=(h=function(a){h.$$s||this;return null==a&&(a=i),'<simpara><emphasis role="strong">'+a+"</emphasis></simpara>"},h.$$s=m,h),f).call(g).$join():(f=(k=c.$content()).$map,f.$$p=(l=function(a){l.$$s||this;return null==a&&(a=i),"<simpara>"+a+"</simpara>"},l.$$s=m,l),f).call(k).$join()}()}(),w=function(){return(f=a.$document()["$attr?"]("cellbgcolor"))===i||f.$$is_boolean&&1!=f?"</entry>":'<?dbfo bgcolor="'+a.$document().$attr("cellbgcolor")+'"?></entry>'}(),s["$<<"](""+t+u+w)},j.$$s=k,j),f).call(h),s["$<<"]("</row>")},g.$$s=h,g),c).call(f),s["$<<"]("</t"+b+">")},l.$$s=p,l),c).call(k),s["$<<"]("</tgroup>"),s["$<<"]("</"+u+">"),q!==!1&&q!==i||p.$warn("asciidoctor: WARNING: tables must have at least one body row"),b(s,r.get("EOL"))},a.defn(p,"$toc",q.$skip),q.$ulist=function(a){var c,d,e,f,g,h=this,j=i,k=i,l=i,m=i;return j=[],a.$style()["$=="]("bibliography")?(j["$<<"]("<bibliodiv"+h.$common_attributes(a.$id(),a.$role(),a.$reftext())+">"),(c=a["$title?"]())===i||c.$$is_boolean&&1!=c||j["$<<"]("<title>"+a.$title()+"</title>"),(c=(d=a.$items()).$each,c.$$p=(e=function(a){var b;e.$$s||this;return null==a&&(a=i),j["$<<"]("<bibliomixed>"),j["$<<"]("<bibliomisc>"+a.$text()+"</bibliomisc>"),(b=a["$blocks?"]())===i||b.$$is_boolean&&1!=b||j["$<<"](a.$content()),j["$<<"]("</bibliomixed>")},e.$$s=h,e),c).call(d),j["$<<"]("</bibliodiv>")):(k=function(){return(c=l=a["$option?"]("checklist"))===i||c.$$is_boolean&&1!=c?a.$style():"none"}(),m=function(){return k!==!1&&k!==i?' mark="'+k+'"':i}(),j["$<<"]("<itemizedlist"+h.$common_attributes(a.$id(),a.$role(),a.$reftext())+m+">"),(c=a["$title?"]())===i||c.$$is_boolean&&1!=c||j["$<<"]("<title>"+a.$title()+"</title>"),(c=(f=a.$items()).$each,c.$$p=(g=function(a){var b,c,d=(g.$$s||this,i);return null==a&&(a=i),d=function(){return(b=(c=l!==!1&&l!==i)?a["$attr?"]("checkbox"):c)===i||b.$$is_boolean&&1!=b?i:(b=a["$attr?"]("checked"))===i||b.$$is_boolean&&1!=b?"&#10063; ":"&#10003; "}(),j["$<<"]("<listitem>"),j["$<<"]("<simpara>"+d+a.$text()+"</simpara>"),(b=a["$blocks?"]())===i||b.$$is_boolean&&1!=b||j["$<<"](a.$content()),j["$<<"]("</listitem>")},g.$$s=h,g),c).call(f),j["$<<"]("</itemizedlist>")),b(j,r.get("EOL"))},q.$verse=function(a){var c,d,e=this,f=i;return f=[],f["$<<"]("<blockquote"+e.$common_attributes(a.$id(),a.$role(),a.$reftext())+">"),(c=a["$title?"]())===i||c.$$is_boolean&&1!=c||f["$<<"]("<title>"+a.$title()+"</title>"),(c=(d=a["$attr?"]("attribution"))!==!1&&d!==i?d:a["$attr?"]("citetitle"))===i||c.$$is_boolean&&1!=c||(f["$<<"]("<attribution>"),(c=a["$attr?"]("attribution"))===i||c.$$is_boolean&&1!=c||f["$<<"](a.$attr("attribution")),(c=a["$attr?"]("citetitle"))===i||c.$$is_boolean&&1!=c||f["$<<"]("<citetitle>"+a.$attr("citetitle")+"</citetitle>"),f["$<<"]("</attribution>")),f["$<<"]("<literallayout>"+a.$content()+"</literallayout>"),f["$<<"]("</blockquote>"),b(f,r.get("EOL"))},a.defn(p,"$video",q.$skip),q.$inline_anchor=function(a){var b,c=this,d=i,e=i,f=i,g=i,h=i;return function(){return d=a.$type(),"ref"["$==="](d)?"<anchor"+c.$common_attributes(a.$target(),i,a.$text())+"/>":"xref"["$==="](d)?(b=e=a.$attributes()["$[]"]("path"))===i||b.$$is_boolean&&1!=b?(f=(b=a.$attributes()["$[]"]("fragment"))!==!1&&b!==i?b:a.$target(),(b=g=a.$text())===i||b.$$is_boolean&&1!=b?'<xref linkend="'+f+'"/>':'<link linkend="'+f+'">'+g+"</link>"):'<link xlink:href="'+a.$target()+'">'+((b=a.$text())!==!1&&b!==i?b:e)+"</link>":"link"["$==="](d)?'<link xlink:href="'+a.$target()+'">'+a.$text()+"</link>":"bibref"["$==="](d)?(h=a.$target(),"<anchor"+c.$common_attributes(h,i,"["+h+"]")+"/>["+h+"]"):c.$warn("asciidoctor: WARNING: unknown anchor type: "+a.$type().$inspect())}()},q.$inline_break=function(a){return""+a.$text()+"<?asciidoc-br?>"},q.$inline_button=function(a){return"<guibutton>"+a.$text()+"</guibutton>"},q.$inline_callout=function(a){var b=this;return"<co"+b.$common_attributes(a.$id())+"/>"},q.$inline_footnote=function(a){var b=this;return a.$type()["$=="]("xref")?'<footnoteref linkend="'+a.$target()+'"/>':"<footnote"+b.$common_attributes(a.$id())+"><simpara>"+a.$text()+"</simpara></footnote>"},q.$inline_image=function(a){var b,c=i,d=i;return c=function(){return(b=a["$attr?"]("width"))===i||b.$$is_boolean&&1!=b?i:' contentwidth="'+a.$attr("width")+'"'}(),d=function(){return(b=a["$attr?"]("height"))===i||b.$$is_boolean&&1!=b?i:' contentdepth="'+a.$attr("height")+'"'}(),'<inlinemediaobject>\n<imageobject>\n<imagedata fileref="'+function(){return a.$type()["$=="]("icon")?a.$icon_uri(a.$target()):a.$image_uri(a.$target())}()+'"'+c+d+"/>\n</imageobject>\n<textobject><phrase>"+a.$attr("alt")+"</phrase></textobject>\n</inlinemediaobject>"},q.$inline_indexterm=function(a){var c=i,d=i,e=i;return a.$type()["$=="]("visible")?"<indexterm><primary>"+a.$text()+"</primary></indexterm>"+a.$text():(c=a.$attr("terms"),d=[],f(e=c.$size(),2)&&d["$<<"]("<indexterm>\n<primary>"+c["$[]"](0)+"</primary><secondary>"+c["$[]"](1)+"</secondary><tertiary>"+c["$[]"](2)+"</tertiary>\n</indexterm>"),f(e,1)&&d["$<<"]("<indexterm>\n<primary>"+c["$[]"](-2)+"</primary><secondary>"+c["$[]"](-1)+"</secondary>\n</indexterm>"),d["$<<"]("<indexterm>\n<primary>"+c["$[]"](-1)+"</primary>\n</indexterm>"),b(d,r.get("EOL")))},q.$inline_kbd=function(a){var b,c,d,e=this,f=i;return(f=a.$attr("keys")).$size()["$=="](1)?"<keycap>"+f["$[]"](0)+"</keycap>":"<keycombo>"+(b=(c=f).$map,b.$$p=(d=function(a){d.$$s||this;return null==a&&(a=i),"<keycap>"+a+"</keycap>"},d.$$s=e,d),b).call(c).$join()+"</keycombo>"},q.$inline_menu=function(a){var b,c,d,e=this,f=i,g=i,h=i,j=i;return f=a.$attr("menu"),(b=(g=a.$attr("submenus"))["$empty?"]()["$!"]())===i||b.$$is_boolean&&1!=b?(b=j=a.$attr("menuitem"))===i||b.$$is_boolean&&1!=b?"<guimenu>"+f+"</guimenu>":"<menuchoice><guimenu>"+f+"</guimenu> <guimenuitem>"+j+"</guimenuitem></menuchoice>":(h=(b=(c=g).$map,b.$$p=(d=function(a){d.$$s||this;return null==a&&(a=i),"<guisubmenu>"+a+"</guisubmenu> "},d.$$s=e,d),b).call(c).$join().$chop(),"<menuchoice><guimenu>"+f+"</guimenu> "+h+" <guimenuitem>"+a.$attr("menuitem")+"</guimenuitem></menuchoice>")},n=[[i,i,!0]],o=a.cdecl(r,"QUOTE_TAGS",l(["emphasis","strong","monospaced","superscript","subscript","double","single","mark"],{emphasis:["<emphasis>","</emphasis>",!0],strong:['<emphasis role="strong">',"</emphasis>",!0],monospaced:["<literal>","</literal>",!1],superscript:["<superscript>","</superscript>",!1],subscript:["<subscript>","</subscript>",!1],"double":["&#8220;","&#8221;",!0],single:["&#8216;","&#8217;",!0],mark:['<emphasis role="marked">',"</emphasis>",!1]})),o["$default="].apply(o,n),n[n.length-1],q.$inline_quoted=function(b){var c,d=this,e=i,f=i,g=i,h=i,j=i,k=i,l=i;return(e=b.$type())["$=="]("latexmath")?"<inlineequation>\n<alt><![CDATA["+b.$text()+"]]></alt>\n<inlinemediaobject><textobject><phrase><![CDATA["+b.$text()+"]]></phrase></textobject></inlinemediaobject>\n</inlineequation>":(c=a.to_ary(r.get("QUOTE_TAGS")["$[]"](e)),f=null==c[0]?i:c[0],g=null==c[1]?i:c[1],h=null==c[2]?i:c[2],j=b.$text(),l=(c=k=b.$role())===i||c.$$is_boolean&&1!=c?""+f+j+g:h!==!1&&h!==i?""+f+'<phrase role="'+k+'">'+j+"</phrase>"+g:""+f.$chop()+' role="'+k+'">'+j+g,(c=b.$id())===i||c.$$is_boolean&&1!=c?l:"<anchor"+d.$common_attributes(b.$id(),i,j)+"/>"+l)},q.$author_element=function(a,c){var d,e=i,f=i,g=i,h=i,j=i;return null==c&&(c=i),e=function(){return c!==!1&&c!==i?"firstname_"+c:"firstname"}(),f=function(){return c!==!1&&c!==i?"middlename_"+c:"middlename"}(),g=function(){return c!==!1&&c!==i?"lastname_"+c:"lastname"}(),h=function(){return c!==!1&&c!==i?"email_"+c:"email"}(),j=[],j["$<<"]("<author>"),j["$<<"]("<personname>"),(d=a["$attr?"](e))===i||d.$$is_boolean&&1!=d||j["$<<"]("<firstname>"+a.$attr(e)+"</firstname>"),(d=a["$attr?"](f))===i||d.$$is_boolean&&1!=d||j["$<<"]("<othername>"+a.$attr(f)+"</othername>"),(d=a["$attr?"](g))===i||d.$$is_boolean&&1!=d||j["$<<"]("<surname>"+a.$attr(g)+"</surname>"),j["$<<"]("</personname>"),(d=a["$attr?"](h))===i||d.$$is_boolean&&1!=d||j["$<<"]("<email>"+a.$attr(h)+"</email>"),j["$<<"]("</author>"),b(j,r.get("EOL"))},q.$common_attributes=function(a,b,c){var d=i;return null==b&&(b=i),null==c&&(c=i),d=function(){return a!==!1&&a!==i?' xml:id="'+a+'"':""}(),b!==!1&&b!==i&&(d=""+d+' role="'+b+'"'),c!==!1&&c!==i&&(d=""+d+' xreflabel="'+c+'"'),d},q.$doctype_declaration=function(a){return i},q.$document_info_element=function(a,c,d){var f,h,j,k,m,n=this,o=i,p=i,q=i;return null==d&&(d=!1),d!==!1&&d!==i||(c=""),o=[],o["$<<"]("<"+c+"info>"),((f=a.$notitle())===i||f.$$is_boolean&&1!=f)&&o["$<<"](n.$document_title_tags(a.$doctitle(l(["partition","use_fallback"],{partition:!0,use_fallback:!0})))),o["$<<"]("<date>"+function(){return(f=a["$attr?"]("revdate"))===i||f.$$is_boolean&&1!=f?a.$attr("docdate"):a.$attr("revdate")}()+"</date>"),(f=a["$has_header?"]())===i||f.$$is_boolean&&1!=f||((f=a["$attr?"]("author"))===i||f.$$is_boolean&&1!=f||(g(p=a.$attr("authorcount").$to_i(),2)?(o["$<<"](n.$author_element(a)),(f=a["$attr?"]("authorinitials"))===i||f.$$is_boolean&&1!=f||o["$<<"]("<authorinitials>"+a.$attr("authorinitials")+"</authorinitials>")):(o["$<<"]("<authorgroup>"),(f=(h=p).$times,f.$$p=(j=function(b){var c=j.$$s||this;return null==b&&(b=i),o["$<<"](c.$author_element(a,e(b,1)))},j.$$s=n,j),f).call(h),o["$<<"]("</authorgroup>"))),k=a["$attr?"]("revdate"),(f=k!==!1&&k!==i?(m=a["$attr?"]("revnumber"))!==!1&&m!==i?m:a["$attr?"]("revremark"):k)===i||f.$$is_boolean&&1!=f||(o["$<<"]("<revhistory>\n<revision>"),(f=a["$attr?"]("revnumber"))===i||f.$$is_boolean&&1!=f||o["$<<"]("<revnumber>"+a.$attr("revnumber")+"</revnumber>"),(f=a["$attr?"]("revdate"))===i||f.$$is_boolean&&1!=f||o["$<<"]("<date>"+a.$attr("revdate")+"</date>"),(f=a["$attr?"]("authorinitials"))===i||f.$$is_boolean&&1!=f||o["$<<"]("<authorinitials>"+a.$attr("authorinitials")+"</authorinitials>"),(f=a["$attr?"]("revremark"))===i||f.$$is_boolean&&1!=f||o["$<<"]("<revremark>"+a.$attr("revremark")+"</revremark>"),o["$<<"]("</revision>\n</revhistory>")),((f=(q=a.$docinfo())["$empty?"]())===i||f.$$is_boolean&&1!=f)&&o["$<<"](q),(f=a["$attr?"]("orgname"))===i||f.$$is_boolean&&1!=f||o["$<<"]("<orgname>"+a.$attr("orgname")+"</orgname>")),o["$<<"]("</"+c+"info>"),a.$doctype()["$=="]("manpage")&&(o["$<<"]("<refmeta>"),(f=a["$attr?"]("mantitle"))===i||f.$$is_boolean&&1!=f||o["$<<"]("<refentrytitle>"+a.$attr("mantitle")+"</refentrytitle>"),(f=a["$attr?"]("manvolnum"))===i||f.$$is_boolean&&1!=f||o["$<<"]("<manvolnum>"+a.$attr("manvolnum")+"</manvolnum>"),o["$<<"]("</refmeta>"),o["$<<"]("<refnamediv>"),(f=a["$attr?"]("manname"))===i||f.$$is_boolean&&1!=f||o["$<<"]("<refname>"+a.$attr("manname")+"</refname>"),(f=a["$attr?"]("manpurpose"))===i||f.$$is_boolean&&1!=f||o["$<<"]("<refpurpose>"+a.$attr("manpurpose")+"</refpurpose>"),o["$<<"]("</refnamediv>")),b(o,r.get("EOL"))},q.$document_ns_attributes=function(a){return' xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink" version="5.0"'},q.$lang_attribute_name=function(){return"xml:lang"},q.$document_title_tags=function(a){var b;return(b=a["$subtitle?"]())===i||b.$$is_boolean&&1!=b?"<title>"+a+"</title>":"<title>"+a.$main()+"</title>\n<subtitle>"+a.$subtitle()+"</subtitle>"},q.$resolve_content=function(a){return a.$content_model()["$=="]("compound")?a.$content():"<simpara>"+a.$content()+"</simpara>"},q.$title_tag=function(a,b){var c,d;return null==b&&(b=!0),(c=(d=b["$!"]())!==!1&&d!==i?d:a["$title?"]())===i||c.$$is_boolean&&1!=c?i:"<title>"+a.$title()+"</title>\n"},i&&"title_tag"}(n.get("Converter"),n.get("Converter").$$scope.get("BuiltIn"))}(h)},Opal.modules["asciidoctor/converter/docbook45"]=function(a){function b(a,b){return"number"==typeof a&&"number"==typeof b?a*b:a["$*"](b)}a.dynamic_require_severity="ignore";var c=a.top,d=a.nil,e=(a.breaker,a.slice),f=a.module,g=a.klass;return c.$require("asciidoctor/converter/docbook5"),function(c){var h=f(c,"Asciidoctor"),i=(h.$$proto,h.$$scope);!function(c,f){function h(){}var i,j,k=h=g(c,f,"DocBook45Converter",h),l=k.$$proto,m=k.$$scope;return l.$admonition=i=function(b){var c=e.call(arguments,0),d=this,f=i.$$p;return i.$$p=null,b.$parent().$context()["$=="]("example")?"<para>\n"+a.find_super_dispatcher(d,"admonition",i,f).apply(d,c)+"\n</para>":a.find_super_dispatcher(d,"admonition",i,f).apply(d,c)},l.$olist=function(a){var c,e,f,g=this,h=d,i=d,j=d;return h=[],i=function(){return(c=a.$style())===d||c.$$is_boolean&&1!=c?d:' numeration="'+a.$style()+'"'}(),j=function(){return(c=a["$attr?"]("start"))===d||c.$$is_boolean&&1!=c?d:' override="'+a.$attr("start")+'"'}(),h["$<<"]("<orderedlist"+g.$common_attributes(a.$id(),a.$role(),a.$reftext())+i+">"),(c=a["$title?"]())===d||c.$$is_boolean&&1!=c||h["$<<"]("<title>"+a.$title()+"</title>"),(c=(e=a.$items()).$each_with_index,c.$$p=(f=function(a,b){var c;f.$$s||this;return null==a&&(a=d),null==b&&(b=d),h["$<<"](function(){return b["$=="](0)?"<listitem"+j+">":"<listitem>"}()),h["$<<"]("<simpara>"+a.$text()+"</simpara>"),(c=a["$blocks?"]())===d||c.$$is_boolean&&1!=c||h["$<<"](a.$content()),h["$<<"]("</listitem>")},f.$$s=g,f),c).call(e),h["$<<"]("</orderedlist>"),b(h,m.get("EOL"))},l.$inline_anchor=function(a){var b,c=this,e=d,f=d,g=d,h=d,i=d;return function(){return e=a.$type(),"ref"["$==="](e)?"<anchor"+c.$common_attributes(a.$target(),d,a.$text())+"/>":"xref"["$==="](e)?(b=f=a.$attributes()["$[]"]("path"))===d||b.$$is_boolean&&1!=b?(g=(b=a.$attributes()["$[]"]("fragment"))!==!1&&b!==d?b:a.$target(),(b=h=a.$text())===d||b.$$is_boolean&&1!=b?'<xref linkend="'+g+'"/>':'<link linkend="'+g+'">'+h+"</link>"):'<ulink url="'+a.$target()+'">'+((b=a.$text())!==!1&&b!==d?b:f)+"</ulink>":"link"["$==="](e)?'<ulink url="'+a.$target()+'">'+a.$text()+"</ulink>":"bibref"["$==="](e)?(i=a.$target(),"<anchor"+c.$common_attributes(i,d,"["+i+"]")+"/>["+i+"]"):d}()},l.$author_element=function(a,c){var e,f=d,g=d,h=d,i=d,j=d;return null==c&&(c=d),f=function(){return c!==!1&&c!==d?"firstname_"+c:"firstname"}(),g=function(){return c!==!1&&c!==d?"middlename_"+c:"middlename"}(),h=function(){return c!==!1&&c!==d?"lastname_"+c:"lastname"}(),i=function(){return c!==!1&&c!==d?"email_"+c:"email"}(),j=[],j["$<<"]("<author>"),(e=a["$attr?"](f))===d||e.$$is_boolean&&1!=e||j["$<<"]("<firstname>"+a.$attr(f)+"</firstname>"),(e=a["$attr?"](g))===d||e.$$is_boolean&&1!=e||j["$<<"]("<othername>"+a.$attr(g)+"</othername>"),(e=a["$attr?"](h))===d||e.$$is_boolean&&1!=e||j["$<<"]("<surname>"+a.$attr(h)+"</surname>"),(e=a["$attr?"](i))===d||e.$$is_boolean&&1!=e||j["$<<"]("<email>"+a.$attr(i)+"</email>"),j["$<<"]("</author>"),b(j,m.get("EOL"))},l.$common_attributes=function(a,b,c){var e=d;return null==b&&(b=d),null==c&&(c=d),e=function(){return a!==!1&&a!==d?' id="'+a+'"':""}(),b!==!1&&b!==d&&(e=""+e+' role="'+b+'"'),c!==!1&&c!==d&&(e=""+e+' xreflabel="'+c+'"'),e},l.$doctype_declaration=function(a){return"<!DOCTYPE "+a+' PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">'},l.$document_info_element=j=function(b,c){var d=this;j.$$p;return j.$$p=null,a.find_super_dispatcher(d,"document_info_element",j,null).apply(d,[b,c,!0])},l.$lang_attribute_name=function(){return"lang"},l.$document_ns_attributes=function(a){var b,c=d;return(b=c=a.$attr("xmlns"))===d||b.$$is_boolean&&1!=b?d:(b=c["$empty?"]())===d||b.$$is_boolean&&1!=b?' xmlns="'+c+'"':' xmlns="http://docbook.org/ns/docbook"'},d&&"document_ns_attributes"}(i.get("Converter"),i.get("Converter").$$scope.get("DocBook5Converter"))}(c)},Opal.modules["asciidoctor/converter/docbook5"]=function(a){function b(a,b){return"number"==typeof a&&"number"==typeof b?a*b:a["$*"](b)}function c(a,b){return"number"==typeof a&&"number"==typeof b?b>=a:a["$<="](b)}function d(a,b){return"number"==typeof a&&"number"==typeof b?a-b:a["$-"](b)}function e(a,b){return"number"==typeof a&&"number"==typeof b?a+b:a["$+"](b)}function f(a,b){return"number"==typeof a&&"number"==typeof b?a>b:a["$>"](b)}function g(a,b){return"number"==typeof a&&"number"==typeof b?b>a:a["$<"](b)}a.dynamic_require_severity="ignore";var h=a.top,i=a.nil,j=(a.breaker,a.slice,a.module),k=a.klass,l=a.hash2;
-return function(h){var m=j(h,"Asciidoctor"),n=(m.$$proto,m.$$scope);!function(h,j){function m(){}var n,o,p=m=k(h,j,"DocBook5Converter",m),q=p.$$proto,r=p.$$scope;return q.asciimath_loaded=i,q.$document=function(a){var c,d=this,e=i,f=i,g=i,h=i,j=i;return e=[],(f=a.$doctype())["$=="]("manpage")&&(f="refentry"),e["$<<"]('<?xml version="1.0" encoding="UTF-8"?>'),(c=g=d.$doctype_declaration(f))===i||c.$$is_boolean&&1!=c||e["$<<"](g),(c=a["$attr?"]("toc"))===i||c.$$is_boolean&&1!=c||((c=a["$attr?"]("toclevels"))===i||c.$$is_boolean&&1!=c?e["$<<"]("<?asciidoc-toc?>"):e["$<<"]('<?asciidoc-toc maxdepth="'+a.$attr("toclevels")+'"?>')),(c=a["$attr?"]("sectnums"))===i||c.$$is_boolean&&1!=c||((c=a["$attr?"]("sectnumlevels"))===i||c.$$is_boolean&&1!=c?e["$<<"]("<?asciidoc-numbered?>"):e["$<<"]('<?asciidoc-numbered maxdepth="'+a.$attr("sectnumlevels")+'"?>')),h=function(){return(c=a["$attr?"]("nolang"))===i||c.$$is_boolean&&1!=c?" "+d.$lang_attribute_name()+'="'+a.$attr("lang","en")+'"':i}(),e["$<<"]("<"+f+d.$document_ns_attributes(a)+h+">"),e["$<<"](d.$document_info_element(a,f)),(c=a["$blocks?"]())===i||c.$$is_boolean&&1!=c||e["$<<"](a.$content()),((c=(j=a.$docinfo("footer"))["$empty?"]())===i||c.$$is_boolean&&1!=c)&&e["$<<"](j),e["$<<"]("</"+f+">"),b(e,r.get("EOL"))},a.defn(p,"$embedded",q.$content),q.$section=function(a){var b,d,e=this,f=i,g=i;return f=a.$document().$doctype(),g=function(){return(b=a.$special())===i||b.$$is_boolean&&1!=b?(b=(d=f["$=="]("book"))?c(a.$level(),1):d)===i||b.$$is_boolean&&1!=b?"section":function(){return a.$level()["$=="](0)?"part":"chapter"}():c(a.$level(),1)?a.$sectname():"section"}(),f["$=="]("manpage")&&(g["$=="]("section")?g="refsection":g["$=="]("synopsis")&&(g="refsynopsisdiv")),"<"+g+e.$common_attributes(a.$id(),a.$role(),a.$reftext())+">\n<title>"+a.$title()+"</title>\n"+a.$content()+"\n</"+g+">"},q.$admonition=function(a){var b=this,c=i;return"<"+(c=a.$attr("name"))+b.$common_attributes(a.$id(),a.$role(),a.$reftext())+">\n"+b.$title_tag(a)+b.$resolve_content(a)+"\n</"+c+">"},a.defn(p,"$audio",q.$skip),q.$colist=function(a){var c,d,e,f=this,g=i;return g=[],g["$<<"]("<calloutlist"+f.$common_attributes(a.$id(),a.$role(),a.$reftext())+">"),(c=a["$title?"]())===i||c.$$is_boolean&&1!=c||g["$<<"]("<title>"+a.$title()+"</title>"),(c=(d=a.$items()).$each,c.$$p=(e=function(a){var b;e.$$s||this;return null==a&&(a=i),g["$<<"]('<callout arearefs="'+a.$attr("coids")+'">'),g["$<<"]("<para>"+a.$text()+"</para>"),(b=a["$blocks?"]())===i||b.$$is_boolean&&1!=b||g["$<<"](a.$content()),g["$<<"]("</callout>")},e.$$s=f,e),c).call(d),g["$<<"]("</calloutlist>"),b(g,r.get("EOL"))},n=[l(["list","entry","term","item"],{list:"variablelist",entry:"varlistentry",term:"term",item:"listitem"})],o=a.cdecl(r,"DLIST_TAGS",l(["labeled","qanda","glossary"],{labeled:l(["list","entry","term","item"],{list:"variablelist",entry:"varlistentry",term:"term",item:"listitem"}),qanda:l(["list","entry","label","term","item"],{list:"qandaset",entry:"qandaentry",label:"question",term:"simpara",item:"answer"}),glossary:l(["list","entry","term","item"],{list:i,entry:"glossentry",term:"glossterm",item:"glossdef"})})),o["$default="].apply(o,n),n[n.length-1],q.$dlist=function(a){var c,d,e,f,g,h=this,j=i,k=i,l=i,m=i,n=i,o=i,p=i,q=i;return j=[],a.$style()["$=="]("horizontal")?(j["$<<"]("<"+(k=function(){return(c=a["$title?"]())===i||c.$$is_boolean&&1!=c?"informaltable":"table"}())+h.$common_attributes(a.$id(),a.$role(),a.$reftext())+' tabstyle="horizontal" frame="none" colsep="0" rowsep="0">\n'+h.$title_tag(a)+'<tgroup cols="2">\n<colspec colwidth="'+a.$attr("labelwidth",15)+'*"/>\n<colspec colwidth="'+a.$attr("itemwidth",85)+'*"/>\n<tbody valign="top">'),(c=(d=a.$items()).$each,c.$$p=(e=function(a,b){var c,d,f,g=e.$$s||this;return null==a&&(a=i),null==b&&(b=i),j["$<<"]("<row>\n<entry>"),(c=(d=[].concat(a)).$each,c.$$p=(f=function(a){f.$$s||this;return null==a&&(a=i),j["$<<"]("<simpara>"+a.$text()+"</simpara>")},f.$$s=g,f),c).call(d),j["$<<"]("</entry>\n<entry>"),((c=b["$nil?"]())===i||c.$$is_boolean&&1!=c)&&((c=b["$text?"]())===i||c.$$is_boolean&&1!=c||j["$<<"]("<simpara>"+b.$text()+"</simpara>"),(c=b["$blocks?"]())===i||c.$$is_boolean&&1!=c||j["$<<"](b.$content())),j["$<<"]("</entry>\n</row>")},e.$$s=h,e),c).call(d),j["$<<"]("</tbody>\n</tgroup>\n</"+k+">")):(l=r.get("DLIST_TAGS")["$[]"](a.$style()),m=l["$[]"]("list"),n=l["$[]"]("entry"),o=l["$[]"]("label"),p=l["$[]"]("term"),q=l["$[]"]("item"),m!==!1&&m!==i&&(j["$<<"]("<"+m+h.$common_attributes(a.$id(),a.$role(),a.$reftext())+">"),(c=a["$title?"]())===i||c.$$is_boolean&&1!=c||j["$<<"]("<title>"+a.$title()+"</title>")),(c=(f=a.$items()).$each,c.$$p=(g=function(a,b){var c,d,e,f=g.$$s||this;return null==a&&(a=i),null==b&&(b=i),j["$<<"]("<"+n+">"),o!==!1&&o!==i&&j["$<<"]("<"+o+">"),(c=(d=[].concat(a)).$each,c.$$p=(e=function(a){e.$$s||this;return null==a&&(a=i),j["$<<"]("<"+p+">"+a.$text()+"</"+p+">")},e.$$s=f,e),c).call(d),o!==!1&&o!==i&&j["$<<"]("</"+o+">"),j["$<<"]("<"+q+">"),((c=b["$nil?"]())===i||c.$$is_boolean&&1!=c)&&((c=b["$text?"]())===i||c.$$is_boolean&&1!=c||j["$<<"]("<simpara>"+b.$text()+"</simpara>"),(c=b["$blocks?"]())===i||c.$$is_boolean&&1!=c||j["$<<"](b.$content())),j["$<<"]("</"+q+">"),j["$<<"]("</"+n+">")},g.$$s=h,g),c).call(f),m!==!1&&m!==i&&j["$<<"]("</"+m+">")),b(j,r.get("EOL"))},q.$example=function(a){var b,c=this;return(b=a["$title?"]())===i||b.$$is_boolean&&1!=b?"<informalexample"+c.$common_attributes(a.$id(),a.$role(),a.$reftext())+">\n"+c.$resolve_content(a)+"\n</informalexample>":"<example"+c.$common_attributes(a.$id(),a.$role(),a.$reftext())+">\n<title>"+a.$title()+"</title>\n"+c.$resolve_content(a)+"\n</example>"},q.$floating_title=function(a){var b=this;return"<bridgehead"+b.$common_attributes(a.$id(),a.$role(),a.$reftext())+' renderas="sect'+a.$level()+'">'+a.$title()+"</bridgehead>"},q.$image=function(a){var b,c=this,d=i,e=i,f=i,g=i,h=i,j=i;return d=function(){return(b=a["$attr?"]("width"))===i||b.$$is_boolean&&1!=b?i:' contentwidth="'+a.$attr("width")+'"'}(),e=function(){return(b=a["$attr?"]("height"))===i||b.$$is_boolean&&1!=b?i:' contentdepth="'+a.$attr("height")+'"'}(),f=function(){return(b=a["$attr?"]("scaledwidth"))===i||b.$$is_boolean&&1!=b?i:' width="'+a.$attr("scaledwidth")+'" scalefit="1"'}(),g=function(){return(b=a["$attr?"]("scale"))===i||b.$$is_boolean&&1!=b?i:' scale="'+a.$attr("scale")+'"'}(),h=function(){return(b=a["$attr?"]("align"))===i||b.$$is_boolean&&1!=b?i:' align="'+a.$attr("align")+'"'}(),j='<mediaobject>\n<imageobject>\n<imagedata fileref="'+a.$image_uri(a.$attr("target"))+'"'+d+e+f+g+h+"/>\n</imageobject>\n<textobject><phrase>"+a.$attr("alt")+"</phrase></textobject>\n</mediaobject>",(b=a["$title?"]())===i||b.$$is_boolean&&1!=b?"<informalfigure"+c.$common_attributes(a.$id(),a.$role(),a.$reftext())+">\n"+j+"\n</informalfigure>":"<figure"+c.$common_attributes(a.$id(),a.$role(),a.$reftext())+">\n<title>"+a.$title()+"</title>\n"+j+"\n</figure>"},q.$listing=function(a){var b,c,d=this,e=i,f=i,g=i,h=i;return e=a["$title?"]()["$!"](),f=d.$common_attributes(a.$id(),a.$role(),a.$reftext()),(b=(c=a.$style()["$=="]("source"))?a["$attr?"]("language"):c)===i||b.$$is_boolean&&1!=b?h="<screen"+function(){return e!==!1&&e!==i?f:i}()+">"+a.$content()+"</screen>":(g=function(){return(b=a["$attr?"]("linenums"))===i||b.$$is_boolean&&1!=b?"unnumbered":"numbered"}(),h="<programlisting"+function(){return e!==!1&&e!==i?f:i}()+' language="'+a.$attr("language",i,!1)+'" linenumbering="'+g+'">'+a.$content()+"</programlisting>"),e!==!1&&e!==i?h:"<formalpara"+f+">\n<title>"+a.$title()+"</title>\n<para>\n"+h+"\n</para>\n</formalpara>"},q.$literal=function(a){var b,c=this;return(b=a["$title?"]())===i||b.$$is_boolean&&1!=b?"<literallayout"+c.$common_attributes(a.$id(),a.$role(),a.$reftext())+' class="monospaced">'+a.$content()+"</literallayout>":"<formalpara"+c.$common_attributes(a.$id(),a.$role(),a.$reftext())+">\n<title>"+a.$title()+'</title>\n<para>\n<literallayout class="monospaced">'+a.$content()+"</literallayout>\n</para>\n</formalpara>"},q.$stem=function(b){var c,d,e,f,g,h=this,j=i,k=i,m=i;return(c=j=b.$subs().$index("specialcharacters"))===i||c.$$is_boolean&&1!=c||b.$subs().$delete("specialcharacters"),k=b.$content(),j!==!1&&j!==i&&b.$subs().$insert(j,"specialcharacters"),m=b.$style()["$=="]("latexmath")?"<alt><![CDATA["+k+"]]></alt>\n<mediaobject><textobject><phrase></phrase></textobject></mediaobject>":(c=(d=b.$style()["$=="]("asciimath"))?(e=null==a.Object.$$scope.AsciiMath?i:"constant")!==!1&&e!==i?e:function(){return(f=(g=h.asciimath_loaded,null!=g&&g!==i?"instance-variable":i)["$!"]())===i||f.$$is_boolean&&1!=f?h.asciimath_loaded:h.asciimath_loaded=r.get("Helpers").$require_library("asciimath",!0,"warn")}():d)===i||c.$$is_boolean&&1!=c?"<mediaobject><textobject><phrase><![CDATA["+k+"]]></phrase></textobject></mediaobject>":a.get("AsciiMath").$parse(k).$to_mathml("mml:",l(["xmlns:mml"],{"xmlns:mml":"http://www.w3.org/1998/Math/MathML"})),(c=b["$title?"]())===i||c.$$is_boolean&&1!=c?"<informalequation"+h.$common_attributes(b.$id(),b.$role(),b.$reftext())+">\n"+m+"\n</informalequation>":"<equation"+h.$common_attributes(b.$id(),b.$role(),b.$reftext())+">\n<title>"+b.$title()+"</title>\n"+m+"\n</equation>"},q.$olist=function(a){var c,d,e,f=this,g=i,h=i,j=i;return g=[],h=function(){return(c=a.$style())===i||c.$$is_boolean&&1!=c?i:' numeration="'+a.$style()+'"'}(),j=function(){return(c=a["$attr?"]("start"))===i||c.$$is_boolean&&1!=c?i:' startingnumber="'+a.$attr("start")+'"'}(),g["$<<"]("<orderedlist"+f.$common_attributes(a.$id(),a.$role(),a.$reftext())+h+j+">"),(c=a["$title?"]())===i||c.$$is_boolean&&1!=c||g["$<<"]("<title>"+a.$title()+"</title>"),(c=(d=a.$items()).$each,c.$$p=(e=function(a){var b;e.$$s||this;return null==a&&(a=i),g["$<<"]("<listitem>"),g["$<<"]("<simpara>"+a.$text()+"</simpara>"),(b=a["$blocks?"]())===i||b.$$is_boolean&&1!=b||g["$<<"](a.$content()),g["$<<"]("</listitem>")},e.$$s=f,e),c).call(d),g["$<<"]("</orderedlist>"),b(g,r.get("EOL"))},q.$open=function(a){var b,c,d,e=this,f=i;return function(){return f=a.$style(),"abstract"["$==="](f)?(b=(c=a.$parent()["$=="](a.$document()))?a.$document()["$attr?"]("doctype","book"):c)===i||b.$$is_boolean&&1!=b?"<abstract>\n"+e.$title_tag(a)+e.$resolve_content(a)+"\n</abstract>":(e.$warn("asciidoctor: WARNING: abstract block cannot be used in a document without a title when doctype is book. Excluding block content."),""):"partintro"["$==="](f)?(c=(d=a.$level()["$=="](0))?a.$parent().$context()["$=="]("section"):d,(b=c!==!1&&c!==i?a.$document().$doctype()["$=="]("book"):c)===i||b.$$is_boolean&&1!=b?(e.$warn("asciidoctor: ERROR: partintro block can only be used when doctype is book and it's a child of a part section. Excluding block content."),""):"<partintro"+e.$common_attributes(a.$id(),a.$role(),a.$reftext())+">\n"+e.$title_tag(a)+e.$resolve_content(a)+"\n</partintro>"):a.$content()}()},q.$page_break=function(a){return"<simpara><?asciidoc-pagebreak?></simpara>"},q.$paragraph=function(a){var b,c=this;return(b=a["$title?"]())===i||b.$$is_boolean&&1!=b?"<simpara"+c.$common_attributes(a.$id(),a.$role(),a.$reftext())+">"+a.$content()+"</simpara>":"<formalpara"+c.$common_attributes(a.$id(),a.$role(),a.$reftext())+">\n<title>"+a.$title()+"</title>\n<para>"+a.$content()+"</para>\n</formalpara>"},q.$preamble=function(a){var b=this;return a.$document().$doctype()["$=="]("book")?"<preface"+b.$common_attributes(a.$id(),a.$role(),a.$reftext())+">\n"+b.$title_tag(a,!1)+a.$content()+"\n</preface>":a.$content()},q.$quote=function(a){var c,d,e=this,f=i;return f=[],f["$<<"]("<blockquote"+e.$common_attributes(a.$id(),a.$role(),a.$reftext())+">"),(c=a["$title?"]())===i||c.$$is_boolean&&1!=c||f["$<<"]("<title>"+a.$title()+"</title>"),(c=(d=a["$attr?"]("attribution"))!==!1&&d!==i?d:a["$attr?"]("citetitle"))===i||c.$$is_boolean&&1!=c||(f["$<<"]("<attribution>"),(c=a["$attr?"]("attribution"))===i||c.$$is_boolean&&1!=c||f["$<<"](a.$attr("attribution")),(c=a["$attr?"]("citetitle"))===i||c.$$is_boolean&&1!=c||f["$<<"]("<citetitle>"+a.$attr("citetitle")+"</citetitle>"),f["$<<"]("</attribution>")),f["$<<"](e.$resolve_content(a)),f["$<<"]("</blockquote>"),b(f,r.get("EOL"))},q.$thematic_break=function(a){return"<simpara><?asciidoc-hr?></simpara>"},q.$sidebar=function(a){var b=this;return"<sidebar"+b.$common_attributes(a.$id(),a.$role(),a.$reftext())+">\n"+b.$title_tag(a)+b.$resolve_content(a)+"\n</sidebar>"},a.cdecl(r,"TABLE_PI_NAMES",["dbhtml","dbfo","dblatex"]),a.cdecl(r,"TABLE_SECTIONS",["head","foot","body"]),q.$table=function(a){var c,f,g,h,j,k,l,m,n,o,p=this,q=i,s=i,t=i,u=i,v=i;return q=!1,s=[],t=function(){return(c=a["$option?"]("pgwide"))===i||c.$$is_boolean&&1!=c?i:' pgwide="1"'}(),s["$<<"]("<"+(u=function(){return(c=a["$title?"]())===i||c.$$is_boolean&&1!=c?"informaltable":"table"}())+p.$common_attributes(a.$id(),a.$role(),a.$reftext())+t+' frame="'+a.$attr("frame","all")+'" rowsep="'+function(){return(c=["none","cols"]["$include?"](a.$attr("grid")))===i||c.$$is_boolean&&1!=c?1:0}()+'" colsep="'+function(){return(c=["none","rows"]["$include?"](a.$attr("grid")))===i||c.$$is_boolean&&1!=c?1:0}()+'">'),(c=a["$option?"]("unbreakable"))===i||c.$$is_boolean&&1!=c?(c=a["$option?"]("breakable"))===i||c.$$is_boolean&&1!=c||s["$<<"]('<?dbfo keep-together="auto"?>'):s["$<<"]('<?dbfo keep-together="always"?>'),u["$=="]("table")&&s["$<<"]("<title>"+a.$title()+"</title>"),(c=v=function(){return(f=a["$attr?"]("width"))===i||f.$$is_boolean&&1!=f?i:a.$attr("width")}())===i||c.$$is_boolean&&1!=c||(c=(f=r.get("TABLE_PI_NAMES")).$each,c.$$p=(g=function(a){g.$$s||this;return null==a&&(a=i),s["$<<"]("<?"+a+' table-width="'+v+'"?>')},g.$$s=p,g),c).call(f),s["$<<"]('<tgroup cols="'+a.$attr("colcount")+'">'),(c=(h=a.$columns()).$each,c.$$p=(j=function(a){j.$$s||this;return null==a&&(a=i),s["$<<"]('<colspec colname="col_'+a.$attr("colnumber")+'" colwidth="'+a.$attr(function(){return v!==!1&&v!==i?"colabswidth":"colpcwidth"}())+'*"/>')},j.$$s=p,j),c).call(h),(c=(k=(m=(n=r.get("TABLE_SECTIONS")).$select,m.$$p=(o=function(b){o.$$s||this;return null==b&&(b=i),a.$rows()["$[]"](b)["$empty?"]()["$!"]()},o.$$s=p,o),m).call(n)).$each,c.$$p=(l=function(b){var c,f,g,h=l.$$s||this;return null==b&&(b=i),b["$=="]("body")&&(q=!0),s["$<<"]("<t"+b+">"),(c=(f=a.$rows()["$[]"](b)).$each,c.$$p=(g=function(c){var f,h,j,k=g.$$s||this;return null==c&&(c=i),s["$<<"]("<row>"),(f=(h=c).$each,f.$$p=(j=function(c){var f,g,h,k,l,m=j.$$s||this,n=i,o=i,p=i,q=i,r=i,t=i,u=i,v=i,w=i;return null==c&&(c=i),n=function(){return(f=c["$attr?"]("halign"))===i||f.$$is_boolean&&1!=f?i:' align="'+c.$attr("halign")+'"'}(),o=function(){return(f=c["$attr?"]("valign"))===i||f.$$is_boolean&&1!=f?i:' valign="'+c.$attr("valign")+'"'}(),p=function(){return(f=c.$colspan())===i||f.$$is_boolean&&1!=f?i:' namest="col_'+(q=c.$column().$attr("colnumber"))+'" nameend="col_'+d(e(q,c.$colspan()),1)+'"'}(),r=function(){return(f=c.$rowspan())===i||f.$$is_boolean&&1!=f?i:' morerows="'+d(c.$rowspan(),1)+'"'}(),t="<entry"+n+o+p+r+">",u=function(){return b["$=="]("head")?c.$text():function(){return v=c.$style(),"asciidoc"["$==="](v)?c.$content():"verse"["$==="](v)?"<literallayout>"+c.$text()+"</literallayout>":"literal"["$==="](v)?'<literallayout class="monospaced">'+c.$text()+"</literallayout>":"header"["$==="](v)?(f=(g=c.$content()).$map,f.$$p=(h=function(a){h.$$s||this;return null==a&&(a=i),'<simpara><emphasis role="strong">'+a+"</emphasis></simpara>"},h.$$s=m,h),f).call(g).$join():(f=(k=c.$content()).$map,f.$$p=(l=function(a){l.$$s||this;return null==a&&(a=i),"<simpara>"+a+"</simpara>"},l.$$s=m,l),f).call(k).$join()}()}(),w=function(){return(f=a.$document()["$attr?"]("cellbgcolor"))===i||f.$$is_boolean&&1!=f?"</entry>":'<?dbfo bgcolor="'+a.$document().$attr("cellbgcolor")+'"?></entry>'}(),s["$<<"](""+t+u+w)},j.$$s=k,j),f).call(h),s["$<<"]("</row>")},g.$$s=h,g),c).call(f),s["$<<"]("</t"+b+">")},l.$$s=p,l),c).call(k),s["$<<"]("</tgroup>"),s["$<<"]("</"+u+">"),q!==!1&&q!==i||p.$warn("asciidoctor: WARNING: tables must have at least one body row"),b(s,r.get("EOL"))},a.defn(p,"$toc",q.$skip),q.$ulist=function(a){var c,d,e,f,g,h=this,j=i,k=i,l=i,m=i;return j=[],a.$style()["$=="]("bibliography")?(j["$<<"]("<bibliodiv"+h.$common_attributes(a.$id(),a.$role(),a.$reftext())+">"),(c=a["$title?"]())===i||c.$$is_boolean&&1!=c||j["$<<"]("<title>"+a.$title()+"</title>"),(c=(d=a.$items()).$each,c.$$p=(e=function(a){var b;e.$$s||this;return null==a&&(a=i),j["$<<"]("<bibliomixed>"),j["$<<"]("<bibliomisc>"+a.$text()+"</bibliomisc>"),(b=a["$blocks?"]())===i||b.$$is_boolean&&1!=b||j["$<<"](a.$content()),j["$<<"]("</bibliomixed>")},e.$$s=h,e),c).call(d),j["$<<"]("</bibliodiv>")):(k=function(){return(c=l=a["$option?"]("checklist"))===i||c.$$is_boolean&&1!=c?a.$style():"none"}(),m=function(){return k!==!1&&k!==i?' mark="'+k+'"':i}(),j["$<<"]("<itemizedlist"+h.$common_attributes(a.$id(),a.$role(),a.$reftext())+m+">"),(c=a["$title?"]())===i||c.$$is_boolean&&1!=c||j["$<<"]("<title>"+a.$title()+"</title>"),(c=(f=a.$items()).$each,c.$$p=(g=function(a){var b,c,d=(g.$$s||this,i);return null==a&&(a=i),d=function(){return(b=(c=l!==!1&&l!==i)?a["$attr?"]("checkbox"):c)===i||b.$$is_boolean&&1!=b?i:(b=a["$attr?"]("checked"))===i||b.$$is_boolean&&1!=b?"&#10063; ":"&#10003; "}(),j["$<<"]("<listitem>"),j["$<<"]("<simpara>"+d+a.$text()+"</simpara>"),(b=a["$blocks?"]())===i||b.$$is_boolean&&1!=b||j["$<<"](a.$content()),j["$<<"]("</listitem>")},g.$$s=h,g),c).call(f),j["$<<"]("</itemizedlist>")),b(j,r.get("EOL"))},q.$verse=function(a){var c,d,e=this,f=i;return f=[],f["$<<"]("<blockquote"+e.$common_attributes(a.$id(),a.$role(),a.$reftext())+">"),(c=a["$title?"]())===i||c.$$is_boolean&&1!=c||f["$<<"]("<title>"+a.$title()+"</title>"),(c=(d=a["$attr?"]("attribution"))!==!1&&d!==i?d:a["$attr?"]("citetitle"))===i||c.$$is_boolean&&1!=c||(f["$<<"]("<attribution>"),(c=a["$attr?"]("attribution"))===i||c.$$is_boolean&&1!=c||f["$<<"](a.$attr("attribution")),(c=a["$attr?"]("citetitle"))===i||c.$$is_boolean&&1!=c||f["$<<"]("<citetitle>"+a.$attr("citetitle")+"</citetitle>"),f["$<<"]("</attribution>")),f["$<<"]("<literallayout>"+a.$content()+"</literallayout>"),f["$<<"]("</blockquote>"),b(f,r.get("EOL"))},a.defn(p,"$video",q.$skip),q.$inline_anchor=function(a){var b,c=this,d=i,e=i,f=i,g=i,h=i;return function(){return d=a.$type(),"ref"["$==="](d)?"<anchor"+c.$common_attributes(a.$target(),i,a.$text())+"/>":"xref"["$==="](d)?(b=e=a.$attributes()["$[]"]("path"))===i||b.$$is_boolean&&1!=b?(f=(b=a.$attributes()["$[]"]("fragment"))!==!1&&b!==i?b:a.$target(),(b=g=a.$text())===i||b.$$is_boolean&&1!=b?'<xref linkend="'+f+'"/>':'<link linkend="'+f+'">'+g+"</link>"):'<link xlink:href="'+a.$target()+'">'+((b=a.$text())!==!1&&b!==i?b:e)+"</link>":"link"["$==="](d)?'<link xlink:href="'+a.$target()+'">'+a.$text()+"</link>":"bibref"["$==="](d)?(h=a.$target(),"<anchor"+c.$common_attributes(h,i,"["+h+"]")+"/>["+h+"]"):c.$warn("asciidoctor: WARNING: unknown anchor type: "+a.$type().$inspect())}()},q.$inline_break=function(a){return""+a.$text()+"<?asciidoc-br?>"},q.$inline_button=function(a){return"<guibutton>"+a.$text()+"</guibutton>"},q.$inline_callout=function(a){var b=this;return"<co"+b.$common_attributes(a.$id())+"/>"},q.$inline_footnote=function(a){var b=this;return a.$type()["$=="]("xref")?'<footnoteref linkend="'+a.$target()+'"/>':"<footnote"+b.$common_attributes(a.$id())+"><simpara>"+a.$text()+"</simpara></footnote>"},q.$inline_image=function(a){var b,c=i,d=i;return c=function(){return(b=a["$attr?"]("width"))===i||b.$$is_boolean&&1!=b?i:' contentwidth="'+a.$attr("width")+'"'}(),d=function(){return(b=a["$attr?"]("height"))===i||b.$$is_boolean&&1!=b?i:' contentdepth="'+a.$attr("height")+'"'}(),'<inlinemediaobject>\n<imageobject>\n<imagedata fileref="'+function(){return a.$type()["$=="]("icon")?a.$icon_uri(a.$target()):a.$image_uri(a.$target())}()+'"'+c+d+"/>\n</imageobject>\n<textobject><phrase>"+a.$attr("alt")+"</phrase></textobject>\n</inlinemediaobject>"},q.$inline_indexterm=function(a){var c=i,d=i,e=i;return a.$type()["$=="]("visible")?"<indexterm><primary>"+a.$text()+"</primary></indexterm>"+a.$text():(c=a.$attr("terms"),d=[],f(e=c.$size(),2)&&d["$<<"]("<indexterm>\n<primary>"+c["$[]"](0)+"</primary><secondary>"+c["$[]"](1)+"</secondary><tertiary>"+c["$[]"](2)+"</tertiary>\n</indexterm>"),f(e,1)&&d["$<<"]("<indexterm>\n<primary>"+c["$[]"](-2)+"</primary><secondary>"+c["$[]"](-1)+"</secondary>\n</indexterm>"),d["$<<"]("<indexterm>\n<primary>"+c["$[]"](-1)+"</primary>\n</indexterm>"),b(d,r.get("EOL")))},q.$inline_kbd=function(a){var b,c,d,e=this,f=i;return(f=a.$attr("keys")).$size()["$=="](1)?"<keycap>"+f["$[]"](0)+"</keycap>":"<keycombo>"+(b=(c=f).$map,b.$$p=(d=function(a){d.$$s||this;return null==a&&(a=i),"<keycap>"+a+"</keycap>"},d.$$s=e,d),b).call(c).$join()+"</keycombo>"},q.$inline_menu=function(a){var b,c,d,e=this,f=i,g=i,h=i,j=i;return f=a.$attr("menu"),(b=(g=a.$attr("submenus"))["$empty?"]()["$!"]())===i||b.$$is_boolean&&1!=b?(b=j=a.$attr("menuitem"))===i||b.$$is_boolean&&1!=b?"<guimenu>"+f+"</guimenu>":"<menuchoice><guimenu>"+f+"</guimenu> <guimenuitem>"+j+"</guimenuitem></menuchoice>":(h=(b=(c=g).$map,b.$$p=(d=function(a){d.$$s||this;return null==a&&(a=i),"<guisubmenu>"+a+"</guisubmenu> "},d.$$s=e,d),b).call(c).$join().$chop(),"<menuchoice><guimenu>"+f+"</guimenu> "+h+" <guimenuitem>"+a.$attr("menuitem")+"</guimenuitem></menuchoice>")},n=[[i,i,!0]],o=a.cdecl(r,"QUOTE_TAGS",l(["emphasis","strong","monospaced","superscript","subscript","double","single","mark"],{emphasis:["<emphasis>","</emphasis>",!0],strong:['<emphasis role="strong">',"</emphasis>",!0],monospaced:["<literal>","</literal>",!1],superscript:["<superscript>","</superscript>",!1],subscript:["<subscript>","</subscript>",!1],"double":["&#8220;","&#8221;",!0],single:["&#8216;","&#8217;",!0],mark:['<emphasis role="marked">',"</emphasis>",!1]})),o["$default="].apply(o,n),n[n.length-1],q.$inline_quoted=function(b){var c,d=this,e=i,f=i,g=i,h=i,j=i,k=i,l=i;return(e=b.$type())["$=="]("latexmath")?"<inlineequation>\n<alt><![CDATA["+b.$text()+"]]></alt>\n<inlinemediaobject><textobject><phrase><![CDATA["+b.$text()+"]]></phrase></textobject></inlinemediaobject>\n</inlineequation>":(c=a.to_ary(r.get("QUOTE_TAGS")["$[]"](e)),f=null==c[0]?i:c[0],g=null==c[1]?i:c[1],h=null==c[2]?i:c[2],j=b.$text(),l=(c=k=b.$role())===i||c.$$is_boolean&&1!=c?""+f+j+g:h!==!1&&h!==i?""+f+'<phrase role="'+k+'">'+j+"</phrase>"+g:""+f.$chop()+' role="'+k+'">'+j+g,(c=b.$id())===i||c.$$is_boolean&&1!=c?l:"<anchor"+d.$common_attributes(b.$id(),i,j)+"/>"+l)},q.$author_element=function(a,c){var d,e=i,f=i,g=i,h=i,j=i;return null==c&&(c=i),e=function(){return c!==!1&&c!==i?"firstname_"+c:"firstname"}(),f=function(){return c!==!1&&c!==i?"middlename_"+c:"middlename"}(),g=function(){return c!==!1&&c!==i?"lastname_"+c:"lastname"}(),h=function(){return c!==!1&&c!==i?"email_"+c:"email"}(),j=[],j["$<<"]("<author>"),j["$<<"]("<personname>"),(d=a["$attr?"](e))===i||d.$$is_boolean&&1!=d||j["$<<"]("<firstname>"+a.$attr(e)+"</firstname>"),(d=a["$attr?"](f))===i||d.$$is_boolean&&1!=d||j["$<<"]("<othername>"+a.$attr(f)+"</othername>"),(d=a["$attr?"](g))===i||d.$$is_boolean&&1!=d||j["$<<"]("<surname>"+a.$attr(g)+"</surname>"),j["$<<"]("</personname>"),(d=a["$attr?"](h))===i||d.$$is_boolean&&1!=d||j["$<<"]("<email>"+a.$attr(h)+"</email>"),j["$<<"]("</author>"),b(j,r.get("EOL"))},q.$common_attributes=function(a,b,c){var d=i;return null==b&&(b=i),null==c&&(c=i),d=function(){return a!==!1&&a!==i?' xml:id="'+a+'"':""}(),b!==!1&&b!==i&&(d=""+d+' role="'+b+'"'),c!==!1&&c!==i&&(d=""+d+' xreflabel="'+c+'"'),d},q.$doctype_declaration=function(a){return i},q.$document_info_element=function(a,c,d){var f,h,j,k,m,n=this,o=i,p=i,q=i;return null==d&&(d=!1),d!==!1&&d!==i||(c=""),o=[],o["$<<"]("<"+c+"info>"),((f=a.$notitle())===i||f.$$is_boolean&&1!=f)&&o["$<<"](n.$document_title_tags(a.$doctitle(l(["partition","use_fallback"],{partition:!0,use_fallback:!0})))),o["$<<"]("<date>"+function(){return(f=a["$attr?"]("revdate"))===i||f.$$is_boolean&&1!=f?a.$attr("docdate"):a.$attr("revdate")}()+"</date>"),(f=a["$has_header?"]())===i||f.$$is_boolean&&1!=f||((f=a["$attr?"]("author"))===i||f.$$is_boolean&&1!=f||(g(p=a.$attr("authorcount").$to_i(),2)?(o["$<<"](n.$author_element(a)),(f=a["$attr?"]("authorinitials"))===i||f.$$is_boolean&&1!=f||o["$<<"]("<authorinitials>"+a.$attr("authorinitials")+"</authorinitials>")):(o["$<<"]("<authorgroup>"),(f=(h=p).$times,f.$$p=(j=function(b){var c=j.$$s||this;return null==b&&(b=i),o["$<<"](c.$author_element(a,e(b,1)))},j.$$s=n,j),f).call(h),o["$<<"]("</authorgroup>"))),k=a["$attr?"]("revdate"),(f=k!==!1&&k!==i?(m=a["$attr?"]("revnumber"))!==!1&&m!==i?m:a["$attr?"]("revremark"):k)===i||f.$$is_boolean&&1!=f||(o["$<<"]("<revhistory>\n<revision>"),(f=a["$attr?"]("revnumber"))===i||f.$$is_boolean&&1!=f||o["$<<"]("<revnumber>"+a.$attr("revnumber")+"</revnumber>"),(f=a["$attr?"]("revdate"))===i||f.$$is_boolean&&1!=f||o["$<<"]("<date>"+a.$attr("revdate")+"</date>"),(f=a["$attr?"]("authorinitials"))===i||f.$$is_boolean&&1!=f||o["$<<"]("<authorinitials>"+a.$attr("authorinitials")+"</authorinitials>"),(f=a["$attr?"]("revremark"))===i||f.$$is_boolean&&1!=f||o["$<<"]("<revremark>"+a.$attr("revremark")+"</revremark>"),o["$<<"]("</revision>\n</revhistory>")),((f=(q=a.$docinfo())["$empty?"]())===i||f.$$is_boolean&&1!=f)&&o["$<<"](q),(f=a["$attr?"]("orgname"))===i||f.$$is_boolean&&1!=f||o["$<<"]("<orgname>"+a.$attr("orgname")+"</orgname>")),o["$<<"]("</"+c+"info>"),a.$doctype()["$=="]("manpage")&&(o["$<<"]("<refmeta>"),(f=a["$attr?"]("mantitle"))===i||f.$$is_boolean&&1!=f||o["$<<"]("<refentrytitle>"+a.$attr("mantitle")+"</refentrytitle>"),(f=a["$attr?"]("manvolnum"))===i||f.$$is_boolean&&1!=f||o["$<<"]("<manvolnum>"+a.$attr("manvolnum")+"</manvolnum>"),o["$<<"]("</refmeta>"),o["$<<"]("<refnamediv>"),(f=a["$attr?"]("manname"))===i||f.$$is_boolean&&1!=f||o["$<<"]("<refname>"+a.$attr("manname")+"</refname>"),(f=a["$attr?"]("manpurpose"))===i||f.$$is_boolean&&1!=f||o["$<<"]("<refpurpose>"+a.$attr("manpurpose")+"</refpurpose>"),o["$<<"]("</refnamediv>")),b(o,r.get("EOL"))},q.$document_ns_attributes=function(a){return' xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink" version="5.0"'},q.$lang_attribute_name=function(){return"xml:lang"},q.$document_title_tags=function(a){var b;return(b=a["$subtitle?"]())===i||b.$$is_boolean&&1!=b?"<title>"+a+"</title>":"<title>"+a.$main()+"</title>\n<subtitle>"+a.$subtitle()+"</subtitle>"},q.$resolve_content=function(a){return a.$content_model()["$=="]("compound")?a.$content():"<simpara>"+a.$content()+"</simpara>"},q.$title_tag=function(a,b){var c,d;return null==b&&(b=!0),(c=(d=b["$!"]())!==!1&&d!==i?d:a["$title?"]())===i||c.$$is_boolean&&1!=c?i:"<title>"+a.$title()+"</title>\n"},i&&"title_tag"}(n.get("Converter"),n.get("Converter").$$scope.get("BuiltIn"))}(h)},("undefined"==typeof AsciidoctorConfiguration||"undefined"==typeof AsciidoctorConfiguration.autoRequireModule||Boolean(AsciidoctorConfiguration.autoRequireModule))&&(Opal.require("asciidoctor/converter"),Opal.require("asciidoctor/converter/docbook5"));
+// UMD Module
+(function (root, factory) {
+  if (typeof module === 'object' && module.exports) {
+    // Node. Does not work with strict CommonJS, but
+    // only CommonJS-like environments that support module.exports,
+    // like Node.
+    module.exports = factory;
+    module.exports.register = factory;
+  } else if (typeof define === 'function' && define.amd) {
+    // AMD. Register a named module.
+    define('asciidoctor/docbook', ['asciidoctor'], function () {
+      return factory();
+    });
+  } else {
+    // Browser globals (root is window)
+    if (typeof root.Asciidoctor === 'undefined') {
+      throw new Error('Asciidoctor.js should be loaded before Asciidoctor DocBook.js');
+    }
+    root.Asciidoctor.DocBook = factory;
+  }
+}(this, function () {
+/* Generated by Opal 0.11.99.dev */
+(function(Opal) {
+  function $rb_minus(lhs, rhs) {
+    return (typeof(lhs) === 'number' && typeof(rhs) === 'number') ? lhs - rhs : lhs['$-'](rhs);
+  }
+  function $rb_gt(lhs, rhs) {
+    return (typeof(lhs) === 'number' && typeof(rhs) === 'number') ? lhs > rhs : lhs['$>'](rhs);
+  }
+  function $rb_plus(lhs, rhs) {
+    return (typeof(lhs) === 'number' && typeof(rhs) === 'number') ? lhs + rhs : lhs['$+'](rhs);
+  }
+  var self = Opal.top, $nesting = [], nil = Opal.nil, $$$ = Opal.const_get_qualified, $$ = Opal.const_get_relative, $breaker = Opal.breaker, $slice = Opal.slice, $module = Opal.module, $klass = Opal.klass, $hash2 = Opal.hash2, $send = Opal.send, $truthy = Opal.truthy, $gvars = Opal.gvars;
+
+  Opal.add_stubs(['$register_for', '$default=', '$-', '$init_backend_traits', '$attr?', '$<<', '$attr', '$==', '$doctype', '$common_attributes', '$id', '$noheader', '$document_info_tag', '$empty?', '$docinfo', '$blocks?', '$content', '$join', '$document', '$[]', '$sectname', '$special', '$option?', '$title', '$role', '$reftext', '$title_tag', '$enclose_content', '$title?', '$each', '$items', '$text', '$style', '$text?', '$level', '$image_uri', '$alt', '$!', '$key?', '$attributes', '$to_i', '$index', '$subs', '$delete_at', '$>', '$insert', '$unshift', '$asciimath_available?', '$to_mathml', '$parse', '$===', '$parent', '$warn', '$logger', '$context', '$error', '$content_model', '$blockquote_tag', '$has_role?', '$include?', '$columns', '$to_h', '$rows', '$colspan', '$column', '$+', '$rowspan', '$type', '$target', '$inspect', '$icon_uri', '$map', '$size', '$chop', '$private', '$gsub', '$strip', '$squeeze', '$firstname', '$sub_replacements', '$middlename', '$lastname', '$email', '$notitle', '$subtitle?', '$doctitle', '$main', '$subtitle', '$=~', '$header?', '$authors', '$author_tag', '$initials', '$cover_tag', '$new', '$load_asciimath', '$nil?', '$require_library']);
+  return (function($base, $parent_nesting) {
+    var self = $module($base, 'Asciidoctor');
+
+    var $nesting = [self].concat($parent_nesting);
+
+    (function($base, $super, $parent_nesting) {
+      var self = $klass($base, $super, 'DocBook5Converter');
+
+      var $nesting = [self].concat($parent_nesting), $DocBook5Converter_initialize$1, $DocBook5Converter_convert_document$2, $DocBook5Converter_convert_section$3, $DocBook5Converter_convert_admonition$4, $DocBook5Converter_convert_colist$5, $DocBook5Converter_convert_dlist$7, $DocBook5Converter_convert_example$12, $DocBook5Converter_convert_floating_title$13, $DocBook5Converter_convert_image$14, $DocBook5Converter_convert_listing$15, $DocBook5Converter_convert_literal$16, $DocBook5Converter_convert_stem$17, $DocBook5Converter_convert_olist$18, $DocBook5Converter_convert_open$20, $DocBook5Converter_convert_page_break$21, $DocBook5Converter_convert_paragraph$22, $DocBook5Converter_convert_preamble$23, $DocBook5Converter_convert_quote$24, $DocBook5Converter_convert_thematic_break$26, $DocBook5Converter_convert_sidebar$27, $DocBook5Converter_convert_table$28, $DocBook5Converter_convert_ulist$34, $DocBook5Converter_convert_verse$37, $DocBook5Converter_convert_inline_anchor$39, $DocBook5Converter_convert_inline_break$40, $DocBook5Converter_convert_inline_button$41, $DocBook5Converter_convert_inline_callout$42, $DocBook5Converter_convert_inline_footnote$43, $DocBook5Converter_convert_inline_image$44, $DocBook5Converter_convert_inline_indexterm$45, $DocBook5Converter_convert_inline_kbd$47, $DocBook5Converter_convert_inline_menu$48, $DocBook5Converter_convert_inline_quoted$49, $DocBook5Converter_common_attributes$50, $DocBook5Converter_author_tag$51, $DocBook5Converter_document_info_tag$52, $DocBook5Converter_enclose_content$55, $DocBook5Converter_title_tag$56, $DocBook5Converter_cover_tag$57, $DocBook5Converter_blockquote_tag$58, $DocBook5Converter_asciimath_available$ques$59, $DocBook5Converter_load_asciimath$60, $writer = nil;
+
+      self.$$prototype.asciimath_status = nil;
+      
+      self.$register_for("docbook5");
+      
+      $writer = [$hash2(["list", "entry", "term", "item"], {"list": "variablelist", "entry": "varlistentry", "term": "term", "item": "listitem"})];
+      $send(Opal.const_set($nesting[0], 'DLIST_TAGS', $hash2(["qanda", "glossary"], {"qanda": $hash2(["list", "entry", "label", "term", "item"], {"list": "qandaset", "entry": "qandaentry", "label": "question", "term": "simpara", "item": "answer"}), "glossary": $hash2(["list", "entry", "term", "item"], {"list": nil, "entry": "glossentry", "term": "glossterm", "item": "glossdef"})})), 'default=', Opal.to_a($writer));
+      $writer[$rb_minus($writer["length"], 1)];;
+      
+      $writer = [["", "", true]];
+      $send(Opal.const_set($nesting[0], 'QUOTE_TAGS', $hash2(["monospaced", "emphasis", "strong", "double", "single", "mark", "superscript", "subscript"], {"monospaced": ["<literal>", "</literal>"], "emphasis": ["<emphasis>", "</emphasis>", true], "strong": ["<emphasis role=\"strong\">", "</emphasis>", true], "double": ["<quote>", "</quote>", true], "single": ["<quote>", "</quote>", true], "mark": ["<emphasis role=\"marked\">", "</emphasis>"], "superscript": ["<superscript>", "</superscript>"], "subscript": ["<subscript>", "</subscript>"]})), 'default=', Opal.to_a($writer));
+      $writer[$rb_minus($writer["length"], 1)];;
+      Opal.const_set($nesting[0], 'MANPAGE_SECTION_TAGS', $hash2(["section", "synopsis"], {"section": "refsection", "synopsis": "refsynopsisdiv"}));
+      Opal.const_set($nesting[0], 'TABLE_PI_NAMES', ["dbhtml", "dbfo", "dblatex"]);
+      Opal.const_set($nesting[0], 'CopyrightRx', /^(.+?)(?: ((?:\d{4}\-)?\d{4}))?$/);
+      Opal.const_set($nesting[0], 'ImageMacroRx', /^image::?(.+?)\[(.*?)\]$/);
+      
+      Opal.def(self, '$initialize', $DocBook5Converter_initialize$1 = function $$initialize(backend, opts) {
+        var self = this;
+
+        
+        
+        if (opts == null) {
+          opts = $hash2([], {});
+        };
+        self.backend = backend;
+        return self.$init_backend_traits($hash2(["basebackend", "filetype", "outfilesuffix", "supports_templates"], {"basebackend": "docbook", "filetype": "xml", "outfilesuffix": ".xml", "supports_templates": true}));
+      }, $DocBook5Converter_initialize$1.$$arity = -2);
+      
+      Opal.def(self, '$convert_document', $DocBook5Converter_convert_document$2 = function $$convert_document(node) {
+        var self = this, result = nil, lang_attribute = nil, root_tag_name = nil, docinfo_content = nil;
+
+        
+        result = ["<?xml version=\"1.0\" encoding=\"UTF-8\"?>"];
+        if ($truthy(node['$attr?']("toc"))) {
+          if ($truthy(node['$attr?']("toclevels"))) {
+            result['$<<']("" + "<?asciidoc-toc maxdepth=\"" + (node.$attr("toclevels")) + "\"?>")
+          } else {
+            result['$<<']("<?asciidoc-toc?>")
+          }};
+        if ($truthy(node['$attr?']("sectnums"))) {
+          if ($truthy(node['$attr?']("sectnumlevels"))) {
+            result['$<<']("" + "<?asciidoc-numbered maxdepth=\"" + (node.$attr("sectnumlevels")) + "\"?>")
+          } else {
+            result['$<<']("<?asciidoc-numbered?>")
+          }};
+        lang_attribute = (function() {if ($truthy(node['$attr?']("nolang"))) {
+          return ""
+        } else {
+          return "" + " xml:lang=\"" + (node.$attr("lang", "en")) + "\""
+        }; return nil; })();
+        if ((root_tag_name = node.$doctype())['$==']("manpage")) {
+          root_tag_name = "refentry"};
+        result['$<<']("" + "<" + (root_tag_name) + " xmlns=\"http://docbook.org/ns/docbook\" xmlns:xl=\"http://www.w3.org/1999/xlink\" version=\"5.0\"" + (lang_attribute) + (self.$common_attributes(node.$id())) + ">");
+        if ($truthy(node.$noheader())) {
+        } else {
+          result['$<<'](self.$document_info_tag(node))
+        };
+        if ($truthy((docinfo_content = node.$docinfo("header"))['$empty?']())) {
+        } else {
+          result['$<<'](docinfo_content)
+        };
+        if ($truthy(node['$blocks?']())) {
+          result['$<<'](node.$content())};
+        if ($truthy((docinfo_content = node.$docinfo("footer"))['$empty?']())) {
+        } else {
+          result['$<<'](docinfo_content)
+        };
+        result['$<<']("" + "</" + (root_tag_name) + ">");
+        return result.$join($$($nesting, 'LF'));
+      }, $DocBook5Converter_convert_document$2.$$arity = 1);
+      Opal.alias(self, "convert_embedded", "content_only");
+      
+      Opal.def(self, '$convert_section', $DocBook5Converter_convert_section$3 = function $$convert_section(node) {
+        var $a, self = this, tag_name = nil, title_el = nil;
+
+        
+        if (node.$document().$doctype()['$==']("manpage")) {
+          tag_name = ($truthy($a = $$($nesting, 'MANPAGE_SECTION_TAGS')['$[]']((tag_name = node.$sectname()))) ? $a : tag_name)
+        } else {
+          tag_name = node.$sectname()
+        };
+        title_el = (function() {if ($truthy(($truthy($a = node.$special()) ? node['$option?']("untitled") : $a))) {
+          return ""
+        } else {
+          return "" + "<title>" + (node.$title()) + "</title>\n"
+        }; return nil; })();
+        return "" + "<" + (tag_name) + (self.$common_attributes(node.$id(), node.$role(), node.$reftext())) + ">\n" + (title_el) + (node.$content()) + "\n" + "</" + (tag_name) + ">";
+      }, $DocBook5Converter_convert_section$3.$$arity = 1);
+      
+      Opal.def(self, '$convert_admonition', $DocBook5Converter_convert_admonition$4 = function $$convert_admonition(node) {
+        var self = this, tag_name = nil;
+
+        return "" + "<" + ((tag_name = node.$attr("name"))) + (self.$common_attributes(node.$id(), node.$role(), node.$reftext())) + ">\n" + (self.$title_tag(node)) + (self.$enclose_content(node)) + "\n" + "</" + (tag_name) + ">"
+      }, $DocBook5Converter_convert_admonition$4.$$arity = 1);
+      Opal.alias(self, "convert_audio", "skip");
+      
+      Opal.def(self, '$convert_colist', $DocBook5Converter_convert_colist$5 = function $$convert_colist(node) {
+        var $$6, self = this, result = nil;
+
+        
+        result = [];
+        result['$<<']("" + "<calloutlist" + (self.$common_attributes(node.$id(), node.$role(), node.$reftext())) + ">");
+        if ($truthy(node['$title?']())) {
+          result['$<<']("" + "<title>" + (node.$title()) + "</title>")};
+        $send(node.$items(), 'each', [], ($$6 = function(item){var self = $$6.$$s || this;
+
+        
+          
+          if (item == null) {
+            item = nil;
+          };
+          result['$<<']("" + "<callout arearefs=\"" + (item.$attr("coids")) + "\">");
+          result['$<<']("" + "<para>" + (item.$text()) + "</para>");
+          if ($truthy(item['$blocks?']())) {
+            result['$<<'](item.$content())};
+          return result['$<<']("</callout>");}, $$6.$$s = self, $$6.$$arity = 1, $$6));
+        result['$<<']("</calloutlist>");
+        return result.$join($$($nesting, 'LF'));
+      }, $DocBook5Converter_convert_colist$5.$$arity = 1);
+      
+      Opal.def(self, '$convert_dlist', $DocBook5Converter_convert_dlist$7 = function $$convert_dlist(node) {
+        var $$8, $$10, self = this, result = nil, tag_name = nil, tags = nil, list_tag = nil, entry_tag = nil, label_tag = nil, term_tag = nil, item_tag = nil;
+
+        
+        result = [];
+        if (node.$style()['$==']("horizontal")) {
+          
+          result['$<<']("" + "<" + ((tag_name = (function() {if ($truthy(node['$title?']())) {
+            return "table"
+          } else {
+            return "informaltable"
+          }; return nil; })())) + (self.$common_attributes(node.$id(), node.$role(), node.$reftext())) + " tabstyle=\"horizontal\" frame=\"none\" colsep=\"0\" rowsep=\"0\">\n" + (self.$title_tag(node)) + "<tgroup cols=\"2\">\n" + "<colspec colwidth=\"" + (node.$attr("labelwidth", 15)) + "*\"/>\n" + "<colspec colwidth=\"" + (node.$attr("itemwidth", 85)) + "*\"/>\n" + "<tbody valign=\"top\">");
+          $send(node.$items(), 'each', [], ($$8 = function(terms, dd){var self = $$8.$$s || this, $$9;
+
+          
+            
+            if (terms == null) {
+              terms = nil;
+            };
+            
+            if (dd == null) {
+              dd = nil;
+            };
+            result['$<<']("" + "<row>\n" + "<entry>");
+            $send(terms, 'each', [], ($$9 = function(dt){var self = $$9.$$s || this;
+
+            
+              
+              if (dt == null) {
+                dt = nil;
+              };
+              return result['$<<']("" + "<simpara>" + (dt.$text()) + "</simpara>");}, $$9.$$s = self, $$9.$$arity = 1, $$9));
+            result['$<<']("" + "</entry>\n" + "<entry>");
+            if ($truthy(dd)) {
+              
+              if ($truthy(dd['$text?']())) {
+                result['$<<']("" + "<simpara>" + (dd.$text()) + "</simpara>")};
+              if ($truthy(dd['$blocks?']())) {
+                result['$<<'](dd.$content())};};
+            return result['$<<']("" + "</entry>\n" + "</row>");}, $$8.$$s = self, $$8.$$arity = 2, $$8));
+          result['$<<']("" + "</tbody>\n" + "</tgroup>\n" + "</" + (tag_name) + ">");
+        } else {
+          
+          tags = $$($nesting, 'DLIST_TAGS')['$[]'](node.$style());
+          list_tag = tags['$[]']("list");
+          entry_tag = tags['$[]']("entry");
+          label_tag = tags['$[]']("label");
+          term_tag = tags['$[]']("term");
+          item_tag = tags['$[]']("item");
+          if ($truthy(list_tag)) {
+            
+            result['$<<']("" + "<" + (list_tag) + (self.$common_attributes(node.$id(), node.$role(), node.$reftext())) + ">");
+            if ($truthy(node['$title?']())) {
+              result['$<<']("" + "<title>" + (node.$title()) + "</title>")};};
+          $send(node.$items(), 'each', [], ($$10 = function(terms, dd){var self = $$10.$$s || this, $$11;
+
+          
+            
+            if (terms == null) {
+              terms = nil;
+            };
+            
+            if (dd == null) {
+              dd = nil;
+            };
+            result['$<<']("" + "<" + (entry_tag) + ">");
+            if ($truthy(label_tag)) {
+              result['$<<']("" + "<" + (label_tag) + ">")};
+            $send(terms, 'each', [], ($$11 = function(dt){var self = $$11.$$s || this;
+
+            
+              
+              if (dt == null) {
+                dt = nil;
+              };
+              return result['$<<']("" + "<" + (term_tag) + ">" + (dt.$text()) + "</" + (term_tag) + ">");}, $$11.$$s = self, $$11.$$arity = 1, $$11));
+            if ($truthy(label_tag)) {
+              result['$<<']("" + "</" + (label_tag) + ">")};
+            result['$<<']("" + "<" + (item_tag) + ">");
+            if ($truthy(dd)) {
+              
+              if ($truthy(dd['$text?']())) {
+                result['$<<']("" + "<simpara>" + (dd.$text()) + "</simpara>")};
+              if ($truthy(dd['$blocks?']())) {
+                result['$<<'](dd.$content())};};
+            result['$<<']("" + "</" + (item_tag) + ">");
+            return result['$<<']("" + "</" + (entry_tag) + ">");}, $$10.$$s = self, $$10.$$arity = 2, $$10));
+          if ($truthy(list_tag)) {
+            result['$<<']("" + "</" + (list_tag) + ">")};
+        };
+        return result.$join($$($nesting, 'LF'));
+      }, $DocBook5Converter_convert_dlist$7.$$arity = 1);
+      
+      Opal.def(self, '$convert_example', $DocBook5Converter_convert_example$12 = function $$convert_example(node) {
+        var self = this;
+
+        if ($truthy(node['$title?']())) {
+          return "" + "<example" + (self.$common_attributes(node.$id(), node.$role(), node.$reftext())) + ">\n" + "<title>" + (node.$title()) + "</title>\n" + (self.$enclose_content(node)) + "\n" + "</example>"
+        } else {
+          return "" + "<informalexample" + (self.$common_attributes(node.$id(), node.$role(), node.$reftext())) + ">\n" + (self.$enclose_content(node)) + "\n" + "</informalexample>"
+        }
+      }, $DocBook5Converter_convert_example$12.$$arity = 1);
+      
+      Opal.def(self, '$convert_floating_title', $DocBook5Converter_convert_floating_title$13 = function $$convert_floating_title(node) {
+        var self = this;
+
+        return "" + "<bridgehead" + (self.$common_attributes(node.$id(), node.$role(), node.$reftext())) + " renderas=\"sect" + (node.$level()) + "\">" + (node.$title()) + "</bridgehead>"
+      }, $DocBook5Converter_convert_floating_title$13.$$arity = 1);
+      
+      Opal.def(self, '$convert_image', $DocBook5Converter_convert_image$14 = function $$convert_image(node) {
+        var self = this, width_attribute = nil, depth_attribute = nil, scale_attribute = nil, align_attribute = nil, mediaobject = nil;
+
+        
+        if ($truthy(node['$attr?']("scaledwidth"))) {
+          
+          width_attribute = "" + " width=\"" + (node.$attr("scaledwidth")) + "\"";
+          depth_attribute = "";
+          scale_attribute = "";
+        } else if ($truthy(node['$attr?']("scale"))) {
+          scale_attribute = "" + " scale=\"" + (node.$attr("scale")) + "\""
+        } else {
+          
+          width_attribute = (function() {if ($truthy(node['$attr?']("width"))) {
+            return "" + " contentwidth=\"" + (node.$attr("width")) + "\""
+          } else {
+            return ""
+          }; return nil; })();
+          depth_attribute = (function() {if ($truthy(node['$attr?']("height"))) {
+            return "" + " contentdepth=\"" + (node.$attr("height")) + "\""
+          } else {
+            return ""
+          }; return nil; })();
+          scale_attribute = "";
+        };
+        align_attribute = (function() {if ($truthy(node['$attr?']("align"))) {
+          return "" + " align=\"" + (node.$attr("align")) + "\""
+        } else {
+          return ""
+        }; return nil; })();
+        mediaobject = "" + "<mediaobject>\n" + "<imageobject>\n" + "<imagedata fileref=\"" + (node.$image_uri(node.$attr("target"))) + "\"" + (width_attribute) + (depth_attribute) + (scale_attribute) + (align_attribute) + "/>\n" + "</imageobject>\n" + "<textobject><phrase>" + (node.$alt()) + "</phrase></textobject>\n" + "</mediaobject>";
+        if ($truthy(node['$title?']())) {
+          return "" + "<figure" + (self.$common_attributes(node.$id(), node.$role(), node.$reftext())) + ">\n" + "<title>" + (node.$title()) + "</title>\n" + (mediaobject) + "\n" + "</figure>"
+        } else {
+          return "" + "<informalfigure" + (self.$common_attributes(node.$id(), node.$role(), node.$reftext())) + ">\n" + (mediaobject) + "\n" + "</informalfigure>"
+        };
+      }, $DocBook5Converter_convert_image$14.$$arity = 1);
+      
+      Opal.def(self, '$convert_listing', $DocBook5Converter_convert_listing$15 = function $$convert_listing(node) {
+        var self = this, informal = nil, common_attrs = nil, attrs = nil, numbering_attrs = nil, wrapped_content = nil;
+
+        
+        informal = node['$title?']()['$!']();
+        common_attrs = self.$common_attributes(node.$id(), node.$role(), node.$reftext());
+        if (node.$style()['$==']("source")) {
+          
+          if ($truthy((attrs = node.$attributes())['$key?']("linenums"))) {
+            numbering_attrs = (function() {if ($truthy(attrs['$key?']("start"))) {
+              return "" + " linenumbering=\"numbered\" startinglinenumber=\"" + (attrs['$[]']("start").$to_i()) + "\""
+            } else {
+              return " linenumbering=\"numbered\""
+            }; return nil; })()
+          } else {
+            numbering_attrs = " linenumbering=\"unnumbered\""
+          };
+          if ($truthy(attrs['$key?']("language"))) {
+            wrapped_content = "" + "<programlisting" + ((function() {if ($truthy(informal)) {
+              return common_attrs
+            } else {
+              return ""
+            }; return nil; })()) + " language=\"" + (attrs['$[]']("language")) + "\"" + (numbering_attrs) + ">" + (node.$content()) + "</programlisting>"
+          } else {
+            wrapped_content = "" + "<screen" + ((function() {if ($truthy(informal)) {
+              return common_attrs
+            } else {
+              return ""
+            }; return nil; })()) + (numbering_attrs) + ">" + (node.$content()) + "</screen>"
+          };
+        } else {
+          wrapped_content = "" + "<screen" + ((function() {if ($truthy(informal)) {
+            return common_attrs
+          } else {
+            return ""
+          }; return nil; })()) + ">" + (node.$content()) + "</screen>"
+        };
+        if ($truthy(informal)) {
+          return wrapped_content
+        } else {
+          return "" + "<formalpara" + (common_attrs) + ">\n" + "<title>" + (node.$title()) + "</title>\n" + "<para>\n" + (wrapped_content) + "\n" + "</para>\n" + "</formalpara>"
+        };
+      }, $DocBook5Converter_convert_listing$15.$$arity = 1);
+      
+      Opal.def(self, '$convert_literal', $DocBook5Converter_convert_literal$16 = function $$convert_literal(node) {
+        var self = this;
+
+        if ($truthy(node['$title?']())) {
+          return "" + "<formalpara" + (self.$common_attributes(node.$id(), node.$role(), node.$reftext())) + ">\n" + "<title>" + (node.$title()) + "</title>\n" + "<para>\n" + "<literallayout class=\"monospaced\">" + (node.$content()) + "</literallayout>\n" + "</para>\n" + "</formalpara>"
+        } else {
+          return "" + "<literallayout" + (self.$common_attributes(node.$id(), node.$role(), node.$reftext())) + " class=\"monospaced\">" + (node.$content()) + "</literallayout>"
+        }
+      }, $DocBook5Converter_convert_literal$16.$$arity = 1);
+      Opal.alias(self, "convert_pass", "content_only");
+      
+      Opal.def(self, '$convert_stem', $DocBook5Converter_convert_stem$17 = function $$convert_stem(node) {
+        var $a, self = this, idx = nil, equation = nil, equation_data = nil;
+
+        
+        if ($truthy((idx = node.$subs().$index("specialcharacters")))) {
+          
+          node.$subs().$delete_at(idx);
+          equation = ($truthy($a = node.$content()) ? $a : "");
+          if ($truthy($rb_gt(idx, 0))) {
+            
+            node.$subs().$insert(idx, "specialcharacters");
+          } else {
+            
+            node.$subs().$unshift("specialcharacters");
+          };
+        } else {
+          equation = ($truthy($a = node.$content()) ? $a : "")
+        };
+        if (node.$style()['$==']("asciimath")) {
+          equation_data = (function() {if ($truthy(self['$asciimath_available?']())) {
+            
+            return $$$('::', 'AsciiMath').$parse(equation).$to_mathml("mml:", $hash2(["xmlns:mml"], {"xmlns:mml": "http://www.w3.org/1998/Math/MathML"}));
+          } else {
+            return "" + "<mathphrase><![CDATA[" + (equation) + "]]></mathphrase>"
+          }; return nil; })()
+        } else {
+          equation_data = "" + "<alt><![CDATA[" + (equation) + "]]></alt>\n" + "<mathphrase><![CDATA[" + (equation) + "]]></mathphrase>"
+        };
+        if ($truthy(node['$title?']())) {
+          return "" + "<equation" + (self.$common_attributes(node.$id(), node.$role(), node.$reftext())) + ">\n" + "<title>" + (node.$title()) + "</title>\n" + (equation_data) + "\n" + "</equation>"
+        } else {
+          return "" + "<informalequation" + (self.$common_attributes(node.$id(), node.$role(), node.$reftext())) + ">\n" + (equation_data) + "\n" + "</informalequation>"
+        };
+      }, $DocBook5Converter_convert_stem$17.$$arity = 1);
+      
+      Opal.def(self, '$convert_olist', $DocBook5Converter_convert_olist$18 = function $$convert_olist(node) {
+        var $$19, self = this, result = nil, num_attribute = nil, start_attribute = nil;
+
+        
+        result = [];
+        num_attribute = (function() {if ($truthy(node.$style())) {
+          return "" + " numeration=\"" + (node.$style()) + "\""
+        } else {
+          return ""
+        }; return nil; })();
+        start_attribute = (function() {if ($truthy(node['$attr?']("start"))) {
+          return "" + " startingnumber=\"" + (node.$attr("start")) + "\""
+        } else {
+          return ""
+        }; return nil; })();
+        result['$<<']("" + "<orderedlist" + (self.$common_attributes(node.$id(), node.$role(), node.$reftext())) + (num_attribute) + (start_attribute) + ">");
+        if ($truthy(node['$title?']())) {
+          result['$<<']("" + "<title>" + (node.$title()) + "</title>")};
+        $send(node.$items(), 'each', [], ($$19 = function(item){var self = $$19.$$s || this;
+
+        
+          
+          if (item == null) {
+            item = nil;
+          };
+          result['$<<']("" + "<listitem" + (self.$common_attributes(item.$id(), item.$role())) + ">");
+          result['$<<']("" + "<simpara>" + (item.$text()) + "</simpara>");
+          if ($truthy(item['$blocks?']())) {
+            result['$<<'](item.$content())};
+          return result['$<<']("</listitem>");}, $$19.$$s = self, $$19.$$arity = 1, $$19));
+        result['$<<']("</orderedlist>");
+        return result.$join($$($nesting, 'LF'));
+      }, $DocBook5Converter_convert_olist$18.$$arity = 1);
+      
+      Opal.def(self, '$convert_open', $DocBook5Converter_convert_open$20 = function $$convert_open(node) {
+        var $a, $b, self = this, $case = nil, id = nil, reftext = nil, role = nil, content_spacer = nil;
+
+        return (function() {$case = node.$style();
+        if ("abstract"['$===']($case)) {if ($truthy((($a = node.$parent()['$=='](node.$document())) ? node.$document().$doctype()['$==']("book") : node.$parent()['$=='](node.$document())))) {
+          
+          self.$logger().$warn("abstract block cannot be used in a document without a title when doctype is book. Excluding block content.");
+          return "";
+        } else {
+          return "" + "<abstract>\n" + (self.$title_tag(node)) + (self.$enclose_content(node)) + "\n" + "</abstract>"
+        }}
+        else if ("partintro"['$===']($case)) {if ($truthy(($truthy($a = (($b = node.$level()['$=='](0)) ? node.$parent().$context()['$==']("section") : node.$level()['$=='](0))) ? node.$document().$doctype()['$==']("book") : $a))) {
+          return "" + "<partintro" + (self.$common_attributes(node.$id(), node.$role(), node.$reftext())) + ">\n" + (self.$title_tag(node)) + (self.$enclose_content(node)) + "\n" + "</partintro>"
+        } else {
+          
+          self.$logger().$error("partintro block can only be used when doctype is book and must be a child of a book part. Excluding block content.");
+          return "";
+        }}
+        else {
+        if ($truthy((id = node.$id()))) {
+          reftext = node.$reftext()};
+        role = node.$role();
+        if ($truthy(node['$title?']())) {
+          return "" + "<formalpara" + (self.$common_attributes(id, role, reftext)) + ">\n" + "<title>" + (node.$title()) + "</title>\n" + "<para>" + ((content_spacer = (function() {if (node.$content_model()['$==']("compound")) {
+            return $$($nesting, 'LF')
+          } else {
+            return ""
+          }; return nil; })())) + (node.$content()) + (content_spacer) + "</para>\n" + "</formalpara>"
+        } else if ($truthy(($truthy($a = id) ? $a : role))) {
+          if (node.$content_model()['$==']("compound")) {
+            return "" + "<para" + (self.$common_attributes(id, role, reftext)) + ">\n" + (node.$content()) + "\n" + "</para>"
+          } else {
+            return "" + "<simpara" + (self.$common_attributes(id, role, reftext)) + ">" + (node.$content()) + "</simpara>"
+          }
+        } else {
+          return self.$enclose_content(node)
+        };}})()
+      }, $DocBook5Converter_convert_open$20.$$arity = 1);
+      
+      Opal.def(self, '$convert_page_break', $DocBook5Converter_convert_page_break$21 = function $$convert_page_break(node) {
+        var self = this;
+
+        return "<simpara><?asciidoc-pagebreak?></simpara>"
+      }, $DocBook5Converter_convert_page_break$21.$$arity = 1);
+      
+      Opal.def(self, '$convert_paragraph', $DocBook5Converter_convert_paragraph$22 = function $$convert_paragraph(node) {
+        var self = this;
+
+        if ($truthy(node['$title?']())) {
+          return "" + "<formalpara" + (self.$common_attributes(node.$id(), node.$role(), node.$reftext())) + ">\n" + "<title>" + (node.$title()) + "</title>\n" + "<para>" + (node.$content()) + "</para>\n" + "</formalpara>"
+        } else {
+          return "" + "<simpara" + (self.$common_attributes(node.$id(), node.$role(), node.$reftext())) + ">" + (node.$content()) + "</simpara>"
+        }
+      }, $DocBook5Converter_convert_paragraph$22.$$arity = 1);
+      
+      Opal.def(self, '$convert_preamble', $DocBook5Converter_convert_preamble$23 = function $$convert_preamble(node) {
+        var self = this;
+
+        if (node.$document().$doctype()['$==']("book")) {
+          return "" + "<preface" + (self.$common_attributes(node.$id(), node.$role(), node.$reftext())) + ">\n" + (self.$title_tag(node, false)) + (node.$content()) + "\n" + "</preface>"
+        } else {
+          return node.$content()
+        }
+      }, $DocBook5Converter_convert_preamble$23.$$arity = 1);
+      
+      Opal.def(self, '$convert_quote', $DocBook5Converter_convert_quote$24 = function $$convert_quote(node) {
+        var $a, $$25, self = this;
+
+        return $send(self, 'blockquote_tag', [node, ($truthy($a = node['$has_role?']("epigraph")) ? "epigraph" : $a)], ($$25 = function(){var self = $$25.$$s || this;
+
+        return self.$enclose_content(node)}, $$25.$$s = self, $$25.$$arity = 0, $$25))
+      }, $DocBook5Converter_convert_quote$24.$$arity = 1);
+      
+      Opal.def(self, '$convert_thematic_break', $DocBook5Converter_convert_thematic_break$26 = function $$convert_thematic_break(node) {
+        var self = this;
+
+        return "<simpara><?asciidoc-hr?></simpara>"
+      }, $DocBook5Converter_convert_thematic_break$26.$$arity = 1);
+      
+      Opal.def(self, '$convert_sidebar', $DocBook5Converter_convert_sidebar$27 = function $$convert_sidebar(node) {
+        var self = this;
+
+        return "" + "<sidebar" + (self.$common_attributes(node.$id(), node.$role(), node.$reftext())) + ">\n" + (self.$title_tag(node)) + (self.$enclose_content(node)) + "\n" + "</sidebar>"
+      }, $DocBook5Converter_convert_sidebar$27.$$arity = 1);
+      
+      Opal.def(self, '$convert_table', $DocBook5Converter_convert_table$28 = function $$convert_table(node) {
+        var $$29, $$30, $$31, self = this, has_body = nil, result = nil, pgwide_attribute = nil, frame = nil, grid = nil, tag_name = nil, col_width_key = nil, width = nil;
+
+        
+        has_body = false;
+        result = [];
+        pgwide_attribute = (function() {if ($truthy(node['$option?']("pgwide"))) {
+          return " pgwide=\"1\""
+        } else {
+          return ""
+        }; return nil; })();
+        if ((frame = node.$attr("frame", "all", "table-frame"))['$==']("ends")) {
+          frame = "topbot"};
+        grid = node.$attr("grid", nil, "table-grid");
+        result['$<<']("" + "<" + ((tag_name = (function() {if ($truthy(node['$title?']())) {
+          return "table"
+        } else {
+          return "informaltable"
+        }; return nil; })())) + (self.$common_attributes(node.$id(), node.$role(), node.$reftext())) + (pgwide_attribute) + " frame=\"" + (frame) + "\" rowsep=\"" + ((function() {if ($truthy(["none", "cols"]['$include?'](grid))) {
+          return 0
+        } else {
+          return 1
+        }; return nil; })()) + "\" colsep=\"" + ((function() {if ($truthy(["none", "rows"]['$include?'](grid))) {
+          return 0
+        } else {
+          return 1
+        }; return nil; })()) + "\"" + ((function() {if ($truthy(node['$attr?']("orientation", "landscape", "table-orientation"))) {
+          return " orient=\"land\""
+        } else {
+          return ""
+        }; return nil; })()) + ">");
+        if ($truthy(node['$option?']("unbreakable"))) {
+          result['$<<']("<?dbfo keep-together=\"always\"?>")
+        } else if ($truthy(node['$option?']("breakable"))) {
+          result['$<<']("<?dbfo keep-together=\"auto\"?>")};
+        if (tag_name['$==']("table")) {
+          result['$<<']("" + "<title>" + (node.$title()) + "</title>")};
+        col_width_key = (function() {if ($truthy((width = (function() {if ($truthy(node['$attr?']("width"))) {
+          
+          return node.$attr("width");
+        } else {
+          return nil
+        }; return nil; })()))) {
+          
+          $send($$($nesting, 'TABLE_PI_NAMES'), 'each', [], ($$29 = function(pi_name){var self = $$29.$$s || this;
+
+          
+            
+            if (pi_name == null) {
+              pi_name = nil;
+            };
+            return result['$<<']("" + "<?" + (pi_name) + " table-width=\"" + (width) + "\"?>");}, $$29.$$s = self, $$29.$$arity = 1, $$29));
+          return "colabswidth";
+        } else {
+          return "colpcwidth"
+        }; return nil; })();
+        result['$<<']("" + "<tgroup cols=\"" + (node.$attr("colcount")) + "\">");
+        $send(node.$columns(), 'each', [], ($$30 = function(col){var self = $$30.$$s || this;
+
+        
+          
+          if (col == null) {
+            col = nil;
+          };
+          return result['$<<']("" + "<colspec colname=\"col_" + (col.$attr("colnumber")) + "\" colwidth=\"" + (col.$attr(col_width_key)) + "*\"/>");}, $$30.$$s = self, $$30.$$arity = 1, $$30));
+        $send(node.$rows().$to_h(), 'each', [], ($$31 = function(tsec, rows){var self = $$31.$$s || this, $$32;
+
+        
+          
+          if (tsec == null) {
+            tsec = nil;
+          };
+          
+          if (rows == null) {
+            rows = nil;
+          };
+          if ($truthy(rows['$empty?']())) {
+            return nil;};
+          if (tsec['$==']("body")) {
+            has_body = true};
+          result['$<<']("" + "<t" + (tsec) + ">");
+          $send(rows, 'each', [], ($$32 = function(row){var self = $$32.$$s || this, $$33;
+
+          
+            
+            if (row == null) {
+              row = nil;
+            };
+            result['$<<']("<row>");
+            $send(row, 'each', [], ($$33 = function(cell){var self = $$33.$$s || this, halign_attribute = nil, valign_attribute = nil, colspan_attribute = nil, colnum = nil, rowspan_attribute = nil, entry_start = nil, cell_content = nil, $case = nil, entry_end = nil;
+
+            
+              
+              if (cell == null) {
+                cell = nil;
+              };
+              halign_attribute = (function() {if ($truthy(cell['$attr?']("halign"))) {
+                return "" + " align=\"" + (cell.$attr("halign")) + "\""
+              } else {
+                return ""
+              }; return nil; })();
+              valign_attribute = (function() {if ($truthy(cell['$attr?']("valign"))) {
+                return "" + " valign=\"" + (cell.$attr("valign")) + "\""
+              } else {
+                return ""
+              }; return nil; })();
+              colspan_attribute = (function() {if ($truthy(cell.$colspan())) {
+                return "" + " namest=\"col_" + ((colnum = cell.$column().$attr("colnumber"))) + "\" nameend=\"col_" + ($rb_minus($rb_plus(colnum, cell.$colspan()), 1)) + "\""
+              } else {
+                return ""
+              }; return nil; })();
+              rowspan_attribute = (function() {if ($truthy(cell.$rowspan())) {
+                return "" + " morerows=\"" + ($rb_minus(cell.$rowspan(), 1)) + "\""
+              } else {
+                return ""
+              }; return nil; })();
+              entry_start = "" + "<entry" + (halign_attribute) + (valign_attribute) + (colspan_attribute) + (rowspan_attribute) + ">";
+              if (tsec['$==']("head")) {
+                cell_content = cell.$text()
+              } else {
+                $case = cell.$style();
+                if ("asciidoc"['$===']($case)) {cell_content = cell.$content()}
+                else if ("literal"['$===']($case)) {cell_content = "" + "<literallayout class=\"monospaced\">" + (cell.$text()) + "</literallayout>"}
+                else if ("header"['$===']($case)) {cell_content = (function() {if ($truthy((cell_content = cell.$content())['$empty?']())) {
+                  return ""
+                } else {
+                  return "" + "<simpara><emphasis role=\"strong\">" + (cell_content.$join("</emphasis></simpara><simpara><emphasis role=\"strong\">")) + "</emphasis></simpara>"
+                }; return nil; })()}
+                else {cell_content = (function() {if ($truthy((cell_content = cell.$content())['$empty?']())) {
+                  return ""
+                } else {
+                  return "" + "<simpara>" + (cell_content.$join("</simpara><simpara>")) + "</simpara>"
+                }; return nil; })()}
+              };
+              entry_end = (function() {if ($truthy(node.$document()['$attr?']("cellbgcolor"))) {
+                return "" + "<?dbfo bgcolor=\"" + (node.$document().$attr("cellbgcolor")) + "\"?></entry>"
+              } else {
+                return "</entry>"
+              }; return nil; })();
+              return result['$<<']("" + (entry_start) + (cell_content) + (entry_end));}, $$33.$$s = self, $$33.$$arity = 1, $$33));
+            return result['$<<']("</row>");}, $$32.$$s = self, $$32.$$arity = 1, $$32));
+          return result['$<<']("" + "</t" + (tsec) + ">");}, $$31.$$s = self, $$31.$$arity = 2, $$31));
+        result['$<<']("</tgroup>");
+        result['$<<']("" + "</" + (tag_name) + ">");
+        if ($truthy(has_body)) {
+        } else {
+          self.$logger().$warn("tables must have at least one body row")
+        };
+        return result.$join($$($nesting, 'LF'));
+      }, $DocBook5Converter_convert_table$28.$$arity = 1);
+      Opal.alias(self, "convert_toc", "skip");
+      
+      Opal.def(self, '$convert_ulist', $DocBook5Converter_convert_ulist$34 = function $$convert_ulist(node) {
+        var $$35, $$36, self = this, result = nil, mark_type = nil, checklist = nil, mark_attribute = nil;
+
+        
+        result = [];
+        if (node.$style()['$==']("bibliography")) {
+          
+          result['$<<']("" + "<bibliodiv" + (self.$common_attributes(node.$id(), node.$role(), node.$reftext())) + ">");
+          if ($truthy(node['$title?']())) {
+            result['$<<']("" + "<title>" + (node.$title()) + "</title>")};
+          $send(node.$items(), 'each', [], ($$35 = function(item){var self = $$35.$$s || this;
+
+          
+            
+            if (item == null) {
+              item = nil;
+            };
+            result['$<<']("<bibliomixed>");
+            result['$<<']("" + "<bibliomisc>" + (item.$text()) + "</bibliomisc>");
+            if ($truthy(item['$blocks?']())) {
+              result['$<<'](item.$content())};
+            return result['$<<']("</bibliomixed>");}, $$35.$$s = self, $$35.$$arity = 1, $$35));
+          result['$<<']("</bibliodiv>");
+        } else {
+          
+          mark_type = (function() {if ($truthy((checklist = node['$option?']("checklist")))) {
+            return "none"
+          } else {
+            return node.$style()
+          }; return nil; })();
+          mark_attribute = (function() {if ($truthy(mark_type)) {
+            return "" + " mark=\"" + (mark_type) + "\""
+          } else {
+            return ""
+          }; return nil; })();
+          result['$<<']("" + "<itemizedlist" + (self.$common_attributes(node.$id(), node.$role(), node.$reftext())) + (mark_attribute) + ">");
+          if ($truthy(node['$title?']())) {
+            result['$<<']("" + "<title>" + (node.$title()) + "</title>")};
+          $send(node.$items(), 'each', [], ($$36 = function(item){var self = $$36.$$s || this, $a, text_marker = nil;
+
+          
+            
+            if (item == null) {
+              item = nil;
+            };
+            if ($truthy(($truthy($a = checklist) ? item['$attr?']("checkbox") : $a))) {
+              text_marker = (function() {if ($truthy(item['$attr?']("checked"))) {
+                return "&#10003; "
+              } else {
+                return "&#10063; "
+              }; return nil; })()};
+            result['$<<']("" + "<listitem" + (self.$common_attributes(item.$id(), item.$role())) + ">");
+            result['$<<']("" + "<simpara>" + (($truthy($a = text_marker) ? $a : "")) + (item.$text()) + "</simpara>");
+            if ($truthy(item['$blocks?']())) {
+              result['$<<'](item.$content())};
+            return result['$<<']("</listitem>");}, $$36.$$s = self, $$36.$$arity = 1, $$36));
+          result['$<<']("</itemizedlist>");
+        };
+        return result.$join($$($nesting, 'LF'));
+      }, $DocBook5Converter_convert_ulist$34.$$arity = 1);
+      
+      Opal.def(self, '$convert_verse', $DocBook5Converter_convert_verse$37 = function $$convert_verse(node) {
+        var $a, $$38, self = this;
+
+        return $send(self, 'blockquote_tag', [node, ($truthy($a = node['$has_role?']("epigraph")) ? "epigraph" : $a)], ($$38 = function(){var self = $$38.$$s || this;
+
+        return "" + "<literallayout>" + (node.$content()) + "</literallayout>"}, $$38.$$s = self, $$38.$$arity = 0, $$38))
+      }, $DocBook5Converter_convert_verse$37.$$arity = 1);
+      Opal.alias(self, "convert_video", "skip");
+      
+      Opal.def(self, '$convert_inline_anchor', $DocBook5Converter_convert_inline_anchor$39 = function $$convert_inline_anchor(node) {
+        var $a, self = this, $case = nil, id = nil, path = nil, linkend = nil, text = nil;
+
+        return (function() {$case = node.$type();
+        if ("ref"['$===']($case)) {return "" + "<anchor" + (self.$common_attributes((id = node.$id()), nil, ($truthy($a = node.$reftext()) ? $a : "" + "[" + (id) + "]"))) + "/>"}
+        else if ("xref"['$===']($case)) {if ($truthy((path = node.$attributes()['$[]']("path")))) {
+          return "" + "<link xl:href=\"" + (node.$target()) + "\">" + (($truthy($a = node.$text()) ? $a : path)) + "</link>"
+        } else {
+          
+          linkend = ($truthy($a = node.$attributes()['$[]']("fragment")) ? $a : node.$target());
+          if ($truthy((text = node.$text()))) {
+            return "" + "<link linkend=\"" + (linkend) + "\">" + (text) + "</link>"
+          } else {
+            return "" + "<xref linkend=\"" + (linkend) + "\"/>"
+          };
+        }}
+        else if ("link"['$===']($case)) {return "" + "<link xl:href=\"" + (node.$target()) + "\">" + (node.$text()) + "</link>"}
+        else if ("bibref"['$===']($case)) {return "" + "<anchor" + (self.$common_attributes(node.$id(), nil, "" + "[" + (($truthy($a = node.$reftext()) ? $a : node.$id())) + "]")) + "/>" + (text)}
+        else {
+        self.$logger().$warn("" + "unknown anchor type: " + (node.$type().$inspect()));
+        return nil;}})()
+      }, $DocBook5Converter_convert_inline_anchor$39.$$arity = 1);
+      
+      Opal.def(self, '$convert_inline_break', $DocBook5Converter_convert_inline_break$40 = function $$convert_inline_break(node) {
+        var self = this;
+
+        return "" + (node.$text()) + "<?asciidoc-br?>"
+      }, $DocBook5Converter_convert_inline_break$40.$$arity = 1);
+      
+      Opal.def(self, '$convert_inline_button', $DocBook5Converter_convert_inline_button$41 = function $$convert_inline_button(node) {
+        var self = this;
+
+        return "" + "<guibutton>" + (node.$text()) + "</guibutton>"
+      }, $DocBook5Converter_convert_inline_button$41.$$arity = 1);
+      
+      Opal.def(self, '$convert_inline_callout', $DocBook5Converter_convert_inline_callout$42 = function $$convert_inline_callout(node) {
+        var self = this;
+
+        return "" + "<co" + (self.$common_attributes(node.$id())) + "/>"
+      }, $DocBook5Converter_convert_inline_callout$42.$$arity = 1);
+      
+      Opal.def(self, '$convert_inline_footnote', $DocBook5Converter_convert_inline_footnote$43 = function $$convert_inline_footnote(node) {
+        var self = this;
+
+        if (node.$type()['$==']("xref")) {
+          return "" + "<footnoteref linkend=\"" + (node.$target()) + "\"/>"
+        } else {
+          return "" + "<footnote" + (self.$common_attributes(node.$id())) + "><simpara>" + (node.$text()) + "</simpara></footnote>"
+        }
+      }, $DocBook5Converter_convert_inline_footnote$43.$$arity = 1);
+      
+      Opal.def(self, '$convert_inline_image', $DocBook5Converter_convert_inline_image$44 = function $$convert_inline_image(node) {
+        var self = this, width_attribute = nil, depth_attribute = nil;
+
+        
+        width_attribute = (function() {if ($truthy(node['$attr?']("width"))) {
+          return "" + " contentwidth=\"" + (node.$attr("width")) + "\""
+        } else {
+          return ""
+        }; return nil; })();
+        depth_attribute = (function() {if ($truthy(node['$attr?']("height"))) {
+          return "" + " contentdepth=\"" + (node.$attr("height")) + "\""
+        } else {
+          return ""
+        }; return nil; })();
+        return "" + "<inlinemediaobject>\n" + "<imageobject>\n" + "<imagedata fileref=\"" + ((function() {if (node.$type()['$==']("icon")) {
+          
+          return node.$icon_uri(node.$target());
+        } else {
+          
+          return node.$image_uri(node.$target());
+        }; return nil; })()) + "\"" + (width_attribute) + (depth_attribute) + "/>\n" + "</imageobject>\n" + "<textobject><phrase>" + (node.$alt()) + "</phrase></textobject>\n" + "</inlinemediaobject>";
+      }, $DocBook5Converter_convert_inline_image$44.$$arity = 1);
+      
+      Opal.def(self, '$convert_inline_indexterm', $DocBook5Converter_convert_inline_indexterm$45 = function $$convert_inline_indexterm(node) {
+        var $$46, self = this, see = nil, rel = nil, see_also_list = nil, numterms = nil, terms = nil;
+
+        
+        if ($truthy((see = node.$attr("see")))) {
+          rel = "" + "\n<see>" + (see) + "</see>"
+        } else if ($truthy((see_also_list = node.$attr("see-also")))) {
+          rel = $send(see_also_list, 'map', [], ($$46 = function(see_also){var self = $$46.$$s || this;
+
+          
+            
+            if (see_also == null) {
+              see_also = nil;
+            };
+            return "" + "\n<seealso>" + (see_also) + "</seealso>";}, $$46.$$s = self, $$46.$$arity = 1, $$46)).$join()
+        } else {
+          rel = ""
+        };
+        if (node.$type()['$==']("visible")) {
+          return "" + "<indexterm>\n" + "<primary>" + (node.$text()) + "</primary>" + (rel) + "\n" + "</indexterm>" + (node.$text())
+        } else if ($truthy($rb_gt((numterms = (terms = node.$attr("terms")).$size()), 2))) {
+          return "" + "<indexterm>\n" + "<primary>" + (terms['$[]'](0)) + "</primary><secondary>" + (terms['$[]'](1)) + "</secondary><tertiary>" + (terms['$[]'](2)) + "</tertiary>" + (rel) + "\n" + "</indexterm>" + ((function() {if ($truthy(node.$document()['$option?']("indexterm-promotion"))) {
+            return "" + "\n" + "<indexterm>\n" + "<primary>" + (terms['$[]'](1)) + "</primary><secondary>" + (terms['$[]'](2)) + "</secondary>\n" + "</indexterm>\n" + "<indexterm>\n" + "<primary>" + (terms['$[]'](2)) + "</primary>\n" + "</indexterm>"
+          } else {
+            return ""
+          }; return nil; })())
+        } else if ($truthy($rb_gt(numterms, 1))) {
+          return "" + "<indexterm>\n" + "<primary>" + (terms['$[]'](0)) + "</primary><secondary>" + (terms['$[]'](1)) + "</secondary>" + (rel) + "\n" + "</indexterm>" + ((function() {if ($truthy(node.$document()['$option?']("indexterm-promotion"))) {
+            return "" + "\n" + "<indexterm>\n" + "<primary>" + (terms['$[]'](1)) + "</primary>\n" + "</indexterm>"
+          } else {
+            return ""
+          }; return nil; })())
+        } else {
+          return "" + "<indexterm>\n" + "<primary>" + (terms['$[]'](0)) + "</primary>" + (rel) + "\n" + "</indexterm>"
+        };
+      }, $DocBook5Converter_convert_inline_indexterm$45.$$arity = 1);
+      
+      Opal.def(self, '$convert_inline_kbd', $DocBook5Converter_convert_inline_kbd$47 = function $$convert_inline_kbd(node) {
+        var self = this, keys = nil;
+
+        if ((keys = node.$attr("keys")).$size()['$=='](1)) {
+          return "" + "<keycap>" + (keys['$[]'](0)) + "</keycap>"
+        } else {
+          return "" + "<keycombo><keycap>" + (keys.$join("</keycap><keycap>")) + "</keycap></keycombo>"
+        }
+      }, $DocBook5Converter_convert_inline_kbd$47.$$arity = 1);
+      
+      Opal.def(self, '$convert_inline_menu', $DocBook5Converter_convert_inline_menu$48 = function $$convert_inline_menu(node) {
+        var self = this, menu = nil, submenus = nil, menuitem = nil;
+
+        
+        menu = node.$attr("menu");
+        if ($truthy((submenus = node.$attr("submenus"))['$empty?']())) {
+          if ($truthy((menuitem = node.$attr("menuitem")))) {
+            return "" + "<menuchoice><guimenu>" + (menu) + "</guimenu> <guimenuitem>" + (menuitem) + "</guimenuitem></menuchoice>"
+          } else {
+            return "" + "<guimenu>" + (menu) + "</guimenu>"
+          }
+        } else {
+          return "" + "<menuchoice><guimenu>" + (menu) + "</guimenu> <guisubmenu>" + (submenus.$join("</guisubmenu> <guisubmenu>")) + "</guisubmenu> <guimenuitem>" + (node.$attr("menuitem")) + "</guimenuitem></menuchoice>"
+        };
+      }, $DocBook5Converter_convert_inline_menu$48.$$arity = 1);
+      
+      Opal.def(self, '$convert_inline_quoted', $DocBook5Converter_convert_inline_quoted$49 = function $$convert_inline_quoted(node) {
+        var $a, $b, self = this, type = nil, equation = nil, open = nil, close = nil, supports_phrase = nil, text = nil, quoted_text = nil;
+
+        if ((type = node.$type())['$==']("asciimath")) {
+          if ($truthy(self['$asciimath_available?']())) {
+            return "" + "<inlineequation>" + ($$$('::', 'AsciiMath').$parse(node.$text()).$to_mathml("mml:", $hash2(["xmlns:mml"], {"xmlns:mml": "http://www.w3.org/1998/Math/MathML"}))) + "</inlineequation>"
+          } else {
+            return "" + "<inlineequation><mathphrase><![CDATA[" + (node.$text()) + "]]></mathphrase></inlineequation>"
+          }
+        } else if (type['$==']("latexmath")) {
+          return "" + "<inlineequation><alt><![CDATA[" + ((equation = node.$text())) + "]]></alt><mathphrase><![CDATA[" + (equation) + "]]></mathphrase></inlineequation>"
+        } else {
+          
+          $b = $$($nesting, 'QUOTE_TAGS')['$[]'](type), $a = Opal.to_ary($b), (open = ($a[0] == null ? nil : $a[0])), (close = ($a[1] == null ? nil : $a[1])), (supports_phrase = ($a[2] == null ? nil : $a[2])), $b;
+          text = node.$text();
+          if ($truthy(node.$role())) {
+            if ($truthy(supports_phrase)) {
+              quoted_text = "" + (open) + "<phrase role=\"" + (node.$role()) + "\">" + (text) + "</phrase>" + (close)
+            } else {
+              quoted_text = "" + (open.$chop()) + " role=\"" + (node.$role()) + "\">" + (text) + (close)
+            }
+          } else {
+            quoted_text = "" + (open) + (text) + (close)
+          };
+          if ($truthy(node.$id())) {
+            return "" + "<anchor" + (self.$common_attributes(node.$id(), nil, text)) + "/>" + (quoted_text)
+          } else {
+            return quoted_text
+          };
+        }
+      }, $DocBook5Converter_convert_inline_quoted$49.$$arity = 1);
+      self.$private();
+      
+      Opal.def(self, '$common_attributes', $DocBook5Converter_common_attributes$50 = function $$common_attributes(id, role, reftext) {
+        var $a, self = this, attrs = nil;
+
+        
+        
+        if (role == null) {
+          role = nil;
+        };
+        
+        if (reftext == null) {
+          reftext = nil;
+        };
+        if ($truthy(id)) {
+          attrs = "" + " xml:id=\"" + (id) + "\"" + ((function() {if ($truthy(role)) {
+            return "" + " role=\"" + (role) + "\""
+          } else {
+            return ""
+          }; return nil; })())
+        } else if ($truthy(role)) {
+          attrs = "" + " role=\"" + (role) + "\""
+        } else {
+          attrs = ""
+        };
+        if ($truthy(reftext)) {
+          
+          if ($truthy(($truthy($a = reftext['$include?']("<")) ? (reftext = reftext.$gsub($$($nesting, 'XmlSanitizeRx'), ""))['$include?'](" ") : $a))) {
+            reftext = reftext.$squeeze(" ").$strip()};
+          if ($truthy(reftext['$include?']("\""))) {
+            reftext = reftext.$gsub("\"", "&quot;")};
+          return "" + (attrs) + " xreflabel=\"" + (reftext) + "\"";
+        } else {
+          return attrs
+        };
+      }, $DocBook5Converter_common_attributes$50.$$arity = -2);
+      
+      Opal.def(self, '$author_tag', $DocBook5Converter_author_tag$51 = function $$author_tag(doc, author) {
+        var self = this, result = nil;
+
+        
+        result = [];
+        result['$<<']("<author>");
+        result['$<<']("<personname>");
+        if ($truthy(author.$firstname())) {
+          result['$<<']("" + "<firstname>" + (doc.$sub_replacements(author.$firstname())) + "</firstname>")};
+        if ($truthy(author.$middlename())) {
+          result['$<<']("" + "<othername>" + (doc.$sub_replacements(author.$middlename())) + "</othername>")};
+        if ($truthy(author.$lastname())) {
+          result['$<<']("" + "<surname>" + (doc.$sub_replacements(author.$lastname())) + "</surname>")};
+        result['$<<']("</personname>");
+        if ($truthy(author.$email())) {
+          result['$<<']("" + "<email>" + (author.$email()) + "</email>")};
+        result['$<<']("</author>");
+        return result.$join($$($nesting, 'LF'));
+      }, $DocBook5Converter_author_tag$51.$$arity = 2);
+      
+      Opal.def(self, '$document_info_tag', $DocBook5Converter_document_info_tag$52 = function $$document_info_tag(doc) {
+        var $a, $$53, $b, $$54, self = this, result = nil, title = nil, date = nil, authors = nil, author = nil, back_cover_tag = nil, front_cover_tag = nil, docinfo_content = nil;
+
+        
+        result = ["<info>"];
+        if ($truthy(doc.$notitle())) {
+        } else if ($truthy((title = doc.$doctitle($hash2(["partition", "use_fallback"], {"partition": true, "use_fallback": true})))['$subtitle?']())) {
+          result['$<<']("" + "<title>" + (title.$main()) + "</title>\n" + "<subtitle>" + (title.$subtitle()) + "</subtitle>")
+        } else {
+          result['$<<']("" + "<title>" + (title) + "</title>")
+        };
+        if ($truthy((date = (function() {if ($truthy(doc['$attr?']("revdate"))) {
+          
+          return doc.$attr("revdate");
+        } else {
+          
+          if ($truthy(doc['$attr?']("reproducible"))) {
+            return nil
+          } else {
+            
+            return doc.$attr("docdate");
+          };
+        }; return nil; })()))) {
+          result['$<<']("" + "<date>" + (date) + "</date>")};
+        if ($truthy(doc['$attr?']("copyright"))) {
+          
+          $$($nesting, 'CopyrightRx')['$=~'](doc.$attr("copyright"));
+          result['$<<']("<copyright>");
+          result['$<<']("" + "<holder>" + ((($a = $gvars['~']) === nil ? nil : $a['$[]'](1))) + "</holder>");
+          if ($truthy((($a = $gvars['~']) === nil ? nil : $a['$[]'](2)))) {
+            result['$<<']("" + "<year>" + ((($a = $gvars['~']) === nil ? nil : $a['$[]'](2))) + "</year>")};
+          result['$<<']("</copyright>");};
+        if ($truthy(doc['$header?']())) {
+          
+          if ($truthy((authors = doc.$authors())['$empty?']())) {
+          } else if ($truthy($rb_gt(authors.$size(), 1))) {
+            
+            result['$<<']("<authorgroup>");
+            $send(authors, 'each', [], ($$53 = function(author){var self = $$53.$$s || this;
+
+            
+              
+              if (author == null) {
+                author = nil;
+              };
+              return result['$<<'](self.$author_tag(doc, author));}, $$53.$$s = self, $$53.$$arity = 1, $$53));
+            result['$<<']("</authorgroup>");
+          } else {
+            
+            result['$<<'](self.$author_tag(doc, (author = authors['$[]'](0))));
+            if ($truthy(author.$initials())) {
+              result['$<<']("" + "<authorinitials>" + (author.$initials()) + "</authorinitials>")};
+          };
+          if ($truthy(($truthy($a = doc['$attr?']("revdate")) ? ($truthy($b = doc['$attr?']("revnumber")) ? $b : doc['$attr?']("revremark")) : $a))) {
+            
+            result['$<<']("" + "<revhistory>\n" + "<revision>");
+            if ($truthy(doc['$attr?']("revnumber"))) {
+              result['$<<']("" + "<revnumber>" + (doc.$attr("revnumber")) + "</revnumber>")};
+            if ($truthy(doc['$attr?']("revdate"))) {
+              result['$<<']("" + "<date>" + (doc.$attr("revdate")) + "</date>")};
+            if ($truthy(doc['$attr?']("authorinitials"))) {
+              result['$<<']("" + "<authorinitials>" + (doc.$attr("authorinitials")) + "</authorinitials>")};
+            if ($truthy(doc['$attr?']("revremark"))) {
+              result['$<<']("" + "<revremark>" + (doc.$attr("revremark")) + "</revremark>")};
+            result['$<<']("" + "</revision>\n" + "</revhistory>");};
+          if ($truthy(($truthy($a = doc['$attr?']("front-cover-image")) ? $a : doc['$attr?']("back-cover-image")))) {
+            if ($truthy((back_cover_tag = self.$cover_tag(doc, "back")))) {
+              
+              result['$<<'](self.$cover_tag(doc, "front", true));
+              result['$<<'](back_cover_tag);
+            } else if ($truthy((front_cover_tag = self.$cover_tag(doc, "front")))) {
+              result['$<<'](front_cover_tag)}};
+          if ($truthy(doc['$attr?']("orgname"))) {
+            result['$<<']("" + "<orgname>" + (doc.$attr("orgname")) + "</orgname>")};
+          if ($truthy((docinfo_content = doc.$docinfo())['$empty?']())) {
+          } else {
+            result['$<<'](docinfo_content)
+          };};
+        result['$<<']("</info>");
+        if (doc.$doctype()['$==']("manpage")) {
+          
+          result['$<<']("<refmeta>");
+          if ($truthy(doc['$attr?']("mantitle"))) {
+            result['$<<']("" + "<refentrytitle>" + (doc.$attr("mantitle")) + "</refentrytitle>")};
+          if ($truthy(doc['$attr?']("manvolnum"))) {
+            result['$<<']("" + "<manvolnum>" + (doc.$attr("manvolnum")) + "</manvolnum>")};
+          result['$<<']("" + "<refmiscinfo class=\"source\">" + (doc.$attr("mansource", "&#160;")) + "</refmiscinfo>");
+          result['$<<']("" + "<refmiscinfo class=\"manual\">" + (doc.$attr("manmanual", "&#160;")) + "</refmiscinfo>");
+          result['$<<']("</refmeta>");
+          result['$<<']("<refnamediv>");
+          if ($truthy(doc['$attr?']("mannames"))) {
+            result = $rb_plus(result, $send(doc.$attr("mannames"), 'map', [], ($$54 = function(n){var self = $$54.$$s || this;
+
+            
+              
+              if (n == null) {
+                n = nil;
+              };
+              return "" + "<refname>" + (n) + "</refname>";}, $$54.$$s = self, $$54.$$arity = 1, $$54)))};
+          if ($truthy(doc['$attr?']("manpurpose"))) {
+            result['$<<']("" + "<refpurpose>" + (doc.$attr("manpurpose")) + "</refpurpose>")};
+          result['$<<']("</refnamediv>");};
+        return result.$join($$($nesting, 'LF'));
+      }, $DocBook5Converter_document_info_tag$52.$$arity = 1);
+      
+      Opal.def(self, '$enclose_content', $DocBook5Converter_enclose_content$55 = function $$enclose_content(node) {
+        var self = this;
+
+        if (node.$content_model()['$==']("compound")) {
+          return node.$content()
+        } else {
+          return "" + "<simpara>" + (node.$content()) + "</simpara>"
+        }
+      }, $DocBook5Converter_enclose_content$55.$$arity = 1);
+      
+      Opal.def(self, '$title_tag', $DocBook5Converter_title_tag$56 = function $$title_tag(node, optional) {
+        var $a, self = this;
+
+        
+        
+        if (optional == null) {
+          optional = true;
+        };
+        if ($truthy(($truthy($a = optional['$!']()) ? $a : node['$title?']()))) {
+          return "" + "<title>" + (node.$title()) + "</title>\n"
+        } else {
+          return ""
+        };
+      }, $DocBook5Converter_title_tag$56.$$arity = -2);
+      
+      Opal.def(self, '$cover_tag', $DocBook5Converter_cover_tag$57 = function $$cover_tag(doc, face, use_placeholder) {
+        var $a, self = this, cover_image = nil, width_attr = nil, depth_attr = nil, attrlist = nil, attrs = nil;
+
+        
+        
+        if (use_placeholder == null) {
+          use_placeholder = false;
+        };
+        if ($truthy((cover_image = doc.$attr("" + (face) + "-cover-image")))) {
+          
+          width_attr = "";
+          depth_attr = "";
+          if ($truthy(($truthy($a = cover_image['$include?'](":")) ? $$($nesting, 'ImageMacroRx')['$=~'](cover_image) : $a))) {
+            
+            attrlist = (($a = $gvars['~']) === nil ? nil : $a['$[]'](2));
+            cover_image = doc.$image_uri((($a = $gvars['~']) === nil ? nil : $a['$[]'](1)));
+            if ($truthy(attrlist['$empty?']())) {
+            } else {
+              
+              attrs = $$($nesting, 'AttributeList').$new(attrlist).$parse(["alt", "width", "height"]);
+              if ($truthy(attrs['$key?']("scaledwidth"))) {
+                width_attr = "" + " width=\"" + (attrs['$[]']("scaledwidth")) + "\""
+              } else {
+                
+                if ($truthy(attrs['$key?']("width"))) {
+                  width_attr = "" + " contentwidth=\"" + (attrs['$[]']("width")) + "\""};
+                if ($truthy(attrs['$key?']("height"))) {
+                  depth_attr = "" + " contentdepth=\"" + (attrs['$[]']("height")) + "\""};
+              };
+            };};
+          return "" + "<cover role=\"" + (face) + "\">\n" + "<mediaobject>\n" + "<imageobject>\n" + "<imagedata fileref=\"" + (cover_image) + "\"" + (width_attr) + (depth_attr) + "/>\n" + "</imageobject>\n" + "</mediaobject>\n" + "</cover>";
+        } else if ($truthy(use_placeholder)) {
+          return "" + "<cover role=\"" + (face) + "\"/>"
+        } else {
+          return nil
+        };
+      }, $DocBook5Converter_cover_tag$57.$$arity = -3);
+      
+      Opal.def(self, '$blockquote_tag', $DocBook5Converter_blockquote_tag$58 = function $$blockquote_tag(node, tag_name) {
+        var $a, $iter = $DocBook5Converter_blockquote_tag$58.$$p, $yield = $iter || nil, self = this, start_tag = nil, end_tag = nil, result = nil;
+
+        if ($iter) $DocBook5Converter_blockquote_tag$58.$$p = null;
+        
+        
+        if (tag_name == null) {
+          tag_name = nil;
+        };
+        if ($truthy(tag_name)) {
+          $a = ["" + "<" + (tag_name), "" + "</" + (tag_name) + ">"], (start_tag = $a[0]), (end_tag = $a[1]), $a
+        } else {
+          $a = ["<blockquote", "</blockquote>"], (start_tag = $a[0]), (end_tag = $a[1]), $a
+        };
+        result = ["" + (start_tag) + (self.$common_attributes(node.$id(), node.$role(), node.$reftext())) + ">"];
+        if ($truthy(node['$title?']())) {
+          result['$<<']("" + "<title>" + (node.$title()) + "</title>")};
+        if ($truthy(($truthy($a = node['$attr?']("attribution")) ? $a : node['$attr?']("citetitle")))) {
+          
+          result['$<<']("<attribution>");
+          if ($truthy(node['$attr?']("attribution"))) {
+            result['$<<'](node.$attr("attribution"))};
+          if ($truthy(node['$attr?']("citetitle"))) {
+            result['$<<']("" + "<citetitle>" + (node.$attr("citetitle")) + "</citetitle>")};
+          result['$<<']("</attribution>");};
+        result['$<<'](Opal.yieldX($yield, []));
+        result['$<<'](end_tag);
+        return result.$join($$($nesting, 'LF'));
+      }, $DocBook5Converter_blockquote_tag$58.$$arity = -2);
+      
+      Opal.def(self, '$asciimath_available?', $DocBook5Converter_asciimath_available$ques$59 = function() {
+        var $a, self = this;
+
+        return (self.asciimath_status = ($truthy($a = self.asciimath_status) ? $a : self.$load_asciimath()))['$==']("loaded")
+      }, $DocBook5Converter_asciimath_available$ques$59.$$arity = 0);
+      return (Opal.def(self, '$load_asciimath', $DocBook5Converter_load_asciimath$60 = function $$load_asciimath() {
+        var $a, $b, $c, $d, self = this;
+
+        if ($truthy(((($a = $$$('::', 'AsciiMath', 'skip_raise')) && ($b = $a, $b) && ($c = $b) && ((($d = $c.$parse) && !$d.$$stub) || $c['$respond_to_missing?']('parse'))) ? 'method' : nil))) {
+          return "loaded"
+        } else if ($truthy($$($nesting, 'Helpers').$require_library("asciimath", true, "warn")['$nil?']())) {
+          return "unavailable"
+        } else {
+          return "loaded"
+        }
+      }, $DocBook5Converter_load_asciimath$60.$$arity = 0), nil) && 'load_asciimath';
+    })($$($nesting, 'Converter'), $$$($$($nesting, 'Converter'), 'Base'), $nesting)
+  })($nesting[0], $nesting)
+})(Opal);
+
+
+  return {};
+}));

@@ -9,9 +9,13 @@ function asciimathWrap(content) {
 function parseStems(parent, content, nodename) {
 
     var finalContent = content;
-    var name = nodename;
+    var name = nodename.replace(/_/g,"");
 
     var stemAttr = parent.$document().$attr('stem', "asciimath");
+
+    console.log({stemAttr: stemAttr});
+
+    stemAttr = stemAttr.replace(/_/g,"");
 
     if (stemAttr == "asciimath") {
         // default is asciimath
