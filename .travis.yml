@@ -6,7 +6,7 @@ os:
 - linux
 script: mvn clean install -Pinstall-runtime
 before_script:
-- wget http://download-keycdn.ej-technologies.com/install4j/install4j_unix_7_0_1.tar.gz
+- wget http://download-keycdn.ej-technologies.com/install4j/install4j_unix_7_0_11.tar.gz
 - tar zxvf install4j_unix_7_0_11.tar.gz
 - wget -O /home/travis/build/asciidocfx/AsciidocFX/install4j7.0.11/jres/macosx-amd64-12.tar.gz
   http://asciidocfx.com/jres/macosx-amd64-12.tar.gz
