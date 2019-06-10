@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<install4j version="7.0.6" transformSequenceNumber="7">
+<install4j version="7.0.11" transformSequenceNumber="7">
   <directoryPresets config="/Users/usta/Documents/Certificates.p12" />
-  <application name="AsciidocFX" distributionSourceDir="" applicationId="7853-9376-5862-1224" mediaDir="target" mediaFilePattern="${compiler:sys.shortName}_${compiler:sys.platform}_${compiler:sys.version}" compression="4" lzmaCompression="true" pack200Compression="true" excludeSignedFromPacking="false" commonExternalFiles="false" createMd5Sums="true" shrinkRuntime="true" shortName="AsciidocFX" publisher="AsciidocFX" publisherWeb="http://asciidocfx.com" version="1.6.9" allPathsRelative="false" backupOnSave="false" autoSave="false" convertDotsToUnderscores="true" macSignature="????" macVolumeId="b98c377570068f5e" javaMinVersion="1.8" javaMaxVersion="1.8" allowBetaVM="true" jdkMode="runtimeJre" jdkName="">
+  <application name="AsciidocFX" distributionSourceDir="" applicationId="7853-9376-5862-1224" mediaDir="target" mediaFilePattern="${compiler:sys.shortName}_${compiler:sys.platform}_${compiler:sys.version}" compression="4" lzmaCompression="true" pack200Compression="true" excludeSignedFromPacking="false" commonExternalFiles="false" createMd5Sums="true" shrinkRuntime="true" shortName="AsciidocFX" publisher="AsciidocFX" publisherWeb="http://asciidocfx.com" version="1.7.0" allPathsRelative="false" backupOnSave="false" autoSave="false" convertDotsToUnderscores="true" macSignature="????" macVolumeId="b98c377570068f5e" javaMinVersion="12" javaMaxVersion="12" allowBetaVM="true" jdkMode="runtimeJre" jdkName="">
     <languages skipLanguageSelection="false" languageSelectionInPrincipalLanguage="false">
       <principalLanguage id="en" customLocalizationFile="" />
       <additionalLanguages />
@@ -13,7 +13,10 @@
     </searchSequence>
     <variables />
     <mergedProjects />
-    <codeSigning macEnabled="true" macPkcs12File="/home/travis/build/asciidocfx/AsciidocFX/code_sign.p12" windowsEnabled="false" windowsKeySource="pkcs12" windowsPvkFile="" windowsSpcFile="" windowsPkcs12File="" />
+    <codeSigning macEnabled="true" macPkcs12File="/home/travis/build/asciidocfx/AsciidocFX/code_sign.p12" windowsEnabled="false" windowsKeySource="pkcs12" windowsPvkFile="" windowsSpcFile="" windowsPkcs12File="" windowsPkcs11Library="" windowsPkcs11Slot="">
+      <windowsKeystoreIdentifier issuer="" serial="" subject="" />
+      <windowsPkcs11Identifier issuer="" serial="" subject="" />
+    </codeSigning>
   </application>
   <files keepModificationTimes="false" missingFilesStrategy="warn" globalExcludeSuffixes="bin" defaultOverwriteMode="1" defaultUninstallMode="0" launcherOverwriteMode="1" defaultFileMode="755" defaultDirMode="755">
     <filesets />
@@ -57,8 +60,70 @@
 -Dfile.encoding=UTF-8
 -Xms512M
 -Xmx1024M
--XX:+UseG1GC
--Djava.awt.headless=false</content>
+-Djava.awt.headless=false 
+--illegal-access=permit
+--add-exports
+javafx.graphics/com.sun.javafx.scene.layout=ALL-UNNAMED
+--add-exports
+javafx.graphics/com.sun.javafx.util=ALL-UNNAMED
+--add-exports
+javafx.graphics/com.sun.javafx.application=ALL-UNNAMED
+--add-exports
+javafx.graphics/com.sun.javafx.sg.prism=ALL-UNNAMED
+--add-exports
+javafx.graphics/com.sun.javafx.scene=ALL-UNNAMED
+--add-exports
+javafx.base/com.sun.javafx.logging=ALL-UNNAMED
+--add-exports
+javafx.graphics/com.sun.prism=ALL-UNNAMED
+--add-exports
+javafx.graphics/com.sun.glass.ui=ALL-UNNAMED
+--add-exports
+javafx.graphics/com.sun.javafx.geom.transform=ALL-UNNAMED
+--add-exports
+javafx.graphics/com.sun.javafx.tk=ALL-UNNAMED
+--add-exports
+javafx.graphics/com.sun.glass.utils=ALL-UNNAMED
+--add-exports
+javafx.graphics/com.sun.javafx.font=ALL-UNNAMED
+--add-exports
+javafx.graphics/com.sun.javafx.scene.input=ALL-UNNAMED
+--add-exports
+javafx.graphics/com.sun.javafx.scene.text=ALL-UNNAMED
+--add-exports
+javafx.base/com.sun.javafx.event=ALL-UNNAMED
+--add-exports
+javafx.base/com.sun.javafx.reflect=ALL-UNNAMED
+--add-exports
+javafx.base/com.sun.javafx.beans=ALL-UNNAMED
+--add-exports
+javafx.base/com.sun.javafx.collections=ALL-UNNAMED
+--add-exports
+javafx.graphics/com.sun.javafx.scene.traversal=ALL-UNNAMED
+--add-exports
+javafx.graphics/com.sun.javafx.stage=ALL-UNNAMED
+--add-exports
+javafx.base/com.sun.javafx.binding=ALL-UNNAMED
+--add-exports
+javafx.graphics/com.sun.javafx.geom=ALL-UNNAMED
+--add-exports
+javafx.graphics/com.sun.javafx.iio=ALL-UNNAMED
+--add-exports
+javafx.base/com.sun.javafx=ALL-UNNAMED
+--add-exports
+javafx.graphics/com.sun.prism.paint=ALL-UNNAMED
+--add-exports
+javafx.graphics/com.sun.scenario.effect=ALL-UNNAMED
+--add-exports
+javafx.graphics/com.sun.javafx.text=ALL-UNNAMED
+--add-opens
+javafx.base/com.sun.javafx.collections=ALL-UNNAMED
+--add-exports
+javafx.graphics/com.sun.scenario.effect.impl.prism=ALL-UNNAMED
+--add-exports
+javafx.graphics/com.sun.javafx.css=ALL-UNNAMED
+--add-exports
+javafx.base/com.sun.javafx.property=ALL-UNNAMED</content>
       </vmOptionsFile>
       <customScript mode="1" file="">
         <content />
@@ -99,6 +164,9 @@
             </formComponent>
           </styleOverride>
         </styleOverrides>
+        <customScript mode="1" file="">
+          <content />
+        </customScript>
         <launcherIds />
         <variables />
         <startup>
@@ -394,8 +462,8 @@ return console.askOkCancel(message, true);
                 <initScript />
                 <visibilityScript />
                 <externalParametrizationPropertyNames>
-                  <propertyName>showSelectionButtons</propertyName>
                   <propertyName>selectionButtonPosition</propertyName>
+                  <propertyName>showSelectionButtons</propertyName>
                 </externalParametrizationPropertyNames>
               </formComponent>
             </formComponents>
@@ -583,54 +651,6 @@ return console.askOkCancel(message, true);
                     </serializedBean>
                     <condition />
                   </action>
-                  <action name="" id="417" customizedId="" beanClass="com.install4j.runtime.beans.actions.desktop.CreateFileAssociationAction" enabled="true" commentSet="false" comment="" actionElevationType="elevated" rollbackBarrier="false" rollbackBarrierExitCode="1" multiExec="false" failureStrategy="1" errorMessage="">
-                    <serializedBean>
-                      <java class="java.beans.XMLDecoder">
-                        <object class="com.install4j.runtime.beans.actions.desktop.CreateFileAssociationAction">
-                          <void property="description">
-                            <string>Markdown File</string>
-                          </void>
-                          <void property="extension">
-                            <string>md</string>
-                          </void>
-                          <void property="launcherId">
-                            <string>24</string>
-                          </void>
-                          <void property="macRole">
-                            <object class="java.lang.Enum" method="valueOf">
-                              <class>com.install4j.runtime.beans.actions.desktop.MacAssociationRole</class>
-                              <string>EDITOR</string>
-                            </object>
-                          </void>
-                        </object>
-                      </java>
-                    </serializedBean>
-                    <condition />
-                  </action>
-                  <action name="" id="418" customizedId="" beanClass="com.install4j.runtime.beans.actions.desktop.CreateFileAssociationAction" enabled="true" commentSet="false" comment="" actionElevationType="elevated" rollbackBarrier="false" rollbackBarrierExitCode="1" multiExec="false" failureStrategy="1" errorMessage="">
-                    <serializedBean>
-                      <java class="java.beans.XMLDecoder">
-                        <object class="com.install4j.runtime.beans.actions.desktop.CreateFileAssociationAction">
-                          <void property="description">
-                            <string>Markdown File</string>
-                          </void>
-                          <void property="extension">
-                            <string>markdown</string>
-                          </void>
-                          <void property="launcherId">
-                            <string>24</string>
-                          </void>
-                          <void property="macRole">
-                            <object class="java.lang.Enum" method="valueOf">
-                              <class>com.install4j.runtime.beans.actions.desktop.MacAssociationRole</class>
-                              <string>EDITOR</string>
-                            </object>
-                          </void>
-                        </object>
-                      </java>
-                    </serializedBean>
-                    <condition />
-                  </action>
                 </beans>
               </group>
             </actions>
@@ -712,6 +732,9 @@ return console.askOkCancel(message, true);
             </formComponent>
           </styleOverride>
         </styleOverrides>
+        <customScript mode="1" file="">
+          <content />
+        </customScript>
         <launcherIds />
         <variables />
         <startup>
@@ -924,6 +947,9 @@ return console.askYesNo(message, true);
           </java>
         </serializedBean>
         <styleOverrides />
+        <customScript mode="1" file="">
+          <content />
+        </customScript>
         <launcherIds />
         <variables />
         <startup>
@@ -2335,7 +2361,7 @@ return true;</string>
     </styles>
   </installerGui>
   <mediaSets>
-    <windows name="Windows Installer" id="86" customizedId="" mediaFileName="AsciidocFX_Windows" installDir="${compiler:sys.shortName}" overridePrincipalLanguage="false" jreBitType="64" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" downloadURL="" includeAllDownloadableComponents="false" includedJRE="windows-amd64-1.8.0_181" manualJREEntry="false" bundleType="1" jreURL="" jreShared="false" directDownload="false" installOnlyIfNecessary="false" customInstallBaseDir="" contentFilesType="1" verifyIntegrity="true">
+    <windows name="Windows Installer" id="86" customizedId="" mediaFileName="AsciidocFX_Windows" installDir="${compiler:sys.shortName}" overridePrincipalLanguage="false" jreBitType="64" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" downloadURL="" includeAllDownloadableComponents="false" includedJRE="windows-amd64-12" manualJREEntry="false" bundleType="1" jreURL="" jreShared="false" directDownload="false" installOnlyIfNecessary="false" customInstallBaseDir="" contentFilesType="1" verifyIntegrity="true">
       <excludedComponents />
       <includedDownloadableComponents />
       <excludedLaunchers />
@@ -2348,7 +2374,7 @@ return true;</string>
         <customAttributes />
       </autoUpdate>
     </windows>
-    <macosFolder name="Mac OS X Folder" id="921" customizedId="" mediaFileName="AsciidocFX_Mac" installDir="${compiler:sys.fullName}" overridePrincipalLanguage="false" jreBitType="all" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" downloadURL="" includeAllDownloadableComponents="false" includedJRE="macosx-amd64-1.8.0_181_unpacked" manualJREEntry="false" bundleType="1" jreURL="" jreShared="false" directDownload="false" installOnlyIfNecessary="false" requiredVmIdPrefix="" customInstallBaseDir="" contentFilesType="1" installerName="${i18n:InstallerName(${compiler:sys.fullName})}" volumeName="${compiler:sys.shortName}" compressDmg="false" signLaunchers="false">
+    <macosFolder name="Mac OS X Folder" id="921" customizedId="" mediaFileName="AsciidocFX_Mac" installDir="${compiler:sys.fullName}" overridePrincipalLanguage="false" jreBitType="all" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" downloadURL="" includeAllDownloadableComponents="false" includedJRE="macosx-amd64-12" manualJREEntry="false" bundleType="1" jreURL="" jreShared="false" directDownload="false" installOnlyIfNecessary="false" requiredVmIdPrefix="" customInstallBaseDir="" contentFilesType="1" installerName="${i18n:InstallerName(${compiler:sys.fullName})}" volumeName="${compiler:sys.shortName}" compressDmg="false" signLaunchers="false">
       <excludedComponents />
       <includedDownloadableComponents />
       <excludedLaunchers />
@@ -2362,7 +2388,7 @@ return true;</string>
       </autoUpdate>
       <topLevelFiles />
     </macosFolder>
-    <windowsArchive name="Windows Archive" id="223" customizedId="" mediaFileName="AsciidocFX_Windows" installDir="${compiler:sys.shortName}" overridePrincipalLanguage="false" jreBitType="64" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" downloadURL="" includeAllDownloadableComponents="true" includedJRE="windows-amd64-1.8.0_181" manualJREEntry="false">
+    <windowsArchive name="Windows Archive" id="223" customizedId="" mediaFileName="AsciidocFX_Windows" installDir="${compiler:sys.shortName}" overridePrincipalLanguage="false" jreBitType="64" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" downloadURL="" includeAllDownloadableComponents="true" includedJRE="windows-amd64-12" manualJREEntry="false">
       <excludedComponents />
       <includedDownloadableComponents />
       <excludedLaunchers />
@@ -2375,19 +2401,6 @@ return true;</string>
         <customAttributes />
       </autoUpdate>
     </windowsArchive>
-    <unixArchive name="Unix Archive" id="224" customizedId="" mediaFileName="AsciidocFX_Linux" installDir="${compiler:sys.shortName}" overridePrincipalLanguage="false" jreBitType="all" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" downloadURL="" includeAllDownloadableComponents="true" includedJRE="linux-amd64-1.8.0_181" manualJREEntry="false">
-      <excludedComponents />
-      <includedDownloadableComponents />
-      <excludedLaunchers />
-      <excludedBeans />
-      <overriddenPrincipalLanguage id="en" customLocalizationFile="" />
-      <exclude />
-      <variables />
-      <autoUpdate useMinUpdatableVersion="false" minUpdatableVersion="" useMaxUpdatableVersion="false" maxUpdatableVersion="">
-        <commentFiles />
-        <customAttributes />
-      </autoUpdate>
-    </unixArchive>
     <windows name="Windows Installer No JRE" id="407" customizedId="" mediaFileName="AsciidocFX_Windows_No_JRE" installDir="${compiler:sys.shortName}" overridePrincipalLanguage="false" jreBitType="64" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" downloadURL="" includeAllDownloadableComponents="false" includedJRE="" manualJREEntry="false" bundleType="1" jreURL="" jreShared="false" directDownload="false" installOnlyIfNecessary="false" customInstallBaseDir="" contentFilesType="1" verifyIntegrity="true">
       <excludedComponents />
       <includedDownloadableComponents />

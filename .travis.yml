@@ -1,23 +1,17 @@
 sudo: false
 language: java
 jdk:
-- oraclejdk8
+- openjdk12
 os:
 - linux
-addons:
-  apt:
-    packages:
-    - oracle-java8-installer
 script: mvn clean install -Pinstall-runtime
 before_script:
-- wget http://download-keycdn.ej-technologies.com/install4j/install4j_unix_7_0_6.tar.gz
-- tar zxvf install4j_unix_7_0_6.tar.gz
-- wget -O /home/travis/build/asciidocfx/AsciidocFX/install4j7.0.6/jres/linux-amd64-1.8.0_181.tar.gz
-  http://kodedu.com/asciidocfx/jres/linux-amd64-1.8.0_181.tar.gz
-- wget -O /home/travis/build/asciidocfx/AsciidocFX/install4j7.0.6/jres/macosx-amd64-1.8.0_181_unpacked.tar.gz
-  http://kodedu.com/asciidocfx/jres/macosx-amd64-1.8.0_181_unpacked.tar.gz
-- wget -O /home/travis/build/asciidocfx/AsciidocFX/install4j7.0.6/jres/windows-amd64-1.8.0_181.tar.gz
-  http://kodedu.com/asciidocfx/jres/windows-amd64-1.8.0_181.tar.gz
+- wget http://download-keycdn.ej-technologies.com/install4j/install4j_unix_7_0_1.tar.gz
+- tar zxvf install4j_unix_7_0_11.tar.gz
+- wget -O /home/travis/build/asciidocfx/AsciidocFX/install4j7.0.11/jres/macosx-amd64-12.tar.gz
+  http://asciidocfx.com/jres/macosx-amd64-12.tar.gz
+- wget -O /home/travis/build/asciidocfx/AsciidocFX/install4j7.0.11/jres/windows-amd64-12.tar.gz
+  http://asciidocfx.com/jres/windows-amd64-12.tar.gz
 - mvn clean
 - mvn install4j:install-license
 deploy:
@@ -27,13 +21,12 @@ deploy:
     secure: L4y+3fi/yVR7guv7cynzrTOjRbE4+JTK79Fv5J8IQFwtzTP4V2GeW5ZjTdZXAlsFRvak5zhxY4OEYbYI2/riMib5Ea/K28Fd0F/nK8bUDddzxyXPc8zj6VrQINJX8Na2KfPvXT2UR+LtUWkK5HjeR+O/YQPTO4M+7SDGx5P+gog=
   file:
   - "/home/travis/build/asciidocfx/AsciidocFX/target/media/AsciidocFX_Mac.dmg"
-  - "/home/travis/build/asciidocfx/AsciidocFX/target/media/AsciidocFX_Linux.tar.gz"
   - "/home/travis/build/asciidocfx/AsciidocFX/target/media/AsciidocFX_Linux_No_JRE.tar.gz"
   - "/home/travis/build/asciidocfx/AsciidocFX/target/media/AsciidocFX_Windows.exe"
   - "/home/travis/build/asciidocfx/AsciidocFX/target/media/AsciidocFX_Windows_No_JRE.exe"
   - "/home/travis/build/asciidocfx/AsciidocFX/target/media/AsciidocFX_Windows.zip"
   - "/home/travis/build/asciidocfx/AsciidocFX/target/media/AsciidocFX_Windows_No_JRE.zip"
-  - "/home/travis/build/asciidocfx/AsciidocFX/target/asciidocfx-1.6.9.zip"
+  - "/home/travis/build/asciidocfx/AsciidocFX/target/asciidocfx-1.7.0.zip"
   - "/home/travis/build/asciidocfx/AsciidocFX/target/media/updates.xml"
   on:
     tags: true
@@ -49,13 +42,12 @@ deploy:
   local_dir: "/home/travis/build/asciidocfx/AsciidocFX/target/media"
   file:
   - "/home/travis/build/asciidocfx/AsciidocFX/target/media/AsciidocFX_Mac.dmg"
-  - "/home/travis/build/asciidocfx/AsciidocFX/target/media/AsciidocFX_Linux.tar.gz"
   - "/home/travis/build/asciidocfx/AsciidocFX/target/media/AsciidocFX_Linux_No_JRE.tar.gz"
   - "/home/travis/build/asciidocfx/AsciidocFX/target/media/AsciidocFX_Windows.exe"
   - "/home/travis/build/asciidocfx/AsciidocFX/target/media/AsciidocFX_Windows_No_JRE.exe"
   - "/home/travis/build/asciidocfx/AsciidocFX/target/media/AsciidocFX_Windows.zip"
   - "/home/travis/build/asciidocfx/AsciidocFX/target/media/AsciidocFX_Windows_No_JRE.zip"
-  - "/home/travis/build/asciidocfx/AsciidocFX/target/asciidocfx-1.6.9.zip"
+  - "/home/travis/build/asciidocfx/AsciidocFX/target/asciidocfx-1.7.0.zip"
   - "/home/travis/build/asciidocfx/AsciidocFX/target/media/updates.xml"
   on:
     tags: true
