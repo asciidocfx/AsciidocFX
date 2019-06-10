@@ -485,8 +485,6 @@ public class TerminalConfigBean extends ConfigurationBase {
         terminalConfig.setFontFamily(getFontFamily());
         terminalConfig.setFontSize(getFontSize());
         terminalConfig.setScrollWhellMoveMultiplier(getScrollWhellMoveMultiplier());
-        terminalConfig.setReceiveEncoding(getReceiveEncoding());
-        terminalConfig.setSendEncoding(getSendEncoding());
         terminalConfig.setUserCss(getUserCss());
         terminalConfig.setWindowsTerminalStarter(getTerminalWinCommand());
         terminalConfig.setUnixTerminalStarter(getTerminalNixCommand());

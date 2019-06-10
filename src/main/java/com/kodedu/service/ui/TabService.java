@@ -4,6 +4,7 @@ import com.kodedu.component.*;
 import com.kodedu.config.StoredConfigBean;
 import com.kodedu.controller.ApplicationController;
 import com.kodedu.helper.IOHelper;
+import com.kodedu.helper.OSHelper;
 import com.kodedu.other.Current;
 import com.kodedu.other.ExtensionFilters;
 import com.kodedu.other.Item;
@@ -180,9 +181,13 @@ public class TabService {
 
     public void openDoc() {
         FileChooser fileChooser = directoryService.newFileChooser("Open File");
-        fileChooser.getExtensionFilters().add(ExtensionFilters.ASCIIDOC);
-        fileChooser.getExtensionFilters().add(ExtensionFilters.MARKDOWN);
-        fileChooser.getExtensionFilters().add(ExtensionFilters.ALL);
+
+        if (OSHelper.isWindows()) {
+            fileChooser.getExtensionFilters().add(ExtensionFilters.ASCIIDOC);
+            fileChooser.getExtensionFilters().add(ExtensionFilters.MARKDOWN);
+            fileChooser.getExtensionFilters().add(ExtensionFilters.ALL);
+        }
+
         List<File> chosenFiles = fileChooser.showOpenMultipleDialog(controller.getStage());
         if (chosenFiles != null) {
             chosenFiles.stream().map(File::toPath).forEach(this::previewDocument);
