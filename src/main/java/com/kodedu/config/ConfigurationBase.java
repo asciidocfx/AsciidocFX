@@ -122,6 +122,10 @@ public abstract class ConfigurationBase {
 
     public abstract Path getConfigPath();
 
+    public void loadPrevious(Path configPath, ActionEvent... actionEvent) {
+        load(configPath, actionEvent);
+    }
+
     public abstract void load(Path configPath, ActionEvent... actionEvent);
 
     public void load(ActionEvent... actionEvent) {
@@ -159,6 +163,6 @@ public abstract class ConfigurationBase {
         String userHome = System.getProperty("user.home");
         Path resolvedConfigPath = Paths.get(userHome).resolve(configDir).resolve(fileName);
 
-        load(resolvedConfigPath);
+        loadPrevious(resolvedConfigPath);
     }
 }

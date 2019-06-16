@@ -155,6 +155,11 @@ public class LocationConfigBean extends ConfigurationBase {
     }
 
     @Override
+    public void loadPrevious(Path configPath, ActionEvent... actionEvent) {
+        // Nothing to do
+    }
+
+    @Override
     public void load(Path configPath, ActionEvent... actionEvent) {
 
         fadeOut(infoLabel, "Loading...");
