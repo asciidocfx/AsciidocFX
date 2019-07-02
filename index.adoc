@@ -58,6 +58,8 @@ NOTE: The latest releases are available from the https://github.com/asciidocfx/A
 
 <<Supported_OS>> shows the list of available builds with links for reference. If you are looking for the very latest version, visit the link in the note above to be guaranteed of downloading the latest and greatest version of AsciidocFX.
 
+NOTE: Thanks image:https://www.ej-technologies.com/images/product_banners/install4j_small.png[link=https://www.ej-technologies.com/products/install4j/overview.html] for providing us open source license for the installers used in AsciidocFX distribution.
+
 [[Supported_OS]]
 .Supported Operating Systems and Builds
 [width="100%",options="header"]
@@ -68,7 +70,7 @@ NOTE: The latest releases are available from the https://github.com/asciidocfx/A
 | Yes | {download-root}AsciidocFX_Windows.zip[AsciidocFX_Windows.zip]
 | No | {download-root}AsciidocFX_Windows_No_JRE.exe[AsciidocFX_Windows_No_JRE.exe]
 | No | {download-root}AsciidocFX_Windows_No_JRE.zip[AsciidocFX_Windows_No_JRE.zip]
-.2+^.^| Linux | Yes | {download-root}AsciidocFX_Linux.tar.gz[AsciidocFX_Linux.tar.gz]
+.1+^.^| Linux
 | No | {download-root}AsciidocFX_Linux_No_JRE.tar.gz[AsciidocFX_Linux_No_JRE.tar.gz]
 |====================
 
