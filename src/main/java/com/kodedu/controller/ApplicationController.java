@@ -151,6 +151,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     public MenuItem afxVersionItem;
     public MenuItem renameFile;
     public MenuItem newFile;
+    public CheckMenuItem showHiddenFiles;
     public TabPane tabPane;
     public SplitPane splitPane;
     public SplitPane splitPaneVertical;
@@ -1493,6 +1494,8 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             directoryService.changeWorkigDir(IOHelper.getPath(workingDirectory));
         }
 
+        showHiddenFiles.selectedProperty().set(editorConfigBean.getShowHiddenFiles());
+
     }
 
     private Stage[] getAllStages() {
@@ -1567,6 +1570,8 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         editorConfigBean.foldStyleProperty().addListener((observable, oldValue, newValue) -> {
             applyForAllEditorPanes(editorPane -> editorPane.setFoldStyle(newValue));
         });
+
+        editorConfigBean.showHiddenFilesProperty().bindBidirectional(showHiddenFiles.selectedProperty());
 
         storedConfigBean.workingDirectoryProperty().addListener((observable, oldValue, newValue) -> {
             if (nonNull(newValue) && isNull(oldValue)) {
@@ -3294,8 +3299,8 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         return markdownTableScene;
     }
 
-    public boolean isSkipHiddenFiles() {
-        return editorConfigBean.isSkipHiddenFiles();
+    public boolean isShowHiddenFiles() {
+        return editorConfigBean.getShowHiddenFiles();
     }
 
     public void checkStageInsideScreens() {
@@ -3317,5 +3322,9 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     public void openPaypal(ActionEvent actionEvent) {
         getHostServices().showDocument("https://opencollective.com/AsciidocFX");
+    }
+
+    public void showHiddenFiles(ActionEvent actionEvent) {
+        fileBrowser.refresh();
     }
 }

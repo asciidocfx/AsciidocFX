@@ -276,6 +276,10 @@
                                                                         <Menu fx:id="favoriteDirMenu"
                                                                               text="Favorite Dirs"/>
                                                                         <SeparatorMenuItem/>
+                                                                        <CheckMenuItem fx:id="showHiddenFiles"
+                                                                                       onAction="#showHiddenFiles"
+                                                                                       text="Show hidden files"/>
+                                                                        <SeparatorMenuItem/>
                                                                         <MenuItem onAction="#openTerminalItem"
                                                                                   text="Open in Terminal"/>
                                                                         <SeparatorMenuItem/>

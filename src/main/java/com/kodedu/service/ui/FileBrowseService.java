@@ -126,7 +126,7 @@ public class FileBrowseService {
 
     public void addPathToTree(Path path, final TreeItem<Item> treeItem, Path changedPath) {
 
-        threadService.runTaskLater((() -> {
+        threadService.runTaskLater(() -> {
 
             if (Objects.isNull(path) || Objects.isNull(treeItem)) {
                 return;
@@ -153,7 +153,7 @@ public class FileBrowseService {
 
                 List<TreeItem<Item>> subItemList = StreamSupport
                         .stream(directoryStream.spliterator(), false)
-                        .filter(p -> !(controller.isSkipHiddenFiles() && isHidden(p)))
+                        .filter(p -> controller.isShowHiddenFiles() || !isHidden(p))
                         .sorted(pathOrder::comparePaths)
                         .map(p -> {
                             TreeItem<Item> childItem = new PathItem(new Item(p), awesomeService.getIcon(p));
@@ -214,7 +214,7 @@ public class FileBrowseService {
                 logger.warn("Problem occured while updating file browser", e);
             }
 
-        }));
+        });
 
     }
 

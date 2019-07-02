@@ -60,7 +60,7 @@ public class EditorConfigBean extends ConfigurationBase {
     private BooleanProperty autoUpdate = new SimpleBooleanProperty(true);
     private BooleanProperty validateDocbook = new SimpleBooleanProperty(false);
     private BooleanProperty detachedPreview = new SimpleBooleanProperty(false);
-    private BooleanProperty skipHiddenFiles = new SimpleBooleanProperty(true);
+    private BooleanProperty showHiddenFiles = new SimpleBooleanProperty(false);
     private ObjectProperty<Boolean> newInstall = new SimpleObjectProperty<>();
     private StringProperty clipboardImageFilePattern = new SimpleStringProperty("'Image'-ddMMyy-hhmmss.SSS'.png'");
     private DoubleProperty screenX = new SimpleDoubleProperty(0);
@@ -107,16 +107,16 @@ public class EditorConfigBean extends ConfigurationBase {
         this.newInstall.set(newInstall);
     }
 
-    public boolean isSkipHiddenFiles() {
-        return skipHiddenFiles.get();
+    public boolean getShowHiddenFiles() {
+        return showHiddenFiles.get();
     }
 
-    public BooleanProperty skipHiddenFilesProperty() {
-        return skipHiddenFiles;
+    public BooleanProperty showHiddenFilesProperty() {
+        return showHiddenFiles;
     }
 
-    public void setSkipHiddenFiles(boolean skipHiddenFiles) {
-        this.skipHiddenFiles.set(skipHiddenFiles);
+    public void setShowHiddenFiles(boolean showHiddenFiles) {
+        this.showHiddenFiles.set(showHiddenFiles);
     }
 
     public boolean isDetachedPreview() {
@@ -442,7 +442,7 @@ public class EditorConfigBean extends ConfigurationBase {
         FXForm editorConfigForm = new FXFormBuilder<>()
                 .resourceBundle(ResourceBundle.getBundle("editorConfig"))
                 .includeAndReorder("editorTheme", "aceTheme", "detachedPreview", "validateDocbook", "fontSize",
-                        "scrollSpeed", "useWrapMode", "wrapLimit", "foldStyle", "showGutter", "defaultLanguage", "autoUpdate","skipHiddenFiles",
+                        "scrollSpeed", "useWrapMode", "wrapLimit", "foldStyle", "showGutter", "defaultLanguage", "autoUpdate","showHiddenFiles",
                         "clipboardImageFilePattern", "hangFileSizeLimit", "extensionImageScale")
                 .build();
 
@@ -503,7 +503,7 @@ public class EditorConfigBean extends ConfigurationBase {
         boolean useWrapMode = jsonObject.getBoolean("useWrapMode", true);
         boolean showGutter = jsonObject.getBoolean("showGutter", false);
         boolean detachedPreview = jsonObject.getBoolean("detachedPreview", false);
-        boolean skipHiddenFiles = jsonObject.getBoolean("skipHiddenFiles", true);
+        boolean showHiddenFiles = jsonObject.getBoolean("showHiddenFiles", false);
         boolean newInstall = jsonObject.getBoolean("newInstall", true);
         int wrapLimit = jsonObject.getInt("wrapLimit", 0);
         boolean autoUpdate = jsonObject.getBoolean("autoUpdate", true);
@@ -558,7 +558,7 @@ public class EditorConfigBean extends ConfigurationBase {
             this.setDetachedPreview(detachedPreview);
             this.setWrapLimit(wrapLimit);
             this.setAutoUpdate(autoUpdate);
-            this.setSkipHiddenFiles(skipHiddenFiles);
+            this.setShowHiddenFiles(showHiddenFiles);
             this.setValidateDocbook(validateDocbook);
             this.setClipboardImageFilePattern(clipboardImageFilePattern);
             this.setHangFileSizeLimit(hangFileSizeLimit);
@@ -694,7 +694,7 @@ public class EditorConfigBean extends ConfigurationBase {
                 .add("secondSplitter", getSecondSplitter())
                 .add("verticalSplitter", getVerticalSplitter())
                 .add("autoUpdate", getAutoUpdate())
-                .add("skipHiddenFiles", isSkipHiddenFiles())
+                .add("showHiddenFiles", getShowHiddenFiles())
                 .add("newInstall", getNewInstall())
                 .add("validateDocbook", getValidateDocbook())
                 .add("clipboardImageFilePattern", getClipboardImageFilePattern())
