@@ -6,12 +6,12 @@ os:
 - linux
 script: mvn clean install -Pinstall-runtime
 before_script:
-- wget http://download-keycdn.ej-technologies.com/install4j/install4j_unix_7_0_11.tar.gz
-- tar zxvf install4j_unix_7_0_11.tar.gz
-- wget -O /home/travis/build/asciidocfx/AsciidocFX/install4j7.0.11/jres/macosx-amd64-12.tar.gz
-  http://asciidocfx.com/jres/macosx-amd64-12.tar.gz
-- wget -O /home/travis/build/asciidocfx/AsciidocFX/install4j7.0.11/jres/windows-amd64-12.tar.gz
-  http://asciidocfx.com/jres/windows-amd64-12.tar.gz
+- wget http://download-keycdn.ej-technologies.com/install4j/install4j_unix_8_0.tar.gz
+- tar zxvf install4j_unix_8_0.tar.gz
+#- wget -O /home/travis/build/asciidocfx/AsciidocFX/install4j8.0/jres/macosx-amd64-12.tar.gz
+#  http://asciidocfx.com/jres/macosx-amd64-12.tar.gz
+#- wget -O /home/travis/build/asciidocfx/AsciidocFX/install4j8.0/jres/windows-amd64-12.tar.gz
+#  http://asciidocfx.com/jres/windows-amd64-12.tar.gz
 - mvn clean
 - mvn install4j:install-license
 deploy:
@@ -21,12 +21,9 @@ deploy:
     secure: L4y+3fi/yVR7guv7cynzrTOjRbE4+JTK79Fv5J8IQFwtzTP4V2GeW5ZjTdZXAlsFRvak5zhxY4OEYbYI2/riMib5Ea/K28Fd0F/nK8bUDddzxyXPc8zj6VrQINJX8Na2KfPvXT2UR+LtUWkK5HjeR+O/YQPTO4M+7SDGx5P+gog=
   file:
   - "/home/travis/build/asciidocfx/AsciidocFX/target/media/AsciidocFX_Mac.dmg"
-  - "/home/travis/build/asciidocfx/AsciidocFX/target/media/AsciidocFX_Linux_No_JRE.tar.gz"
+  - "/home/travis/build/asciidocfx/AsciidocFX/target/media/AsciidocFX_Linux.tar.gz"
   - "/home/travis/build/asciidocfx/AsciidocFX/target/media/AsciidocFX_Windows.exe"
-  - "/home/travis/build/asciidocfx/AsciidocFX/target/media/AsciidocFX_Windows_No_JRE.exe"
   - "/home/travis/build/asciidocfx/AsciidocFX/target/media/AsciidocFX_Windows.zip"
-  - "/home/travis/build/asciidocfx/AsciidocFX/target/media/AsciidocFX_Windows_No_JRE.zip"
-  - "/home/travis/build/asciidocfx/AsciidocFX/target/asciidocfx-1.7.0.zip"
   - "/home/travis/build/asciidocfx/AsciidocFX/target/media/updates.xml"
   on:
     tags: true
@@ -42,12 +39,9 @@ deploy:
   local_dir: "/home/travis/build/asciidocfx/AsciidocFX/target/media"
   file:
   - "/home/travis/build/asciidocfx/AsciidocFX/target/media/AsciidocFX_Mac.dmg"
-  - "/home/travis/build/asciidocfx/AsciidocFX/target/media/AsciidocFX_Linux_No_JRE.tar.gz"
+  - "/home/travis/build/asciidocfx/AsciidocFX/target/media/AsciidocFX_Linux.tar.gz"
   - "/home/travis/build/asciidocfx/AsciidocFX/target/media/AsciidocFX_Windows.exe"
-  - "/home/travis/build/asciidocfx/AsciidocFX/target/media/AsciidocFX_Windows_No_JRE.exe"
   - "/home/travis/build/asciidocfx/AsciidocFX/target/media/AsciidocFX_Windows.zip"
-  - "/home/travis/build/asciidocfx/AsciidocFX/target/media/AsciidocFX_Windows_No_JRE.zip"
-  - "/home/travis/build/asciidocfx/AsciidocFX/target/asciidocfx-1.7.0.zip"
   - "/home/travis/build/asciidocfx/AsciidocFX/target/media/updates.xml"
   on:
     tags: true
@@ -59,6 +53,7 @@ env:
   - secure: xfIJj1AUhUgXfrMZStwGv0njAc8eSPe38M+QOyApgl1LriEc2WX0vdf/zQhcELHmuAidkDV6t4KCQ6IavzylvYHbrSL3Ki7uTIf1qWKPkJKJq0yhOON4Qw44sziM9ePAMLu09C6sOzXkcIYw8VJGQA4Dh8OxiKUePX0wqUw9zIY=
   - secure: itDqULG69MoCnvLvMoFpBC8osAb/603jmc47hwC3qn1X+egKrT8kM/w8DC5fYgwp45LKBaxZhxY1q2twxvC6tW28/Zc31kR65RkfbRv5b2jqvb+PFtBSTvBDtKQxPf5DgK1yvqZYZ8r46uYEjepKwELhsYF05W+4irZqakd3aIo=
   - secure: xm/y8T8BYyTxr6qRJ6UP/GkMCEcPDAdrlMysOeZ4XChwZOGU4n0ECkxz0c9xtbdmAkgISYAhHTckQNHQiuOV1AGp+EZMvapPoT3k+AR3bv20NDb9xlTz2p3LPSmH35mRjttHslj2FE+4k+V5H8BoQIMtdkcFUye+PWn2hk54kZg=
+  - secure: aVp+h5KCEPp28y/RHiUVe+/Gyt52QNOXVJNAM0Y/GJ8M4ReJVC/INofHysPbIw/DDkTJXvwe19NT64bkpvwMJT69yvdx2vhNN8hWAxBZ7JS0WG92At3Jm0KUT2aX0zBHZEEf9PIpB9jPzUyS1CjILUmuSHL1UXTtivsEEi3jtgQ=
 before_install:
 - openssl aes-256-cbc -K $encrypted_56a53bf9cdec_key -iv $encrypted_56a53bf9cdec_iv
   -in code_sign.p12.enc -out code_sign.p12 -d
