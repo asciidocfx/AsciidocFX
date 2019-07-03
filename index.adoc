@@ -64,14 +64,11 @@ NOTE: Thanks image:https://www.ej-technologies.com/images/product_banners/instal
 .Supported Operating Systems and Builds
 [width="100%",options="header"]
 |====================
-| OS | JRE included? | Filename
-^.^| Mac | Yes | {download-root}AsciidocFX_Mac.dmg[AsciidocFX_Mac.dmg]
-.4+^.^| Windows | Yes | {download-root}AsciidocFX_Windows.exe[AsciidocFX_Windows.exe]
-| Yes | {download-root}AsciidocFX_Windows.zip[AsciidocFX_Windows.zip]
-| No | {download-root}AsciidocFX_Windows_No_JRE.exe[AsciidocFX_Windows_No_JRE.exe]
-| No | {download-root}AsciidocFX_Windows_No_JRE.zip[AsciidocFX_Windows_No_JRE.zip]
-.1+^.^| Linux
-| No | {download-root}AsciidocFX_Linux_No_JRE.tar.gz[AsciidocFX_Linux_No_JRE.tar.gz]
+| OS | Filename
+| Mac | {download-root}AsciidocFX_Mac.dmg[AsciidocFX_Mac.dmg]
+| Windows | {download-root}AsciidocFX_Windows.exe[AsciidocFX_Windows.exe]
+| Linux
+| {download-root}AsciidocFX_Linux.tar.gz[AsciidocFX_Linux.tar.gz]
 |====================
 
 === Install on Linux
