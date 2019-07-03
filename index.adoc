@@ -67,6 +67,7 @@ NOTE: Thanks image:https://www.ej-technologies.com/images/product_banners/instal
 | OS | Filename
 | Mac | {download-root}AsciidocFX_Mac.dmg[AsciidocFX_Mac.dmg]
 | Windows | {download-root}AsciidocFX_Windows.exe[AsciidocFX_Windows.exe]
+| Windows | {download-root}AsciidocFX_Windows.zip[AsciidocFX_Windows.zip]
 | Linux
 | {download-root}AsciidocFX_Linux.tar.gz[AsciidocFX_Linux.tar.gz]
 |====================
