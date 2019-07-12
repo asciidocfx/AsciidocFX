@@ -51,6 +51,8 @@ NOTE: The latest releases are available from the https://github.com/asciidocfx/A
 
 NOTE: Thanks image:https://www.ej-technologies.com/images/product_banners/install4j_small.png[link=https://www.ej-technologies.com/products/install4j/overview.html] for providing us open source license for the installers used in AsciidocFX distribution.
 
+NOTE: In all releases we use AdoptOpenJDK JREs, so you will not have any licensing issue regarding bundled JRE.
+
 [[Supported_OS]]
 .Supported Operating Systems and Builds
 [width="100%",options="header"]
