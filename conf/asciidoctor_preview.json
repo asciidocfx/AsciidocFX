@@ -1,7 +1,7 @@
 
 {
     "jsPlatform":"Webkit",
-    "safe":"safe",
+    "safe":"unsafe",
     "sourcemap":true,
     "attributes":{
         "showtitle":"true",

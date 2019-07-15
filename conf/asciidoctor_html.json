@@ -2,7 +2,7 @@
 {
     "backend":"html5",
     "jsPlatform":"Webkit",
-    "safe":"safe",
+    "safe":"unsafe",
     "header_footer":true,
     "attributes":{
         "showtitle":"true",
