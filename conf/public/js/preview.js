@@ -39,10 +39,8 @@ function refreshUI(data) {
     $placeholder.html(data);
 
     sourceHighlightAction.buff(function () {
-        $placeholder.find('pre.highlightjs').children("code").each(function () {
-            if (!$(this).hasClass("hljs")) {
-                hljs.highlightBlock(this);
-            }
+        document.querySelectorAll('pre code').forEach((block) => {
+            hljs.highlightBlock(block);
         });
 
         prettyPrint();
