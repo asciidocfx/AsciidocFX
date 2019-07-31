@@ -19,6 +19,8 @@ import org.springframework.stereotype.Component;
 import javax.json.JsonObject;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -30,6 +32,8 @@ import java.util.concurrent.TimeUnit;
  */
 @Component("WebkitEngine")
 public class AsciidocWebkitConverter extends ViewPanel implements AsciidocConvertible {
+
+    private static final List<String> extensions = Arrays.asList("stem", "asciimath", "latexmath", "mathml", "math", "plantuml", "uml", "ditaa", "graphviz", "tree");
 
     private final PreviewConfigBean previewConfigBean;
     private final DocbookConfigBean docbookConfigBean;
@@ -137,6 +141,7 @@ public class AsciidocWebkitConverter extends ViewPanel implements AsciidocConver
 
     protected ConverterResult convert(String functionName, String asciidoc, JsonObject config) {
         try {
+            asciidoc= applyContentReplacements(asciidoc);
             return convertContent(functionName, asciidoc, config).get(5, TimeUnit.SECONDS);
         } catch (Exception e1) {
 
@@ -191,6 +196,15 @@ public class AsciidocWebkitConverter extends ViewPanel implements AsciidocConver
     @Override
     public void convertOdf(String asciidoc) {
 
+    }
+
+    private String applyContentReplacements(String content) {
+        for (String extension : extensions) {
+            String replacement = String.join("_", extension.split(""));
+            content = content.replaceAll(extension, replacement);
+            content = content.replaceAll(":" + replacement + ":", ":" + extension + ":");
+        }
+        return content;
     }
 
     public Map<String, CompletableFuture<ConverterResult>> getWebWorkerTasks() {

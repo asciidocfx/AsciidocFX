@@ -7,8 +7,6 @@ function process_inline_macro_extension(obj) {
     var name = obj["name"];
     var target = obj["target"];
 
-    name = name.replace(/_/g, "");
-
     var title = (attrs.title),
         alt = (attrs.alt),
         caption = (attrs.caption),
@@ -38,8 +36,10 @@ function process_inline_macro_extension(obj) {
         filename = "" + parts[1] + extension;
     }
 
+    var normalName = name.replace(/_/g, "");
+
     var content = "" + parts[0];
-    var command = name;
+    var command = normalName;
 
     if (filename != "") {
         target = parent.$image_uri(filename);
@@ -49,13 +49,13 @@ function process_inline_macro_extension(obj) {
         filename = host + target;
     }
 
-    var stems = ["stem", "asciimath", "latexmath", "mathml"];
+    var stems = getMathExtensionNames();
     if (stems.indexOf(name) != -1) {
         content = parseStems(parent, content, name);
         command = "math";
     }
 
-    var parameters = [content, type, imagesdir, target, name].map(function (e) {
+    var parameters = [content, type, imagesdir, target, normalName].map(function (e) {
         return e + "";
     });
 
@@ -117,6 +117,7 @@ function registerInlineMacroExtensions(name) {
 }
 
 // there is a bug for math asciimath:[] generates text + image ascii<img>
-["stem", "asciimath", "a_s_c_i_i_m_a_t_h", "latexmath", "mathml"].forEach(function (name) {
-    registerInlineMacroExtensions(name);
-});
+getMathExtensionNames()
+    .forEach(function (name) {
+        registerInlineMacroExtensions(name);
+    });

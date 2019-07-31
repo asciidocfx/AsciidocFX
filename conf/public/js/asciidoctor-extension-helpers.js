@@ -9,13 +9,11 @@ function asciimathWrap(content) {
 function parseStems(parent, content, nodename) {
 
     var finalContent = content;
-    var name = nodename.replace(/_/g,"");
+    var name = nodename.replace(/_/g, "");
 
     var stemAttr = parent.$document().$attr('stem', "asciimath");
 
-    console.log({stemAttr: stemAttr});
-
-    stemAttr = stemAttr.replace(/_/g,"");
+    stemAttr = stemAttr.replace(/_/g, "");
 
     if (stemAttr == "asciimath") {
         // default is asciimath
@@ -45,4 +43,16 @@ function parseStems(parent, content, nodename) {
     }
 
     return finalContent;
+}
+
+let getExtensionNames = function () {
+    return ["stem", "asciimath", "latexmath", "mathml", "math", "plantuml", "uml", "ditaa", "graphviz", "tree"].map(e => e.split("").join("_"));
+}
+
+let getUmlExtensionNames = function () {
+    return ["plantuml", "uml", "ditaa", "graphviz"].map(e => e.split("").join("_"));
+}
+
+let getMathExtensionNames = function () {
+    return ["stem", "asciimath", "latexmath", "mathml", "math"].map(e => e.split("").join("_"));
 }

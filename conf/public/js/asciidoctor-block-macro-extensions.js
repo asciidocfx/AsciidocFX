@@ -28,25 +28,26 @@ function process_block_macro_extension(obj) {
         filename = "" + attrs['$[]']("file") + extension;
     }
 
+    var normalName = name.replace(/_/g, "");
+
     var content = "" + Ajax.getFile(target);
-    var command = name;
+    var command = normalName;
 
     if (filename != "") {
         target = parent.$image_uri(filename);
-    }
-    else {
+    } else {
         target = cachedImageUri(content);
         var host = ((typeof location) != "undefined") ? "http://" + location.host : "";
         filename = host + target;
     }
 
-    var stems = ["stem", "asciimath", "latexmath", "mathml"];
+    var stems = getMathExtensionNames();
     if (stems.indexOf(name) != -1) {
         content = parseStems(parent, content, name);
         command = "math";
     }
 
-    var parameters = [content, type, imagesdir, target, name].map(function (e) {
+    var parameters = [content, type, imagesdir, target, normalName].map(function (e) {
         return e + "";
     });
 
@@ -130,6 +131,7 @@ function registerBlockMacroExtensions(name) {
     })(Opal);
 }
 
-["uml", "plantuml", "ditaa", "graphviz", "tree", "math", "stem", "asciimath", "a_s_c_i_i_m_a_t_h", "latexmath", "mathml"].forEach(function (name) {
-    registerBlockMacroExtensions(name);
-});
+getExtensionNames()
+    .forEach(function (name) {
+        registerBlockMacroExtensions(name);
+    });

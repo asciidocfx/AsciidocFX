@@ -25,38 +25,38 @@ function process_block_extension(obj) {
 
     if (!attrs['$[]']("file")["$nil?"]()) {
         filename = "" + attrs['$[]']("file");
-    }
-    else if (!attrs['$[]'](2)["$nil?"]()) {
+    } else if (!attrs['$[]'](2)["$nil?"]()) {
         var extension = attrs['$[]'](3)["$nil?"]() ? "" : "." + attrs['$[]'](3);
         filename = "" + attrs['$[]'](2) + extension;
     }
 
-    var command = name;
+    var normalName = name.replace(/_/g, "");
+
+    var command = normalName;
     var content = reader.$read();
 
     if (filename != "") {
         target = parent.$image_uri(filename);
-    }
-    else {
+    } else {
         target = cachedImageUri(content);
         var host = ((typeof location) != "undefined") ? "http://" + location.host : "";
         filename = host + target;
     }
 
 
-    var stems = ["stem", "asciimath", "latexmath", "mathml"];
+    var stems = getMathExtensionNames();
     if (stems.indexOf(name) != -1) {
         content = parseStems(parent, content, name);
         command = "math";
     }
 
-    var parameters = [content, type, imagesdir, target, name].map(function (e) {
+    var parameters = [content, type, imagesdir, target, normalName].map(function (e) {
         return e + "";
     });
 
     //afx[command].apply(afx,parameters);
 
-    if (["ditaa", "uml", "plantuml", "graphviz"].indexOf(name) != -1) {
+    if (getUmlExtensionNames().indexOf(name) != -1) {
         parameters.push(options + "");
     }
 
@@ -114,15 +114,15 @@ function registerBlockExtensions(name) {
 
                     if (parent == null) {
                         parent = nil;
-                    };
+                    }
 
                     if (reader == null) {
                         reader = nil;
-                    };
+                    }
 
                     if (attrs == null) {
                         attrs = nil;
-                    };
+                    }
 
                     return process_block_extension({
                         parent: parent,
@@ -140,6 +140,6 @@ function registerBlockExtensions(name) {
     })(Opal);
 }
 
-["uml", "plantuml", "ditaa", "math", "graphviz", "tree", "stem", "asciimath", "latexmath", "mathml"].forEach(function (name) {
+getExtensionNames().forEach(function (name) {
     registerBlockExtensions(name);
 });
