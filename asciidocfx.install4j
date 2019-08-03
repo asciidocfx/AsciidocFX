@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <install4j version="8.0" transformSequenceNumber="8">
   <directoryPresets config="/Users/usta/projects/AsciidocFX/jmods" />
-  <application name="AsciidocFX" applicationId="7853-9376-5862-1224" mediaDir="target" compression="4" lzmaCompression="true" pack200Compression="true" excludeSignedFromPacking="false" shortName="AsciidocFX" publisher="AsciidocFX" publisherWeb="http://asciidocfx.com" version="1.7.0" macVolumeId="b98c377570068f5e" javaMinVersion="12" javaMaxVersion="12" allowBetaVM="true">
+  <application name="AsciidocFX" applicationId="7853-9376-5862-1224" mediaDir="target" compression="4" lzmaCompression="true" pack200Compression="true" excludeSignedFromPacking="false" shortName="AsciidocFX" publisher="AsciidocFX" publisherWeb="http://asciidocfx.com" version="1.7.1" macVolumeId="b98c377570068f5e" javaMinVersion="12" javaMaxVersion="12" allowBetaVM="true">
     <searchSequence>
       <envVar name="JAVA_HOME" />
       <envVar name="JDK_HOME" />
