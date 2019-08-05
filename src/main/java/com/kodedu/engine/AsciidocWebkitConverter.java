@@ -141,7 +141,7 @@ public class AsciidocWebkitConverter extends ViewPanel implements AsciidocConver
 
     protected ConverterResult convert(String functionName, String asciidoc, JsonObject config) {
         try {
-            asciidoc= applyContentReplacements(asciidoc);
+            asciidoc = applyContentReplacements(asciidoc);
             return convertContent(functionName, asciidoc, config).get(5, TimeUnit.SECONDS);
         } catch (Exception e1) {
 
@@ -201,8 +201,9 @@ public class AsciidocWebkitConverter extends ViewPanel implements AsciidocConver
     private String applyContentReplacements(String content) {
         for (String extension : extensions) {
             String replacement = String.join("_", extension.split(""));
-            content = content.replaceAll(extension, replacement);
-            content = content.replaceAll(":" + replacement + ":", ":" + extension + ":");
+            content = content.replaceAll("\\[" + extension, "[" + replacement);
+            content = content.replaceAll(extension + "::",  replacement + "::");
+            content = content.replaceAll(extension + ":\\[",  replacement + ":[");
         }
         return content;
     }
