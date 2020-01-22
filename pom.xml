@@ -399,7 +399,7 @@
         <repository>
             <id>central</id>
             <name>Maven Central</name>
-            <url>http://repo1.maven.org/maven2/</url>
+            <url>https://repo1.maven.org/maven2/</url>
             <releases>
                 <enabled>true</enabled>
                 <checksumPolicy>warn</checksumPolicy>
@@ -421,16 +421,16 @@
                 <checksumPolicy>warn</checksumPolicy>
                 <updatePolicy>always</updatePolicy>
             </releases>
-            <url>http://www.sparetimelabs.com/maven2</url>
+            <url>https://www.sparetimelabs.com/maven2</url>
         </repository>
         <repository>
             <id>jcenter-central</id>
             <name>jcenter</name>
-            <url>http://jcenter.bintray.com</url>
+            <url>https://jcenter.bintray.com</url>
         </repository>
         <repository>
             <id>ej-technologies</id>
-            <url>http://maven.ej-technologies.com/repository</url>
+            <url>https://maven.ej-technologies.com/repository</url>
         </repository>
     </repositories>
 
