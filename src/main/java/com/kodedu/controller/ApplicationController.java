@@ -2411,6 +2411,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
         Optional.ofNullable(rendered)
                 .ifPresent(html -> {
+                    html = ContentFixes.decodeExtensionNames(html);
                     htmlPane.refreshUI(html);
                     sendOverWebSocket(html);
                 });

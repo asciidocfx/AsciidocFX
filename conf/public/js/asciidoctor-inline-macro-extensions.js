@@ -36,7 +36,7 @@ function process_inline_macro_extension(obj) {
         filename = "" + parts[1] + extension;
     }
 
-    var normalName = name.replace(/_/g, "");
+    var normalName = name.toLowerCase();
 
     var content = "" + parts[0];
     var command = normalName;

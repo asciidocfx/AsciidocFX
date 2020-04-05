@@ -30,7 +30,7 @@ function process_block_extension(obj) {
         filename = "" + attrs['$[]'](2) + extension;
     }
 
-    var normalName = name.replace(/_/g, "");
+    var normalName = name.toLowerCase();
 
     var command = normalName;
     var content = reader.$read();

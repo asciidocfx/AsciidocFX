@@ -9,11 +9,11 @@ function asciimathWrap(content) {
 function parseStems(parent, content, nodename) {
 
     var finalContent = content;
-    var name = nodename.replace(/_/g, "");
+    var name = nodename.toLowerCase();
 
     var stemAttr = parent.$document().$attr('stem', "asciimath");
 
-    stemAttr = stemAttr.replace(/_/g, "");
+    stemAttr = stemAttr.toLowerCase();
 
     if (stemAttr == "asciimath") {
         // default is asciimath
@@ -46,13 +46,13 @@ function parseStems(parent, content, nodename) {
 }
 
 let getExtensionNames = function () {
-    return ["stem", "asciimath", "latexmath", "mathml", "math", "plantuml", "uml", "ditaa", "graphviz", "tree"].map(e => e.split("").join("_"));
+    return ["stem", "asciimath", "latexmath", "mathml", "math", "plantuml", "uml", "ditaa", "graphviz", "tree"].map(e => e.toUpperCase());
 }
 
 let getUmlExtensionNames = function () {
-    return ["plantuml", "uml", "ditaa", "graphviz"].map(e => e.split("").join("_"));
+    return ["plantuml", "uml", "ditaa", "graphviz"].map(e => e.toUpperCase());
 }
 
 let getMathExtensionNames = function () {
-    return ["stem", "asciimath", "latexmath", "mathml", "math"].map(e => e.split("").join("_"));
+    return ["stem", "asciimath", "latexmath", "mathml", "math"].map(e => e.toUpperCase());
 }

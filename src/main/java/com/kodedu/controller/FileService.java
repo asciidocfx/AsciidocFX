@@ -1,5 +1,6 @@
 package com.kodedu.controller;
 
+import com.kodedu.other.ContentFixes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -9,6 +10,7 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -16,6 +18,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.zip.GZIPOutputStream;
+
+import static com.kodedu.other.Constants.ASCIIDOC_EXTENSIONS;
 
 /**
  * Created by usta on 10.04.2015.
@@ -227,12 +231,14 @@ public class FileService {
         // Send requested file (part(s)) to client ------------------------------------------------
 
         // Prepare streams.
-        RandomAccessFile input = null;
         OutputStream output = null;
+
+        if (isAsciidocFile(file)) {
+            ranges.clear();
+        }
 
         try {
             // Open streams.
-            input = new RandomAccessFile(file, "r");
             output = response.getOutputStream();
 
             if (ranges.isEmpty() || ranges.get(0) == full) {
@@ -254,7 +260,7 @@ public class FileService {
                     }
 
                     // Copy full range.
-                    copy(input, output, r.start, r.length);
+                    copy(file, output, r);
                 }
 
             } else if (ranges.size() == 1) {
@@ -268,7 +274,7 @@ public class FileService {
 
                 if (content) {
                     // Copy single part range.
-                    copy(input, output, r.start, r.length);
+                    copy(file, output, r);
                 }
 
             } else {
@@ -290,7 +296,7 @@ public class FileService {
                         sos.println("Content-Range: bytes " + r.start + "-" + r.end + "/" + r.total);
 
                         // Copy single part range of multi part range.
-                        copy(input, output, r.start, r.length);
+                        copy(file, output, r);
                     }
 
                     // End with multipart boundary.
@@ -301,7 +307,6 @@ public class FileService {
         } finally {
             // Gently close streams.
             close(output);
-            close(input);
         }
     }
 
@@ -360,36 +365,49 @@ public class FileService {
     /**
      * Copy the given byte range of the given input to the given output.
      *
-     * @param input  The input to copy the given range to the given output for.
-     * @param output The output to copy the given range from the given input for.
-     * @param start  Start of the byte range.
-     * @param length Length of the byte range.
      * @throws IOException If something fails at I/O level.
      */
-    private void copy(RandomAccessFile input, OutputStream output, long start, long length)
-            throws IOException {
-        byte[] buffer = new byte[DEFAULT_BUFFER_SIZE];
-        int read;
+    private void copy(File file, OutputStream output, Range r) throws IOException {
 
-        if (input.length() == length) {
-            // Write full range.
-            while ((read = input.read(buffer)) > 0) {
-                output.write(buffer, 0, read);
-            }
+        if (isAsciidocFile(file)) {
+            Charset charset = Charset.forName("UTF-8");
+            String content = Files.readString(file.toPath(), charset); // TODO: consider charset
+            content = ContentFixes.encodeExtensionNames(content);
+            output.write(content.getBytes(charset));
         } else {
-            // Write partial range.
-            input.seek(start);
-            long toRead = length;
+            RandomAccessFile input = new RandomAccessFile(file, "r");
+            byte[] buffer = new byte[DEFAULT_BUFFER_SIZE];
+            int read;
 
-            while ((read = input.read(buffer)) > 0) {
-                if ((toRead -= read) > 0) {
-                    output.write(buffer, 0, read);
+            try {
+                if (input.length() == r.length) {
+                    // Write full range.
+                    while ((read = input.read(buffer)) > 0) {
+                        output.write(buffer, 0, read);
+                    }
                 } else {
-                    output.write(buffer, 0, (int) toRead + read);
-                    break;
+                    // Write partial range.
+                    input.seek(r.start);
+                    long toRead = r.length;
+
+                    while ((read = input.read(buffer)) > 0) {
+                        if ((toRead -= read) > 0) {
+                            output.write(buffer, 0, read);
+                        } else {
+                            output.write(buffer, 0, (int) toRead + read);
+                            break;
+                        }
+                    }
                 }
+            } finally {
+                close(input);
             }
         }
+
+    }
+
+    private boolean isAsciidocFile(File file) {
+        return file.getName().matches(ASCIIDOC_EXTENSIONS);
     }
 
     /**

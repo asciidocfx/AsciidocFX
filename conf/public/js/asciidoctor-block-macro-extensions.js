@@ -28,7 +28,7 @@ function process_block_macro_extension(obj) {
         filename = "" + attrs['$[]']("file") + extension;
     }
 
-    var normalName = name.replace(/_/g, "");
+    var normalName = name.toLowerCase();
 
     var content = "" + Ajax.getFile(target);
     var command = normalName;
