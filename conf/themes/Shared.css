@@ -19,6 +19,7 @@
 
 .root {
     -fx-font-size: 1em;
+    -fx-font-family: "Dialog", "Verdana", "Arial";
 }
 
 .ikonli-font-icon {
