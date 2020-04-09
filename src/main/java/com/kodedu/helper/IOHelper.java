@@ -353,49 +353,20 @@ public class IOHelper {
             Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
                 @Override
                 public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-                    Optional<Exception> exception = IOHelper
-                            .forceDelete(file)
-                            .flatMap(e -> {
-                                ThreadService.sleep(100);
-                                return IOHelper.forceDelete(file);
-                            });
-
-                    if (exception.isPresent()) {
-                        throw new IOException(exception.get());
-                    }
-
+                    recursivelyDelete(file);
                     return FileVisitResult.CONTINUE;
                 }
 
                 @Override
                 public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException {
-                    Optional<Exception> exception = IOHelper
-                            .forceDelete(file)
-                            .flatMap(e -> {
-                                ThreadService.sleep(100);
-                                return IOHelper.forceDelete(file);
-                            });
-
-                    if (exception.isPresent()) {
-                        throw new IOException(exception.get());
-                    }
-
+                    recursivelyDelete(file);
                     return FileVisitResult.CONTINUE;
                 }
 
                 @Override
                 public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
                     if (exc == null) {
-                        Optional<Exception> exception = IOHelper
-                                .forceDelete(dir)
-                                .flatMap(e -> {
-                                    ThreadService.sleep(100);
-                                    return IOHelper.forceDelete(dir);
-                                });
-
-                        if (exception.isPresent()) {
-                            throw new IOException(exception.get());
-                        }
+                        recursivelyDelete(dir);
                         return FileVisitResult.CONTINUE;
                     } else {
                         throw exc;
@@ -404,6 +375,19 @@ public class IOHelper {
             });
         } catch (Exception e) {
             logger.error("Problem occured while deleting {} path", path, e);
+        }
+    }
+
+    private static void recursivelyDelete(Path file) throws IOException {
+        Optional<Exception> exception = IOHelper
+                .forceDelete(file)
+                .flatMap(e -> {
+                    ThreadService.sleep(100);
+                    return IOHelper.forceDelete(file);
+                });
+
+        if (exception.isPresent()) {
+            throw new IOException(exception.get());
         }
     }
 
@@ -611,5 +595,9 @@ public class IOHelper {
 
     public static String getEncoding(Path path) {
         return pathCharsetMap.get(path);
+    }
+
+    public static String getCachedCharset(Path path) {
+        return pathCharsetMap.getOrDefault(path, "UTF-8");
     }
 }

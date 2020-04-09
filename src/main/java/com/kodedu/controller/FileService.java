@@ -1,5 +1,6 @@
 package com.kodedu.controller;
 
+import com.kodedu.helper.IOHelper;
 import com.kodedu.other.ContentFixes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -370,10 +371,10 @@ public class FileService {
     private void copy(File file, OutputStream output, Range r) throws IOException {
 
         if (isAsciidocFile(file)) {
-            Charset charset = Charset.forName("UTF-8");
-            String content = Files.readString(file.toPath(), charset); // TODO: consider charset
+            String content = IOHelper.readFile(file.toPath());
+            String cachedCharset= IOHelper.getCachedCharset(file.toPath());
             content = ContentFixes.encodeExtensionNames(content);
-            output.write(content.getBytes(charset));
+            output.write(content.getBytes(cachedCharset));
         } else {
             RandomAccessFile input = new RandomAccessFile(file, "r");
             byte[] buffer = new byte[DEFAULT_BUFFER_SIZE];
