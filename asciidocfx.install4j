@@ -1122,14 +1122,14 @@ return true;</property>
   </installerGui>
   <mediaSets>
     <windows name="Windows Installer" id="86" mediaFileName="AsciidocFX_Windows">
-      <jreBundle jreBundleSource="generated" includedJre="windows-amd64-12">
+      <jreBundle usePack200="false" jreBundleSource="generated" includedJre="windows-amd64-12">
         <modules>
           <jmodDirectory location="jmods/windows" />
         </modules>
       </jreBundle>
     </windows>
     <macosFolder name="Mac OS X Folder" id="921" mediaFileName="AsciidocFX_Mac">
-      <jreBundle jreBundleSource="generated" includedJre="macosx-amd64-12">
+      <jreBundle usePack200="false" jreBundleSource="generated" includedJre="macosx-amd64-12">
         <modules>
           <jmodDirectory location="jmods/mac" />
         </modules>
