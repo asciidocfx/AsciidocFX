@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.function.Consumer;
 
 import static org.springframework.web.bind.annotation.RequestMethod.*;
 
@@ -36,30 +35,6 @@ public class AllController {
 
         commonResource.processPayload(payload);
 
-    }
-
-    class Router {
-
-        private final Payload payload;
-
-        public Router(Payload payload) {
-            this.payload = payload;
-        }
-
-        public Router executeIf(String pattern, Consumer<Payload> consumer) {
-
-            if (payload.getRequestURI().contains(pattern)) {
-
-                payload.setPattern(pattern);
-
-                try {
-                    consumer.accept(payload);
-                } catch (Exception e) {
-                    logger.debug(e.getMessage(), e);
-                }
-            }
-            return this;
-        }
     }
 
 }

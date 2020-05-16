@@ -16,11 +16,15 @@ import org.springframework.stereotype.Component;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static java.util.Arrays.asList;
 
 /**
  * Created by usta on 25.12.2014.
@@ -277,9 +281,18 @@ public class DirectoryService {
 
     }
 
-    public Path findPathInPublic(String uri) {
-        Path configPath = controller.getConfigPath().resolve("public");
-        return configPath.resolve(uri);
+    public Path findPathInPublic(String finalUri) {
+        List<String> uris = asList(finalUri, finalUri.replaceFirst("/", "")).stream().collect(Collectors.toList());
+        Path result = null;
+        for (String uri : uris) {
+            Path configPath = controller.getConfigPath().resolve("public");
+            Path resolve = configPath.resolve(uri);
+            if (Files.exists(resolve)) {
+                result = resolve;
+                break;
+            }
+        }
+        return result;
     }
 
     public Path findPathInWorkdirOrLookup(Path uri) {

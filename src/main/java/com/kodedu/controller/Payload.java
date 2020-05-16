@@ -14,6 +14,8 @@ import java.nio.file.Paths;
 import java.util.Objects;
 import java.util.Optional;
 
+import static java.util.Objects.nonNull;
+
 /**
  * Created by usta on 04.09.2016.
  */
@@ -50,7 +52,7 @@ public class Payload {
 
         if (Objects.isNull(finalURI)) {
             String requestURI = getRequestURI();
-            if (requestURI.contains(pattern)) {
+            if (nonNull(pattern) && requestURI.contains(pattern)) {
                 setFinalURI(requestURI.replace(pattern, ""));
             } else {
                 setFinalURI(requestURI);
@@ -106,7 +108,7 @@ public class Payload {
     }
 
     public boolean hasParam(String param) {
-        return Objects.nonNull(param(param));
+        return nonNull(param(param));
     }
 
     public Optional<String> getReferer() {
@@ -115,6 +117,7 @@ public class Payload {
 
     public Optional<String> getCleanReferer() {
         return getReferer()
+                .filter(e -> nonNull(pattern))
                 .map(e -> e.replaceFirst(String.format("^.*%s", pattern), ""))
                 .map(e -> e.replaceAll("\\?.*", ""));
     }
