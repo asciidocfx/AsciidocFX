@@ -2325,7 +2325,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         });
     }
 
-    private AtomicReference<Tuple<String, String>> latestTupleReference = new AtomicReference<>();
+    private AtomicReference<TextChangeEvent> latestTextChangeEvent = new AtomicReference<>();
     private Semaphore renderLoopSemaphore = new Semaphore(1);
 
     private void renderLoop() throws InterruptedException {
@@ -2336,14 +2336,14 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             return;
         }
 
-        Tuple<String, String> tuple = latestTupleReference.get();
+        TextChangeEvent textChangeEvent = latestTextChangeEvent.get();
 
-        if (isNull(tuple)) {
+        if (isNull(textChangeEvent)) {
             return;
         }
 
-        String text = tuple.getKey();
-        String mode = tuple.getValue();
+        String text = textChangeEvent.getText();
+        String mode = textChangeEvent.getMode();
 
         try {
 
@@ -2356,7 +2356,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                     setIncludeAsciidocResource(true);
                 }
 
-                ConverterResult converterResult = converterProvider.get(previewConfigBean).convertAsciidoc(text);
+                ConverterResult converterResult = converterProvider.get(previewConfigBean).convertAsciidoc(textChangeEvent);
 
                 setIncludeAsciidocResource(false);
 
@@ -2433,8 +2433,8 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     }
 
     @WebkitCall(from = "editor")
-    public void textListener(String text, String mode) {
-        latestTupleReference.set(new Tuple<>(text, mode));
+    public void textListener(String text, String mode, Path path) {
+        latestTextChangeEvent.set(new TextChangeEvent(text, mode, path));
         if (renderLoopSemaphore.hasQueuedThreads()) {
             renderLoopSemaphore.release();
         }

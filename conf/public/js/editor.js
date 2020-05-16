@@ -110,7 +110,7 @@ var editorChangeListener = function (obj) {
         editorPane.appendWildcard();
 
     renderAction.buff(function () {
-        afx.textListener(editor.getValue(), editorMode());
+        afx.textListener(editor.getValue(), editorMode(), editorPane.getPath());
     }, 100);
 
     checkSpelling();
@@ -276,7 +276,7 @@ function initializeEmmet(mode) {
 var rerenderAction = new BufferedAction();
 function rerender() {
     rerenderAction.buff(function () {
-        afx.textListener(editor.getValue(), editorMode());
+        afx.textListener(editor.getValue(), editorMode(), editorPane.getPath());
         updateStatusBox();
     }, 100);
     checkSpelling();

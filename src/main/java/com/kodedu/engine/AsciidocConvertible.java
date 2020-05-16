@@ -1,5 +1,6 @@
 package com.kodedu.engine;
 
+import com.kodedu.controller.TextChangeEvent;
 import com.kodedu.other.ConverterResult;
 
 /**
@@ -7,15 +8,15 @@ import com.kodedu.other.ConverterResult;
  */
 public interface AsciidocConvertible {
 
-    public ConverterResult convertDocbook(String asciidoc);
+    ConverterResult convertDocbook(TextChangeEvent textChangeEvent);
 
-    public ConverterResult convertAsciidoc(String asciidoc);
+    ConverterResult convertAsciidoc(TextChangeEvent textChangeEvent);
 
-    public ConverterResult convertHtml(String asciidoc);
+    ConverterResult convertHtml(TextChangeEvent textChangeEvent);
 
-    public void convertOdf(String asciidoc);
+    void convertOdf(String asciidoc);
 
-    public void fillOutlines(Object doc);
+    void fillOutlines(Object doc);
 
-    public String applyReplacements(String asciidoc);
+    String applyReplacements(String asciidoc);
 }

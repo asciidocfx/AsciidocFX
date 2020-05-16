@@ -1,5 +1,6 @@
 package com.kodedu.config;
 
+import com.kodedu.controller.TextChangeEvent;
 import javafx.collections.ObservableList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -7,11 +8,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.json.*;
+import java.nio.file.Path;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static org.apache.commons.io.FilenameUtils.getBaseName;
+import static org.apache.commons.io.FilenameUtils.getExtension;
 
 /**
  * Created by usta on 31.08.2015.
@@ -30,9 +35,10 @@ public class AsciidocConfigMerger {
         this.editorConfigBean = editorConfigBean;
     }
 
-    public JsonObject updateConfig(String asciidoc, JsonObject config) {
+    public JsonObject updateConfig(TextChangeEvent event, JsonObject config) {
         try {
 
+            String asciidoc = event.getText();
             Matcher matcher = attributePattern.matcher(asciidoc);
 
             JsonObject currentAttributes = config.getJsonObject("attributes");
@@ -82,6 +88,23 @@ public class AsciidocConfigMerger {
                     finalAttrBuilder.add("lang=" + defaultLanguage.get(0));
                 }
 
+            }
+
+            Path path = event.getPath();
+            if (path != null) {
+                if (!foundKeys.contains("docdir")) {
+                    finalAttrBuilder.add("docdir=" + path.getParent());
+                }
+                if (!foundKeys.contains("docfile")) {
+                    finalAttrBuilder.add("docfile=" + path);
+                }
+                String filename = path.getFileName().toString();
+                if (!foundKeys.contains("docfilesuffix")) {
+                    finalAttrBuilder.add("docfilesuffix=." + getExtension(filename));
+                }
+                if (!foundKeys.contains("docname")) {
+                    finalAttrBuilder.add("docname=" + getBaseName(filename));
+                }
             }
 
             finalBuilder.add("attributes", finalAttrBuilder);

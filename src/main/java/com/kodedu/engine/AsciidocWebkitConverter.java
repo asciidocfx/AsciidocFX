@@ -3,6 +3,7 @@ package com.kodedu.engine;
 import com.kodedu.component.ViewPanel;
 import com.kodedu.config.*;
 import com.kodedu.controller.ApplicationController;
+import com.kodedu.controller.TextChangeEvent;
 import com.kodedu.helper.IOHelper;
 import com.kodedu.other.ConverterResult;
 import com.kodedu.other.Current;
@@ -172,23 +173,26 @@ public class AsciidocWebkitConverter extends ViewPanel implements AsciidocConver
         return completableFuture;
     }
 
-    private JsonObject updateConfig(String asciidoc, JsonObject config) {
-        return configMerger.updateConfig(asciidoc, config);
+    private JsonObject updateConfig(TextChangeEvent event, JsonObject config) {
+        return configMerger.updateConfig(event, config);
     }
 
     @Override
-    public ConverterResult convertDocbook(String asciidoc) {
-        return convert("convertDocbook", asciidoc, updateConfig(asciidoc, docbookConfigBean.getJSON()));
+    public ConverterResult convertDocbook(TextChangeEvent textChangeEvent) {
+        String text = textChangeEvent.getText();
+        return convert("convertDocbook", text, updateConfig(textChangeEvent, docbookConfigBean.getJSON()));
     }
 
     @Override
-    public ConverterResult convertAsciidoc(String asciidoc) {
-        return convert("convertAsciidoc", asciidoc, updateConfig(asciidoc, previewConfigBean.getJSON()));
+    public ConverterResult convertAsciidoc(TextChangeEvent textChangeEvent) {
+        String text = textChangeEvent.getText();
+        return convert("convertAsciidoc", text, updateConfig(textChangeEvent, previewConfigBean.getJSON()));
     }
 
     @Override
-    public ConverterResult convertHtml(String asciidoc) {
-        return convert("convertHtml", asciidoc, updateConfig(asciidoc, htmlConfigBean.getJSON()));
+    public ConverterResult convertHtml(TextChangeEvent textChangeEvent) {
+        String text = textChangeEvent.getText();
+        return convert("convertHtml", text, updateConfig(textChangeEvent, htmlConfigBean.getJSON()));
     }
 
     @Override

@@ -1,6 +1,7 @@
 package com.kodedu.service.convert.docbook;
 
 import com.kodedu.config.DocbookConfigBean;
+import com.kodedu.controller.TextChangeEvent;
 import com.kodedu.engine.AsciidocConverterProvider;
 import com.kodedu.helper.IOHelper;
 import com.kodedu.helper.XMLHelper;
@@ -54,7 +55,8 @@ public class DocBookConverter implements DocbookTraversable, DocumentConverter<S
 
         threadService.runTaskLater(() -> {
 
-            String rendered = converterProvider.get(docbookConfigBean).convertDocbook(asciidoc).getRendered();
+            TextChangeEvent event = new TextChangeEvent(asciidoc, null, currentTabPath);
+            String rendered = converterProvider.get(docbookConfigBean).convertDocbook(event).getRendered();
 
             boolean validated = docbookValidator.validateDocbook(rendered);
 

@@ -2,6 +2,7 @@ package com.kodedu.service.convert.html;
 
 import com.kodedu.config.HtmlConfigBean;
 import com.kodedu.controller.ApplicationController;
+import com.kodedu.controller.TextChangeEvent;
 import com.kodedu.engine.AsciidocConverterProvider;
 import com.kodedu.helper.IOHelper;
 import com.kodedu.other.Current;
@@ -64,8 +65,11 @@ public class HtmlBookConverter implements Traversable, DocumentConverter<String>
             logger.debug("HTML conversion started");
 
             final String asciidoc = current.currentEditorValue();
+            Path path = current.currentPath().get();
 
-            String rendered = converterProvider.get(htmlConfigBean).convertHtml(asciidoc).getRendered();
+            TextChangeEvent event = new TextChangeEvent(asciidoc, null, path);
+
+            String rendered = converterProvider.get(htmlConfigBean).convertHtml(event).getRendered();
 
             IOHelper.writeToFile(htmlBookPath, rendered, CREATE, TRUNCATE_EXISTING);
 
