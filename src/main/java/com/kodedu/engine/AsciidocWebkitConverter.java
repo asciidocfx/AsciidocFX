@@ -119,7 +119,7 @@ public class AsciidocWebkitConverter extends ViewPanel implements AsciidocConver
                         completableFuture.completeExceptionally(e);
                     }
                 });
-            });
+            }, threadService.executor());
             return completableFuture.join();
         }
 
