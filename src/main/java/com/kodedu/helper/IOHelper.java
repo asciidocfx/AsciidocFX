@@ -31,6 +31,7 @@ import java.nio.file.attribute.FileAttribute;
 import java.nio.file.attribute.FileTime;
 import java.util.*;
 import java.util.function.BiPredicate;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.Objects.isNull;
@@ -299,8 +300,8 @@ public class IOHelper {
             maxDepth = Integer.MAX_VALUE;
         }
 
-        try {
-            return Files.find(start, maxDepth, matcher, options);
+        try (Stream<Path> pathStream = Files.find(start, maxDepth, matcher, options);) {
+            return pathStream.collect(Collectors.toList()).stream();
         } catch (Exception e) {
             logger.error("Problem occured while finding in path {}", start, e);
         }
@@ -599,5 +600,13 @@ public class IOHelper {
 
     public static String getCachedCharset(Path path) {
         return pathCharsetMap.getOrDefault(path, "UTF-8");
+    }
+
+    public static void closeStream(Stream<Path> stream) {
+        try {
+            stream.close();
+        } catch (Exception e) {
+
+        }
     }
 }

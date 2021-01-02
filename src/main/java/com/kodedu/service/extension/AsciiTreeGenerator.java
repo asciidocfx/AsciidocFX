@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 /**
  * Created by usta on 16.03.2015.
@@ -35,16 +37,17 @@ public class AsciiTreeGenerator {
         tree.setDepth(indent);
         tree.setName(folder.getFileName().toString());
 
-        IOHelper.list(folder).forEach(p -> {
-            if (IOHelper.isHidden(p))
-                return;
-
-            if (Files.isDirectory(p))
-                tree.getChildren().add(createInitialTree(p, indent + 1, new Tree()));
-            else
-                createChild(p, indent + 1, tree);
-        });
-        return tree;
+        try (Stream<Path> folderStream = IOHelper.list(folder);) {
+            folderStream
+                    .filter(Predicate.not(IOHelper::isHidden))
+                    .forEach(p -> {
+                        if (Files.isDirectory(p))
+                            tree.getChildren().add(createInitialTree(p, indent + 1, new Tree()));
+                        else
+                            createChild(p, indent + 1, tree);
+                    });
+            return tree;
+        }
     }
 
     private void createChild(Path file, int indent, Tree parent) {

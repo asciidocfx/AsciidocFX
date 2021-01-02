@@ -24,7 +24,10 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.nio.file.*;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.zip.Deflater;
@@ -157,7 +160,7 @@ public class EpubConverter {
                             logger.error("Problem occured while zipping mimetype");
                         }
 
-                        try (FileSystem zipfs = FileSystems.newFileSystem(epubOut, null)) {
+                        try (FileSystem zipfs = FileSystems.newFileSystem(epubPath,Collections.emptyMap())) {
                             iterativelyPackDir(epubTemp.resolve("OEBPS"), epubTemp, zipfs);
                             iterativelyPackDir(epubTemp.resolve("META-INF"), epubTemp, zipfs);
                         } catch (IOException e) {
@@ -190,16 +193,17 @@ public class EpubConverter {
 
 
     private void iterativelyPackDir(Path rootPath, Path realRoot, FileSystem zipfs) throws IOException {
-        List<Path> fileList = IOHelper.list(rootPath).collect(Collectors.toList());
-        for (Path oebpsFile : fileList) {
-
-            if (Files.isDirectory(oebpsFile)) {
-                iterativelyPackDir(oebpsFile, realRoot, zipfs);
-            } else {
-                Path relativeFile = realRoot.relativize(oebpsFile);
-                Path relativeRoot = realRoot.relativize(oebpsFile.getParent());
-                Files.createDirectories(zipfs.getPath(relativeRoot.toString()));
-                Files.copy(oebpsFile, zipfs.getPath(relativeFile.toString()), StandardCopyOption.REPLACE_EXISTING);
+        try (Stream<Path> stream = IOHelper.list(rootPath);) {
+            List<Path> fileList = stream.collect(Collectors.toList());
+            for (Path oebpsFile : fileList) {
+                if (Files.isDirectory(oebpsFile)) {
+                    iterativelyPackDir(oebpsFile, realRoot, zipfs);
+                } else {
+                    Path relativeFile = realRoot.relativize(oebpsFile);
+                    Path relativeRoot = realRoot.relativize(oebpsFile.getParent());
+                    Files.createDirectories(zipfs.getPath(relativeRoot.toString()));
+                    Files.copy(oebpsFile, zipfs.getPath(relativeFile.toString()), StandardCopyOption.REPLACE_EXISTING);
+                }
             }
         }
     }

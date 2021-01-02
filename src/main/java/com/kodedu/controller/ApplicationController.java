@@ -1107,17 +1107,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                     return;
                 }
 
-                Map<String, List<Path>> dependencies = IOHelper.list(lib)
-                        .collect(Collectors.groupingBy(path -> {
-                            Path fileName = path.getFileName();
-                            String name = fileName.toString();
-
-                            LinkedList<String> nameParts = new LinkedList<String>(Arrays.asList(name.split("-")));
-//                        String lastPart = nameParts.get(nameParts.size() - 1);
-//                        String version = lastPart.replaceAll("\\p{Alpha}", "");
-                            nameParts.removeLast();
-                            return String.join("-", nameParts);
-                        }));
+                Map<String, List<Path>> dependencies = getLibraryDependencies(lib);
 
                 List<String> duplicatePaths = dependencies
                         .entrySet()
@@ -1139,6 +1129,22 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             }
         });
 
+    }
+
+    private Map<String, List<Path>> getLibraryDependencies(Path lib) {
+        try (Stream<Path> libStream = IOHelper.list(lib);) {
+            return libStream
+                    .collect(Collectors.groupingBy(path -> {
+                        Path fileName = path.getFileName();
+                        String name = fileName.toString();
+
+                        LinkedList<String> nameParts = new LinkedList<String>(Arrays.asList(name.split("-")));
+//                        String lastPart = nameParts.get(nameParts.size() - 1);
+//                        String version = lastPart.replaceAll("\\p{Alpha}", "");
+                        nameParts.removeLast();
+                        return String.join("-", nameParts);
+                    }));
+        }
     }
 
     private void deleteSelectedItems(Event event) {

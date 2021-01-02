@@ -640,31 +640,30 @@ public class EditorConfigBean extends ConfigurationBase {
     }
 
     private List<String> languageList() {
-
         Path configPath = controller.getConfigPath();
 
-        Stream<Path> languageStream = IOHelper.list(configPath.resolve("docbook/common"));
-        List<String> languageList = languageStream.parallel().filter(p -> !p.endsWith("xml"))
-                .map(path -> {
-                    try {
-                        Match $ = JOOX.$(path.toFile());
-                        String language = $.attr("language");
-                        String languageName = $.attr("english-language-name");
+        try (Stream<Path> languageStream = IOHelper.list(configPath.resolve("docbook/common"));) {
+            List<String> languageList = languageStream.parallel().filter(p -> !p.endsWith("xml"))
+                    .map(path -> {
+                        try {
+                            Match $ = JOOX.$(path.toFile());
+                            String language = $.attr("language");
+                            String languageName = $.attr("english-language-name");
 
-                        Objects.requireNonNull(languageName);
-                        Objects.requireNonNull(language);
+                            Objects.requireNonNull(languageName);
+                            Objects.requireNonNull(language);
 
-                        return language;
-                    } catch (Exception ex) {
-                        // no-op
-                    }
+                            return language;
+                        } catch (Exception ex) {
+                            // no-op
+                        }
 
-                    return null;
-                })
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList());
-
-        return languageList;
+                        return null;
+                    })
+                    .filter(Objects::nonNull)
+                    .collect(Collectors.toList());
+            return languageList;
+        }
     }
 
     @Override
