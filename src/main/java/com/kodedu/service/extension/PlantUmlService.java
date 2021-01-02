@@ -7,10 +7,8 @@ import com.kodedu.other.Current;
 import com.kodedu.service.DirectoryService;
 import com.kodedu.service.ThreadService;
 import com.kodedu.service.cache.BinaryCacheService;
-import net.sourceforge.plantuml.FileFormat;
-import net.sourceforge.plantuml.FileFormatOption;
-import net.sourceforge.plantuml.FileSystem;
-import net.sourceforge.plantuml.SourceStringReader;
+import net.sourceforge.plantuml.*;
+import net.sourceforge.plantuml.security.SFile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -106,14 +104,12 @@ public class PlantUmlService {
 
         logger.debug("UML extension is started for {}", imageTarget);
 
-        SourceStringReader reader = new SourceStringReader(uml);
-
         try (ByteArrayOutputStream os = new ByteArrayOutputStream()) {
 
             Path path = current.currentTab().getParentOrWorkdir();
             Path umlPath = path.resolve(imageTarget);
 
-            FileSystem.getInstance().setCurrentDir(path.toFile());
+            SourceStringReader reader = new SourceStringReader(uml, SFile.fromFile(path.toAbsolutePath().toFile()));
 
             FileFormat fileType = imageTarget.endsWith(".svg") ? FileFormat.SVG : FileFormat.PNG;
 
