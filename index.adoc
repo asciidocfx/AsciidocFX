@@ -99,7 +99,7 @@ Download the `.dmg` and run it.
 
 or
 
-Use https://caskroom.github.io/[Homebrew-cask] to install it with one command: `brew cask install asciidocfx`
+Use https://brew.sh/[Homebrew-cask] to install it with one command: `brew install --cask asciidocfx`
 
 
 === Installation Notes
@@ -118,7 +118,9 @@ sudo apt-get install graphviz
 .Mac OS X
 [source,bash]
 ----
-ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+# Install Brew
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+# Install Graphviz
 brew install graphviz
 ----
 +
