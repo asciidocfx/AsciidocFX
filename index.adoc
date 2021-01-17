@@ -99,7 +99,7 @@ Download the `.dmg` and run it.
 
 or
 
-Use https://caskroom.github.io/[Homebrew-cask] to install it with one command: `brew cask install asciidocfx`
+Use https://caskroom.github.io/[Homebrew-cask] to install it with one command: `brew install --cask asciidocfx`
 
 
 === Installation Notes
