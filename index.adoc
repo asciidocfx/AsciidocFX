@@ -118,7 +118,7 @@ sudo apt-get install graphviz
 .Mac OS X
 [source,bash]
 ----
-`/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"`
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 brew install graphviz
 ----
 +
