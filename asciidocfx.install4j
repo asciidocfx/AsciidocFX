@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<install4j version="8.0" transformSequenceNumber="8">
+<install4j version="9.0.1" transformSequenceNumber="9">
   <directoryPresets config="/Users/usta/projects/AsciidocFX/jmods" />
   <application name="AsciidocFX" applicationId="7853-9376-5862-1224" mediaDir="target" compression="4" lzmaCompression="true" pack200Compression="true" excludeSignedFromPacking="false" shortName="AsciidocFX" publisher="AsciidocFX" publisherWeb="http://asciidocfx.com" version="1.7.3" macVolumeId="b98c377570068f5e" javaMinVersion="12" javaMaxVersion="12" allowBetaVM="true">
     <searchSequence>
@@ -8,9 +8,9 @@
       <registry />
     </searchSequence>
     <codeSigning macEnabled="true" macPkcs12File="/home/travis/build/asciidocfx/AsciidocFX/code_sign.p12" />
-    <jreBundles jdkProviderId="AdoptOpenJDK" release="openjdk12/jdk-12.0.1+12" />
+    <jreBundles jdkProviderId="AdoptOpenJDK" release="12/jdk-12.0.1+12" />
   </application>
-  <files globalExcludeSuffixes="bin" defaultOverwriteMode="1" launcherOverwriteMode="1" defaultFileMode="755">
+  <files globalExcludeSuffixes="bin" defaultOverwriteMode="1" launcherOverwriteMode="1" defaultFileMode="755" preserveSymlinks="false">
     <mountPoints>
       <mountPoint id="23" />
     </mountPoints>
@@ -943,11 +943,19 @@ return true;</property>
           <group id="931" beanClass="com.install4j.runtime.beans.groups.VerticalFormComponentGroup" useExternalParametrization="true" externalParametrizationName="Customize banner image" externalParametrizationMode="include">
             <serializedBean>
               <property name="backgroundColor">
-                <object class="java.awt.Color">
-                  <int>255</int>
-                  <int>255</int>
-                  <int>255</int>
-                  <int>255</int>
+                <object class="com.install4j.runtime.beans.LightOrDarkColor">
+                  <object class="java.awt.Color">
+                    <int>255</int>
+                    <int>255</int>
+                    <int>255</int>
+                    <int>255</int>
+                  </object>
+                  <object class="java.awt.Color">
+                    <int>49</int>
+                    <int>52</int>
+                    <int>53</int>
+                    <int>255</int>
+                  </object>
                 </object>
               </property>
               <property name="borderSides">
@@ -956,11 +964,19 @@ return true;</property>
                 </object>
               </property>
               <property name="imageEdgeBackgroundColor">
-                <object class="java.awt.Color">
-                  <int>25</int>
-                  <int>143</int>
-                  <int>220</int>
-                  <int>255</int>
+                <object class="com.install4j.runtime.beans.LightOrDarkColor">
+                  <object class="java.awt.Color">
+                    <int>25</int>
+                    <int>143</int>
+                    <int>220</int>
+                    <int>255</int>
+                  </object>
+                  <object class="java.awt.Color">
+                    <int>0</int>
+                    <int>74</int>
+                    <int>151</int>
+                    <int>255</int>
+                  </object>
                 </object>
               </property>
               <property name="imageEdgeBorder" type="boolean" value="true" />
@@ -1014,11 +1030,19 @@ return true;</property>
               <group id="938" beanClass="com.install4j.runtime.beans.groups.VerticalFormComponentGroup" useExternalParametrization="true" externalParametrizationName="Customize title bar" externalParametrizationMode="include">
                 <serializedBean>
                   <property name="backgroundColor">
-                    <object class="java.awt.Color">
-                      <int>255</int>
-                      <int>255</int>
-                      <int>255</int>
-                      <int>255</int>
+                    <object class="com.install4j.runtime.beans.LightOrDarkColor">
+                      <object class="java.awt.Color">
+                        <int>255</int>
+                        <int>255</int>
+                        <int>255</int>
+                        <int>255</int>
+                      </object>
+                      <object class="java.awt.Color">
+                        <int>49</int>
+                        <int>52</int>
+                        <int>53</int>
+                        <int>255</int>
+                      </object>
                     </object>
                   </property>
                   <property name="borderSides">
@@ -1122,28 +1146,28 @@ return true;</property>
   </installerGui>
   <mediaSets>
     <windows name="Windows Installer" id="86" mediaFileName="AsciidocFX_Windows">
-      <jreBundle usePack200="false" jreBundleSource="generated" includedJre="windows-amd64-12">
+      <jreBundle usePack200="false" includedJre="windows-amd64-12">
         <modules>
           <jmodDirectory location="jmods/windows" />
         </modules>
       </jreBundle>
     </windows>
     <macosFolder name="Mac OS X Folder" id="921" mediaFileName="AsciidocFX_Mac">
-      <jreBundle usePack200="false" jreBundleSource="generated" includedJre="macosx-amd64-12">
+      <jreBundle usePack200="false" includedJre="macosx-amd64-12">
         <modules>
           <jmodDirectory location="jmods/mac" />
         </modules>
       </jreBundle>
     </macosFolder>
     <windowsArchive name="Windows Archive" id="223" mediaFileName="AsciidocFX_Windows">
-      <jreBundle jreBundleSource="generated" includedJre="windows-amd64-12">
+      <jreBundle includedJre="windows-amd64-12">
         <modules>
           <jmodDirectory location="jmods/windows" />
         </modules>
       </jreBundle>
     </windowsArchive>
     <unixArchive name="Unix Archive" id="1110" mediaFileName="AsciidocFX_Linux">
-      <jreBundle jreBundleSource="generated">
+      <jreBundle>
         <modules>
           <jmodDirectory location="jmods/linux" />
         </modules>
