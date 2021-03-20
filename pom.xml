@@ -12,14 +12,14 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <java.version>12</java.version>
+        <java.version>16</java.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <mainClass>com.kodedu.boot.AppStarter</mainClass>
         <install4j.home>/home/travis/build/asciidocfx/AsciidocFX/install4j8.0</install4j.home>
         <install4j.licenseKey>${env.LICENSE_KEY_8}</install4j.licenseKey>
-        <openjfx.version>14</openjfx.version>
-        <ikonli.version>11.3.5</ikonli.version>
+        <openjfx.version>16</openjfx.version>
+        <ikonli.version>12.2.0</ikonli.version>
         <jaxb.version>2.3.2</jaxb.version>
     </properties>
 
@@ -30,7 +30,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.2.5.RELEASE</version>
+        <version>2.4.4</version>
     </parent>
 
     <dependencies>
@@ -43,12 +43,6 @@
             <groupId>com.dooapp.fxform2</groupId>
             <artifactId>core</artifactId>
             <version>9.0.0</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>validation-api</artifactId>
-                    <groupId>javax.validation</groupId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>commons-io</groupId>
@@ -102,7 +96,7 @@
         <dependency>
             <groupId>org.apache.xmlgraphics</groupId>
             <artifactId>fop</artifactId>
-            <version>2.5</version>
+            <version>2.6</version>
             <exclusions>
                 <exclusion>
                     <artifactId>servlet-api</artifactId>
@@ -143,7 +137,7 @@
         <dependency>
             <groupId>net.sourceforge.plantuml</groupId>
             <artifactId>plantuml</artifactId>
-            <version>1.2020.9</version>
+            <version>1.2021.2</version>
         </dependency>
         <dependency>
             <groupId>org.apache.xmlgraphics</groupId>
@@ -158,7 +152,7 @@
         <dependency>
             <groupId>com.install4j</groupId>
             <artifactId>install4j-runtime</artifactId>
-            <version>8.0</version>
+            <version>9.0</version>
             <!--            <scope>provided</scope>-->
         </dependency>
         <dependency>
@@ -410,7 +404,7 @@
             <plugin>
                 <groupId>org.sonatype.install4j</groupId>
                 <artifactId>install4j-maven-plugin</artifactId>
-                <version>1.1.1</version>
+                <version>1.1.2</version>
                 <executions>
                     <execution>
                         <id>compile-installers</id>
