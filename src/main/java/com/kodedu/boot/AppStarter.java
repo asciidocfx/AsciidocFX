@@ -31,7 +31,9 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 
 import static javafx.scene.input.KeyCombination.SHORTCUT_DOWN;
 
@@ -102,13 +104,18 @@ public class AppStarter extends Application {
     }
 
     private void loadRequiredFonts() {
-        Font.loadFont(AppStarter.class.getResourceAsStream("/font/NotoSerif-Regular.ttf"), -1);
-        Font.loadFont(AppStarter.class.getResourceAsStream("/font/NotoSerif-Italic.ttf"), -1);
-        Font.loadFont(AppStarter.class.getResourceAsStream("/font/NotoSerif-Bold.ttf"), -1);
-        Font.loadFont(AppStarter.class.getResourceAsStream("/font/NotoSerif-BoldItalic.ttf"), -1);
-        Font.loadFont(AppStarter.class.getResourceAsStream("/font/DejaVuSansMono.ttf"), -1);
-        Font.loadFont(AppStarter.class.getResourceAsStream("/font/DejaVuSansMono-Bold.ttf"), -1);
-        Font.loadFont(AppStarter.class.getResourceAsStream("/font/DejaVuSansMono-Oblique.ttf"), -1);
+        var fonts = List.of("/font/NotoSerif-Regular.ttf", "/font/NotoSerif-Italic.ttf", "/font/NotoSerif-Bold.ttf",
+                "/font/NotoSerif-BoldItalic.ttf", "/font/DejaVuSansMono.ttf", "/font/DejaVuSansMono-Bold.ttf",
+                "/font/DejaVuSansMono-Oblique.ttf");
+
+        for (String font : fonts) {
+            try (var in = AppStarter.class.getResourceAsStream(font);) {
+                Font.loadFont(in, -1);
+            } catch (IOException e) {
+                logger.error("Error when loading font {}", font, e);
+            }
+        }
+
     }
 
     private void startApp(final Stage stage, final CmdlineConfig config) throws Throwable {
