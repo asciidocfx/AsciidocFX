@@ -7,7 +7,9 @@ import com.kodedu.other.Current;
 import com.kodedu.service.DirectoryService;
 import com.kodedu.service.ThreadService;
 import com.kodedu.service.cache.BinaryCacheService;
-import net.sourceforge.plantuml.*;
+import net.sourceforge.plantuml.FileFormat;
+import net.sourceforge.plantuml.FileFormatOption;
+import net.sourceforge.plantuml.SourceStringReader;
 import net.sourceforge.plantuml.security.SFile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,7 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Objects;
 
@@ -49,7 +50,7 @@ public class PlantUmlService {
         this.directoryService = directoryService;
     }
 
-    public void plantUml(String uml, String type, String imagesDir, String imageTarget, String nodename, String options) {
+    public synchronized void plantUml(String uml, String type, String imagesDir, String imageTarget, String nodename, String options) {
         Objects.requireNonNull(imageTarget);
 
         boolean cachedResource = imageTarget.contains("/afx/cache");
@@ -104,7 +105,7 @@ public class PlantUmlService {
 
         logger.debug("UML extension is started for {}", imageTarget);
 
-        try (ByteArrayOutputStream os = new ByteArrayOutputStream()) {
+        try {
 
             Path path = current.currentTab().getParentOrWorkdir();
             Path umlPath = path.resolve(imageTarget);
@@ -113,32 +114,35 @@ public class PlantUmlService {
 
             FileFormat fileType = imageTarget.endsWith(".svg") ? FileFormat.SVG : FileFormat.PNG;
 
-            threadService.runTaskLater(() -> {
-                try {
+            ByteArrayOutputStream os = new ByteArrayOutputStream();
 
-                    reader.outputImage(os, new FileFormatOption(fileType));
+            try {
 
-                    if (!cachedResource) {
-                        IOHelper.createDirectories(path.resolve(imagesDir));
-                        IOHelper.writeToFile(umlPath, os.toByteArray(), CREATE, WRITE, TRUNCATE_EXISTING, SYNC);
-                    } else {
-                        binaryCacheService.putBinary(imageTarget, os.toByteArray());
-                    }
+                reader.outputImage(os, new FileFormatOption(fileType));
 
-                    logger.debug("UML extension is ended for {}", imageTarget);
-
-                    threadService.runActionLater(() -> {
-                        controller.clearImageCache(umlPath);
-                    });
-                } catch (Exception e) {
-                    logger.error("Problem occured while generating UML diagram", e);
+                if (!cachedResource) {
+                    IOHelper.createDirectories(path.resolve(imagesDir));
+                    IOHelper.writeToFile(umlPath, os.toByteArray(), CREATE, WRITE, TRUNCATE_EXISTING, SYNC);
+                } else {
+                    binaryCacheService.putBinary(imageTarget, os.toByteArray());
                 }
-            });
 
+                IOHelper.close(os);
+
+                logger.debug("UML extension is ended for {}", imageTarget);
+
+                threadService.runActionLater(() -> {
+                    controller.clearImageCache(umlPath);
+                });
+            } catch (Exception e) {
+                logger.error("Problem occured while generating UML diagram", e);
+            } finally {
+                IOHelper.close(os);
+            }
 
             current.getCache().put(imageTarget, hashCode);
 
-        } catch (IOException e) {
+        } catch (Exception e) {
             logger.error("Problem occured while generating UML diagram", e);
         }
     }
