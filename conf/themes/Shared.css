@@ -19,7 +19,7 @@
 
 .root {
     -fx-font-size: 1em;
-    -fx-font-family: "Dialog", "Verdana", "Arial";
+    -fx-font-family: 'Arial' ,'Verdana', 'Calibri';
 }
 
 .ikonli-font-icon {

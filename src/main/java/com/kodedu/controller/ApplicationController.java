@@ -1043,6 +1043,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                 Scene scene = new Scene(anchorPane);
                 detachStage.setScene(scene);
                 applyCurrentTheme(detachStage);
+                applyCurrentFontFamily(detachStage);
                 applyDetachedStagePosition(detachStage);
                 detachStage.show();
             } else {
@@ -1386,6 +1387,11 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     public void applyInitialConfigurations() {
 
+        editorConfigBean.getFontFamily().stream().findFirst().ifPresent(fontFamily -> {
+            scene.getRoot().setStyle(String.format("-fx-font-family: '%s';", fontFamily));
+            editorConfigBean.updateFontFamily(fontFamily);
+        });
+
         Double screenX = editorConfigBean.getScreenX();
         Double screenY = editorConfigBean.getScreenY();
         Double screenWidth = editorConfigBean.getScreenWidth();
@@ -1509,6 +1515,13 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     }
 
     public void bindConfigurations() {
+
+        editorConfigBean.getFontFamily().addListener((ListChangeListener<String>) c -> {
+            c.next();
+            if (c.wasAdded()) {
+                scene.getRoot().setStyle(String.format("-fx-font-family: '%s';", c.getList().get(0)));
+            }
+        });
 
         editorConfigBean.getEditorTheme().addListener((ListChangeListener<EditorConfigBean.Theme>) c -> {
             c.next();
@@ -3241,6 +3254,20 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     public int getHangFileSizeLimit() {
         return editorConfigBean.getHangFileSizeLimit();
+    }
+
+    public void applyCurrentFontFamily(Stage... stages) {
+        ObservableList<String> fontFamilies = editorConfigBean.getFontFamily();
+        if(fontFamilies.isEmpty()){
+            return;
+        }
+        String fontFamily = fontFamilies.get(0);
+        if(fontFamily == null){
+            return;
+        }
+        threadService.runActionLater(()->{
+            scene.getRoot().setStyle(String.format("-fx-font-family: '%s';", fontFamily));
+        });
     }
 
     public void applyCurrentTheme(Stage... stages) {
