@@ -227,7 +227,7 @@ public class DirectoryService {
         final Path currentTabPath = current.currentPath().get();
         final Path currentTabPathDir = currentTabPath.getParent();
         String tabText = current.getCurrentTabText().replace("*", "").trim();
-        tabText = tabText.contains(".") ? tabText.split("\\.")[0] : tabText;
+        tabText = tabText.contains(".") ? tabText.substring(0, tabText.lastIndexOf(".")) : tabText;
 
         if (!askPath) {
             return currentTabPathDir.resolve(extensionFilter.getExtensions().get(0).replace("*", tabText));
