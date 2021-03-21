@@ -29,6 +29,19 @@
                         </padding>
                     </ToggleButton>
                     <ToggleButton toggleGroup="$rightToggleGroup" styleClass="corner-toggle-button,corner-bottom-half"
+                                  onAction="#toggleZenMode"
+                                  fx:id="toggleZenButton"
+                                  prefHeight="80" prefWidth="20">
+                        <graphic>
+                            <Group>
+                                <Label text="Preview Only" rotate="90"></Label>
+                            </Group>
+                        </graphic>
+                        <padding>
+                            <Insets bottom="0" top="0" left="0" right="0"></Insets>
+                        </padding>
+                    </ToggleButton>
+                    <ToggleButton toggleGroup="$rightToggleGroup" styleClass="corner-toggle-button,corner-bottom-half"
                                   onAction="#toggleConfigurationView"
                                   fx:id="toggleConfigButton"
                                   prefHeight="80" prefWidth="20">

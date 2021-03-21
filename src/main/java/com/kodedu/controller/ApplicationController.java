@@ -3144,6 +3144,25 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     }
 
     @FXML
+    public void toggleZenMode(ActionEvent actionEvent) {
+        final ToggleButton source = (ToggleButton) actionEvent.getSource();
+        final boolean selected = source.isSelected();
+
+        if(selected)  {
+            splitPane.setDividerPositions(0, 0);
+            rightShowerHider.showDefaultNode();
+        } else {
+            // I was able to set divisions back this way
+            splitPane.setDividerPositions(1, 1);
+            threadService.schedule(()-> {
+                threadService.runActionLater(()-> {
+                    splitPane.setDividerPositions(0.17, 0.59);
+                });
+            }, 25, TimeUnit.MILLISECONDS);
+        }
+    }
+
+    @FXML
     public void toggleConfigurationView(ActionEvent actionEvent) {
         final ToggleButton source = (ToggleButton) actionEvent.getSource();
         splitPane.setDividerPosition(1, source.isSelected() ? 0.59 : 1);
