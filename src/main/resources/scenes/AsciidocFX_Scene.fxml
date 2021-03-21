@@ -31,7 +31,7 @@
                     <ToggleButton toggleGroup="$rightToggleGroup" styleClass="corner-toggle-button,corner-bottom-half"
                                   onAction="#toggleZenMode"
                                   fx:id="toggleZenButton"
-                                  prefHeight="80" prefWidth="20">
+                                  prefHeight="90" prefWidth="20">
                         <graphic>
                             <Group>
                                 <Label text="Preview Only" rotate="90"></Label>

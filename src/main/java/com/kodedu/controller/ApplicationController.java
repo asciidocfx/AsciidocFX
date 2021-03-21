@@ -3267,6 +3267,9 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         }
         threadService.runActionLater(()->{
             scene.getRoot().setStyle(String.format("-fx-font-family: '%s';", fontFamily));
+            for (Stage stg : stages) {
+                stg.getScene().getRoot().setStyle(String.format("-fx-font-family: '%s';", fontFamily));
+            }
         });
     }
 
