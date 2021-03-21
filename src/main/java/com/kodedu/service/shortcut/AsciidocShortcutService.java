@@ -179,6 +179,11 @@ public class AsciidocShortcutService implements ShortcutService {
     }
 
     @Override
+    public void addMath2Block() {
+        current.currentEngine().executeScript("editorMenu.asciidoc.addMath2Block()");
+    }
+
+    @Override
     public void addUmlBlock() {
         current.currentEngine().executeScript("editorMenu.asciidoc.addUmlBlock()");
     }

@@ -163,6 +163,11 @@ public class NoneShortcutService implements ShortcutService {
     }
 
     @Override
+    public void addMath2Block() {
+
+    }
+
+    @Override
     public void addUmlBlock() {
 
     }

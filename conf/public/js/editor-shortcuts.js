@@ -376,11 +376,17 @@ var editorMenu = {
                 "generated automatically by the DocBook toolchain.\n" +
                 "////////////////////////////////////////////////////////////////  ");
         },
-        addMathBlock: function () {
+        addMathBlock: function () { // block
             var range = editor.getSelectionRange();
             editor.removeToLineStart();
             editor.insert("[math,,png]\n--\n\n--");
             editor.gotoLine(range.end.row + 1, 6, true);
+        },
+        addMath2Block: function () { // inline
+            var range = editor.getSelectionRange();
+            editor.removeToLineStart();
+            editor.insert("asciimath:[]");
+            editor.gotoLine(range.end.row + 1, 11, true);
         },
         addUmlBlock: function () {
             var range = editor.getSelectionRange();
@@ -669,6 +675,12 @@ editor.commands.addCommand({
         // math tab
         if (textRange == "math") { // math block generator
             afx.getShortcutProvider().getProvider().addMathBlock();
+            return;
+        }
+
+        // math2 tab
+        if (textRange == "math2") { // math inline generator
+            afx.getShortcutProvider().getProvider().addMath2Block();
             return;
         }
 

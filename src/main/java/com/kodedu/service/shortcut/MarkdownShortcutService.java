@@ -186,6 +186,11 @@ public class MarkdownShortcutService implements ShortcutService {
     }
 
     @Override
+    public void addMath2Block() {
+        AlertHelper.notImplementedDialog();
+    }
+
+    @Override
     public void addUmlBlock() {
         AlertHelper.notImplementedDialog();
     }

@@ -297,8 +297,11 @@ public class EditorService {
 
         final MenuButton extensions = new MenuButton("Extensions");
         extensions.setFocusTraversable(false);
-        extensions.getItems().add(MenuItemBuilt.item("Mathjax").click(event -> {
+        extensions.getItems().add(MenuItemBuilt.item("Mathjax (block)").click(event -> {
             shortcutProvider.getProvider().addMathBlock();
+        }));
+        extensions.getItems().add(MenuItemBuilt.item("Mathjax (inline)").click(event -> {
+            shortcutProvider.getProvider().addMath2Block();
         }));
         extensions.getItems().add(MenuItemBuilt.item("PlantUML").click(event -> {
             shortcutProvider.getProvider().addUmlBlock();

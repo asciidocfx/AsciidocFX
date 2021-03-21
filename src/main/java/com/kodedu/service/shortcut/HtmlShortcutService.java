@@ -161,6 +161,10 @@ public class HtmlShortcutService implements ShortcutService {
     }
 
     @Override
+    public void addMath2Block() {
+    }
+
+    @Override
     public void addUmlBlock() {
     }
 

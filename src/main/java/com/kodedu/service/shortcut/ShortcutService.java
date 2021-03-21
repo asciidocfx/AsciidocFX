@@ -67,6 +67,8 @@ public interface ShortcutService {
 
     void addMathBlock();
 
+    void addMath2Block();
+
     void addUmlBlock();
 
     void addDitaaBlock();
