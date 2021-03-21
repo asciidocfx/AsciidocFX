@@ -163,8 +163,8 @@ function getTokenList() {
 function updateOptions() {
     var editorConfigBean = afx.getEditorConfigBean();
     editor.setOptions({
-        fontFamily: editorConfigBean.getFontFamily(),
-        fontSize: editorConfigBean.getFontSize()
+        fontFamily: editorConfigBean.getAceFontFamily(),
+        fontSize: editorConfigBean.getAceFontSize()
     });
     var themes = editorConfigBean.getAceTheme();
     if (themes.size() > 0) {
@@ -185,6 +185,14 @@ function changeTheme(theme) {
 
 function changeFontSize(fontSize) {
     editor.setFontSize(fontSize);
+}
+
+function changeFontFamily(family) {
+    if (family) {
+        editor.setOptions({
+            fontFamily: family,
+        });
+    }
 }
 
 function changeScrollSpeed(value) {

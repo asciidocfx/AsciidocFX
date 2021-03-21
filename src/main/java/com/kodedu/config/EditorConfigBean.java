@@ -47,11 +47,11 @@ public class EditorConfigBean extends ConfigurationBase {
     private ObjectProperty<ObservableList<Theme>> editorTheme = new SimpleObjectProperty<>(FXCollections.observableArrayList());
     private ObjectProperty<ObservableList<String>> defaultLanguage = new SimpleObjectProperty<>(FXCollections.observableArrayList());
     private ObjectProperty<ObservableList<String>> fontFamily = new SimpleObjectProperty(FXCollections.observableArrayList());
+    private ObjectProperty<ObservableList<String>> aceFontFamily = new SimpleObjectProperty(FXCollections.observableArrayList());
     private DoubleProperty firstSplitter = new SimpleDoubleProperty(0.17551963048498845);
     private DoubleProperty secondSplitter = new SimpleDoubleProperty(0.5996920708237106);
     private DoubleProperty verticalSplitter = new SimpleDoubleProperty(0.5);
-    private StringProperty aceFontFamily = new SimpleStringProperty("'Dejavu Sans Mono'");
-    private ObjectProperty<Integer> fontSize = new SimpleObjectProperty(16);
+    private ObjectProperty<Integer> aceFontSize = new SimpleObjectProperty(16);
     private DoubleProperty scrollSpeed = new SimpleDoubleProperty(0.1);
     private BooleanProperty useWrapMode = new SimpleBooleanProperty(true);
     private ObjectProperty<Integer> wrapLimit = new SimpleObjectProperty<>(0);
@@ -226,15 +226,15 @@ public class EditorConfigBean extends ConfigurationBase {
         this.aceTheme.set(aceTheme);
     }
 
-    public String getAceFontFamily() {
+    public ObservableList<String> getAceFontFamily() {
         return aceFontFamily.get();
     }
 
-    public StringProperty aceFontFamilyProperty() {
+    public ObjectProperty<ObservableList<String>> aceFontFamilyProperty() {
         return aceFontFamily;
     }
 
-    public void setAceFontFamily(String aceFontFamily) {
+    public void setAceFontFamily(ObservableList<String> aceFontFamily) {
         this.aceFontFamily.set(aceFontFamily);
     }
 
@@ -250,16 +250,16 @@ public class EditorConfigBean extends ConfigurationBase {
         this.fontFamily.set(fontFamily);
     }
 
-    public Integer getFontSize() {
-        return fontSize.get();
+    public Integer getAceFontSize() {
+        return aceFontSize.get();
     }
 
-    public ObjectProperty<Integer> fontSizeProperty() {
-        return fontSize;
+    public ObjectProperty<Integer> aceFontSizeProperty() {
+        return aceFontSize;
     }
 
-    public void setFontSize(Integer fontSize) {
-        this.fontSize.set(fontSize);
+    public void setAceFontSize(Integer aceFontSize) {
+        this.aceFontSize.set(aceFontSize);
     }
 
     public double getScrollSpeed() {
@@ -452,7 +452,7 @@ public class EditorConfigBean extends ConfigurationBase {
 
         FXForm editorConfigForm = new FXFormBuilder<>()
                 .resourceBundle(ResourceBundle.getBundle("editorConfig"))
-                .includeAndReorder("editorTheme", "aceTheme", "detachedPreview", "validateDocbook", "fontFamily", "fontSize",
+                .includeAndReorder("editorTheme", "aceTheme", "detachedPreview", "validateDocbook", "fontFamily", "aceFontFamily", "aceFontSize",
                         "scrollSpeed", "useWrapMode", "wrapLimit", "foldStyle", "showGutter", "defaultLanguage", "autoUpdate","showHiddenFiles",
                         "clipboardImageFilePattern", "hangFileSizeLimit", "extensionImageScale")
                 .build();
@@ -463,8 +463,9 @@ public class EditorConfigBean extends ConfigurationBase {
         editorConfigFormProvider.addFactory(new NamedFieldHandler("editorTheme"), new ListChoiceBoxFactory());
         editorConfigFormProvider.addFactory(new NamedFieldHandler("defaultLanguage"), new ListChoiceBoxFactory());
         editorConfigFormProvider.addFactory(new NamedFieldHandler("fontFamily"), new ListChoiceBoxFactory());
+        editorConfigFormProvider.addFactory(new NamedFieldHandler("aceFontFamily"), new ListChoiceBoxFactory());
         editorConfigFormProvider.addFactory(new NamedFieldHandler("scrollSpeed"), new SliderFactory(SliderBuilt.create(0.0, 1, 0.1).step(0.1)));
-        editorConfigFormProvider.addFactory(new NamedFieldHandler("fontSize"), new SpinnerFactory(new Spinner(8, 32, 14)));
+        editorConfigFormProvider.addFactory(new NamedFieldHandler("aceFontSize"), new SpinnerFactory(new Spinner(8, 32, 14)));
         editorConfigFormProvider.addFactory(new NamedFieldHandler("wrapLimit"), new SpinnerFactory(new Spinner(0, 500, 0)));
         editorConfigFormProvider.addFactory(new NamedFieldHandler("hangFileSizeLimit"), new SpinnerFactory(new Spinner(0, Integer.MAX_VALUE, 3)));
         editorConfigFormProvider.addFactory(new NamedFieldHandler("extensionImageScale"), new SpinnerFactory(new Spinner(0, Integer.MAX_VALUE, 2)));
@@ -499,7 +500,10 @@ public class EditorConfigBean extends ConfigurationBase {
 
         List<String> aceThemeList = new LinkedList<>(IOHelper.readAllLines(getConfigDirectory().resolve("ace_themes.txt")));
         List<String> languageList = this.languageList();
-        List<String> fontFamilies = new ArrayList(Font.getFamilies());
+        List<String> systemFonts = Font.getFamilies();
+        List<String> fontFamilies = new ArrayList(systemFonts);
+        List<String> aceFontFamilies = new ArrayList(systemFonts.stream()
+                .filter(f-> f.contains("Mono") || f.contains("Consol") || f.contains("Courier")).toList());
 
         Reader fileReader = IOHelper.fileReader(configPath);
         JsonReader jsonReader = Json.createReader(fileReader);
@@ -516,8 +520,15 @@ public class EditorConfigBean extends ConfigurationBase {
                 .or(() -> fontFamilies.stream().filter(f -> Objects.equals(f, "Calibri")).findFirst())
                 .orElse(Font.getDefault().getFamily());
 
+        String aceDefaultFont = aceFontFamilies.stream()
+                .filter(f -> f.contains("DejaVu Sans Mono"))
+                .findFirst()
+                .or(() -> aceFontFamilies.stream().filter(f -> f.contains("Consolas")).findFirst())
+                .orElse("Monospaced");
+
         String fontFamily = jsonObject.getString("fontFamily", defaultFont);
-        int fontSize = jsonObject.getInt("fontSize", 14);
+        String aceFontFamily = jsonObject.getString("aceFontFamily", aceDefaultFont);
+        int aceFontSize = jsonObject.getInt("aceFontSize", 14);
         String aceTheme = jsonObject.getString("aceTheme", "xcode");
         String defaultLanguage = jsonObject.getString("defaultLanguage", "en");
         boolean useWrapMode = jsonObject.getBoolean("useWrapMode", true);
@@ -567,15 +578,19 @@ public class EditorConfigBean extends ConfigurationBase {
         fontFamilies.remove(fontFamily);
         fontFamilies.add(0, fontFamily);
 
+        aceFontFamilies.remove(aceFontFamily);
+        aceFontFamilies.add(0, aceFontFamily);
+
         IOHelper.close(jsonReader, fileReader);
 
         threadService.runActionLater(() -> {
             getFontFamily().setAll(fontFamilies);
+            getAceFontFamily().setAll(aceFontFamilies);
             getEditorTheme().setAll(themeList);
             getAceTheme().setAll(aceThemeList);
             getDefaultLanguage().setAll(languageList);
 
-            this.setFontSize(fontSize);
+            this.setAceFontSize(aceFontSize);
             this.setUseWrapMode(useWrapMode);
             this.setShowGutter(showGutter);
             this.setDetachedPreview(detachedPreview);
@@ -703,8 +718,8 @@ public class EditorConfigBean extends ConfigurationBase {
 
         objectBuilder
                 .add("fontFamily", getFontFamily().get(0))
-                .add("aceFontFamily", getAceFontFamily())
-                .add("fontSize", getFontSize())
+                .add("aceFontFamily", getAceFontFamily().get(0))
+                .add("aceFontSize", getAceFontSize())
                 .add("scrollSpeed", getScrollSpeed())
                 .add("useWrapMode", getUseWrapMode())
                 .add("wrapLimit", getWrapLimit())
@@ -741,8 +756,13 @@ public class EditorConfigBean extends ConfigurationBase {
     }
 
     public void updateFontFamily(String fontFamily) {
-        getFontFamily().remove(aceTheme);
+        getFontFamily().remove(fontFamily);
         getFontFamily().add(0, fontFamily);
+    }
+
+    public void updateAceFontFamily(String aceFontFamily) {
+        getAceFontFamily().remove(aceFontFamily);
+        getAceFontFamily().add(0, aceFontFamily);
     }
 
     public class Theme {

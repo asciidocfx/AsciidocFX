@@ -1392,6 +1392,11 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             editorConfigBean.updateFontFamily(fontFamily);
         });
 
+        editorConfigBean.getAceFontFamily().stream().findFirst().ifPresent(fontFamily -> {
+            applyForAllEditorPanes(editorPane -> editorPane.setFontFamily(fontFamily));
+            editorConfigBean.updateAceFontFamily(fontFamily);
+        });
+
         Double screenX = editorConfigBean.getScreenX();
         Double screenY = editorConfigBean.getScreenY();
         Double screenWidth = editorConfigBean.getScreenWidth();
@@ -1437,7 +1442,8 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         applyForAllEditorPanes(editorPane -> editorPane.setShowGutter(editorConfigBean.getShowGutter()));
         applyForAllEditorPanes(editorPane -> editorPane.setUseWrapMode(editorConfigBean.getUseWrapMode()));
         applyForAllEditorPanes(editorPane -> editorPane.setWrapLimitRange(editorConfigBean.getWrapLimit()));
-        applyForAllEditorPanes(editorPane -> editorPane.setFontSize(editorConfigBean.getFontSize()));
+        applyForAllEditorPanes(editorPane -> editorPane.setFontSize(editorConfigBean.getAceFontSize()));
+        applyForAllEditorPanes(editorPane -> editorPane.setFontFamily(editorConfigBean.getAceFontFamily().get(0)));
         applyForAllEditorPanes(editorPane -> editorPane.setFoldStyle(editorConfigBean.getFoldStyle()));
 
         ObservableList<Item> recentFilesList = storedConfigBean.getRecentFiles();
@@ -1523,6 +1529,13 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             }
         });
 
+        editorConfigBean.getAceFontFamily().addListener((ListChangeListener<String>) c -> {
+            c.next();
+            if (c.wasAdded()) {
+                applyForAllEditorPanes(editorPane -> editorPane.setFontFamily(c.getList().get(0)));
+            }
+        });
+
         editorConfigBean.getEditorTheme().addListener((ListChangeListener<EditorConfigBean.Theme>) c -> {
             c.next();
             if (c.wasAdded()) {
@@ -1582,8 +1595,12 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             }
         });
 
-        editorConfigBean.fontSizeProperty().addListener((observable, oldValue, newValue) -> {
+        editorConfigBean.aceFontSizeProperty().addListener((observable, oldValue, newValue) -> {
             applyForAllEditorPanes(editorPane -> editorPane.setFontSize(newValue.intValue()));
+        });
+
+        editorConfigBean.aceFontFamilyProperty().addListener((observable, oldValue, newValue) -> {
+            applyForAllEditorPanes(editorPane -> editorPane.setFontFamily(newValue.get(0)));
         });
 
         editorConfigBean.foldStyleProperty().addListener((observable, oldValue, newValue) -> {

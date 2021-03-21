@@ -759,7 +759,7 @@ function mouseWheelHandler(event) {
 
     if (event.ctrlKey && editor.getValue().length) {
 
-        var fontSize = parseInt(editor.getFontSize());
+        var fontSize = parseInt(editor.getAceFontSize());
 
         if (event.wheelDelta < 0 && fontSize > 8) {
             //mouse scroll down - min size 8

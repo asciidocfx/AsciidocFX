@@ -361,6 +361,12 @@ public class EditorPane extends AnchorPane {
         });
     }
 
+    public void setFontFamily(String fontFamily) {
+        threadService.runActionLater(() -> {
+            this.call("changeFontFamily", fontFamily);
+        });
+    }
+
     public void setShowGutter(Boolean showGutter) {
         threadService.runActionLater(() -> {
             this.call("setShowGutter", showGutter);
