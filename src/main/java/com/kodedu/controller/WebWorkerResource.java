@@ -99,6 +99,10 @@ public class WebWorkerResource {
         }
 
         if (optional.isPresent()) {
+            if(finalURI.matches("^file:///[A-Z]:[\\\\/].+$")) {
+                finalURI = finalURI.replace("file:///", "");
+            }
+
             Path found = directoryService.findPathInWorkdirOrLookup(IOHelper.getPath(finalURI));
 
             if (Objects.nonNull(found)) {
