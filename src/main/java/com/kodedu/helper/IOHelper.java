@@ -20,6 +20,7 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 import java.awt.image.BufferedImage;
 import java.io.*;
+import java.net.URI;
 import java.net.URLDecoder;
 import java.nio.ByteBuffer;
 import java.nio.charset.CharacterCodingException;
@@ -588,7 +589,10 @@ public class IOHelper {
             return getPath;
         } catch (NullPointerException nlp) {
             throw nlp;
-        } catch (Exception e) {
+        } catch (InvalidPathException ie){
+            return Paths.get(URI.create(path));
+        }
+        catch (Exception e) {
             e.printStackTrace();
         }
         return null;
