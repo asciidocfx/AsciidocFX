@@ -59,5 +59,15 @@ javafx.base/com.sun.javafx.collections=ALL-UNNAMED
 javafx.graphics/com.sun.scenario.effect.impl.prism=ALL-UNNAMED
 --add-exports
 javafx.graphics/com.sun.javafx.css=ALL-UNNAMED
+--add-opens
+javafx.base/com.sun.javafx.collections=javafx.web
+--add-opens
+javafx.controls/javafx.scene.control=ALL-UNNAMED
 --add-exports
 javafx.base/com.sun.javafx.property=ALL-UNNAMED
+--add-exports
+javafx.controls/com.sun.javafx.scene.control=ALL-UNNAMED
+--module-path
+jmods/mac
+--add-modules=ALL-MODULE-PATH
+--add-modules=javafx.controls,javafx.fxml,javafx.graphics,javafx.media,javafx.swing,javafx.web
