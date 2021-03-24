@@ -964,9 +964,11 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             detachStage.setTitle("AsciidocFX Preview");
             detachStage.initModality(Modality.WINDOW_MODAL);
             detachStage.setAlwaysOnTop(true);
-            InputStream logoStream = AppStarter.class.getResourceAsStream("/logo.png");
-            detachStage.getIcons().add(new Image(logoStream));
-            IOUtils.closeQuietly(logoStream);
+            try (InputStream logoStream = AppStarter.class.getResourceAsStream("/logo.png")) {
+                detachStage.getIcons().add(new Image(logoStream));
+            } catch (Exception e) {
+                logger.error("Problem occured while rendering logo", e);
+            }
             detachStage.setOnCloseRequest(e -> {
                 if (stage.isShowing()) {
                     detachStage.setFullScreen(false);

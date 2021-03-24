@@ -56,7 +56,7 @@ public class TableFactory implements Callback<Void, FXFormNode> {
 
                 addButton.setOnAction(event -> {
                     try {
-                        tableView.getItems().add(element.getWrappedType().newInstance());
+                        tableView.getItems().add(element.getWrappedType().getDeclaredConstructor().newInstance());
                         tableView.edit(tableView.getItems().size() - 1, (TableColumn) tableView.getColumns().get(0));
                     } catch (Exception e) {
                         e.printStackTrace();
