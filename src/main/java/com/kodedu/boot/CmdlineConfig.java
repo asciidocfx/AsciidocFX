@@ -13,4 +13,7 @@ public class CmdlineConfig {
     @CmdOption(args = "FILE", description = "File to open", maxCount = -1)
     final List<String> files = new LinkedList<String>();
 
+    @CmdOption(names = {"--workdir", "-W"}, args = "DIRECTORY", description = "Working directory to use when generating opened files views")
+    String workingDirectory = null;
+
 }

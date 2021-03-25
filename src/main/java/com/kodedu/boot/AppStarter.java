@@ -4,8 +4,10 @@ import com.install4j.api.launcher.StartupNotification;
 import com.kodedu.config.ConfigurationService;
 import com.kodedu.config.EditorConfigBean;
 import com.kodedu.controller.ApplicationController;
+import com.kodedu.service.DirectoryService;
 import com.kodedu.service.FileOpenListener;
 import com.kodedu.service.ThreadService;
+import com.kodedu.service.ui.FileBrowseService;
 import com.kodedu.service.ui.TabService;
 import com.kodedu.terminalfx.helper.ThreadHelper;
 import de.tototec.cmdoption.CmdlineParser;
@@ -32,8 +34,12 @@ import org.springframework.context.ConfigurableApplicationContext;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.nio.file.NotDirectoryException;
 import java.io.InputStream;
+import java.nio.file.Path;
 import java.util.List;
+import java.util.Optional;
 
 import static javafx.scene.input.KeyCombination.SHORTCUT_DOWN;
 
@@ -256,7 +262,19 @@ public class AppStarter extends Application {
 
         final ThreadService threadService = context.getBean(ThreadService.class);
         final TabService tabService = context.getBean(TabService.class);
+        final DirectoryService directoryService = context.getBean(DirectoryService.class);
 
+        if (config.workingDirectory != null) {
+            threadService.runActionLater(() -> {
+                File workingDirectory = new File(config.workingDirectory);
+                if (workingDirectory.isDirectory()) {
+                    Path absoluteWorkingDirectoryPath = workingDirectory.getAbsoluteFile().toPath();
+                    directoryService.changeWorkigDir(absoluteWorkingDirectoryPath);
+                } else {
+                    logger.error("Can't set path as working directory", new NotDirectoryException(workingDirectory.toString()));
+                }
+            });
+        }
         if (!config.files.isEmpty()) {
             threadService.runActionLater(() -> {
                 config.files.stream().forEach(f -> {
