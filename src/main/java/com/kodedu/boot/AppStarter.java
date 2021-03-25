@@ -130,15 +130,19 @@ public class AppStarter extends Application {
         final FXMLLoader parentLoader = new FXMLLoader();
         parentLoader.setControllerFactory(context::getBean);
 
-        InputStream sceneStream = AppStarter.class.getResourceAsStream("/scenes/AsciidocFX_Scene.fxml");
-        Parent root = parentLoader.load(sceneStream);
+        Parent root;
+        try (InputStream sceneStream = AppStarter.class.getResourceAsStream("/scenes/AsciidocFX_Scene.fxml")) {
+            root = parentLoader.load(sceneStream);
+        }
 
         Scene scene = new Scene(root);
 
         stage.setTitle("AsciidocFX");
-        InputStream logoStream = AppStarter.class.getResourceAsStream("/logo.png");
-        stage.getIcons().add(new Image(logoStream));
-
+        Image logoImage;
+        try (InputStream logoStream = AppStarter.class.getResourceAsStream("/logo.png")) {
+            logoImage = new Image(logoStream);
+        }
+        stage.getIcons().add(logoImage);
         threadService.runActionLater(stage::setScene, scene);
 
         controller.initializeApp();
@@ -170,37 +174,35 @@ public class AppStarter extends Application {
             stage.show();
         });
 
-        IOUtils.closeQuietly(sceneStream);
-        IOUtils.closeQuietly(logoStream);
-
         final FXMLLoader asciidocTableLoader = new FXMLLoader();
         final FXMLLoader markdownTableLoader = new FXMLLoader();
 
         asciidocTableLoader.setControllerFactory(context::getBean);
         markdownTableLoader.setControllerFactory(context::getBean);
 
-        InputStream asciidocTableStream = AppStarter.class.getResourceAsStream("/scenes/AsciidocTablePopup.fxml");
-        AnchorPane asciidocTableAnchor = asciidocTableLoader.load(asciidocTableStream);
+        AnchorPane asciidocTableAnchor;
+        try (InputStream asciidocTableStream = AppStarter.class.getResourceAsStream("/scenes/AsciidocTablePopup.fxml")) {
+            asciidocTableAnchor = asciidocTableLoader.load(asciidocTableStream);
+        }
 
-        InputStream markdownTableStream = AppStarter.class.getResourceAsStream("/scenes/MarkdownTablePopup.fxml");
-        AnchorPane markdownTableAnchor = markdownTableLoader.load(markdownTableStream);
+        AnchorPane markdownTableAnchor;
+        try (InputStream markdownTableStream = AppStarter.class.getResourceAsStream("/scenes/MarkdownTablePopup.fxml")) {
+            markdownTableAnchor = markdownTableLoader.load(markdownTableStream);
+        }
 
         Stage asciidocTableStage = threadService.supply(Stage::new);
         threadService.runActionLater(asciidocTableStage::setScene, new Scene(asciidocTableAnchor));
         asciidocTableStage.setTitle("Table Generator");
         asciidocTableStage.initModality(Modality.WINDOW_MODAL);
         asciidocTableStage.initOwner(scene.getWindow());
-        asciidocTableStage.getIcons().add(new Image(logoStream));
+        asciidocTableStage.getIcons().add(logoImage);
 
         Stage markdownTableStage = threadService.supply(Stage::new);
         threadService.runActionLater(markdownTableStage::setScene, new Scene(markdownTableAnchor));
         markdownTableStage.setTitle("Table Generator");
         markdownTableStage.initModality(Modality.WINDOW_MODAL);
         markdownTableStage.initOwner(scene.getWindow());
-        markdownTableStage.getIcons().add(new Image(logoStream));
-
-        IOUtils.closeQuietly(asciidocTableStream);
-        IOUtils.closeQuietly(markdownTableStream);
+        markdownTableStage.getIcons().add(logoImage);
 
         controller.setAsciidocTableAnchor(asciidocTableAnchor);
         controller.setMarkdownTableAnchor(markdownTableAnchor);
