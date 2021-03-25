@@ -4,6 +4,7 @@ import com.install4j.api.launcher.StartupNotification;
 import com.kodedu.config.ConfigurationService;
 import com.kodedu.config.EditorConfigBean;
 import com.kodedu.controller.ApplicationController;
+import com.kodedu.service.DirectoryService;
 import com.kodedu.service.FileOpenListener;
 import com.kodedu.service.ThreadService;
 import com.kodedu.service.ui.TabService;
@@ -256,6 +257,7 @@ public class AppStarter extends Application {
 
         final ThreadService threadService = context.getBean(ThreadService.class);
         final TabService tabService = context.getBean(TabService.class);
+        final DirectoryService directoryService = context.getBean(DirectoryService.class);
 
         if (!config.files.isEmpty()) {
             threadService.runActionLater(() -> {
@@ -269,6 +271,19 @@ public class AppStarter extends Application {
                         logger.error("Cannot open non-existent file: {}", file);
                     }
                 });
+            });
+            threadService.runActionLater(() -> {
+                File file = new File(config.files.get(0)).getAbsoluteFile();
+                File parent = file.getParentFile();
+                int loop_count = 0; // Sanity check to make loop exit trivially provable
+                while (parent != null && loop_count++ < 12) {
+                    File child = new File(parent, ".asciidocfx");
+                    if (child.isFile()) {
+                        directoryService.changeWorkigDir(parent.toPath());
+                        break;
+                    }
+                    parent = parent.getParentFile();
+                }
             });
         }
     }
