@@ -69,9 +69,9 @@ There are ordered, unordered, checked and labeled list elements.
 -     normal
 
 .Labeled list
-Elma:: Eski Türkçe'de "alma" diye bilinen adının, meyvenin rengi olan "al" (kırmızı)'dan geldiği bilinmektedir
+CPU:: The brain of the computer.
 
-Armut:: Gülgiller (Rosaceae) familyasının Maloideae alt familyasında sınıflanan Pyrus cinsine ait ağaç nitelikli bitki türleriyle, bu türlerden bazılarının yenilebilir meyvelerinin ortak adı.
+Hard drive:: Permanent storage for operating system and/or user files.
 
 '''
 
@@ -362,7 +362,7 @@ digraph foo {
 
 === MathJAX Extension
 
-sciidocFX supports MathJAX, which visually outputs various languages (MathML, Tex, AsciiMath) in which complex mathematical formulas are expressed textually. You can use complex formulas in AsciidocFX and MathML and Tex formats that will be inserted as PNG images in your documents.
+AsciidocFX supports MathJAX, which visually outputs various languages (MathML, Tex, AsciiMath) in which complex mathematical formulas are expressed textually. You can use complex formulas in AsciidocFX and MathML and Tex formats that will be inserted as PNG images in your documents.
 
 ==== Tex formula
 
