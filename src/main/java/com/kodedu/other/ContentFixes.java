@@ -6,7 +6,8 @@ import java.util.Objects;
 
 public class ContentFixes {
 
-    private static final List<String> extensions = Arrays.asList("stem", "asciimath", "latexmath", "mathml", "math", "plantuml", "uml", "ditaa", "graphviz", "tree");
+    private static final List<String> extensions = Arrays.asList("stem", "asciimath", "latexmath", "mathml",
+            "math", "plantuml", "uml", "ditaa", "graphviz", "tree", "mermaid");
 
     // stem: to s_t_e_m:
     public static String encodeExtensionNames(String content) {

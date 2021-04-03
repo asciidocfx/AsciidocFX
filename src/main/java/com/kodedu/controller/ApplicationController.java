@@ -23,6 +23,7 @@ import com.kodedu.service.convert.ebook.MobiConverter;
 import com.kodedu.service.convert.html.HtmlBookConverter;
 import com.kodedu.service.convert.slide.SlideConverter;
 import com.kodedu.service.extension.MathJaxService;
+import com.kodedu.service.extension.MermaidService;
 import com.kodedu.service.extension.PlantUmlService;
 import com.kodedu.service.extension.TreeService;
 import com.kodedu.service.extension.chart.ChartProvider;
@@ -67,7 +68,6 @@ import javafx.scene.text.Text;
 import javafx.stage.*;
 import javafx.util.Duration;
 import netscape.javascript.JSObject;
-import org.apache.commons.io.IOUtils;
 import org.kordamp.ikonli.fontawesome.FontAwesome;
 import org.kordamp.ikonli.javafx.FontIcon;
 import org.slf4j.Logger;
@@ -99,10 +99,7 @@ import java.security.CodeSource;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.Semaphore;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
@@ -228,6 +225,9 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     @Autowired
     private TreeService treeService;
+
+    @Autowired
+    private MermaidService mermaidService;
 
     @Autowired
     private TooltipTimeFixService tooltipTimeFixService;
@@ -467,6 +467,13 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     public void math(String formula, String type, String imagesDir, String imageTarget, String nodename) {
 
         mathJaxService.processFormula(formula, imagesDir, imageTarget);
+    }
+
+    @WebkitCall(from = "asciidoctor-mermaid")
+    public void mermaid(String content, String type, String imagesDir, String imageTarget, String nodename) {
+        threadService.runActionLater(() -> {
+            mermaidService.createMermaidDiagram(content, type, imagesDir, imageTarget, nodename, false);
+        });
     }
 
     @WebkitCall(from = "mathjax.html")

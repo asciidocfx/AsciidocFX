@@ -46,7 +46,7 @@ function parseStems(parent, content, nodename) {
 }
 
 let getExtensionNames = function () {
-    return ["stem", "asciimath", "latexmath", "mathml", "math", "plantuml", "uml", "ditaa", "graphviz", "tree"].map(e => e.toUpperCase());
+    return ["stem", "asciimath", "latexmath", "mathml", "math", "plantuml", "uml", "ditaa", "graphviz", "tree", "mermaid"].map(e => e.toUpperCase());
 }
 
 let getUmlExtensionNames = function () {
