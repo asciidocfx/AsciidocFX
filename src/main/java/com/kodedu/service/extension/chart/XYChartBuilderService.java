@@ -204,8 +204,8 @@ public abstract class XYChartBuilderService extends ChartBuilderService {
             yAxis.setSide(Side.valueOf(optMap.get("y-side").toUpperCase()));
         }
 
-        xyChart.setLayoutX(-10000);
-        xyChart.setLayoutY(-10000);
+        xyChart.setLayoutX(-7000);
+        xyChart.setLayoutY(-7000);
 
         controller.getRootAnchor().getChildren().add(xyChart);
         WritableImage writableImage = xyChart.snapshot(new SnapshotParameters(), null);

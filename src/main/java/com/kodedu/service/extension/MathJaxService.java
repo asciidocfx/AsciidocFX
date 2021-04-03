@@ -113,8 +113,8 @@ public class MathJaxService {
             webView.setPrefHeight(1000);
             webView.setMaxWidth(1000);
             webView.setPrefWidth(1000);
-            webView.setLayoutX(-22000);
-            webView.setLayoutY(-22000);
+            webView.setLayoutX(-35000);
+            webView.setLayoutY(-35000);
             webView.setZoom(extensionConfigBean.getDefaultImageZoom());
             controller.getRootAnchor().getChildren().add(webView);
         }

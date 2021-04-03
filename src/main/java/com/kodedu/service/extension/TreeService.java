@@ -237,8 +237,8 @@ public class TreeService implements DefaultSettings {
     private TreeView getSnaphotTreeView() {
         TreeView fileView = new TreeView();
         StyleHelper.addClass(fileView, "tree-extension");
-        fileView.setLayoutX(-13000);
-        fileView.setLayoutY(-13000);
+        fileView.setLayoutX(-14000);
+        fileView.setLayoutY(-14000);
         fileView.setMinSize(0, 0);
         return fileView;
     }
@@ -261,8 +261,8 @@ public class TreeService implements DefaultSettings {
             threadService.runActionLater(() -> {
 
                 WebView treeview = new WebView();
-                treeview.setLayoutX(-16000);
-                treeview.setLayoutY(-16000);
+                treeview.setLayoutX(-21000);
+                treeview.setLayoutY(-21000);
                 treeview.setMinSize(0, 0);
 
                 int zoom = extensionConfigBean.getDefaultImageZoom();
