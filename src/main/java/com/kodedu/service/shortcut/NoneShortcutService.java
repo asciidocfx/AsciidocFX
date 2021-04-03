@@ -173,6 +173,11 @@ public class NoneShortcutService implements ShortcutService {
     }
 
     @Override
+    public void addMermaidBlock() {
+
+    }
+
+    @Override
     public void addDitaaBlock() {
     }
 

@@ -393,6 +393,11 @@ var editorMenu = {
             editor.removeToLineStart();
             editor.insert("[plantuml,,png]\n--\n\n--");
             editor.gotoLine(range.end.row + 1, 10, true);
+        }, addMermaidBlock: function () {
+            var range = editor.getSelectionRange();
+            editor.removeToLineStart();
+            editor.insert("[mermaid,,png]\n--\n\n--");
+            editor.gotoLine(range.end.row + 1, 9, true);
         },
         addDitaaBlock: function () {
             var range = editor.getSelectionRange();
@@ -687,6 +692,12 @@ editor.commands.addCommand({
         // uml tab
         if (textRange == "uml") { // uml block generator
             afx.getShortcutProvider().getProvider().addUmlBlock();
+            return;
+        }
+
+        // mermaid tab
+        if (textRange == "mermaid") { // mermaid block generator
+            afx.getShortcutProvider().getProvider().addMermaidBlock();
             return;
         }
 

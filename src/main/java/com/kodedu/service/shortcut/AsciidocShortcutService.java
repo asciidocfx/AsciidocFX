@@ -189,6 +189,11 @@ public class AsciidocShortcutService implements ShortcutService {
     }
 
     @Override
+    public void addMermaidBlock() {
+        current.currentEngine().executeScript("editorMenu.asciidoc.addMermaidBlock()");
+    }
+
+    @Override
     public void addDitaaBlock() {
         current.currentEngine().executeScript("editorMenu.asciidoc.addDitaaBlock()");
     }

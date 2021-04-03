@@ -196,6 +196,11 @@ public class MarkdownShortcutService implements ShortcutService {
     }
 
     @Override
+    public void addMermaidBlock() {
+        AlertHelper.notImplementedDialog();
+    }
+
+    @Override
     public void addDitaaBlock() {
         AlertHelper.notImplementedDialog();
     }

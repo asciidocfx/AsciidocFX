@@ -314,6 +314,10 @@ public class EditorService {
             shortcutProvider.getProvider().addTreeBlock();
         }));
 
+        extensions.getItems().add(MenuItemBuilt.item("Mermaid").click(event -> {
+            shortcutProvider.getProvider().addMermaidBlock();
+        }));
+
         final MenuButton chartMenu = new MenuButton("Charts");
         chartMenu.setFocusTraversable(false);
 

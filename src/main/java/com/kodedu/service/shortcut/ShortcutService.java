@@ -71,6 +71,8 @@ public interface ShortcutService {
 
     void addUmlBlock();
 
+    void addMermaidBlock();
+
     void addDitaaBlock();
 
     void addTreeBlock();
