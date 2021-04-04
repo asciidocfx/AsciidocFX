@@ -8,9 +8,9 @@ import com.kodedu.service.FileWatchService;
 import com.kodedu.service.PathOrderService;
 import com.kodedu.service.PathResolverService;
 import com.kodedu.service.ThreadService;
-import javafx.geometry.Orientation;
-import javafx.scene.Node;
-import javafx.scene.control.ScrollBar;
+import javafx.beans.value.ChangeListener;
+import javafx.scene.control.MultipleSelectionModel;
+import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import org.slf4j.Logger;
@@ -21,7 +21,6 @@ import org.springframework.stereotype.Component;
 import java.nio.file.*;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
 import java.util.regex.PatternSyntaxException;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -46,14 +45,14 @@ public class FileBrowseService {
     @Autowired
     private FileWatchService fileWatchService;
 
-    private final Map<Path, TreeItem<Item>> directoryItemMap = new ConcurrentHashMap();
-    private final Map<Path, TreeItem<Item>> pathItemMap = new ConcurrentHashMap();
+    private final Map<Path, TreeItem<Item>> directoryItemMap = new ConcurrentHashMap(); // only changed parent path or root path
+    private final Map<Path, TreeItem<Item>> pathItemMap = new ConcurrentHashMap(); // parents + child paths
+    private final Map<Path, Boolean> expandedPaths = new ConcurrentHashMap(); // parents + child paths
     private Set<Path> lastSelectedItems = new HashSet<>();
     private PathItem rootItem;
     private TreeView<Item> treeView;
-    private ScrollState verticalScrollState;
-    private ScrollState horizontalScrollState;
     private Path browsedPath;
+    private ChangeListener<TreeItem<Item>> treeItemChangeListener;
 
 
     @Autowired
@@ -70,17 +69,11 @@ public class FileBrowseService {
     public void refresh() {
         if (Objects.nonNull(browsedPath)) {
             browse(browsedPath);
+            treeView.requestFocus();
         }
     }
 
     public void browse(final Path path) {
-
-        if (path != browsedPath) {
-            this.verticalScrollState = new ScrollState();
-            this.horizontalScrollState = new ScrollState();
-            initializeScrollListener();
-        }
-
         this.browsedPath = path;
 
         threadService.runActionLater(() -> {
@@ -88,6 +81,16 @@ public class FileBrowseService {
             current.currentEditor().updatePreviewUrl();
 
             this.treeView = controller.getFileSystemView();
+
+            if (treeItemChangeListener == null) {
+                treeItemChangeListener = (observable, oldValue, newValue) -> {
+                    final MultipleSelectionModel<TreeItem<Item>> selectionModel = treeView.getSelectionModel();
+                    if (!selectionModel.isEmpty()) {
+                        saveTreeSelectionState(selectionModel);
+                    }
+                };
+                treeView.getSelectionModel().selectedItemProperty().addListener(treeItemChangeListener);
+            }
 
             rootItem = new PathItem(new Item(path, String.format("%s", Optional.of(path).map(Path::getFileName).orElse(path))), awesomeService.getIcon(path));
             rootItem.getChildren().add(new PathItem(new Item(null, "Loading..")));
@@ -100,28 +103,6 @@ public class FileBrowseService {
             logger.info("File browser relisted for {}", path);
 
         }, true);
-    }
-
-    private void initializeScrollListener() {
-        threadService.runActionLater(() -> {
-            this.treeView = controller.getFileSystemView();
-
-            Set<Node> nodes = this.treeView.lookupAll(".scroll-bar");
-            for (Node node : nodes) {
-                ScrollBar scrollBar = (ScrollBar) node;
-                if (scrollBar.getOrientation() == Orientation.VERTICAL) {
-                    verticalScrollState.updateState(scrollBar);
-                    scrollBar.valueProperty().addListener((observable, oldValue, newValue) -> {
-                        verticalScrollState.updateState(scrollBar, newValue);
-                    });
-                } else if (scrollBar.getOrientation() == Orientation.HORIZONTAL) {
-                    horizontalScrollState.updateState(scrollBar);
-                    scrollBar.valueProperty().addListener((observable, oldValue, newValue) -> {
-                        horizontalScrollState.updateState(scrollBar, newValue);
-                    });
-                }
-            }
-        });
     }
 
     public void addPathToTree(Path path, final TreeItem<Item> treeItem, Path changedPath) {
@@ -161,11 +142,15 @@ public class FileBrowseService {
                                 if (!IOHelper.isEmptyDir(p)) {
                                     childItem.getChildren().add(new PathItem(new Item(null, "Loading..")));
                                 }
-                                childItem.setExpanded(false);
+                                childItem.setExpanded(expandedPaths.getOrDefault(p, false));
+                                if (childItem.isExpanded()) {
+                                    addPathToTree(p, childItem, null);
+                                }
                                 childItem.expandedProperty().addListener((observable, oldValue, newValue) -> {
                                     if (newValue) {
-                                        addPathToTree(childItem.getValue().getPath(), childItem, null);
+                                        addPathToTree(p, childItem, null);
                                     }
+                                    expandedPaths.put(p, newValue);
 
                                     // fixes not expand issue
                                     treeView.refresh();
@@ -178,25 +163,18 @@ public class FileBrowseService {
 
                 threadService.runActionLater(() -> {
 
-                    saveTreeSelectionState();
-                    boolean treeViewFocused = treeView.isFocused();
                     treeItem.getChildren().clear();
                     treeView.getSelectionModel().clearSelection();
-
                     treeItem.getChildren().addAll(subItemList);
 
                     restoreTreeSelectionState();
-                    restoreTreeScrollState();
-                    if (treeViewFocused) {
-                        treeView.requestFocus();
-                    }
 
                     if (Objects.nonNull(changedPath)) {
                         TreeItem<Item> item = pathItemMap.get(changedPath);
                         if (Objects.nonNull(item)) {
                             treeView.getSelectionModel().clearSelection();
                             treeView.getSelectionModel().select(item);
-                            treeView.scrollTo(findIndex(item));
+                            treeView.scrollTo(treeView.getSelectionModel().getSelectedIndex());
 
                             TreeItem<Item> parent = item.getParent();
                             if (Objects.nonNull(parent)) {
@@ -218,36 +196,20 @@ public class FileBrowseService {
 
     }
 
-    private void restoreTreeScrollState() {
-
-        threadService.schedule(() -> { // run after some ms
-            threadService.runActionLater(() -> { // run in ui thread
-
-                Set<Node> nodes = this.treeView.lookupAll(".scroll-bar");
-                for (Node node : nodes) {
-                    ScrollBar scrollBar = (ScrollBar) node;
-                    if (scrollBar.getOrientation() == Orientation.VERTICAL) {
-                        verticalScrollState.restoreState(scrollBar);
-                    } else if (scrollBar.getOrientation() == Orientation.HORIZONTAL) {
-                        horizontalScrollState.restoreState(scrollBar);
-                    }
-                }
-            });
-        }, 50, TimeUnit.MILLISECONDS);
-    }
-
     private void restoreTreeSelectionState() {
+        MultipleSelectionModel<TreeItem<Item>> selectionModel = treeView.getSelectionModel();
+        selectionModel.setSelectionMode(SelectionMode.MULTIPLE);
         for (Path lastSelectedPath : lastSelectedItems) {
             TreeItem<Item> item = pathItemMap.get(lastSelectedPath);
             if (Objects.nonNull(item)) {
-                treeView.getSelectionModel().select(item);
+                selectionModel.select(item);
             }
         }
     }
 
-    private void saveTreeSelectionState() {
+    private void saveTreeSelectionState(MultipleSelectionModel<TreeItem<Item>> newValue) {
         try {
-            lastSelectedItems = treeView.getSelectionModel()
+            lastSelectedItems = newValue
                     .getSelectedItems()
                     .stream()
                     .map(TreeItem::getValue)
@@ -262,10 +224,18 @@ public class FileBrowseService {
     }
 
     public void refreshPathToTree(Path path, Path changedPath) {
+        if (browsedPath == null) {
+            return;
+        }
+        threadService.runActionLater(() -> {
+            rootItem = new PathItem(new Item(browsedPath, String.format("%s", Optional.of(browsedPath).map(Path::getFileName).orElse(browsedPath))), awesomeService.getIcon(browsedPath));
+            rootItem.getChildren().add(new PathItem(new Item(null, "Loading..")));
 
-        TreeItem<Item> item = directoryItemMap.get(path);
-        addPathToTree(path, item, changedPath);
-
+            treeView.setRoot(rootItem);
+            rootItem.setExpanded(true);
+            addPathToTree(browsedPath, rootItem, changedPath);
+            treeView.requestFocus();
+        });
     }
 
     TreeItem<Item> searchFoundItem;
@@ -367,13 +337,10 @@ public class FileBrowseService {
             TreeView<Item> fileSystemView = controller.getFileSystemView();
             threadService.runActionLater(() -> {
 
-                fileSystemView.getSelectionModel().clearSelection();
-
-                int selectedIndex = findIndex(searchFoundItem);
-
-                fileSystemView.getSelectionModel().select(searchFoundItem);
-
-                fileSystemView.scrollTo(selectedIndex);
+                MultipleSelectionModel<TreeItem<Item>> selectionModel = fileSystemView.getSelectionModel();
+                selectionModel.clearSelection();
+                selectionModel.select(searchFoundItem);
+                fileSystemView.scrollTo(selectionModel.getSelectedIndex());
 
                 TreeItem<Item> parent = searchFoundItem.getParent();
                 if (Objects.nonNull(parent)) {
@@ -422,24 +389,6 @@ public class FileBrowseService {
                 .map(e -> e.get())
                 .sorted((p1, p2) -> pathOrder.comparePaths(p1.getValue().getPath(), p2.getValue().getPath()))
                 .collect(Collectors.toList());
-    }
-
-    public int findIndex(TreeItem<Item> changedItem) {
-
-        TreeItem<Item> item = changedItem;
-        int result = 0;
-        while (true) {
-            TreeItem<Item> parent = item.getParent();
-            if (Objects.isNull(parent)) {
-                break;
-            }
-
-            int index = parent.getChildren().indexOf(item);
-            result += index;
-            item = parent;
-        }
-
-        return result;
     }
 
     public void searchAndSelect(String text) {

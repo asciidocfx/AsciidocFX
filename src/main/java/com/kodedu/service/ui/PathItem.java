@@ -9,9 +9,9 @@ import java.util.Objects;
 /**
  * Created by usta on 03.07.2016.
  */
-public class PathItem extends TreeItem {
+public class PathItem<T> extends TreeItem<T> {
 
-    public PathItem(Item item, Node graphic) {
+    public PathItem(T item, Node graphic) {
         super(item, graphic);
     }
 
@@ -19,7 +19,7 @@ public class PathItem extends TreeItem {
         super();
     }
 
-    public PathItem(Item item) {
+    public PathItem(T item) {
         super(item);
     }
 
