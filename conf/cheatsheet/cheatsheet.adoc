@@ -69,9 +69,9 @@ There are ordered, unordered, checked and labeled list elements.
 -     normal
 
 .Labeled list
-Elma:: Eski Türkçe'de "alma" diye bilinen adının, meyvenin rengi olan "al" (kırmızı)'dan geldiği bilinmektedir
+CPU:: The brain of the computer.
 
-Armut:: Gülgiller (Rosaceae) familyasının Maloideae alt familyasında sınıflanan Pyrus cinsine ait ağaç nitelikli bitki türleriyle, bu türlerden bazılarının yenilebilir meyvelerinin ortak adı.
+Hard drive:: Permanent storage for operating system and/or user files.
 
 '''
 
@@ -135,91 +135,87 @@ end
 
 == [underline]#Blocks#
 
-Sınırlandırılmış bloklar 4'er özel karakter ile sınırlandırılmış alanlardır.
+You can use blocks to put emphasis on specific document section or provide contextual information
 
 === _Sidebar_ block
 
-.Başlık (opsiyonel)
+.Bloc Title (optional)
 ****
-Bu blok türünün adı *Sidebar* bloktur.
+This is a *Sidebar* block.
 ****
 
 === Example block
 
-.Başlık (opsiyonel)
+.Bloc Title (optional)
 ====
-Bu blok türünün adı *Example* bloktur.
+This is an *Example* block.
 ====
 
 ifdef::backend-html5[]
 === Passthrough block
 
 ++++
-Bu blok türünün adı <b>Passthrough</b> bloktur. Bu blok içerinde HTML elemanları kullanabilirsiniz.
+This is a <b>Passthrough</b> block. IT may be used with a HTML backend to insert raw HTML within the document.
 <br/>
 <br/>
-<u>Örneğin;</u>
+<u>Grocery list:</u>
 <br/><br/>
 <ul>
-    <li>Ali</li>
-    <li>Veli</li>
-    <li>Selami</li>
+    <li>Garlic</li>
+    <li>Bread</li>
+    <li>Salami</li>
 </ul>
 ++++
 endif::[]
 
-=== BlockquoteS block
+=== Blockquote block
 
-.Başlık (opsiyonel)
-[quote, Hakan Özler, AspectJ Ebook]
+.Bloc Title (optional)
+[quote, Winston S. Churchill, Birth Of Britain, 55 B.C. To 1485]
 ____
-AspectJ dilinin kullandığı yapılar 3 kısımda toplanmıştır.
-
-Bunlar:: Ortak, Dinamik ve Statik crosscutting (enine kesen) bölümlerdir.
-
-Bu bölümler, içlerinde farklı bileşenleri toplayarak bizim mevcut *OOP* sistemimizi *AOP* mantığı ile harmanlamamıza imkan veriyorlar.
+And wherever men are fighting against barbarism, tyranny, and massacre, for freedom, law, and honour, let them remember that the fame of their deeds, even though they themselves be exterminated, may perhaps be celebrated as long as the world rolls round.
 ____
 
 '''
 
-== [underline]#Uyarı blokları#
+== [underline]#Admonitions#
 
-Asciidoc işaretleme dilinde 5 tip uyarı (admonition) bloğu bulunmaktadır. Bu blokların kendine has ikonları bulunmaktadır.
+Asciidoc permits the use of 5 types of admonitions to fit different information needs.
 
-.Not bloğu
+.Note
 [NOTE]
 ====
-Burası bir not bloğu
+An additional information
 ====
 
-.Önemli bloğu
-[IMPORTANT]
-====
-Burası bir önemli bloğu
-====
-
-.İpucu bloğu
+.Tip
 [TIP]
 ====
-Burası bir ipucu bloğu
+A useful information or trick
 ====
 
-.Dikkat bloğu
+.Important
+[IMPORTANT]
+====
+Ensure something is known
+====
+
+.Caution
 [CAUTION]
 ====
-Burası bir dikkat bloğu
+Advise the reader to act carefully (i.e., exercise care)
 ====
 
-.Uyarı bloğu
+.Warning
 [WARNING]
 ====
-Burası bir uyarı bloğu
+Inform the reader of danger, harm, or consequences that exist.
 ====
 
 ////
-.Icon bloğu
+.Additional icons
 
-AsciidocFX ile http://fortawesome.github.io/Font-Awesome/icons/[FontAwesome] ikonlarını kullanabilirsiniz.
+AsciidocFX uses http://fortawesome.github.io/Font-Awesome/icons/[FontAwesome] to provide additional icons.
 
 icon:tags[] ruby, asciidoctor +
 icon:folder[] ruby, asciidoctor +
@@ -230,13 +226,13 @@ icon:twitter[] ruby, asciidoctor
 ////
 
 '''
-== [underline]#Tablolar#
+== [underline]#Table#
 
-Asciidoc ile hemen hemen tüm kompleks tablo yapılarını kurabilirsiniz.
+Asciidoc allows the creation of tables
 
-=== Basit bir tablo
+=== Basic table
 
-.Başlık (opsiyonel)
+.Title (optional)
 [options="header,footer"]
 |=======================
 |Col 1|Col 2      |Col 3
@@ -246,9 +242,9 @@ Asciidoc ile hemen hemen tüm kompleks tablo yapılarını kurabilirsiniz.
 |6    |Three items|d
 |=======================
 
-=== Kompleks bir tablo
+=== Complex table
 
-.Başlık (opsiyonel)
+.Title (optional)
 |====
 |Date |Duration |Avg HR |Notes
 |22-Aug-08 .2+^.^|10:24 | 157 |
@@ -260,9 +256,9 @@ Back-to-back with previous interval.
 |24-Aug-08 3+^|none
 |====
 
-== [underline]#AsciidocFX eklentileri#
+== [underline]#AsciidocFX plugins#
 
-AsciidocFX metin editörü, *UML* diagramları, *matematiksel kompleks formüller* ve *JavaFX Chart* için üç özel eklentiye sahiptir.
+AsciidocFX integrates plugins to produce *UML* diagrams, *complex matematical formulas* and *JavaFX Chart*.
 
 === JavaFX Charts Extension
 
@@ -302,9 +298,9 @@ For other charts and available options, look at https://github.com/asciidocfx/As
 
 === PlantUML Extension
 
-PlantUML metinsel olarak yazılan ifadelerle zengin UML diagramları oluşturmaya olanak tanıyan, Java bazlı bir teknolojidir. AsciidocFX gömülü olarak PlantUML desteklemektedir.
+PlantUML is a UML diagram extension embedded in AsciidocFX. Note that some diagram generation may require you to install http://graphviz.org/[Graphviz] externally.
 
-.Başlık (opsiyonel)
+.Title (optional)
 [uml,file="uml-diagram.png"]
 --
 abstract class AbstractList
@@ -366,11 +362,11 @@ digraph foo {
 
 === MathJAX Extension
 
-MathJAX matematiksel kompleks formüllerin, metinsel olarak ifade edildiği çeşitli dilleri (MathML, Tex, AsciiMath) görsel olarak çıktılayan bir teknolojidir. AsciidocFX gömülü olarak MathJAX desteklemektedir. AsciidocFX ile MathML ve Tex biçimlerinde kompleks formülleri PNG resmi olarak eşzamanlı olarak dökümanlarınızda kullanabilirsiniz.
+AsciidocFX supports MathJAX, which visually outputs various languages (MathML, Tex, AsciiMath) in which complex mathematical formulas are expressed textually. You can use complex formulas in AsciidocFX and MathML and Tex formats that will be inserted as PNG images in your documents.
 
-==== Tex ile formül örneği
+==== Tex formula
 
-.Başlık (opsiyonel)
+.Title (optional)
 [math,file="tex-formula.png"]
 --
 \begin{align}
@@ -380,9 +376,9 @@ MathJAX matematiksel kompleks formüllerin, metinsel olarak ifade edildiği çe�
 \end{align}
 --
 
-==== MathML ile formül örneği
+==== MathML formula
 
-.Başlık (opsiyonel)
+.Title (optional)
 [math,file="mathml-formula.png"]
 --
 <math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
@@ -417,10 +413,9 @@ MathJAX matematiksel kompleks formüllerin, metinsel olarak ifade edildiği çe�
 
 === Filesystem Tree Viewers
 
-2 farklı yolla dosya sisteminin ağaç yapısını "tree" opsiyonu ile oluşturabilirsiniz.
+You may generate a visual representation of a file system as a "Tree" structure.
 
-==== Birinci Yol
-
+==== Basic tree
 
 .Filesystem Tree
 [tree,file="filesystem-tree-viewer.png"]
@@ -441,7 +436,7 @@ MathJAX matematiksel kompleks formüllerin, metinsel olarak ifade edildiği çe�
 ###uml-diagram.png
 --
 
-==== İkinci Yol
+==== Linked tree
 
 .Filesystem Tree
 [tree,file="filesystem-tree-viewer-new.png"]
@@ -469,6 +464,6 @@ root
 `-- etc.
 --
 
-Döküman geliştirilmeye ve önerilere açıktır.
+This document is open to development and suggestions.
 
-Teşekkürler.
+Thanks.
