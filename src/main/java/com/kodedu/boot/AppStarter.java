@@ -7,7 +7,6 @@ import com.kodedu.controller.ApplicationController;
 import com.kodedu.service.DirectoryService;
 import com.kodedu.service.FileOpenListener;
 import com.kodedu.service.ThreadService;
-import com.kodedu.service.ui.FileBrowseService;
 import com.kodedu.service.ui.TabService;
 import com.kodedu.terminalfx.helper.ThreadHelper;
 import de.tototec.cmdoption.CmdlineParser;
@@ -26,7 +25,6 @@ import javafx.scene.text.Font;
 import javafx.stage.Modality;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
-import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
@@ -34,12 +32,10 @@ import org.springframework.context.ConfigurableApplicationContext;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
-import java.nio.file.NotDirectoryException;
 import java.io.InputStream;
+import java.nio.file.NotDirectoryException;
 import java.nio.file.Path;
 import java.util.List;
-import java.util.Optional;
 
 import static javafx.scene.input.KeyCombination.SHORTCUT_DOWN;
 
@@ -264,8 +260,8 @@ public class AppStarter extends Application {
         final TabService tabService = context.getBean(TabService.class);
         final DirectoryService directoryService = context.getBean(DirectoryService.class);
 
-        if (config.workingDirectory != null) {
-            threadService.runActionLater(() -> {
+        threadService.runActionLater(() -> {
+            if (config.workingDirectory != null) {
                 File workingDirectory = new File(config.workingDirectory);
                 if (workingDirectory.isDirectory()) {
                     Path absoluteWorkingDirectoryPath = workingDirectory.getAbsoluteFile().toPath();
@@ -273,10 +269,8 @@ public class AppStarter extends Application {
                 } else {
                     logger.error("Can't set path as working directory", new NotDirectoryException(workingDirectory.toString()));
                 }
-            });
-        }
-        if (!config.files.isEmpty()) {
-            threadService.runActionLater(() -> {
+            }
+            if (!config.files.isEmpty()) {
                 config.files.stream().forEach(f -> {
                     File file = new File(f).getAbsoluteFile();
                     if (file.exists()) {
@@ -287,8 +281,8 @@ public class AppStarter extends Application {
                         logger.error("Cannot open non-existent file: {}", file);
                     }
                 });
-            });
-        }
+            }
+        });
     }
 
     @Override
