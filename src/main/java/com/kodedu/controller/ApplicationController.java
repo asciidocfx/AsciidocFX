@@ -2492,6 +2492,10 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         current.currentEditor().showSuggestions(stringList);
     }
 
+    public String toUpperCase(String str) {
+        return str.toUpperCase();
+    }
+
     @WebkitCall(from = "editor")
     public void processTokens() {
 

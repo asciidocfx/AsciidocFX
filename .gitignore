@@ -47,3 +47,5 @@ nashorn_code_cache
 *.p12
 
 jmods/mac-jars/
+
+jars/
