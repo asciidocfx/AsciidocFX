@@ -33,9 +33,14 @@ import org.springframework.context.ConfigurableApplicationContext;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
 import java.nio.file.NotDirectoryException;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
+import java.util.Set;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import static javafx.scene.input.KeyCombination.SHORTCUT_DOWN;
 
@@ -260,21 +265,22 @@ public class AppStarter extends Application {
         final TabService tabService = context.getBean(TabService.class);
         final DirectoryService directoryService = context.getBean(DirectoryService.class);
 
+        Path workingDirectory = resolveWorkingDirectory(config);
+
         threadService.runActionLater(() -> {
-            if (config.workingDirectory != null) {
-                File workingDirectory = new File(config.workingDirectory);
-                if (workingDirectory.isDirectory()) {
-                    Path absoluteWorkingDirectoryPath = workingDirectory.getAbsoluteFile().toPath();
-                    directoryService.changeWorkigDir(absoluteWorkingDirectoryPath);
-                } else {
-                    logger.error("Can't set path as working directory", new NotDirectoryException(workingDirectory.toString()));
-                }
+
+            if (workingDirectory != null) {
+                directoryService.changeWorkigDir(workingDirectory);
             }
+
             if (!config.files.isEmpty()) {
                 config.files.stream().forEach(f -> {
                     File file = new File(f).getAbsoluteFile();
                     if (file.exists()) {
                         logger.info("Opening file as requsted from cmdline: {}", file);
+                        if (workingDirectory == null) {
+                            directoryService.changeWorkigDir(file.toPath().getParent());
+                        }
                         tabService.addTab(file.toPath());
                     } else {
                         // TODO: do we want to create such a file on demand?
@@ -283,6 +289,49 @@ public class AppStarter extends Application {
                 });
             }
         });
+    }
+
+    private Path resolveWorkingDirectory(CmdlineConfig config) {
+        if (config.workingDirectory != null) {
+            File workingDirectory = new File(config.workingDirectory);
+            if (workingDirectory.isDirectory()) {
+                Path absoluteWorkingDirectoryPath = workingDirectory.getAbsoluteFile().toPath();
+                return absoluteWorkingDirectoryPath;
+            } else {
+                logger.error("Can't set path as working directory", new NotDirectoryException(workingDirectory.toString()));
+            }
+        }
+
+        Set<Path> workingDirectories = config.files.stream()
+                .map(Paths::get)
+                .map(Path::toAbsolutePath)
+                .map(Path::getParent)
+                .distinct()
+                .mapMulti((Path path, Consumer<Path> consumer) -> {
+                    Path currentPath = path;
+                    long maxIteration = 50;
+                    while ((maxIteration--) > 0 && currentPath != null) {
+                        Path localConfigPath = currentPath.resolve(".asciidocfx");
+                        if (Files.isReadable(localConfigPath) &&
+                                Files.exists(localConfigPath) &&
+                                Files.isDirectory(localConfigPath)) {
+                            consumer.accept(currentPath);
+                            break;
+                        } else {
+                            currentPath = currentPath.getParent();
+                        }
+                    }
+                })
+                .collect(Collectors.toSet());
+
+        if (workingDirectories.size() > 1) {
+            logger.error("Resolved multiple working directory candidate." +
+                    "Skipping setting working path: ", workingDirectories);
+        } else if (workingDirectories.size() == 1) {
+            return workingDirectories.iterator().next();
+        }
+
+        return null;
     }
 
     @Override
