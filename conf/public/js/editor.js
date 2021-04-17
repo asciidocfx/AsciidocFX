@@ -71,7 +71,6 @@ editor.getSession().on('changeScrollTop', function (scroll) {
         }
     }, 50);
 
-    checkSpelling();
 });
 
 var updateStatusAction = new BufferedAction();
@@ -137,7 +136,7 @@ function checkSpelling() {
 }
 
 function getTokenList() {
-    var tokenit = new TokenIterator(editor.getSession(), editor.getFirstVisibleRow(), 0);
+    var tokenit = new TokenIterator(editor.getSession(), 0, 0);
     var currentToken = tokenit.getCurrentToken();
 
     var allTokens = [];
@@ -150,10 +149,6 @@ function getTokenList() {
             start: tokenit.getCurrentTokenColumn(),
             end: tokenit.getCurrentTokenColumn() + currentToken.value.length
         });
-
-        if (editor.getLastVisibleRow() < tokenit.getCurrentTokenRow()) {
-            break;
-        }
 
         currentToken = tokenit.stepForward();
     }
@@ -287,7 +282,9 @@ function rerender() {
         afx.textListener(editor.getValue(), editorMode(), editorPane.getPath());
         updateStatusBox();
     }, 100);
-    checkSpelling();
+    if (markers.length == 0) {
+        checkSpelling();
+    }
 }
 
 function editorMode() {
@@ -337,6 +334,17 @@ function replaceMisspelled(suggestion) {
     if (selectionIsEmpty) {
         editor.selection.selectWord();
     }
+
+    let selectedText = editor.getSelectedText();
+    if (selectedText && selectedText.length > 0 &&
+        suggestion && suggestion.length > 0) {
+        let selectedStartChar = afx.toUpperCase(selectedText[0]);
+        let suggestionStartChar = afx.toUpperCase(suggestion[0]);
+        if (selectedStartChar == selectedText[0]) {
+            suggestion = suggestionStartChar + suggestion.substring(1);
+        }
+    }
+
     editor.session.replace(editor.selection.getRange(), suggestion);
     editor.selection.clearSelection();
     if (selectionIsEmpty) {
