@@ -317,7 +317,21 @@
     -fx-background: derive(-fx-base, 26.4%);
 }
 
-.tree-extension, .tree-extension * {
+.tree-extension {
+    -fx-border-color: black !important;
+    -fx-border-width: 1px !important;
+}
+
+.tree-extension .arrow {
+    -fx-padding: 0.333333em;
+    -fx-shape: "M6 4l20 12-20 12z";
+    -fx-background-color: black;
+}
+
+.tree-extension *, .tree-extension .tree-cell {
     -fx-base: #ececec;
     -fx-background: derive(-fx-base, 26.4%);
+    -fx-background-color: #fefefe;
+    -fx-border-width: 0;
+    -fx-border-insets: 0;
 }

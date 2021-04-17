@@ -178,7 +178,12 @@ public class TreeService implements DefaultSettings {
                                 logger.info(e.getMessage(), e);
                             }
 
-                            parent.getChildren().add(currentItem);
+                            if (parent != null) {
+                                parent.getChildren().add(currentItem);
+                            } else {
+                                throw new IllegalStateException("Tree view can't have multiple root parent. Current item: " + currentItemValue.getValue());
+                            }
+
                         }
                         continue;
                     }
