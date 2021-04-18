@@ -93,14 +93,14 @@ editor.commands.addCommand({
 //     readOnly: true
 // });
 
-editor.commands.addCommand({
-    name: 'ctrl-enter-1',
-    bindKey: {win: 'Ctrl-Enter', mac: 'Command-Enter'},
-    exec: function (editor) {
-        editor.insert("\n");
-    },
-    readOnly: true
-});
+// editor.commands.addCommand({
+//     name: 'ctrl-enter-1',
+//     bindKey: {win: 'Ctrl-Enter', mac: 'Command-Enter'},
+//     exec: function (editor) {
+//         editor.insert("\n");
+//     },
+//     readOnly: true
+// });
 
 editor.commands.addCommand({
     name: 'ctrl-duplicate',
