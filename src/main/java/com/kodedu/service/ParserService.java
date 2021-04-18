@@ -79,7 +79,7 @@ public class ParserService {
             ImageIO.write(fromFXImage, "png", targetImage.toFile());
 
         } catch (Exception e) {
-            logger.error("Problem occured while saving clipboard image {}", targetImage);
+            logger.error("Problem occured while saving clipboard image {}", targetImage, e);
         }
 
         buffer.add(String.format("image::images/%s[]", path.getFileName()));

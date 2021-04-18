@@ -2594,7 +2594,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             }
         }
 
-        editorPane.execCommand("paste-raw-1");
+        editorPane.execCommand("paste", clipboardValue());
     }
 
     @WebkitCall
@@ -2634,7 +2634,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             logger.error(e.getMessage(), e);
         }
 
-        editorPane.execCommand("paste-raw-1");
+        editorPane.execCommand("paste", clipboardValue());
 
     }
 

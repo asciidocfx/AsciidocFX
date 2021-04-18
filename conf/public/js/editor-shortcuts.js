@@ -64,34 +64,34 @@ editor.commands.addCommand({
     readOnly: true
 });
 
-editor.commands.addCommand({
-    name: 'paste-raw-1',
-    bindKey: {win: 'Ctrl-V', mac: 'Command-V'},
-    exec: function (editor) {
-        //afx.pasteRaw();
-        var text = afx.clipboardValue();
-
-        if (!editor.inMultiSelectMode || editor.inVirtualSelectionMode) {
-            editor.insert(text);
-        } else {
-            var lines = text.split(/\r\n|\r|\n/);
-            var ranges = editor.selection.rangeList.ranges;
-            if (lines.length > ranges.length || lines.length < 2 || !lines[1]) {
-                return editor.commands.exec("insertstring", editor, text);
-            }
-
-            for (var i = ranges.length; i--;) {
-                var range = ranges[i];
-                if (!range.isEmpty()) {
-                    editor.session.remove(range);
-                }
-
-                editor.session.insert(range.start, lines[i]);
-            }
-        }
-    },
-    readOnly: true
-});
+// editor.commands.addCommand({
+//     name: 'paste-raw-1',
+//     bindKey: {win: 'Ctrl-V', mac: 'Command-V'},
+//     exec: function (editor) {
+//         //afx.pasteRaw();
+//         var text = afx.clipboardValue();
+//
+//         if (!editor.inMultiSelectMode || editor.inVirtualSelectionMode) {
+//             editor.insert(text);
+//         } else {
+//             var lines = text.split(/\r\n|\r|\n/);
+//             var ranges = editor.selection.rangeList.ranges;
+//             if (lines.length > ranges.length || lines.length < 2 || !lines[1]) {
+//                 return editor.commands.exec("insertstring", editor, text);
+//             }
+//
+//             for (var i = ranges.length; i--;) {
+//                 var range = ranges[i];
+//                 if (!range.isEmpty()) {
+//                     editor.session.remove(range);
+//                 }
+//
+//                 editor.session.insert(range.start, lines[i]);
+//             }
+//         }
+//     },
+//     readOnly: true
+// });
 
 editor.commands.addCommand({
     name: 'ctrl-enter-1',

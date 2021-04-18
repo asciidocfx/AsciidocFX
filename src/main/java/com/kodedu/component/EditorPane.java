@@ -393,10 +393,11 @@ public class EditorPane extends AnchorPane {
         });
     }
 
-    public void execCommand(String command) {
+//    'command-name', args
+    public void execCommand(Object... args) {
         threadService.runActionLater(() -> {
             JSObject editor = (JSObject) webEngine().executeScript("editor");
-            editor.call("execCommand", command);
+            editor.call("execCommand", args);
         });
     }
 
