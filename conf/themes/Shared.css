@@ -121,7 +121,7 @@
 }
 
 .progress-bar .bar {
-    -fx-padding: 0.08em;
+    -fx-padding: 0.1em;
     -fx-background-insets: 0;
     -fx-background-radius: 0;
     -fx-border-radius: 0;
