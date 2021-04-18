@@ -45,7 +45,7 @@
             // Remove some white spaces if exist
             if (bbox.width < width && bbox.height < height) {
                 let viewBox = [bbox.x, bbox.y, bbox.width, bbox.height].join(" ");
-                svg.setAttribute("viewBox", viewBox);
+                // svg.setAttribute("viewBox", viewBox);
             }
 
             var {x, y, width, height} = svg.viewBox.baseVal;
