@@ -105,7 +105,7 @@
     -fx-icon-color: -fx-text-fill;
 }
 
-.log-viewer .message-column {
+.log-viewer .message-column, .log-viewer .message-column * {
     -fx-text-fill: #ffffff;
     -fx-fill: -fx-text-fill;
     -fx-font-weight: bold;
