@@ -112,7 +112,7 @@
 }
 
 .tab:selected {
-    -fx-background-color: linear-gradient(derive(-fx-base, 35%),-fx-base);
+    -fx-background-color: linear-gradient(derive(-fx-base, 55%),-fx-base);
 }
 
 .progress-bar .bar {
