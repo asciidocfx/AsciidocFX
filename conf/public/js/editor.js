@@ -369,6 +369,14 @@ function setFoldStyle(style) {
     }
 }
 
+function makeReadOnly() {
+    editor.setOptions({
+        readOnly: true,
+        highlightActiveLine: false,
+        highlightGutterLine: false
+    })
+}
+
 function getCursorCoordinates() {
     return editor.renderer.textToScreenCoordinates(editor.getCursorPosition());
 }

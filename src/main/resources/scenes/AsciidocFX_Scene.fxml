@@ -226,18 +226,6 @@
                                                         <Insets/>
                                                     </HBox.margin>
                                                 </MenuButton>
-                                                <Button onAction="#openPaypal" styleClass="paypal-button">
-                                                    <graphic>
-                                                        <HBox>
-                                                            <Label text="Donate a "></Label>
-                                                            <Label>
-                                                                <graphic>
-                                                                    <FontIcon iconLiteral="fa-beer"/>
-                                                                </graphic>
-                                                            </Label>
-                                                        </HBox>
-                                                    </graphic>
-                                                </Button>
                                             </children>
                                             <padding>
                                                 <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>

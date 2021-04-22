@@ -103,7 +103,7 @@ public class TabService {
 
         ObservableList<Item> recentFiles = storedConfigBean.getRecentFiles();
         if (Files.notExists(path)) {
-            recentFiles.remove(path.toString());
+            recentFiles.remove(new Item(path));
             logger.debug("Path {} not found in the filesystem", path);
             return;
         }

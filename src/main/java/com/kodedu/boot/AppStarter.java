@@ -39,6 +39,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -169,6 +170,10 @@ public class AppStarter extends Application {
         stage.setOnShown(e -> {
             controller.bindConfigurations();
             controller.showConfigLoaderOnNewInstall();
+            int random = ThreadLocalRandom.current().nextInt(1, 11);
+            if (random == 1) {
+                controller.showSupportAsciidocFX();
+            }
         });
 
         threadService.runActionLater(() -> {

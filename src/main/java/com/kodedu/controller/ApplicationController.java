@@ -99,7 +99,10 @@ import java.security.CodeSource;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.concurrent.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
@@ -1010,6 +1013,8 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         }
 
         editorConfigBean.setNewInstall(false);
+
+        showSupportAsciidocFX();
 
         String userHome = System.getProperty("user.home");
 
@@ -3412,5 +3417,18 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     public void showHiddenFiles(ActionEvent actionEvent) {
         fileBrowser.refresh();
+    }
+
+    public void showSupportAsciidocFX() {
+        Path supportPath = getInstallationPath().resolve("conf").resolve("Support.adoc");
+        if(Files.exists(supportPath)){
+            threadService.runActionLater(()->{
+                tabService.addTab(supportPath,()->{
+                    current.currentEditor().call("makeReadOnly");
+                    ObservableList<Item> recentFiles = storedConfigBean.getRecentFiles();
+                    recentFiles.remove(new Item(supportPath));
+                });
+            },true);
+        }
     }
 }
