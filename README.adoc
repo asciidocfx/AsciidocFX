@@ -1,4 +1,4 @@
-= Asciidoc Book Editor based on JavaFX 12
+= Asciidoc Book Editor based on JavaFX 16
 :experimental:
 :toc:
 :toc-placement: preamble

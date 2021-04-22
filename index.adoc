@@ -1,4 +1,4 @@
-= Asciidoc Book Editor based on JavaFX 8
+= Asciidoc Book Editor based on JavaFX 16
 :experimental:
 :data-uri:
 :toc:
