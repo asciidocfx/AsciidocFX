@@ -6,8 +6,10 @@ os:
 - linux
 script: mvn clean install -Pinstall-runtime
 before_script:
-- wget https://download-gcdn.ej-technologies.com/install4j/install4j_linux-x64_9_0_2.tar.gz
-- tar zxvf install4j_linux-x64_9_0_2.tar.gz
+- wget -qO- https://download-gcdn.ej-technologies.com/install4j/install4j_linux-x64_9_0_2.tar.gz | tar zxvf -
+- wget -qO- https://gluonhq.com/download/javafx-16-jmods-mac | tar zxvf - && mkdir -p jmods/mac && mv javafx-jmods-16/* jmods/mac/
+- wget -qO- https://gluonhq.com/download/javafx-16-jmods-windows | tar zxvf - && mkdir -p jmods/windows && mv javafx-jmods-16/* jmods/windows/
+- wget -qO- https://gluonhq.com/download/javafx-16-jmods-linux | tar zxvf - && mkdir -p jmods/linux && mv javafx-jmods-16/* jmods/linux/
 - mvn clean
 - mvn install4j:install-license
 deploy:
