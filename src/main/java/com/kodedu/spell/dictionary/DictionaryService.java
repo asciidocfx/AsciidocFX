@@ -83,7 +83,14 @@ public class DictionaryService {
         final List<Token> tokens = tokenList.stream()
                 .flatMap(token -> token.fromLines((token.getValue())).stream())
                 .filter(spellFilterProvider.filterByMode(mode))
-                .filter(t -> languageSpeller.isMisspelled(t.getValue()))
+                .filter(t -> {
+                    try {
+                        return languageSpeller.isMisspelled(t.getValue());
+                    } catch (Exception e) {
+                        logger.info("Couldn't spell the word: {}", t.getValue(), e);
+                        return false;
+                    }
+                })
                 .peek(t -> {
                     final List<String> suggestions = languageSpeller.findSuggestions(t.getValue());
                     t.setEmptySuggestion(suggestions.isEmpty());
