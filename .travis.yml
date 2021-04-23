@@ -14,7 +14,7 @@ deploy:
 - provider: releases
   skip_cleanup: true
   api_key:
-    secure: L4y+3fi/yVR7guv7cynzrTOjRbE4+JTK79Fv5J8IQFwtzTP4V2GeW5ZjTdZXAlsFRvak5zhxY4OEYbYI2/riMib5Ea/K28Fd0F/nK8bUDddzxyXPc8zj6VrQINJX8Na2KfPvXT2UR+LtUWkK5HjeR+O/YQPTO4M+7SDGx5P+gog=
+    secure: eXWmeEqed9dok9+JZNDEHabvFObneOtmEsoiA7T4RrKGNFOnrhH/tRh47uEmLsoXddnCu56Pykv3vatmWsXqdcKevfaXz+D4Rlw+O0oxQjVtxluHCjlStzPCMwYzW5n/mIns8TnqCLyLzdcT/JkB9lhA7jPmCBlBHh+tsu4UInU=
   file:
   - "/home/travis/build/asciidocfx/AsciidocFX/target/media/AsciidocFX_Mac.dmg"
   - "/home/travis/build/asciidocfx/AsciidocFX/target/media/AsciidocFX_Linux.tar.gz"
