@@ -8,12 +8,12 @@ script: mvn clean install -Pinstall-runtime
 before_script:
 - wget --tries=3 https://download-gcdn.ej-technologies.com/install4j/install4j_linux-x64_9_0_2.tar.gz
 - tar zxvf install4j_linux-x64_9_0_2.tar.gz
-- wget --tries=3 https://gluonhq.com/download/javafx-16-jmods-mac
-- unzip javafx-16-jmods-mac && mkdir -p jmods/mac && mv javafx-jmods-16/* jmods/mac/
-- wget --tries=3 https://gluonhq.com/download/javafx-16-jmods-windows
-- unzip javafx-16-jmods-windows && mkdir -p jmods/windows && mv javafx-jmods-16/* jmods/windows/
-- wget --tries=3 https://gluonhq.com/download/javafx-16-jmods-linux
-- unzip javafx-16-jmods-linux && mkdir -p jmods/linux && mv javafx-jmods-16/* jmods/linux/
+#- wget --tries=3 https://gluonhq.com/download/javafx-16-jmods-mac
+#- unzip javafx-16-jmods-mac && mkdir -p jmods/mac && mv javafx-jmods-16/* jmods/mac/
+#- wget --tries=3 https://gluonhq.com/download/javafx-16-jmods-windows
+#- unzip javafx-16-jmods-windows && mkdir -p jmods/windows && mv javafx-jmods-16/* jmods/windows/
+#- wget --tries=3 https://gluonhq.com/download/javafx-16-jmods-linux
+#- unzip javafx-16-jmods-linux && mkdir -p jmods/linux && mv javafx-jmods-16/* jmods/linux/
 - mvn clean
 - mvn install4j:install-license
 deploy:

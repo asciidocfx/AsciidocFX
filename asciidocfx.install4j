@@ -1167,28 +1167,28 @@ return true;</property>
     <windows name="Windows Installer" id="86" mediaFileName="AsciidocFX_Windows">
       <jreBundle usePack200="false" includedJre="windows-amd64-12">
         <modules>
-          <jmodDirectory location="/Users/usta/projects/AsciidocFX/jmods/windows" />
+          <jmodDirectory location="jmods/windows" />
         </modules>
       </jreBundle>
     </windows>
     <macosFolder name="Mac OS X Folder" id="921" mediaFileName="AsciidocFX_Mac" signLaunchers="true">
       <jreBundle release="16/jdk-16+36" usePack200="false" includedJre="macosx-amd64-12">
         <modules>
-          <jmodDirectory location="/Users/usta/projects/AsciidocFX/jmods/mac" />
+          <jmodDirectory location="jmods/mac" />
         </modules>
       </jreBundle>
     </macosFolder>
     <windowsArchive name="Windows Archive" id="223" mediaFileName="AsciidocFX_Windows">
       <jreBundle includedJre="windows-amd64-12">
         <modules>
-          <jmodDirectory location="/Users/usta/projects/AsciidocFX/jmods/windows" />
+          <jmodDirectory location="jmods/windows" />
         </modules>
       </jreBundle>
     </windowsArchive>
     <unixArchive name="Unix Archive" id="1110" mediaFileName="AsciidocFX_Linux">
       <jreBundle>
         <modules>
-          <jmodDirectory location="/Users/usta/projects/AsciidocFX/jmods/linux" />
+          <jmodDirectory location="jmods/linux" />
         </modules>
       </jreBundle>
     </unixArchive>
