@@ -68,12 +68,18 @@ public class FileBrowseService {
 
     public void refresh() {
         if (Objects.nonNull(browsedPath)) {
+            cleanPathMaps();
             browse(browsedPath);
             treeView.requestFocus();
         }
     }
 
     public void browse(final Path path) {
+
+        if (!Objects.equals(path, browsedPath)) {
+            cleanPathMaps();
+        }
+
         this.browsedPath = path;
 
         threadService.runActionLater(() -> {
@@ -105,6 +111,12 @@ public class FileBrowseService {
         }, true);
     }
 
+    private void cleanPathMaps() {
+        expandedPaths.clear();
+        pathItemMap.clear();
+        directoryItemMap.clear();
+    }
+
     public void addPathToTree(Path path, final TreeItem<Item> treeItem, Path changedPath) {
 
         threadService.runTaskLater(() -> {
@@ -122,8 +134,6 @@ public class FileBrowseService {
             }
 
             if (treeItem == treeView.getRoot()) { // is root
-                pathItemMap.clear();
-                directoryItemMap.clear();
                 fileWatchService.reCreateWatchService();
             }
 
@@ -174,7 +184,9 @@ public class FileBrowseService {
                         if (Objects.nonNull(item)) {
                             treeView.getSelectionModel().clearSelection();
                             treeView.getSelectionModel().select(item);
-                            treeView.scrollTo(treeView.getSelectionModel().getSelectedIndex());
+                            if (Objects.equals(item, treeView.getSelectionModel().getSelectedItem())) {
+                                treeView.scrollTo(treeView.getSelectionModel().getSelectedIndex());
+                            }
 
                             TreeItem<Item> parent = item.getParent();
                             if (Objects.nonNull(parent)) {
