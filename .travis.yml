@@ -1,17 +1,13 @@
 sudo: false
 language: java
 jdk:
-- openjdk12
+- openjdk16
 os:
 - linux
 script: mvn clean install -Pinstall-runtime
 before_script:
-- wget http://download-keycdn.ej-technologies.com/install4j/install4j_unix_8_0.tar.gz
-- tar zxvf install4j_unix_8_0.tar.gz
-#- wget -O /home/travis/build/asciidocfx/AsciidocFX/install4j8.0/jres/macosx-amd64-12.tar.gz
-#  http://asciidocfx.com/jres/macosx-amd64-12.tar.gz
-#- wget -O /home/travis/build/asciidocfx/AsciidocFX/install4j8.0/jres/windows-amd64-12.tar.gz
-#  http://asciidocfx.com/jres/windows-amd64-12.tar.gz
+- wget https://download-gcdn.ej-technologies.com/install4j/install4j_linux-x64_9_0_2.tar.gz
+- tar zxvf install4j_linux-x64_9_0_2.tar.gz
 - mvn clean
 - mvn install4j:install-license
 deploy:
@@ -54,6 +50,7 @@ env:
   - secure: itDqULG69MoCnvLvMoFpBC8osAb/603jmc47hwC3qn1X+egKrT8kM/w8DC5fYgwp45LKBaxZhxY1q2twxvC6tW28/Zc31kR65RkfbRv5b2jqvb+PFtBSTvBDtKQxPf5DgK1yvqZYZ8r46uYEjepKwELhsYF05W+4irZqakd3aIo=
   - secure: xm/y8T8BYyTxr6qRJ6UP/GkMCEcPDAdrlMysOeZ4XChwZOGU4n0ECkxz0c9xtbdmAkgISYAhHTckQNHQiuOV1AGp+EZMvapPoT3k+AR3bv20NDb9xlTz2p3LPSmH35mRjttHslj2FE+4k+V5H8BoQIMtdkcFUye+PWn2hk54kZg=
   - secure: aVp+h5KCEPp28y/RHiUVe+/Gyt52QNOXVJNAM0Y/GJ8M4ReJVC/INofHysPbIw/DDkTJXvwe19NT64bkpvwMJT69yvdx2vhNN8hWAxBZ7JS0WG92At3Jm0KUT2aX0zBHZEEf9PIpB9jPzUyS1CjILUmuSHL1UXTtivsEEi3jtgQ=
+  - secure: nKCOCCe3kR4es1qYdYawvdYMerrXcXqN9XtWbxGCjWte0tIwnvdMI+WlOzNoe03oqso/YHdkB/LekcCDPY//tAQd9kYD7kfO7ZNvwCkhf0ERKs5QGuLBk6XvDz2Rmx+CRCBxmfMKe+dkCgPNcRTSFtSURoXnbyUCI0lTAyO6Evs=
 before_install:
 - openssl aes-256-cbc -K $encrypted_56a53bf9cdec_key -iv $encrypted_56a53bf9cdec_iv
   -in code_sign.p12.enc -out code_sign.p12 -d

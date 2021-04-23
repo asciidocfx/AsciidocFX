@@ -16,8 +16,8 @@
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <mainClass>com.kodedu.boot.AppStarter</mainClass>
-        <install4j.home>/home/travis/build/asciidocfx/AsciidocFX/install4j8.0</install4j.home>
-        <install4j.licenseKey>${env.LICENSE_KEY_8}</install4j.licenseKey>
+        <install4j.home>/home/travis/build/asciidocfx/AsciidocFX/install4j9.0.2</install4j.home>
+        <install4j.licenseKey>${env.LICENSE_KEY_9}</install4j.licenseKey>
         <openjfx.version>16</openjfx.version>
         <ikonli.version>12.2.0</ikonli.version>
         <jaxb.version>2.3.2</jaxb.version>
@@ -296,7 +296,8 @@
                         -Duser.language=en
                         -Duser.country=US
                         -Dfile.encoding=UTF-8
-                        -Xmx1G
+                        -Xms128M
+                        -Xmx756M
                         -Djava.awt.headless=false
                         --illegal-access=permit
                         --add-exports
@@ -367,6 +368,7 @@
                         javafx.base/com.sun.javafx.property=ALL-UNNAMED
                         --add-exports
                         javafx.controls/com.sun.javafx.scene.control=ALL-UNNAMED
+                        --module-path jmods
                         --add-modules=ALL-MODULE-PATH
                         --add-modules=javafx.controls,javafx.fxml,javafx.graphics,javafx.media,javafx.swing,javafx.web
                     </extraJvmArguments>

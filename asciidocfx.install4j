@@ -1,14 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <install4j version="9.0.1" transformSequenceNumber="9">
   <directoryPresets config="/Users/usta/projects/AsciidocFX/jmods" />
-  <application name="AsciidocFX" applicationId="7853-9376-5862-1224" mediaDir="target" compression="4" lzmaCompression="true" pack200Compression="true" excludeSignedFromPacking="false" shortName="AsciidocFX" publisher="AsciidocFX" publisherWeb="http://asciidocfx.com" version="1.7.3" macVolumeId="b98c377570068f5e" javaMinVersion="12" javaMaxVersion="12" allowBetaVM="true">
+  <application name="AsciidocFX" applicationId="7853-9376-5862-1224" mediaDir="target" compression="4" lzmaCompression="true" excludeSignedFromPacking="false" shortName="AsciidocFX" publisher="AsciidocFX" publisherWeb="http://asciidocfx.com" version="1.7.4" macVolumeId="b98c377570068f5e" javaMinVersion="16" javaMaxVersion="16" allowBetaVM="true">
     <searchSequence>
       <envVar name="JAVA_HOME" />
       <envVar name="JDK_HOME" />
       <registry />
     </searchSequence>
     <codeSigning macEnabled="true" macPkcs12File="/home/travis/build/asciidocfx/AsciidocFX/code_sign.p12" />
-    <jreBundles jdkProviderId="AdoptOpenJDK" release="12/jdk-12.0.1+12" />
+    <jreBundles jdkProviderId="AdoptOpenJDK-OpenJ9" release="16/jdk-16.0.1+9_openj9-0.26.0">
+      <modules>
+        <defaultModules set="jre" />
+        <module name="openj9.cuda" />
+        <module name="openj9.dataaccess" />
+        <module name="openj9.dtfj" />
+        <module name="openj9.dtfjview" />
+        <module name="openj9.gpu" />
+        <module name="openj9.jvm" />
+        <module name="openj9.sharedclasses" />
+        <module name="openj9.traceformat" />
+        <module name="openj9.zosconditionhandling" />
+      </modules>
+    </jreBundles>
   </application>
   <files globalExcludeSuffixes="bin" defaultOverwriteMode="1" launcherOverwriteMode="1" defaultFileMode="755" preserveSymlinks="false">
     <mountPoints>
@@ -31,15 +44,15 @@
           <scanDirectory location="lib" failOnError="false" />
         </classPath>
       </java>
-      <macStaticAssociationActions mode="selected" />
       <vmOptionsFile mode="content" overwriteMode="1" fileMode="755">
         <content># Enter one VM parameter per line
 
 -Duser.language=en
 -Duser.country=US
 -Dfile.encoding=UTF-8
--Xms512M
--Xmx1024M
+-Xms128M
+-Xmx756M
+-Xshareclasses:name=asciidocfx-174,nonfatal
 -Djava.awt.headless=false 
 --illegal-access=permit
 --add-exports
@@ -98,14 +111,20 @@ javafx.graphics/com.sun.scenario.effect=ALL-UNNAMED
 javafx.graphics/com.sun.javafx.text=ALL-UNNAMED
 --add-opens
 javafx.base/com.sun.javafx.collections=ALL-UNNAMED
---add-opens
-javafx.base/com.sun.javafx.collections=javafx.web
 --add-exports
 javafx.graphics/com.sun.scenario.effect.impl.prism=ALL-UNNAMED
 --add-exports
 javafx.graphics/com.sun.javafx.css=ALL-UNNAMED
+--add-opens
+javafx.base/com.sun.javafx.collections=javafx.web
+--add-opens
+javafx.controls/javafx.scene.control=ALL-UNNAMED
 --add-exports
-javafx.base/com.sun.javafx.property=ALL-UNNAMED</content>
+javafx.base/com.sun.javafx.property=ALL-UNNAMED
+--add-exports
+javafx.controls/com.sun.javafx.scene.control=ALL-UNNAMED
+--add-modules=ALL-MODULE-PATH
+--add-modules=javafx.controls,javafx.fxml,javafx.graphics,javafx.media,javafx.swing,javafx.web</content>
       </vmOptionsFile>
       <iconImageFiles>
         <file path="src/main/resources/logo.png" />
@@ -1148,33 +1167,33 @@ return true;</property>
     <windows name="Windows Installer" id="86" mediaFileName="AsciidocFX_Windows">
       <jreBundle usePack200="false" includedJre="windows-amd64-12">
         <modules>
-          <jmodDirectory location="jmods/windows" />
+          <jmodDirectory location="/Users/usta/projects/AsciidocFX/jmods/windows" />
         </modules>
       </jreBundle>
     </windows>
-    <macosFolder name="Mac OS X Folder" id="921" mediaFileName="AsciidocFX_Mac">
-      <jreBundle usePack200="false" includedJre="macosx-amd64-12">
+    <macosFolder name="Mac OS X Folder" id="921" mediaFileName="AsciidocFX_Mac" signLaunchers="true">
+      <jreBundle release="16/jdk-16+36" usePack200="false" includedJre="macosx-amd64-12">
         <modules>
-          <jmodDirectory location="jmods/mac" />
+          <jmodDirectory location="/Users/usta/projects/AsciidocFX/jmods/mac" />
         </modules>
       </jreBundle>
     </macosFolder>
     <windowsArchive name="Windows Archive" id="223" mediaFileName="AsciidocFX_Windows">
       <jreBundle includedJre="windows-amd64-12">
         <modules>
-          <jmodDirectory location="jmods/windows" />
+          <jmodDirectory location="/Users/usta/projects/AsciidocFX/jmods/windows" />
         </modules>
       </jreBundle>
     </windowsArchive>
     <unixArchive name="Unix Archive" id="1110" mediaFileName="AsciidocFX_Linux">
       <jreBundle>
         <modules>
-          <jmodDirectory location="jmods/linux" />
+          <jmodDirectory location="/Users/usta/projects/AsciidocFX/jmods/linux" />
         </modules>
       </jreBundle>
     </unixArchive>
   </mediaSets>
   <buildIds>
-    <mediaSet refId="921" />
+    <mediaSet refId="1110" />
   </buildIds>
 </install4j>
