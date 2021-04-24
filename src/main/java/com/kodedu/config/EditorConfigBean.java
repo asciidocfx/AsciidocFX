@@ -7,7 +7,10 @@ import com.dooapp.fxform.builder.FXFormBuilder;
 import com.dooapp.fxform.handler.NamedFieldHandler;
 import com.dooapp.fxform.view.factory.DefaultFactoryProvider;
 import com.kodedu.component.SliderBuilt;
-import com.kodedu.config.factory.*;
+import com.kodedu.config.factory.FileChooserEditableFactory;
+import com.kodedu.config.factory.ListChoiceBoxFactory;
+import com.kodedu.config.factory.SliderFactory;
+import com.kodedu.config.factory.SpinnerFactory;
 import com.kodedu.controller.ApplicationController;
 import com.kodedu.helper.IOHelper;
 import com.kodedu.service.ThreadService;
@@ -514,10 +517,9 @@ public class EditorConfigBean extends ConfigurationBase {
         setDetachedStagePositions(jsonObject);
 
         String defaultFont = fontFamilies.stream()
-                .filter(f -> Objects.equals(f, "Arial"))
+                .filter(f -> Objects.equals(f, "Verdana"))
                 .findFirst()
-                .or(() -> fontFamilies.stream().filter(f -> Objects.equals(f, "Verdana")).findFirst())
-                .or(() -> fontFamilies.stream().filter(f -> Objects.equals(f, "Calibri")).findFirst())
+                .or(() -> fontFamilies.stream().filter(f -> Objects.equals(f, "Arial")).findFirst())
                 .orElse(Font.getDefault().getFamily());
 
         String aceDefaultFont = aceFontFamilies.stream()
@@ -526,7 +528,7 @@ public class EditorConfigBean extends ConfigurationBase {
                 .or(() -> aceFontFamilies.stream().filter(f -> f.contains("Consolas")).findFirst())
                 .orElse("Monospaced");
 
-        String fontFamily = jsonObject.getString("fontFamily", defaultFont);
+        String fontFamily = jsonObject.getString("generalFontFamily", defaultFont);
         String aceFontFamily = jsonObject.getString("aceFontFamily", aceDefaultFont);
         int aceFontSize = jsonObject.getInt("aceFontSize", 14);
         String aceTheme = jsonObject.getString("aceTheme", "xcode");
@@ -717,7 +719,7 @@ public class EditorConfigBean extends ConfigurationBase {
         JsonObjectBuilder objectBuilder = Json.createObjectBuilder();
 
         objectBuilder
-                .add("fontFamily", getFontFamily().get(0))
+                .add("generalFontFamily", getFontFamily().get(0))
                 .add("aceFontFamily", getAceFontFamily().get(0))
                 .add("aceFontSize", getAceFontSize())
                 .add("scrollSpeed", getScrollSpeed())

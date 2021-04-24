@@ -1,6 +1,6 @@
 
 {
-    "fontFamily":"'Dejavu Sans Mono'",
+    "fontFamily": "Verdana",
     "fontSize":16,
     "scrollSpeed":0.1,
     "useWrapMode":true,
