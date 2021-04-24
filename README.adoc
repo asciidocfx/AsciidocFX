@@ -71,7 +71,10 @@ NOTE: In all releases we use AdoptOpenJDK JREs, so you will not have any licensi
 After the download is completed, untar the package in your preferred directory.
 
 [source,bash]
-$ sh AsciidocFX
+----
+$ cd bin
+$ ./AsciidocFX
+----
 
 ////
 === Install on Arch Linux
