@@ -27,6 +27,7 @@ image::images/asciidocfx.png[]
 * Table Generator
 * MathJax Extension
 * PlantUML Extension
+* Mermaid Extension (Experimental)
 * ditaa Extension
 * Filesystem Tree Extension
 * JavaFX Charts Extension
@@ -191,6 +192,52 @@ annotation SuppressWarnings
 image::images/uml-example.png[]
 
 NOTE: In some UML elements, PlantUML needs to work with Graphviz. Because of this, you should install `Graphviz` manually for your platform. After installing Graphviz, you should set `GRAPHVIZ_DOT` environment variable to `dot` executable in Graphviz.
+
+== Mermaid Extension (Experimental)
+
+[quote,Rūmī]
+____
+Mermaid lets you create diagrams using text and code. This simplifies the maintenance of complex diagrams. **See more examples**: https://mermaid-js.github.io/
+____
+
+[source,asciidoc]
+----
+[mermaid,images/mermaid-graph,png]
+--
+graph TD 
+    A[Start] --> B{Is it?};
+    B -- Yes --> C[OK];
+    C --> D[Rethink];
+    D --> B;
+    B -- No ----> E[End];
+--
+----
+
+image::images/mermaid-graph.png[]
+
+
+[source,asciidoc]
+----
+[mermaid,file="images/mermaid-flowchart.png"]
+--
+flowchart TB
+    c1-->a2
+    subgraph one
+    a1-->a2
+    end
+    subgraph two
+    b1-->b2
+    end
+    subgraph three
+    c1-->c2
+    end
+    one --> two
+    three --> two
+    two --> c2
+--
+----
+
+image::images/mermaid-flowchart.png[]
 
 == ditaa Extension
 
