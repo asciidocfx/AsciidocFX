@@ -66,9 +66,15 @@ public class FileBrowseService {
         this.current = current;
     }
 
-    public void refresh() {
+    public void cleanRefresh() {
         if (Objects.nonNull(browsedPath)) {
             cleanPathMaps();
+            refresh();
+        }
+    }
+
+    public void refresh() {
+        if (Objects.nonNull(browsedPath)) {
             browse(browsedPath);
             treeView.requestFocus();
         }
@@ -179,23 +185,7 @@ public class FileBrowseService {
 
                     restoreTreeSelectionState();
 
-                    if (Objects.nonNull(changedPath)) {
-                        TreeItem<Item> item = pathItemMap.get(changedPath);
-                        if (Objects.nonNull(item)) {
-                            treeView.getSelectionModel().clearSelection();
-                            treeView.getSelectionModel().select(item);
-                            if (Objects.equals(item, treeView.getSelectionModel().getSelectedItem())) {
-                                treeView.scrollTo(treeView.getSelectionModel().getSelectedIndex());
-                            }
-
-                            TreeItem<Item> parent = item.getParent();
-                            if (Objects.nonNull(parent)) {
-                                if (!parent.isExpanded()) {
-                                    parent.setExpanded(true);
-                                }
-                            }
-                        }
-                    }
+                    focusPath(changedPath);
 
                     fileWatchService.registerPathWatcher(path);
                 });
@@ -206,6 +196,27 @@ public class FileBrowseService {
 
         });
 
+    }
+
+    public void focusPath(Path path) {
+        if (Objects.nonNull(path)) {
+            TreeItem<Item> item = pathItemMap.get(path);
+            if (Objects.nonNull(item)) {
+                TreeItem<Item> parent = item.getParent();
+                while (Objects.nonNull(parent)) {
+                    if (!parent.isExpanded()) {
+                        parent.setExpanded(true);
+                    }
+                    parent = parent.getParent();
+                }
+
+                treeView.getSelectionModel().clearSelection();
+                treeView.getSelectionModel().select(item);
+                if (Objects.equals(item, treeView.getSelectionModel().getSelectedItem())) {
+                    treeView.scrollTo(treeView.getSelectionModel().getSelectedIndex());
+                }
+            }
+        }
     }
 
     private void restoreTreeSelectionState() {
@@ -246,7 +257,7 @@ public class FileBrowseService {
             treeView.setRoot(rootItem);
             rootItem.setExpanded(true);
             addPathToTree(browsedPath, rootItem, changedPath);
-            treeView.requestFocus();
+//            treeView.requestFocus();
         });
     }
 

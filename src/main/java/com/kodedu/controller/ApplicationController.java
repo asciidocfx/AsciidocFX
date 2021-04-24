@@ -557,7 +557,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         if (currentPath.isPresent()) {
             directoryService.changeWorkigDir(currentPath.get());
         } else {
-            fileBrowser.refresh();
+            fileBrowser.cleanRefresh();
         }
 
     }
@@ -3430,5 +3430,9 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                 });
             },true);
         }
+    }
+
+    public void refreshFileView(ActionEvent actionEvent) {
+        fileBrowser.cleanRefresh();
     }
 }

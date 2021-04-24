@@ -92,9 +92,13 @@ public class DictionaryService {
                     }
                 })
                 .peek(t -> {
-                    final List<String> suggestions = languageSpeller.findSuggestions(t.getValue());
-                    t.setEmptySuggestion(suggestions.isEmpty());
-                    suggestionMap.put(t.getValue(), suggestions);
+                    try {
+                        final List<String> suggestions = languageSpeller.findSuggestions(t.getValue());
+                        t.setEmptySuggestion(suggestions.isEmpty());
+                        suggestionMap.put(t.getValue(), suggestions);
+                    } catch (Exception e) {
+                        logger.info("Couldn't find suggestions for value {}", t.getValue(), e);
+                    }
                 })
                 .collect(Collectors.toList());
 

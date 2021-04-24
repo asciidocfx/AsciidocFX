@@ -241,6 +241,8 @@
                                                                     <items>
                                                                         <MenuItem fx:id="openFileTreeItem"
                                                                                   mnemonicParsing="false" text="Open"/>
+                                                                        <MenuItem onAction="#refreshFileView"
+                                                                                  mnemonicParsing="false" text="Refresh"/>
                                                                         <MenuItem id="openFolderTreeItem"
                                                                                   fx:id="openFolderTreeItem"
                                                                                   mnemonicParsing="false"
