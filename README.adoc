@@ -195,7 +195,7 @@ NOTE: In some UML elements, PlantUML needs to work with Graphviz. Because of thi
 
 == Mermaid Extension (Experimental)
 
-[quote,Rūmī]
+[quote]
 ____
 Mermaid lets you create diagrams using text and code. This simplifies the maintenance of complex diagrams. **See more examples**: https://mermaid-js.github.io/
 ____
