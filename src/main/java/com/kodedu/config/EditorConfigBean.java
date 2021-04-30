@@ -531,14 +531,17 @@ public class EditorConfigBean extends ConfigurationBase {
                 .orElse(Font.getDefault().getFamily());
 
         String aceDefaultFont = aceFontFamilies.stream()
-                .filter(f -> f.contains("DejaVu Sans Mono"))
+                .filter(f -> Objects.equals(f, "JetBrains Mono"))
                 .findFirst()
-                .or(() -> aceFontFamilies.stream().filter(f -> f.contains("Consolas")).findFirst())
+                .or(() -> aceFontFamilies.stream().filter(f -> Objects.equals(f, "DejaVu Sans Mono")).findFirst())
+                .or(() -> aceFontFamilies.stream().filter(f -> Objects.equals(f, "Monaco")).findFirst())
+                .or(() -> aceFontFamilies.stream().filter(f -> Objects.equals(f, "Menlo")).findFirst())
+                .or(() -> aceFontFamilies.stream().filter(f -> Objects.equals(f, "Consolas")).findFirst())
                 .orElse("Monospaced");
 
         String fontFamily = jsonObject.getString("generalFontFamily", defaultFont);
-        String aceFontFamily = jsonObject.getString("aceFontFamily", aceDefaultFont);
-        int aceFontSize = jsonObject.getInt("aceFontSize", 14);
+        String aceFontFamily = jsonObject.getString("aceFontFamily-1", aceDefaultFont);
+        int aceFontSize = jsonObject.getInt("aceFontSize-1", 16);
         String aceTheme = jsonObject.getString("aceTheme", "xcode");
         String defaultLanguage = jsonObject.getString("defaultLanguage", "en");
         boolean useWrapMode = jsonObject.getBoolean("useWrapMode", true);
@@ -749,8 +752,8 @@ public class EditorConfigBean extends ConfigurationBase {
 
         objectBuilder
                 .add("generalFontFamily", getFontFamily().get(0))
-                .add("aceFontFamily", getAceFontFamily().get(0))
-                .add("aceFontSize", getAceFontSize())
+                .add("aceFontFamily-1", getAceFontFamily().get(0))
+                .add("aceFontSize-1", getAceFontSize())
                 .add("scrollSpeed", getScrollSpeed())
                 .add("useWrapMode", getUseWrapMode())
                 .add("wrapLimit", getWrapLimit())
