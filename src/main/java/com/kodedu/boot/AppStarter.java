@@ -4,6 +4,7 @@ import com.install4j.api.launcher.StartupNotification;
 import com.kodedu.config.ConfigurationService;
 import com.kodedu.config.EditorConfigBean;
 import com.kodedu.controller.ApplicationController;
+import com.kodedu.helper.IOHelper;
 import com.kodedu.service.DirectoryService;
 import com.kodedu.service.FileOpenListener;
 import com.kodedu.service.ThreadService;
@@ -31,17 +32,18 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.NotDirectoryException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static javafx.scene.input.KeyCombination.SHORTCUT_DOWN;
 
@@ -111,19 +113,23 @@ public class AppStarter extends Application {
         });
     }
 
-    private void loadRequiredFonts() {
-        var fonts = List.of("/font/NotoSerif-Regular.ttf", "/font/NotoSerif-Italic.ttf", "/font/NotoSerif-Bold.ttf",
-                "/font/NotoSerif-BoldItalic.ttf", "/font/DejaVuSansMono.ttf", "/font/DejaVuSansMono-Bold.ttf",
-                "/font/DejaVuSansMono-Oblique.ttf");
-
-        for (String font : fonts) {
-            try (var in = AppStarter.class.getResourceAsStream(font);) {
-                Font.loadFont(in, -1);
-            } catch (IOException e) {
-                logger.error("Error when loading font {}", font, e);
-            }
+    public void loadRequiredFonts() {
+        try {
+            Files.walk(IOHelper.getInstallationPath().resolve("conf/fonts"))
+                    .filter(f -> f.toString().endsWith(".ttf"))
+                    .forEach(font -> {
+                        try (var in = new FileInputStream(font.toFile())) {
+                            IntStream.range(8, 32)
+                                    .forEach(size -> {
+                                        Font.loadFont(in, size);
+                                    });
+                        } catch (IOException e) {
+                            logger.error("Error when loading font {}", font, e);
+                        }
+                    });
+        } catch (IOException e) {
+            logger.warn("Couldn't load fonts", e);
         }
-
     }
 
     private void startApp(final Stage stage, final CmdlineConfig config) throws Throwable {

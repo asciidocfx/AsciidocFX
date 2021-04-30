@@ -2,6 +2,7 @@ package com.kodedu.helper;
 
 import com.ibm.icu.text.CharsetDetector;
 import com.ibm.icu.text.CharsetMatch;
+import com.kodedu.controller.ApplicationController;
 import com.kodedu.other.LRUMap;
 import com.kodedu.service.ThreadService;
 import org.apache.commons.io.FileUtils;
@@ -30,6 +31,7 @@ import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileAttribute;
 import java.nio.file.attribute.FileTime;
+import java.security.CodeSource;
 import java.util.*;
 import java.util.function.BiPredicate;
 import java.util.stream.Collectors;
@@ -46,6 +48,7 @@ public class IOHelper {
     private static final Logger logger = LoggerFactory.getLogger(IOHelper.class);
 
     private static final Map<Path, String> pathCharsetMap = new LRUMap();
+    private static Path installationPath;
 
     public static Optional<Exception> writeToFile(Path path, String content, StandardOpenOption... openOption) {
         String charset = pathCharsetMap.getOrDefault(path, "UTF-8");
@@ -612,5 +615,24 @@ public class IOHelper {
         } catch (Exception e) {
 
         }
+    }
+
+    public static Path getInstallationPath() {
+        if (isNull(installationPath)) {
+            try {
+                String homeProp = System.getProperty("asciidocfx.home");
+                if (homeProp != null) {
+                    installationPath = new File(homeProp).toPath();
+                } else {
+                    //guess installation path
+                    CodeSource codeSource = ApplicationController.class.getProtectionDomain().getCodeSource();
+                    File jarFile = new File(codeSource.getLocation().toURI().getPath());
+                    installationPath = jarFile.toPath().getParent().getParent();
+                }
+            } catch (Exception e) {
+                logger.error("Problem occured while resolving conf and log paths", e);
+            }
+        }
+        return installationPath;
     }
 }

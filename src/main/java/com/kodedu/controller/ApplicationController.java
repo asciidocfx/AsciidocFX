@@ -110,6 +110,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static com.kodedu.helper.IOHelper.getInstallationPath;
 import static java.nio.file.StandardOpenOption.*;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
@@ -1821,27 +1822,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             e.printStackTrace();
             logger.error("Problem occured while loading document types", e);
         }
-    }
-
-    public Path getInstallationPath() {
-
-        if (isNull(installationPath)) {
-            try {
-                String homeProp = System.getProperty("asciidocfx.home");
-                if (homeProp != null) {
-                    installationPath = new File(homeProp).toPath();
-                } else {
-                    //guess installation path
-                    CodeSource codeSource = ApplicationController.class.getProtectionDomain().getCodeSource();
-                    File jarFile = new File(codeSource.getLocation().toURI().getPath());
-                    installationPath = jarFile.toPath().getParent().getParent();
-                }
-            } catch (Exception e) {
-                logger.error("Problem occured while resolving conf and log paths", e);
-            }
-        }
-
-        return installationPath;
     }
 
     public String getLogPath() {

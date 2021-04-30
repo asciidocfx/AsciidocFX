@@ -34,8 +34,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.json.*;
+import java.awt.*;
+import java.awt.font.FontRenderContext;
+import java.awt.geom.Rectangle2D;
 import java.io.Reader;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -505,8 +509,12 @@ public class EditorConfigBean extends ConfigurationBase {
         List<String> languageList = this.languageList();
         List<String> systemFonts = Font.getFamilies();
         List<String> fontFamilies = new ArrayList(systemFonts);
-        List<String> aceFontFamilies = new ArrayList(systemFonts.stream()
-                .filter(f-> f.contains("Mono") || f.contains("Consol") || f.contains("Courier")).toList());
+
+        List<String> detectedMonoSpacedFonts = getDetectedMonospacedFonts();
+        List<String> knownMonoFonts = getKnownMonoFonts(systemFonts);
+
+        List<String> aceFontFamilies = Stream.concat(knownMonoFonts.stream(), detectedMonoSpacedFonts.stream())
+                .distinct().collect(Collectors.toList());
 
         Reader fileReader = IOHelper.fileReader(configPath);
         JsonReader jsonReader = Json.createReader(fileReader);
@@ -633,6 +641,27 @@ public class EditorConfigBean extends ConfigurationBase {
             fadeOut(infoLabel, "Loaded...");
 
         });
+    }
+
+    private List<String> getKnownMonoFonts(List<String> systemFonts) {
+        return systemFonts.stream()
+                .filter(f -> f.contains("Mono") || f.contains("Consol") || f.contains("Courier")
+                        || f.equals("Monaco") || f.equals("Menlo")).collect(Collectors.toList());
+    }
+
+    private List<String> getDetectedMonospacedFonts() {
+        java.awt.Font[] fonts = GraphicsEnvironment.getLocalGraphicsEnvironment().getAllFonts();
+        List<String> detectedFonts = new ArrayList<>();
+
+        FontRenderContext frc = new FontRenderContext(null, RenderingHints.VALUE_TEXT_ANTIALIAS_DEFAULT, RenderingHints.VALUE_FRACTIONALMETRICS_DEFAULT);
+        for (java.awt.Font font : fonts) {
+            Rectangle2D iBounds = font.getStringBounds("i", frc);
+            Rectangle2D mBounds = font.getStringBounds("m", frc);
+            if (iBounds.getWidth() == mBounds.getWidth()) {
+                detectedFonts.add(font.getFamily());
+            }
+        }
+        return detectedFonts;
     }
 
     private void setMainStagePositions(JsonObject jsonObject) {
