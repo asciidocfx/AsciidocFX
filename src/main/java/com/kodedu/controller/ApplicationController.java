@@ -2355,7 +2355,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         });
     }
 
-    private AtomicReference<TextChangeEvent> latestTextChangeEvent = new AtomicReference<>();
+    private volatile AtomicReference<TextChangeEvent> latestTextChangeEvent = new AtomicReference<>();
     private Semaphore renderLoopSemaphore = new Semaphore(1);
 
     private void renderLoop() throws InterruptedException {
