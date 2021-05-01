@@ -9,9 +9,14 @@ function asciimathWrap(content) {
 function parseStems(parent, content, nodename) {
 
     var finalContent = content;
-    var name = nodename.toLowerCase();
+    var name = nodename.replace(/_/g,"").toLowerCase();
 
-    var stemAttr = parent.$document().$attr('stem', "asciimath");
+    var stemAttr = parent.$document().$attr('stem', "no_stem");
+
+    // :stem: -> ""
+    if (stemAttr == "" || !stemAttr) {
+        stemAttr = "asciimath";
+    }
 
     stemAttr = stemAttr.toLowerCase();
 
