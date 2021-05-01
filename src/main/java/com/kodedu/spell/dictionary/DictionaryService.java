@@ -87,7 +87,7 @@ public class DictionaryService {
                     try {
                         return languageSpeller.isMisspelled(t.getValue());
                     } catch (Exception e) {
-                        logger.info("Couldn't spell the word: {}", t.getValue(), e);
+//                        logger.info("Couldn't spell the word: {}", t.getValue(), e);
                         return false;
                     }
                 })
@@ -97,7 +97,7 @@ public class DictionaryService {
                         t.setEmptySuggestion(suggestions.isEmpty());
                         suggestionMap.put(t.getValue(), suggestions);
                     } catch (Exception e) {
-                        logger.info("Couldn't find suggestions for value {}", t.getValue(), e);
+//                        logger.info("Couldn't find suggestions for value {}", t.getValue(), e);
                     }
                 })
                 .collect(Collectors.toList());
