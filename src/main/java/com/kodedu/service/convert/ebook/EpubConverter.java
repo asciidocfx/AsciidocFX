@@ -160,7 +160,7 @@ public class EpubConverter {
                             logger.error("Problem occured while zipping mimetype");
                         }
 
-                        try (FileSystem zipfs = FileSystems.newFileSystem(epubPath,Collections.emptyMap())) {
+                        try (FileSystem zipfs = FileSystems.newFileSystem(epubOut, Collections.emptyMap())) {
                             iterativelyPackDir(epubTemp.resolve("OEBPS"), epubTemp, zipfs);
                             iterativelyPackDir(epubTemp.resolve("META-INF"), epubTemp, zipfs);
                         } catch (IOException e) {
