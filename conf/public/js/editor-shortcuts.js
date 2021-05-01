@@ -9,7 +9,7 @@ function addNewCommand(key, value) {
         exec: function (editor) {
             editor.insert(value);
         },
-        readOnly: true
+        readOnly: false
     });
 }
 
@@ -30,7 +30,7 @@ editor.commands.addCommand({
         editor.execCommand("cut");
 
     },
-    readOnly: true
+    readOnly: false
 });
 
 //editor.commands.addCommand({
@@ -49,7 +49,7 @@ editor.commands.addCommand({
         afx.cutCopy(editor.getCopyText());
         editor.execCommand("copy");
     },
-    readOnly: false
+    readOnly: true
 });
 
 editor.commands.addCommand({
@@ -61,7 +61,7 @@ editor.commands.addCommand({
 
         //editor.execCommand("paste");
     },
-    readOnly: true
+    readOnly: false
 });
 
 // editor.commands.addCommand({
@@ -108,7 +108,7 @@ editor.commands.addCommand({
     exec: function (editor) {
         editor.copyLinesDown();
     },
-    readOnly: true
+    readOnly: false
 });
 
 var formatText = function (editor, matcher, firstCharacter, lastCharacter) {
@@ -576,7 +576,7 @@ editor.commands.addCommand({
     exec: function () {
         afx.getShortcutProvider().getProvider().addUnderline();
     },
-    readOnly: true
+    readOnly: false
 });
 
 editor.commands.addCommand({
@@ -585,7 +585,7 @@ editor.commands.addCommand({
     exec: function () {
         afx.getShortcutProvider().getProvider().addBold();
     },
-    readOnly: true
+    readOnly: false
 });
 
 editor.commands.addCommand({
@@ -594,7 +594,7 @@ editor.commands.addCommand({
     exec: function () {
         afx.getShortcutProvider().getProvider().addHeading();
     },
-    readOnly: true
+    readOnly: false
 });
 
 editor.commands.addCommand({
@@ -610,7 +610,7 @@ editor.commands.addCommand({
     exec: function (editor) {
         formatText(editor, matchCode, "`", "`");
     },
-    readOnly: true
+    readOnly: false
 });
 
 editor.commands.addCommand({
@@ -622,7 +622,7 @@ editor.commands.addCommand({
     exec: function () {
         afx.getShortcutProvider().getProvider().addItalic();
     },
-    readOnly: true
+    readOnly: false
 });
 
 editor.commands.addCommand({
@@ -758,7 +758,7 @@ editor.commands.addCommand({
 
         editor.indent();
     },
-    readOnly: true
+    readOnly: false
 });
 
 editor.addEventListener("mousewheel", mouseWheelHandler);
