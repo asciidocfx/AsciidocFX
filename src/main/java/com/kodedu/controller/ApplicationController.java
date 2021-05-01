@@ -92,10 +92,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.URL;
+import java.nio.BufferUnderflowException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.security.CodeSource;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -2493,7 +2493,13 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         final String mode = editorPane.editorMode();
 
         threadService.runTaskLater(() -> {
-            dictionaryService.processTokens(editorPane, tokenList, mode);
+            try {
+                dictionaryService.processTokens(editorPane, tokenList, mode);
+            } catch (IllegalArgumentException | BufferUnderflowException bufex) {
+//            logger.debug(bufex.getMessage(), bufex);
+            } catch (Exception e) {
+                logger.error(e.getMessage(), e);
+            }
         });
     }
 
@@ -2757,10 +2763,10 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     @FXML
     public void generateCheatSheet(ActionEvent actionEvent) {
-        Path cheatsheetPath = getConfigPath().resolve("cheatsheet/cheatsheet.adoc");
+        Path cheatsheetPath = getConfigPath().resolve("cheatsheet/Cheatsheet.adoc");
 
         Path tempSheetPath = IOHelper.createTempDirectory(directoryService.workingDirectory(), "cheatsheet")
-                .resolve("cheatsheet.adoc");
+                .resolve("Cheatsheet.adoc");
 
         IOHelper.copy(cheatsheetPath, tempSheetPath);
 

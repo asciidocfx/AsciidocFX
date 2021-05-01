@@ -272,7 +272,7 @@ JavaFX has 8 kind of Chart component and AsciidocFX supports all of them.
 
 ==== Pie Chart
 
-[chart,pie,file="secim-2014-pie.png",opt="title=2014 YEREL SEÇİM SONUÇLARI"]
+[chart,pie,file="secim-2014-pie.png",opt="title=LOCAL ELECTION RESULTS"]
 --
 AKP,  45.6, orange
 CHP,  27.8,red
