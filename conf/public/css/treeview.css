@@ -150,3 +150,7 @@ body, pre {
 .hljs {
     padding: 1em;
 }
+
+pre > code {
+    font-family: "JetBrains Mono Medium", "JetBrains Mono", "DejaVu Sans Mono", "Consolas", "Courier", monospace;
+}
