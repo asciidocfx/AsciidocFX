@@ -52,7 +52,7 @@
 -Dfile.encoding=UTF-8
 -Xms128M
 -Xmx756M
--Xshareclasses:name=asciidocfx-174-1,nonfatal
+-Xshareclasses:name=asciidocfx-174-2,nonfatal
 -Djava.awt.headless=false 
 --illegal-access=permit
 --add-exports
