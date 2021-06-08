@@ -1,9 +1,10 @@
-package com.kodedu.service;
+package com.kodedu.service.impl;
 
 import com.kodedu.config.StoredConfigBean;
 import com.kodedu.controller.ApplicationController;
 import com.kodedu.helper.IOHelper;
 import com.kodedu.other.Current;
+import com.kodedu.service.DirectoryService;
 import com.kodedu.service.ui.FileBrowseService;
 import javafx.application.Platform;
 import javafx.stage.DirectoryChooser;
@@ -31,7 +32,7 @@ import static java.util.Arrays.asList;
  * Created by usta on 25.12.2014.
  */
 @Component
-public class DirectoryService {
+public class DirectoryServiceImpl implements DirectoryService {
 
     private final ApplicationController controller;
     private final FileBrowseService fileBrowser;
@@ -51,7 +52,7 @@ public class DirectoryService {
 
 
     @Autowired
-    public DirectoryService(final ApplicationController controller, final FileBrowseService fileBrowser, final Current current, PathResolverService pathResolver, StoredConfigBean storedConfigBean, FileWatchService fileWatchService, ThreadService threadService, PathMapper pathMapper) {
+    public DirectoryServiceImpl(final ApplicationController controller, final FileBrowseService fileBrowser, final Current current, PathResolverService pathResolver, StoredConfigBean storedConfigBean, FileWatchService fileWatchService, ThreadService threadService, PathMapper pathMapper) {
         this.controller = controller;
         this.fileBrowser = fileBrowser;
         this.current = current;

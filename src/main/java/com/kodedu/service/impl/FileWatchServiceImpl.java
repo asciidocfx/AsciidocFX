@@ -1,8 +1,9 @@
-package com.kodedu.service;
+package com.kodedu.service.impl;
 
 import com.kodedu.component.MyTab;
 import com.kodedu.controller.ApplicationController;
 import com.kodedu.helper.IOHelper;
+import com.kodedu.service.FileWatchService;
 import com.kodedu.service.ui.FileBrowseService;
 import com.kodedu.service.ui.TabService;
 import javafx.collections.ObservableList;
@@ -26,7 +27,7 @@ import static java.nio.file.StandardWatchEventKinds.*;
  * Created by usta on 31.12.2014.
  */
 @Component
-public class FileWatchService {
+public class FileWatchServiceImpl implements FileWatchService {
 
     private final Logger logger = LoggerFactory.getLogger(FileWatchService.class);
 
@@ -44,7 +45,7 @@ public class FileWatchService {
     private final PathMapper pathMapper;
 
     @Autowired
-    public FileWatchService(ApplicationController controller, ThreadService threadService, PathMapper pathMapper) {
+    public FileWatchServiceImpl(ApplicationController controller, ThreadService threadService, PathMapper pathMapper) {
         this.controller = controller;
         this.threadService = threadService;
         this.pathMapper = pathMapper;

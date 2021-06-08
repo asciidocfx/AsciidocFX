@@ -1,6 +1,8 @@
-package com.kodedu.service;
+package com.kodedu.service.impl;
 
 import com.kodedu.helper.OSHelper;
+import com.kodedu.service.PathOrderService;
+
 import org.springframework.stereotype.Component;
 
 import java.nio.file.Path;
@@ -9,7 +11,7 @@ import java.nio.file.Path;
  * Created by usta on 01.01.2015.
  */
 @Component
-public class PathOrderService {
+public class PathOrderServiceImpl implements PathOrderService {
 
     public int comparePaths(Path first, Path second) {
 

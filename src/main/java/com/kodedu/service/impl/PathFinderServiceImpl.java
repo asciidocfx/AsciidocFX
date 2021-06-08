@@ -1,6 +1,9 @@
-package com.kodedu.service;
+package com.kodedu.service.impl;
 
 import com.kodedu.other.Current;
+import com.kodedu.service.DirectoryService;
+import com.kodedu.service.PathFinderService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -14,13 +17,13 @@ import java.util.stream.IntStream;
  */
 @Component("pathFinder")
 @Scope("prototype")
-public class PathFinderService {
+public class PathFinderServiceImpl implements PathFinderService {
 
     private final Current current;
     private final DirectoryService directoryService;
 
     @Autowired
-    public PathFinderService(Current current, DirectoryService directoryService) {
+    public PathFinderServiceImpl(Current current, DirectoryService directoryService) {
         this.current = current;
         this.directoryService = directoryService;
     }

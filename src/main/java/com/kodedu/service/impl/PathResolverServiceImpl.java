@@ -1,6 +1,8 @@
-package com.kodedu.service;
+package com.kodedu.service.impl;
 
 import com.kodedu.helper.IOHelper;
+import com.kodedu.service.PathResolverService;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -14,7 +16,7 @@ import java.nio.file.PathMatcher;
  * Created by usta on 07.09.2014.
  */
 @Component
-public class PathResolverService {
+public class PathResolverServiceImpl implements PathResolverService {
 
     private final Logger logger = LoggerFactory.getLogger(PathResolverService.class);
 

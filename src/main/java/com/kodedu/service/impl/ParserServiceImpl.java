@@ -1,9 +1,12 @@
-package com.kodedu.service;
+package com.kodedu.service.impl;
 
 import com.kodedu.controller.ApplicationController;
 import com.kodedu.helper.IOHelper;
 import com.kodedu.other.Constants;
 import com.kodedu.other.Current;
+import com.kodedu.service.DirectoryService;
+import com.kodedu.service.ParserService;
+
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.Image;
 import org.slf4j.Logger;
@@ -30,7 +33,7 @@ import java.util.stream.Collectors;
  * Created by usta on 16.12.2014.
  */
 @Component
-public class ParserService {
+public class ParserServiceImpl implements ParserService {
 
     private final ApplicationController asciiDocController;
     private final Current current;
@@ -40,7 +43,7 @@ public class ParserService {
     private Logger logger = LoggerFactory.getLogger(ParserService.class);
 
     @Autowired
-    public ParserService(final ApplicationController asciiDocController, final Current current, final PathResolverService pathResolver, DirectoryService directoryService) {
+    public ParserServiceImpl(final ApplicationController asciiDocController, final Current current, final PathResolverService pathResolver, DirectoryService directoryService) {
         this.asciiDocController = asciiDocController;
         this.current = current;
         this.pathResolver = pathResolver;

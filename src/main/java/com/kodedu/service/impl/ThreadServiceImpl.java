@@ -1,9 +1,12 @@
-package com.kodedu.service;
+package com.kodedu.service.impl;
 
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import org.springframework.stereotype.Component;
+
+import com.kodedu.service.Buff;
+import com.kodedu.service.ThreadService;
 
 import java.util.Objects;
 import java.util.concurrent.*;
@@ -14,7 +17,7 @@ import java.util.function.Supplier;
  * Created by usta on 25.12.2014.
  */
 @Component
-public class ThreadService {
+public class ThreadServiceImpl implements ThreadService {
 
     private final ExecutorService threadPollWorker;
     private final ScheduledExecutorService scheduledWorker;
@@ -23,7 +26,7 @@ public class ThreadService {
     private final ExecutorService singleExecutor;
 
 
-    public ThreadService() {
+    public ThreadServiceImpl() {
         scheduledWorker = Executors.newSingleThreadScheduledExecutor();
         threadPollWorker = Executors.newWorkStealingPool(16);
         singleExecutor = Executors.newSingleThreadExecutor();

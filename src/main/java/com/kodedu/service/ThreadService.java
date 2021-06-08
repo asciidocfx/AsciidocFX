@@ -1,0 +1,43 @@
+package com.kodedu.service;
+
+import javafx.event.ActionEvent;
+
+import java.util.concurrent.Executor;
+import java.util.concurrent.Future;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
+
+/**
+ * Created by usta on 25.12.2014.
+ */
+public interface ThreadService {
+
+    public ScheduledFuture<?> schedule(Runnable runnable, long delay, TimeUnit timeUnit);
+
+    public ScheduledFuture<?> scheduleWithDelay(Runnable runnable, long initialDelay, long delay, TimeUnit timeUnit);
+
+    // Runs Task in background thread pool
+    public <T> Future<?> runTaskLater(Runnable runnable);
+
+    // Runs task in JavaFX Thread
+    public void runActionLater(Consumer<ActionEvent> consumer);
+
+    // Runs task in JavaFX Thread
+    public void runActionLater(final Runnable runnable);
+
+    public void runActionLater(Runnable runnable, boolean force);
+
+    public void start(Runnable runnable);
+
+    public Executor executor();
+
+    public Buff buff(String id);
+
+    public <T> T supply(Supplier<T> supplier);
+
+    public <T> void runActionLater(Consumer<T> consumer, T t);
+
+    public ScheduledFuture<?> scheduleWithDelay(Runnable runnable, int timeBetweenFramesMS, TimeUnit milliseconds);
+}

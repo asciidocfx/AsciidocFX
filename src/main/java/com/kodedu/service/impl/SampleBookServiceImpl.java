@@ -1,9 +1,11 @@
-package com.kodedu.service;
+package com.kodedu.service.impl;
 
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+
+import com.kodedu.service.SampleBookService;
 
 import java.io.File;
 import java.io.IOException;
@@ -13,7 +15,7 @@ import java.nio.file.Path;
  * Created by usta on 02.09.2014.
  */
 @Component
-public class SampleBookService {
+public class SampleBookServiceImpl implements SampleBookService {
 
     private final Logger logger = LoggerFactory.getLogger(SampleBookService.class);
 
