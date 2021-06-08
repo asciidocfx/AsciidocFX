@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.nio.file.Files;
+import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Objects;
@@ -74,10 +75,7 @@ public class DirectoryService {
         DirectoryChooser directoryChooser = new DirectoryChooser();
         directoryChooser.setTitle(title);
         initialDirectory.ifPresent(file -> {
-            if (Files.isDirectory(file.toPath()))
-                directoryChooser.setInitialDirectory(file);
-            else
-                directoryChooser.setInitialDirectory(file.toPath().getParent().toFile());
+            directoryChooser.setInitialDirectory(getChooserInitialDirectory(file));
         });
         return directoryChooser;
     }
@@ -86,13 +84,29 @@ public class DirectoryService {
         final FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle(title);
         initialDirectory.ifPresent(file -> {
-            if (Files.isDirectory(file.toPath()))
-                fileChooser.setInitialDirectory(file);
-            else
-                fileChooser.setInitialDirectory(file.toPath().getParent().toFile());
+            fileChooser.setInitialDirectory(getChooserInitialDirectory(file));
         });
 
         return fileChooser;
+    }
+
+    /**
+     * Resolve a file to a valid base browsing directory
+     * @param referenceFile The base directory or a child file that should be used as a browsing base path
+     * @return A valid directory's File object
+     */
+    private static File getChooserInitialDirectory(File referenceFile) {
+        // Search for an existing directory
+        while (referenceFile != null){
+            if(Files.isDirectory(referenceFile.toPath())) {
+                return referenceFile;
+            }
+            referenceFile = referenceFile.getParentFile();
+        }
+
+        // No parent file could be found or referenceFile
+        // Default to returning a path to the first drive available
+        return FileSystems.getDefault().getRootDirectories().iterator().next().toFile();
     }
 
     public Path workingDirectory() {
