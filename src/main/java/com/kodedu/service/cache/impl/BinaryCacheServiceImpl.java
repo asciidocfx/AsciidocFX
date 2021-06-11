@@ -45,6 +45,7 @@ public class BinaryCacheServiceImpl implements BinaryCacheService {
         this.current = current;
     }
 
+    @Override
     public String putBinary(String key, byte[] bytes) {
 
         if (Platform.isFxApplicationThread()) {
@@ -142,10 +143,12 @@ public class BinaryCacheServiceImpl implements BinaryCacheService {
         return totalSize.get();
     }
 
+    @Override
     public CacheData getCacheData(String key) {
         return cache.get(key);
     }
 
+    @Override
     public void putBinary(String key, BufferedImage trimmed) {
         try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream();) {
             ImageIO.write(trimmed, "png", outputStream);
@@ -156,6 +159,7 @@ public class BinaryCacheServiceImpl implements BinaryCacheService {
         }
     }
 
+    @Override
     public boolean hasCache(String key) {
         return cache.containsKey(key);
     }

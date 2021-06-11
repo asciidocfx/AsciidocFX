@@ -43,6 +43,7 @@ public class EditorServiceImpl implements EditorService {
     @Autowired
     private ShortcutProvider shortcutProvider;
 
+    @Override
     public Node createEditorVBox(EditorPane editorPane, MyTab myTab) {
         FlowPane flowPane = new FlowPane();
         String iconSize = "14.0";

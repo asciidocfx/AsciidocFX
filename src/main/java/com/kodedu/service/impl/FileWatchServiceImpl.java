@@ -58,6 +58,7 @@ public class FileWatchServiceImpl implements FileWatchService {
         threadService.runTaskLater(this::watchPathChanges);
     }
 
+    @Override
     public void reCreateWatchService() {
         if (Objects.nonNull(watcher)) {
             try {
@@ -77,6 +78,7 @@ public class FileWatchServiceImpl implements FileWatchService {
 
     }
 
+    @Override
     public void unRegisterAllPath() {
         for (Map.Entry<WatchKey, Path> entry : watchKeys.entrySet()) {
             WatchKey watchKey = entry.getKey();
@@ -162,6 +164,7 @@ public class FileWatchServiceImpl implements FileWatchService {
 
     }
 
+    @Override
     public void registerPathWatcher(final Path path) {
 
         threadService.runTaskLater(() -> {
@@ -191,6 +194,7 @@ public class FileWatchServiceImpl implements FileWatchService {
         });
     }
 
+    @Override
     public boolean isRegisteredPath(Path finalPath, Map<WatchKey, Path> watchKeys) {
         boolean exist = false;
         for (Map.Entry<WatchKey, Path> entry : watchKeys.entrySet()) {
@@ -208,6 +212,7 @@ public class FileWatchServiceImpl implements FileWatchService {
         return exist;
     }
 
+    @Override
     public void unRegisterPath(Path path) {
         try {
             for (Map.Entry<WatchKey, Path> entry : watchKeys.entrySet()) {

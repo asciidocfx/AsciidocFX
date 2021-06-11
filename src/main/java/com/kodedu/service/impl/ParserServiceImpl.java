@@ -51,6 +51,7 @@ public class ParserServiceImpl implements ParserService {
         this.directoryService = directoryService;
     }
 
+    @Override
     public Optional<String> toIncludeBlock(List<File> dropFiles) {
 
         List<Path> files = dropFiles.stream().map(File::toPath).filter(p -> !Files.isDirectory(p)).collect(Collectors.toList());
@@ -67,6 +68,7 @@ public class ParserServiceImpl implements ParserService {
         return Optional.empty();
     }
 
+    @Override
     public Optional<String> toImageBlock(Image image) {
 
         Path currentPath = directoryService.currentParentOrWorkdir();
@@ -95,6 +97,7 @@ public class ParserServiceImpl implements ParserService {
 
     }
 
+    @Override
     public Optional<String> toImageBlock(List<File> dropFiles) {
 
         Path workDir = directoryService.workingDirectory();
@@ -114,6 +117,7 @@ public class ParserServiceImpl implements ParserService {
 
     }
 
+    @Override
     public Optional<String> toWebImageBlock(String html) {
 
         Matcher matcher = Constants.IMAGE_URL_MATCH.matcher(html);

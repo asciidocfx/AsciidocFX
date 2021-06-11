@@ -70,6 +70,7 @@ public class FileBrowseServiceImpl implements FileBrowseService {
         this.current = current;
     }
 
+    @Override
     public void cleanRefresh() {
         if (Objects.nonNull(browsedPath)) {
             cleanPathMaps();
@@ -77,6 +78,7 @@ public class FileBrowseServiceImpl implements FileBrowseService {
         }
     }
 
+    @Override
     public void refresh() {
         if (Objects.nonNull(browsedPath)) {
             browse(browsedPath);
@@ -84,6 +86,7 @@ public class FileBrowseServiceImpl implements FileBrowseService {
         }
     }
 
+    @Override
     public void browse(final Path path) {
 
         if (!Objects.equals(path, browsedPath)) {
@@ -127,6 +130,7 @@ public class FileBrowseServiceImpl implements FileBrowseService {
         directoryItemMap.clear();
     }
 
+    @Override
     public void addPathToTree(Path path, final TreeItem<Item> treeItem, Path changedPath) {
 
         threadService.runTaskLater(() -> {
@@ -202,6 +206,7 @@ public class FileBrowseServiceImpl implements FileBrowseService {
 
     }
 
+    @Override
     public void focusPath(Path path) {
         if (Objects.nonNull(path)) {
             TreeItem<Item> item = pathItemMap.get(path);
@@ -250,6 +255,7 @@ public class FileBrowseServiceImpl implements FileBrowseService {
         }
     }
 
+    @Override
     public void refreshPathToTree(Path path, Path changedPath) {
         if (browsedPath == null) {
             return;
@@ -267,6 +273,7 @@ public class FileBrowseServiceImpl implements FileBrowseService {
 
     TreeItem<Item> searchFoundItem;
 
+    @Override
     public void searchUpAndSelect(String text) {
 
         threadService.runTaskLater(() -> {
@@ -313,6 +320,7 @@ public class FileBrowseServiceImpl implements FileBrowseService {
         });
     }
 
+    @Override
     public void searchDownAndSelect(String text) {
 
         threadService.runTaskLater(() -> {
@@ -418,6 +426,7 @@ public class FileBrowseServiceImpl implements FileBrowseService {
                 .collect(Collectors.toList());
     }
 
+    @Override
     public void searchAndSelect(String text) {
 
         threadService.runTaskLater(() -> {

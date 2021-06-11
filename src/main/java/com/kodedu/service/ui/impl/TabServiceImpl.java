@@ -92,6 +92,7 @@ public class TabServiceImpl implements TabService {
         this.asciiTreeGenerator = asciiTreeGenerator;
     }
 
+    @Override
     public void closeFirstNewTab(){
         ObservableList<Tab> tabs = controller.getTabPane().getTabs();
         if(!tabs.isEmpty()){
@@ -102,6 +103,7 @@ public class TabServiceImpl implements TabService {
         }
     }
 
+    @Override
     public void addTab(Path path, Runnable... runnables) {
 
         ObservableList<Item> recentFiles = storedConfigBean.getRecentFiles();
@@ -156,10 +158,12 @@ public class TabServiceImpl implements TabService {
     }
 
 
+    @Override
     public void newDoc() {
         newDoc("");
     }
 
+    @Override
     public void newDoc(final String content) {
 
         MyTab tab = this.createTab();
@@ -182,6 +186,7 @@ public class TabServiceImpl implements TabService {
         editorPane.load(String.format(editorUrl, controller.getPort()));
     }
 
+    @Override
     public void openDoc() {
         FileChooser fileChooser = directoryService.newFileChooser("Open File");
 
@@ -203,6 +208,7 @@ public class TabServiceImpl implements TabService {
     }
 
 
+    @Override
     public Path getSelectedTabPath() {
         TreeItem<Item> selectedItem = controller.getFileSystemView().getSelectionModel().getSelectedItem();
         Item value = selectedItem.getValue();
@@ -212,6 +218,7 @@ public class TabServiceImpl implements TabService {
 
 
     // TODO: It is not a right place for this helper
+    @Override
     public List<Path> getSelectedTabPaths() {
         ObservableList<TreeItem<Item>> treeItems = controller.getFileSystemView().getSelectionModel().getSelectedItems();
         return treeItems.stream()
@@ -220,6 +227,7 @@ public class TabServiceImpl implements TabService {
                 .collect(Collectors.toList());
     }
 
+    @Override
     public MyTab createTab() {
 
         final MyTab tab = applicationContext.getBean(MyTab.class);
@@ -362,6 +370,7 @@ public class TabServiceImpl implements TabService {
         return tab;
     }
 
+    @Override
     public void previewDocument(Path path) {
         if (Objects.isNull(path)) {
             logger.error("Null path cannot be viewed");
@@ -410,6 +419,7 @@ public class TabServiceImpl implements TabService {
         }
     }
 
+    @Override
     public void addImageTab(Path imagePath) {
 
         ImageTab tab = new ImageTab(imagePath);
@@ -453,6 +463,7 @@ public class TabServiceImpl implements TabService {
         previewTabPane.getSelectionModel().select(tab);
     }
 
+    @Override
     public void initializeTabChangeListener(TabPane tabPane) {
 
         ReadOnlyObjectProperty<Tab> itemProperty = tabPane.getSelectionModel().selectedItemProperty();
@@ -476,10 +487,12 @@ public class TabServiceImpl implements TabService {
         });
     }
 
+    @Override
     public ObservableList<Optional<Path>> getClosedPaths() {
         return closedPaths;
     }
 
+    @Override
     public void applyForEachMyTab(Consumer<MyTab> consumer, List<? extends Tab> tabs) {
         for (Tab tab : tabs) {
             if (tab instanceof MyTab) {
@@ -489,6 +502,7 @@ public class TabServiceImpl implements TabService {
         }
     }
 
+    @Override
     public void applyForEachMyTab(Consumer<MyTab> consumer) {
         ObservableList<Tab> tabs = controller.getTabPane().getTabs();
         applyForEachMyTab(consumer, tabs);

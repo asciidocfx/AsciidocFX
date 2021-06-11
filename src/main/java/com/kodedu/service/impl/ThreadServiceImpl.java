@@ -25,7 +25,6 @@ public class ThreadServiceImpl implements ThreadService {
     private final Semaphore uiSemaphore;
     private final ExecutorService singleExecutor;
 
-
     public ThreadServiceImpl() {
         scheduledWorker = Executors.newSingleThreadScheduledExecutor();
         threadPollWorker = Executors.newWorkStealingPool(16);
@@ -34,6 +33,7 @@ public class ThreadServiceImpl implements ThreadService {
         buffMap = new ConcurrentHashMap<>();
     }
 
+    @Override
     public ScheduledFuture<?> schedule(Runnable runnable, long delay, TimeUnit timeUnit) {
         return scheduledWorker.schedule(runnable, delay, timeUnit);
     }
@@ -43,6 +43,7 @@ public class ThreadServiceImpl implements ThreadService {
     }
 
     // Runs Task in background thread pool
+    @Override
     public <T> Future<?> runTaskLater(Runnable runnable) {
 
         Task<T> task = new Task<T>() {
@@ -63,6 +64,7 @@ public class ThreadServiceImpl implements ThreadService {
     }
 
     // Runs task in JavaFX Thread
+    @Override
     public void runActionLater(Consumer<ActionEvent> consumer) {
         runActionLater(() -> {
             consumer.accept(null);
@@ -71,6 +73,7 @@ public class ThreadServiceImpl implements ThreadService {
 
 
     // Runs task in JavaFX Thread
+    @Override
     public void runActionLater(final Runnable runnable) {
         if (Platform.isFxApplicationThread()) {
             runnable.run();
@@ -99,6 +102,7 @@ public class ThreadServiceImpl implements ThreadService {
         });
     }
 
+    @Override
     public void runActionLater(Runnable runnable, boolean force) {
         if (force) {
             Platform.runLater(runnable);
@@ -107,20 +111,24 @@ public class ThreadServiceImpl implements ThreadService {
         }
     }
 
+    @Override
     public void start(Runnable runnable) {
         Thread thread = new Thread(runnable);
         thread.start();
     }
 
+    @Override
     public Executor executor() {
         return threadPollWorker;
     }
 
+    @Override
     public Buff buff(String id) {
         buffMap.putIfAbsent(id, new Buff(this));
         return buffMap.get(id);
     }
 
+    @Override
     public <T> T supply(Supplier<T> supplier) {
 
         if (Platform.isFxApplicationThread()) {
@@ -142,12 +150,14 @@ public class ThreadServiceImpl implements ThreadService {
         return completableFuture.join();
     }
 
+    @Override
     public <T> void runActionLater(Consumer<T> consumer, T t) {
         runActionLater(() -> {
             consumer.accept(t);
         });
     }
 
+    @Override
     public ScheduledFuture<?> scheduleWithDelay(Runnable runnable, int timeBetweenFramesMS, TimeUnit milliseconds) {
         return scheduleWithDelay(runnable, 0, timeBetweenFramesMS, milliseconds);
     }

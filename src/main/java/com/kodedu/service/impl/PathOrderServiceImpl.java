@@ -13,6 +13,7 @@ import java.nio.file.Path;
 @Component
 public class PathOrderServiceImpl implements PathOrderService {
 
+    @Override
     public int comparePaths(Path first, Path second) {
 
         if (OSHelper.isMac() || OSHelper.isWindows())

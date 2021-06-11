@@ -27,6 +27,7 @@ public class IndikatorServiceImpl implements IndikatorService {
         this.htmlPane = htmlPane;
     }
 
+    @Override
     public void startProgressBar() {
 
         threadService.runActionLater(() -> {
@@ -38,6 +39,7 @@ public class IndikatorServiceImpl implements IndikatorService {
         });
     }
 
+    @Override
     public void stopProgressBar() {
         threadService.runActionLater(() -> {
             ProgressBar progressBar = applicationContoller.getProgressBar();

@@ -19,6 +19,7 @@ public class SampleBookServiceImpl implements SampleBookService {
 
     private final Logger logger = LoggerFactory.getLogger(SampleBookService.class);
 
+    @Override
     public void produceSampleBook(Path configPath, Path outputPath) {
         File booksample = configPath.resolve("booksample").toFile();
         File destDir = outputPath.toFile();

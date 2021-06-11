@@ -28,6 +28,7 @@ public abstract class ChartBuilderServiceImpl implements ChartBuilderService {
         this.controller = controller;
     }
 
+    @Override
     public boolean chartBuild(String chartContent, String imagesDir, String imageTarget, Map<String, String> optMap) {
 
         if (!imageTarget.endsWith(".png")) {

@@ -26,6 +26,7 @@ public class AwesomeServiceImpl implements AwesomeService {
         this.pathResolver = pathResolver;
     }
 
+    @Override
     public Node getIcon(final Path path) {
 
         FontIcon fontIcon = new FontIcon(FontAwesome.FILE_O);

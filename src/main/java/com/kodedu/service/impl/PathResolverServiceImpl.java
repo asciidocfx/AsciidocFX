@@ -40,34 +40,42 @@ public class PathResolverServiceImpl implements PathResolverService {
     private final PathMatcher bookMatcher = FileSystems.getDefault().getPathMatcher("glob:{**book.asc,**book.txt,**book.asciidoc,**book.adoc,**book.ad}");
     private final PathMatcher wordMatcher = FileSystems.getDefault().getPathMatcher("glob:**.{doc,dot,docx,docm,dotx,dotm,docb,odt,fodt}");
 
+    @Override
     public boolean isPDF(Path path) {
         return pdfMatcher.matches(path);
     }
 
+    @Override
     public boolean isImage(Path path) {
         return imageMatcher.matches(path);
     }
 
+    @Override
     public boolean isHidden(Path path) {
         return IOHelper.isHidden(path);
     }
 
+    @Override
     public boolean isMarkdown(Path path) {
         return markdownMatcher.matches(path);
     }
 
+    @Override
     public boolean isXML(Path path) {
         return docBookMatcher.matches(path);
     }
 
+    @Override
     public boolean isHTML(Path path) {
         return htmlMatcher.matches(path);
     }
 
+    @Override
     public boolean isAsciidoc(Path path) {
         return ascMatcher.matches(path);
     }
 
+    @Override
     public boolean isViewable(Path path) {
         return true || Files.isDirectory(path)
                 || isAsciidoc(path)
@@ -80,55 +88,67 @@ public class PathResolverServiceImpl implements PathResolverService {
                 || isMarkdown(path);
     }
 
+    @Override
     public boolean isOffice(Path path) {
         return isWord(path) || isExcel(path) || isPPT(path);
     }
 
-
+    @Override
     public boolean isBook(Path path) {
         return bookMatcher.matches(path);
     }
 
+    @Override
     public boolean isMobi(Path path) {
         return mobiMatcher.matches(path);
     }
 
+    @Override
     public boolean isPPT(Path path) {
         return pptMatcher.matches(path);
     }
 
+    @Override
     public boolean isExcel(Path path) {
         return excelMatcher.matches(path);
     }
 
+    @Override
     public boolean isArchive(Path path) {
         return archieveMatcher.matches(path);
     }
 
+    @Override
     public boolean isVideo(Path path) {
         return videoMatcher.matches(path);
     }
 
+    @Override
     public boolean isCSS(Path path) {
         return cssMatcher.matches(path);
     }
 
+    @Override
     public boolean isBash(Path path) {
         return terminalMatcher.matches(path);
     }
 
+    @Override
     public boolean isCode(Path path) {
         return codeMatcher.matches(path);
     }
 
+    @Override
     public boolean isAny(Path path) {
         return anyMatcher.matches(path) || uniqueMatcher.matches(path);
     }
 
+    @Override
     public boolean isEpub(Path path) {
         return epubMatcher.matches(path);
     }
 
+    @Override
     public boolean isWord(Path path) {
         return wordMatcher.matches(path);
     }
