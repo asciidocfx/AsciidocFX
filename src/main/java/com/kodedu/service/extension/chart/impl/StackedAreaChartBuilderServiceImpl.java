@@ -1,4 +1,4 @@
-package com.kodedu.service.extension.chart;
+package com.kodedu.service.extension.chart.impl;
 
 import com.kodedu.config.ExtensionConfigBean;
 import com.kodedu.controller.ApplicationController;
@@ -14,9 +14,9 @@ import org.springframework.stereotype.Component;
  * Created by usta on 31.03.2015.
  */
 @Component("stacked-area-bean")
-public class StackedAreaChartBuilderService extends XYChartBuilderService {
+public class StackedAreaChartBuilderServiceImpl extends XYChartBuilderServiceImpl {
 
-    public StackedAreaChartBuilderService(ThreadService threadService, Current current, ApplicationController controller, ExtensionConfigBean extensionConfigBean) {
+    public StackedAreaChartBuilderServiceImpl(ThreadService threadService, Current current, ApplicationController controller, ExtensionConfigBean extensionConfigBean) {
         super(threadService, current, controller, extensionConfigBean);
     }
 

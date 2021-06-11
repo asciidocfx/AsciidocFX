@@ -1,4 +1,4 @@
-package com.kodedu.service.ui;
+package com.kodedu.service.ui.impl;
 
 import com.kodedu.component.EditorPane;
 import com.kodedu.component.LabelBuilt;
@@ -8,6 +8,8 @@ import com.kodedu.controller.ApplicationController;
 import com.kodedu.other.Current;
 import com.kodedu.other.DocumentMode;
 import com.kodedu.service.shortcut.ShortcutProvider;
+import com.kodedu.service.ui.EditorService;
+
 import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -27,13 +29,13 @@ import java.util.stream.Collectors;
  * Created by usta on 25.12.2014.
  */
 @Component
-public class EditorService {
+public class EditorServiceImpl implements EditorService {
 
     private final Current current;
     private final ApplicationController controller;
 
     @Autowired
-    public EditorService(final Current current, final ApplicationController controller) {
+    public EditorServiceImpl(final Current current, final ApplicationController controller) {
         this.current = current;
         this.controller = controller;
     }

@@ -1,7 +1,8 @@
-package com.kodedu.service.shortcut;
+package com.kodedu.service.shortcut.impl;
 
 import com.kodedu.controller.ApplicationController;
 import com.kodedu.other.Current;
+import com.kodedu.service.shortcut.HtmlShortcutService;
 import com.kodedu.service.table.AsciidocTableController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -10,14 +11,14 @@ import org.springframework.stereotype.Component;
  * Created by usta on 02.10.2015.
  */
 @Component
-public class HtmlShortcutService implements ShortcutService {
+public class HtmlShortcutServiceImpl implements HtmlShortcutService {
 
     private final Current current;
     private final ApplicationController controller;
     private final AsciidocTableController tableController;
 
     @Autowired
-    public HtmlShortcutService(Current current, ApplicationController controller, AsciidocTableController tableController) {
+    public HtmlShortcutServiceImpl(Current current, ApplicationController controller, AsciidocTableController tableController) {
         this.current = current;
         this.controller = controller;
         this.tableController = tableController;

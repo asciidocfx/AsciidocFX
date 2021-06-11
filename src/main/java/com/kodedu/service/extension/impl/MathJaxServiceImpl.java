@@ -1,4 +1,4 @@
-package com.kodedu.service.extension;
+package com.kodedu.service.extension.impl;
 
 import com.kodedu.config.ExtensionConfigBean;
 import com.kodedu.controller.ApplicationController;
@@ -7,6 +7,8 @@ import com.kodedu.other.Current;
 import com.kodedu.other.TrimWhite;
 import com.kodedu.service.ThreadService;
 import com.kodedu.service.cache.BinaryCacheService;
+import com.kodedu.service.extension.MathJaxService;
+
 import javafx.concurrent.Worker;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.SnapshotParameters;
@@ -28,7 +30,7 @@ import java.util.Objects;
  * Created by usta on 25.12.2014.
  */
 @Component
-public class MathJaxService {
+public class MathJaxServiceImpl implements MathJaxService {
 
     private final Logger logger = LoggerFactory.getLogger(MathJaxService.class);
 
@@ -44,7 +46,7 @@ public class MathJaxService {
     private String mathjaxUrl;
 
     @Autowired
-    public MathJaxService(final ApplicationController controller, final Current current, ThreadService threadService, BinaryCacheService binaryCacheService, ExtensionConfigBean extensionConfigBean) {
+    public MathJaxServiceImpl(final ApplicationController controller, final Current current, ThreadService threadService, BinaryCacheService binaryCacheService, ExtensionConfigBean extensionConfigBean) {
         this.controller = controller;
         this.current = current;
         this.threadService = threadService;

@@ -1,4 +1,4 @@
-package com.kodedu.service.ui;
+package com.kodedu.service.ui.impl;
 
 import com.kodedu.component.*;
 import com.kodedu.config.StoredConfigBean;
@@ -14,6 +14,9 @@ import com.kodedu.service.PathResolverService;
 import com.kodedu.service.ThreadService;
 import com.kodedu.service.extension.AsciiTreeGenerator;
 import com.kodedu.service.shortcut.ShortcutProvider;
+import com.kodedu.service.ui.EditorService;
+import com.kodedu.service.ui.TabService;
+
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.value.ObservableObjectValue;
 import javafx.collections.FXCollections;
@@ -47,7 +50,7 @@ import java.util.stream.Collectors;
  * Created by usta on 25.12.2014.
  */
 @Component
-public class TabService {
+public class TabServiceImpl implements TabService {
 
     private final Logger logger = LoggerFactory.getLogger(TabService.class);
 
@@ -73,7 +76,7 @@ public class TabService {
 
 
     @Autowired
-    public TabService(final ApplicationController controller, final EditorService editorService,
+    public TabServiceImpl(final ApplicationController controller, final EditorService editorService,
                       final PathResolverService pathResolver, final ThreadService threadService, final Current current,
                       final DirectoryService directoryService, StoredConfigBean storedConfigBean, ParserService parserService, ApplicationContext applicationContext, ShortcutProvider shortcutProvider, AsciiTreeGenerator asciiTreeGenerator) {
         this.controller = controller;

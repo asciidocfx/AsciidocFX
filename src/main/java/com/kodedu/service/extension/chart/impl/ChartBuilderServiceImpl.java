@@ -1,8 +1,10 @@
-package com.kodedu.service.extension.chart;
+package com.kodedu.service.extension.chart.impl;
 
 import com.kodedu.controller.ApplicationController;
 import com.kodedu.other.Current;
 import com.kodedu.service.ThreadService;
+import com.kodedu.service.extension.chart.ChartBuilderService;
+
 import javafx.scene.chart.*;
 
 import java.nio.file.Path;
@@ -12,7 +14,7 @@ import java.util.Objects;
 /**
  * Created by usta on 01.04.2015.
  */
-public abstract class ChartBuilderService {
+public abstract class ChartBuilderServiceImpl implements ChartBuilderService {
 
     private final ThreadService threadService;
     private final Current current;
@@ -20,7 +22,7 @@ public abstract class ChartBuilderService {
     protected Path currentRoot;
     protected Path imagePath;
 
-    public ChartBuilderService(ThreadService threadService, Current current, ApplicationController controller) {
+    public ChartBuilderServiceImpl(ThreadService threadService, Current current, ApplicationController controller) {
         this.threadService = threadService;
         this.current = current;
         this.controller = controller;

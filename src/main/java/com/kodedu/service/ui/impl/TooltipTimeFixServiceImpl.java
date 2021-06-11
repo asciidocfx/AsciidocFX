@@ -1,4 +1,4 @@
-package com.kodedu.service.ui;
+package com.kodedu.service.ui.impl;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -8,13 +8,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import com.kodedu.service.ui.TooltipTimeFixService;
+
 import java.lang.reflect.Field;
 
 /**
  * Created by usta on 25.01.2015.
  */
 @Component
-public class TooltipTimeFixService {
+public class TooltipTimeFixServiceImpl implements TooltipTimeFixService {
 
     private final Logger logger = LoggerFactory.getLogger(TooltipTimeFixService.class);
 

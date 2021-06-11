@@ -1,10 +1,12 @@
-package com.kodedu.service.extension.chart;
+package com.kodedu.service.extension.chart.impl;
 
 import com.kodedu.config.ExtensionConfigBean;
 import com.kodedu.controller.ApplicationController;
 import com.kodedu.helper.IOHelper;
 import com.kodedu.other.Current;
 import com.kodedu.service.ThreadService;
+import com.kodedu.service.extension.chart.ChartBuilderService;
+
 import javafx.embed.swing.SwingFXUtils;
 import javafx.geometry.Side;
 import javafx.scene.Node;
@@ -23,15 +25,15 @@ import java.util.*;
 /**
  * Created by usta on 31.03.2015.
  */
-public abstract class XYChartBuilderService extends ChartBuilderService {
+public abstract class XYChartBuilderServiceImpl extends ChartBuilderServiceImpl {
 
     private final ThreadService threadService;
     private final Current current;
     private final ApplicationController controller;
     private final ExtensionConfigBean extensionConfigBean;
-    private final Logger logger = LoggerFactory.getLogger(XYChartBuilderService.class);
+    private final Logger logger = LoggerFactory.getLogger(ChartBuilderService.class);
 
-    public XYChartBuilderService(ThreadService threadService, Current current, ApplicationController controller, ExtensionConfigBean extensionConfigBean) {
+    public XYChartBuilderServiceImpl(ThreadService threadService, Current current, ApplicationController controller, ExtensionConfigBean extensionConfigBean) {
         super(threadService, current, controller);
         this.threadService = threadService;
         this.current = current;

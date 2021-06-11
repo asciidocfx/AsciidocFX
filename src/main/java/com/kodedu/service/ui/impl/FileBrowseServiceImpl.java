@@ -1,4 +1,4 @@
-package com.kodedu.service.ui;
+package com.kodedu.service.ui.impl;
 
 import com.kodedu.controller.ApplicationController;
 import com.kodedu.helper.IOHelper;
@@ -8,6 +8,10 @@ import com.kodedu.service.FileWatchService;
 import com.kodedu.service.PathOrderService;
 import com.kodedu.service.PathResolverService;
 import com.kodedu.service.ThreadService;
+import com.kodedu.service.ui.AwesomeService;
+import com.kodedu.service.ui.FileBrowseService;
+import com.kodedu.service.ui.PathItem;
+
 import javafx.beans.value.ChangeListener;
 import javafx.scene.control.MultipleSelectionModel;
 import javafx.scene.control.SelectionMode;
@@ -31,7 +35,7 @@ import static com.kodedu.helper.IOHelper.isHidden;
  * Created by usta on 12.07.2014.
  */
 @Component
-public class FileBrowseService {
+public class FileBrowseServiceImpl implements FileBrowseService {
 
     private Logger logger = LoggerFactory.getLogger(FileBrowseService.class);
 
@@ -56,7 +60,7 @@ public class FileBrowseService {
 
 
     @Autowired
-    public FileBrowseService(final PathOrderService pathOrder, final ThreadService threadService, final PathResolverService pathResolver,
+    public FileBrowseServiceImpl(final PathOrderService pathOrder, final ThreadService threadService, final PathResolverService pathResolver,
                              final AwesomeService awesomeService, ApplicationController controller, Current current) {
         this.pathOrder = pathOrder;
         this.threadService = threadService;

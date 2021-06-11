@@ -1,4 +1,4 @@
-package com.kodedu.service.extension;
+package com.kodedu.service.extension.impl;
 
 import com.kodedu.config.ExtensionConfigBean;
 import com.kodedu.controller.ApplicationController;
@@ -9,6 +9,7 @@ import com.kodedu.other.TrimWhite;
 import com.kodedu.other.Tuple;
 import com.kodedu.service.ThreadService;
 import com.kodedu.service.cache.BinaryCacheService;
+import com.kodedu.service.extension.TreeService;
 import com.kodedu.service.ui.AwesomeService;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.Node;
@@ -39,7 +40,7 @@ import java.util.stream.Collectors;
  * Created by usta on 25.12.2014.
  */
 @Component
-public class TreeService implements DefaultSettings {
+public class TreeServiceImpl implements TreeService {
 
     private final Logger logger = LoggerFactory.getLogger(TreeService.class);
 
@@ -58,7 +59,7 @@ public class TreeService implements DefaultSettings {
     private boolean initialized;
 
     @Autowired
-    public TreeService(final Current current, final ApplicationController controller, final ThreadService threadService,
+    public TreeServiceImpl(final Current current, final ApplicationController controller, final ThreadService threadService,
                        final AwesomeService awesomeService, BinaryCacheService binaryCacheService, ExtensionConfigBean extensionConfigBean) {
         this.current = current;
         this.controller = controller;

@@ -33,6 +33,14 @@ public interface ThreadService {
 
     public Executor executor();
 
+    public static void sleep(int ms) {
+        try {
+            Thread.sleep(ms);
+        } catch (InterruptedException e) {
+//            logger.error("Error in Thread#sleep", e);
+        }
+    }
+
     public Buff buff(String id);
 
     public <T> T supply(Supplier<T> supplier);

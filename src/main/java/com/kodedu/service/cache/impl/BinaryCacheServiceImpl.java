@@ -1,8 +1,13 @@
-package com.kodedu.service.cache;
+package com.kodedu.service.cache.impl;
 
 import com.kodedu.helper.IOHelper;
 import com.kodedu.other.Current;
 import com.kodedu.service.ThreadService;
+import com.kodedu.service.cache.BinaryCacheService;
+import com.kodedu.service.cache.CacheData;
+import com.kodedu.service.cache.InDiskData;
+import com.kodedu.service.cache.InMemoryDAta;
+
 import javafx.application.Platform;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,7 +29,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * Created by usta on 12.06.2016.
  */
 @Component
-public class BinaryCacheService {
+public class BinaryCacheServiceImpl implements BinaryCacheService {
 
     private final long maximumSize = 50 * 1024 * 1024;
     private final AtomicLong totalSize = new AtomicLong(0);
@@ -35,7 +40,7 @@ public class BinaryCacheService {
     private Logger logger = LoggerFactory.getLogger(BinaryCacheService.class);
 
     @Autowired
-    public BinaryCacheService(ThreadService threadService, Current current) {
+    public BinaryCacheServiceImpl(ThreadService threadService, Current current) {
         this.threadService = threadService;
         this.current = current;
     }

@@ -1,4 +1,4 @@
-package com.kodedu.service.extension;
+package com.kodedu.service.extension.impl;
 
 import com.kodedu.config.ExtensionConfigBean;
 import com.kodedu.controller.ApplicationController;
@@ -7,6 +7,8 @@ import com.kodedu.other.Current;
 import com.kodedu.service.DirectoryService;
 import com.kodedu.service.ThreadService;
 import com.kodedu.service.cache.BinaryCacheService;
+import com.kodedu.service.extension.PlantUmlService;
+
 import net.sourceforge.plantuml.FileFormat;
 import net.sourceforge.plantuml.FileFormatOption;
 import net.sourceforge.plantuml.SourceStringReader;
@@ -28,7 +30,7 @@ import static java.util.Objects.nonNull;
  * Created by usta on 25.12.2014.
  */
 @Component
-public class PlantUmlService {
+public class PlantUmlServiceImpl implements PlantUmlService {
 
     private final Logger logger = LoggerFactory.getLogger(PlantUmlService.class);
 
@@ -41,7 +43,7 @@ public class PlantUmlService {
     private final DirectoryService directoryService;
 
     @Autowired
-    public PlantUmlService(final Current current, final ApplicationController controller, final ThreadService threadService, BinaryCacheService binaryCacheService, ExtensionConfigBean extensionConfigBean, DirectoryService directoryService) {
+    public PlantUmlServiceImpl(final Current current, final ApplicationController controller, final ThreadService threadService, BinaryCacheService binaryCacheService, ExtensionConfigBean extensionConfigBean, DirectoryService directoryService) {
         this.current = current;
         this.controller = controller;
         this.threadService = threadService;

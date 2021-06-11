@@ -6,6 +6,7 @@ import com.kodedu.other.Constants;
 import com.kodedu.other.Current;
 import com.kodedu.service.DirectoryService;
 import com.kodedu.service.ParserService;
+import com.kodedu.service.PathResolverService;
 
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.Image;

@@ -1,6 +1,8 @@
-package com.kodedu.service.ui;
+package com.kodedu.service.ui.impl;
 
 import com.kodedu.service.PathResolverService;
+import com.kodedu.service.ui.AwesomeService;
+
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import org.kordamp.ikonli.fontawesome.FontAwesome;
@@ -15,12 +17,12 @@ import java.nio.file.Path;
  * Created by usta on 16.12.2014.
  */
 @Component
-public class AwesomeService {
+public class AwesomeServiceImpl implements AwesomeService {
 
     private final PathResolverService pathResolver;
 
     @Autowired
-    public AwesomeService(final PathResolverService pathResolver) {
+    public AwesomeServiceImpl(final PathResolverService pathResolver) {
         this.pathResolver = pathResolver;
     }
 

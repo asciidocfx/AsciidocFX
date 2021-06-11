@@ -1,12 +1,14 @@
-package com.kodedu.service.shortcut;
+package com.kodedu.service.shortcut.impl;
 
 import org.springframework.stereotype.Component;
+
+import com.kodedu.service.shortcut.NoneShortcutService;
 
 /**
  * Created by usta on 06.07.2015.
  */
 @Component
-public class NoneShortcutService implements ShortcutService {
+public class NoneShortcutServiceImpl implements NoneShortcutService {
     @Override
     public void addBold() {
 

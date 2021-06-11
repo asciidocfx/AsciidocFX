@@ -1,4 +1,4 @@
-package com.kodedu.service.extension;
+package com.kodedu.service.extension.impl;
 
 import com.kodedu.config.ExtensionConfigBean;
 import com.kodedu.controller.ApplicationController;
@@ -7,6 +7,8 @@ import com.kodedu.other.Current;
 import com.kodedu.other.TrimWhite;
 import com.kodedu.service.ThreadService;
 import com.kodedu.service.cache.BinaryCacheService;
+import com.kodedu.service.extension.MermaidService;
+
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.image.WritableImage;
@@ -27,7 +29,7 @@ import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Component
-public class MermaidService implements DefaultSettings {
+public class MermaidServiceImpl implements MermaidService {
 
     private final Logger logger = LoggerFactory.getLogger(MermaidService.class);
 
@@ -43,7 +45,7 @@ public class MermaidService implements DefaultSettings {
     private Map<String, Integer> rerenderMap = new ConcurrentHashMap<>();
 
     @Autowired
-    public MermaidService(final Current current, final ApplicationController controller,
+    public MermaidServiceImpl(final Current current, final ApplicationController controller,
                           final ThreadService threadService,
                           BinaryCacheService binaryCacheService, ExtensionConfigBean extensionConfigBean) {
         this.current = current;

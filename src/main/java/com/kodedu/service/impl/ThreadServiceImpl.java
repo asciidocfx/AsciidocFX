@@ -116,15 +116,6 @@ public class ThreadServiceImpl implements ThreadService {
         return threadPollWorker;
     }
 
-    public static void sleep(int ms) {
-        try {
-            Thread.sleep(ms);
-        } catch (InterruptedException e) {
-//            logger.error("Error in Thread#sleep", e);
-        }
-    }
-
-
     public Buff buff(String id) {
         buffMap.putIfAbsent(id, new Buff(this));
         return buffMap.get(id);
