@@ -1,4 +1,4 @@
-package com.kodedu.service.extension.chart;
+package com.kodedu.service.extension.chart.impl;
 
 import com.kodedu.config.ExtensionConfigBean;
 import com.kodedu.controller.ApplicationController;
@@ -14,9 +14,9 @@ import org.springframework.stereotype.Component;
  * Created by usta on 31.03.2015.
  */
 @Component("scatter-bean")
-public class ScatterChartBuilderService extends XYChartBuilderService {
+public class ScatterChartBuilderServiceImpl extends XYChartBuilderServiceImpl {
 
-    public ScatterChartBuilderService(ThreadService threadService, Current current, ApplicationController controller, ExtensionConfigBean extensionConfigBean) {
+    public ScatterChartBuilderServiceImpl(ThreadService threadService, Current current, ApplicationController controller, ExtensionConfigBean extensionConfigBean) {
         super(threadService, current, controller, extensionConfigBean);
     }
 

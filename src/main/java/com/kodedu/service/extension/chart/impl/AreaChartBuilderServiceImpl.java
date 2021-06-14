@@ -1,10 +1,10 @@
-package com.kodedu.service.extension.chart;
+package com.kodedu.service.extension.chart.impl;
 
 import com.kodedu.config.ExtensionConfigBean;
 import com.kodedu.controller.ApplicationController;
 import com.kodedu.other.Current;
 import com.kodedu.service.ThreadService;
-import javafx.scene.chart.BubbleChart;
+import javafx.scene.chart.AreaChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import org.springframework.stereotype.Component;
@@ -12,10 +12,10 @@ import org.springframework.stereotype.Component;
 /**
  * Created by usta on 31.03.2015.
  */
-@Component("bubble-bean")
-public class BubbleChartBuilderService extends XYChartBuilderService {
+@Component("area-bean")
+public class AreaChartBuilderServiceImpl extends XYChartBuilderServiceImpl {
 
-    public BubbleChartBuilderService(ThreadService threadService, Current current, ApplicationController controller, ExtensionConfigBean extensionConfigBean) {
+    public AreaChartBuilderServiceImpl(ThreadService threadService, Current current, ApplicationController controller, ExtensionConfigBean extensionConfigBean) {
         super(threadService, current, controller, extensionConfigBean);
     }
 
@@ -23,10 +23,9 @@ public class BubbleChartBuilderService extends XYChartBuilderService {
     protected XYChart<Number, Number> createXYChart() {
         final NumberAxis xAxis = new NumberAxis();
         final NumberAxis yAxis = new NumberAxis();
-        BubbleChart<Number, Number> chart = new BubbleChart<>(xAxis, yAxis);
+        final XYChart<Number, Number> chart = new AreaChart<Number, Number>(xAxis, yAxis);
         chart.getStyleClass().add("chart-extension");
         return chart;
     }
-
 
 }
