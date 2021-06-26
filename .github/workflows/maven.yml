@@ -33,7 +33,10 @@ jobs:
         distribution: 'adopt'
     - name: Build with Maven
       run: mvn -B -Djava.version=${{ matrix.java }} -Dopenjfx.version=${{ matrix.java }} compile test
-
+    - name: Save coverage stats
+      uses: codecov/codecov-action@v1
+      with:
+        fail_ci_if_error: false
       
   package:
     runs-on: ubuntu-latest
