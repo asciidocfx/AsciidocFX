@@ -7,8 +7,8 @@ import org.springframework.stereotype.Component;
 /**
  * Created by usta on 25.12.2014.
  */
-@Component
 public interface MathJaxService {
+    public final static String label = "core::service::extension::MathJax";
 
     public void reload();
 

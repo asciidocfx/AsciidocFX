@@ -84,6 +84,7 @@ import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import javax.annotation.PostConstruct;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
@@ -303,6 +304,9 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     @Autowired
     private SpellcheckConfigBean spellcheckConfigBean;
 
+    @Autowired
+    private EventService eventService;
+
     private Stage stage;
     private List<WebSocketSession> sessionList = new ArrayList<>();
     private Scene scene;
@@ -372,6 +376,15 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     private Scene asciidocTableScene;
     private Scene markdownTableScene;
     private String VERSION_PATTERN = "\\.AsciidocFX-\\d+\\.\\d+\\.\\d+";
+
+    @PostConstruct
+    public void install_listeners() {
+        // Listen to working directory update events
+        eventService.subscribe(DirectoryService.WORKING_DIRECTORY_UPDATE_EVENT, event -> {
+            Path path = (Path) event.getData();
+            getStage().setTitle(String.format("AsciidocFX - %s", path));
+        });
+    }
 
     public void createAsciidocTable() {
         asciidocTableStage.showAndWait();
@@ -2548,7 +2561,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             return String.format("link:%s[]", uri);
         }
 
-        PathFinderService fileReader = applicationContext.getBean("pathFinder", PathFinderService.class);
+        PathFinderService fileReader = applicationContext.getBean(PathFinderService.label, PathFinderService.class);
         Path path = fileReader.findPath(uri, parent);
 
         if (!Files.exists(path)) {

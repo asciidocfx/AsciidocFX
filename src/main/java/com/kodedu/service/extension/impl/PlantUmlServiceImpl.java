@@ -4,7 +4,6 @@ import com.kodedu.config.ExtensionConfigBean;
 import com.kodedu.controller.ApplicationController;
 import com.kodedu.helper.IOHelper;
 import com.kodedu.other.Current;
-import com.kodedu.service.DirectoryService;
 import com.kodedu.service.ThreadService;
 import com.kodedu.service.cache.BinaryCacheService;
 import com.kodedu.service.extension.PlantUmlService;
@@ -29,29 +28,27 @@ import static java.util.Objects.nonNull;
 /**
  * Created by usta on 25.12.2014.
  */
-@Component
+@Component(PlantUmlService.label)
 public class PlantUmlServiceImpl implements PlantUmlService {
 
     private final Logger logger = LoggerFactory.getLogger(PlantUmlService.class);
 
     private final Current current;
     private final ApplicationController controller;
-    private final ThreadService threadService;
-    private final BinaryCacheService binaryCacheService;
     private final ExtensionConfigBean extensionConfigBean;
-
-    private final DirectoryService directoryService;
+    @Autowired
+    private ThreadService threadService;
+    @Autowired
+    private BinaryCacheService binaryCacheService;
 
     @Autowired
-    public PlantUmlServiceImpl(final Current current, final ApplicationController controller, final ThreadService threadService, BinaryCacheService binaryCacheService, ExtensionConfigBean extensionConfigBean, DirectoryService directoryService) {
+    public PlantUmlServiceImpl(final Current current, final ApplicationController controller, ExtensionConfigBean extensionConfigBean) {
         this.current = current;
         this.controller = controller;
-        this.threadService = threadService;
-        this.binaryCacheService = binaryCacheService;
         this.extensionConfigBean = extensionConfigBean;
-        this.directoryService = directoryService;
     }
 
+    @Override
     public synchronized void plantUml(String uml, String type, String imagesDir, String imageTarget, String nodename, String options) {
         Objects.requireNonNull(imageTarget);
 

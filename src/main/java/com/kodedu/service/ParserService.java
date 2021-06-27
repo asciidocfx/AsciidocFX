@@ -9,6 +9,7 @@ import java.util.Optional;
  * Created by usta on 16.12.2014.
  */
 public interface ParserService {
+    public final static String label = "core::service::Parser";
 
     public Optional<String> toIncludeBlock(List<File> dropFiles);
 

@@ -15,17 +15,17 @@ import java.util.stream.IntStream;
 /**
  * Created by usta on 20.05.2015.
  */
-@Component("pathFinder")
+@Component(PathFinderService.label)
 @Scope("prototype")
 public class PathFinderServiceImpl implements PathFinderService {
-
     private final Current current;
-    private final DirectoryService directoryService;
 
     @Autowired
-    public PathFinderServiceImpl(Current current, DirectoryService directoryService) {
+    private DirectoryService directoryService;
+
+    @Autowired
+    public PathFinderServiceImpl(final Current current) {
         this.current = current;
-        this.directoryService = directoryService;
     }
 
     @Override

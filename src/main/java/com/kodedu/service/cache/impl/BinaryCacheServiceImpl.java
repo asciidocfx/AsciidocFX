@@ -28,20 +28,20 @@ import java.util.concurrent.atomic.AtomicLong;
 /**
  * Created by usta on 12.06.2016.
  */
-@Component
+@Component(BinaryCacheService.label)
 public class BinaryCacheServiceImpl implements BinaryCacheService {
 
     private final long maximumSize = 50 * 1024 * 1024;
     private final AtomicLong totalSize = new AtomicLong(0);
     private final ConcurrentHashMap<String, CacheData> cache = new ConcurrentHashMap<>();
-    private final ThreadService threadService;
     private final Current current;
+    @Autowired
+    private ThreadService threadService;
 
     private Logger logger = LoggerFactory.getLogger(BinaryCacheService.class);
 
     @Autowired
-    public BinaryCacheServiceImpl(ThreadService threadService, Current current) {
-        this.threadService = threadService;
+    public BinaryCacheServiceImpl(Current current) {
         this.current = current;
     }
 
@@ -132,7 +132,7 @@ public class BinaryCacheServiceImpl implements BinaryCacheService {
                 .ifPresent(aLong -> totalSize.addAndGet(-aLong));
 
         cache.put(key, new InMemoryDAta(key, bytes));
-        long length = totalSize.addAndGet(bytes.length);
+        totalSize.addAndGet(bytes.length);
     }
 
     private boolean hasCacheFor(byte[] bytes) {

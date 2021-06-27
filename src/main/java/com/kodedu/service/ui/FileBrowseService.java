@@ -10,6 +10,8 @@ import java.nio.file.Path;
  */
 public interface FileBrowseService {
 
+    public final static String label = "core::service::ui::FileBrowseService";
+
     public void cleanRefresh();
 
     public void refresh();

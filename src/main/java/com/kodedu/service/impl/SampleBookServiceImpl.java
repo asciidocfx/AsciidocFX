@@ -14,9 +14,8 @@ import java.nio.file.Path;
 /**
  * Created by usta on 02.09.2014.
  */
-@Component
+@Component(SampleBookService.label)
 public class SampleBookServiceImpl implements SampleBookService {
-
     private final Logger logger = LoggerFactory.getLogger(SampleBookService.class);
 
     @Override
