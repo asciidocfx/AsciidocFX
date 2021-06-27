@@ -21,6 +21,8 @@
         <openjfx.version>16</openjfx.version>
         <ikonli.version>12.2.0</ikonli.version>
         <jaxb.version>2.3.2</jaxb.version>
+        <jacoco.version>0.8.7</jacoco.version>
+        <logunit.version>1.1.0</logunit.version>
     </properties>
 
     <organization>
@@ -242,6 +244,42 @@
             <version>${openjfx.version}</version>
             <scope>provided</scope>
         </dependency>
+        <!-- Add test dependencies -->
+        <dependency>
+            <groupId>io.github.netmikey.logunit</groupId>
+            <artifactId>logunit-core</artifactId>
+            <version>${logunit.version}</version>
+            <scope>test</scope>
+         </dependency>
+        <dependency>
+            <groupId>io.github.netmikey.logunit</groupId>
+            <artifactId>logunit-logback</artifactId>
+            <version>${logunit.version}</version>
+            <scope>test</scope>
+         </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <version>${junit-jupiter.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <version>${junit-jupiter.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+           <groupId>org.springframework.boot</groupId>
+           <artifactId>spring-boot-starter-test</artifactId>
+           <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.testfx</groupId>
+            <artifactId>testfx-junit5</artifactId>
+            <version>4.0.16-alpha</version>
+            <scope>test</scope>
+        </dependency>
 
     </dependencies>
 
@@ -430,9 +468,42 @@
                     </execution>
                 </executions>
             </plugin>
+               <!-- Test reporting -->
+            <plugin>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>${maven-surefire-plugin.version}</version>
+            </plugin>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>${jacoco.version}</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>report</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 
+    <reporting>
+        <plugins>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>${jacoco.version}</version>
+            </plugin>
+        </plugins>
+    </reporting>
     <repositories>
         <repository>
             <id>central</id>
