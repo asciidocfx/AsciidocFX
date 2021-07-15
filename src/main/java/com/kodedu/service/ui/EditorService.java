@@ -9,5 +9,6 @@ import javafx.scene.Node;
  * Created by usta on 25.12.2014.
  */
 public interface EditorService {
+    public final static String label = "core::service::ui::EditorService";
     public Node createEditorVBox(EditorPane editorPane, MyTab myTab);
 }

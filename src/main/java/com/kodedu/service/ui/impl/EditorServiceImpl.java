@@ -5,7 +5,6 @@ import com.kodedu.component.LabelBuilt;
 import com.kodedu.component.MenuItemBuilt;
 import com.kodedu.component.MyTab;
 import com.kodedu.controller.ApplicationController;
-import com.kodedu.other.Current;
 import com.kodedu.other.DocumentMode;
 import com.kodedu.service.shortcut.ShortcutProvider;
 import com.kodedu.service.ui.EditorService;
@@ -13,8 +12,17 @@ import com.kodedu.service.ui.EditorService;
 import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
-import javafx.scene.control.*;
-import javafx.scene.layout.*;
+import javafx.scene.control.Label;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuButton;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
+
 import org.kordamp.ikonli.fontawesome.FontAwesome;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -28,17 +36,11 @@ import java.util.stream.Collectors;
 /**
  * Created by usta on 25.12.2014.
  */
-@Component
+@Component(EditorService.label)
 public class EditorServiceImpl implements EditorService {
 
-    private final Current current;
-    private final ApplicationController controller;
-
     @Autowired
-    public EditorServiceImpl(final Current current, final ApplicationController controller) {
-        this.current = current;
-        this.controller = controller;
-    }
+    private ApplicationController controller;
 
     @Autowired
     private ShortcutProvider shortcutProvider;

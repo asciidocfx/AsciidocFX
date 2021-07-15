@@ -29,16 +29,19 @@ import java.util.Objects;
 /**
  * Created by usta on 25.12.2014.
  */
-@Component
+@Component(MathJaxService.label)
 public class MathJaxServiceImpl implements MathJaxService {
 
     private final Logger logger = LoggerFactory.getLogger(MathJaxService.class);
 
     private final ApplicationController controller;
     private final Current current;
-    private final ThreadService threadService;
-    private final BinaryCacheService binaryCacheService;
     private final ExtensionConfigBean extensionConfigBean;
+    @Autowired
+    private ThreadService threadService;
+    @Autowired
+    private BinaryCacheService binaryCacheService;
+
     private WebView webView;
     private boolean initialized;
 
@@ -46,11 +49,9 @@ public class MathJaxServiceImpl implements MathJaxService {
     private String mathjaxUrl;
 
     @Autowired
-    public MathJaxServiceImpl(final ApplicationController controller, final Current current, ThreadService threadService, BinaryCacheService binaryCacheService, ExtensionConfigBean extensionConfigBean) {
+    public MathJaxServiceImpl(final ApplicationController controller, final Current current, ExtensionConfigBean extensionConfigBean) {
         this.controller = controller;
         this.current = current;
-        this.threadService = threadService;
-        this.binaryCacheService = binaryCacheService;
         this.extensionConfigBean = extensionConfigBean;
     }
 
@@ -81,6 +82,7 @@ public class MathJaxServiceImpl implements MathJaxService {
         });
     }
 
+    @Override
     public void reload() {
         this.load();
     }
@@ -89,6 +91,7 @@ public class MathJaxServiceImpl implements MathJaxService {
         return getWebView().getEngine();
     }
 
+    @Override
     public void processFormula(String formula, String imagesDir, String imageTarget) {
 
         threadService.runActionLater(() -> {
@@ -104,10 +107,12 @@ public class MathJaxServiceImpl implements MathJaxService {
         });
     }
 
+    @Override
     public JSObject getWindow() {
         return (JSObject) webEngine().executeScript("window");
     }
 
+    @Override
     public WebView getWebView() {
         if (Objects.isNull(webView)) {
             webView = new WebView();
@@ -123,6 +128,7 @@ public class MathJaxServiceImpl implements MathJaxService {
         return webView;
     }
 
+    @Override
     public void snapshotFormula(String formula, String imagesDir, String imageTarget) {
 
         try {

@@ -12,6 +12,12 @@ import java.util.function.Supplier;
  * Created by usta on 25.12.2014.
  */
 public interface DirectoryService {
+    public final static String label = "core::service::DirectoryService";
+
+    /**
+     * Notify a working directory update. Sends a nullable {@link java.nio.file.Path}.
+     */
+    public final static String WORKING_DIRECTORY_UPDATE_EVENT = "event::directory::workingdirectory::update";
 
     public DirectoryChooser newDirectoryChooser(String title);
 

@@ -10,9 +10,8 @@ import java.nio.file.Path;
 /**
  * Created by usta on 01.01.2015.
  */
-@Component
+@Component(PathOrderService.label)
 public class PathOrderServiceImpl implements PathOrderService {
-
     @Override
     public int comparePaths(Path first, Path second) {
 

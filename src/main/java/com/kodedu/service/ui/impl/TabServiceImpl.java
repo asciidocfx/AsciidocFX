@@ -1,6 +1,10 @@
 package com.kodedu.service.ui.impl;
 
-import com.kodedu.component.*;
+import com.kodedu.component.AlertHelper;
+import com.kodedu.component.EditorPane;
+import com.kodedu.component.ImageTab;
+import com.kodedu.component.MenuItemBuilt;
+import com.kodedu.component.MyTab;
 import com.kodedu.config.StoredConfigBean;
 import com.kodedu.controller.ApplicationController;
 import com.kodedu.helper.IOHelper;
@@ -9,11 +13,8 @@ import com.kodedu.other.Current;
 import com.kodedu.other.ExtensionFilters;
 import com.kodedu.other.Item;
 import com.kodedu.service.DirectoryService;
-import com.kodedu.service.ParserService;
 import com.kodedu.service.PathResolverService;
 import com.kodedu.service.ThreadService;
-import com.kodedu.service.extension.AsciiTreeGenerator;
-import com.kodedu.service.shortcut.ShortcutProvider;
 import com.kodedu.service.ui.EditorService;
 import com.kodedu.service.ui.TabService;
 
@@ -22,7 +23,17 @@ import javafx.beans.value.ObservableObjectValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
-import javafx.scene.control.*;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.Label;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.SeparatorMenuItem;
+import javafx.scene.control.SingleSelectionModel;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
+import javafx.scene.control.Tooltip;
+import javafx.scene.control.TreeItem;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
@@ -49,22 +60,25 @@ import java.util.stream.Collectors;
 /**
  * Created by usta on 25.12.2014.
  */
-@Component
+@Component(TabService.label)
 public class TabServiceImpl implements TabService {
 
     private final Logger logger = LoggerFactory.getLogger(TabService.class);
 
-    private final ApplicationController controller;
-    private final EditorService editorService;
-    private final PathResolverService pathResolver;
-    private final ThreadService threadService;
+    @Autowired
+    private ApplicationController controller;
+    @Autowired
+    private ThreadService threadService;
+    @Autowired
+    private EditorService editorService;
+    @Autowired
+    private DirectoryService directoryService;
+    @Autowired
+    private PathResolverService pathResolver;
+
     private final Current current;
-    private final DirectoryService directoryService;
     private final StoredConfigBean storedConfigBean;
-    private final ParserService parserService;
     private final ApplicationContext applicationContext;
-    private final ShortcutProvider shortcutProvider;
-    private final AsciiTreeGenerator asciiTreeGenerator;
 
     @Value("${application.editor.url}")
     private String editorUrl;
@@ -74,22 +88,11 @@ public class TabServiceImpl implements TabService {
 
     private ObservableList<Optional<Path>> closedPaths = FXCollections.observableArrayList();
 
-
     @Autowired
-    public TabServiceImpl(final ApplicationController controller, final EditorService editorService,
-                      final PathResolverService pathResolver, final ThreadService threadService, final Current current,
-                      final DirectoryService directoryService, StoredConfigBean storedConfigBean, ParserService parserService, ApplicationContext applicationContext, ShortcutProvider shortcutProvider, AsciiTreeGenerator asciiTreeGenerator) {
-        this.controller = controller;
-        this.editorService = editorService;
-        this.pathResolver = pathResolver;
-        this.threadService = threadService;
+    public TabServiceImpl(final Current current, StoredConfigBean storedConfigBean, ApplicationContext applicationContext) {
         this.current = current;
-        this.directoryService = directoryService;
         this.storedConfigBean = storedConfigBean;
-        this.parserService = parserService;
         this.applicationContext = applicationContext;
-        this.shortcutProvider = shortcutProvider;
-        this.asciiTreeGenerator = asciiTreeGenerator;
     }
 
     @Override
@@ -271,22 +274,6 @@ public class TabServiceImpl implements TabService {
                     event.consume();
             });
         });
-//
-//        MenuItem menuItem3 = new MenuItem("Close Unmodified");
-//        menuItem3.setOnAction(actionEvent -> {
-//
-//            ObservableList<Tab> clonedTabs = FXCollections.observableArrayList();
-//            clonedTabs.addAll(controller.getTabPane().getTabs());
-//
-//
-//            for (Tab clonedTab : clonedTabs) {
-//                MyTab myTab = (MyTab) clonedTab;
-//                if (!myTab.getTabText().contains(" *"))
-//                    threadService.runActionLater(()->{
-//                        myTab.close();
-//                    });
-//            }
-//        });
 
         MenuItem menuItem4 = new MenuItem("Select Next Tab");
         menuItem4.setOnAction(actionEvent -> {

@@ -6,6 +6,7 @@ import java.nio.file.Path;
  * Created by usta on 07.09.2014.
  */
 public interface PathResolverService {
+    public final static String label = "core::service::PathResolver";
 
     public boolean isPDF(Path path);
 
@@ -24,7 +25,6 @@ public interface PathResolverService {
     public boolean isViewable(Path path);
 
     public boolean isOffice(Path path);
-
 
     public boolean isBook(Path path);
 

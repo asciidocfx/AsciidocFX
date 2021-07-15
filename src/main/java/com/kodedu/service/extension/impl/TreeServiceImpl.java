@@ -39,36 +39,33 @@ import java.util.stream.Collectors;
 /**
  * Created by usta on 25.12.2014.
  */
-@Component
+@Component(TreeService.label)
 public class TreeServiceImpl implements TreeService {
-
     private final Logger logger = LoggerFactory.getLogger(TreeService.class);
 
     private Current current;
     private ApplicationController controller;
-    private ThreadService threadService;
-    private AwesomeService awesomeService;
-    private final BinaryCacheService binaryCacheService;
     private final ExtensionConfigBean extensionConfigBean;
+    @Autowired
+    private ThreadService threadService;
+    @Autowired
+    private BinaryCacheService binaryCacheService;
+    @Autowired
+    private AwesomeService awesomeService;
 
     Pattern pattern = Pattern.compile("^(addw|minw|setw|addh|minh|seth|scale):\\s*(\\d+)$");
 
     @Value("${application.treeview.url}")
     private String treeviewUrl;
-    private WebView treeview;
-    private boolean initialized;
 
     @Autowired
-    public TreeServiceImpl(final Current current, final ApplicationController controller, final ThreadService threadService,
-                       final AwesomeService awesomeService, BinaryCacheService binaryCacheService, ExtensionConfigBean extensionConfigBean) {
+    public TreeServiceImpl(final Current current, final ApplicationController controller, ExtensionConfigBean extensionConfigBean) {
         this.current = current;
         this.controller = controller;
-        this.threadService = threadService;
-        this.awesomeService = awesomeService;
-        this.binaryCacheService = binaryCacheService;
         this.extensionConfigBean = extensionConfigBean;
     }
 
+    @Override
     public void createFileTree(String tree, String type, String imagesDir, String imageTarget, String nodename) {
 
         Objects.requireNonNull(imageTarget);
@@ -249,6 +246,7 @@ public class TreeServiceImpl implements TreeService {
         return fileView;
     }
 
+    @Override
     public void createHighlightFileTree(String tree, String type, String imagesDir, String imageTarget, String nodename) {
         Objects.requireNonNull(imageTarget);
 

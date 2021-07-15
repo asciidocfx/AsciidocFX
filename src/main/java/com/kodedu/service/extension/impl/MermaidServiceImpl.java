@@ -28,16 +28,18 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
-@Component
+@Component(MermaidService.label)
 public class MermaidServiceImpl implements MermaidService {
 
     private final Logger logger = LoggerFactory.getLogger(MermaidService.class);
 
     private Current current;
     private ApplicationController controller;
-    private ThreadService threadService;
-    private final BinaryCacheService binaryCacheService;
     private final ExtensionConfigBean extensionConfigBean;
+    @Autowired
+    private ThreadService threadService;
+    @Autowired
+    private BinaryCacheService binaryCacheService;
 
     @Value("${application.mermaid.url}")
     private String mermaidUrl;
@@ -45,16 +47,13 @@ public class MermaidServiceImpl implements MermaidService {
     private Map<String, Integer> rerenderMap = new ConcurrentHashMap<>();
 
     @Autowired
-    public MermaidServiceImpl(final Current current, final ApplicationController controller,
-                          final ThreadService threadService,
-                          BinaryCacheService binaryCacheService, ExtensionConfigBean extensionConfigBean) {
+    public MermaidServiceImpl(final Current current, final ApplicationController controller, ExtensionConfigBean extensionConfigBean) {
         this.current = current;
         this.controller = controller;
-        this.threadService = threadService;
-        this.binaryCacheService = binaryCacheService;
         this.extensionConfigBean = extensionConfigBean;
     }
 
+    @Override
     public void createMermaidDiagram(String mermaidContent, String type, String imagesDir, String imageTarget, String nodename, boolean rerender) {
         Objects.requireNonNull(imageTarget);
 

@@ -13,6 +13,7 @@ import java.util.function.Supplier;
  * Created by usta on 25.12.2014.
  */
 public interface ThreadService {
+    public final static String label = "core::service::ThreadService";
 
     public ScheduledFuture<?> schedule(Runnable runnable, long delay, TimeUnit timeUnit);
 

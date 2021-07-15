@@ -4,9 +4,10 @@ import com.kodedu.controller.ApplicationController;
 import com.kodedu.helper.IOHelper;
 import com.kodedu.other.Current;
 import com.kodedu.other.Item;
+import com.kodedu.service.DirectoryService;
+import com.kodedu.service.EventService;
 import com.kodedu.service.FileWatchService;
 import com.kodedu.service.PathOrderService;
-import com.kodedu.service.PathResolverService;
 import com.kodedu.service.ThreadService;
 import com.kodedu.service.ui.AwesomeService;
 import com.kodedu.service.ui.FileBrowseService;
@@ -22,52 +23,71 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.nio.file.*;
-import java.util.*;
+import java.nio.file.DirectoryStream;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.PathMatcher;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.PatternSyntaxException;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
+
+import javax.annotation.PostConstruct;
 
 import static com.kodedu.helper.IOHelper.isHidden;
 
 /**
  * Created by usta on 12.07.2014.
  */
-@Component
+@Component(FileBrowseService.label)
 public class FileBrowseServiceImpl implements FileBrowseService {
 
     private Logger logger = LoggerFactory.getLogger(FileBrowseService.class);
 
-    private final PathOrderService pathOrder;
-    private final ThreadService threadService;
-    private final PathResolverService pathResolver;
-    private final AwesomeService awesomeService;
-    private final ApplicationController controller;
     private final Current current;
-
+    @Autowired
+    private ApplicationController controller;
+    @Autowired
+    private EventService eventService;
+    @Autowired
+    private ThreadService threadService;
+    @Autowired
+    private AwesomeService awesomeService;
     @Autowired
     private FileWatchService fileWatchService;
+    @Autowired
+    private PathOrderService pathOrderService;
 
-    private final Map<Path, TreeItem<Item>> directoryItemMap = new ConcurrentHashMap(); // only changed parent path or root path
-    private final Map<Path, TreeItem<Item>> pathItemMap = new ConcurrentHashMap(); // parents + child paths
-    private final Map<Path, Boolean> expandedPaths = new ConcurrentHashMap(); // parents + child paths
+    private final Map<Path, TreeItem<Item>> directoryItemMap = new ConcurrentHashMap<Path, TreeItem<Item>>(); // only changed parent path or root path
+    private final Map<Path, TreeItem<Item>> pathItemMap = new ConcurrentHashMap<Path, TreeItem<Item>>(); // parents + child paths
+    private final Map<Path, Boolean> expandedPaths = new ConcurrentHashMap<Path, Boolean>(); // parents + child paths
     private Set<Path> lastSelectedItems = new HashSet<>();
-    private PathItem rootItem;
+    private PathItem<Item> rootItem;
     private TreeView<Item> treeView;
     private Path browsedPath;
     private ChangeListener<TreeItem<Item>> treeItemChangeListener;
 
-
     @Autowired
-    public FileBrowseServiceImpl(final PathOrderService pathOrder, final ThreadService threadService, final PathResolverService pathResolver,
-                             final AwesomeService awesomeService, ApplicationController controller, Current current) {
-        this.pathOrder = pathOrder;
-        this.threadService = threadService;
-        this.pathResolver = pathResolver;
-        this.awesomeService = awesomeService;
-        this.controller = controller;
+    public FileBrowseServiceImpl(Current current) {
         this.current = current;
+    }
+
+    @PostConstruct
+    public void install_listeners() {
+        // Listen to working directory update events
+        eventService.subscribe(DirectoryService.WORKING_DIRECTORY_UPDATE_EVENT, event -> {
+            Path path = (Path) event.getData();
+            browse(path);
+        });
     }
 
     @Override
@@ -111,8 +131,8 @@ public class FileBrowseServiceImpl implements FileBrowseService {
                 treeView.getSelectionModel().selectedItemProperty().addListener(treeItemChangeListener);
             }
 
-            rootItem = new PathItem(new Item(path, String.format("%s", Optional.of(path).map(Path::getFileName).orElse(path))), awesomeService.getIcon(path));
-            rootItem.getChildren().add(new PathItem(new Item(null, "Loading..")));
+            rootItem = new PathItem<Item>(new Item(path, String.format("%s", Optional.of(path).map(Path::getFileName).orElse(path))), awesomeService.getIcon(path));
+            rootItem.getChildren().add(new PathItem<Item>(new Item(null, "Loading..")));
 
             treeView.setRoot(rootItem);
             rootItem.setExpanded(true);
@@ -159,12 +179,12 @@ public class FileBrowseServiceImpl implements FileBrowseService {
                 List<TreeItem<Item>> subItemList = StreamSupport
                         .stream(directoryStream.spliterator(), false)
                         .filter(p -> controller.isShowHiddenFiles() || !isHidden(p))
-                        .sorted(pathOrder::comparePaths)
+                        .sorted(pathOrderService::comparePaths)
                         .map(p -> {
-                            TreeItem<Item> childItem = new PathItem(new Item(p), awesomeService.getIcon(p));
+                            TreeItem<Item> childItem = new PathItem<Item>(new Item(p), awesomeService.getIcon(p));
                             if (Files.isDirectory(p)) {
                                 if (!IOHelper.isEmptyDir(p)) {
-                                    childItem.getChildren().add(new PathItem(new Item(null, "Loading..")));
+                                    childItem.getChildren().add(new PathItem<Item>(new Item(null, "Loading..")));
                                 }
                                 childItem.setExpanded(expandedPaths.getOrDefault(p, false));
                                 if (childItem.isExpanded()) {
@@ -261,8 +281,8 @@ public class FileBrowseServiceImpl implements FileBrowseService {
             return;
         }
         threadService.runActionLater(() -> {
-            rootItem = new PathItem(new Item(browsedPath, String.format("%s", Optional.of(browsedPath).map(Path::getFileName).orElse(browsedPath))), awesomeService.getIcon(browsedPath));
-            rootItem.getChildren().add(new PathItem(new Item(null, "Loading..")));
+            rootItem = new PathItem<Item>(new Item(browsedPath, String.format("%s", Optional.of(browsedPath).map(Path::getFileName).orElse(browsedPath))), awesomeService.getIcon(browsedPath));
+            rootItem.getChildren().add(new PathItem<Item>(new Item(null, "Loading..")));
 
             treeView.setRoot(rootItem);
             rootItem.setExpanded(true);
@@ -422,7 +442,7 @@ public class FileBrowseServiceImpl implements FileBrowseService {
                         .filter(p -> finalPathMatcher.matches(p))
                         .isPresent())
                 .map(e -> e.get())
-                .sorted((p1, p2) -> pathOrder.comparePaths(p1.getValue().getPath(), p2.getValue().getPath()))
+                .sorted((p1, p2) -> pathOrderService.comparePaths(p1.getValue().getPath(), p2.getValue().getPath()))
                 .collect(Collectors.toList());
     }
 

@@ -6,6 +6,8 @@ import java.awt.image.BufferedImage;
  * Created by usta on 12.06.2016.
  */
 public interface BinaryCacheService {
+    public final static String label = "core::service::cache::BinaryCache";
+
     public String putBinary(String key, byte[] bytes);
 
     public CacheData getCacheData(String key);
