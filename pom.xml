@@ -12,6 +12,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <asciidocfx.mainClass>com.kodedu.boot.AppStarter</asciidocfx.mainClass>
         <java.version>16</java.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
@@ -23,6 +24,7 @@
         <jaxb.version>2.3.2</jaxb.version>
         <jacoco.version>0.8.7</jacoco.version>
         <logunit.version>1.1.0</logunit.version>
+        <javafx.scope>provided</javafx.scope>
     </properties>
 
     <organization>
@@ -224,25 +226,25 @@
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-swing</artifactId>
             <version>${openjfx.version}</version>
-            <scope>provided</scope>
+            <scope>${javafx.scope}</scope>
         </dependency>
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-controls</artifactId>
             <version>${openjfx.version}</version>
-            <scope>provided</scope>
+            <scope>${javafx.scope}</scope>
         </dependency>
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-web</artifactId>
             <version>${openjfx.version}</version>
-            <scope>provided</scope>
+            <scope>${javafx.scope}</scope>
         </dependency>
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-fxml</artifactId>
             <version>${openjfx.version}</version>
-            <scope>provided</scope>
+            <scope>${javafx.scope}</scope>
         </dependency>
         <!-- Add test dependencies -->
         <dependency>
@@ -326,7 +328,7 @@
                 <configuration>
                     <programs>
                         <program>
-                            <mainClass>com.kodedu.boot.AppStarter</mainClass>
+                            <mainClass>${asciidocfx.mainClass}</mainClass>
                             <id>asciidocfx</id>
                         </program>
                     </programs>
@@ -491,6 +493,15 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+              <!-- Easy launch in development -->
+            <plugin>
+                <groupId>org.openjfx</groupId>
+                <artifactId>javafx-maven-plugin</artifactId>
+                <version>0.0.6</version>
+                <configuration>
+                    <mainClass>${asciidocfx.mainClass}</mainClass>
+                </configuration>
             </plugin>
         </plugins>
     </build>
