@@ -285,33 +285,26 @@ public class FileBrowseServiceImpl implements FileBrowseService {
 
             ListIterator<TreeItem<Item>> listIterator = foundItems.listIterator();
 
-            while (true) {
-
-                if (Objects.isNull(searchFoundItem)) {
-                    if (listIterator.hasNext()) {
-                        searchFoundItem = listIterator.next();
-                    }
-                    break;
-                }
-
+            if (Objects.isNull(searchFoundItem)) {
                 if (listIterator.hasNext()) {
-                    TreeItem<Item> next = listIterator.next();
-                    if (next.getValue().equals(searchFoundItem.getValue())) {
-                        if (listIterator.hasNext()) {
-                            TreeItem<Item> nexted = listIterator.next();
+                    searchFoundItem = listIterator.next();
+                }
+            }
+            while (listIterator.hasNext()) {
+                TreeItem<Item> next = listIterator.next();
+                if (next.getValue().equals(searchFoundItem.getValue())) {
+                    if (listIterator.hasNext()) {
+                        TreeItem<Item> nexted = listIterator.next();
 
-                            if (next == nexted) {
-                                if (listIterator.hasNext()) {
-                                    nexted = listIterator.next();
-                                }
+                        if (next == nexted) {
+                            if (listIterator.hasNext()) {
+                                nexted = listIterator.next();
                             }
-
-                            searchFoundItem = nexted;
-                            break;
                         }
+
+                        searchFoundItem = nexted;
+                        break;
                     }
-                } else {
-                    break;
                 }
 
             }
@@ -332,34 +325,23 @@ public class FileBrowseServiceImpl implements FileBrowseService {
 
             ListIterator<TreeItem<Item>> listIterator = foundItems.listIterator();
 
-            while (true) {
-
-                if (Objects.isNull(searchFoundItem)) {
-                    if (listIterator.hasPrevious()) {
-                        searchFoundItem = listIterator.previous();
-                    }
-
-                    break;
-                }
-
+            if (Objects.isNull(searchFoundItem)) {
                 if (listIterator.hasNext()) {
-                    TreeItem<Item> next = listIterator.next();
-                    if (next.getValue().equals(searchFoundItem.getValue())) {
-                        if (listIterator.hasPrevious()) {
-                            TreeItem<Item> previous = listIterator.previous();
-                            if (next == previous) {
-                                if (listIterator.hasPrevious()) {
-                                    previous = listIterator.previous();
-                                }
-                            }
-                            searchFoundItem = previous;
-                            break;
-                        }
-                    }
-                } else {
-                    break;
+                    searchFoundItem = listIterator.next();
                 }
+            } else {
 
+                while (listIterator.hasNext()) {
+                    TreeItem<Item> next = listIterator.next();
+                    if (next.getValue().equals(searchFoundItem.getValue()) && listIterator.hasPrevious()) {
+                        TreeItem<Item> previous = listIterator.previous();
+                        if (next == previous && listIterator.hasPrevious()) {
+                            previous = listIterator.previous();
+                        }
+                        searchFoundItem = previous;
+                        break;
+                    }
+                }
             }
 
             focusFoundItem(searchFoundItem);
@@ -438,7 +420,6 @@ public class FileBrowseServiceImpl implements FileBrowseService {
             }
 
             ListIterator<TreeItem<Item>> listIterator = foundItems.listIterator();
-
 
             if (Objects.isNull(searchFoundItem)) {
                 if (listIterator.hasNext()) {

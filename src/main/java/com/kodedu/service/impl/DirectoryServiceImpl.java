@@ -362,19 +362,13 @@ public class DirectoryServiceImpl implements DirectoryService {
         if (optional.isPresent()) {
             Path currentParent = optional.get();
 
-            while (true) {
-
-                if (Objects.nonNull(currentParent)) {
-                    Path candidate = currentParent.resolve(uri);
-                    if (Files.exists(candidate)) {
-                        return candidate;
-                    } else {
-                        currentParent = currentParent.getParent();
-                    }
-                } else {
-                    break;
+            while (Objects.nonNull(currentParent)) {
+                Path candidate = currentParent.resolve(uri);
+                if (Files.exists(candidate)) {
+                    return candidate;
                 }
 
+                currentParent = currentParent.getParent();
             }
 
         }
