@@ -5,9 +5,7 @@ import com.kodedu.controller.ApplicationController;
 import com.kodedu.helper.IOHelper;
 import com.kodedu.other.Current;
 import com.kodedu.service.DirectoryService;
-import com.kodedu.service.FileWatchService;
 import com.kodedu.service.PathMapper;
-import com.kodedu.service.PathResolverService;
 import com.kodedu.service.ThreadService;
 import com.kodedu.service.ui.FileBrowseService;
 import javafx.application.Platform;
@@ -22,12 +20,12 @@ import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.Arrays.asList;
@@ -38,43 +36,31 @@ import static java.util.Arrays.asList;
 @Component
 public class DirectoryServiceImpl implements DirectoryService {
 
-    private final ApplicationController controller;
-    private final FileBrowseService fileBrowser;
-    private final Current current;
-    private final PathResolverService pathResolver;
-    private final StoredConfigBean storedConfigBean;
+    @Autowired
+    private ApplicationController controller;
+    @Autowired
+    private FileBrowseService fileBrowser;
+    @Autowired
+    private ThreadService threadService;
+    @Autowired
+    private PathMapper pathMapper;
+    @Autowired
+    private Current current;
+    @Autowired
+    private StoredConfigBean storedConfigBean;
 
     private final Logger logger = LoggerFactory.getLogger(DirectoryService.class);
 
     private Optional<Path> workingDirectory = Optional.of(IOHelper.getPath(System.getProperty("user.home")));
     private Optional<File> initialDirectory = Optional.empty();
 
-    private Supplier<Path> pathSaveSupplier;
-    private final FileWatchService fileWatchService;
-    private final ThreadService threadService;
-    private final PathMapper pathMapper;
-
-
-    @Autowired
-    public DirectoryServiceImpl(final ApplicationController controller, final FileBrowseService fileBrowser, final Current current, PathResolverService pathResolver, StoredConfigBean storedConfigBean, FileWatchService fileWatchService, ThreadService threadService, PathMapper pathMapper) {
-        this.controller = controller;
-        this.fileBrowser = fileBrowser;
-        this.current = current;
-        this.pathResolver = pathResolver;
-        this.storedConfigBean = storedConfigBean;
-        this.fileWatchService = fileWatchService;
-        this.threadService = threadService;
-        this.pathMapper = pathMapper;
-
-        pathSaveSupplier = () -> {
-            final FileChooser chooser = newFileChooser("Save Document");
-            chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Asciidoc", "*.adoc", "*.asciidoc", "*.asc", "*.ad", "*.txt", "*.*"));
-            chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Markdown", "*.md", "*.markdown", "*.txt", "*.*"));
-            File file = chooser.showSaveDialog(null);
-            return Objects.nonNull(file) ? file.toPath() : null;
-        };
-
-    }
+    private Supplier<Path> pathSaveSupplier = () -> {
+        final FileChooser chooser = newFileChooser("Save Document");
+        chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Asciidoc", "*.adoc", "*.asciidoc", "*.asc", "*.ad", "*.txt", "*.*"));
+        chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Markdown", "*.md", "*.markdown", "*.txt", "*.*"));
+        File file = chooser.showSaveDialog(null);
+        return Objects.nonNull(file) ? file.toPath() : null;
+    };
 
     @Override
     public DirectoryChooser newDirectoryChooser(String title) {
@@ -314,13 +300,13 @@ public class DirectoryServiceImpl implements DirectoryService {
                 .map(path -> path.resolve(uri))
                 .filter(Files::exists)
                 .findFirst()
-                .orElseGet(() -> null);
+                .orElse(null);
 
     }
 
     @Override
     public Path findPathInPublic(String finalUri) {
-        List<String> uris = asList(finalUri, finalUri.replaceFirst("/", "")).stream().collect(Collectors.toList());
+        List<String> uris = new ArrayList<>(asList(finalUri, finalUri.replaceFirst("/", "")));
         Path result = null;
         for (String uri : uris) {
             Path configPath = controller.getConfigPath().resolve("public");
