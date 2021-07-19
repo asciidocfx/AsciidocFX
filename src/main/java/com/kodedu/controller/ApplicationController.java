@@ -612,6 +612,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         Arrays.asList(htmlPane, slidePane, liveReloadPane).forEach(viewPanel -> VBox.getVgrow(viewPanel));
 
         threadService.runTaskLater(() -> {
+            // Main loop for the app
             while (true) {
                 try {
                     renderLoop();
