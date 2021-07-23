@@ -1164,15 +1164,13 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     }
 
     private void deleteSelectedItems(Event event) {
-        List<TreeItem<Item>> selectedItems = fileSystemView
+        List<TreeItem<Item>> selectedItems = new ArrayList<>(fileSystemView
                 .getSelectionModel()
-                .getSelectedItems()
-                .stream()
-                .collect(Collectors.toList());
+                .getSelectedItems());
 
         List<Path> pathList = selectedItems.stream()
-                .map(e -> e.getValue())
-                .map(e -> e.getPath())
+                .map(TreeItem::getValue)
+                .map(Item::getPath)
                 .collect(Collectors.toList());
 
         AlertHelper.deleteAlert(pathList).ifPresent(btn -> {
@@ -2818,6 +2816,17 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         logger.error(message.replace("\\\"","").replace("\"",""));
     }
 
+    /**
+     * Get tñe path to a selected item in tñe view or to tñe workspace if no item is selected
+     * @return The selected path or workspace (or an empty optional if neither is set)
+     */
+    private Optional<Path> getSelectedItemOrWorkspacePath() {
+        TreeItem<Item> selection = fileSystemView.getSelectionModel().getSelectedItem();
+        return Optional.ofNullable(selection)
+                .map(s -> s.getValue().getPath())
+                .or(() -> directoryService.getWorkingDirectory());
+    }
+
     @FXML
     public void createFolder(ActionEvent actionEvent) {
 
@@ -2830,16 +2839,14 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
             if (result.matches(DialogBuilder.FOLDER_NAME_REGEX)) {
 
-                Path path = fileSystemView.getSelectionModel().getSelectedItem()
-                        .getValue().getPath();
+                Path path = getSelectedItemOrWorkspacePath().orElseThrow(() -> {
+                    throw new IllegalStateException("Can't add a folder without a workspace or a selected item in the view");
+                });
 
                 Path folderPath = path.resolve(result);
 
                 threadService.runTaskLater(() -> {
                     IOHelper.createDirectories(folderPath);
-//                    threadService.runActionLater(() -> {
-//                        directoryService.changeWorkigDir(folderPath);
-//                    });
                 });
             }
         };
@@ -2863,14 +2870,17 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
             if (result.matches(DialogBuilder.FILE_NAME_REGEX)) {
 
-                Path path = fileSystemView.getSelectionModel().getSelectedItem()
-                        .getValue().getPath();
+                Path path = getSelectedItemOrWorkspacePath().orElseThrow(() -> {
+                    throw new IllegalStateException("Can't add a file without a workspace or a selected item in the view");
+                });
 
                 IOHelper.createDirectories(path);
                 Optional<Exception> exception = IOHelper.writeToFile(path.resolve(result), "", CREATE_NEW, WRITE);
 
                 if (!exception.isPresent()) {
                     tabService.addTab(path.resolve(result));
+                } else {
+                    logger.debug(exception.get().getMessage(), exception);
                 }
             }
         };
@@ -2921,13 +2931,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         dialog.showAndWait().ifPresent(consumer);
     }
 
-    /*
-    @WebkitCall
-    public void fillModeList(String mode) {
-        threadService.runActionLater(() -> {
-            modeList.add(mode);
-        });
-    }*/
     public void clearImageCache(Path imagePath) {
         rightShowerHider.getShowing()
                 .ifPresent(w -> w.clearImageCache(imagePath));
@@ -2974,8 +2977,9 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
             if (folderName.matches(DialogBuilder.FOLDER_NAME_REGEX)) {
 
-                Path path = fileSystemView.getSelectionModel().getSelectedItem()
-                        .getValue().getPath();
+                Path path = getSelectedItemOrWorkspacePath().orElseThrow(() -> {
+                    throw new IllegalStateException("Can't add a slide without a workspace or a selected item in the view");
+                });
 
                 Path folderPath = path.resolve(folderName);
 
