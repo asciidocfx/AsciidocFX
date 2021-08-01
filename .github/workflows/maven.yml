@@ -31,8 +31,12 @@ jobs:
       with:
         java-version: ${{ matrix.java }}
         distribution: 'adopt'
+    - name: Set-up test environment
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y xvfb
     - name: Build with Maven
-      run: mvn -B -Djava.version=${{ matrix.java }} -Dopenjfx.version=${{ matrix.java }} compile test
+      run: xvfb-run mvn -B -Djava.version=${{ matrix.java }} -Dopenjfx.version=${{ matrix.java }} test
     - name: Save coverage stats
       uses: codecov/codecov-action@v1
       with:
