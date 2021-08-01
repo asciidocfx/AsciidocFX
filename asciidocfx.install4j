@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<install4j version="9.0.1" transformSequenceNumber="9">
+<install4j version="9.0.4" transformSequenceNumber="9">
   <directoryPresets config="/Users/usta/projects/AsciidocFX/jmods" />
   <application name="AsciidocFX" applicationId="7853-9376-5862-1224" mediaDir="target" compression="4" lzmaCompression="true" excludeSignedFromPacking="false" shortName="AsciidocFX" publisher="AsciidocFX" publisherWeb="http://asciidocfx.com" version="1.7.4" macVolumeId="b98c377570068f5e" javaMinVersion="16" javaMaxVersion="16" allowBetaVM="true">
     <searchSequence>
@@ -7,7 +7,7 @@
       <envVar name="JDK_HOME" />
       <registry />
     </searchSequence>
-    <codeSigning macEnabled="true" macPkcs12File="/home/travis/build/asciidocfx/AsciidocFX/code_sign.p12" />
+    <codeSigning macEnabled="true" macPkcs12File="code_sign.p12" />
     <jreBundles jdkProviderId="AdoptOpenJDK-OpenJ9" release="16/jdk-16.0.1+9_openj9-0.26.0">
       <modules>
         <defaultModules set="jre" />
@@ -1191,6 +1191,18 @@ return true;</property>
           <jmodDirectory location="jmods/linux" />
         </modules>
       </jreBundle>
+    </unixArchive>
+    <windows name="Windows Installer No JRE" id="407" mediaFileName="AsciidocFX_Windows_No_JRE">
+      <jreBundle usePack200="false" jreBundleSource="none" />
+    </windows>
+    <windowsArchive name="Windows Archive No JRE" id="416" mediaFileName="AsciidocFX_Windows_No_JRE">
+      <jreBundle jreBundleSource="none" />
+    </windowsArchive>
+    <macosFolder name="Mac OS X Folder No JRE" id="4500" mediaFileName="AsciidocFX_Mac_No_JRE" signLaunchers="true">
+      <jreBundle release="16/jdk-16+36" usePack200="false" jreBundleSource="none" />
+    </macosFolder>
+    <unixArchive name="Unix Archive No JRE" id="413" mediaFileName="AsciidocFX_Linux_No_JRE">
+      <jreBundle jreBundleSource="none" />
     </unixArchive>
   </mediaSets>
   <buildIds>

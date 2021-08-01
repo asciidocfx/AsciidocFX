@@ -16,8 +16,9 @@
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <mainClass>com.kodedu.boot.AppStarter</mainClass>
-        <install4j.home>/home/travis/build/asciidocfx/AsciidocFX/install4j9.0.2</install4j.home>
+        <install4j.home>install4j</install4j.home>
         <install4j.licenseKey>${env.LICENSE_KEY_9}</install4j.licenseKey>
+	<install4j.macKeystorePassword>${env.MAC_KEYSTORE_PASSWORD}</install4j.macKeystorePassword>
         <openjfx.version>16</openjfx.version>
         <ikonli.version>12.2.0</ikonli.version>
         <jaxb.version>2.3.2</jaxb.version>

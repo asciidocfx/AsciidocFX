@@ -1,10 +1,10 @@
 # This workflow will build a Java project with Maven
 # For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-maven
 
-name: Java CI with Maven
+name: CI/CD
 
 env:
-  install4j_download_url: https://download-gcdn.ej-technologies.com/install4j/install4j_linux-x64_9_0_2.tar.gz
+  install4j_download_url: https://download-gcdn.ej-technologies.com/install4j/install4j_linux-x64_9_0_4.tar.gz
 
 on:
   push:
@@ -14,12 +14,20 @@ on:
       install4j_download_url:
         description: Download source for Install4J
         required: true
-        default: https://download-gcdn.ej-technologies.com/install4j/install4j_linux-x64_9_0_2.tar.gz
+        default: https://download-gcdn.ej-technologies.com/install4j/install4j_linux-x64_9_0_4.tar.gz
+      release_build:
+        description: Whether we should build the release files
+        default: false
+      create_draft:
+        description: Whether a release draft should be generated - requires release_build
+        default: false
+      push_to_s3:
+        description: Whether generated products should be pushed to s3 - requires release_build
+        default: false
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    environment: install4j
     strategy:
       matrix:
         java: [ 16 ]
@@ -31,21 +39,23 @@ jobs:
       with:
         java-version: ${{ matrix.java }}
         distribution: 'adopt'
+    # Install xvfb to provide a graphical environment to use when running tests
     - name: Set-up test environment
       run: |
         sudo apt-get update
         sudo apt-get install -y xvfb
     - name: Build with Maven
-      run: xvfb-run mvn -B -Djava.version=${{ matrix.java }} -Dopenjfx.version=${{ matrix.java }} test
+      run: xvfb-run mvn -B -Djava.version=${{ matrix.java }} -Dopenjfx.version=${{ matrix.java }} -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.httpconnectionManager.ttlSeconds=120 test
     - name: Save coverage stats
       uses: codecov/codecov-action@v1
       with:
         fail_ci_if_error: false
       
-  package:
+  release:
     runs-on: ubuntu-latest
+    environment: install4j
     needs: build
-    if: ${{ startsWith(github.ref, 'refs/tags/') }}
+    if: ${{ github.event.inputs.release_build || startsWith(github.ref, 'refs/tags/v') }}
     strategy:
       matrix:
         java: [ 16 ]
@@ -59,12 +69,54 @@ jobs:
         distribution: 'adopt'
     - name: Download install4j
       run: |
-         wget --tries=3 ${{ github.event.inputs.install4j_download_url || env.install4j_download_url }} -O install4j.tar.gz
+         wget --no-verbose --tries=3 ${{ github.event.inputs.install4j_download_url || env.install4j_download_url }} -O install4j.tar.gz
          mkdir install4j
          tar -zxvf install4j.tar.gz --strip-components 1 -C install4j
     - name: Configure Install4J
       env:
         LICENSE_KEY_9: ${{ secrets.INSTALL4J_LICENSE_KEY }}
       run: mvn install4j:install-license
-    - name: Package with maven and install4j
-      run: mvn -B -Dinstall4j.home=install4j -Djava.version=${{ matrix.java }} -Dopenjfx.version=${{ matrix.java }} package
+    - name: Add signing key
+      env:
+        # The signing key secret file should be stored as a base64 string
+        SIGNING_KEY: ${{ secrets.INSTALL4J_SIGNING_KEY }}
+      run: 'echo "$SIGNING_KEY" | base64 -d  >code_sign.p12'
+    - name: Build with install4j
+      env:
+        LICENSE_KEY_9: ${{ secrets.INSTALL4J_LICENSE_KEY }}
+        MAC_KEYSTORE_PASSWORD: ${{ secrets.MAC_KEYSTORE_KEY }}
+      run: mvn -B -DskipTests=true -Djava.version=${{ matrix.java }} -Dopenjfx.version=${{ matrix.java }} -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.httpconnectionManager.ttlSeconds=600 package
+    - name: Prepare release notes
+      run: |
+        awk -e '/^## /{a+=1} {if(a>1)exit} {if(a==1){print $0}}' CHANGELOG.md >RELEASE_MESSAGE.md
+        printf '\n## Files checksums\n| File | SHA 256 |\n| --- | --- |\n' >>RELEASE_MESSAGE.md
+        awk -e '{print"|"$2"|"$1"|"}' <target/media/sha256sums >>RELEASE_MESSAGE.md
+    - name: Release draft
+      uses: softprops/action-gh-release@v1
+      if: ${{ github.event.inputs.create_draft || startsWith(github.ref, 'refs/tags/v') }}
+      with:
+        body_path: RELEASE_MESSAGE.md
+        draft: true
+        fail_on_unmatched_files: true
+        files: |
+          target/media/AsciidocFX_Mac.dmg
+          target/media/AsciidocFX_Mac_No_JRE.dmg
+          target/media/AsciidocFX_Linux.tar.gz
+          target/media/AsciidocFX_Linux_No_JRE.tar.gz
+          target/media/AsciidocFX_Windows.exe
+          target/media/AsciidocFX_Windows_No_JRE.exe
+          target/media/AsciidocFX_Windows.zip
+          target/media/AsciidocFX_Windows_No_JRE.zip
+          target/media/updates.xml
+          LICENSE
+    - name: Publish to S3
+      uses: jakejarvis/s3-sync-action@v0.5.1
+      if: ${{ github.event.inputs.push_to_s3 || startsWith(github.ref, 'refs/tags/v') }}
+      with:
+        args: --acl public-read --follow-symlinks --delete
+      env:
+        AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        AWS_REGION: ${{ secrets.AWS_REGION }}
+        SOURCE_DIR: 'target/media'
