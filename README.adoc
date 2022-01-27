@@ -20,7 +20,6 @@ image::images/asciidocfx.png[]
 * Real-Time Preview
 * Multi-platform (Windows, Mac, Linux)
 * Creating Asciidoc Books
-* Creating Markdown Books
 * Creating PDF, HTML, Epub, Mobi, Docbook
 * Epub Viewer
 * External Browser Support
