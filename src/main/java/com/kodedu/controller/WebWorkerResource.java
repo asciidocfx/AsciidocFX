@@ -69,6 +69,10 @@ public class WebWorkerResource {
         if (optional.isPresent()) {
             finalURI = payload.param("path");
         }
+        
+        if (finalURI.contains("docinfo") && finalURI.contains(".html") && finalURI.startsWith("./")) {
+            finalURI = finalURI.replace("./", "");
+        }
 
         if (finalURI.matches(".*\\.(asc|asciidoc|ad|adoc|md|markdown)$")) {
 
