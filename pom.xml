@@ -217,6 +217,22 @@
             <artifactId>icu4j-charset</artifactId>
             <version>67.1</version>
         </dependency>
+        
+        <dependency>
+            <groupId>org.asciidoctor</groupId>
+            <artifactId>asciidoctorj</artifactId>
+            <version>2.5.3</version>
+        </dependency>
+        <dependency>
+            <groupId>org.asciidoctor</groupId>
+            <artifactId>asciidoctorj-pdf</artifactId>
+            <version>1.6.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.asciidoctor</groupId>
+            <artifactId>asciidoctorj-diagram</artifactId>
+            <version>2.2.1</version>
+        </dependency>
 
         <!--  Uncomment 'scope' for local run -->
 

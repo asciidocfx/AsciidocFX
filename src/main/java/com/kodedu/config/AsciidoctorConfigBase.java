@@ -1,17 +1,45 @@
 package com.kodedu.config;
 
+import com.kodedu.config.AsciidoctorConfigBase.LoadedAttributes;
+import com.kodedu.config.factory.ListChoiceBoxFactory;
+import com.kodedu.config.factory.TableFactory;
+import com.kodedu.controller.ApplicationController;
+import com.kodedu.helper.IOHelper;
+import com.kodedu.service.ThreadService;
+
+import java.io.Reader;
+import java.nio.file.Path;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.ResourceBundle;
+
+import javax.json.Json;
+import javax.json.JsonObject;
+import javax.json.JsonObjectBuilder;
+import javax.json.JsonReader;
+import javax.json.JsonString;
+import javax.json.JsonValue;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 //import com.dooapp.fxform.annotation.Accessor;
 
 import com.dooapp.fxform.FXForm;
 import com.dooapp.fxform.builder.FXFormBuilder;
 import com.dooapp.fxform.handler.NamedFieldHandler;
 import com.dooapp.fxform.view.factory.DefaultFactoryProvider;
-import com.kodedu.config.factory.ListChoiceBoxFactory;
-import com.kodedu.config.factory.TableFactory;
-import com.kodedu.controller.ApplicationController;
-import com.kodedu.helper.IOHelper;
-import com.kodedu.service.ThreadService;
-import javafx.beans.property.*;
+
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.ListProperty;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleListProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -22,18 +50,11 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TableView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.json.*;
-import java.io.Reader;
-import java.nio.file.Path;
-import java.util.*;
 
 /**
  * Created by usta on 17.07.2015.
  */
-public abstract class AsciidoctorConfigBase extends ConfigurationBase {
+public abstract class AsciidoctorConfigBase<T extends LoadedAttributes> extends ConfigurationBase {
 
     public ObjectProperty<JSPlatform> jsPlatform = new SimpleObjectProperty<>(JSPlatform.Webkit);
 
@@ -194,6 +215,8 @@ public abstract class AsciidoctorConfigBase extends ConfigurationBase {
         boolean header_footer = jsonObject.getBoolean("header_footer", false);
         JsonObject attributes = jsonObject.getJsonObject("attributes");
         String jsPlatform = jsonObject.getString("jsPlatform", "Webkit");
+        
+        T childClassAttributes = this.loadAdditionalAttributes(jsonObject);
 
         IOHelper.close(jsonReader, fileReader);
 
@@ -203,6 +226,8 @@ public abstract class AsciidoctorConfigBase extends ConfigurationBase {
             this.setBackend(backend);
             this.setHeader_footer(header_footer);
             this.setJsPlatform(JSPlatform.valueOf(JSPlatform.class, jsPlatform));
+            
+            this.fxSetAdditionalAttributes(childClassAttributes);
 
             ObservableList<AttributesTable> attrList = FXCollections.observableArrayList();
 
@@ -221,7 +246,29 @@ public abstract class AsciidoctorConfigBase extends ConfigurationBase {
         });
     }
 
-    @Override
+    /**
+     * Load additional attributes in the GUI.
+     * Only needed if child class has additional elements which are not shown
+     * in the parent class.
+     * @param jsonObject 
+     * @return default implementation: empty map
+     * @see AsciidoctorConfigBase#load(Path, ActionEvent...)
+     */
+	protected T loadAdditionalAttributes(JsonObject jsonObject) {
+		return null;
+	}
+
+    /**
+     * Set additional attributes in the GUI.
+     * Only needed if child class has additional elements which are not shown
+     * in the parent class.
+     * @param childClassAttributes
+     * @see AsciidoctorConfigBase#load(Path, ActionEvent...)
+     */
+    protected void fxSetAdditionalAttributes(T t) {
+    }
+
+	@Override
     public JsonObject getJSON() {
         JsonObjectBuilder attributesObject = Json.createObjectBuilder();
 
@@ -260,16 +307,30 @@ public abstract class AsciidoctorConfigBase extends ConfigurationBase {
             objectBuilder.add("header_footer", getHeader_footer());
         }
 
+        addAdditionalAttributesToJson(objectBuilder);
+
         objectBuilder.add("attributes", attributesObject);
 
         return objectBuilder.build();
     }
+	
 
-    @Override
+    protected void addAdditionalAttributesToJson(JsonObjectBuilder objectBuilder) {
+	}
+
+	@Override
     public void save(ActionEvent... actionEvent) {
         infoLabel.setText("Saving...");
         saveJson(getJSON());
         fadeOut(infoLabel, "Saved...");
+    }
+    
+    public interface LoadedAttributes {
+    	
+    }
+    
+    static class NoAttributes implements LoadedAttributes {
+    	
     }
 
 

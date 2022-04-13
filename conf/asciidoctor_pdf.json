@@ -1,0 +1,11 @@
+{
+	"backend": "pdf",
+	"safe": "unsafe",
+	"header_footer": true,
+	"converter": "ASCIIDOCTOR",
+	"attributes": {
+		"allow-uri-read": "true",
+		"source-highlighter": "rouge",
+		"icons": "font"
+	}
+}

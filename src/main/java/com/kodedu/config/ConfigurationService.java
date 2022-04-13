@@ -36,9 +36,10 @@ public class ConfigurationService {
     private final TerminalConfigBean terminalConfigBean;
     private final ExtensionConfigBean extensionConfigBean;
     private VBox configBox;
+    private final PdfConfigBean pdfConfigBean;
 
     @Autowired
-    public ConfigurationService(LocationConfigBean locationConfigBean, EditorConfigBean editorConfigBean, PreviewConfigBean previewConfigBean, HtmlConfigBean htmlConfigBean, DocbookConfigBean docbookConfigBean, ApplicationController controller, StoredConfigBean storedConfigBean, ThreadService threadService, SpellcheckConfigBean spellcheckConfigBean, TerminalConfigBean terminalConfigBean, ExtensionConfigBean extensionConfigBean) {
+    public ConfigurationService(LocationConfigBean locationConfigBean, EditorConfigBean editorConfigBean, PreviewConfigBean previewConfigBean, HtmlConfigBean htmlConfigBean, DocbookConfigBean docbookConfigBean, ApplicationController controller, StoredConfigBean storedConfigBean, ThreadService threadService, SpellcheckConfigBean spellcheckConfigBean, TerminalConfigBean terminalConfigBean, ExtensionConfigBean extensionConfigBean, PdfConfigBean pdfConfigBean) {
         this.locationConfigBean = locationConfigBean;
         this.editorConfigBean = editorConfigBean;
         this.previewConfigBean = previewConfigBean;
@@ -50,6 +51,7 @@ public class ConfigurationService {
         this.spellcheckConfigBean = spellcheckConfigBean;
         this.terminalConfigBean = terminalConfigBean;
         this.extensionConfigBean = extensionConfigBean;
+        this.pdfConfigBean = pdfConfigBean;
     }
 
     public void loadConfigurations(Runnable... runnables) {
@@ -63,6 +65,7 @@ public class ConfigurationService {
         spellcheckConfigBean.load();
         terminalConfigBean.load();
         extensionConfigBean.load();
+        pdfConfigBean.load();
 
         List<ConfigurationBase> configBeanList = Arrays.asList(
                 editorConfigBean,
@@ -72,7 +75,8 @@ public class ConfigurationService {
                 htmlConfigBean,
                 docbookConfigBean,
 //                odfConfigBean,
-                extensionConfigBean
+                extensionConfigBean,
+                pdfConfigBean
 //                ,spellcheckConfigBean
         );
 

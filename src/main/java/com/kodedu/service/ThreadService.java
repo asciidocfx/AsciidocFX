@@ -19,13 +19,24 @@ public interface ThreadService {
 
     public ScheduledFuture<?> scheduleWithDelay(Runnable runnable, long initialDelay, long delay, TimeUnit timeUnit);
 
-    // Runs Task in background thread pool
+    /**
+     * Runs Task in background thread pool
+     * @param <T>
+     * @param runnable
+     * @return
+     */
     public <T> Future<?> runTaskLater(Runnable runnable);
 
-    // Runs task in JavaFX Thread
+    /**
+     *  Runs task in JavaFX Thread
+     *  @param consumer
+     */
     public void runActionLater(Consumer<ActionEvent> consumer);
 
-    // Runs task in JavaFX Thread
+    /**
+     *  Runs task in JavaFX Thread
+     *  @param runnable
+     */
     public void runActionLater(final Runnable runnable);
 
     public void runActionLater(Runnable runnable, boolean force);

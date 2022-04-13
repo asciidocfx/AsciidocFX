@@ -21,6 +21,7 @@ import com.kodedu.service.convert.docbook.DocBookConverter;
 import com.kodedu.service.convert.ebook.EpubConverter;
 import com.kodedu.service.convert.ebook.MobiConverter;
 import com.kodedu.service.convert.html.HtmlBookConverter;
+import com.kodedu.service.convert.pdf.PdfBookConverter;
 import com.kodedu.service.convert.slide.SlideConverter;
 import com.kodedu.service.extension.MathJaxService;
 import com.kodedu.service.extension.MermaidService;
@@ -253,8 +254,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     private HtmlBookConverter htmlBookService;
 
     @Autowired
-    @Qualifier("pdfBookConverter")
-    private DocumentConverter pdfBookConverter;
+    private PdfBookConverter pdfBookConverter;
 
     @Autowired
     private EpubConverter epubConverter;

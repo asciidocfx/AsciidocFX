@@ -778,7 +778,7 @@ public class EditorConfigBean extends ConfigurationBase {
                 .add("previewScreenY", getPreviewScreenY())
                 .add("previewScreenWidth", getPreviewScreenWidth())
                 .add("previewScreenHeight", getPreviewScreenHeight())
-                .add("foldStyle", getFoldStyle().name())
+                .add("sStyle", getFoldStyle().name())
                 .add("hangFileSizeLimit", getHangFileSizeLimit());
 
         return objectBuilder.build();
