@@ -3,7 +3,7 @@
 You can use (((ditaa)))ditaa syntax to draw diagrams:
 
 .Ditaa http://ditaa.sourceforge.net/
-[ditaa,file="ditaa-example.png"]
+[ditaa,file="images/ditaa-example.png"]
 --
     +--------+   +-------+    +-------+
     |        | --+ ditaa +--> |       |

@@ -3,7 +3,7 @@
 http://www.mathjax.org/[MathJax] is an open source JavaScript display engine for (((mathematics)))mathematics that works in all browsers. In addition to png output, you can produce svg output also. Just change the extension.
 
 .Tex Example
-[math,file="tex-formula.png"]
+[math,file="images/tex-formula.png"]
 --
 \begin{align}
 \dot{x} & = \sigma(y-x) \\
@@ -15,7 +15,7 @@ http://www.mathjax.org/[MathJax] is an open source JavaScript display engine for
 You can use (((Tex)))Tex or (((MathML)))MathML languages for describing mathematical formulas in AsciidocFX. AsciidocFX converts this textual formulas as png image.
 
 .MathML Example
-[math,file="mathml-formula.png"]
+[math,file="images/mathml-formula.png"]
 --
 <math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
   <mi>x</mi>

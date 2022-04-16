@@ -31,7 +31,7 @@ public class AwesomeServiceImpl implements AwesomeService {
 
         FontIcon fontIcon = new FontIcon(FontAwesome.FILE_O);
 
-        if (Files.isDirectory(path)) {
+        if (Files.isDirectory(path) && path.isAbsolute()) {
             fontIcon.setIconCode(FontAwesome.FOLDER_O);
         } else {
             if (pathResolver.isAsciidoc(path) || pathResolver.isMarkdown(path))
@@ -56,6 +56,8 @@ public class AwesomeServiceImpl implements AwesomeService {
                 fontIcon.setIconCode(FontAwesome.FILE_POWERPOINT_O);
             if (pathResolver.isBash(path))
                 fontIcon.setIconCode(FontAwesome.TERMINAL);
+            if (pathResolver.isCSS(path))
+                fontIcon.setIconCode(FontAwesome.CSS3);
         }
 
         return new Label(null, fontIcon);

@@ -14,11 +14,14 @@ import com.kodedu.service.ui.AwesomeService;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.Node;
 import javafx.scene.SnapshotParameters;
+import javafx.scene.control.Label;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.image.WritableImage;
 import javafx.scene.web.WebView;
 import netscape.javascript.JSObject;
+import org.kordamp.ikonli.fontawesome.FontAwesome;
+import org.kordamp.ikonli.javafx.FontIcon;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -149,6 +152,7 @@ public class TreeServiceImpl implements TreeService {
 
                     if (currentItemValue.getKey() > lastPos) {
 
+                        applyFolderIcon(lastItem);
                         lastItem.getChildren().add(currentItem);
                         continue;
                     }
@@ -158,6 +162,7 @@ public class TreeServiceImpl implements TreeService {
                         TreeItem<Tuple<Integer, String>> parent = lastItem.getParent();
                         if (Objects.isNull(parent))
                             parent = fileView.getRoot();
+                        applyFolderIcon(parent);
                         parent.getChildren().add(currentItem);
                         continue;
                     }
@@ -180,6 +185,7 @@ public class TreeServiceImpl implements TreeService {
                             }
 
                             if (parent != null) {
+                                applyFolderIcon(parent);
                                 parent.getChildren().add(currentItem);
                             } else {
                                 throw new IllegalStateException("Tree view can't have multiple root parent. Current item: " + currentItemValue.getValue());
@@ -238,6 +244,11 @@ public class TreeServiceImpl implements TreeService {
         }
 
         current.getCache().put(imageTarget, hashCode);
+    }
+
+    private void applyFolderIcon(TreeItem<Tuple<Integer, String>> lastItem) {
+        Node icon = new Label(null, new FontIcon(FontAwesome.FOLDER_O));
+        lastItem.setGraphic(icon);
     }
 
     private TreeView getSnaphotTreeView() {

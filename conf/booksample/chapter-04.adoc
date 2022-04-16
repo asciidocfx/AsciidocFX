@@ -3,7 +3,7 @@
 You can use (((PlantUML)))PlantUML extension
 
 .UML http://plantuml.sourceforge.net/
-[uml,file="uml-diagram.png"]
+[uml,file="images/uml-diagram.png"]
 --
 abstract class AbstractList
 abstract AbstractCollection
@@ -32,7 +32,7 @@ annotation SuppressWarnings
 --
 
 .UML http://plantuml.sourceforge.net/ditaa.html
-[uml,file="ditaa-diagram.png"]
+[uml,file="images/ditaa-diagram.png"]
 --
 @startditaa
 +--------+   +-------+    +-------+
@@ -48,7 +48,7 @@ annotation SuppressWarnings
 --
 
 .UML http://plantuml.sourceforge.net/ditaa.html
-[uml,file="dot-diagram.png"]
+[uml,file="images/dot-diagram.png"]
 --
 @startdot
 digraph foo {
