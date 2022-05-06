@@ -1,14 +1,11 @@
 package com.kodedu.config;
 
 import java.nio.file.Path;
-import java.util.Objects;
 import java.util.ResourceBundle;
 
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 
-import org.asciidoctor.Attributes;
-import org.asciidoctor.AttributesBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -23,7 +20,6 @@ import com.kodedu.service.ThreadService;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.collections.ObservableList;
 
 
 @Component
@@ -52,21 +48,6 @@ public class PdfConfigBean extends AsciidoctorConfigBase<PdfConfigAttributes> {
     public Path getConfigPath() {
         return super.resolveConfigPath("asciidoctor_pdf.json");
     }
-
-	public Attributes getAsciiDocAttributes() {
-		AttributesBuilder attributesBuilder = Attributes.builder();
-
-		ObservableList<AttributesTable> attributes = getAttributes();
-		for (AttributesTable attribute : attributes) {
-			String key = attribute.getAttribute();
-			String value = attribute.getValue();
-
-			if (Objects.nonNull(key) || Objects.nonNull(value)) {
-				attributesBuilder.attribute(key, value);
-			}
-		}
-		return attributesBuilder.build();
-	}
 
 	@Override
 	protected PdfConfigAttributes loadAdditionalAttributes(JsonObject jsonObject) {
@@ -126,7 +107,7 @@ public class PdfConfigBean extends AsciidoctorConfigBase<PdfConfigAttributes> {
 	}
 
 
-	static class PdfConfigAttributes implements LoadedAttributes {
+	public static class PdfConfigAttributes implements LoadedAttributes {
     	PdfConverterType converter;
     	
     	

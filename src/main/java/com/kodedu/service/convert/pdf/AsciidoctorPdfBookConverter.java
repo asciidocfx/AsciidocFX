@@ -1,5 +1,20 @@
 package com.kodedu.service.convert.pdf;
 
+import com.kodedu.config.AsciidoctorConfigBase;
+import com.kodedu.config.PdfConfigBean.PdfConfigAttributes;
+import com.kodedu.controller.ApplicationController;
+import com.kodedu.other.Current;
+import com.kodedu.other.ExtensionFilters;
+import com.kodedu.service.DirectoryService;
+import com.kodedu.service.ThreadService;
+import com.kodedu.service.convert.DocumentConverter;
+import com.kodedu.service.extension.chart.ChartProvider;
+import com.kodedu.service.extension.chart.FxChartBlockProcessor;
+import com.kodedu.service.ui.IndikatorService;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import java.io.File;
 import java.nio.file.Path;
 import java.util.function.Consumer;
@@ -10,19 +25,6 @@ import org.asciidoctor.Options;
 import org.asciidoctor.SafeMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
-import com.kodedu.config.PdfConfigBean;
-import com.kodedu.controller.ApplicationController;
-import com.kodedu.other.Current;
-import com.kodedu.other.ExtensionFilters;
-import com.kodedu.service.DirectoryService;
-import com.kodedu.service.ThreadService;
-import com.kodedu.service.convert.DocumentConverter;
-import com.kodedu.service.extension.chart.ChartProvider;
-import com.kodedu.service.extension.chart.FxChartBlockProcessor;
-import com.kodedu.service.ui.IndikatorService;
 
 /**
  * Created by usta on 09.04.2015.
@@ -37,12 +39,12 @@ public class AsciidoctorPdfBookConverter implements DocumentConverter<String> {
     private final ThreadService threadService;
     private final DirectoryService directoryService;
     private final Current current;
-	private final PdfConfigBean pdfConfigBean;
+	private final AsciidoctorConfigBase<PdfConfigAttributes> pdfConfigBean;
 	private final ChartProvider chartProvider;
 
     @Autowired
     public AsciidoctorPdfBookConverter(final ApplicationController asciiDocController,
-                            final IndikatorService indikatorService, final PdfConfigBean pdfConfigBean,
+                            final IndikatorService indikatorService, final AsciidoctorConfigBase<PdfConfigAttributes> pdfConfigBean,
                             final ThreadService threadService, final DirectoryService directoryService, final Current current,
                             final ChartProvider chartProvider) {
         this.asciiDocController = asciiDocController;

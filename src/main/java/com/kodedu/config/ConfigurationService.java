@@ -1,6 +1,7 @@
 package com.kodedu.config;
 
 import com.kodedu.component.ToggleButtonBuilt;
+import com.kodedu.config.PdfConfigBean.PdfConfigAttributes;
 import com.kodedu.controller.ApplicationController;
 import com.kodedu.service.ThreadService;
 import javafx.geometry.Insets;
@@ -36,10 +37,10 @@ public class ConfigurationService {
     private final TerminalConfigBean terminalConfigBean;
     private final ExtensionConfigBean extensionConfigBean;
     private VBox configBox;
-    private final PdfConfigBean pdfConfigBean;
+    private final AsciidoctorConfigBase<PdfConfigAttributes> pdfConfigBean;
 
     @Autowired
-    public ConfigurationService(LocationConfigBean locationConfigBean, EditorConfigBean editorConfigBean, PreviewConfigBean previewConfigBean, HtmlConfigBean htmlConfigBean, DocbookConfigBean docbookConfigBean, ApplicationController controller, StoredConfigBean storedConfigBean, ThreadService threadService, SpellcheckConfigBean spellcheckConfigBean, TerminalConfigBean terminalConfigBean, ExtensionConfigBean extensionConfigBean, PdfConfigBean pdfConfigBean) {
+    public ConfigurationService(LocationConfigBean locationConfigBean, EditorConfigBean editorConfigBean, PreviewConfigBean previewConfigBean, HtmlConfigBean htmlConfigBean, DocbookConfigBean docbookConfigBean, ApplicationController controller, StoredConfigBean storedConfigBean, ThreadService threadService, SpellcheckConfigBean spellcheckConfigBean, TerminalConfigBean terminalConfigBean, ExtensionConfigBean extensionConfigBean, AsciidoctorConfigBase<PdfConfigAttributes> pdfConfigBean) {
         this.locationConfigBean = locationConfigBean;
         this.editorConfigBean = editorConfigBean;
         this.previewConfigBean = previewConfigBean;

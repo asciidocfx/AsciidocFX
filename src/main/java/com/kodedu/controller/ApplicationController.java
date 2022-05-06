@@ -7,6 +7,7 @@ import com.kodedu.animation.GifExporterFX;
 import com.kodedu.boot.AppStarter;
 import com.kodedu.component.*;
 import com.kodedu.config.*;
+import com.kodedu.engine.AsciidocAsciidoctorjConverter;
 import com.kodedu.engine.AsciidocConverterProvider;
 import com.kodedu.engine.AsciidocWebkitConverter;
 import com.kodedu.helper.IOHelper;
@@ -207,6 +208,9 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     @Autowired
     public AsciidocWebkitConverter asciidocWebkitConverter;
+
+    @Autowired
+    public AsciidocAsciidoctorjConverter acAsciidocAsciidoctorjConverter;
 
     @Autowired
     private EditorConfigBean editorConfigBean;
@@ -2079,9 +2083,12 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     }
 
     @WebkitCall(from = "index")
-    public void finishOutline() {
+	public void finishOutline() {
+		finishOutline(outlineList);
+	}
 
-        threadService.runActionLater(() -> {
+    public void finishOutline(List<Section> sections) {
+	      threadService.runActionLater(() -> {
 
             if (outlineTreeView.getRoot() == null) {
                 TreeItem<Section> rootItem = new TreeItem<>();
@@ -2106,11 +2113,11 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                 });
             }
 
-            if (outlineList.size() > 0) {
+            if (sections.size() > 0) {
                 outlineTreeView.getRoot().getChildren().clear();
             }
 
-            for (Section section : outlineList) {
+            for (Section section : sections) {
                 TreeItem<Section> sectionItem = new TreeItem<>(section);
                 sectionItem.setExpanded(true);
                 outlineTreeView.getRoot().getChildren().add(sectionItem);
@@ -2123,10 +2130,8 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                     this.addSubSections(subItem, subsection.getSubsections());
                 }
             }
-
-        });
-
-    }
+        });	
+	}
 
     private void addSubSections(TreeItem<Section> subItem, TreeSet<Section> outlineList) {
         for (Section section : outlineList) {

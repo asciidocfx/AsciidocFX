@@ -45,13 +45,16 @@ public class FxChartBlockProcessor extends BlockProcessor {
 		String imagesDir = String.valueOf(parent.getDocument().getAttribute("imagesdir"));
 		String chartContent = reader.read();
 		String chartType = String.valueOf(attributes.get("2"));
-		String imageTarget = String.valueOf(attributes.get("file"));
+		
+		String imageFile = String.valueOf(attributes.get("file"));
+		String imageTarget = String.format("%s/%s", imagesDir, imageFile);
+
 		var optMap = parseChartOptions(String.valueOf(attributes.get("opt")));
 		
 		
 		// FX diagrams must be created in FX Thread
-		final FutureTask<Boolean> chartBuilderTask = new FutureTask<Boolean>(() ->		
-		chartProvider.getProvider(chartType).chartBuild(chartContent, imagesDir, imageTarget, optMap));
+		final FutureTask<Boolean> chartBuilderTask = new FutureTask<Boolean>(
+		        () -> chartProvider.getProvider(chartType).chartBuild(chartContent, imagesDir, imageTarget, optMap));
 		threadService.runActionLater(chartBuilderTask);
 		try {
 			chartBuilderTask.get(1, TimeUnit.MINUTES);
@@ -63,7 +66,7 @@ public class FxChartBlockProcessor extends BlockProcessor {
 		// Not sure why, but it seems that it only works if target is set afterwards
 		// https://stackoverflow.com/questions/71595454/create-image-block-with-asciidocj/71849631#71849631
 		Block block = createBlock(parent, "image", Collections.emptyMap());
-		block.setAttribute("target", imageTarget, true);
+		block.setAttribute("target", imageFile, true);
 		return block;
 	}
 

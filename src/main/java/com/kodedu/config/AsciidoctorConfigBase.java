@@ -22,6 +22,8 @@ import javax.json.JsonReader;
 import javax.json.JsonString;
 import javax.json.JsonValue;
 
+import org.asciidoctor.Attributes;
+import org.asciidoctor.AttributesBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -325,7 +327,22 @@ public abstract class AsciidoctorConfigBase<T extends LoadedAttributes> extends 
         fadeOut(infoLabel, "Saved...");
     }
     
-    public interface LoadedAttributes {
+    public Attributes getAsciiDocAttributes() {
+		AttributesBuilder attributesBuilder = Attributes.builder();
+	
+		ObservableList<AttributesTable> attributes = getAttributes();
+		for (AttributesTable attribute : attributes) {
+			String key = attribute.getAttribute();
+			String value = attribute.getValue();
+	
+			if (Objects.nonNull(key) || Objects.nonNull(value)) {
+				attributesBuilder.attribute(key, value);
+			}
+		}
+		return attributesBuilder.build();
+	}
+
+	public interface LoadedAttributes {
     	
     }
     
