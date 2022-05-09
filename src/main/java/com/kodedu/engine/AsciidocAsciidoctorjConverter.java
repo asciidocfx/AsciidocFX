@@ -2,7 +2,6 @@ package com.kodedu.engine;
 
 import com.kodedu.component.ViewPanel;
 import com.kodedu.config.AsciidoctorConfigBase;
-import com.kodedu.config.DocbookConfigBean;
 import com.kodedu.config.EditorConfigBean;
 import com.kodedu.config.HtmlConfigBean;
 import com.kodedu.config.PreviewConfigBean;
@@ -13,9 +12,6 @@ import com.kodedu.other.Current;
 import com.kodedu.outline.Outliner;
 import com.kodedu.outline.Section;
 import com.kodedu.service.ThreadService;
-import com.kodedu.service.extension.DataLineProcessor;
-import com.kodedu.service.extension.chart.ChartProvider;
-import com.kodedu.service.extension.chart.FxChartBlockProcessor;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -28,7 +24,6 @@ import org.asciidoctor.Attributes;
 import org.asciidoctor.Options;
 import org.asciidoctor.SafeMode;
 import org.asciidoctor.ast.Document;
-import org.asciidoctor.jruby.ast.impl.DocumentImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,22 +33,20 @@ public class AsciidocAsciidoctorjConverter extends ViewPanel implements Asciidoc
     private final Logger logger = LoggerFactory.getLogger(AsciidocAsciidoctorjConverter.class);
 	
     private final PreviewConfigBean previewConfigBean;
-    private final DocbookConfigBean docbookConfigBean;
-    private final HtmlConfigBean htmlConfigBean;
-	private final ChartProvider chartProvider;
 	private final ThreadService threadService;
 
+	private final Asciidoctor doctor;
+
     @Autowired
-    public AsciidocAsciidoctorjConverter(ThreadService threadService, ApplicationController controller, Current current, EditorConfigBean editorConfigBean,
-    		ChartProvider chartProvider, PreviewConfigBean previewConfigBean,
-    		DocbookConfigBean docbookConfigBean, HtmlConfigBean htmlConfigBean) {
-        super(threadService, controller, current, editorConfigBean);
-        this.previewConfigBean = previewConfigBean;
-        this.docbookConfigBean = docbookConfigBean;
-        this.htmlConfigBean = htmlConfigBean;
-        this.chartProvider = chartProvider;
-        this.threadService = threadService;
-    }
+	public AsciidocAsciidoctorjConverter(ThreadService threadService, ApplicationController controller,
+	        Current current, EditorConfigBean editorConfigBean,
+	        PreviewConfigBean previewConfigBean, HtmlConfigBean htmlConfigBean,
+	        Asciidoctor doctor) {
+		super(threadService, controller, current, editorConfigBean);
+		this.previewConfigBean = previewConfigBean;
+		this.threadService = threadService;
+		this.doctor = doctor;
+	}
 
 	@Override
 	public ConverterResult convertDocbook(TextChangeEvent textChangeEvent) {
@@ -102,13 +95,6 @@ public class AsciidocAsciidoctorjConverter extends ViewPanel implements Asciidoc
 		SafeMode safe = convertSafe(configBean.getSafe());
 
 		Attributes attributes = configBean.getAsciiDocAttributes();
-
-		Asciidoctor doctor = Asciidoctor.Factory.create();
-		doctor.requireLibrary("asciidoctor-diagram");
-		doctor.javaExtensionRegistry()
-		      .block(new FxChartBlockProcessor(chartProvider,
-		              threadService))
-		      .treeprocessor(DataLineProcessor.class);
 		
 		var workdir = controller.getCurrent().currentTab().getParentOrWorkdir();
 

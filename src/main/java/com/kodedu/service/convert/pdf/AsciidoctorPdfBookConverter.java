@@ -8,8 +8,6 @@ import com.kodedu.other.ExtensionFilters;
 import com.kodedu.service.DirectoryService;
 import com.kodedu.service.ThreadService;
 import com.kodedu.service.convert.DocumentConverter;
-import com.kodedu.service.extension.chart.ChartProvider;
-import com.kodedu.service.extension.chart.FxChartBlockProcessor;
 import com.kodedu.service.ui.IndikatorService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,20 +38,20 @@ public class AsciidoctorPdfBookConverter implements DocumentConverter<String> {
     private final DirectoryService directoryService;
     private final Current current;
 	private final AsciidoctorConfigBase<PdfConfigAttributes> pdfConfigBean;
-	private final ChartProvider chartProvider;
+	private final Asciidoctor doctor;
 
     @Autowired
     public AsciidoctorPdfBookConverter(final ApplicationController asciiDocController,
                             final IndikatorService indikatorService, final AsciidoctorConfigBase<PdfConfigAttributes> pdfConfigBean,
-                            final ThreadService threadService, final DirectoryService directoryService, final Current current,
-                            final ChartProvider chartProvider) {
+                            final ThreadService threadService, final DirectoryService directoryService,
+                            final Current current, Asciidoctor doctor) {
         this.asciiDocController = asciiDocController;
         this.indikatorService = indikatorService;
         this.threadService = threadService;
         this.directoryService = directoryService;
         this.current = current;
         this.pdfConfigBean = pdfConfigBean;
-        this.chartProvider = chartProvider;
+        this.doctor = doctor;
     }
 
 
@@ -75,11 +73,6 @@ public class AsciidoctorPdfBookConverter implements DocumentConverter<String> {
 			
 			Attributes attributes = pdfConfigBean.getAsciiDocAttributes();
 			
-			Asciidoctor doctor = Asciidoctor.Factory.create();
-			doctor.requireLibrary("asciidoctor-diagram");
-			doctor.javaExtensionRegistry().block(new FxChartBlockProcessor(chartProvider,
-			                                                               threadService));
-
 			Options options = Options.builder()
 			                         .baseDir(destFile.getParentFile())
 			                         .toFile(destFile)

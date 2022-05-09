@@ -17,6 +17,11 @@
 package com.kodedu.boot;
 
 import com.kodedu.controller.ApplicationController;
+import com.kodedu.service.ThreadService;
+import com.kodedu.service.extension.DataLineProcessor;
+import com.kodedu.service.extension.chart.ChartProvider;
+import com.kodedu.service.extension.chart.FxChartBlockProcessor;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
@@ -30,6 +35,8 @@ import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
 import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
 
 import java.util.Base64;
+
+import org.asciidoctor.Asciidoctor;
 
 
 @Configuration
@@ -61,6 +68,17 @@ public class SpringAppConfig extends SpringBootServletInitializer implements Web
     public Base64.Encoder base64Encoder() {
         return Base64.getEncoder();
     }
+    
+    @Bean
+	public Asciidoctor asciidoctor(ThreadService threadService, ChartProvider chartProvider) {
+		Asciidoctor doctor = Asciidoctor.Factory.create();
+		doctor.requireLibrary("asciidoctor-diagram");
+		doctor.javaExtensionRegistry()
+		      .block(new FxChartBlockProcessor(chartProvider,
+		              threadService))
+		      .treeprocessor(DataLineProcessor.class);
+		return doctor;
+	}
 
 
 }
