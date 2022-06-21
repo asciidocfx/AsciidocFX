@@ -3,6 +3,7 @@ package com.kodedu.service.impl;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
+
 import org.springframework.stereotype.Component;
 
 import com.kodedu.service.Buff;
@@ -16,9 +17,8 @@ import java.util.function.Supplier;
 /**
  * Created by usta on 25.12.2014.
  */
-@Component
+@Component(ThreadService.label)
 public class ThreadServiceImpl implements ThreadService {
-
     private final ExecutorService threadPollWorker;
     private final ScheduledExecutorService scheduledWorker;
     private final ConcurrentHashMap<String, Buff> buffMap;

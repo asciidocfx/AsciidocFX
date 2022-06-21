@@ -15,7 +15,7 @@ import java.lang.reflect.Field;
 /**
  * Created by usta on 25.01.2015.
  */
-@Component
+@Component(TooltipTimeFixService.label)
 public class TooltipTimeFixServiceImpl implements TooltipTimeFixService {
 
     private final Logger logger = LoggerFactory.getLogger(TooltipTimeFixService.class);

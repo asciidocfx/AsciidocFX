@@ -29,6 +29,9 @@ idea/
 *.iml
 *.iws
 
+.project
+.settings/
+
 # OSX
 .DS_Store
 
@@ -49,3 +52,4 @@ nashorn_code_cache
 jmods/mac-jars/
 
 jars/
+

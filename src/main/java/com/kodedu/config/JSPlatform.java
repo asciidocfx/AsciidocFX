@@ -6,7 +6,9 @@ package com.kodedu.config;
 public enum JSPlatform {
 
     Webkit("webkit"),
-    Nashorn("nashorn"),;
+    Nashorn("nashorn"),
+    Asciidoctorj("asciidoctorj")
+    ;
 
     private final String value;
 

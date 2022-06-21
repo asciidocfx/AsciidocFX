@@ -13,18 +13,30 @@ import java.util.function.Supplier;
  * Created by usta on 25.12.2014.
  */
 public interface ThreadService {
+    public final static String label = "core::service::ThreadService";
 
     public ScheduledFuture<?> schedule(Runnable runnable, long delay, TimeUnit timeUnit);
 
     public ScheduledFuture<?> scheduleWithDelay(Runnable runnable, long initialDelay, long delay, TimeUnit timeUnit);
 
-    // Runs Task in background thread pool
+    /**
+     * Runs Task in background thread pool
+     * @param <T>
+     * @param runnable
+     * @return
+     */
     public <T> Future<?> runTaskLater(Runnable runnable);
 
-    // Runs task in JavaFX Thread
+    /**
+     *  Runs task in JavaFX Thread
+     *  @param consumer
+     */
     public void runActionLater(Consumer<ActionEvent> consumer);
 
-    // Runs task in JavaFX Thread
+    /**
+     *  Runs task in JavaFX Thread
+     *  @param runnable
+     */
     public void runActionLater(final Runnable runnable);
 
     public void runActionLater(Runnable runnable, boolean force);

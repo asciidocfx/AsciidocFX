@@ -16,6 +16,8 @@ import com.kodedu.component.MyTab;
  */
 public interface TabService {
 
+    public final static String label = "core::service::ui::TabService";
+
     public void closeFirstNewTab();
 
     public void addTab(Path path, Runnable... runnables);

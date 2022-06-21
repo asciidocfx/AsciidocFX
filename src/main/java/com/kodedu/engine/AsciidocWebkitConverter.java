@@ -153,7 +153,6 @@ public class AsciidocWebkitConverter extends ViewPanel implements AsciidocConver
     }
 
     private CompletableFuture<ConverterResult> convertContent(String functionName, String asciidoc, JsonObject config) {
-
         final CompletableFuture<ConverterResult> completableFuture = new CompletableFuture();
         final String taskId = UUID.randomUUID().toString();
 
@@ -185,6 +184,7 @@ public class AsciidocWebkitConverter extends ViewPanel implements AsciidocConver
 
     @Override
     public ConverterResult convertAsciidoc(TextChangeEvent textChangeEvent) {
+		logger.debug("Using WebkitEngine to convert Asciidoc");
         String text = textChangeEvent.getText();
         return convert("convertAsciidoc", text, updateConfig(textChangeEvent, previewConfigBean.getJSON()));
     }

@@ -8,5 +8,7 @@ import java.nio.file.Path;
  */
 public interface AwesomeService {
 
+    public final static String label = "core::service::ui::AwesomeService";
+
     public Node getIcon(final Path path);
 }

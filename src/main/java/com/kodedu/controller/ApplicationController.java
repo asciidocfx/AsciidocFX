@@ -7,6 +7,7 @@ import com.kodedu.animation.GifExporterFX;
 import com.kodedu.boot.AppStarter;
 import com.kodedu.component.*;
 import com.kodedu.config.*;
+import com.kodedu.engine.AsciidocAsciidoctorjConverter;
 import com.kodedu.engine.AsciidocConverterProvider;
 import com.kodedu.engine.AsciidocWebkitConverter;
 import com.kodedu.helper.IOHelper;
@@ -21,6 +22,7 @@ import com.kodedu.service.convert.docbook.DocBookConverter;
 import com.kodedu.service.convert.ebook.EpubConverter;
 import com.kodedu.service.convert.ebook.MobiConverter;
 import com.kodedu.service.convert.html.HtmlBookConverter;
+import com.kodedu.service.convert.pdf.PdfBookConverter;
 import com.kodedu.service.convert.slide.SlideConverter;
 import com.kodedu.service.extension.MathJaxService;
 import com.kodedu.service.extension.MermaidService;
@@ -84,6 +86,7 @@ import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import javax.annotation.PostConstruct;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
@@ -207,6 +210,9 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     public AsciidocWebkitConverter asciidocWebkitConverter;
 
     @Autowired
+    public AsciidocAsciidoctorjConverter acAsciidocAsciidoctorjConverter;
+
+    @Autowired
     private EditorConfigBean editorConfigBean;
 
     @Autowired
@@ -252,8 +258,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     private HtmlBookConverter htmlBookService;
 
     @Autowired
-    @Qualifier("pdfBookConverter")
-    private DocumentConverter pdfBookConverter;
+    private PdfBookConverter pdfBookConverter;
 
     @Autowired
     private EpubConverter epubConverter;
@@ -302,6 +307,9 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     @Autowired
     private SpellcheckConfigBean spellcheckConfigBean;
+
+    @Autowired
+    private EventService eventService;
 
     private Stage stage;
     private List<WebSocketSession> sessionList = new ArrayList<>();
@@ -372,6 +380,15 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     private Scene asciidocTableScene;
     private Scene markdownTableScene;
     private String VERSION_PATTERN = "\\.AsciidocFX-\\d+\\.\\d+\\.\\d+";
+
+    @PostConstruct
+    public void install_listeners() {
+        // Listen to working directory update events
+        eventService.subscribe(DirectoryService.WORKING_DIRECTORY_UPDATE_EVENT, event -> {
+            Path path = (Path) event.getData();
+            getStage().setTitle(String.format("AsciidocFX - %s", path));
+        });
+    }
 
     public void createAsciidocTable() {
         asciidocTableStage.showAndWait();
@@ -1164,15 +1181,13 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     }
 
     private void deleteSelectedItems(Event event) {
-        List<TreeItem<Item>> selectedItems = fileSystemView
+        List<TreeItem<Item>> selectedItems = new ArrayList<>(fileSystemView
                 .getSelectionModel()
-                .getSelectedItems()
-                .stream()
-                .collect(Collectors.toList());
+                .getSelectedItems());
 
         List<Path> pathList = selectedItems.stream()
-                .map(e -> e.getValue())
-                .map(e -> e.getPath())
+                .map(TreeItem::getValue)
+                .map(Item::getPath)
                 .collect(Collectors.toList());
 
         AlertHelper.deleteAlert(pathList).ifPresent(btn -> {
@@ -2068,9 +2083,12 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     }
 
     @WebkitCall(from = "index")
-    public void finishOutline() {
+	public void finishOutline() {
+		finishOutline(outlineList);
+	}
 
-        threadService.runActionLater(() -> {
+    public void finishOutline(List<Section> sections) {
+	      threadService.runActionLater(() -> {
 
             if (outlineTreeView.getRoot() == null) {
                 TreeItem<Section> rootItem = new TreeItem<>();
@@ -2095,11 +2113,11 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                 });
             }
 
-            if (outlineList.size() > 0) {
+            if (sections.size() > 0) {
                 outlineTreeView.getRoot().getChildren().clear();
             }
 
-            for (Section section : outlineList) {
+            for (Section section : sections) {
                 TreeItem<Section> sectionItem = new TreeItem<>(section);
                 sectionItem.setExpanded(true);
                 outlineTreeView.getRoot().getChildren().add(sectionItem);
@@ -2112,10 +2130,8 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                     this.addSubSections(subItem, subsection.getSubsections());
                 }
             }
-
-        });
-
-    }
+        });	
+	}
 
     private void addSubSections(TreeItem<Section> subItem, TreeSet<Section> outlineList) {
         for (Section section : outlineList) {
@@ -2548,7 +2564,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             return String.format("link:%s[]", uri);
         }
 
-        PathFinderService fileReader = applicationContext.getBean("pathFinder", PathFinderService.class);
+        PathFinderService fileReader = applicationContext.getBean(PathFinderService.label, PathFinderService.class);
         Path path = fileReader.findPath(uri, parent);
 
         if (!Files.exists(path)) {
@@ -2818,6 +2834,17 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         logger.error(message.replace("\\\"","").replace("\"",""));
     }
 
+    /**
+     * Get tñe path to a selected item in tñe view or to tñe workspace if no item is selected
+     * @return The selected path or workspace (or an empty optional if neither is set)
+     */
+    private Optional<Path> getSelectedItemOrWorkspacePath() {
+        TreeItem<Item> selection = fileSystemView.getSelectionModel().getSelectedItem();
+        return Optional.ofNullable(selection)
+                .map(s -> s.getValue().getPath())
+                .or(() -> directoryService.getWorkingDirectory());
+    }
+
     @FXML
     public void createFolder(ActionEvent actionEvent) {
 
@@ -2830,16 +2857,14 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
             if (result.matches(DialogBuilder.FOLDER_NAME_REGEX)) {
 
-                Path path = fileSystemView.getSelectionModel().getSelectedItem()
-                        .getValue().getPath();
+                Path path = getSelectedItemOrWorkspacePath().orElseThrow(() -> {
+                    throw new IllegalStateException("Can't add a folder without a workspace or a selected item in the view");
+                });
 
                 Path folderPath = path.resolve(result);
 
                 threadService.runTaskLater(() -> {
                     IOHelper.createDirectories(folderPath);
-//                    threadService.runActionLater(() -> {
-//                        directoryService.changeWorkigDir(folderPath);
-//                    });
                 });
             }
         };
@@ -2863,14 +2888,17 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
             if (result.matches(DialogBuilder.FILE_NAME_REGEX)) {
 
-                Path path = fileSystemView.getSelectionModel().getSelectedItem()
-                        .getValue().getPath();
+                Path path = getSelectedItemOrWorkspacePath().orElseThrow(() -> {
+                    throw new IllegalStateException("Can't add a file without a workspace or a selected item in the view");
+                });
 
                 IOHelper.createDirectories(path);
                 Optional<Exception> exception = IOHelper.writeToFile(path.resolve(result), "", CREATE_NEW, WRITE);
 
                 if (!exception.isPresent()) {
                     tabService.addTab(path.resolve(result));
+                } else {
+                    logger.debug(exception.get().getMessage(), exception);
                 }
             }
         };
@@ -2921,13 +2949,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         dialog.showAndWait().ifPresent(consumer);
     }
 
-    /*
-    @WebkitCall
-    public void fillModeList(String mode) {
-        threadService.runActionLater(() -> {
-            modeList.add(mode);
-        });
-    }*/
     public void clearImageCache(Path imagePath) {
         rightShowerHider.getShowing()
                 .ifPresent(w -> w.clearImageCache(imagePath));
@@ -2974,8 +2995,9 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
             if (folderName.matches(DialogBuilder.FOLDER_NAME_REGEX)) {
 
-                Path path = fileSystemView.getSelectionModel().getSelectedItem()
-                        .getValue().getPath();
+                Path path = getSelectedItemOrWorkspacePath().orElseThrow(() -> {
+                    throw new IllegalStateException("Can't add a slide without a workspace or a selected item in the view");
+                });
 
                 Path folderPath = path.resolve(folderName);
 

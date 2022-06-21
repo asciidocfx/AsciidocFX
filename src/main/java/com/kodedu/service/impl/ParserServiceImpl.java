@@ -3,7 +3,6 @@ package com.kodedu.service.impl;
 import com.kodedu.controller.ApplicationController;
 import com.kodedu.helper.IOHelper;
 import com.kodedu.other.Constants;
-import com.kodedu.other.Current;
 import com.kodedu.service.DirectoryService;
 import com.kodedu.service.ParserService;
 import com.kodedu.service.PathResolverService;
@@ -33,23 +32,18 @@ import java.util.stream.Collectors;
 /**
  * Created by usta on 16.12.2014.
  */
-@Component
+@Component(ParserService.label)
 public class ParserServiceImpl implements ParserService {
-
-    private final ApplicationController asciiDocController;
-    private final Current current;
-    private final PathResolverService pathResolver;
-    private final DirectoryService directoryService;
-
-    private Logger logger = LoggerFactory.getLogger(ParserService.class);
+    @Autowired
+    private DirectoryService directoryService;
 
     @Autowired
-    public ParserServiceImpl(final ApplicationController asciiDocController, final Current current, final PathResolverService pathResolver, DirectoryService directoryService) {
-        this.asciiDocController = asciiDocController;
-        this.current = current;
-        this.pathResolver = pathResolver;
-        this.directoryService = directoryService;
-    }
+    private PathResolverService pathResolverService;
+
+    @Autowired
+    private ApplicationController asciiDocController;
+
+    private Logger logger = LoggerFactory.getLogger(ParserService.class);
 
     @Override
     public Optional<String> toIncludeBlock(List<File> dropFiles) {
@@ -70,7 +64,6 @@ public class ParserServiceImpl implements ParserService {
 
     @Override
     public Optional<String> toImageBlock(Image image) {
-
         Path currentPath = directoryService.currentParentOrWorkdir();
         IOHelper.createDirectories(currentPath.resolve("images"));
 
@@ -102,7 +95,7 @@ public class ParserServiceImpl implements ParserService {
 
         Path workDir = directoryService.workingDirectory();
         IOHelper.createDirectories(workDir.resolve("images"));
-        List<Path> paths = dropFiles.stream().map(File::toPath).filter(pathResolver::isImage).collect(Collectors.toList());
+        List<Path> paths = dropFiles.stream().map(File::toPath).filter(pathResolverService::isImage).collect(Collectors.toList());
 
         List<String> buffer = new LinkedList<>();
 

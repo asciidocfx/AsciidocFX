@@ -5,16 +5,12 @@ import com.kodedu.controller.ApplicationController;
 import com.kodedu.helper.IOHelper;
 import com.kodedu.other.Current;
 import com.kodedu.service.DirectoryService;
-import com.kodedu.service.FileWatchService;
+import com.kodedu.service.EventService;
 import com.kodedu.service.PathMapper;
-import com.kodedu.service.PathResolverService;
 import com.kodedu.service.ThreadService;
-import com.kodedu.service.ui.FileBrowseService;
 import javafx.application.Platform;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -35,35 +31,28 @@ import static java.util.Arrays.asList;
 /**
  * Created by usta on 25.12.2014.
  */
-@Component
+@Component(DirectoryService.label)
 public class DirectoryServiceImpl implements DirectoryService {
-
     private final ApplicationController controller;
-    private final FileBrowseService fileBrowser;
     private final Current current;
-    private final PathResolverService pathResolver;
     private final StoredConfigBean storedConfigBean;
-
-    private final Logger logger = LoggerFactory.getLogger(DirectoryService.class);
 
     private Optional<Path> workingDirectory = Optional.of(IOHelper.getPath(System.getProperty("user.home")));
     private Optional<File> initialDirectory = Optional.empty();
 
     private Supplier<Path> pathSaveSupplier;
-    private final FileWatchService fileWatchService;
-    private final ThreadService threadService;
     private final PathMapper pathMapper;
 
+    @Autowired
+    private EventService eventService;
+    @Autowired
+    private ThreadService threadService;
 
     @Autowired
-    public DirectoryServiceImpl(final ApplicationController controller, final FileBrowseService fileBrowser, final Current current, PathResolverService pathResolver, StoredConfigBean storedConfigBean, FileWatchService fileWatchService, ThreadService threadService, PathMapper pathMapper) {
+    public DirectoryServiceImpl(final ApplicationController controller, final Current current, StoredConfigBean storedConfigBean, PathMapper pathMapper) {
         this.controller = controller;
-        this.fileBrowser = fileBrowser;
         this.current = current;
-        this.pathResolver = pathResolver;
         this.storedConfigBean = storedConfigBean;
-        this.fileWatchService = fileWatchService;
-        this.threadService = threadService;
         this.pathMapper = pathMapper;
 
         pathSaveSupplier = () -> {
@@ -142,10 +131,9 @@ public class DirectoryServiceImpl implements DirectoryService {
         final File file = directoryChooser.showDialog(null);
 
         workingDirectory = Optional.ofNullable(file.toPath());
+        eventService.sendEvent(DirectoryService.WORKING_DIRECTORY_UPDATE_EVENT, workingDirectory.orElse(null));
 
-        workingDirectory.ifPresent(fileBrowser::browse);
-
-        return Objects.nonNull(file) ? file.toPath() : null;
+        return workingDirectory.orElse(null);
     }
 
     @Override
@@ -198,14 +186,11 @@ public class DirectoryServiceImpl implements DirectoryService {
             return;
 
         pathMapper.addRootPath(path);
-
         storedConfigBean.setWorkingDirectory(path.toString());
-
         this.setWorkingDirectory(Optional.of(path));
-        fileBrowser.browse(path);
         this.setInitialDirectory(Optional.ofNullable(path.toFile()));
-        controller.getStage().setTitle(String.format("AsciidocFX - %s", path));
 
+        eventService.sendEvent(DirectoryService.WORKING_DIRECTORY_UPDATE_EVENT, path);
     }
 
     @Override

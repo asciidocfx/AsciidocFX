@@ -3,8 +3,6 @@ package com.kodedu.service.impl;
 import com.kodedu.helper.IOHelper;
 import com.kodedu.service.PathResolverService;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.nio.file.FileSystems;
@@ -15,11 +13,8 @@ import java.nio.file.PathMatcher;
 /**
  * Created by usta on 07.09.2014.
  */
-@Component
+@Component(PathResolverService.label)
 public class PathResolverServiceImpl implements PathResolverService {
-
-    private final Logger logger = LoggerFactory.getLogger(PathResolverService.class);
-
     private final PathMatcher pdfMatcher = FileSystems.getDefault().getPathMatcher("glob:**.pdf");
     private final PathMatcher markdownMatcher = FileSystems.getDefault().getPathMatcher("glob:{**.md,**.markdown}");
     private final PathMatcher htmlMatcher = FileSystems.getDefault().getPathMatcher("glob:**.{htm,html}");
@@ -86,6 +81,7 @@ public class PathResolverServiceImpl implements PathResolverService {
                 || isHTML(path)
                 || isXML(path)
                 || isMarkdown(path);
+
     }
 
     @Override

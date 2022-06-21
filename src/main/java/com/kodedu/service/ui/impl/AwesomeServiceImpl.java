@@ -16,15 +16,11 @@ import java.nio.file.Path;
 /**
  * Created by usta on 16.12.2014.
  */
-@Component
+@Component(AwesomeService.label)
 public class AwesomeServiceImpl implements AwesomeService {
 
-    private final PathResolverService pathResolver;
-
     @Autowired
-    public AwesomeServiceImpl(final PathResolverService pathResolver) {
-        this.pathResolver = pathResolver;
-    }
+    private PathResolverService pathResolver;
 
     @Override
     public Node getIcon(final Path path) {

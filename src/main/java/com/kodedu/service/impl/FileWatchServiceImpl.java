@@ -28,17 +28,17 @@ import static java.nio.file.StandardWatchEventKinds.*;
 /**
  * Created by usta on 31.12.2014.
  */
-@Component
+@Component(FileWatchService.label)
 public class FileWatchServiceImpl implements FileWatchService {
-
     private final Logger logger = LoggerFactory.getLogger(FileWatchService.class);
 
     private WatchService watcher = null;
     private final ApplicationController controller;
-    private final ThreadService threadService;
-
     @Autowired
     private FileBrowseService fileBrowseService;
+
+    @Autowired
+    private ThreadService threadService;
 
     @Autowired
     private ApplicationContext applicationContext;
@@ -47,9 +47,8 @@ public class FileWatchServiceImpl implements FileWatchService {
     private final PathMapper pathMapper;
 
     @Autowired
-    public FileWatchServiceImpl(ApplicationController controller, ThreadService threadService, PathMapper pathMapper) {
+    public FileWatchServiceImpl(ApplicationController controller, PathMapper pathMapper) {
         this.controller = controller;
-        this.threadService = threadService;
         this.pathMapper = pathMapper;
     }
 
@@ -123,6 +122,7 @@ public class FileWatchServiceImpl implements FileWatchService {
             for (WatchEvent<?> event : watchEvents) {
                 WatchEvent.Kind<?> kind = event.kind();
                 if (kind == ENTRY_MODIFY && event.count() == 1) {
+                    @SuppressWarnings("unchecked")
                     WatchEvent<Path> ev = (WatchEvent<Path>) event;
                     Path modifiedPath = path.resolve(ev.context());
                     ObservableList<Tab> tabs = controller.getTabPane().getTabs();
@@ -151,6 +151,7 @@ public class FileWatchServiceImpl implements FileWatchService {
                 Path changedPath = null;
 
                 if (watchEvents.size() == 1) {
+                    @SuppressWarnings("unchecked")
                     WatchEvent<Path> ev = (WatchEvent<Path>) watchEvents.get(0);
                     changedPath = path.resolve(ev.context());
                     pathMapper.addPath(changedPath);

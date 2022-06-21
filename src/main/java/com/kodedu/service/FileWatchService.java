@@ -8,6 +8,7 @@ import java.util.Map;
  * Created by usta on 31.12.2014.
  */
 public interface FileWatchService {
+    public final static String label = "core::service::FileWatch";
 
     public void reCreateWatchService();
 
