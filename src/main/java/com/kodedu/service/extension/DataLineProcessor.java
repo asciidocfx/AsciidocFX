@@ -6,7 +6,9 @@ import java.util.Map;
 import org.asciidoctor.ast.Document;
 import org.asciidoctor.ast.StructuralNode;
 import org.asciidoctor.extension.Treeprocessor;
+import org.springframework.stereotype.Component;
 
+@Component
 public class DataLineProcessor extends Treeprocessor {
 	
 	private static final Map<Object, Object> SELECTOR = Map.of("traverse_documents", "true");

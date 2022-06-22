@@ -14,6 +14,7 @@ import com.kodedu.outline.Section;
 import com.kodedu.service.ThreadService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -35,6 +36,7 @@ public class AsciidocAsciidoctorjConverter extends ViewPanel implements Asciidoc
     private final PreviewConfigBean previewConfigBean;
 	private final ThreadService threadService;
 
+	@Qualifier("previewDoctor")
 	private final Asciidoctor doctor;
 
     @Autowired

@@ -556,14 +556,14 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     public void createFileTree(String tree, String type, String imagesDir, String imageTarget, String nodename) {
 
         threadService.runTaskLater(() -> {
-            treeService.createFileTree(tree, type, imagesDir, imageTarget, nodename);
+            treeService.createFileTree(tree, type, imagesDir, imageTarget, nodename,()->{});
         });
     }
 
     public void createHighlightFileTree(String tree, String type, String imagesDir, String imageTarget, String nodename) {
 
         threadService.runTaskLater(() -> {
-            treeService.createHighlightFileTree(tree, type, imagesDir, imageTarget, nodename);
+            treeService.createHighlightFileTree(tree, type, imagesDir, imageTarget, nodename,()->{});
         });
     }
 

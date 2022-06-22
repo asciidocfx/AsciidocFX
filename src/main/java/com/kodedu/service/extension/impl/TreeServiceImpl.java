@@ -27,14 +27,17 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.util.DigestUtils;
 import org.springframework.util.StringUtils;
 
 import java.awt.image.BufferedImage;
+import java.nio.charset.Charset;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -68,15 +71,19 @@ public class TreeServiceImpl implements TreeService {
         this.extensionConfigBean = extensionConfigBean;
     }
 
+
     @Override
-    public void createFileTree(String tree, String type, String imagesDir, String imageTarget, String nodename) {
+    public void createFileTree(String tree, String type, String imagesDir,
+                               String imageTarget, String nodename, Runnable completed) {
 
         Objects.requireNonNull(imageTarget);
 
         boolean cachedResource = imageTarget.contains("/afx/cache");
 
-        if (!imageTarget.endsWith(".png") && !cachedResource)
+        if (!imageTarget.endsWith(".png") && !cachedResource){
+            completed.run();
             return;
+        }
 
         Integer cacheHit = current.getCache().get(imageTarget);
 
@@ -220,7 +227,9 @@ public class TreeServiceImpl implements TreeService {
                     if (!cachedResource) {
 
                         Path treePath = path.resolve(imageTarget);
-                        IOHelper.createDirectories(path.resolve(imagesDir));
+                        if (Objects.nonNull(imagesDir)) {
+                            IOHelper.createDirectories(path.resolve(imagesDir));
+                        }
                         IOHelper.imageWrite((BufferedImage) bufferedImage, "png", treePath.toFile());
                         controller.clearImageCache(treePath);
 
@@ -233,11 +242,15 @@ public class TreeServiceImpl implements TreeService {
 
                     controller.getRootAnchor().getChildren().remove(fileView);
 
+                    completed.run();
+
                 });
 
             } catch (Exception e) {
                 logger.error("Problem occured while generating Filesystem Tree", e);
             }
+        } else {
+            completed.run();
         }
 
         current.getCache().put(imageTarget, hashCode);
@@ -258,13 +271,16 @@ public class TreeServiceImpl implements TreeService {
     }
 
     @Override
-    public void createHighlightFileTree(String tree, String type, String imagesDir, String imageTarget, String nodename) {
+    public void createHighlightFileTree(String tree, String type, String imagesDir,
+                                        String imageTarget, String nodename, Runnable completed) {
         Objects.requireNonNull(imageTarget);
 
         boolean cachedResource = imageTarget.contains("/afx/cache");
 
-        if (!imageTarget.endsWith(".png") && !cachedResource)
+        if (!imageTarget.endsWith(".png") && !cachedResource){
+            completed.run();
             return;
+        }
 
         Integer cacheHit = current.getCache().get(imageTarget);
 
@@ -282,7 +298,7 @@ public class TreeServiceImpl implements TreeService {
 
                 int zoom = extensionConfigBean.getDefaultImageZoom();
 
-                treeview.setPrefSize(3000, 6000);
+                treeview.setPrefSize(300, 600);
                 treeview.setZoom(zoom);
 
                 controller.getRootAnchor().getChildren().add(treeview);
@@ -294,7 +310,9 @@ public class TreeServiceImpl implements TreeService {
                 treeview.getEngine().setOnAlert(event -> {
                     String data = event.getData();
                     if ("READY".equals(data)) {
-                        ((JSObject) treeview.getEngine().executeScript("window")).call("executeTree", tree);
+                        JSObject window = (JSObject) treeview.getEngine().executeScript("window");
+                        window.setMember("treeview", treeview);
+                        window.call("executeTree", tree);
                     }
                     if ("RENDERED".equals(data)) {
 
@@ -308,13 +326,16 @@ public class TreeServiceImpl implements TreeService {
                             if (!cachedResource) {
 
                                 Path treePath = path.resolve(imageTarget);
-                                IOHelper.createDirectories(path.resolve(imagesDir));
+                                if (Objects.nonNull(imagesDir)) {
+                                    IOHelper.createDirectories(path.resolve(imagesDir));
+                                }
                                 IOHelper.imageWrite(trimmed, "png", treePath.toFile());
                                 controller.clearImageCache(treePath);
                             } else {
                                 binaryCacheService.putBinary(imageTarget, trimmed);
                                 controller.clearImageCache(imageTarget);
                             }
+                            completed.run();
 
                             threadService.runActionLater(() -> {
                                 controller.getRootAnchor().getChildren().remove(treeview);
@@ -325,6 +346,8 @@ public class TreeServiceImpl implements TreeService {
                 });
             });
 
+        } else {
+            completed.run();
         }
 
         current.getCache().put(imageTarget, hashCode);

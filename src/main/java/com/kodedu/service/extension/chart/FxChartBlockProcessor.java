@@ -24,8 +24,8 @@ import org.asciidoctor.extension.Reader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@Name("chart")                                              
-@Contexts({Contexts.OPEN})                            
+@Name("chart")
+@Contexts({Contexts.OPEN, Contexts.EXAMPLE, Contexts.SIDEBAR, Contexts.LITERAL, Contexts.LISTING})
 @ContentModel(ContentModel.EMPTY)
 @Component
 public class FxChartBlockProcessor extends BlockProcessor {

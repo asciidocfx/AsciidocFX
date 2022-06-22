@@ -5,6 +5,8 @@ package com.kodedu.service.extension;
  */
 public interface TreeService extends DefaultSettings {
     public final static String label = "core::service::extension::Tree";
-    public void createFileTree(String tree, String type, String imagesDir, String imageTarget, String nodename);
-    public void createHighlightFileTree(String tree, String type, String imagesDir, String imageTarget, String nodename);
+    public void createFileTree(String tree, String type, String imagesDir,
+                               String imageTarget, String nodename,Runnable completed);
+    public void createHighlightFileTree(String tree, String type, String imagesDir,
+                                        String imageTarget, String nodename,Runnable completed);
 }

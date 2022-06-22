@@ -13,6 +13,19 @@
 <pre><code class="treeview"></code></pre>
 <script>
 
+    hljs.addPlugin({
+        'after:highlightElement': ({ el, result }) => {
+            let view = document.querySelector(".treeview");
+            let zoom = treeview.getZoom();
+            let width = (view.offsetWidth * zoom) + 100;
+            let height = (view.offsetHeight * zoom) + 100;
+            treeview.setPrefSize(width, height);
+            setTimeout(() => {
+                alert("RENDERED");
+            }, 500);
+        }
+    });
+
     function executeTree(tree) {
         var view = document.querySelector(".treeview");
         view.innerHTML = tree;
@@ -20,12 +33,6 @@
         [].slice.call(trees).forEach(function (item) {
             hljs.highlightBlock(item);
         });
-        setTimeout(function () {
-            var width = view.offsetWidth;
-            var height = view.offsetHeight;
-            window.resizeTo(width*3, height*3);
-            alert("RENDERED");
-        }, 500);
     }
 
     (function () {
