@@ -18,7 +18,7 @@
         <mainClass>com.kodedu.boot.AppStarter</mainClass>
         <install4j.home>/home/travis/build/asciidocfx/AsciidocFX/install4j9.0.2</install4j.home>
         <install4j.licenseKey>${env.LICENSE_KEY_9}</install4j.licenseKey>
-        <openjfx.version>17.0.1</openjfx.version>
+        <openjfx.version>18.0.1</openjfx.version>
         <ikonli.version>12.2.0</ikonli.version>
         <jaxb.version>2.3.2</jaxb.version>
         <jacoco.version>0.8.7</jacoco.version>
@@ -192,7 +192,7 @@
         <dependency>
             <groupId>com.kodedu.terminalfx</groupId>
             <artifactId>terminalfx</artifactId>
-            <version>1.1.0</version>
+            <version>1.2.0</version>
             <exclusions>
                 <exclusion>
                     <artifactId>error_prone_annotations</artifactId>
