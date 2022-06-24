@@ -487,7 +487,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     @WebkitCall(from = "asciidoctor-math")
     public void math(String formula, String type, String imagesDir, String imageTarget, String nodename) {
 
-        mathJaxService.processFormula(formula, imagesDir, imageTarget);
+        mathJaxService.processFormula(formula, imagesDir, imageTarget, null);
     }
 
     @WebkitCall(from = "asciidoctor-mermaid")
@@ -499,7 +499,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     @WebkitCall(from = "mathjax.html")
     public void snapshotFormula(String formula, String imagesDir, String imageTarget) {
-        mathJaxService.snapshotFormula(formula, imagesDir, imageTarget);
+        mathJaxService.snapshotFormula(formula, imagesDir, imageTarget, null);
     }
 
     private void convertMobi() {

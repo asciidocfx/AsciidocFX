@@ -19,6 +19,7 @@ package com.kodedu.boot;
 import com.kodedu.controller.ApplicationController;
 import com.kodedu.service.ThreadService;
 import com.kodedu.service.extension.DataLineProcessor;
+import com.kodedu.service.extension.MathBlockProcessor;
 import com.kodedu.service.extension.TreeBlockProcessor;
 import com.kodedu.service.extension.chart.ChartProvider;
 import com.kodedu.service.extension.chart.FxChartBlockProcessor;
@@ -74,12 +75,14 @@ public class SpringAppConfig extends SpringBootServletInitializer implements Web
     @Bean
 	public Asciidoctor previewDoctor(FxChartBlockProcessor fxChartBlockProcessor,
                                      DataLineProcessor dataLineProcessor,
-                                     TreeBlockProcessor treeBlockProcessor) {
+                                     TreeBlockProcessor treeBlockProcessor,
+                                     MathBlockProcessor mathBlockProcessor) {
 		Asciidoctor doctor = Asciidoctor.Factory.create();
 		doctor.requireLibrary("asciidoctor-diagram");
 		doctor.javaExtensionRegistry()
 		      .block(fxChartBlockProcessor)
 		      .block(treeBlockProcessor)
+		      .block(mathBlockProcessor)
 		      .treeprocessor(dataLineProcessor);
 		return doctor;
 	}
@@ -87,12 +90,14 @@ public class SpringAppConfig extends SpringBootServletInitializer implements Web
     @Bean
     @Primary
     public Asciidoctor standardDoctor(FxChartBlockProcessor fxChartBlockProcessor,
-                                      TreeBlockProcessor treeBlockProcessor) {
+                                      TreeBlockProcessor treeBlockProcessor,
+                                      MathBlockProcessor mathBlockProcessor) {
         Asciidoctor doctor = Asciidoctor.Factory.create();
         doctor.requireLibrary("asciidoctor-diagram");
         doctor.javaExtensionRegistry()
                 .block(treeBlockProcessor)
-                .block(fxChartBlockProcessor);
+                .block(fxChartBlockProcessor)
+                .block(mathBlockProcessor);
         return doctor;
     }
 

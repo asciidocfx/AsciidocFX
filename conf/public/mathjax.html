@@ -49,21 +49,22 @@
 <script src="/afx/dynamic/mathjax/MathJax.js"></script>
 <script type="text/javascript">
 
-    function Atom(formula, imagesDir, imageTarget) {
+    function Atom(formula, imagesDir, imageTarget, completableFuture) {
         this.formula = formula;
         this.imagesDir = imagesDir;
         this.imageTarget = imageTarget;
+        this.completableFuture = completableFuture;
         this.hashCode = function () {
-            return (this.formula + this.imagesDir + this.imageTarget);
+            return (this.formula + this.imagesDir + this.imageTarget + this.completableFuture);
         }
     }
 
     var atoms = [];
     var cache = {};
     var starter = Promise.resolve();
-    function processFormula(formula, imagesDir, imageTarget) {
+    function processFormula(formula, imagesDir, imageTarget, completableFuture) {
 
-        atoms.push(new Atom(formula, imagesDir, imageTarget));
+        atoms.push(new Atom(formula, imagesDir, imageTarget, completableFuture));
 
         starter = starter.then(function () {
             return new Promise(function (resolved, rejected) {
@@ -95,7 +96,7 @@
                 if ((typeof MathJax) != "undefined") {
                     MathJax.Hub.Queue(["Typeset", MathJax.Hub], function () {
                         try {
-                            afx.snapshotFormula(popped.formula, popped.imagesDir, popped.imageTarget);
+                            afx.snapshotFormula(popped.formula, popped.imagesDir, popped.imageTarget, popped.completableFuture);
                             cache[popped.imageTarget] = hashCode;
                         }
                         catch (e) {

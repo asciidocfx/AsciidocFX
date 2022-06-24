@@ -25,6 +25,7 @@ import org.springframework.stereotype.Component;
 import java.awt.image.BufferedImage;
 import java.nio.file.Path;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * Created by usta on 25.12.2014.
@@ -59,9 +60,6 @@ public class MathJaxServiceImpl implements MathJaxService {
 
         webEngine().getLoadWorker().stateProperty().addListener((observableValue1, state, state2) -> {
             if (state2 == Worker.State.SUCCEEDED) {
-                JSObject window = getWindow();
-                if (window.getMember("afx").equals("undefined"))
-                    window.setMember("afx", controller);
 
                 if (!initialized) {
                     for (Runnable run : runnable) {
@@ -92,15 +90,17 @@ public class MathJaxServiceImpl implements MathJaxService {
     }
 
     @Override
-    public void processFormula(String formula, String imagesDir, String imageTarget) {
+    public void processFormula(String formula, String imagesDir, String imageTarget, CompletableFuture completableFuture) {
 
         threadService.runActionLater(() -> {
 
             if (initialized) {
-                getWindow().call("processFormula", formula, imagesDir, imageTarget);
+                getWindow().setMember("afx", this);
+                getWindow().call("processFormula", formula, imagesDir, imageTarget, completableFuture);
             } else {
                 initialize(() -> {
-                    getWindow().call("processFormula", formula, imagesDir, imageTarget);
+                    getWindow().setMember("afx", this);
+                    getWindow().call("processFormula", formula, imagesDir, imageTarget, completableFuture);
                 });
             }
 
@@ -129,15 +129,17 @@ public class MathJaxServiceImpl implements MathJaxService {
     }
 
     @Override
-    public void snapshotFormula(String formula, String imagesDir, String imageTarget) {
+    public void snapshotFormula(String formula, String imagesDir, String imageTarget, CompletableFuture completableFuture) {
 
         try {
             Objects.requireNonNull(imageTarget);
 
             boolean cachedResource = imageTarget.contains("/afx/cache");
 
-            if (!imageTarget.endsWith(".png") && !cachedResource)
+            if (!imageTarget.endsWith(".png") && !cachedResource){
+                completeSnapShot(completableFuture);
                 return;
+            }
 
             Integer cacheHit = current.getCache().get(imageTarget);
 
@@ -168,20 +170,38 @@ public class MathJaxServiceImpl implements MathJaxService {
                             });
                         }
 
+                        completeSnapShot(completableFuture);
+
                         current.getCache().put(imageTarget, hashCode);
                         logger.debug("MathJax extension is ended for {}", imageTarget);
 
                     } catch (Exception e) {
                         logger.error("Problem occured while generating MathJax png", e);
+                        completeSnapShot(completableFuture, e);
                         throw new RuntimeException(e);
                     }
                 });
+            }else{
+                completeSnapShot(completableFuture);
             }
         } catch (Exception e) {
             logger.error("Problem occured while generating MathJax png", e);
+            completeSnapShot(completableFuture, e);
             throw e;
         }
 
 
+    }
+
+    private void completeSnapShot(CompletableFuture completableFuture, Exception e) {
+        if(Objects.nonNull(completableFuture)){
+            completableFuture.completeExceptionally(e);
+        }
+    }
+
+    private void completeSnapShot(CompletableFuture completableFuture) {
+        if(Objects.nonNull(completableFuture)){
+            completableFuture.complete(null);
+        }
     }
 }
