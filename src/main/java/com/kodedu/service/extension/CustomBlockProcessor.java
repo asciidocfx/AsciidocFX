@@ -40,7 +40,7 @@ public abstract class CustomBlockProcessor extends BlockProcessor {
             imageTarget = parent.imageUri(imageName);
         }
 
-        imageName += "?" + imageMd5;
+        imageName += "?cache" + imageMd5;
         return new ImageInfo(imagesDir, imageName, imageTarget);
     }
 
