@@ -31,7 +31,11 @@ public abstract class CustomBlockProcessor extends BlockProcessor {
 
     private ImageInfo getImageInfo(Map<String, Object> attributes, StructuralNode parent, String content) {
         String imagesDir = getImagesDir(parent);
-        String imageName = (String) attributes.get("file");
+        String imageName = (String) attributes.getOrDefault("file", attributes.get("target"));
+        String format = (String) attributes.get("format");
+        if(Objects.nonNull(imageName) && Objects.nonNull(format)){
+            imageName = String.format("%s.%s", imageName, format);
+        }
         String imageTarget = null;
         String imageMd5 = cachedImageUri(content);
         if (Objects.isNull(imageName)) {
@@ -47,7 +51,7 @@ public abstract class CustomBlockProcessor extends BlockProcessor {
     }
 
     private String getImagesDir(StructuralNode parent) {
-        return (String) parent.getDocument().getAttribute("imagesdir");
+        return (String) parent.getDocument().getAttribute("imagesdir", "images");
     }
 
     private String cachedImageUri(String content) {

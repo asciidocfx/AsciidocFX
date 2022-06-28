@@ -19,7 +19,7 @@ public class CacheAppendRemoverProcessor extends Treeprocessor {
     @Override
     public Document process(Document document) {
         List<StructuralNode> nodes = document.findBy(SELECTOR);
-        for (StructuralNode node : nodes) {
+        for (Object node : nodes) {
             if (node instanceof BlockImpl block) {
                 if ("image".equals(block.getContext())) {
                     String target = (String) block.getAttribute("target");
