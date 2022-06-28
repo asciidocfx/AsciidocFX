@@ -9,20 +9,19 @@ import com.kodedu.service.DirectoryService;
 import com.kodedu.service.ThreadService;
 import com.kodedu.service.convert.DocumentConverter;
 import com.kodedu.service.ui.IndikatorService;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
-import java.io.File;
-import java.nio.file.Path;
-import java.util.function.Consumer;
-
 import org.asciidoctor.Asciidoctor;
 import org.asciidoctor.Attributes;
 import org.asciidoctor.Options;
 import org.asciidoctor.SafeMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
+
+import java.io.File;
+import java.nio.file.Path;
+import java.util.function.Consumer;
 
 /**
  * Created by usta on 09.04.2015.
@@ -44,7 +43,7 @@ public class AsciidoctorPdfBookConverter implements DocumentConverter<String> {
     public AsciidoctorPdfBookConverter(final ApplicationController asciiDocController,
                             final IndikatorService indikatorService, final AsciidoctorConfigBase<PdfConfigAttributes> pdfConfigBean,
                             final ThreadService threadService, final DirectoryService directoryService,
-                            final Current current, Asciidoctor doctor) {
+                            final Current current, @Qualifier("standardDoctor") Asciidoctor doctor) {
         this.asciiDocController = asciiDocController;
         this.indikatorService = indikatorService;
         this.threadService = threadService;
@@ -72,7 +71,10 @@ public class AsciidoctorPdfBookConverter implements DocumentConverter<String> {
 			SafeMode safe = convertSafe(pdfConfigBean.getSafe());
 			
 			Attributes attributes = pdfConfigBean.getAsciiDocAttributes();
-			
+			attributes.setExperimental(true);
+			attributes.setIgnoreUndefinedAttributes(true);
+			attributes.setAllowUriRead(true);
+
 			Options options = Options.builder()
 			                         .baseDir(destFile.getParentFile())
 			                         .toFile(destFile)
@@ -82,8 +84,7 @@ public class AsciidoctorPdfBookConverter implements DocumentConverter<String> {
 			                         .headerFooter(pdfConfigBean.getHeader_footer())
 			                         .attributes(attributes)
 			                         .build();
-			doctor.convert(asciidoc,
-			               options);
+			doctor.convert(asciidoc, options);
 
 			indikatorService.stopProgressBar();
 			logger.debug("PDF conversion ended");

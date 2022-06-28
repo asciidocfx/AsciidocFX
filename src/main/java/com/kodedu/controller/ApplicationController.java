@@ -2295,7 +2295,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                         try {
                             Map<String, String> optMap = parseChartOptions(options);
                             optMap.put("csv-file", csvFile);
-                            chartProvider.getProvider(chartType).chartBuild(csvContent, imagesDir, imageTarget, optMap);
+                            chartProvider.getProvider(chartType).chartBuild(csvContent, imagesDir, imageTarget, optMap, null);
 
                         } catch (Exception e) {
                             logger.info(e.getMessage(), e);
@@ -2316,7 +2316,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         threadService.runActionLater(() -> {
             try {
                 Map<String, String> optMap = parseChartOptions(options);
-                chartProvider.getProvider(chartType).chartBuild(chartContent, imagesDir, imageTarget, optMap);
+                chartProvider.getProvider(chartType).chartBuild(chartContent, imagesDir, imageTarget, optMap, null);
 
             } catch (Exception e) {
                 logger.info(e.getMessage(), e);

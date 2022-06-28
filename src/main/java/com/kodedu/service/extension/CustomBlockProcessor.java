@@ -4,11 +4,13 @@ import org.asciidoctor.ast.Block;
 import org.asciidoctor.ast.StructuralNode;
 import org.asciidoctor.extension.BlockProcessor;
 import org.asciidoctor.extension.Reader;
+import org.asciidoctor.log.LogRecord;
 import org.springframework.core.env.Environment;
 import org.springframework.util.DigestUtils;
 
 import java.nio.charset.Charset;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 

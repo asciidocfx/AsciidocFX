@@ -17,13 +17,13 @@
 package com.kodedu.boot;
 
 import com.kodedu.controller.ApplicationController;
-import com.kodedu.service.ThreadService;
+import com.kodedu.service.extension.CacheAppendRemoverProcessor;
 import com.kodedu.service.extension.DataLineProcessor;
 import com.kodedu.service.extension.MathBlockProcessor;
-import com.kodedu.service.extension.TreeBlockProcessor;
-import com.kodedu.service.extension.chart.ChartProvider;
+import com.kodedu.service.extension.FileTreeBlockProcessor;
 import com.kodedu.service.extension.chart.FxChartBlockProcessor;
 
+import org.asciidoctor.extension.ExtensionGroup;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
@@ -75,7 +75,7 @@ public class SpringAppConfig extends SpringBootServletInitializer implements Web
     @Bean
 	public Asciidoctor previewDoctor(FxChartBlockProcessor fxChartBlockProcessor,
                                      DataLineProcessor dataLineProcessor,
-                                     TreeBlockProcessor treeBlockProcessor,
+                                     FileTreeBlockProcessor treeBlockProcessor,
                                      MathBlockProcessor mathBlockProcessor) {
 		Asciidoctor doctor = Asciidoctor.Factory.create();
 		doctor.requireLibrary("asciidoctor-diagram");
@@ -90,14 +90,17 @@ public class SpringAppConfig extends SpringBootServletInitializer implements Web
     @Bean
     @Primary
     public Asciidoctor standardDoctor(FxChartBlockProcessor fxChartBlockProcessor,
-                                      TreeBlockProcessor treeBlockProcessor,
-                                      MathBlockProcessor mathBlockProcessor) {
+                                      FileTreeBlockProcessor treeBlockProcessor,
+                                      MathBlockProcessor mathBlockProcessor,
+                                      CacheAppendRemoverProcessor cacheAppendRemoverProcessor) {
         Asciidoctor doctor = Asciidoctor.Factory.create();
         doctor.requireLibrary("asciidoctor-diagram");
         doctor.javaExtensionRegistry()
-                .block(treeBlockProcessor)
                 .block(fxChartBlockProcessor)
-                .block(mathBlockProcessor);
+                .block(treeBlockProcessor)
+                .block(mathBlockProcessor)
+                .treeprocessor(cacheAppendRemoverProcessor);
+
         return doctor;
     }
 

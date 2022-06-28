@@ -21,6 +21,7 @@ import org.slf4j.LoggerFactory;
 
 import java.awt.image.BufferedImage;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * Created by usta on 31.03.2015.
@@ -42,11 +43,12 @@ public abstract class XYChartBuilderServiceImpl extends ChartBuilderServiceImpl 
     }
 
     @Override
-    public boolean chartBuild(String chartContent, String imagesDir, String imageTarget, Map<String, String> optMap) {
+    public boolean chartBuild(String chartContent, String imagesDir, String imageTarget, Map<String, String> optMap, CompletableFuture completableFuture) {
 
-        boolean chartBuild = super.chartBuild(chartContent, imagesDir, imageTarget, optMap);
+        boolean chartBuild = super.chartBuild(chartContent, imagesDir, imageTarget, optMap, completableFuture);
 
         if (!chartBuild) {
+            completableFuture.complete(null);
             return chartBuild;
         }
 
@@ -215,6 +217,7 @@ public abstract class XYChartBuilderServiceImpl extends ChartBuilderServiceImpl 
         BufferedImage bufferedImage = SwingFXUtils.fromFXImage(writableImage, null);
         IOHelper.createDirectories(currentRoot.resolve(imagesDir));
         IOHelper.imageWrite(bufferedImage, "png", imagePath.toFile());
+        completableFuture.complete(null);
         logger.debug("Chart extension is ended for {}", imageTarget);
         controller.clearImageCache(imagePath);
 

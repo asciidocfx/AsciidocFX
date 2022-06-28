@@ -36,14 +36,13 @@ public class AsciidocAsciidoctorjConverter extends ViewPanel implements Asciidoc
     private final PreviewConfigBean previewConfigBean;
 	private final ThreadService threadService;
 
-	@Qualifier("previewDoctor")
 	private final Asciidoctor doctor;
 
     @Autowired
 	public AsciidocAsciidoctorjConverter(ThreadService threadService, ApplicationController controller,
 	        Current current, EditorConfigBean editorConfigBean,
 	        PreviewConfigBean previewConfigBean, HtmlConfigBean htmlConfigBean,
-	        Asciidoctor doctor) {
+										 @Qualifier("previewDoctor") Asciidoctor doctor) {
 		super(threadService, controller, current, editorConfigBean);
 		this.previewConfigBean = previewConfigBean;
 		this.threadService = threadService;

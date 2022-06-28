@@ -8,6 +8,7 @@ import org.asciidoctor.extension.Name;
 import org.asciidoctor.extension.Reader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Scope;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
@@ -20,6 +21,7 @@ import java.util.concurrent.TimeUnit;
 @Contexts({Contexts.OPEN, Contexts.EXAMPLE, Contexts.SIDEBAR, Contexts.LITERAL, Contexts.LISTING})
 @ContentModel(ContentModel.EMPTY)
 @Component
+@Scope("prototype")
 public class MathBlockProcessor extends CustomBlockProcessor {
 
     private final Logger logger = LoggerFactory.getLogger(MathBlockProcessor.class);

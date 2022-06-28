@@ -4,15 +4,16 @@ import static java.util.Objects.nonNull;
 
 import com.kodedu.service.ThreadService;
 
+import com.kodedu.service.extension.CustomBlockProcessor;
+import com.kodedu.service.extension.ImageInfo;
+import org.springframework.context.annotation.Scope;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.FutureTask;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
+import java.util.concurrent.*;
 
 import org.asciidoctor.ast.Block;
 import org.asciidoctor.ast.ContentModel;
@@ -28,46 +29,43 @@ import org.slf4j.LoggerFactory;
 @Contexts({Contexts.OPEN, Contexts.EXAMPLE, Contexts.SIDEBAR, Contexts.LITERAL, Contexts.LISTING})
 @ContentModel(ContentModel.EMPTY)
 @Component
-public class FxChartBlockProcessor extends BlockProcessor {
+@Scope("prototype")
+public class FxChartBlockProcessor extends CustomBlockProcessor {
 
     private final Logger logger = LoggerFactory.getLogger(FxChartBlockProcessor.class);
 
     private final ChartProvider chartProvider;
 	private final ThreadService threadService;
     
-    public FxChartBlockProcessor(ChartProvider chartProvider, ThreadService threadService) {
-    	this.chartProvider = chartProvider;
+    public FxChartBlockProcessor(Environment environment, ChartProvider chartProvider, ThreadService threadService) {
+		super(environment);
+		this.chartProvider = chartProvider;
     	this.threadService = threadService;
 	}
 
 	@Override
-	public Object process(StructuralNode parent, Reader reader, Map<String, Object> attributes) {
-		String imagesDir = String.valueOf(parent.getDocument().getAttribute("imagesdir"));
-		String chartContent = reader.read();
+	protected Object process(StructuralNode parent, Reader reader, Map<String, Object> attributes, ImageInfo imageInfo, String content) {
 		String chartType = String.valueOf(attributes.get("2"));
-		
-		String imageFile = String.valueOf(attributes.get("file"));
-		String imageTarget = String.format("%s/%s", imagesDir, imageFile);
 
-		var optMap = parseChartOptions(String.valueOf(attributes.get("opt")));
-		
-		
-		// FX diagrams must be created in FX Thread
-		final FutureTask<Boolean> chartBuilderTask = new FutureTask<Boolean>(
-		        () -> chartProvider.getProvider(chartType).chartBuild(chartContent, imagesDir, imageTarget, optMap));
-		threadService.runActionLater(chartBuilderTask);
+		var optMap = parseChartOptions((String) attributes.get("opt"));
+
+		CompletableFuture completableFuture = new CompletableFuture();
+
+		completableFuture.runAsync(()->{
+			threadService.runActionLater(() -> {
+				chartProvider.getProvider(chartType).chartBuild(content, imageInfo.imagesDir(), imageInfo.imageTarget(), optMap, completableFuture);
+			});
+		}, threadService.executor());
+
 		try {
-			chartBuilderTask.get(1, TimeUnit.MINUTES);
-		} catch (InterruptedException | ExecutionException | TimeoutException e) {
-			logger.error("Could not create FX chart.", e);
-			return null;
+			completableFuture.get(10, TimeUnit.SECONDS);
+		} catch (Exception e) {
+			logger.error("Could not create FX chart. {}", content, e);
 		}
-		
+
 		// Not sure why, but it seems that it only works if target is set afterwards
 		// https://stackoverflow.com/questions/71595454/create-image-block-with-asciidocj/71849631#71849631
-		Block block = createBlock(parent, "image", Collections.emptyMap());
-		block.setAttribute("target", imageFile, true);
-		return block;
+		return createBlock(parent, imageInfo.imageName());
 	}
 
 	private Map<String, String> parseChartOptions(String options) {
