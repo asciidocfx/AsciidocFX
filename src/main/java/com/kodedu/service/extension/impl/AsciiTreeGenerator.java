@@ -1,4 +1,4 @@
-package com.kodedu.service.extension;
+package com.kodedu.service.extension.impl;
 
 import com.kodedu.helper.IOHelper;
 import org.springframework.stereotype.Component;

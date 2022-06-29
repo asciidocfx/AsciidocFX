@@ -1,4 +1,4 @@
-package com.kodedu.service.extension;
+package com.kodedu.service.extension.processor;
 
 import java.util.List;
 import java.util.Map;

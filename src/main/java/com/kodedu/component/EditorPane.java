@@ -10,7 +10,7 @@ import com.kodedu.keyboard.KeyHelper;
 import com.kodedu.service.DirectoryService;
 import com.kodedu.service.ParserService;
 import com.kodedu.service.ThreadService;
-import com.kodedu.service.extension.AsciiTreeGenerator;
+import com.kodedu.service.extension.impl.AsciiTreeGenerator;
 import com.kodedu.service.shortcut.ShortcutProvider;
 import com.kodedu.service.ui.TabService;
 import com.kodedu.spell.dictionary.Token;

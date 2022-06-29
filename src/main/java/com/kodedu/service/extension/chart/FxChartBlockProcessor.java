@@ -4,8 +4,10 @@ import static java.util.Objects.nonNull;
 
 import com.kodedu.service.ThreadService;
 
-import com.kodedu.service.extension.CustomBlockProcessor;
+import com.kodedu.service.extension.base.CustomBlockProcessor;
+import com.kodedu.service.extension.base.CustomProcessor;
 import com.kodedu.service.extension.ImageInfo;
+import org.asciidoctor.ast.ContentNode;
 import org.springframework.context.annotation.Scope;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
@@ -18,7 +20,6 @@ import java.util.concurrent.*;
 import org.asciidoctor.ast.Block;
 import org.asciidoctor.ast.ContentModel;
 import org.asciidoctor.ast.StructuralNode;
-import org.asciidoctor.extension.BlockProcessor;
 import org.asciidoctor.extension.Contexts;
 import org.asciidoctor.extension.Name;
 import org.asciidoctor.extension.Reader;
@@ -30,7 +31,7 @@ import org.slf4j.LoggerFactory;
 @ContentModel(ContentModel.EMPTY)
 @Component
 @Scope("prototype")
-public class FxChartBlockProcessor extends CustomBlockProcessor {
+public class FxChartBlockProcessor extends CustomBlockProcessor implements CustomProcessor {
 
     private final Logger logger = LoggerFactory.getLogger(FxChartBlockProcessor.class);
 
@@ -44,7 +45,7 @@ public class FxChartBlockProcessor extends CustomBlockProcessor {
 	}
 
 	@Override
-	protected Object process(StructuralNode parent, Reader reader, Map<String, Object> attributes, ImageInfo imageInfo, String content) {
+	public Object process(ContentNode parent, Reader reader, Map<String, Object> attributes, ImageInfo imageInfo, String content) {
 		String chartType = String.valueOf(attributes.get("2"));
 
 		var optMap = parseChartOptions((String) attributes.get("opt"));
@@ -65,7 +66,9 @@ public class FxChartBlockProcessor extends CustomBlockProcessor {
 
 		// Not sure why, but it seems that it only works if target is set afterwards
 		// https://stackoverflow.com/questions/71595454/create-image-block-with-asciidocj/71849631#71849631
-		return createBlock(parent, imageInfo.imageName());
+		Block block = createBlock((StructuralNode) parent, "image", Collections.emptyMap());
+		block.setAttribute("target", imageInfo.imageName(), true);
+		return block;
 	}
 
 	private Map<String, String> parseChartOptions(String options) {

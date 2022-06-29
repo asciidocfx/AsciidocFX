@@ -1,7 +1,12 @@
-package com.kodedu.service.extension;
+package com.kodedu.service.extension.math;
 
 import com.kodedu.service.ThreadService;
+import com.kodedu.service.extension.base.CustomBlockProcessor;
+import com.kodedu.service.extension.ImageInfo;
+import com.kodedu.service.extension.MathJaxService;
+import org.asciidoctor.ast.Block;
 import org.asciidoctor.ast.ContentModel;
+import org.asciidoctor.ast.ContentNode;
 import org.asciidoctor.ast.StructuralNode;
 import org.asciidoctor.extension.Contexts;
 import org.asciidoctor.extension.Name;
@@ -12,6 +17,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
+import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
@@ -36,8 +42,8 @@ public class MathBlockProcessor extends CustomBlockProcessor {
     }
 
     @Override
-    protected String preProcessContent(StructuralNode parent, Reader reader, Map<String, Object> attributes,
-                                       String content) {
+    public String preProcessContent(ContentNode parent, Reader reader, Map<String, Object> attributes,
+                                    String content) {
         var finalContent = content;
         var stemAttr = (String) attributes.getOrDefault("stem", "no_stem");
 
@@ -79,7 +85,7 @@ public class MathBlockProcessor extends CustomBlockProcessor {
     }
 
     @Override
-    protected Object process(StructuralNode parent, Reader reader, Map<String, Object> attributes, ImageInfo imageInfo, String content) {
+    public Object process(ContentNode parent, Reader reader, Map<String, Object> attributes, ImageInfo imageInfo, String content) {
 
         CompletableFuture completableFuture = new CompletableFuture();
 
@@ -93,7 +99,9 @@ public class MathBlockProcessor extends CustomBlockProcessor {
             logger.error("Error occured during tree generation. {}", content, e);
         }
 
-        return createBlock(parent, imageInfo.imageName());
+        Block block = createBlock((StructuralNode) parent, "image", Collections.emptyMap());
+        block.setAttribute("target", imageInfo.imageName(), true);
+        return block;
     }
 
     public String latexmathWrap(String content){

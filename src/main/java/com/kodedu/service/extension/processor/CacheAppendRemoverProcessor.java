@@ -1,4 +1,4 @@
-package com.kodedu.service.extension;
+package com.kodedu.service.extension.processor;
 
 import org.asciidoctor.ast.Document;
 import org.asciidoctor.ast.StructuralNode;

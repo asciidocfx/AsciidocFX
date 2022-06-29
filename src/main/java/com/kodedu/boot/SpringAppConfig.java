@@ -17,9 +17,15 @@
 package com.kodedu.boot;
 
 import com.kodedu.controller.ApplicationController;
-import com.kodedu.service.extension.*;
 import com.kodedu.service.extension.chart.FxChartBlockProcessor;
 
+import com.kodedu.service.extension.math.MathBlockProcessor;
+import com.kodedu.service.extension.processor.CacheAppendRemoverProcessor;
+import com.kodedu.service.extension.processor.DataLineProcessor;
+import com.kodedu.service.extension.processor.ExtensionPreprocessor;
+import com.kodedu.service.extension.tree.FileTreeBlockMacroProcessor;
+import com.kodedu.service.extension.tree.FileTreeBlockProcessor;
+import com.kodedu.service.extension.tree.FileTreeInlineMacroProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
@@ -69,21 +75,25 @@ public class SpringAppConfig extends SpringBootServletInitializer implements Web
     }
 
     @Bean
-	public Asciidoctor previewDoctor(FxChartBlockProcessor fxChartBlockProcessor,
+    public Asciidoctor previewDoctor(FxChartBlockProcessor fxChartBlockProcessor,
                                      DataLineProcessor dataLineProcessor,
                                      FileTreeBlockProcessor treeBlockProcessor,
                                      MathBlockProcessor mathBlockProcessor,
-                                     ExtensionPreprocessor extensionPreprocessor) {
-		Asciidoctor doctor = Asciidoctor.Factory.create();
-		doctor.requireLibrary("asciidoctor-diagram");
-		doctor.javaExtensionRegistry()
-		      .block(fxChartBlockProcessor)
-		      .block(treeBlockProcessor)
-		      .block(mathBlockProcessor)
-		      .treeprocessor(dataLineProcessor)
-              .preprocessor(extensionPreprocessor);
-		return doctor;
-	}
+                                     ExtensionPreprocessor extensionPreprocessor,
+                                     FileTreeBlockMacroProcessor fileTreeBlockMacroProcessor,
+                                     FileTreeInlineMacroProcessor fileTreeInlineMacroProcessor) {
+        Asciidoctor doctor = Asciidoctor.Factory.create();
+        doctor.requireLibrary("asciidoctor-diagram");
+        doctor.javaExtensionRegistry()
+                .block(fxChartBlockProcessor)
+                .block(treeBlockProcessor)
+                .block(mathBlockProcessor)
+                .treeprocessor(dataLineProcessor)
+                .preprocessor(extensionPreprocessor)
+                .blockMacro(fileTreeBlockMacroProcessor)
+                .inlineMacro(fileTreeInlineMacroProcessor);
+        return doctor;
+    }
 
     @Bean
     @Primary
@@ -91,7 +101,9 @@ public class SpringAppConfig extends SpringBootServletInitializer implements Web
                                       FileTreeBlockProcessor treeBlockProcessor,
                                       MathBlockProcessor mathBlockProcessor,
                                       CacheAppendRemoverProcessor cacheAppendRemoverProcessor,
-                                      ExtensionPreprocessor extensionPreprocessor) {
+                                      ExtensionPreprocessor extensionPreprocessor,
+                                      FileTreeBlockMacroProcessor fileTreeBlockMacroProcessor,
+                                      FileTreeInlineMacroProcessor fileTreeInlineMacroProcessor) {
         Asciidoctor doctor = Asciidoctor.Factory.create();
         doctor.requireLibrary("asciidoctor-diagram");
         doctor.javaExtensionRegistry()
@@ -99,7 +111,9 @@ public class SpringAppConfig extends SpringBootServletInitializer implements Web
                 .block(treeBlockProcessor)
                 .block(mathBlockProcessor)
                 .treeprocessor(cacheAppendRemoverProcessor)
-                .preprocessor(extensionPreprocessor);
+                .preprocessor(extensionPreprocessor)
+                .blockMacro(fileTreeBlockMacroProcessor)
+                .inlineMacro(fileTreeInlineMacroProcessor);
 
         return doctor;
     }

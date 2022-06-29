@@ -1,11 +1,9 @@
-package com.kodedu.service.extension;
+package com.kodedu.service.extension.tree;
 
 import com.kodedu.service.ThreadService;
+import com.kodedu.service.extension.ImageInfo;
 import com.kodedu.service.extension.impl.TreeServiceImpl;
-import org.asciidoctor.ast.ContentModel;
-import org.asciidoctor.ast.StructuralNode;
-import org.asciidoctor.extension.Contexts;
-import org.asciidoctor.extension.Name;
+import org.asciidoctor.ast.ContentNode;
 import org.asciidoctor.extension.Reader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,28 +15,23 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
-@Name("tree")
-@Contexts({Contexts.OPEN, Contexts.EXAMPLE, Contexts.SIDEBAR, Contexts.LITERAL, Contexts.LISTING})
-@ContentModel(ContentModel.EMPTY)
 @Component
 @Scope("prototype")
-public class FileTreeBlockProcessor extends CustomBlockProcessor {
+public class FileTreeProcessor {
 
-    private final Logger logger = LoggerFactory.getLogger(FileTreeBlockProcessor.class);
+    private final Logger logger = LoggerFactory.getLogger(FileTreeProcessor.class);
 
     private final Environment environment;
     private final TreeServiceImpl treeService;
     private final ThreadService threadService;
 
-    public FileTreeBlockProcessor(Environment environment, TreeServiceImpl treeService, ThreadService threadService) {
-        super(environment);
+    public FileTreeProcessor(Environment environment, TreeServiceImpl treeService, ThreadService threadService) {
         this.environment = environment;
         this.treeService = treeService;
         this.threadService = threadService;
     }
 
-    @Override
-    protected Object process(StructuralNode parent, Reader reader, Map<String, Object> attributes, ImageInfo imageInfo, String content) {
+    public void process(ContentNode parent, Reader reader, Map<String, Object> attributes, ImageInfo imageInfo, String content, String name) {
         String type = (String) attributes.get("type");
 
         CompletableFuture completableFuture = new CompletableFuture();
@@ -67,7 +60,7 @@ public class FileTreeBlockProcessor extends CustomBlockProcessor {
             logger.error("Error occured during tree generation. {}", content, e);
         }
 
-        return createBlock(parent, imageInfo.imageName());
     }
+
 
 }
