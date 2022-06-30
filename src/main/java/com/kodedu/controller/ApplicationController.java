@@ -804,13 +804,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
         ContextMenu ebookProMenu = new ContextMenu();
         ebookProMenu.getStyleClass().add("build-menu");
-        ebookProMenu.getItems().add(MenuBuilt.name("Mobi")
-                .add(MenuItemBuilt.item("Save").click(event -> {
-                    this.convertMobi();
-                }))
-                .add(MenuItemBuilt.item("Save as").click(event -> {
-                    this.convertMobi(true);
-                })).build());
 
         ebookProMenu.getItems().add(MenuBuilt.name("Epub")
                 .add(MenuItemBuilt.item("Save").click(event -> {

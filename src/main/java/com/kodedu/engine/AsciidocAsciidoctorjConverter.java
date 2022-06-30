@@ -96,6 +96,7 @@ public class AsciidocAsciidoctorjConverter extends ViewPanel implements Asciidoc
 		SafeMode safe = convertSafe(configBean.getSafe());
 
 		Attributes attributes = configBean.getAsciiDocAttributes();
+		attributes.setAttribute("preview", true);
 		
 		var workdir = controller.getCurrent().currentTab().getParentOrWorkdir();
 

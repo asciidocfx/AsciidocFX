@@ -46,9 +46,7 @@ public class FileTreeBlockProcessor extends CustomBlockProcessor {
     @Override
     public Object process(ContentNode parent, Reader reader, Map<String, Object> attributes, ImageInfo imageInfo, String content) {
         fileTreeProcessor.process(parent, reader, attributes, imageInfo, content, name);
-        Block block = createBlock((StructuralNode) parent, "image", Collections.emptyMap());
-        block.setAttribute("target", imageInfo.imageName(), true);
-        return block;
+        return createBlockImage((StructuralNode) parent, attributes, imageInfo);
     }
 
 }

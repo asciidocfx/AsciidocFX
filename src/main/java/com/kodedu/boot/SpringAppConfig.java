@@ -22,7 +22,6 @@ import com.kodedu.service.extension.chart.FxChartBlockProcessor;
 import com.kodedu.service.extension.math.MathBlockMacroProcessor;
 import com.kodedu.service.extension.math.MathBlockProcessor;
 import com.kodedu.service.extension.math.MathInlineMacroProcessor;
-import com.kodedu.service.extension.processor.CacheAppendRemoverProcessor;
 import com.kodedu.service.extension.processor.DataLineProcessor;
 import com.kodedu.service.extension.processor.ExtensionPreprocessor;
 import com.kodedu.service.extension.tree.FileTreeBlockMacroProcessor;
@@ -106,7 +105,6 @@ public class SpringAppConfig extends SpringBootServletInitializer implements Web
     public Asciidoctor standardDoctor(FxChartBlockProcessor fxChartBlockProcessor,
                                       FileTreeBlockProcessor treeBlockProcessor,
                                       MathBlockProcessor mathBlockProcessor,
-                                      CacheAppendRemoverProcessor cacheAppendRemoverProcessor,
                                       ExtensionPreprocessor extensionPreprocessor,
                                       FileTreeBlockMacroProcessor fileTreeBlockMacroProcessor,
                                       FileTreeInlineMacroProcessor fileTreeInlineMacroProcessor,
@@ -118,7 +116,6 @@ public class SpringAppConfig extends SpringBootServletInitializer implements Web
                 .block(fxChartBlockProcessor)
                 .block(treeBlockProcessor)
                 .block(mathBlockProcessor)
-                .treeprocessor(cacheAppendRemoverProcessor)
                 .preprocessor(extensionPreprocessor)
                 .blockMacro(fileTreeBlockMacroProcessor)
                 .blockMacro(mathBlockMacroProcessor)

@@ -46,9 +46,7 @@ public class MathBlockMacroProcessor extends CustomBlockMacroProcessor implement
     public Object process(ContentNode parent, Reader reader, Map<String, Object> attributes, ImageInfo imageInfo, String content) {
 
         mathProcessor.process(imageInfo, content);
-        Block block = createBlock((StructuralNode) parent, "image", Collections.emptyMap());
-        block.setAttribute("target", imageInfo.imageName(), true);
-        return block;
+        return createBlockImage((StructuralNode) parent, attributes, imageInfo);
     }
 
 }

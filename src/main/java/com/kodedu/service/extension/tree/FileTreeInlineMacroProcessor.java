@@ -29,10 +29,7 @@ public class FileTreeInlineMacroProcessor extends CustomInlineMacroProcessor imp
     public Object process(ContentNode parent, Reader reader, Map<String, Object> attributes,
                           ImageInfo imageInfo, String content) {
         fileTreeProcessor.process(parent, reader, attributes, imageInfo, content, name);
-        Map<String, Object> options = new HashMap<String, Object>();
-        options.put("type", "image");
-        options.put("target", imageInfo.imageName());
-        return createPhraseNode(parent, "image",null, attributes, options);
+        return createInlineImage(parent, attributes, imageInfo);
     }
 
 }

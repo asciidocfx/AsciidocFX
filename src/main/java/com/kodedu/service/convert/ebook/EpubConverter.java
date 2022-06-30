@@ -9,25 +9,25 @@ import com.kodedu.service.PathResolverService;
 import com.kodedu.service.ThreadService;
 import com.kodedu.service.convert.docbook.DocBookConverter;
 import com.kodedu.service.ui.IndikatorService;
+import org.asciidoctor.Asciidoctor;
+import org.asciidoctor.Attributes;
+import org.asciidoctor.Options;
+import org.asciidoctor.SafeMode;
 import org.joox.Match;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.StringReader;
-import java.io.StringWriter;
+import java.io.*;
 import java.nio.file.*;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.zip.Deflater;
@@ -53,12 +53,14 @@ public class EpubConverter {
     private final IndikatorService indikatorService;
     private final DocBookConverter docBookConverter;
     private final PathResolverService pathResolverService;
+    private final Asciidoctor asciidoctor;
 
     private Path epubPath;
 
     @Autowired
     public EpubConverter(final ApplicationController asciiDocController, final Current current, final ThreadService threadService,
-                         final DirectoryService directoryService, final IndikatorService indikatorService, final DocBookConverter docBookConverter, PathResolverService pathResolverService) {
+                         final DirectoryService directoryService, final IndikatorService indikatorService, final DocBookConverter docBookConverter, PathResolverService pathResolverService,
+                         @Qualifier("standardDoctor") Asciidoctor asciidoctor) {
         this.asciiDocController = asciiDocController;
         this.current = current;
         this.threadService = threadService;
@@ -66,6 +68,7 @@ public class EpubConverter {
         this.indikatorService = indikatorService;
         this.docBookConverter = docBookConverter;
         this.pathResolverService = pathResolverService;
+        this.asciidoctor = asciidoctor;
     }
 
     public Path produceEpub3Temp() {
@@ -78,115 +81,45 @@ public class EpubConverter {
 
     private Path produceEpub3(boolean askPath, boolean isTemp) {
 
-        try {
+        Path currentTabPath = current.currentPath().get();
+        Path currentTabPathDir = currentTabPath.getParent();
+        Path configPath = asciiDocController.getConfigPath();
+        String tabText = current.getCurrentTabText().replace("*", "").trim();
+        String asciidoc = current.currentEditorValue();
 
-            Path currentTabPath = current.currentPath().get();
-            Path currentTabPathDir = currentTabPath.getParent();
-            Path configPath = asciiDocController.getConfigPath();
-            String tabText = current.getCurrentTabText().replace("*", "").trim();
+        threadService.runTaskLater(() -> {
+            final Path epubPath = directoryService.getSaveOutputPath(ExtensionFilters.EPUB, askPath);
+            File destFile = epubPath.toFile();
 
-            epubPath = directoryService.getSaveOutputPath(ExtensionFilters.EPUB, askPath);
-
-            if (isTemp) {
-                epubPath = IOHelper.createTempFile(".epub");
-            }
+            indikatorService.startProgressBar();
+            logger.debug("Epub conversion started");
 
             try {
-                if (!isTemp) {
-                    indikatorService.startProgressBar();
-                    logger.debug("Epub conversion started");
-                }
+                Attributes attributes = Attributes.builder().build();
+                attributes.setExperimental(true);
+                attributes.setIgnoreUndefinedAttributes(true);
+                attributes.setAllowUriRead(true);
 
-                Path epubTemp = Files.createTempDirectory("epub");
+                Options options = Options.builder()
+                        .baseDir(destFile.getParentFile())
+                        .toFile(destFile)
+                        .backend("epub3")
+                        .safe(SafeMode.UNSAFE)
+                        .attributes(attributes)
+                        .build();
 
+                asciidoctor.convert(asciidoc, options);
 
-                TransformerFactory factory = TransformerFactory.newInstance();
-                Transformer transformer = factory.newTransformer(new StreamSource(configPath.resolve("docbook/epub3/chunk.xsl").toFile()));
+                indikatorService.stopProgressBar();
+                logger.debug("Epub conversion ended");
 
-                docBookConverter.convert(false, docbook -> {
-
-
-                    threadService.runTaskLater(() -> {
-                        Path oebpsPath = epubTemp.resolve("OEBPS");
-                        transformer.setParameter("base.dir", oebpsPath.toString());
-                        try (StringReader reader = new StringReader(docbook);
-                             StringWriter fakeWriter = new StringWriter();) {
-                            StreamSource src = new StreamSource(reader);
-                            transformer.transform(src, new StreamResult(fakeWriter));
-                        } catch (Exception e) {
-                            logger.error("Problem occured while converting to Epub", e);
-                            return;
-                        }
-
-                        Path containerXml = epubTemp.resolve("META-INF/container.xml");
-
-                        Match root = IOHelper.$(containerXml.toFile());
-                        root
-                                .find("rootfile")
-                                .attr("full-path", "OEBPS/package.opf");
-
-                        StringBuilder builder = new StringBuilder();
-                        builder.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-
-                        Match wrapper = $("wrapper");
-                        wrapper.append(root);
-                        builder.append(wrapper.content());
-
-                        IOHelper.matchWrite(root, containerXml.toFile());
-
-                        IOHelper.writeToFile(containerXml, builder.toString(), TRUNCATE_EXISTING, WRITE);
-
-                        Path epubOut = epubTemp.resolve("book.epub");
-
-                        Stream<Path> imageStream = IOHelper.find(currentTabPathDir, Integer.MAX_VALUE, (p, attr) -> pathResolverService.isImage(p));
-
-                        imageStream.forEach(img -> {
-                            IOHelper.copyFile(img.toFile(), oebpsPath.resolve(currentTabPathDir.relativize(img)).toFile());
-                        });
-
-                        IOHelper.copyDirectoryToDirectory(configPath.resolve("docbook/images/callouts").toFile(), epubTemp.resolve("OEBPS/images")
-                                .toFile());
-
-                        try (FileOutputStream fileOutputStream = new FileOutputStream(epubOut.toFile());
-                             ZipOutputStream zipOutputStream = new ZipOutputStream(fileOutputStream);) {
-
-                            zipOutputStream.setMethod(ZipOutputStream.DEFLATED);
-                            zipOutputStream.setLevel(Deflater.NO_COMPRESSION);
-                            ZipEntry zipEntry = new ZipEntry("mimetype");
-                            zipOutputStream.putNextEntry(zipEntry);
-                            zipOutputStream.write("application/epub+zip".getBytes());
-
-                        } catch (Exception e) {
-                            logger.error("Problem occured while zipping mimetype");
-                        }
-
-                        try (FileSystem zipfs = FileSystems.newFileSystem(epubOut, Collections.emptyMap())) {
-                            iterativelyPackDir(epubTemp.resolve("OEBPS"), epubTemp, zipfs);
-                            iterativelyPackDir(epubTemp.resolve("META-INF"), epubTemp, zipfs);
-                        } catch (IOException e) {
-                            logger.error("Problem occured while packing epub content");
-                        }
-
-                        IOHelper.move(epubOut, epubPath, StandardCopyOption.REPLACE_EXISTING);
-
-                        if (!isTemp) {
-                            indikatorService.stopProgressBar();
-                            logger.debug("Epub conversion ended");
-                            asciiDocController.addRemoveRecentList(epubPath);
-                        }
-
-                    });
-                });
-
+                asciiDocController.addRemoveRecentList(epubPath);
             } catch (Exception e) {
-                logger.error("Problem occured while converting to Epub", e);
+                indikatorService.stopProgressBar();
+                logger.error("Epub conversion has failed", e);
             }
 
-
-        } catch (Exception e) {
-            logger.error("Problem occured while converting to Epub", e);
-            indikatorService.stopProgressBar();
-        }
+        });
 
         return epubPath;
     }

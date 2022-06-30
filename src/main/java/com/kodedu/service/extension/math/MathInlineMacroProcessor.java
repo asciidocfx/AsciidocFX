@@ -5,6 +5,7 @@ import com.kodedu.service.extension.ImageInfo;
 import com.kodedu.service.extension.MathJaxService;
 import com.kodedu.service.extension.base.CustomInlineMacroProcessor;
 import org.asciidoctor.ast.ContentNode;
+import org.asciidoctor.ast.PhraseNode;
 import org.asciidoctor.extension.Name;
 import org.asciidoctor.extension.Reader;
 import org.slf4j.Logger;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 @Name("math")
 @Component
@@ -44,10 +46,7 @@ public class MathInlineMacroProcessor extends CustomInlineMacroProcessor impleme
     public Object process(ContentNode parent, Reader reader, Map<String, Object> attributes, ImageInfo imageInfo, String content) {
 
         mathProcessor.process(imageInfo, content);
-        Map<String, Object> options = new HashMap<String, Object>();
-        options.put("type", "image");
-        options.put("target", imageInfo.imageName());
-        return createPhraseNode(parent, "image",null, attributes, options);
+        return createInlineImage(parent, attributes, imageInfo);
     }
 
 }

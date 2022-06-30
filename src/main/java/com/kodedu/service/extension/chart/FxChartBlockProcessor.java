@@ -66,9 +66,7 @@ public class FxChartBlockProcessor extends CustomBlockProcessor implements Custo
 
 		// Not sure why, but it seems that it only works if target is set afterwards
 		// https://stackoverflow.com/questions/71595454/create-image-block-with-asciidocj/71849631#71849631
-		Block block = createBlock((StructuralNode) parent, "image", Collections.emptyMap());
-		block.setAttribute("target", imageInfo.imageName(), true);
-		return block;
+		return createBlockImage((StructuralNode) parent, attributes, imageInfo);
 	}
 
 	private Map<String, String> parseChartOptions(String options) {
