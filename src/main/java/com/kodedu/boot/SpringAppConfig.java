@@ -19,7 +19,9 @@ package com.kodedu.boot;
 import com.kodedu.controller.ApplicationController;
 import com.kodedu.service.extension.chart.FxChartBlockProcessor;
 
+import com.kodedu.service.extension.math.MathBlockMacroProcessor;
 import com.kodedu.service.extension.math.MathBlockProcessor;
+import com.kodedu.service.extension.math.MathInlineMacroProcessor;
 import com.kodedu.service.extension.processor.CacheAppendRemoverProcessor;
 import com.kodedu.service.extension.processor.DataLineProcessor;
 import com.kodedu.service.extension.processor.ExtensionPreprocessor;
@@ -81,7 +83,9 @@ public class SpringAppConfig extends SpringBootServletInitializer implements Web
                                      MathBlockProcessor mathBlockProcessor,
                                      ExtensionPreprocessor extensionPreprocessor,
                                      FileTreeBlockMacroProcessor fileTreeBlockMacroProcessor,
-                                     FileTreeInlineMacroProcessor fileTreeInlineMacroProcessor) {
+                                     FileTreeInlineMacroProcessor fileTreeInlineMacroProcessor,
+                                     MathBlockMacroProcessor mathBlockMacroProcessor,
+                                     MathInlineMacroProcessor mathInlineMacroProcessor) {
         Asciidoctor doctor = Asciidoctor.Factory.create();
         doctor.requireLibrary("asciidoctor-diagram");
         doctor.javaExtensionRegistry()
@@ -91,7 +95,9 @@ public class SpringAppConfig extends SpringBootServletInitializer implements Web
                 .treeprocessor(dataLineProcessor)
                 .preprocessor(extensionPreprocessor)
                 .blockMacro(fileTreeBlockMacroProcessor)
-                .inlineMacro(fileTreeInlineMacroProcessor);
+                .blockMacro(mathBlockMacroProcessor)
+                .inlineMacro(fileTreeInlineMacroProcessor)
+                .inlineMacro(mathInlineMacroProcessor);
         return doctor;
     }
 
@@ -103,7 +109,9 @@ public class SpringAppConfig extends SpringBootServletInitializer implements Web
                                       CacheAppendRemoverProcessor cacheAppendRemoverProcessor,
                                       ExtensionPreprocessor extensionPreprocessor,
                                       FileTreeBlockMacroProcessor fileTreeBlockMacroProcessor,
-                                      FileTreeInlineMacroProcessor fileTreeInlineMacroProcessor) {
+                                      FileTreeInlineMacroProcessor fileTreeInlineMacroProcessor,
+                                      MathBlockMacroProcessor mathBlockMacroProcessor,
+                                      MathInlineMacroProcessor mathInlineMacroProcessor) {
         Asciidoctor doctor = Asciidoctor.Factory.create();
         doctor.requireLibrary("asciidoctor-diagram");
         doctor.javaExtensionRegistry()
@@ -113,7 +121,9 @@ public class SpringAppConfig extends SpringBootServletInitializer implements Web
                 .treeprocessor(cacheAppendRemoverProcessor)
                 .preprocessor(extensionPreprocessor)
                 .blockMacro(fileTreeBlockMacroProcessor)
-                .inlineMacro(fileTreeInlineMacroProcessor);
+                .blockMacro(mathBlockMacroProcessor)
+                .inlineMacro(fileTreeInlineMacroProcessor)
+                .inlineMacro(mathInlineMacroProcessor);
 
         return doctor;
     }

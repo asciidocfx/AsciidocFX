@@ -37,6 +37,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -74,14 +75,14 @@ public class TreeServiceImpl implements TreeService {
 
     @Override
     public void createFileTree(String tree, String type, String imagesDir,
-                               String imageTarget, String nodename, Runnable completed) {
+                               String imageTarget, String nodename, CompletableFuture completed) {
 
         Objects.requireNonNull(imageTarget);
 
         boolean cachedResource = imageTarget.contains("/afx/cache");
 
         if (!imageTarget.endsWith(".png") && !cachedResource){
-            completed.run();
+            completed.complete(null);
             return;
         }
 
@@ -242,7 +243,7 @@ public class TreeServiceImpl implements TreeService {
 
                     controller.getRootAnchor().getChildren().remove(fileView);
 
-                    completed.run();
+                    completed.complete(null);
 
                 });
 
@@ -250,7 +251,7 @@ public class TreeServiceImpl implements TreeService {
                 logger.error("Problem occured while generating Filesystem Tree", e);
             }
         } else {
-            completed.run();
+            completed.complete(null);
         }
 
         current.getCache().put(imageTarget, hashCode);
@@ -272,13 +273,13 @@ public class TreeServiceImpl implements TreeService {
 
     @Override
     public void createHighlightFileTree(String tree, String type, String imagesDir,
-                                        String imageTarget, String nodename, Runnable completed) {
+                                        String imageTarget, String nodename, CompletableFuture completed) {
         Objects.requireNonNull(imageTarget);
 
         boolean cachedResource = imageTarget.contains("/afx/cache");
 
         if (!imageTarget.endsWith(".png") && !cachedResource){
-            completed.run();
+            completed.complete(null);
             return;
         }
 
@@ -335,7 +336,7 @@ public class TreeServiceImpl implements TreeService {
                                 binaryCacheService.putBinary(imageTarget, trimmed);
                                 controller.clearImageCache(imageTarget);
                             }
-                            completed.run();
+                            completed.complete(null);
 
                             threadService.runActionLater(() -> {
                                 controller.getRootAnchor().getChildren().remove(treeview);
@@ -347,7 +348,7 @@ public class TreeServiceImpl implements TreeService {
             });
 
         } else {
-            completed.run();
+            completed.complete(null);
         }
 
         current.getCache().put(imageTarget, hashCode);

@@ -3,12 +3,10 @@ package com.kodedu.service.extension.math;
 import com.kodedu.service.ThreadService;
 import com.kodedu.service.extension.ImageInfo;
 import com.kodedu.service.extension.MathJaxService;
-import com.kodedu.service.extension.base.CustomBlockProcessor;
+import com.kodedu.service.extension.base.CustomBlockMacroProcessor;
 import org.asciidoctor.ast.Block;
-import org.asciidoctor.ast.ContentModel;
 import org.asciidoctor.ast.ContentNode;
 import org.asciidoctor.ast.StructuralNode;
-import org.asciidoctor.extension.Contexts;
 import org.asciidoctor.extension.Name;
 import org.asciidoctor.extension.Reader;
 import org.slf4j.Logger;
@@ -21,19 +19,17 @@ import java.util.Collections;
 import java.util.Map;
 
 @Name("math")
-@Contexts({Contexts.OPEN, Contexts.EXAMPLE, Contexts.SIDEBAR, Contexts.LITERAL, Contexts.LISTING})
-@ContentModel(ContentModel.EMPTY)
 @Component
 @Scope("prototype")
-public class MathBlockProcessor extends CustomBlockProcessor implements MathStemPreProcessor {
+public class MathBlockMacroProcessor extends CustomBlockMacroProcessor implements MathStemPreProcessor {
 
-    private final Logger logger = LoggerFactory.getLogger(MathBlockProcessor.class);
+    private final Logger logger = LoggerFactory.getLogger(MathBlockMacroProcessor.class);
 
     private final MathJaxService mathJaxService;
     private final ThreadService threadService;
     private final MathProcessor mathProcessor;
 
-    public MathBlockProcessor(Environment environment, MathJaxService mathJaxService, ThreadService threadService, MathProcessor mathProcessor) {
+    public MathBlockMacroProcessor(Environment environment, MathJaxService mathJaxService, ThreadService threadService, MathProcessor mathProcessor) {
         super(environment);
         this.mathJaxService = mathJaxService;
         this.threadService = threadService;
