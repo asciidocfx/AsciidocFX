@@ -95,6 +95,8 @@ public class FileWatchServiceImpl implements FileWatchService {
             reCreateWatchService();
         }
 
+        // This should keep running to keep track of files changes
+        // Must be implemented as an active check due to the way Java handles listening to file changes
         while (true) {
 
             if (Objects.isNull(watcher)) {
@@ -118,6 +120,7 @@ public class FileWatchServiceImpl implements FileWatchService {
             }
 
             List<WatchEvent<?>> watchEvents = watchKey.pollEvents();
+            watchKey.reset();
 
             boolean updateFsView = false;
             for (WatchEvent<?> event : watchEvents) {
@@ -137,14 +140,9 @@ public class FileWatchServiceImpl implements FileWatchService {
                             }
                         }
                     }
-                    watchKey.reset();
-                } else if (kind == ENTRY_MODIFY && event.count() > 1) {
-                    watchKey.reset();
-                } else {
+                } else if (kind != ENTRY_MODIFY || (kind == ENTRY_MODIFY && event.count() == 0)) {
                     updateFsView = true;
-                    watchKey.reset();
                 }
-
             }
 
             if (updateFsView) {
@@ -159,7 +157,6 @@ public class FileWatchServiceImpl implements FileWatchService {
                 }
                 fileBrowseService.refreshPathToTree(path, changedPath);
             }
-
         }
 
     }
