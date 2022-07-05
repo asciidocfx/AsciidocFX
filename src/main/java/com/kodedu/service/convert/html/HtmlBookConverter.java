@@ -2,9 +2,7 @@ package com.kodedu.service.convert.html;
 
 import com.kodedu.config.HtmlConfigBean;
 import com.kodedu.controller.ApplicationController;
-import com.kodedu.controller.TextChangeEvent;
 import com.kodedu.engine.AsciidocConverterProvider;
-import com.kodedu.helper.IOHelper;
 import com.kodedu.other.Current;
 import com.kodedu.other.ExtensionFilters;
 import com.kodedu.service.DirectoryService;
@@ -12,16 +10,20 @@ import com.kodedu.service.ThreadService;
 import com.kodedu.service.convert.DocumentConverter;
 import com.kodedu.service.convert.Traversable;
 import com.kodedu.service.ui.IndikatorService;
+import org.asciidoctor.Asciidoctor;
+import org.asciidoctor.Attributes;
+import org.asciidoctor.Options;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
+import java.io.File;
 import java.nio.file.Path;
 import java.util.function.Consumer;
 
-import static java.nio.file.StandardOpenOption.CREATE;
-import static java.nio.file.StandardOpenOption.TRUNCATE_EXISTING;
+import static com.kodedu.helper.AsciidoctorHelper.convertSafe;
 
 /**
  * Created by usta on 30.08.2014.
@@ -37,14 +39,14 @@ public class HtmlBookConverter implements Traversable, DocumentConverter<String>
     private final Current current;
     private final IndikatorService indikatorService;
     private final HtmlConfigBean htmlConfigBean;
-
-    private Path htmlBookPath;
+    private final Asciidoctor asciidoctor;
     private final AsciidocConverterProvider converterProvider;
 
     @Autowired
     public HtmlBookConverter(final ApplicationController controller, final ThreadService threadService,
                              final DirectoryService directoryService, final Current current,
-                             IndikatorService indikatorService, HtmlConfigBean htmlConfigBean, AsciidocConverterProvider converterProvider) {
+                             IndikatorService indikatorService, HtmlConfigBean htmlConfigBean,
+                             AsciidocConverterProvider converterProvider, @Qualifier("standardDoctor") Asciidoctor asciidoctor) {
         this.controller = controller;
         this.threadService = threadService;
         this.directoryService = directoryService;
@@ -52,6 +54,7 @@ public class HtmlBookConverter implements Traversable, DocumentConverter<String>
         this.indikatorService = indikatorService;
         this.htmlConfigBean = htmlConfigBean;
         this.converterProvider = converterProvider;
+        this.asciidoctor = asciidoctor;
     }
 
     @Override
@@ -59,7 +62,8 @@ public class HtmlBookConverter implements Traversable, DocumentConverter<String>
 
         try {
 
-            htmlBookPath = directoryService.getSaveOutputPath(ExtensionFilters.HTML, askPath);
+            Path htmlBookPath = directoryService.getSaveOutputPath(ExtensionFilters.HTML, askPath);
+            File destFile = htmlBookPath.toFile();
 
             indikatorService.startProgressBar();
             logger.debug("HTML conversion started");
@@ -67,11 +71,22 @@ public class HtmlBookConverter implements Traversable, DocumentConverter<String>
             final String asciidoc = current.currentEditorValue();
             Path path = current.currentPath().get();
 
-            TextChangeEvent event = new TextChangeEvent(asciidoc, null, path);
+            Attributes attributes = htmlConfigBean.getAsciiDocAttributes();
+            attributes.setExperimental(true);
+            attributes.setIgnoreUndefinedAttributes(true);
+            attributes.setAllowUriRead(true);
 
-            String rendered = converterProvider.get(htmlConfigBean).convertHtml(event).getRendered();
+            Options options = Options.builder()
+                    .baseDir(destFile.getParentFile())
+                    .toFile(destFile)
+                    .backend(htmlConfigBean.getBackend())
+                    .headerFooter(htmlConfigBean.getHeader_footer())
+                    .sourcemap(htmlConfigBean.getSourcemap())
+                    .safe(convertSafe(htmlConfigBean.getSafe()))
+                    .attributes(attributes)
+                    .build();
 
-            IOHelper.writeToFile(htmlBookPath, rendered, CREATE, TRUNCATE_EXISTING);
+            asciidoctor.convert(asciidoc, options);
 
             controller.addRemoveRecentList(htmlBookPath);
 
@@ -84,4 +99,5 @@ public class HtmlBookConverter implements Traversable, DocumentConverter<String>
         }
 
     }
+
 }
