@@ -1,10 +1,7 @@
 package com.kodedu.engine;
 
 import com.kodedu.component.ViewPanel;
-import com.kodedu.config.AsciidoctorConfigBase;
-import com.kodedu.config.EditorConfigBean;
-import com.kodedu.config.HtmlConfigBean;
-import com.kodedu.config.PreviewConfigBean;
+import com.kodedu.config.*;
 import com.kodedu.controller.ApplicationController;
 import com.kodedu.controller.TextChangeEvent;
 import com.kodedu.other.ConverterResult;
@@ -28,31 +25,36 @@ import org.asciidoctor.ast.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static com.kodedu.helper.AsciidoctorHelper.convertSafe;
+
 @Component("AsciidoctorjEngine")
 public class AsciidocAsciidoctorjConverter extends ViewPanel implements AsciidocConvertible {
 
     private final Logger logger = LoggerFactory.getLogger(AsciidocAsciidoctorjConverter.class);
 	
     private final PreviewConfigBean previewConfigBean;
+	private final DocbookConfigBean docbookConfigBean;
 	private final ThreadService threadService;
 
 	private final Asciidoctor doctor;
 
     @Autowired
 	public AsciidocAsciidoctorjConverter(ThreadService threadService, ApplicationController controller,
-	        Current current, EditorConfigBean editorConfigBean,
-	        PreviewConfigBean previewConfigBean, HtmlConfigBean htmlConfigBean,
-										 @Qualifier("previewDoctor") Asciidoctor doctor) {
+										 Current current, EditorConfigBean editorConfigBean,
+										 PreviewConfigBean previewConfigBean, HtmlConfigBean htmlConfigBean,
+										 DocbookConfigBean docbookConfigBean, @Qualifier("previewDoctor") Asciidoctor doctor) {
 		super(threadService, controller, current, editorConfigBean);
 		this.previewConfigBean = previewConfigBean;
 		this.threadService = threadService;
+		this.docbookConfigBean = docbookConfigBean;
 		this.doctor = doctor;
 	}
 
 	@Override
 	public ConverterResult convertDocbook(TextChangeEvent textChangeEvent) {
-		// TODO Auto-generated method stub
-		return null;
+		logger.debug("Using AsciidocJEngine to convert Asciidoc");
+		String text = textChangeEvent.getText();
+		return convert("docbook5", text, docbookConfigBean);
 	}
 
 	@Override
@@ -96,8 +98,10 @@ public class AsciidocAsciidoctorjConverter extends ViewPanel implements Asciidoc
 		SafeMode safe = convertSafe(configBean.getSafe());
 
 		Attributes attributes = configBean.getAsciiDocAttributes();
-		attributes.setAttribute("preview", true);
-		
+		if (backend.equals("html5")) {
+			attributes.setAttribute("preview", true);
+		}
+
 		var workdir = controller.getCurrent().currentTab().getParentOrWorkdir();
 
 		Options options = Options.builder()
@@ -117,22 +121,10 @@ public class AsciidocAsciidoctorjConverter extends ViewPanel implements Asciidoc
 		String converted = doctor.convert(text, options);
 
         final String taskId = UUID.randomUUID().toString();
-		ConverterResult res = new ConverterResult(taskId, converted, backend, doc.getAttribute("doctype").toString());
+		ConverterResult res = new ConverterResult(taskId, converted, backend, (String)doc.getAttribute("doctype"));
 		
 		fillOutlines(doc);
 		return res;
-	}
-
-	private SafeMode convertSafe(String safeStr) {
-		if (safeStr == null) {
-			return SafeMode.SAFE;
-		}
-		try {
-			return SafeMode.valueOf(safeStr.toUpperCase());
-		} catch (IllegalArgumentException ex) {
-			logger.error("Unkown safe mode! Will use SAFE.", ex);
-			return SafeMode.SAFE;
-		}
 	}
 
 	@Override

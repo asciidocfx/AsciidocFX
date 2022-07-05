@@ -23,6 +23,8 @@ import java.io.File;
 import java.nio.file.Path;
 import java.util.function.Consumer;
 
+import static com.kodedu.helper.AsciidoctorHelper.convertSafe;
+
 /**
  * Created by usta on 09.04.2015.
  */
@@ -94,15 +96,4 @@ public class AsciidoctorPdfBookConverter implements DocumentConverter<String> {
 		});
 	}
 
-	private SafeMode convertSafe(String safeStr) {
-		if (safeStr == null) {
-			return SafeMode.SAFE;
-		}
-		try {
-			return SafeMode.valueOf(safeStr.toUpperCase());
-		} catch (IllegalArgumentException ex) {
-			logger.error("Unkown safe mode! Will use SAFE.", ex);
-			return SafeMode.SAFE;
-		}
-	}
 }
