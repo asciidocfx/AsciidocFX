@@ -33,10 +33,8 @@ import org.springframework.util.StringUtils;
 import java.awt.image.BufferedImage;
 import java.nio.charset.Charset;
 import java.nio.file.Path;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.nio.file.Paths;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 import java.util.regex.Matcher;
@@ -81,7 +79,7 @@ public class TreeServiceImpl implements TreeService {
 
         boolean cachedResource = imageTarget.contains("/afx/cache");
 
-        if (!imageTarget.endsWith(".png") && !cachedResource){
+        if (!imageTarget.contains(".png") && !cachedResource){
             completed.complete(null);
             return;
         }
@@ -202,7 +200,7 @@ public class TreeServiceImpl implements TreeService {
 
                 }
 
-                Path path = current.currentTab().getParentOrWorkdir();
+                Path currentDir = current.currentTab().getParentOrWorkdir();
 
                 int changeWidth = (settings.get("addw") - settings.get("minw"));
                 int changeHeight = (settings.get("addh") - settings.get("minh"));
@@ -226,16 +224,12 @@ public class TreeServiceImpl implements TreeService {
                     BufferedImage bufferedImage = SwingFXUtils.fromFXImage(writableImage, null);
 
                     if (!cachedResource) {
-
-                        Path treePath = path.resolve(imageTarget);
-                        if (Objects.nonNull(imagesDir)) {
-                            IOHelper.createDirectories(path.resolve(imagesDir));
-                        }
-                        IOHelper.imageWrite((BufferedImage) bufferedImage, "png", treePath.toFile());
-                        controller.clearImageCache(treePath);
+                        Path imagePath = Paths.get(imageTarget);
+                        IOHelper.imageWrite(bufferedImage, "png", imagePath.toFile());
+                        controller.clearImageCache(imagePath);
 
                     } else {
-                        binaryCacheService.putBinary(imageTarget, (BufferedImage) bufferedImage);
+                        binaryCacheService.putBinary(imageTarget, bufferedImage);
                         controller.clearImageCache(imageTarget);
                     }
 
@@ -278,7 +272,7 @@ public class TreeServiceImpl implements TreeService {
 
         boolean cachedResource = imageTarget.contains("/afx/cache");
 
-        if (!imageTarget.endsWith(".png") && !cachedResource){
+        if (!imageTarget.contains(".png") && !cachedResource){
             completed.complete(null);
             return;
         }
@@ -326,12 +320,9 @@ public class TreeServiceImpl implements TreeService {
 
                             if (!cachedResource) {
 
-                                Path treePath = path.resolve(imageTarget);
-                                if (Objects.nonNull(imagesDir)) {
-                                    IOHelper.createDirectories(path.resolve(imagesDir));
-                                }
-                                IOHelper.imageWrite(trimmed, "png", treePath.toFile());
-                                controller.clearImageCache(treePath);
+                                Path imagePath = Paths.get(imageTarget);
+                                IOHelper.imageWrite(trimmed, "png", imagePath.toFile());
+                                controller.clearImageCache(imagePath);
                             } else {
                                 binaryCacheService.putBinary(imageTarget, trimmed);
                                 controller.clearImageCache(imageTarget);

@@ -8,6 +8,7 @@ import com.kodedu.service.extension.chart.ChartBuilderService;
 import javafx.scene.chart.*;
 
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
@@ -32,7 +33,7 @@ public abstract class ChartBuilderServiceImpl implements ChartBuilderService {
     @Override
     public boolean chartBuild(String chartContent, String imagesDir, String imageTarget, Map<String, String> optMap, CompletableFuture completableFuture) {
 
-        if (!imageTarget.endsWith(".png")) {
+        if (!imageTarget.contains(".png")) {
             return false;
         }
 
@@ -47,7 +48,7 @@ public abstract class ChartBuilderServiceImpl implements ChartBuilderService {
         current.getCache().put(imageTarget, hashCode);
 
         currentRoot = current.currentTab().getParentOrWorkdir();
-        imagePath = currentRoot.resolve(imageTarget);
+        imagePath = Paths.get(imageTarget);
 
         return true;
     }

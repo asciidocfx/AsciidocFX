@@ -12,12 +12,10 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.*;
 
-import org.asciidoctor.ast.Block;
 import org.asciidoctor.ast.ContentModel;
 import org.asciidoctor.ast.StructuralNode;
 import org.asciidoctor.extension.Contexts;
@@ -54,7 +52,7 @@ public class FxChartBlockProcessor extends CustomBlockProcessor implements Custo
 
 		completableFuture.runAsync(()->{
 			threadService.runActionLater(() -> {
-				chartProvider.getProvider(chartType).chartBuild(content, imageInfo.imagesDir(), imageInfo.imageTarget(), optMap, completableFuture);
+				chartProvider.getProvider(chartType).chartBuild(content, imageInfo.imagesDir(), imageInfo.imagePath(), optMap, completableFuture);
 			});
 		}, threadService.executor());
 

@@ -213,6 +213,7 @@ public class IOHelper {
 
     public static void imageWrite(BufferedImage bufferedImage, String format, File output) {
         try {
+            IOHelper.createDirectories(output.getParentFile().toPath());
             ImageIO.write(bufferedImage, format, output);
         } catch (Exception e) {
             logger.error("Problem occured while writing buff image to {}", output, e);

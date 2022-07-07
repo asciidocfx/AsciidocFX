@@ -130,7 +130,6 @@ public class PieChartBuilderServiceImpl extends ChartBuilderServiceImpl {
             WritableImage writableImage = pieChart.snapshot(new SnapshotParameters(), null);
             controller.getRootAnchor().getChildren().remove(pieChart);
             BufferedImage bufferedImage = SwingFXUtils.fromFXImage(writableImage, null);
-            IOHelper.createDirectories(currentRoot.resolve(imagesDir));
             IOHelper.imageWrite(bufferedImage, "png", imagePath.toFile());
             completableFuture.complete(null);
             controller.clearImageCache(imagePath);

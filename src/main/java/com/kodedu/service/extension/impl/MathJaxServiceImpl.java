@@ -24,6 +24,7 @@ import org.springframework.stereotype.Component;
 
 import java.awt.image.BufferedImage;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
@@ -136,7 +137,7 @@ public class MathJaxServiceImpl implements MathJaxService {
 
             boolean cachedResource = imageTarget.contains("/afx/cache");
 
-            if (!imageTarget.endsWith(".png") && !cachedResource){
+            if (!imageTarget.contains(".png") && !cachedResource){
                 completeSnapShot(completableFuture);
                 return;
             }
@@ -157,8 +158,7 @@ public class MathJaxServiceImpl implements MathJaxService {
                         TrimWhite trimWhite = new TrimWhite();
                         BufferedImage trimmed = trimWhite.trim(bufferedImage);
                         if (!cachedResource) {
-                            Path imagePath = path.resolve(imageTarget);
-                            IOHelper.createDirectories(imagePath.getParent());
+                            Path imagePath = Paths.get(imageTarget);
                             IOHelper.imageWrite(trimmed, "png", imagePath.toFile());
                             threadService.runActionLater(() -> {
                                 controller.clearImageCache(imagePath);

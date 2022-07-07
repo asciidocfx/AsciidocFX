@@ -30,29 +30,29 @@ public interface CustomProcessor {
     }
 
     default ImageInfo getImageInfo(Environment environment, Map<String, Object> attributes, ContentNode parent, String content) {
+        String docdir = (String) parent.getDocument().getAttributes().get("docdir");
         String imagesDir = getImagesDir(parent);
-        String imageName = (String) attributes.getOrDefault("file", attributes.get("target"));
+        String imageTarget = (String) attributes.getOrDefault("file", attributes.get("target"));
         String format = (String) attributes.getOrDefault("format","png");
-        if(Objects.nonNull(imageName) && Objects.nonNull(format)){
-            imageName = String.format("%s.%s", imageName, format);
+        if(Objects.nonNull(imageTarget) && Objects.nonNull(format)){
+            imageTarget = String.format("%s.%s", imageTarget, format);
         }
-        String imageTarget = null;
         String imageMd5 = cachedImageUri(content);
-        if (Objects.isNull(imageName)) {
+        if (Objects.isNull(imageTarget)) {
             int port = Integer.parseInt(environment.getProperty("local.server.port"));
-            imageTarget = "/afx/cache/" + imageMd5 + ".png";
-            imageName = "http://localhost:" + port + imageTarget;
+            imageTarget = "http://localhost:" + port + "/afx/cache/" + imageMd5 + ".png";
         } else {
-            imageTarget = parent.imageUri(imageName);
+            imageTarget = Paths.get(imagesDir).resolve(imageTarget).toString();
         }
 
         boolean isPreview = (boolean) parent.getDocument().getAttributes().getOrDefault("preview", false);
-
-        if (isPreview) {
-            imageName += "?cache" + imageMd5;
+        boolean isDataUri = parent.getDocument().hasAttribute("data-uri");
+        String imagePath = Paths.get(docdir).resolve(imageTarget).toString();
+        if (isPreview && !isDataUri) {
+            imageTarget += "?cache" + imageMd5; // for html cache
         }
 
-        return new ImageInfo(imagesDir, imageName, imageTarget);
+        return new ImageInfo(imagesDir, imageTarget, imagePath);
     }
 
     default String getImagesDir(ContentNode parent) {
@@ -90,10 +90,10 @@ public interface CustomProcessor {
     default PhraseNode createInlineImage(ContentNode parent, Map<String, Object> attributes, ImageInfo imageInfo) {
         Map<String, Object> options = new HashMap<String, Object>();
         options.put("type", "image");
-        options.put("target", imageInfo.imageName());
+        options.put("target", imageInfo.imageTarget());
         HashMap<String, Object> attrCopy = new HashMap<>(attributes);
-        attrCopy.put("target", imageInfo.imageName());
-        Object alt = parent.getAttribute("alt", imageInfo.imageName());
+        attrCopy.put("target", imageInfo.imageTarget());
+        Object alt = parent.getAttribute("alt", imageInfo.imageTarget());
         attrCopy.put("alt", alt);
         return createPhraseNode(parent, "image", null, attrCopy, options);
     }
@@ -103,7 +103,7 @@ public interface CustomProcessor {
         for (Map.Entry<String, Object> entry : attributes.entrySet()) {
             block.setAttribute(entry.getKey(), entry.getValue(), true);
         }
-        block.setAttribute("target", imageInfo.imageName(), true);
+        block.setAttribute("target", imageInfo.imageTarget(), true);
         return block;
     }
 

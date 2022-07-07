@@ -30,7 +30,7 @@ public class MathProcessor {
         CompletableFuture completableFuture = new CompletableFuture();
 
         completableFuture.runAsync(() -> {
-            mathJaxService.processFormula(content, imageInfo.imagesDir(), imageInfo.imageTarget(), completableFuture);
+            mathJaxService.processFormula(content, imageInfo.imagesDir(), imageInfo.imagePath(), completableFuture);
         }, threadService.executor());
 
         try {

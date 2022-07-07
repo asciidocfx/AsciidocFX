@@ -449,28 +449,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             saveDoc();
         }
 
-        threadService.runTaskLater(() -> {
-
-            indikatorService.startProgressBar();
-
-            Path docbookPath = directoryService.getSaveOutputPath(ExtensionFilters.DOCBOOK, askPath);
-
-            Consumer<String> step = docbook -> {
-                final String finalDocbook = docbook;
-                threadService.runTaskLater(() -> {
-                    IOHelper.writeToFile(docbookPath, finalDocbook, CREATE, TRUNCATE_EXISTING, WRITE);
-                });
-                threadService.runActionLater(() -> {
-                    ObservableList<Item> recentFiles = storedConfigBean.getRecentFiles();
-                    recentFiles.remove(new Item(docbookPath));
-                    recentFiles.add(0, new Item(docbookPath));
-                });
-                indikatorService.stopProgressBar();
-            };
-
-            docBookConverter.convert(false, step);
-
-        });
+        docBookConverter.convert(false);
 
     }
 

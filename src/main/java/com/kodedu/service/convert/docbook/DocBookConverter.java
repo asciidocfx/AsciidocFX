@@ -1,17 +1,25 @@
 package com.kodedu.service.convert.docbook;
 
 import com.kodedu.config.DocbookConfigBean;
-import com.kodedu.controller.TextChangeEvent;
+import com.kodedu.controller.ApplicationController;
 import com.kodedu.engine.AsciidocConverterProvider;
 import com.kodedu.helper.IOHelper;
 import com.kodedu.helper.XMLHelper;
 import com.kodedu.other.Current;
+import com.kodedu.other.ExtensionFilters;
+import com.kodedu.service.DirectoryService;
 import com.kodedu.service.ThreadService;
 import com.kodedu.service.convert.DocumentConverter;
+import com.kodedu.service.ui.IndikatorService;
+import org.asciidoctor.Asciidoctor;
+import org.asciidoctor.Attributes;
+import org.asciidoctor.Options;
+import org.asciidoctor.SafeMode;
 import org.joox.Match;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.xml.sax.InputSource;
 
@@ -19,6 +27,7 @@ import java.io.StringReader;
 import java.nio.file.Path;
 import java.util.function.Consumer;
 
+import static com.kodedu.helper.AsciidoctorHelper.convertSafe;
 import static org.joox.JOOX.$;
 
 /**
@@ -34,14 +43,26 @@ public class DocBookConverter implements DocbookTraversable, DocumentConverter<S
     private final DocbookValidator docbookValidator;
     private final DocbookConfigBean docbookConfigBean;
     private final ThreadService threadService;
+    private final IndikatorService indikatorService;
+    private final DirectoryService directoryService;
+    private final ApplicationController applicationController;
+
+    private final Asciidoctor asciidoctor;
 
     @Autowired
-    public DocBookConverter(Current current, AsciidocConverterProvider converterProvider, DocbookValidator docbookValidator, DocbookConfigBean docbookConfigBean, ThreadService threadService) {
+    public DocBookConverter(Current current, AsciidocConverterProvider converterProvider,
+                            DocbookValidator docbookValidator, DocbookConfigBean docbookConfigBean,
+                            ThreadService threadService,
+                            IndikatorService indikatorService, DirectoryService directoryService, ApplicationController applicationController, @Qualifier("standardDoctor") Asciidoctor asciidoctor) {
         this.current = current;
         this.converterProvider = converterProvider;
         this.docbookValidator = docbookValidator;
         this.docbookConfigBean = docbookConfigBean;
         this.threadService = threadService;
+        this.indikatorService = indikatorService;
+        this.directoryService = directoryService;
+        this.applicationController = applicationController;
+        this.asciidoctor = asciidoctor;
     }
 
 
@@ -53,36 +74,43 @@ public class DocBookConverter implements DocbookTraversable, DocumentConverter<S
 
         String asciidoc = current.currentEditorValue();
 
+        Path docbookPath = directoryService.getSaveOutputPath(ExtensionFilters.DOCBOOK, askPath);
+        indikatorService.startProgressBar();
+
         threadService.runTaskLater(() -> {
 
-            TextChangeEvent event = new TextChangeEvent(asciidoc, null, currentTabPath);
-            String rendered = converterProvider.get(docbookConfigBean).convertDocbook(event).getRendered();
+            try {
+                SafeMode safe = convertSafe(docbookConfigBean.getSafe());
 
-            boolean validated = docbookValidator.validateDocbook(rendered);
+                Attributes attributes = docbookConfigBean.getAsciiDocAttributes();
+                attributes.setExperimental(true);
+                attributes.setIgnoreUndefinedAttributes(true);
+                attributes.setAllowUriRead(true);
 
-            if (!validated)
-                return;
+                Options options = Options.builder()
+                        .baseDir(docbookPath.getParent().toFile())
+                        .toFile(docbookPath.toFile())
+                        .backend("docbook5")
+                        .safe(safe)
+                        .sourcemap(docbookConfigBean.getSourcemap())
+                        .headerFooter(docbookConfigBean.getHeader_footer())
+                        .attributes(attributes)
+                        .build();
 
-            StringReader bookReader = new StringReader(rendered);
-            Match rootDocument = IOHelper.$(new InputSource(bookReader));
-            bookReader.close();
+                String rendered = asciidoctor.convert(asciidoc, options);
+                boolean validated = docbookValidator.validateDocbook(rendered);
 
-//            // makes figure centering
-            rootDocument.find("figure").find("imagedata").attr("align", "center");
+                if (!validated || rendered == null)
+                    return;
 
-            // remove callout's duplicated refs and pick last
-            rootDocument.find("callout").forEach(elem -> {
-                String arearefs = $(elem).attr("arearefs");
-                String[] cos = arearefs.split(" ");
-                if (cos.length > 1)
-                    $(elem).attr("arearefs", cos[cos.length - 1]);
-            });
+                for (Consumer<String> step : nextStep) {
+                    step.accept(rendered);
+                }
+            } finally {
+                indikatorService.stopProgressBar();
+                logger.debug("Docbook5 conversion ended");
 
-            String result = XMLHelper.nodeToString(rootDocument.document(), false);
-//            result = result.replace("00HEADER00COLON00", ":");
-
-            for (Consumer<String> step : nextStep) {
-                step.accept(result);
+                applicationController.addRemoveRecentList(docbookPath);
             }
         });
     }

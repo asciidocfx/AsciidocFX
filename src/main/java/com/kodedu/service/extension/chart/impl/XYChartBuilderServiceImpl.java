@@ -215,7 +215,6 @@ public abstract class XYChartBuilderServiceImpl extends ChartBuilderServiceImpl 
         WritableImage writableImage = xyChart.snapshot(new SnapshotParameters(), null);
         controller.getRootAnchor().getChildren().remove(xyChart);
         BufferedImage bufferedImage = SwingFXUtils.fromFXImage(writableImage, null);
-        IOHelper.createDirectories(currentRoot.resolve(imagesDir));
         IOHelper.imageWrite(bufferedImage, "png", imagePath.toFile());
         completableFuture.complete(null);
         logger.debug("Chart extension is ended for {}", imageTarget);
