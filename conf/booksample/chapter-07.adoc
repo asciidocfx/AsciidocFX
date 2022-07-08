@@ -4,9 +4,9 @@ JavaFX has 8 kind of Chart component and AsciidocFX supports all of them. To see
 
 === Pie Chart
 
-[chart,pie,file="images/secim-2014-pie.png",opt="title=2014 YEREL SEÇİM SONUÇLARI"]
+[chart,pie,target="secim-2014-pie",opt="title=2014 YEREL SEÇİM SONUÇLARI"]
 --
-AKP,  45.6, orange
+AKP,  45.7, orange
 CHP,  27.8,red
 MHP,  15.2
 BDP,  4.2
@@ -15,7 +15,7 @@ SP,  2
 
 === Line Chart
 
-[chart,line,file="images/secim-2014-line.png",opt="title=2014 YEREL SEÇİM SONUÇLARI"]
+[chart,line,target="secim-2014-line",opt="title=2014 YEREL SEÇİM SONUÇLARI"]
 --
 //April
 1,  4
@@ -34,7 +34,7 @@ SP,  2
 
 === Area Chart
 
-[chart,area,file="images/area-chart.png"]
+[chart,area,target="area-chart"]
 --
 //April
 1,  4
@@ -53,7 +53,7 @@ SP,  2
 
 === Bar Chart
 
-[chart,bar,file="images/bar-chart.png"]
+[chart,bar,target="bar-chart"]
 --
 //AKP
 1,  52
@@ -73,7 +73,7 @@ SP,  2
 
 === Scatter Chart
 
-[chart,scatter,file="images/scatter-chart.png"]
+[chart,scatter,target="scatter-chart"]
 --
 //April
 1,  4
@@ -93,7 +93,7 @@ SP,  2
 
 === Bubble Chart
 
-[chart,bubble,file="images/bubble-chart.png"]
+[chart,bubble,target="bubble-chart"]
 --
 //April
 1,  400
@@ -112,7 +112,7 @@ SP,  2
 
 === Stacked Area Chart
 
-[chart,"stacked-area",file="images/stacked-area-chart.png"]
+[chart,"stacked-area",target="stacked-area-chart"]
 --
 //April
 1,  4
@@ -131,7 +131,7 @@ SP,  2
 
 === Stacked Bar Chart
 
-[chart,"stacked-bar",file="images/stacked-bar-chart.png"]
+[chart,"stacked-bar",target="stacked-bar-chart"]
 --
 //April
 1,  40
