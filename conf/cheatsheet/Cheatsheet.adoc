@@ -272,7 +272,7 @@ JavaFX has 8 kind of Chart component and AsciidocFX supports all of them.
 
 ==== Pie Chart
 
-[chart,pie,file="secim-2014-pie.png",opt="title=LOCAL ELECTION RESULTS"]
+[chart,pie,target="secim-2014-pie",opt="title=LOCAL ELECTION RESULTS"]
 --
 AKP,  45.6, orange
 CHP,  27.8,red
@@ -283,7 +283,7 @@ SP,  2
 
 ==== Area Chart
 
-[chart,area,file="area-chart.png"]
+[chart,area,target="area-chart"]
 --
 //April
 1,  4
@@ -307,7 +307,7 @@ For other charts and available options, look at https://github.com/asciidocfx/As
 PlantUML is a UML diagram extension embedded in AsciidocFX. Note that some diagram generation may require you to install http://graphviz.org/[Graphviz] externally.
 
 .Title (optional)
-[uml,file="uml-diagram.png"]
+[plantuml,target="uml-diagram"]
 --
 abstract class AbstractList
 abstract AbstractCollection
@@ -336,7 +336,7 @@ annotation SuppressWarnings
 --
 
 .UML http://plantuml.sourceforge.net/ditaa.html
-[uml,file="ditaa-diagram.png"]
+[plantuml,target="ditaa-diagram"]
 --
 @startditaa
 +--------+   +-------+    +-------+
@@ -352,7 +352,7 @@ annotation SuppressWarnings
 --
 
 .UML http://plantuml.sourceforge.net/ditaa.html
-[uml,file="dot-diagram.png"]
+[plantuml,target="dot-diagram"]
 --
 @startdot
 digraph foo {
@@ -373,7 +373,7 @@ AsciidocFX supports MathJAX, which visually outputs various languages (MathML, T
 ==== Tex formula
 
 .Title (optional)
-[math,file="tex-formula.png"]
+[math,target="tex-formula"]
 --
 \begin{align}
 \dot{x} & = \sigma(y-x) \\
@@ -385,7 +385,7 @@ AsciidocFX supports MathJAX, which visually outputs various languages (MathML, T
 ==== MathML formula
 
 .Title (optional)
-[math,file="mathml-formula.png"]
+[math,target="mathml-formula"]
 --
 <math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
   <mi>x</mi>
@@ -424,7 +424,7 @@ You may generate a visual representation of a file system as a "Tree" structure.
 ==== Basic tree
 
 .Filesystem Tree
-[tree,file="filesystem-tree-viewer.png"]
+[tree,target="filesystem-tree-viewer"]
 --
 #booksample
 ##asciidoctor.css
@@ -445,7 +445,7 @@ You may generate a visual representation of a file system as a "Tree" structure.
 ==== Linked tree
 
 .Filesystem Tree
-[tree,file="filesystem-tree-viewer-new.png"]
+[tree,target="filesystem-tree-viewer-new"]
 --
 root
 |-- photos
