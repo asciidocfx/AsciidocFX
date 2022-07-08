@@ -1,11 +1,13 @@
 {
 	"backend": "pdf",
+	"jsPlatform":"Asciidoctorj",
 	"safe": "unsafe",
 	"header_footer": true,
 	"converter": "ASCIIDOCTOR",
 	"attributes": {
 		"allow-uri-read": "true",
 		"source-highlighter": "rouge",
-		"icons": "font"
+		"icons": "font",
+		"imagesdir": "images"
 	}
 }

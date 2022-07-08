@@ -1,6 +1,6 @@
 
 {
-    "jsPlatform":"Webkit",
+    "jsPlatform":"Asciidoctorj",
     "safe":"unsafe",
     "sourcemap":true,
     "attributes":{
@@ -13,6 +13,8 @@
         "env-browser":"true",
         "idprefix":"true",
         "apply-data-line": "true",
-        "apply-image-cacher": "true"
+        "apply-image-cacher": "true",
+        "imagesdir": "images",
+        "allow-uri-read": "true"
     }
 }
