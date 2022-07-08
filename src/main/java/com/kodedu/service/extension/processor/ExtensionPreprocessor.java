@@ -14,7 +14,7 @@ import java.util.List;
 public class ExtensionPreprocessor extends Preprocessor {
 
     private final List<String> extensions = List.of("stem", "asciimath", "latexmath", "mathml", "math", "plantuml",
-            "uml", "ditaa", "graphviz", "tree", "mermaid");
+            "uml", "ditaa", "graphviz", "tree", "mermaid","chart");
 
     @Override
     public void process(Document document, PreprocessorReader reader) {

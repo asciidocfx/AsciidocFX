@@ -98,7 +98,7 @@ public class EpubConverter {
                 Attributes attributes = Attributes.builder().build();
                 attributes.setExperimental(true);
                 attributes.setIgnoreUndefinedAttributes(true);
-                attributes.setAllowUriRead(false);
+                attributes.setAllowUriRead(false); // TODO: Check include true
 
                 Options options = Options.builder()
                         .baseDir(destFile.getParentFile())

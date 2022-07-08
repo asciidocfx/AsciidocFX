@@ -41,13 +41,11 @@ public interface CustomProcessor {
         if (Objects.isNull(imageTarget)) {
             int port = Integer.parseInt(environment.getProperty("local.server.port"));
             imageTarget = "http://localhost:" + port + "/afx/cache/" + imageMd5 + ".png";
-        } else {
-            imageTarget = Paths.get(imagesDir).resolve(imageTarget).toString();
         }
 
         boolean isPreview = (boolean) parent.getDocument().getAttributes().getOrDefault("preview", false);
         boolean isDataUri = parent.getDocument().hasAttribute("data-uri");
-        String imagePath = Paths.get(docdir).resolve(imageTarget).toString();
+        String imagePath = Paths.get(docdir).resolve(imagesDir).resolve(imageTarget).toString();
         if (isPreview && !isDataUri) {
             imageTarget += "?cache" + imageMd5; // for html cache
         }
