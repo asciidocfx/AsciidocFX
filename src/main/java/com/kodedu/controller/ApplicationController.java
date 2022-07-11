@@ -418,7 +418,14 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         }
 
         threadService.runTaskLater(() -> {
-            pdfBookConverter.convert(askPath);
+            boolean isRevealJs = lastConverterResult.isBackend("revealjs");
+            if (isRevealJs) {
+                threadService.runActionLater(()->{
+                    slidePane.printPdf();
+                });
+            } else {
+                pdfBookConverter.convert(askPath);
+            }
         });
     }
 

@@ -4,6 +4,7 @@ import com.kodedu.config.EditorConfigBean;
 import com.kodedu.controller.ApplicationController;
 import com.kodedu.engine.AsciidocWebkitConverter;
 import com.kodedu.other.Current;
+import com.kodedu.service.DirectoryService;
 import com.kodedu.service.ThreadService;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.value.ObservableValue;
@@ -17,6 +18,7 @@ import netscape.javascript.JSObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -30,13 +32,18 @@ public class SlidePane extends ViewPanel {
 
     private String backend = "revealjs";
     private Logger logger = LoggerFactory.getLogger(SlidePane.class);
+
+    @Value("${application.slide.url}")
+    private String slideUrl;
     private final AsciidocWebkitConverter asciidocWebkitConverter;
+    private final DirectoryService directoryService;
 
     @Autowired
-    public SlidePane(ThreadService threadService, ApplicationController controller, Current current, AsciidocWebkitConverter asciidocWebkitConverter, EditorConfigBean editorConfigBean) {
+    public SlidePane(ThreadService threadService, ApplicationController controller, Current current, AsciidocWebkitConverter asciidocWebkitConverter, EditorConfigBean editorConfigBean, DirectoryService directoryService) {
         super(threadService, controller, current, editorConfigBean);
         this.asciidocWebkitConverter = asciidocWebkitConverter;
 
+        this.directoryService = directoryService;
     }
 
     @PostConstruct
@@ -125,5 +132,17 @@ public class SlidePane extends ViewPanel {
 
     public String getBackend() {
         return backend;
+    }
+
+    public void printPdf() {
+        controller.browseInDesktop(getPdfSlideUrl());
+    }
+
+    public String getSlideUrl() {
+        return String.format(slideUrl, controller.getPort(), directoryService.interPath());
+    }
+
+    private String getPdfSlideUrl() {
+        return getSlideUrl() + "?print-pdf";
     }
 }

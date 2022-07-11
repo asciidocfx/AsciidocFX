@@ -57,7 +57,7 @@ public class SlideConverter {
 
             this.rendered = rendered;
 
-            String url = String.format(slideUrl, controller.getPort(), directoryService.interPath());
+            String url = slidePane.getSlideUrl();
 
             if (controller.rightShowerHider.getShowing().orElse(null) != slidePane || slidePane.getLocation() == null) {
                 slidePane.load(url);
