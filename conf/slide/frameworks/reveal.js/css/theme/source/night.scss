@@ -27,7 +27,9 @@ $headingTextShadow: none;
 $headingLetterSpacing: -0.03em;
 $headingTextTransform: none;
 $selectionBackgroundColor: #e7ad52;
-$mainFontSize: 30px;
+
+// Change text colors against light slide backgrounds
+@include light-bg-text-color(#222);
 
 
 // Theme template ------------------------------
