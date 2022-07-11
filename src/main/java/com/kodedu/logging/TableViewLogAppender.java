@@ -93,12 +93,28 @@ public class TableViewLogAppender extends UnsynchronizedAppenderBase<ILoggingEve
         }
 
         threadService.buff("logAppender").schedule(() -> {
-            final List<MyLog> clone = new LinkedList<>(buffer);
+            final List<MyLog> cloneBufferList = new LinkedList<>(buffer);
+            final List<MyLog> cloneLogList = new LinkedList<>(logList);
+            cloneLogList.addAll(cloneBufferList);
+            final List<MyLog> reducedLogList = new LinkedList<>();
+            reduceRepeatedLogs(cloneLogList, reducedLogList);
             buffer.clear();
             threadService.runActionLater(() -> {
-                logList.addAll(clone);
+                logList.setAll(reducedLogList);
             });
         }, 2, TimeUnit.SECONDS);
+    }
+
+    private void reduceRepeatedLogs(List<MyLog> cloneLogList, List<MyLog> newList) {
+        MyLog previousLog = null;
+        for (MyLog myLog : cloneLogList) {
+            if (Objects.nonNull(previousLog) && Objects.equals(previousLog.getOriginalMessage(), myLog.getOriginalMessage())) {
+                previousLog.count();
+            } else {
+                newList.add(myLog);
+                previousLog = myLog;
+            }
+        }
     }
 
     public PatternLayoutEncoder getEncoder() {
