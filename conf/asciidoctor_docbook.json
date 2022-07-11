@@ -8,6 +8,7 @@
         "env":"browser",
         "env-browser":"true",
         "imagesdir": "images",
-        "allow-uri-read": "true"
+        "allow-uri-read": "true",
+        "experimental": "true"
     }
 }

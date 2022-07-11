@@ -6,13 +6,13 @@ import java.util.ResourceBundle;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 
+import org.asciidoctor.Asciidoctor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.dooapp.fxform.FXForm;
 import com.dooapp.fxform.builder.FXFormBuilder;
 import com.dooapp.fxform.filter.ExcludeFilter;
-import com.kodedu.config.AsciidoctorConfigBase.LoadedAttributes;
 import com.kodedu.config.PdfConfigBean.PdfConfigAttributes;
 import com.kodedu.controller.ApplicationController;
 import com.kodedu.service.ThreadService;
@@ -27,6 +27,7 @@ public class PdfConfigBean extends AsciidoctorConfigBase<PdfConfigAttributes> {
 
     private final ApplicationController controller;
     private final ThreadService threadService;
+	private final Asciidoctor asciidoctor;
 
     private ObjectProperty<PdfConverterType> converter = new SimpleObjectProperty<>(PdfConverterType.FOP);
 
@@ -38,11 +39,12 @@ public class PdfConfigBean extends AsciidoctorConfigBase<PdfConfigAttributes> {
     }
 
     @Autowired
-    public PdfConfigBean(ApplicationController controller, ThreadService threadService) {
-        super(controller, threadService);
+    public PdfConfigBean(ApplicationController controller, ThreadService threadService, Asciidoctor asciidoctor) {
+        super(controller, threadService, asciidoctor);
         this.controller = controller;
         this.threadService = threadService;
-    }
+		this.asciidoctor = asciidoctor;
+	}
 
     @Override
     public Path getConfigPath() {

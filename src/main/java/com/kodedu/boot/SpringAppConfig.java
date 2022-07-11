@@ -31,10 +31,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.*;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;
 import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
@@ -76,6 +73,7 @@ public class SpringAppConfig extends SpringBootServletInitializer implements Web
     }
 
     @Bean
+//    @Scope("prototype")
     public Asciidoctor previewDoctor(FxChartBlockProcessor fxChartBlockProcessor,
                                      DataLineProcessor dataLineProcessor,
                                      FileTreeBlockProcessor treeBlockProcessor,
@@ -87,6 +85,8 @@ public class SpringAppConfig extends SpringBootServletInitializer implements Web
                                      MathInlineMacroProcessor mathInlineMacroProcessor) {
         Asciidoctor doctor = Asciidoctor.Factory.create();
         doctor.requireLibrary("asciidoctor-diagram");
+        doctor.requireLibrary("asciidoctor-epub3");
+        doctor.requireLibrary("asciidoctor-revealjs");
         doctor.javaExtensionRegistry()
                 .block(fxChartBlockProcessor)
                 .block(treeBlockProcessor)
@@ -102,6 +102,7 @@ public class SpringAppConfig extends SpringBootServletInitializer implements Web
 
     @Bean
     @Primary
+//    @Scope("prototype")
     public Asciidoctor standardDoctor(FxChartBlockProcessor fxChartBlockProcessor,
                                       FileTreeBlockProcessor treeBlockProcessor,
                                       MathBlockProcessor mathBlockProcessor,
@@ -112,6 +113,8 @@ public class SpringAppConfig extends SpringBootServletInitializer implements Web
                                       MathInlineMacroProcessor mathInlineMacroProcessor) {
         Asciidoctor doctor = Asciidoctor.Factory.create();
         doctor.requireLibrary("asciidoctor-diagram");
+        doctor.requireLibrary("asciidoctor-epub3");
+        doctor.requireLibrary("asciidoctor-revealjs");
         doctor.javaExtensionRegistry()
                 .block(fxChartBlockProcessor)
                 .block(treeBlockProcessor)

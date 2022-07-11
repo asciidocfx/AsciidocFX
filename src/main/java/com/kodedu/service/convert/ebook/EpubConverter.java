@@ -1,5 +1,6 @@
 package com.kodedu.service.convert.ebook;
 
+import com.kodedu.config.Epub3ConfigBean;
 import com.kodedu.controller.ApplicationController;
 import com.kodedu.helper.IOHelper;
 import com.kodedu.other.Current;
@@ -9,33 +10,20 @@ import com.kodedu.service.PathResolverService;
 import com.kodedu.service.ThreadService;
 import com.kodedu.service.convert.docbook.DocBookConverter;
 import com.kodedu.service.ui.IndikatorService;
-import org.asciidoctor.Asciidoctor;
-import org.asciidoctor.Attributes;
-import org.asciidoctor.Options;
-import org.asciidoctor.SafeMode;
-import org.joox.Match;
+import org.asciidoctor.*;
+import org.asciidoctor.ast.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.stream.StreamSource;
 import java.io.*;
 import java.nio.file.*;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import java.util.zip.Deflater;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
 
-import static java.nio.file.StandardOpenOption.TRUNCATE_EXISTING;
-import static java.nio.file.StandardOpenOption.WRITE;
 import static org.joox.JOOX.$;
 
 /**
@@ -53,14 +41,13 @@ public class EpubConverter {
     private final IndikatorService indikatorService;
     private final DocBookConverter docBookConverter;
     private final PathResolverService pathResolverService;
+    private final Epub3ConfigBean epub3ConfigBean;
     private final Asciidoctor asciidoctor;
-
-    private Path epubPath;
 
     @Autowired
     public EpubConverter(final ApplicationController asciiDocController, final Current current, final ThreadService threadService,
                          final DirectoryService directoryService, final IndikatorService indikatorService, final DocBookConverter docBookConverter, PathResolverService pathResolverService,
-                         @Qualifier("standardDoctor") Asciidoctor asciidoctor) {
+                         Epub3ConfigBean epub3ConfigBean, @Qualifier("standardDoctor") Asciidoctor asciidoctor) {
         this.asciiDocController = asciiDocController;
         this.current = current;
         this.threadService = threadService;
@@ -68,18 +55,19 @@ public class EpubConverter {
         this.indikatorService = indikatorService;
         this.docBookConverter = docBookConverter;
         this.pathResolverService = pathResolverService;
+        this.epub3ConfigBean = epub3ConfigBean;
         this.asciidoctor = asciidoctor;
     }
 
-    public Path produceEpub3Temp() {
-        return produceEpub3(false, true);
+    public void produceEpub3Temp() {
+         produceEpub3(false, true);
     }
 
-    public Path produceEpub3(boolean askPath) {
-        return produceEpub3(askPath, false);
+    public void produceEpub3(boolean askPath) {
+         produceEpub3(askPath, false);
     }
 
-    private Path produceEpub3(boolean askPath, boolean isTemp) {
+    private void produceEpub3(boolean askPath, boolean isTemp) {
 
         Path currentTabPath = current.currentPath().get();
         Path currentTabPathDir = currentTabPath.getParent();
@@ -95,10 +83,8 @@ public class EpubConverter {
             logger.debug("Epub conversion started");
 
             try {
-                Attributes attributes = Attributes.builder().build();
+                Attributes attributes = epub3ConfigBean.getAsciiDocAttributes(asciidoc);
                 attributes.setExperimental(true);
-                attributes.setIgnoreUndefinedAttributes(true);
-                attributes.setAllowUriRead(false); // TODO: Check include true
 
                 Options options = Options.builder()
                         .baseDir(destFile.getParentFile())
@@ -121,7 +107,6 @@ public class EpubConverter {
 
         });
 
-        return epubPath;
     }
 
 

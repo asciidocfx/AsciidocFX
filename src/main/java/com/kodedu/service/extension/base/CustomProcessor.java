@@ -54,7 +54,7 @@ public interface CustomProcessor {
     }
 
     default String getImagesDir(ContentNode parent) {
-        return (String) parent.getDocument().getAttribute("imagesdir", "images");
+        return (String) parent.getDocument().getAttribute("imagesdir", "");
     }
 
     default String cachedImageUri(String content) {

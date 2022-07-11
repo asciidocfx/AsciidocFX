@@ -15,10 +15,10 @@ public class DataLineProcessor extends Treeprocessor {
 
 	@Override
 	public Document process(Document document) {
-		Object foo = document.getAttribute("apply-data-line");
-		if (!Boolean.parseBoolean(String.valueOf(foo))) {
-			return document;
-		}
+//		Object foo = document.getAttribute("apply-data-line");
+//		if (!Boolean.parseBoolean(String.valueOf(foo))) {
+//			return document;
+//		}
 
 		// The returned List is not type safe
 		// StructuralNode.findBy() claims that only StructuralNodes are returned

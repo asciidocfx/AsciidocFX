@@ -33,6 +33,7 @@ public class AsciidocAsciidoctorjConverter extends ViewPanel implements Asciidoc
     private final Logger logger = LoggerFactory.getLogger(AsciidocAsciidoctorjConverter.class);
 	
     private final PreviewConfigBean previewConfigBean;
+    private final RevealjsConfigBean revealjsConfigBean;
 	private final DocbookConfigBean docbookConfigBean;
 	private final ThreadService threadService;
 
@@ -42,10 +43,11 @@ public class AsciidocAsciidoctorjConverter extends ViewPanel implements Asciidoc
 	public AsciidocAsciidoctorjConverter(ThreadService threadService, ApplicationController controller,
 										 Current current, EditorConfigBean editorConfigBean,
 										 PreviewConfigBean previewConfigBean, HtmlConfigBean htmlConfigBean,
-										 DocbookConfigBean docbookConfigBean, @Qualifier("previewDoctor") Asciidoctor doctor) {
+										 RevealjsConfigBean revealjsConfigBean, DocbookConfigBean docbookConfigBean, @Qualifier("previewDoctor") Asciidoctor doctor) {
 		super(threadService, controller, current, editorConfigBean);
 		this.previewConfigBean = previewConfigBean;
 		this.threadService = threadService;
+		this.revealjsConfigBean = revealjsConfigBean;
 		this.docbookConfigBean = docbookConfigBean;
 		this.doctor = doctor;
 	}
@@ -93,14 +95,22 @@ public class AsciidocAsciidoctorjConverter extends ViewPanel implements Asciidoc
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	public ConverterResult convert(String backend, String text) {
+		return switch (backend) {
+			case "html5" -> convert(backend, text, previewConfigBean);
+			case "revealjs" -> convert(backend, text, revealjsConfigBean);
+			default -> throw new RuntimeException("Backend not found: " + backend);
+		};
+	}
 	
 	private ConverterResult convert(String backend, String text, AsciidoctorConfigBase<?> configBean) {
 		SafeMode safe = convertSafe(configBean.getSafe());
 
-		Attributes attributes = configBean.getAsciiDocAttributes();
-		if (backend.equals("html5")) {
-			attributes.setAttribute("preview", true);
-		}
+		Attributes attributes = configBean.getAsciiDocAttributes(text);
+//		if (backend.equals("html5")) {
+//			attributes.setAttribute("preview", true);
+//		}
 
 		var workdir = controller.getCurrent().currentTab().getParentOrWorkdir();
 
@@ -141,4 +151,5 @@ public class AsciidocAsciidoctorjConverter extends ViewPanel implements Asciidoc
 	public void scrollByLine(String text) {
 		// no-op
 	}
+
 }

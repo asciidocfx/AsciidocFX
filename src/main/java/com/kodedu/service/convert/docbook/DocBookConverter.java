@@ -82,10 +82,7 @@ public class DocBookConverter implements DocbookTraversable, DocumentConverter<S
             try {
                 SafeMode safe = convertSafe(docbookConfigBean.getSafe());
 
-                Attributes attributes = docbookConfigBean.getAsciiDocAttributes();
-                attributes.setExperimental(true);
-                attributes.setIgnoreUndefinedAttributes(true);
-                attributes.setAllowUriRead(true);
+                Attributes attributes = docbookConfigBean.getAsciiDocAttributes(asciidoc);
 
                 Options options = Options.builder()
                         .baseDir(docbookPath.getParent().toFile())

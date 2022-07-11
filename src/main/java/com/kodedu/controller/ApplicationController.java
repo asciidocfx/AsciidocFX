@@ -17,10 +17,8 @@ import com.kodedu.logging.TableViewLogAppender;
 import com.kodedu.other.*;
 import com.kodedu.outline.Section;
 import com.kodedu.service.*;
-import com.kodedu.service.convert.DocumentConverter;
 import com.kodedu.service.convert.docbook.DocBookConverter;
 import com.kodedu.service.convert.ebook.EpubConverter;
-import com.kodedu.service.convert.ebook.MobiConverter;
 import com.kodedu.service.convert.html.HtmlBookConverter;
 import com.kodedu.service.convert.pdf.PdfBookConverter;
 import com.kodedu.service.convert.slide.SlideConverter;
@@ -70,12 +68,16 @@ import javafx.scene.text.Text;
 import javafx.stage.*;
 import javafx.util.Duration;
 import netscape.javascript.JSObject;
+import org.asciidoctor.Asciidoctor;
+import org.asciidoctor.Attributes;
+import org.asciidoctor.Options;
+import org.asciidoctor.SafeMode;
+import org.asciidoctor.ast.Document;
 import org.kordamp.ikonli.fontawesome.FontAwesome;
 import org.kordamp.ikonli.javafx.FontIcon;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.env.Environment;
@@ -210,7 +212,10 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     public AsciidocWebkitConverter asciidocWebkitConverter;
 
     @Autowired
-    public AsciidocAsciidoctorjConverter acAsciidocAsciidoctorjConverter;
+    public AsciidocAsciidoctorjConverter asciidoctorjConverter;
+
+    @Autowired
+    private Asciidoctor asciidoctor;
 
     @Autowired
     private EditorConfigBean editorConfigBean;
@@ -268,16 +273,10 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     @Autowired
     private FileBrowseService fileBrowser;
-
     @Autowired
     private IndikatorService indikatorService;
-
-    @Autowired
-    private MobiConverter mobiConverter;
-
     @Autowired
     private SampleBookService sampleBookService;
-
     @Autowired
     private Environment environment;
 
@@ -479,34 +478,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     @WebkitCall(from = "mathjax.html")
     public void snapshotFormula(String formula, String imagesDir, String imageTarget) {
         mathJaxService.snapshotFormula(formula, imagesDir, imageTarget, null);
-    }
-
-    private void convertMobi() {
-        convertMobi(false);
-    }
-
-    private void convertMobi(boolean askPath) {
-
-        if (nonNull(locationConfigBean.getKindlegen())) {
-            if (!Files.exists(IOHelper.getPath(locationConfigBean.getKindlegen()))) {
-                locationConfigBean.setKindlegen(null);
-            }
-        }
-
-        if (isNull(locationConfigBean.getKindlegen())) {
-            FileChooser fileChooser = directoryService.newFileChooser("Select 'kindlegen' executable");
-            File kindlegenFile = fileChooser.showOpenDialog(null);
-            if (isNull(kindlegenFile)) {
-                return;
-            }
-
-            locationConfigBean.setKindlegen(kindlegenFile.toPath().toString());
-        }
-
-        threadService.runTaskLater(() -> {
-            mobiConverter.convert(askPath);
-        });
-
     }
 
     private void generateHtml() {
@@ -2374,7 +2345,15 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                     setIncludeAsciidocResource(true);
                 }
 
-                ConverterResult converterResult = converterProvider.get(previewConfigBean).convertAsciidoc(textChangeEvent);
+                Attributes attributes = Attributes.builder().allowUriRead(true).build();
+                Document document = asciidoctor.load(text, Options.builder()
+                        .safe(SafeMode.UNSAFE)
+                        .baseDir(current.currentTab().getParentOrWorkdir().toFile())
+                        .attributes(attributes).build());
+
+                String backend = (String) document.getAttribute("backend", "html5");
+
+                ConverterResult converterResult = asciidoctorjConverter.convert(backend, text);
 
                 setIncludeAsciidocResource(false);
 
@@ -2386,13 +2365,13 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
                 this.lastConverterResult = converterResult;
 
-                if (this.lastConverterResult.isBackend("html5")) {
+                if (Objects.equals(backend, "html5")) {
                     updateRendered(this.lastConverterResult.getRendered());
                     rightShowerHider.showNode(htmlPane);
                 }
 
-                if (this.lastConverterResult.isBackend("revealjs") || this.lastConverterResult.isBackend("deckjs")) {
-                    slidePane.setBackend(this.lastConverterResult.getBackend());
+                if (Objects.equals(backend, "revealjs")) {
+                    slidePane.setBackend(backend);
                     slideConverter.convert(this.lastConverterResult.getRendered());
                     rightShowerHider.showNode(slidePane);
                 }
@@ -2410,14 +2389,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                 rightShowerHider.showNode(liveReloadPane);
 
             }
-//            else if ("plantuml".equalsIgnoreCase(mode)) {
-//                MarkdownService markdownService = applicationContext.getBean(MarkdownService.class);
-//                markdownService.convertToAsciidoc(text, asciidoc -> {
-//                    ConverterResult result = converterProvider.get(previewConfigBean).convertAsciidoc(asciidoc);
-//                    result.afterRender(this::updateRendered);
-//                });
-//                rightShowerHider.showNode(htmlPane);
-//            }
 
         } catch (Exception e) {
             setIncludeAsciidocResource(false);

@@ -36,11 +36,18 @@ public class ConfigurationService {
     private final SpellcheckConfigBean spellcheckConfigBean;
     private final TerminalConfigBean terminalConfigBean;
     private final ExtensionConfigBean extensionConfigBean;
+    private final Epub3ConfigBean epub3ConfigBean;
+    private final RevealjsConfigBean revealjsConfigBean;
     private VBox configBox;
     private final AsciidoctorConfigBase<PdfConfigAttributes> pdfConfigBean;
 
     @Autowired
-    public ConfigurationService(LocationConfigBean locationConfigBean, EditorConfigBean editorConfigBean, PreviewConfigBean previewConfigBean, HtmlConfigBean htmlConfigBean, DocbookConfigBean docbookConfigBean, ApplicationController controller, StoredConfigBean storedConfigBean, ThreadService threadService, SpellcheckConfigBean spellcheckConfigBean, TerminalConfigBean terminalConfigBean, ExtensionConfigBean extensionConfigBean, AsciidoctorConfigBase<PdfConfigAttributes> pdfConfigBean) {
+    public ConfigurationService(LocationConfigBean locationConfigBean, EditorConfigBean editorConfigBean,
+                                PreviewConfigBean previewConfigBean, HtmlConfigBean htmlConfigBean,
+                                DocbookConfigBean docbookConfigBean, ApplicationController controller,
+                                StoredConfigBean storedConfigBean, ThreadService threadService,
+                                SpellcheckConfigBean spellcheckConfigBean, TerminalConfigBean terminalConfigBean,
+                                ExtensionConfigBean extensionConfigBean, Epub3ConfigBean epub3ConfigBean, RevealjsConfigBean revealjsConfigBean, AsciidoctorConfigBase<PdfConfigAttributes> pdfConfigBean) {
         this.locationConfigBean = locationConfigBean;
         this.editorConfigBean = editorConfigBean;
         this.previewConfigBean = previewConfigBean;
@@ -52,6 +59,8 @@ public class ConfigurationService {
         this.spellcheckConfigBean = spellcheckConfigBean;
         this.terminalConfigBean = terminalConfigBean;
         this.extensionConfigBean = extensionConfigBean;
+        this.epub3ConfigBean = epub3ConfigBean;
+        this.revealjsConfigBean = revealjsConfigBean;
         this.pdfConfigBean = pdfConfigBean;
     }
 
@@ -67,6 +76,8 @@ public class ConfigurationService {
         terminalConfigBean.load();
         extensionConfigBean.load();
         pdfConfigBean.load();
+        epub3ConfigBean.load();
+        revealjsConfigBean.load();
 
         List<ConfigurationBase> configBeanList = Arrays.asList(
                 editorConfigBean,
@@ -77,7 +88,9 @@ public class ConfigurationService {
                 docbookConfigBean,
 //                odfConfigBean,
                 extensionConfigBean,
-                pdfConfigBean
+                pdfConfigBean,
+                epub3ConfigBean,
+                revealjsConfigBean
 //                ,spellcheckConfigBean
         );
 

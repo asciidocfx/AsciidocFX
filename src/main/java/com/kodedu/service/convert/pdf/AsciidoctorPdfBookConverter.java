@@ -72,10 +72,7 @@ public class AsciidoctorPdfBookConverter implements DocumentConverter<String> {
 			
 			SafeMode safe = convertSafe(pdfConfigBean.getSafe());
 			
-			Attributes attributes = pdfConfigBean.getAsciiDocAttributes();
-			attributes.setExperimental(true);
-			attributes.setIgnoreUndefinedAttributes(true);
-			attributes.setAllowUriRead(true);
+			Attributes attributes = pdfConfigBean.getAsciiDocAttributes(asciidoc);
 
 			Options options = Options.builder()
 			                         .baseDir(destFile.getParentFile())

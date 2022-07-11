@@ -71,10 +71,7 @@ public class HtmlBookConverter implements Traversable, DocumentConverter<String>
             final String asciidoc = current.currentEditorValue();
             Path path = current.currentPath().get();
 
-            Attributes attributes = htmlConfigBean.getAsciiDocAttributes();
-            attributes.setExperimental(true);
-            attributes.setIgnoreUndefinedAttributes(true);
-            attributes.setAllowUriRead(true);
+            Attributes attributes = htmlConfigBean.getAsciiDocAttributes(asciidoc);
 
             Options options = Options.builder()
                     .baseDir(destFile.getParentFile())

@@ -15,6 +15,7 @@
         "apply-data-line": "true",
         "apply-image-cacher": "true",
         "imagesdir": "images",
-        "allow-uri-read": "true"
+        "allow-uri-read": "true",
+        "experimental": "true"
     }
 }

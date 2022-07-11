@@ -22,8 +22,11 @@ import javax.json.JsonReader;
 import javax.json.JsonString;
 import javax.json.JsonValue;
 
+import org.asciidoctor.Asciidoctor;
 import org.asciidoctor.Attributes;
 import org.asciidoctor.AttributesBuilder;
+import org.asciidoctor.Options;
+import org.asciidoctor.ast.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -71,6 +74,7 @@ public abstract class AsciidoctorConfigBase<T extends LoadedAttributes> extends 
     private ListProperty<AttributesTable> attributes = new SimpleListProperty<>(FXCollections.observableArrayList());
 
     private final ApplicationController controller;
+    private final Asciidoctor asciidoctor;
 
     private final ThreadService threadService;
 
@@ -82,10 +86,11 @@ public abstract class AsciidoctorConfigBase<T extends LoadedAttributes> extends 
     private final Button loadButton = new Button("Load");
     private final Label infoLabel = new Label();
 
-    public AsciidoctorConfigBase(ApplicationController controller, ThreadService threadService) {
+    public AsciidoctorConfigBase(ApplicationController controller, ThreadService threadService, Asciidoctor asciidoctor) {
         super(controller, threadService);
         this.controller = controller;
         this.threadService = threadService;
+        this.asciidoctor = asciidoctor;
     }
 
     public String getBackend() {
@@ -342,7 +347,27 @@ public abstract class AsciidoctorConfigBase<T extends LoadedAttributes> extends 
 		return attributesBuilder.build();
 	}
 
-	public interface LoadedAttributes {
+    public Attributes getAsciiDocAttributes(String asciidoc) {
+        Document document = asciidoctor.load(asciidoc, Options.builder().build());
+        Map<String, Object> defaultAttributes = document.getAttributes();
+
+        AttributesBuilder attributesBuilder = Attributes.builder();
+        for (Map.Entry<String, Object> entry : defaultAttributes.entrySet()) {
+            attributesBuilder.attribute(entry.getKey(), entry.getValue());
+        }
+        ObservableList<AttributesTable> attributes = getAttributes();
+        for (AttributesTable attribute : attributes) {
+            String key = attribute.getAttribute();
+            String value = attribute.getValue();
+
+            if (Objects.nonNull(key) || Objects.nonNull(value)) {
+                attributesBuilder.attribute(key, value);
+            }
+        }
+        return attributesBuilder.build();
+    }
+
+    public interface LoadedAttributes {
     	
     }
     

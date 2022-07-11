@@ -4,6 +4,7 @@ import com.kodedu.config.AsciidoctorConfigBase.NoAttributes;
 import com.kodedu.controller.ApplicationController;
 import com.kodedu.service.ThreadService;
 
+import org.asciidoctor.Asciidoctor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -17,6 +18,7 @@ public class HtmlConfigBean extends AsciidoctorConfigBase<NoAttributes> {
 
     private final ApplicationController controller;
     private final ThreadService threadService;
+    private final Asciidoctor asciidoctor;
 
     @Override
     public String formName() {
@@ -24,10 +26,11 @@ public class HtmlConfigBean extends AsciidoctorConfigBase<NoAttributes> {
     }
 
     @Autowired
-    public HtmlConfigBean(ApplicationController controller, ThreadService threadService) {
-        super(controller, threadService);
+    public HtmlConfigBean(ApplicationController controller, ThreadService threadService, Asciidoctor asciidoctor) {
+        super(controller, threadService, asciidoctor);
         this.controller = controller;
         this.threadService = threadService;
+        this.asciidoctor = asciidoctor;
     }
 
     @Override

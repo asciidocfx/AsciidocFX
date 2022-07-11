@@ -235,6 +235,11 @@
         </dependency>
         <dependency>
             <groupId>org.asciidoctor</groupId>
+            <artifactId>asciidoctorj-revealjs</artifactId>
+            <version>5.0.0.rc1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.asciidoctor</groupId>
             <artifactId>asciidoctorj-diagram</artifactId>
             <version>2.2.3</version>
         </dependency>

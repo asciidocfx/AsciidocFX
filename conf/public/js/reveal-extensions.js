@@ -8,12 +8,12 @@ revealjsExt.replaceSlides = function (data) {
 
 revealjsExt.flipCurrentPage = function (lineno) {
 
-    var closest = $(".data-line-" + lineno).closest("section.stack");
+    var closest = $(".data-line-" + lineno).closest("section");
 
     if (closest.length > 0) {
         Reveal.slide(revealjsExt.getSlideNumber(closest));
     } else {
-        closest = revealjsExt.findNextNode(lineno).closest("section.stack");
+        closest = revealjsExt.findNextNode(lineno).closest("section");
         if (closest.length > 0) {
             Reveal.slide(revealjsExt.getSlideNumber(closest));
         }
@@ -21,7 +21,7 @@ revealjsExt.flipCurrentPage = function (lineno) {
 };
 
 revealjsExt.getSlideNumber = function (closest) {
-    var getSlide = $("div.slides").find("section.stack").index(closest.get(0));
+    var getSlide = $("div.slides").find("section").index(closest.get(0));
     return getSlide;
 }
 
@@ -29,7 +29,7 @@ revealjsExt.findNextNode = function (lineno) {
     var node;
     for (var i = 0; i < 100; i++) {
         lineno++;
-        node = $("div.slides").find("section.stack").find(".data-line-" + lineno);
+        node = $("div.slides").find("section").find(".data-line-" + lineno);
         if (node.length > 0)
             break;
     }
