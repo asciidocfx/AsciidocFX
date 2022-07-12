@@ -1,6 +1,8 @@
 :backend: revealjs
 :encoding: utf-8
 :lang: en
+:source-highlighter: highlightjs
+:icons: font
 ////
 Slide backend for AsciidocFX
 ////
@@ -39,7 +41,7 @@ https://docs.asciidoctor.org/reveal.js-converter/latest/converter/revealjs-optio
 :revealjs_backgroundtransition: default
 :revealjs_viewdistance: 3
 :revealjs_parallaxbackgroundimage:
-:revealjs_parallaxbackgroundsize: 
+:revealjs_parallaxbackgroundsize:
 :revealjs_theme: serif
 ////
 beige, blond, default, moon, night, serif, simple, sky, solarized

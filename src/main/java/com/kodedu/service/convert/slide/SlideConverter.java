@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -57,12 +58,15 @@ public class SlideConverter {
 
             this.rendered = rendered;
 
-            String url = slidePane.getSlideUrl();
+            String defaultUrl = slidePane.getSlideUrl();
+            String currentSlideUrl = slidePane.getLocation();
 
-            if (controller.rightShowerHider.getShowing().orElse(null) != slidePane || slidePane.getLocation() == null) {
-                slidePane.load(url);
+            if (controller.rightShowerHider.getShowing().orElse(null) != slidePane ||
+                    currentSlideUrl == null ||
+                    !currentSlideUrl.contains("slide.html")) {
+                slidePane.load(defaultUrl);
             } else {
-                slidePane.load(slidePane.getLocation());
+                slidePane.load(currentSlideUrl);
             }
 
             for (Consumer<String> step : nextStep) {
