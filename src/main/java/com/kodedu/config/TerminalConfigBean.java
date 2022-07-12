@@ -64,6 +64,19 @@ public class TerminalConfigBean extends ConfigurationBase {
     private StringProperty receiveEncoding = new SimpleStringProperty("utf-8");
     private StringProperty sendEncoding = new SimpleStringProperty("raw");
     private StringProperty userCss = new SimpleStringProperty("data:text/plain;base64,eC1zY3JlZW4geyBjdXJzb3I6IGF1dG87IH0=");
+    private BooleanProperty initialized = new SimpleBooleanProperty(false);
+
+    public boolean isInitialized() {
+        return initialized.get();
+    }
+
+    public BooleanProperty initializedProperty() {
+        return initialized;
+    }
+
+    public void setInitialized(boolean initialized) {
+        this.initialized.set(initialized);
+    }
 
     public String getTerminalWinCommand() {
         return terminalWinCommand.getValue();
@@ -400,6 +413,7 @@ public class TerminalConfigBean extends ConfigurationBase {
         String receiveEncoding = jsonObject.getString("receiveEncoding", this.receiveEncoding.getValue());
         String sendEncoding = jsonObject.getString("sendEncoding", this.sendEncoding.getValue());
         String userCss = jsonObject.getString("userCss", this.userCss.getValue());
+        Boolean initialized = jsonObject.getBoolean("initialized", this.initialized.getValue());
 
         IOHelper.close(jsonReader, fileReader);
 
@@ -423,6 +437,7 @@ public class TerminalConfigBean extends ConfigurationBase {
             this.setReceiveEncoding(receiveEncoding);
             this.setSendEncoding(sendEncoding);
             this.setUserCss(userCss);
+            this.setInitialized(initialized);
 
             if (jsonObject.containsKey("scrollWhellMoveMultiplier")) {
                 this.setScrollWhellMoveMultiplier(jsonObject.getJsonNumber("scrollWhellMoveMultiplier").doubleValue());
@@ -464,7 +479,8 @@ public class TerminalConfigBean extends ConfigurationBase {
                 .add("scrollWhellMoveMultiplier", getScrollWhellMoveMultiplier())
                 .add("receiveEncoding", getReceiveEncoding())
                 .add("sendEncoding", getSendEncoding())
-                .add("userCss", getUserCss());
+                .add("userCss", getUserCss())
+                .add("initialized", isInitialized());
 
         return objectBuilder.build();
     }
@@ -493,6 +509,10 @@ public class TerminalConfigBean extends ConfigurationBase {
     }
 
     public void changeTheme(EditorConfigBean.Theme theme) {
+        if (initialized.get()) {
+            return;
+        }
+        initialized.set(true);
         Platform.runLater(() -> {
             if (theme.getThemeName().equals("Dark")) {
                 setBackgroundColor(Color.rgb(16, 16, 16));
