@@ -45,6 +45,7 @@ public class TableFactory implements Callback<Void, FXFormNode> {
                 super.init(element, fxForm);
                 Class wrappedType = element.getWrappedType();
                 List<Field> fields = ReflectionUtils.listFields(wrappedType);
+                tableView.getColumns().clear();
                 for (Field field : fields) {
                     TableColumn col = new TableColumn(field.getName());
                     col.setCellValueFactory(new PropertyValueFactory(field.getName()));
