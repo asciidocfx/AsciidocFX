@@ -108,9 +108,6 @@ public class AsciidocAsciidoctorjConverter extends ViewPanel implements Asciidoc
 		SafeMode safe = convertSafe(configBean.getSafe());
 
 		Attributes attributes = configBean.getAsciiDocAttributes(text);
-//		if (backend.equals("html5")) {
-//			attributes.setAttribute("preview", true);
-//		}
 
 		var workdir = controller.getCurrent().currentTab().getParentOrWorkdir();
 
@@ -129,6 +126,7 @@ public class AsciidocAsciidoctorjConverter extends ViewPanel implements Asciidoc
 		// See also https://github.com/asciidoctor/asciidoctorj-diagram/issues/25
 		// String converted = doc.convert();
 		String converted = doctor.convert(text, options);
+		logger.info("Converted Asciidoc to {}", backend.toUpperCase());
 
         final String taskId = UUID.randomUUID().toString();
 		ConverterResult res = new ConverterResult(taskId, converted, backend, (String)doc.getAttribute("doctype"));
