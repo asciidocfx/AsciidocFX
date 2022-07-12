@@ -43,7 +43,7 @@ public class AsciidocAsciidoctorjConverter extends ViewPanel implements Asciidoc
 	public AsciidocAsciidoctorjConverter(ThreadService threadService, ApplicationController controller,
 										 Current current, EditorConfigBean editorConfigBean,
 										 PreviewConfigBean previewConfigBean, HtmlConfigBean htmlConfigBean,
-										 RevealjsConfigBean revealjsConfigBean, DocbookConfigBean docbookConfigBean, @Qualifier("previewDoctor") Asciidoctor doctor) {
+										 RevealjsConfigBean revealjsConfigBean, DocbookConfigBean docbookConfigBean, Asciidoctor doctor) {
 		super(threadService, controller, current, editorConfigBean);
 		this.previewConfigBean = previewConfigBean;
 		this.threadService = threadService;

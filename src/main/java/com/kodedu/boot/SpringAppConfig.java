@@ -72,36 +72,7 @@ public class SpringAppConfig extends SpringBootServletInitializer implements Web
         return Base64.getEncoder();
     }
 
-    @Bean
-//    @Scope("prototype")
-    public Asciidoctor previewDoctor(FxChartBlockProcessor fxChartBlockProcessor,
-                                     DataLineProcessor dataLineProcessor,
-                                     FileTreeBlockProcessor treeBlockProcessor,
-                                     MathBlockProcessor mathBlockProcessor,
-                                     ExtensionPreprocessor extensionPreprocessor,
-                                     FileTreeBlockMacroProcessor fileTreeBlockMacroProcessor,
-                                     FileTreeInlineMacroProcessor fileTreeInlineMacroProcessor,
-                                     MathBlockMacroProcessor mathBlockMacroProcessor,
-                                     MathInlineMacroProcessor mathInlineMacroProcessor) {
-        Asciidoctor doctor = Asciidoctor.Factory.create();
-        doctor.requireLibrary("asciidoctor-diagram");
-        doctor.requireLibrary("asciidoctor-epub3");
-        doctor.requireLibrary("asciidoctor-revealjs");
-        doctor.javaExtensionRegistry()
-                .block(fxChartBlockProcessor)
-                .block(treeBlockProcessor)
-                .block(mathBlockProcessor)
-                .treeprocessor(dataLineProcessor)
-                .preprocessor(extensionPreprocessor)
-                .blockMacro(fileTreeBlockMacroProcessor)
-                .blockMacro(mathBlockMacroProcessor)
-                .inlineMacro(fileTreeInlineMacroProcessor)
-                .inlineMacro(mathInlineMacroProcessor);
-        return doctor;
-    }
-
-    @Bean
-    @Primary
+    @Bean(destroyMethod = "shutdown")
 //    @Scope("prototype")
     public Asciidoctor standardDoctor(FxChartBlockProcessor fxChartBlockProcessor,
                                       FileTreeBlockProcessor treeBlockProcessor,
