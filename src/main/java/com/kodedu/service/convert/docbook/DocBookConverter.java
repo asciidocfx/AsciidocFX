@@ -94,10 +94,11 @@ public class DocBookConverter implements DocbookTraversable, DocumentConverter<S
                         .attributes(attributes)
                         .build();
 
-                String rendered = asciidoctor.convert(asciidoc, options);
+                asciidoctor.convert(asciidoc, options);
+                String rendered = IOHelper.readFile(docbookPath);
                 boolean validated = docbookValidator.validateDocbook(rendered);
 
-                if (!validated || rendered == null)
+                if (!validated)
                     return;
 
                 for (Consumer<String> step : nextStep) {
