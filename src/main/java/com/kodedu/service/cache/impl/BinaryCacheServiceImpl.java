@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.Collection;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
@@ -47,10 +48,11 @@ public class BinaryCacheServiceImpl implements BinaryCacheService {
 
     @Override
     public String putBinary(String key, byte[] bytes) {
-
+        key = alignHttpKey(key);
         if (Platform.isFxApplicationThread()) {
+            String finalKey = key;
             threadService.runTaskLater(() -> {
-                putBinary(key, bytes);
+                putBinary(finalKey, bytes);
             });
             return key;
         }
@@ -145,11 +147,13 @@ public class BinaryCacheServiceImpl implements BinaryCacheService {
 
     @Override
     public CacheData getCacheData(String key) {
+        key = alignHttpKey(key);
         return cache.get(key);
     }
 
     @Override
     public void putBinary(String key, BufferedImage trimmed) {
+        key = alignHttpKey(key);
         try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream();) {
             ImageIO.write(trimmed, "png", outputStream);
             byte[] bytes = outputStream.toByteArray();
@@ -157,6 +161,14 @@ public class BinaryCacheServiceImpl implements BinaryCacheService {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private String alignHttpKey(String key) {
+        String cacheSeparator = "/afx/cache";
+        if (Objects.nonNull(key) && key.contains(cacheSeparator) && key.startsWith("http")) {
+            key = key.substring(key.indexOf(cacheSeparator));
+        }
+        return key;
     }
 
     @Override
