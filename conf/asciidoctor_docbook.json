@@ -5,8 +5,6 @@
     "safe":"unsafe",
     "header_footer":true,
     "attributes":{
-        "env":"browser",
-        "env-browser":"true",
         "imagesdir": "images",
         "allow-uri-read": "true",
         "experimental": "true"
