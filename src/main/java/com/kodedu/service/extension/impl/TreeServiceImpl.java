@@ -321,10 +321,10 @@ public class TreeServiceImpl implements TreeService {
                             if (!cachedResource) {
 
                                 Path imagePath = Paths.get(imageTarget);
-                                IOHelper.imageWrite(trimmed, "png", imagePath.toFile());
+                                IOHelper.imageWrite(bufferedImage, "png", imagePath.toFile());
                                 controller.clearImageCache(imagePath);
                             } else {
-                                binaryCacheService.putBinary(imageTarget, trimmed);
+                                binaryCacheService.putBinary(imageTarget, bufferedImage);
                                 controller.clearImageCache(imageTarget);
                             }
                             completed.complete(null);

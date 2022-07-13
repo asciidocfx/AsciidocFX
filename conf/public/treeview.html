@@ -2,36 +2,47 @@
 <html>
 <head lang="en">
     <meta charset="UTF-8">
-    <link rel="stylesheet" href="/afx/resource/css/?p=css/hljs.css" type="text/css"/>
-    <link rel="stylesheet" href="/afx/resource/css/?p=css/treeview.css" type="text/css"/>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+        }
+        body{
+            background: #f5f2f0;
+        }
+        .treeview-container{
+            display: inline-block;
+        }
+    </style>
+    <link rel="stylesheet" href="/afx/resource/css/?p=css/prism.css" type="text/css"/>
     <script src="/afx/resource/js/?p=js/jquery.js"></script>
-    <script src="/afx/resource/js/?p=js/highlight.pack.js"></script>
-    <script src="/afx/resource/js/?p=js/highlight-treeview.pack.js"></script>
+    <script src="/afx/resource/js/?p=js/prism.js"></script>
+    <script>
+        window.Prism = window.Prism || {};
+        Prism.manual = true;
+    </script>
     <title></title>
 </head>
 <body>
-<pre><code class="treeview"></code></pre>
+<div class="treeview-container">
+    <pre><code class="language-treeview"></code></pre>
+</div>
 <script>
 
-    hljs.addPlugin({
-        'after:highlightElement': ({ el, result }) => {
-            let view = document.querySelector(".treeview");
+    function executeTree(tree) {
+        var view = document.querySelector(".treeview-container > pre > code");
+        view.innerHTML = tree;
+        let totalLines = tree.split(/\r\n|\r|\n/).length;
+        let additionalOffset = totalLines * 5;
+        Prism.highlightAll(false, () => {
+            let view = document.querySelector(".treeview-container");
             let zoom = treeview.getZoom();
-            let width = (view.offsetWidth * zoom) + 100;
-            let height = (view.offsetHeight * zoom) + 100;
+            let width = (view.scrollWidth * zoom) + 50;
+            let height = (view.scrollHeight * zoom) + additionalOffset;
             treeview.setPrefSize(width, height);
             setTimeout(() => {
                 alert("RENDERED");
             }, 500);
-        }
-    });
-
-    function executeTree(tree) {
-        var view = document.querySelector(".treeview");
-        view.innerHTML = tree;
-        var trees = document.querySelectorAll("pre code");
-        [].slice.call(trees).forEach(function (item) {
-            hljs.highlightBlock(item);
         });
     }
 
