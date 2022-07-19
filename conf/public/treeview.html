@@ -8,7 +8,7 @@
             margin: 0;
         }
         body{
-            background: #f5f2f0;
+            background: white;
         }
         .treeview-container{
             display: inline-block;
@@ -32,13 +32,11 @@
     function executeTree(tree) {
         var view = document.querySelector(".treeview-container > pre > code");
         view.innerHTML = tree;
-        let totalLines = tree.split(/\r\n|\r|\n/).length;
-        let additionalOffset = totalLines * 5;
         Prism.highlightAll(false, () => {
             let view = document.querySelector(".treeview-container");
             let zoom = treeview.getZoom();
-            let width = (view.scrollWidth * zoom) + 50;
-            let height = (view.scrollHeight * zoom) + additionalOffset;
+            let width = (view.offsetWidth * zoom) + 100;
+            let height = (view.offsetHeight * zoom) + 100;
             treeview.setPrefSize(width, height);
             setTimeout(() => {
                 alert("RENDERED");
