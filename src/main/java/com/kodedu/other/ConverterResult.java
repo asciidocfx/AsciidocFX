@@ -15,13 +15,11 @@ public class ConverterResult {
     private String taskId;
     private String rendered;
     private String backend;
-    private String doctype;
 
-    public ConverterResult(String taskId, String rendered, String backend, String doctype) {
+    public ConverterResult(String taskId, String rendered, String backend) {
         this.taskId = taskId;
         this.rendered = doFinalReplacements(rendered);
         this.backend = backend;
-        this.doctype = doctype;
     }
 
     private String doFinalReplacements(String rendered) {
@@ -44,14 +42,6 @@ public class ConverterResult {
 
     public String getBackend() {
         return backend;
-    }
-
-    public void setDoctype(String doctype) {
-        this.doctype = doctype;
-    }
-
-    public String getDoctype() {
-        return doctype;
     }
 
     public boolean isBackend(String backend) {

@@ -73,7 +73,7 @@ public class SpringAppConfig extends SpringBootServletInitializer implements Web
     }
 
     @Bean(destroyMethod = "shutdown")
-//    @Scope("prototype")
+    @Primary
     public Asciidoctor standardDoctor(FxChartBlockProcessor fxChartBlockProcessor,
                                       FileTreeBlockProcessor treeBlockProcessor,
                                       MathBlockProcessor mathBlockProcessor,
@@ -99,5 +99,11 @@ public class SpringAppConfig extends SpringBootServletInitializer implements Web
         return doctor;
     }
 
+    @Bean(destroyMethod = "shutdown")
+    public Asciidoctor plainDoctor() {
+        Asciidoctor doctor = Asciidoctor.Factory.create();
+        doctor.unregisterAllExtensions();
+        return doctor;
+    }
 
 }

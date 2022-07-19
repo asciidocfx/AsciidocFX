@@ -78,6 +78,7 @@ import org.kordamp.ikonli.javafx.FontIcon;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.env.Environment;
@@ -216,6 +217,10 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     @Autowired
     private Asciidoctor asciidoctor;
+
+    @Autowired
+    @Qualifier("plainDoctor")
+    private Asciidoctor plainDoctor;
 
     @Autowired
     private EditorConfigBean editorConfigBean;
@@ -2307,7 +2312,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     @WebkitCall(from = "converter.js")
     public void completeWebWorker(String taskId, String rendered, String backend, String doctype) {
         threadService.runTaskLater(() -> {
-            final ConverterResult converterResult = new ConverterResult(taskId, rendered, backend, doctype);
+            final ConverterResult converterResult = new ConverterResult(taskId, rendered, backend);
             final Map<String, CompletableFuture<ConverterResult>> workerTasks = asciidocWebkitConverter.getWebWorkerTasks();
             final CompletableFuture<ConverterResult> completableFuture = workerTasks.get(converterResult.getTaskId());
 
@@ -2353,14 +2358,15 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                 }
 
                 Attributes attributes = Attributes.builder().allowUriRead(true).build();
-                Document document = asciidoctor.load(text, Options.builder()
+                Document document = plainDoctor.load(text, Options.builder()
                         .safe(SafeMode.UNSAFE)
+                        .sourcemap(true)
                         .baseDir(current.currentTab().getParentOrWorkdir().toFile())
                         .attributes(attributes).build());
 
                 String backend = (String) document.getAttribute("backend", "html5");
 
-                ConverterResult converterResult = asciidoctorjConverter.convert(backend, text);
+                ConverterResult converterResult = asciidoctorjConverter.convert(document, text);
 
                 setIncludeAsciidocResource(false);
 

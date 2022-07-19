@@ -11,7 +11,6 @@ import com.kodedu.outline.Section;
 import com.kodedu.service.ThreadService;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -54,16 +53,12 @@ public class AsciidocAsciidoctorjConverter extends ViewPanel implements Asciidoc
 
 	@Override
 	public ConverterResult convertDocbook(TextChangeEvent textChangeEvent) {
-		logger.debug("Using AsciidocJEngine to convert Asciidoc");
-		String text = textChangeEvent.getText();
-		return convert("docbook5", text, docbookConfigBean);
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public ConverterResult convertAsciidoc(TextChangeEvent textChangeEvent) {
-		logger.debug("Using AsciidocJEngine to convert Asciidoc");
-        String text = textChangeEvent.getText();
-		return convert("html5", text, previewConfigBean);
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
@@ -96,18 +91,19 @@ public class AsciidocAsciidoctorjConverter extends ViewPanel implements Asciidoc
 		return null;
 	}
 
-	public ConverterResult convert(String backend, String text) {
+	public ConverterResult convert(Document document, String text) {
+		String backend = (String) document.getAttribute("backend", "html5");
 		return switch (backend) {
-			case "html5" -> convert(backend, text, previewConfigBean);
-			case "revealjs" -> convert(backend, text, revealjsConfigBean);
+			case "html5" -> convert(document, text, previewConfigBean);
+			case "revealjs" -> convert(document, text, revealjsConfigBean);
 			default -> throw new RuntimeException("Backend not found: " + backend);
 		};
 	}
 	
-	private ConverterResult convert(String backend, String text, AsciidoctorConfigBase<?> configBean) {
+	private ConverterResult convert(Document document, String text, AsciidoctorConfigBase<?> configBean) {
 		SafeMode safe = convertSafe(configBean.getSafe());
-
-		Attributes attributes = configBean.getAsciiDocAttributes(text);
+		String backend = (String) document.getAttribute("backend", "html5");
+		Attributes attributes = configBean.getAsciiDocAttributes(document.getAttributes());
 		attributes.setAttribute("preview", true);
 
 		var workdir = controller.getCurrent().currentTab().getParentOrWorkdir();
@@ -121,7 +117,6 @@ public class AsciidocAsciidoctorjConverter extends ViewPanel implements Asciidoc
 		                         .attributes(attributes)
 		                         .build();
 
-		Document doc = doctor.load(text, options);
 		// Load and then convert of the returned document does not work as expected
 		// The generated plantuml images are in the wrong location
 		// See also https://github.com/asciidoctor/asciidoctorj-diagram/issues/25
@@ -130,9 +125,9 @@ public class AsciidocAsciidoctorjConverter extends ViewPanel implements Asciidoc
 		logger.info("Converted Asciidoc to {}", backend.toUpperCase());
 
         final String taskId = UUID.randomUUID().toString();
-		ConverterResult res = new ConverterResult(taskId, converted, backend, (String)doc.getAttribute("doctype"));
+		ConverterResult res = new ConverterResult(taskId, converted, backend);
 		
-		fillOutlines(doc);
+		fillOutlines(document);
 		return res;
 	}
 

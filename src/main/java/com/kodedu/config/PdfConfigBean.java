@@ -8,6 +8,7 @@ import javax.json.JsonObjectBuilder;
 
 import org.asciidoctor.Asciidoctor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import com.dooapp.fxform.FXForm;
@@ -39,7 +40,8 @@ public class PdfConfigBean extends AsciidoctorConfigBase<PdfConfigAttributes> {
     }
 
     @Autowired
-    public PdfConfigBean(ApplicationController controller, ThreadService threadService, Asciidoctor asciidoctor) {
+    public PdfConfigBean(ApplicationController controller, ThreadService threadService,
+						 @Qualifier("plainDoctor") Asciidoctor asciidoctor) {
         super(controller, threadService, asciidoctor);
         this.controller = controller;
         this.threadService = threadService;

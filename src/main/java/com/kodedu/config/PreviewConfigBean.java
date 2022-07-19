@@ -6,6 +6,7 @@ import com.kodedu.service.ThreadService;
 
 import org.asciidoctor.Asciidoctor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import java.nio.file.Path;
@@ -26,7 +27,8 @@ public class PreviewConfigBean extends AsciidoctorConfigBase<NoAttributes> {
     }
 
     @Autowired
-    public PreviewConfigBean(ApplicationController controller, ThreadService threadService, Asciidoctor asciidoctor) {
+    public PreviewConfigBean(ApplicationController controller, ThreadService threadService,
+                             @Qualifier("plainDoctor") Asciidoctor asciidoctor) {
         super(controller, threadService, asciidoctor);
         this.controller = controller;
         this.threadService = threadService;

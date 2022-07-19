@@ -9,11 +9,7 @@ import com.kodedu.service.ThreadService;
 
 import java.io.Reader;
 import java.nio.file.Path;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.ResourceBundle;
+import java.util.*;
 
 import javax.json.Json;
 import javax.json.JsonObject;
@@ -22,10 +18,7 @@ import javax.json.JsonReader;
 import javax.json.JsonString;
 import javax.json.JsonValue;
 
-import org.asciidoctor.Asciidoctor;
-import org.asciidoctor.Attributes;
-import org.asciidoctor.AttributesBuilder;
-import org.asciidoctor.Options;
+import org.asciidoctor.*;
 import org.asciidoctor.ast.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -348,21 +341,39 @@ public abstract class AsciidoctorConfigBase<T extends LoadedAttributes> extends 
 	}
 
     public Attributes getAsciiDocAttributes(String asciidoc) {
-        Document document = asciidoctor.load(asciidoc, Options.builder().build());
+        Document document = asciidoctor.load(asciidoc, Options.builder()
+                .safe(SafeMode.UNSAFE)
+                .sourcemap(true)
+                .baseDir(controller.getCurrent().currentTab().getParentOrWorkdir().toFile())
+                .attributes(Attributes.builder().allowUriRead(true).build()).build());
         Map<String, Object> defaultAttributes = document.getAttributes();
 
-        AttributesBuilder attributesBuilder = Attributes.builder();
-        for (Map.Entry<String, Object> entry : defaultAttributes.entrySet()) {
-            attributesBuilder.attribute(entry.getKey(), entry.getValue());
-        }
+        return getAsciiDocAttributes(defaultAttributes);
+    }
+
+    public Attributes getAsciiDocAttributes(Map<String, Object> originalDocAttributes) {
+        Map<String, String> map = new HashMap<>();
         ObservableList<AttributesTable> attributes = getAttributes();
         for (AttributesTable attribute : attributes) {
             String key = attribute.getAttribute();
             String value = attribute.getValue();
-
             if (Objects.nonNull(key) || Objects.nonNull(value)) {
-                attributesBuilder.attribute(key, value);
+                map.put(key, value);
             }
+        }
+        HashMap<String, String> cloneMap = new HashMap<>(map);
+        for (Map.Entry<String, String> entry : map.entrySet()) {
+            String key = entry.getKey();
+            if(originalDocAttributes.containsKey(key)){
+                Object value = originalDocAttributes.get(key);
+                if(Objects.nonNull(value)){
+                    cloneMap.put(key, String.valueOf(value));
+                }
+            }
+        }
+        AttributesBuilder attributesBuilder = Attributes.builder();
+        for (Map.Entry<String, String> entry : cloneMap.entrySet()) {
+            attributesBuilder.attribute(entry.getKey(), entry.getValue());
         }
         return attributesBuilder.build();
     }
