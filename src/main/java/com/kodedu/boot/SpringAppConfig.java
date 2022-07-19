@@ -80,6 +80,7 @@ public class SpringAppConfig extends SpringBootServletInitializer implements Web
                                       ExtensionPreprocessor extensionPreprocessor,
                                       FileTreeBlockMacroProcessor fileTreeBlockMacroProcessor,
                                       FileTreeInlineMacroProcessor fileTreeInlineMacroProcessor,
+                                      DataLineProcessor dataLineProcessor,
                                       MathBlockMacroProcessor mathBlockMacroProcessor,
                                       MathInlineMacroProcessor mathInlineMacroProcessor) {
         Asciidoctor doctor = Asciidoctor.Factory.create();
@@ -87,6 +88,7 @@ public class SpringAppConfig extends SpringBootServletInitializer implements Web
         doctor.requireLibrary("asciidoctor-epub3");
         doctor.requireLibrary("asciidoctor-revealjs");
         doctor.javaExtensionRegistry()
+                .treeprocessor(dataLineProcessor)
                 .block(fxChartBlockProcessor)
                 .block(treeBlockProcessor)
                 .block(mathBlockProcessor)

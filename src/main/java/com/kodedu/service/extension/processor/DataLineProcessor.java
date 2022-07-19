@@ -20,6 +20,11 @@ public class DataLineProcessor extends Treeprocessor {
 //			return document;
 //		}
 
+		Boolean isPreview = (Boolean) document.getAttribute("preview", false);
+		if (!isPreview) {
+			return document;
+		}
+
 		// The returned List is not type safe
 		// StructuralNode.findBy() claims that only StructuralNodes are returned
 		// But CellImpl were also returned which are no StructuralNode!
