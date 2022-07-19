@@ -9,14 +9,8 @@ import java.awt.image.BufferedImage;
 public class TrimWhite {
 
     public BufferedImage trim(BufferedImage img) {
-        int width = getTrimmedWidth(img) + 5;
-        int height = getTrimmedHeight(img) + 5;
-
-        BufferedImage newImg = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-        Graphics g = newImg.createGraphics();
-        g.drawImage(img, 0, 0, null);
-        g.dispose();
-        return newImg;
+        BufferedImage bufferedImage = AutoCrop.autoCrop(img, 5);
+        return bufferedImage;
     }
 
     private int getTrimmedWidth(BufferedImage img) {
@@ -26,7 +20,7 @@ public class TrimWhite {
 
         for (int i = 0; i < height; i++) {
             for (int j = width - 1; j >= 0; j--) {
-                if (img.getRGB(j, i) != Color.WHITE.getRGB() &&
+                if (!ColorUtils.match(Color.WHITE,img.getRGB(j, i) ,5) &&
                         j > trimmedWidth) {
                     trimmedWidth = j;
                     break;
@@ -44,7 +38,7 @@ public class TrimWhite {
 
         for (int i = 0; i < width; i++) {
             for (int j = height - 1; j >= 0; j--) {
-                if (img.getRGB(i, j) != Color.WHITE.getRGB() &&
+                if (!ColorUtils.match(Color.WHITE,img.getRGB(i, j) ,5) &&
                         j > trimmedHeight) {
                     trimmedHeight = j;
                     break;
