@@ -2,7 +2,7 @@
 {
     "fontFamily": "Verdana",
     "fontSize":16,
-    "scrollSpeed":0.1,
+    "scrollSpeed":5,
     "useWrapMode":true,
     "wrapLimit":0,
     "showGutter":true,

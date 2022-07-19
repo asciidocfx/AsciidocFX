@@ -59,7 +59,7 @@ public class EditorConfigBean extends ConfigurationBase {
     private DoubleProperty secondSplitter = new SimpleDoubleProperty(0.5996920708237106);
     private DoubleProperty verticalSplitter = new SimpleDoubleProperty(0.5);
     private ObjectProperty<Integer> aceFontSize = new SimpleObjectProperty(16);
-    private DoubleProperty scrollSpeed = new SimpleDoubleProperty(0.1);
+    private DoubleProperty scrollSpeed = new SimpleDoubleProperty(5);
     private BooleanProperty useWrapMode = new SimpleBooleanProperty(true);
     private ObjectProperty<Integer> wrapLimit = new SimpleObjectProperty<>(0);
     private BooleanProperty showGutter = new SimpleBooleanProperty(false);
@@ -471,7 +471,7 @@ public class EditorConfigBean extends ConfigurationBase {
         editorConfigFormProvider.addFactory(new NamedFieldHandler("defaultLanguage"), new ListChoiceBoxFactory());
         editorConfigFormProvider.addFactory(new NamedFieldHandler("fontFamily"), new ListChoiceBoxFactory());
         editorConfigFormProvider.addFactory(new NamedFieldHandler("aceFontFamily"), new ListChoiceBoxFactory());
-        editorConfigFormProvider.addFactory(new NamedFieldHandler("scrollSpeed"), new SliderFactory(SliderBuilt.create(0.0, 1, 0.1).step(0.1)));
+        editorConfigFormProvider.addFactory(new NamedFieldHandler("scrollSpeed"), new SliderFactory(SliderBuilt.create(0.0, 20, 0.1).step(0.1)));
         editorConfigFormProvider.addFactory(new NamedFieldHandler("aceFontSize"), new SpinnerFactory(new Spinner(8, 32, 14)));
         editorConfigFormProvider.addFactory(new NamedFieldHandler("wrapLimit"), new SpinnerFactory(new Spinner(0, 500, 0)));
         editorConfigFormProvider.addFactory(new NamedFieldHandler("hangFileSizeLimit"), new SpinnerFactory(new Spinner(0, Integer.MAX_VALUE, 3)));
