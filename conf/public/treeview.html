@@ -35,8 +35,8 @@
         Prism.highlightAll(false, () => {
             let view = document.querySelector(".treeview-container");
             let zoom = treeview.getZoom();
-            let width = (view.offsetWidth * zoom) + 100;
-            let height = (view.offsetHeight * zoom) + 100;
+            let width = (view.offsetWidth * zoom) + 200;
+            let height = (view.offsetHeight * zoom) + 200;
             treeview.setPrefSize(width, height);
             setTimeout(() => {
                 alert("RENDERED");
