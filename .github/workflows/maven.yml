@@ -27,8 +27,6 @@ jobs:
       run: |
          wget --tries=3 ${{ env.INSTALL4J_URL }}
          tar zxvf install4j_linux-x64_9_0_7.tar.gz     
-    - name: Install Install4J License
-      run: mvn -B -Pinstall4j install4j:install-license
     - name: Add signing key
       run: 'echo "$CODE_SIGN_P12" | base64 -d  >code_sign.p12'  
     - name: Build with install4j
