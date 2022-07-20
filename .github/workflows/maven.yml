@@ -41,9 +41,9 @@ jobs:
       run: mvn -B -DskipTests -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.httpconnectionManager.ttlSeconds=600 clean install -P install4j  
     - name: Release draft
       uses: softprops/action-gh-release@v1
-      if: ${{ github.event.inputs.create_draft || startsWith(github.ref, 'refs/tags/v') }}
+      if: ${{ startsWith(github.ref, 'refs/tags/v') }}
       with:
-        draft: false
+        draft: true
         fail_on_unmatched_files: true
         files: |
           target/media/AsciidocFX_Mac.dmg
