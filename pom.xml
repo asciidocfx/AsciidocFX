@@ -393,7 +393,6 @@
                                 -Xms128M
                                 -Xmx756M
                                 -Djava.awt.headless=false
-                                -Xshareclasses:name=asciidocfx-175-0,nonfatal
                                 -Dsun.java2d.metal=true
                                 -Dorg.apache.xml.dtm.DTMManager=org.apache.xml.dtm.ref.DTMManagerDefault
                                 --add-opens

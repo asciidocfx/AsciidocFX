@@ -8,20 +8,7 @@
       <registry />
     </searchSequence>
     <codeSigning macEnabled="true" macPkcs12File="${compiler:env.GITHUB_WORKSPACE}/code_sign.p12" />
-    <jreBundles jdkProviderId="AdoptOpenJDK-OpenJ9" release="18/jdk-18.0.1.1+2_openj9-0.32.0">
-      <modules>
-        <defaultModules set="jre" />
-        <module name="openj9.cuda" />
-        <module name="openj9.dataaccess" />
-        <module name="openj9.dtfj" />
-        <module name="openj9.dtfjview" />
-        <module name="openj9.gpu" />
-        <module name="openj9.jvm" />
-        <module name="openj9.sharedclasses" />
-        <module name="openj9.traceformat" />
-        <module name="openj9.zosconditionhandling" />
-      </modules>
-    </jreBundles>
+    <jreBundles jdkProviderId="Adoptium" release="18/jdk-18.0.1+10" />
   </application>
   <files globalExcludeSuffixes="bin" defaultOverwriteMode="1" launcherOverwriteMode="1" defaultFileMode="755" preserveSymlinks="false">
     <mountPoints>
@@ -53,7 +40,6 @@
 -Xms128M
 -Xmx756M
 -Djava.awt.headless=false
--Xshareclasses:name=asciidocfx-175-0,nonfatal
 -Dsun.java2d.metal=true
 -Dorg.apache.xml.dtm.DTMManager=org.apache.xml.dtm.ref.DTMManagerDefault
 --add-opens
