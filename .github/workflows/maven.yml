@@ -4,6 +4,11 @@
 name: Java CI with Maven
 
 on: [ workflow_dispatch ]
+env:
+  INSTALL4J_URL: https://download-gcdn.ej-technologies.com/install4j/install4j_linux-x64_9_0_7.tar.gz
+  LICENSE_KEY_9: ${{ secrets.LICENSE_KEY_9 }}
+  CODE_SIGN_P12: ${{ secrets.CODE_SIGN_P12 }}
+  MAC_KEYSTORE_PASSWORD: ${{ secrets.MAC_KEYSTORE_PASSWORD }}
 
 jobs:
   build:
@@ -18,5 +23,14 @@ jobs:
         java-version: '18'
         distribution: 'temurin'
         cache: maven
-    - name: Build with Maven
-      run: mvn -B package --file pom.xml
+    - name: Download install4j
+      run: |
+         wget --tries=3 ${{ env.INSTALL4J_URL }}
+         tar zxvf install4j_linux-x64_9_0_7.tar.gz     
+    - name: Install Install4J License
+      run: mvn -B -Pinstall4j install4j:install-license
+    - name: Add signing key
+      run: 'echo "$CODE_SIGN_P12" | base64 -d  >code_sign.p12'  
+    - name: Build with install4j
+      run: mvn -B -DskipTests -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.httpconnectionManager.ttlSeconds=600 clean install -P install-runtime,install4j  
+      
