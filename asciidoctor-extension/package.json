@@ -9,7 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "asciidoctor": "^2.0.2",
-    "opal-compiler": "^1.0.10"
+    "asciidoctor": "^2.2.6",
+    "opal-compiler": "^2.1.0"
   }
 }
