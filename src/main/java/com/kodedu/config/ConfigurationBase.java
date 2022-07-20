@@ -27,6 +27,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -42,6 +43,11 @@ public abstract class ConfigurationBase {
 
     @Value("${application.config.folder}")
     private String userHomeConfigFolder;
+
+    @Value("${application.version}")
+    private String afxVersion;
+
+    private static final List<String> ignoreVersionList = List.of("1.7.5");
 
     public static ObjectProperty<Path> configRootLocation = new SimpleObjectProperty<>();
 
@@ -157,6 +163,11 @@ public abstract class ConfigurationBase {
     }
 
     public void loadPreviousConfiguration(String configDir) {
+
+        if(ignoreVersionList.contains(afxVersion)){
+            return;
+        }
+
         Path defaultConfigPath = getConfigPath();
         Path fileName = defaultConfigPath.getFileName();
 
