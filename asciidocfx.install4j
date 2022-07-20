@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<install4j version="9.0.1" transformSequenceNumber="9">
+<install4j version="9.0.7" transformSequenceNumber="9">
   <directoryPresets config="/Users/usta/projects/AsciidocFX/jmods" />
-  <application name="AsciidocFX" applicationId="7853-9376-5862-1224" mediaDir="target" compression="4" lzmaCompression="true" excludeSignedFromPacking="false" shortName="AsciidocFX" publisher="AsciidocFX" publisherWeb="http://asciidocfx.com" version="1.7.4" macVolumeId="b98c377570068f5e" javaMinVersion="16" javaMaxVersion="16" allowBetaVM="true">
+  <application name="AsciidocFX" applicationId="7853-9376-5862-1224" mediaDir="target" compression="4" lzmaCompression="true" excludeSignedFromPacking="false" shortName="AsciidocFX" publisher="AsciidocFX" publisherWeb="http://asciidocfx.com" version="1.7.5" macVolumeId="b98c377570068f5e" javaMinVersion="18" javaMaxVersion="18" allowBetaVM="true">
     <searchSequence>
       <envVar name="JAVA_HOME" />
       <envVar name="JDK_HOME" />
       <registry />
     </searchSequence>
     <codeSigning macEnabled="true" macPkcs12File="/home/travis/build/asciidocfx/AsciidocFX/code_sign.p12" />
-    <jreBundles jdkProviderId="AdoptOpenJDK-OpenJ9" release="16/jdk-16.0.1+9_openj9-0.26.0">
+    <jreBundles jdkProviderId="AdoptOpenJDK-OpenJ9" release="18/jdk-18.0.1.1+2_openj9-0.32.0">
       <modules>
         <defaultModules set="jre" />
         <module name="openj9.cuda" />
@@ -52,9 +52,14 @@
 -Dfile.encoding=UTF-8
 -Xms128M
 -Xmx756M
--Xshareclasses:name=asciidocfx-174-2,nonfatal
--Djava.awt.headless=false 
---illegal-access=permit
+-Djava.awt.headless=false
+-Xshareclasses:name=asciidocfx-175-0,nonfatal
+-Dsun.java2d.metal=true
+-Dorg.apache.xml.dtm.DTMManager=org.apache.xml.dtm.ref.DTMManagerDefault
+--add-opens
+java.base/sun.nio.ch=ALL-UNNAMED
+--add-opens
+java.base/java.io=ALL-UNNAMED
 --add-exports
 javafx.graphics/com.sun.javafx.scene.layout=ALL-UNNAMED
 --add-exports
@@ -1192,6 +1197,13 @@ return true;</property>
         </modules>
       </jreBundle>
     </unixArchive>
+    <macosFolder name="Mac OS X M1 Folder" id="1116" mediaFileName="AsciidocFX_Mac_M1" architecture="aarch64" signLaunchers="true">
+      <jreBundle release="16/jdk-16+36" usePack200="false" includedJre="macosx-amd64-12">
+        <modules>
+          <jmodDirectory location="jmods/mac-m1" />
+        </modules>
+      </jreBundle>
+    </macosFolder>
   </mediaSets>
   <buildIds>
     <mediaSet refId="1110" />
