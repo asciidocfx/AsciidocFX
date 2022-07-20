@@ -1,21 +1,15 @@
 sudo: false
 language: java
 jdk:
-- openjdk16
+- openjdk18
 os:
 - linux
 script: mvn clean install -Pinstall-runtime
 before_script:
-- wget --tries=3 https://download-gcdn.ej-technologies.com/install4j/install4j_linux-x64_9_0_2.tar.gz
-- tar zxvf install4j_linux-x64_9_0_2.tar.gz
-#- wget --tries=3 https://gluonhq.com/download/javafx-16-jmods-mac
-#- unzip javafx-16-jmods-mac && mkdir -p jmods/mac && mv javafx-jmods-16/* jmods/mac/
-#- wget --tries=3 https://gluonhq.com/download/javafx-16-jmods-windows
-#- unzip javafx-16-jmods-windows && mkdir -p jmods/windows && mv javafx-jmods-16/* jmods/windows/
-#- wget --tries=3 https://gluonhq.com/download/javafx-16-jmods-linux
-#- unzip javafx-16-jmods-linux && mkdir -p jmods/linux && mv javafx-jmods-16/* jmods/linux/
+- wget --tries=3 https://download-gcdn.ej-technologies.com/install4j/install4j_linux-x64_9_0_7.tar.gz
+- tar zxvf install4j_linux-x64_9_0_7.tar.gz
 - mvn clean
-- mvn install4j:install-license
+- mvn -Pinstall4j install4j:install-license
 deploy:
 - provider: releases
   skip_cleanup: true
@@ -23,6 +17,7 @@ deploy:
     secure: eXWmeEqed9dok9+JZNDEHabvFObneOtmEsoiA7T4RrKGNFOnrhH/tRh47uEmLsoXddnCu56Pykv3vatmWsXqdcKevfaXz+D4Rlw+O0oxQjVtxluHCjlStzPCMwYzW5n/mIns8TnqCLyLzdcT/JkB9lhA7jPmCBlBHh+tsu4UInU=
   file:
   - "/home/travis/build/asciidocfx/AsciidocFX/target/media/AsciidocFX_Mac.dmg"
+  - "/home/travis/build/asciidocfx/AsciidocFX/target/media/AsciidocFX_Mac_M1.dmg"
   - "/home/travis/build/asciidocfx/AsciidocFX/target/media/AsciidocFX_Linux.tar.gz"
   - "/home/travis/build/asciidocfx/AsciidocFX/target/media/AsciidocFX_Windows.exe"
   - "/home/travis/build/asciidocfx/AsciidocFX/target/media/AsciidocFX_Windows.zip"
@@ -41,6 +36,7 @@ deploy:
   local_dir: "/home/travis/build/asciidocfx/AsciidocFX/target/media"
   file:
   - "/home/travis/build/asciidocfx/AsciidocFX/target/media/AsciidocFX_Mac.dmg"
+  - "/home/travis/build/asciidocfx/AsciidocFX/target/media/AsciidocFX_Mac_M1.dmg"
   - "/home/travis/build/asciidocfx/AsciidocFX/target/media/AsciidocFX_Linux.tar.gz"
   - "/home/travis/build/asciidocfx/AsciidocFX/target/media/AsciidocFX_Windows.exe"
   - "/home/travis/build/asciidocfx/AsciidocFX/target/media/AsciidocFX_Windows.zip"
