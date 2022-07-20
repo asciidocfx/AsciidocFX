@@ -7,7 +7,7 @@
       <envVar name="JDK_HOME" />
       <registry />
     </searchSequence>
-    <codeSigning macEnabled="true" macPkcs12File="/home/travis/build/asciidocfx/AsciidocFX/code_sign.p12" />
+    <codeSigning macEnabled="true" macPkcs12File="${compiler:env.GITHUB_WORKSPACE}/code_sign.p12" />
     <jreBundles jdkProviderId="AdoptOpenJDK-OpenJ9" release="18/jdk-18.0.1.1+2_openj9-0.32.0">
       <modules>
         <defaultModules set="jre" />
