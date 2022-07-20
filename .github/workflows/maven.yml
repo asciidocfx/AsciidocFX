@@ -3,7 +3,15 @@
 
 name: Java CI with Maven
 
-on: [ workflow_dispatch ]
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+      
 env:
   INSTALL4J_URL: https://download-gcdn.ej-technologies.com/install4j/install4j_linux-x64_9_0_7.tar.gz
   LICENSE_KEY_9: ${{ secrets.LICENSE_KEY_9 }}
@@ -31,4 +39,16 @@ jobs:
       run: 'echo "$CODE_SIGN_P12" | base64 -d  >code_sign.p12'  
     - name: Build with install4j
       run: mvn -B -DskipTests -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.httpconnectionManager.ttlSeconds=600 clean install -P install4j  
-      
+    - name: Release draft
+      uses: softprops/action-gh-release@v1
+      if: ${{ github.event.inputs.create_draft || startsWith(github.ref, 'refs/tags/v') }}
+      with:
+        draft: false
+        fail_on_unmatched_files: true
+        files: |
+          target/media/AsciidocFX_Mac.dmg
+          target/media/AsciidocFX_Mac_M1.dmg
+          target/media/AsciidocFX_Linux.tar.gz
+          target/media/AsciidocFX_Windows.exe
+          target/media/AsciidocFX_Windows.zip
+          target/media/updates.xml  
