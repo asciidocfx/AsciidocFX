@@ -104,6 +104,9 @@ public class SpringAppConfig extends SpringBootServletInitializer implements Web
     @Bean(destroyMethod = "shutdown")
     public Asciidoctor plainDoctor() {
         Asciidoctor doctor = Asciidoctor.Factory.create();
+        doctor.requireLibrary("asciidoctor-diagram");
+        doctor.requireLibrary("asciidoctor-epub3");
+        doctor.requireLibrary("asciidoctor-revealjs");
         doctor.unregisterAllExtensions();
         return doctor;
     }
