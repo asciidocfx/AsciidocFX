@@ -11,12 +11,14 @@ import com.kodedu.service.ThreadService;
 import javafx.application.Platform;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
-import java.nio.file.Files;
 import java.nio.file.FileSystems;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Objects;
@@ -33,6 +35,9 @@ import static java.util.Arrays.asList;
  */
 @Component(DirectoryService.label)
 public class DirectoryServiceImpl implements DirectoryService {
+
+    private Logger logger = LoggerFactory.getLogger(DirectoryService.class);
+
     private final ApplicationController controller;
     private final Current current;
     private final StoredConfigBean storedConfigBean;
@@ -107,7 +112,7 @@ public class DirectoryServiceImpl implements DirectoryService {
 
     @Override
     public Path workingDirectory() {
-        return workingDirectory.orElseGet(this::workingDirectorySupplier);
+        return workingDirectory.filter(Files::exists).orElseGet(this::workingDirectorySupplier);
     }
 
     private Path workingDirectorySupplier() {
@@ -185,12 +190,31 @@ public class DirectoryServiceImpl implements DirectoryService {
         if (Objects.isNull(path))
             return;
 
+        if (!Files.exists(path)) {
+            Path closestParentOrWorkdir = findClosestParentOrWorkdir(path);
+            logger.error("Path: {} is no longer exist. Workdir set to: {}", path, closestParentOrWorkdir);
+            path = closestParentOrWorkdir;
+        }
+
         pathMapper.addRootPath(path);
         storedConfigBean.setWorkingDirectory(path.toString());
         this.setWorkingDirectory(Optional.of(path));
         this.setInitialDirectory(Optional.ofNullable(path.toFile()));
 
         eventService.sendEvent(DirectoryService.WORKING_DIRECTORY_UPDATE_EVENT, path);
+    }
+
+    private Path findClosestParentOrWorkdir(Path path) {
+        if (Files.exists(path)) {
+            return path;
+        } else {
+            Path parent = path.getParent();
+            if (Objects.isNull(parent)) {
+                return workingDirectory();
+            } else {
+                return findClosestParentOrWorkdir(parent);
+            }
+        }
     }
 
     @Override
