@@ -423,7 +423,7 @@ You may generate a visual representation of a file system as a "Tree" structure.
 ==== Basic tree
 
 .Filesystem Tree
-[tree,target="filesystem-tree-viewer"]
+[tree,target="filesystem-tree-viewer",width=300]
 --
 #booksample
 ##asciidoctor.css
@@ -444,7 +444,7 @@ You may generate a visual representation of a file system as a "Tree" structure.
 ==== Linked tree
 
 .Filesystem Tree
-[tree,target="filesystem-tree-viewer-new"]
+[tree,target="filesystem-tree-viewer-new",width=300]
 --
 root
 |-- photos
