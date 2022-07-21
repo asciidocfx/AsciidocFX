@@ -11,6 +11,7 @@ All notable changes are documented in this file.
 * Asciidoctor Diagrams Integration
 * Asciidoctor Epub3 Integration
 * Asciidoctor Reveal.js Integration
+* Github Actions Integration
 
 ## [Version ~1.7.4](https://github.com/asciidocfx/AsciidocFX/releases/tag/v1.7.4) (23.04.2021)
 
