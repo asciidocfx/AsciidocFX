@@ -34,11 +34,17 @@ jobs:
     - name: Add signing key
       run: 'echo "$CODE_SIGN_P12" | base64 -d  >code_sign.p12'  
     - name: Build with install4j
-      run: mvn -B -DskipTests -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.httpconnectionManager.ttlSeconds=600 clean install -P install4j  
+      run: mvn -B -DskipTests -T 1.5C -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.httpconnectionManager.ttlSeconds=600 clean install -P install4j  
+    - name: Prepare release notes
+      run: |
+        awk -e '/^## /{a+=1} {if(a>1)exit} {if(a==1){print $0}}' CHANGELOG.md >RELEASE_MESSAGE.md
+        printf '\n## Files checksums\n| File | SHA 256 |\n| --- | --- |\n' >>RELEASE_MESSAGE.md
+        awk -e '{print"|"$2"|"$1"|"}' <target/media/sha256sums >>RELEASE_MESSAGE.md
     - name: Release draft
       uses: softprops/action-gh-release@v1
       if: ${{ startsWith(github.ref, 'refs/tags/v') }}
       with:
+        body_path: RELEASE_MESSAGE.md
         draft: true
         fail_on_unmatched_files: true
         files: |
