@@ -11,6 +11,7 @@
         "sectanchors":"true",
         "imagesdir": "images",
         "allow-uri-read": "true",
-        "experimental": "true"
+        "experimental": "true",
+        "data-uri": "true"
     }
 }
