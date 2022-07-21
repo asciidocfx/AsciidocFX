@@ -2,6 +2,7 @@
 :experimental:
 :toc:
 :toc-placement: preamble
+:imagesdir: images
 :asciidocfx-version: 1.7.5
 :download-root: https://github.com/asciidocfx/AsciidocFX/releases/download/v{asciidocfx-version}/
 
@@ -13,7 +14,7 @@ image:https://badges.gitter.im/Join%20Chat.svg["Gitter", link="https://gitter.im
 Asciidoc FX is a book / document editor to build PDF, Epub, Mobi and HTML books, documents and slides. AsciidocFX is also a winner of https://www.oracle.com/corporate/pressrelease/dukes-award-102815.html[Duke's Choice Award 2015].
 
 .AsciidocFX - Duke's Choice Award 2015 winner
-image::images/asciidocfx.png[]
+image::asciidocfx.png[]
 
 == Features
 
@@ -204,7 +205,7 @@ annotation SuppressWarnings
 --
 ----
 .UML example output
-image::images/uml-example.png[]
+image::uml-example.png[]
 
 NOTE: In some UML elements, PlantUML needs to work with Graphviz. Because of this, you should install `Graphviz` manually for your platform. After installing Graphviz, you should set `GRAPHVIZ_DOT` environment variable to `dot` executable in Graphviz.
 
@@ -228,7 +229,7 @@ graph TD
 --
 ----
 
-image::images/mermaid-graph.png[]
+image::mermaid-graph.png[]
 
 
 [source,asciidoc]
@@ -252,7 +253,7 @@ flowchart TB
 --
 ----
 
-image::images/mermaid-flowchart.png[]
+image::mermaid-flowchart.png[]
 
 == ditaa Extension
 
@@ -277,7 +278,7 @@ http://ditaa.sourceforge.net/[ditaa] is a component that converts diagrams drawn
 --
 ----
 
-image::images/ditaa-example.png[]
+image::ditaa-example.png[]
 
 == MathJax Extension
 
@@ -300,7 +301,7 @@ You can use `Tex` or `MathML` languages for describing mathematical formulas in 
 
 == Tex output
 
-image::images/tex-formula.png[]
+image::tex-formula.png[]
 
 .For Example (MathML)
 [source,xml]
@@ -339,7 +340,7 @@ image::images/tex-formula.png[]
 ----
 
 == MathML output
-image::images/mathml-formula.png[]
+image::mathml-formula.png[]
 
 == Filesystem Tree Extension
 
@@ -369,7 +370,7 @@ You can represent filesystem tree in following `tree` block. There is two style 
 
 When you drag and drop a folder to editor, AFX will generate this like tree automatically.
 
-image::images/tree-view.png[]
+image::tree-view.png[width=320]
 
 [source,java]
 ----
@@ -400,13 +401,15 @@ root
 ----
 
 == Filesystem Tree output (__new__)
-image::images/tree-view-new.png[]
+image::tree-view-new.png[width=250]
 
 == JavaFX Charts Extension
 
 JavaFX has 8 kind of Chart component and AsciidocFX supports all of them.
 
 === Pie Chart
+
+image::secim-2014-pie.png[]
 
 ----
 [chart,pie,target="secim-2014-pie",opt="title=2014 YEREL SEÇİM SONUÇLARI"]
@@ -448,13 +451,12 @@ For other charts and available options, look at https://github.com/asciidocfx/As
 
 == How to Build AsciidocFX
 
-1. Firstly, install http://www.oracle.com/technetwork/java/javase/downloads/index.html[JDK 8]
+1. Firstly, install https://adoptium.net/temurin/releases[JDK 17]
 2. Download http://maven.apache.org/download.cgi[Apache Maven] and set `/bin` directory to environment variables
 3. Enter `AsciidocFX` directory and run `$ mvn clean install`
 4. Follow to `target/appassembler/bin` directory and you will see `asciidocfx.sh` and `asciidocfx.bat`
 
-NOTE: We are generating builts with *Travis-CI* automatically.
-NOTE: All builds x64 based. If you want to use in x86 systems, build AsciidocFX yourself.
+NOTE: We are generating builds with *Github Actions* automatically.
 
 == Books Written with AsciidocFX
 
@@ -476,12 +478,12 @@ https://www.gitbook.com/book/pemcg/introduction-to-cloudforms-automation/details
 AsciidocFX supports slides by using the Asciidoctor Reveal.js backend. To getting start with slide authoring, you can just follow menu:New[Slide] menu.
 
 .menu:New[Slide]
-image::images/new-slide.png[]
+image::new-slide.png[]
 
 After that AFX will prompt you a freespace directory name and *"OK"* you will see the slide demo.
 
 .Slide demo
-image::images/slide-demo.png[]
+image::slide-demo.png[]
 
 You can easily switch between reveal.js and deck.js by changing the comment below. Also, you can configure default settings by editing `_settings_reveal.adoc` and `include::_settings_deck.adoc`.
 
@@ -498,7 +500,7 @@ AsciidocFX uses Java, JavaScript and XML related technologies.
 
 * Java FX 18
 * AsciidoctorJ
-* Asciidoctor.js
+* Asciidoctor.js (Deprecated)
 * Spring Boot
 * Spring WebSocket
 * Docbook
