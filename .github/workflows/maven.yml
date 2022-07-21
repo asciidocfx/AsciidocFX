@@ -45,7 +45,8 @@ jobs:
       if: ${{ startsWith(github.ref, 'refs/tags/v') }}
       with:
         body_path: RELEASE_MESSAGE.md
-        draft: true
+        draft: false
+        prerelease: false
         fail_on_unmatched_files: true
         files: |
           target/media/AsciidocFX_Mac.dmg
