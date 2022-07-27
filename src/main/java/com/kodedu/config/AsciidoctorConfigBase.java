@@ -373,7 +373,8 @@ public abstract class AsciidoctorConfigBase<T extends LoadedAttributes> extends 
         return attributesBuilder.build();
     }
 
-    List<String> node_extensions = List.of("mmdc","vg2png","vg2svg","nomnoml");
+    List<String> node_extensions = List.of("mmdc","vg2png","vg2svg","nomnoml","bytefield");
+    Map<String, Path> extensionPathMap = new HashMap<>();
     private Map<String, Object> resolveExtensionBuilderAttributes(String docdir, Map<String, Object> docAttributes) {
         Map<String, Object> map = new HashMap<>(docAttributes);
 
@@ -389,7 +390,7 @@ public abstract class AsciidoctorConfigBase<T extends LoadedAttributes> extends 
 
         for (String node_extension : node_extensions) {
             Path extensionPath = Optional.ofNullable(map.get(node_extension))
-                    .map(p->{
+                    .map(p -> {
                         return resolveExtensionPath(docPath, p);
                     })
                     .orElseGet(() -> {
@@ -397,8 +398,11 @@ public abstract class AsciidoctorConfigBase<T extends LoadedAttributes> extends 
                         return resolveExtensionPath(docPath, p);
                     });
             if (Objects.nonNull(extensionPath)) {
-                logger.info("Extension path resolved: {}", extensionPath);
+                if (!extensionPathMap.containsKey(node_extension)) {
+                    logger.info("Extension path resolved: {}", extensionPath);
+                }
                 map.put(node_extension, extensionPath.toString());
+                extensionPathMap.put(node_extension, extensionPath);
             }
         }
 
