@@ -16,12 +16,14 @@
 
 package com.kodedu.boot;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kodedu.controller.ApplicationController;
 import com.kodedu.service.extension.chart.FxChartBlockProcessor;
 
 import com.kodedu.service.extension.math.MathBlockMacroProcessor;
 import com.kodedu.service.extension.math.MathBlockProcessor;
 import com.kodedu.service.extension.math.MathInlineMacroProcessor;
+import com.kodedu.service.extension.processor.CacheSuffikAppenderProcessor;
 import com.kodedu.service.extension.processor.DataLineProcessor;
 import com.kodedu.service.extension.processor.ExtensionPreprocessor;
 import com.kodedu.service.extension.tree.FileTreeBlockMacroProcessor;
@@ -82,7 +84,8 @@ public class SpringAppConfig extends SpringBootServletInitializer implements Web
                                       FileTreeInlineMacroProcessor fileTreeInlineMacroProcessor,
                                       DataLineProcessor dataLineProcessor,
                                       MathBlockMacroProcessor mathBlockMacroProcessor,
-                                      MathInlineMacroProcessor mathInlineMacroProcessor) {
+                                      MathInlineMacroProcessor mathInlineMacroProcessor,
+                                      CacheSuffikAppenderProcessor cacheAppendRemoverProcessor) {
         Asciidoctor doctor = Asciidoctor.Factory.create();
         doctor.requireLibrary("asciidoctor-diagram");
         doctor.requireLibrary("asciidoctor-epub3");
@@ -96,7 +99,8 @@ public class SpringAppConfig extends SpringBootServletInitializer implements Web
                 .blockMacro(fileTreeBlockMacroProcessor)
                 .blockMacro(mathBlockMacroProcessor)
                 .inlineMacro(fileTreeInlineMacroProcessor)
-                .inlineMacro(mathInlineMacroProcessor);
+                .inlineMacro(mathInlineMacroProcessor)
+                .treeprocessor(cacheAppendRemoverProcessor);
 
         return doctor;
     }
@@ -109,6 +113,11 @@ public class SpringAppConfig extends SpringBootServletInitializer implements Web
         doctor.requireLibrary("asciidoctor-revealjs");
         doctor.unregisterAllExtensions();
         return doctor;
+    }
+
+    @Bean
+    public ObjectMapper objectMapper(){
+        return new ObjectMapper();
     }
 
 }
