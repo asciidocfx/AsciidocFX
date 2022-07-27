@@ -194,15 +194,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     private List<Section> outlineList = new ArrayList<>();
     private ObservableList<DocumentMode> modeList = FXCollections.observableArrayList();
 
-    private final Pattern bookArticleHeaderRegex
-            = Pattern.compile("^:doctype:.*(book|article)", Pattern.MULTILINE);
-
-    private final Pattern forceIncludeRegex
-            = Pattern.compile("^:forceinclude:", Pattern.MULTILINE);
-
     private BooleanProperty stopRendering = new SimpleBooleanProperty(false);
-
-    private AtomicBoolean includeAsciidocResource = new AtomicBoolean(false);
 
     private static ObservableList<MyLog> logList = FXCollections.synchronizedObservableList(FXCollections.observableArrayList());
 
@@ -2348,14 +2340,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
         try {
 
-            boolean bookArticleHeader = this.bookArticleHeaderRegex.matcher(text).find();
-            boolean forceInclude = this.forceIncludeRegex.matcher(text).find();
-
             if ("asciidoc".equalsIgnoreCase(mode)) {
-
-                if (bookArticleHeader && !forceInclude) {
-                    setIncludeAsciidocResource(true);
-                }
 
                 Attributes attributes = Attributes.builder().allowUriRead(true).build();
                 Document document = plainDoctor.load(text, Options.builder()
@@ -2367,8 +2352,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                 String backend = (String) document.getAttribute("backend", "html5");
 
                 ConverterResult converterResult = asciidoctorjConverter.convert(document, text);
-
-                setIncludeAsciidocResource(false);
 
                 if (lastConverterResult != null) {
                     if (converterResult.getDateTime().isBefore(lastConverterResult.getDateTime())) {
@@ -2404,7 +2387,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             }
 
         } catch (Exception e) {
-            setIncludeAsciidocResource(false);
             logger.error("Problem occured while rendering content", e);
         }
     }
@@ -2413,7 +2395,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
         Optional.ofNullable(rendered)
                 .ifPresent(html -> {
-                    html = ContentFixes.decodeExtensionNames(html);
                     htmlPane.refreshUI(html);
                     sendOverWebSocket(html);
                 });
@@ -2515,10 +2496,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     @WebkitCall(from = "asciidoctor")
     public String readAsciidoctorResource(String uri, Integer parent) {
-
-        if (uri.matches(".*?\\.(asc|adoc|ad|asciidoc|md|markdown)") && getIncludeAsciidocResource()) {
-            return String.format("link:%s[]", uri);
-        }
 
         PathFinderService fileReader = applicationContext.getBean(PathFinderService.label, PathFinderService.class);
         Path path = fileReader.findPath(uri, parent);
@@ -2921,14 +2898,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     public List<String> getSupportedModes() {
         return supportedModes;
-    }
-
-    public boolean getIncludeAsciidocResource() {
-        return includeAsciidocResource.get();
-    }
-
-    public void setIncludeAsciidocResource(boolean includeAsciidocResource) {
-        this.includeAsciidocResource.set(includeAsciidocResource);
     }
 
     public ProgressBar getProgressBar() {

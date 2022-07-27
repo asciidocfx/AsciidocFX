@@ -1,7 +1,6 @@
 package com.kodedu.controller;
 
 import com.kodedu.helper.IOHelper;
-import com.kodedu.other.ContentFixes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -373,7 +372,6 @@ public class FileService {
         if (isAsciidocFile(file)) {
             String content = IOHelper.readFile(file.toPath());
             String cachedCharset= IOHelper.getCachedCharset(file.toPath());
-            content = ContentFixes.encodeExtensionNames(content);
             output.write(content.getBytes(cachedCharset));
         } else {
             RandomAccessFile input = new RandomAccessFile(file, "r");

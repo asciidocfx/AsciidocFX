@@ -4,8 +4,6 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.function.Consumer;
 
-import static com.kodedu.other.ContentFixes.decodeExtensionNames;
-import static com.kodedu.other.ContentFixes.fixLineEnding;
 
 /**
  * Created by usta on 20.06.2015.
@@ -18,18 +16,12 @@ public class ConverterResult {
 
     public ConverterResult(String taskId, String rendered, String backend) {
         this.taskId = taskId;
-        this.rendered = doFinalReplacements(rendered);
+        this.rendered = rendered;
         this.backend = backend;
     }
 
-    private String doFinalReplacements(String rendered) {
-        rendered = fixLineEnding(rendered);
-        rendered = decodeExtensionNames(rendered);
-        return rendered;
-    }
-
     public void setRendered(String rendered) {
-        this.rendered = doFinalReplacements(rendered);
+        this.rendered = rendered;
     }
 
     public String getRendered() {

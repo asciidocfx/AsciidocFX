@@ -26,8 +26,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
-import static com.kodedu.other.ContentFixes.encodeExtensionNames;
-
 /**
  * Created by usta on 09.04.2015.
  */
@@ -140,7 +138,6 @@ public class AsciidocWebkitConverter extends ViewPanel implements AsciidocConver
 
     protected ConverterResult convert(String functionName, String asciidoc, JsonObject config) {
         try {
-            asciidoc = encodeExtensionNames(asciidoc);
             return convertContent(functionName, asciidoc, config).get(5, TimeUnit.SECONDS);
         } catch (Exception e1) {
 

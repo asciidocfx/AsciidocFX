@@ -8,7 +8,9 @@ import com.kodedu.helper.IOHelper;
 import com.kodedu.service.ThreadService;
 
 import java.io.Reader;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 
 import javax.json.Json;
@@ -324,21 +326,6 @@ public abstract class AsciidoctorConfigBase<T extends LoadedAttributes> extends 
         saveJson(getJSON());
         fadeOut(infoLabel, "Saved...");
     }
-    
-    public Attributes getAsciiDocAttributes() {
-		AttributesBuilder attributesBuilder = Attributes.builder();
-	
-		ObservableList<AttributesTable> attributes = getAttributes();
-		for (AttributesTable attribute : attributes) {
-			String key = attribute.getAttribute();
-			String value = attribute.getValue();
-	
-			if (Objects.nonNull(key) || Objects.nonNull(value)) {
-				attributesBuilder.attribute(key, value);
-			}
-		}
-		return attributesBuilder.build();
-	}
 
     public Attributes getAsciiDocAttributes(String asciidoc) {
         Document document = asciidoctor.load(asciidoc, Options.builder()
@@ -361,21 +348,74 @@ public abstract class AsciidoctorConfigBase<T extends LoadedAttributes> extends 
                 map.put(key, value);
             }
         }
-        HashMap<String, String> cloneMap = new HashMap<>(map);
+        Map<String, Object> cloneMap = new HashMap<>(map);
         for (Map.Entry<String, String> entry : map.entrySet()) {
             String key = entry.getKey();
             if(originalDocAttributes.containsKey(key)){
                 Object value = originalDocAttributes.get(key);
                 if(Objects.nonNull(value)){
-                    cloneMap.put(key, String.valueOf(value));
+                    cloneMap.put(key, value);
                 }
             }
         }
+
+        String docdir = (String) originalDocAttributes.get("docdir");
+        cloneMap = resolveExtensionBuilderAttributes(docdir, cloneMap);
+        for (Map.Entry<String, Object> entry : originalDocAttributes.entrySet()) {
+            if(!cloneMap.containsKey(entry.getKey())){
+                cloneMap.put(entry.getKey(), entry.getValue());
+            }
+        }
         AttributesBuilder attributesBuilder = Attributes.builder();
-        for (Map.Entry<String, String> entry : cloneMap.entrySet()) {
+        for (Map.Entry<String, Object> entry : cloneMap.entrySet()) {
             attributesBuilder.attribute(entry.getKey(), entry.getValue());
         }
         return attributesBuilder.build();
+    }
+
+    List<String> node_extensions = List.of("mmdc","vg2png","vg2svg","nomnoml");
+    private Map<String, Object> resolveExtensionBuilderAttributes(String docdir, Map<String, Object> docAttributes) {
+        Map<String, Object> map = new HashMap<>(docAttributes);
+
+        if(Objects.isNull(docdir)){
+            return map;
+        }
+
+        Path docPath = Paths.get(docdir);
+
+        if(Files.notExists(docPath)){
+            return map;
+        }
+
+        for (String node_extension : node_extensions) {
+            Path extensionPath = Optional.ofNullable(map.get(node_extension))
+                    .map(p->{
+                        return resolveExtensionPath(docPath, p);
+                    })
+                    .orElseGet(() -> {
+                        String p = String.format("./node_modules/.bin/%s", node_extension);
+                        return resolveExtensionPath(docPath, p);
+                    });
+            if (Objects.nonNull(extensionPath)) {
+                logger.info("Extension path resolved: {}", extensionPath);
+                map.put(node_extension, extensionPath.toString());
+            }
+        }
+
+        return map;
+    }
+
+    private Path resolveExtensionPath(Path docPath, Object p) {
+        String path = (String) p;
+        Path firstPath = Paths.get(path);
+        if(Files.exists(firstPath) && Files.isExecutable(firstPath)){
+            return firstPath;
+        }
+        Path secondPath = docPath.resolve(path);
+        if(Files.exists(secondPath) && Files.isExecutable(secondPath)){
+            return secondPath;
+        }
+        return null;
     }
 
     public interface LoadedAttributes {

@@ -69,26 +69,25 @@ public class AsciidoctorPdfBookConverter implements DocumentConverter<String> {
 
 			indikatorService.startProgressBar();
 			logger.debug("PDF conversion started");
-			
-			SafeMode safe = convertSafe(pdfConfigBean.getSafe());
-			
-			Attributes attributes = pdfConfigBean.getAsciiDocAttributes(asciidoc);
 
-			Options options = Options.builder()
-			                         .baseDir(destFile.getParentFile())
-			                         .toFile(destFile)
-			                         .backend("pdf")
-			                         .safe(safe)
-			                         .sourcemap(pdfConfigBean.getSourcemap())
-			                         .headerFooter(pdfConfigBean.getHeader_footer())
-			                         .attributes(attributes)
-			                         .build();
-			doctor.convert(asciidoc, options);
-
-			indikatorService.stopProgressBar();
-			logger.debug("PDF conversion ended");
-
-			asciiDocController.addRemoveRecentList(pdfPath);
+			try {
+				SafeMode safe = convertSafe(pdfConfigBean.getSafe());
+				Attributes attributes = pdfConfigBean.getAsciiDocAttributes(asciidoc);
+				Options options = Options.builder()
+						.baseDir(destFile.getParentFile())
+						.toFile(destFile)
+						.backend("pdf")
+						.safe(safe)
+						.sourcemap(pdfConfigBean.getSourcemap())
+						.headerFooter(pdfConfigBean.getHeader_footer())
+						.attributes(attributes)
+						.build();
+				doctor.convert(asciidoc, options);
+				asciiDocController.addRemoveRecentList(pdfPath);
+			} finally {
+				indikatorService.stopProgressBar();
+				logger.debug("PDF conversion ended");
+			}
 
 		});
 	}

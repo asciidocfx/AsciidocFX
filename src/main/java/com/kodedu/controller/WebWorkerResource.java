@@ -72,11 +72,6 @@ public class WebWorkerResource {
 
         if (finalURI.matches(".*\\.(asc|asciidoc|ad|adoc|md|markdown)$")) {
 
-            if (controller.getIncludeAsciidocResource()) {
-                payload.write(String.format("link:%s[]", finalURI));
-                return;
-            }
-
             if (finalURI.startsWith("//")) {
                 finalURI = finalURI.replace("//", "http://");
             }
