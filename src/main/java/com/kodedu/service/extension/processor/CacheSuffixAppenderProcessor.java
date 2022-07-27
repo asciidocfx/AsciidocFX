@@ -20,12 +20,12 @@ import java.util.Objects;
 
 @Component
 @Scope("prototype")
-public class CacheSuffikAppenderProcessor extends Treeprocessor {
+public class CacheSuffixAppenderProcessor extends Treeprocessor {
     private final Map<Object, Object> SELECTOR = Map.of("traverse_documents", "true");
 
     private final ObjectMapper objectMapper;
 
-    public CacheSuffikAppenderProcessor(ObjectMapper objectMapper) {
+    public CacheSuffixAppenderProcessor(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
     }
 

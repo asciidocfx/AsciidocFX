@@ -23,7 +23,7 @@ import com.kodedu.service.extension.chart.FxChartBlockProcessor;
 import com.kodedu.service.extension.math.MathBlockMacroProcessor;
 import com.kodedu.service.extension.math.MathBlockProcessor;
 import com.kodedu.service.extension.math.MathInlineMacroProcessor;
-import com.kodedu.service.extension.processor.CacheSuffikAppenderProcessor;
+import com.kodedu.service.extension.processor.CacheSuffixAppenderProcessor;
 import com.kodedu.service.extension.processor.DataLineProcessor;
 import com.kodedu.service.extension.processor.ExtensionPreprocessor;
 import com.kodedu.service.extension.tree.FileTreeBlockMacroProcessor;
@@ -85,7 +85,7 @@ public class SpringAppConfig extends SpringBootServletInitializer implements Web
                                       DataLineProcessor dataLineProcessor,
                                       MathBlockMacroProcessor mathBlockMacroProcessor,
                                       MathInlineMacroProcessor mathInlineMacroProcessor,
-                                      CacheSuffikAppenderProcessor cacheAppendRemoverProcessor) {
+                                      CacheSuffixAppenderProcessor cacheSuffixAppenderProcessor) {
         Asciidoctor doctor = Asciidoctor.Factory.create();
         doctor.requireLibrary("asciidoctor-diagram");
         doctor.requireLibrary("asciidoctor-epub3");
@@ -100,7 +100,7 @@ public class SpringAppConfig extends SpringBootServletInitializer implements Web
                 .blockMacro(mathBlockMacroProcessor)
                 .inlineMacro(fileTreeInlineMacroProcessor)
                 .inlineMacro(mathInlineMacroProcessor)
-                .treeprocessor(cacheAppendRemoverProcessor);
+                .treeprocessor(cacheSuffixAppenderProcessor);
 
         return doctor;
     }
