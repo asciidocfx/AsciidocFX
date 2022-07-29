@@ -60,7 +60,7 @@ public class TerminalConfigBean extends ConfigurationBase {
     private BooleanProperty useDefaultWindowCopy = new SimpleBooleanProperty(true);
     private StringProperty fontFamily = new SimpleStringProperty("'DejaVu Sans Mono', 'Everson Mono', FreeMono, 'Menlo', 'Terminal', monospace");
     private IntegerProperty fontSize = new SimpleIntegerProperty(14);
-    private DoubleProperty scrollWhellMoveMultiplier = new SimpleDoubleProperty(0.1);
+    private DoubleProperty scrollWhellMoveMultiplier = new SimpleDoubleProperty(1);
     private StringProperty receiveEncoding = new SimpleStringProperty("utf-8");
     private StringProperty sendEncoding = new SimpleStringProperty("raw");
     private StringProperty userCss = new SimpleStringProperty("data:text/plain;base64,eC1zY3JlZW4geyBjdXJzb3I6IGF1dG87IH0=");
@@ -359,7 +359,7 @@ public class TerminalConfigBean extends ConfigurationBase {
 
         DefaultFactoryProvider editorConfigFormProvider = new DefaultFactoryProvider();
 
-        editorConfigFormProvider.addFactory(new NamedFieldHandler("scrollWhellMoveMultiplier"), new SliderFactory(SliderBuilt.create(0.0, 1, 0.1).step(0.1)));
+        editorConfigFormProvider.addFactory(new NamedFieldHandler("scrollWhellMoveMultiplier"), new SliderFactory(SliderBuilt.create(0.0, 5, 1).step(0.1)));
         editorConfigFormProvider.addFactory(new NamedFieldHandler("fontSize"), new SpinnerFactory(new Spinner(8, 32, 14)));
         FileChooserEditableFactory fileChooserEditableFactory = new FileChooserEditableFactory();
         editorConfigForm.setEditorFactoryProvider(editorConfigFormProvider);
