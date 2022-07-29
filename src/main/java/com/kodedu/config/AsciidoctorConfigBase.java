@@ -177,9 +177,7 @@ public abstract class AsciidoctorConfigBase<T extends LoadedAttributes> extends 
 
         FXForm configForm = getConfigForm();
 
-        DefaultFactoryProvider previewConfigFormProvider = new DefaultFactoryProvider();
-        previewConfigFormProvider.addFactory(new NamedFieldHandler("safe"), new ListChoiceBoxFactory(new ChoiceBox()));
-        previewConfigFormProvider.addFactory(new NamedFieldHandler("attributes"), new TableFactory(new TableView()));
+        DefaultFactoryProvider previewConfigFormProvider = getFxFormFactoryProvider();
         configForm.setEditorFactoryProvider(previewConfigFormProvider);
 
         configForm.setSource(this);
@@ -198,7 +196,7 @@ public abstract class AsciidoctorConfigBase<T extends LoadedAttributes> extends 
         return vBox;
     }
 
-    @Override
+	@Override
     public abstract Path getConfigPath();
 
     @Override
@@ -375,7 +373,14 @@ public abstract class AsciidoctorConfigBase<T extends LoadedAttributes> extends 
         return attributesBuilder.build();
     }
 
-    List<String> node_extensions = List.of("mmdc","vg2png","vg2svg","nomnoml","bytefield");
+    DefaultFactoryProvider getFxFormFactoryProvider() {
+		DefaultFactoryProvider previewConfigFormProvider = new DefaultFactoryProvider();
+	    previewConfigFormProvider.addFactory(new NamedFieldHandler("safe"), new ListChoiceBoxFactory(new ChoiceBox()));
+	    previewConfigFormProvider.addFactory(new NamedFieldHandler("attributes"), new TableFactory(new TableView()));
+		return previewConfigFormProvider;
+	}
+
+	List<String> node_extensions = List.of("mmdc","vg2png","vg2svg","nomnoml","bytefield");
     Map<String, Path> extensionPathMap = new HashMap<>();
     private Map<String, Object> resolveExtensionBuilderAttributes(String docdir, Map<String, Object> docAttributes) {
         Map<String, Object> map = new LinkedHashMap<>(docAttributes);

@@ -1,7 +1,6 @@
 package com.kodedu.config;
 
 import com.kodedu.component.ToggleButtonBuilt;
-import com.kodedu.config.PdfConfigBean.PdfConfigAttributes;
 import com.kodedu.controller.ApplicationController;
 import com.kodedu.service.ThreadService;
 import javafx.geometry.Insets;

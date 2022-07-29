@@ -1,7 +1,7 @@
 package com.kodedu.service.convert.pdf;
 
 import com.kodedu.config.AsciidoctorConfigBase;
-import com.kodedu.config.PdfConfigBean.PdfConfigAttributes;
+import com.kodedu.config.PdfConfigAttributes;
 import com.kodedu.controller.ApplicationController;
 import com.kodedu.other.Current;
 import com.kodedu.other.ExtensionFilters;
