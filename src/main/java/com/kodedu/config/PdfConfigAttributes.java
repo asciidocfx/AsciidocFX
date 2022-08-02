@@ -6,5 +6,5 @@ import javafx.collections.ObservableList;
 
 public class PdfConfigAttributes implements LoadedAttributes {
 	PdfConverterType converter;
-	ObservableList<AttributesTable> templates; 
+	ObservableList<PdfTemplateLocation> templates; 
 }

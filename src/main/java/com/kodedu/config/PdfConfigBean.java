@@ -42,7 +42,7 @@ public class PdfConfigBean extends AsciidoctorConfigBase<PdfConfigAttributes> {
 	private final Asciidoctor asciidoctor;
 
     private ObjectProperty<PdfConverterType> converter = new SimpleObjectProperty<>(PdfConverterType.FOP);
-    private ListProperty<AttributesTable> templates = new SimpleListProperty<>(FXCollections.observableArrayList());
+    private ListProperty<PdfTemplateLocation> templates = new SimpleListProperty<>(FXCollections.observableArrayList());
 
     private final ExcludeFilter attributeExclusion = new ExcludeFilter("attributes");
 
@@ -73,7 +73,7 @@ public class PdfConfigBean extends AsciidoctorConfigBase<PdfConfigAttributes> {
 			attributes.converter = PdfConverterType.valueOf(converterStr);
 		}
 		System.out.println(jsonObject.getJsonArray("templates"));
-        ObservableList<AttributesTable> attrList = FXCollections.observableArrayList();
+        ObservableList<PdfTemplateLocation> attrList = FXCollections.observableArrayList();
 		attributes.templates = attrList;
 		return attributes;
 	}
@@ -90,13 +90,13 @@ public class PdfConfigBean extends AsciidoctorConfigBase<PdfConfigAttributes> {
 		objectBuilder.add("converter", getPdfConverterType().name());
 		
 		JsonObjectBuilder attributesObject = Json.createObjectBuilder();
-		ObservableList<AttributesTable> attributes = getTemplates();
-		for (AttributesTable attribute : attributes) {
-			String value = attribute.getValue();
+		ObservableList<PdfTemplateLocation> templates = getTemplates();
+		for (PdfTemplateLocation template : templates) {
+			String value = template.getName();
 			if ("false".equalsIgnoreCase(value)) {
 				continue;
 			}
-			String key = attribute.getAttribute();
+			String key = template.getLocation();
 
 			if (Objects.nonNull(key) || Objects.nonNull(value)) {
 				attributesObject.add(key, value);
@@ -140,15 +140,15 @@ public class PdfConfigBean extends AsciidoctorConfigBase<PdfConfigAttributes> {
 		}
 	}
 
-	public ObservableList<AttributesTable> getTemplates() {
+	public ObservableList<PdfTemplateLocation> getTemplates() {
 		return templates.get();
 	}
 
-	public ListProperty<AttributesTable> templatesProperty() {
+	public ListProperty<PdfTemplateLocation> templatesProperty() {
 		return templates;
 	}
 
-	public void setTemplates(ObservableList<AttributesTable> templates) {
+	public void setTemplates(ObservableList<PdfTemplateLocation> templates) {
 		this.templates.set(templates);
 	}
     
