@@ -4,11 +4,11 @@ import com.kodedu.config.factory.TableFactory;
 import com.kodedu.controller.ApplicationController;
 import com.kodedu.service.ThreadService;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Objects;
 import java.util.ResourceBundle;
 
@@ -25,14 +25,15 @@ import com.dooapp.fxform.handler.NamedFieldHandler;
 import com.dooapp.fxform.view.factory.DefaultFactoryProvider;
 
 import javafx.application.Platform;
+import javafx.beans.Observable;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
-import javafx.scene.control.MenuButton;
 import javafx.scene.control.TableView;
 
 
@@ -44,7 +45,8 @@ public class PdfConfigBean extends AsciidoctorConfigBase<PdfConfigAttributes> {
 	private final Asciidoctor asciidoctor;
 
     private ObjectProperty<PdfConverterType> converter = new SimpleObjectProperty<>(PdfConverterType.FOP);
-    private ListProperty<PdfTemplateLocation> templates = new SimpleListProperty<>(FXCollections.observableArrayList());
+    private final ListProperty<PdfTemplateLocation> templates;
+	private final ObservableList<PdfTemplateLocation> observableTemplates;
 
     private final ExcludeFilter attributeExclusion = new ExcludeFilter("attributes");
 
@@ -53,14 +55,16 @@ public class PdfConfigBean extends AsciidoctorConfigBase<PdfConfigAttributes> {
         return "PDF Settings";
     }
 
-    @Autowired
     public PdfConfigBean(ApplicationController controller, ThreadService threadService,
 						 @Qualifier("plainDoctor") Asciidoctor asciidoctor) {
         super(controller, threadService, asciidoctor);
         this.controller = controller;
         this.threadService = threadService;
 		this.asciidoctor = asciidoctor;
-		templates.addListener((observable, oldValue, newValue) -> controller.addTemplateMenuItems(newValue.toString()));
+		
+		
+        templates = new SimpleListProperty<>(FXCollections.observableArrayList());
+		observableTemplates = initObservableTemplates(controller);
 	}
 
     @Override
@@ -94,7 +98,7 @@ public class PdfConfigBean extends AsciidoctorConfigBase<PdfConfigAttributes> {
 		
 		JsonObjectBuilder attributesObject = Json.createObjectBuilder();
 		ObservableList<PdfTemplateLocation> templates = getTemplates();
-		for (PdfTemplateLocation template : templates) {
+		for (PdfTemplateI template : templates) {
 			String value = template.getName();
 			if ("false".equalsIgnoreCase(value)) {
 				continue;
@@ -161,6 +165,24 @@ public class PdfConfigBean extends AsciidoctorConfigBase<PdfConfigAttributes> {
 		} else {
 			Platform.runLater(() -> configForm.addFilters(attributeExclusion));
 		}
+	}
+
+	/**
+	 * Receiving a change event for each modification of an ObservableList is a bit convoluted.
+	 * Nevertheless this seems to be the JavaFx way: https://stackoverflow.com/a/28289021/2021763
+	 * @param controller
+	 * @return
+	 */
+	private ObservableList<PdfTemplateLocation> initObservableTemplates(ApplicationController controller) {
+		var observableTemplates = FXCollections.observableList(new ArrayList<>(),
+		                                                       (PdfTemplateLocation t) -> new Observable[] {
+		                                                               t.nameProperty(),
+		                                                               t.locationProperty() });
+		Bindings.bindContent(observableTemplates, templates);
+		observableTemplates.addListener((ListChangeListener<PdfTemplateLocation>) change -> {
+			controller.setTemplateMenuItems(getTemplates());
+		});
+		return observableTemplates;
 	}
     
     

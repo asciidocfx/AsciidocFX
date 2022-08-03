@@ -196,7 +196,6 @@ public abstract class AsciidoctorConfigBase<T extends LoadedAttributes> extends 
         return vBox;
     }
 
-	@Override
     public abstract Path getConfigPath();
 
     @Override

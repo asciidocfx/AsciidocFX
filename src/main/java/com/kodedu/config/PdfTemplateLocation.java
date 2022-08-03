@@ -4,31 +4,34 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
 
-public class PdfTemplateLocation {
-    private StringProperty name = new SimpleStringProperty();
-    private StringProperty location = new SimpleStringProperty();
+class PdfTemplateLocation implements PdfTemplateI {
 
-    public String getName() {
-        return name.get();
-    }
+	private final StringProperty name = new SimpleStringProperty();
+	private final StringProperty location = new SimpleStringProperty();
 
-    public StringProperty nameProperty() {
-        return name;
-    }
+	@Override
+	public String getName() {
+		return name.get();
+	}
 
-    public void setName(String name) {
-        this.name.set(name);
-    }
+	public StringProperty nameProperty() {
+		return name;
+	}
 
-    public String getLocation() {
-        return location.get();
-    }
+	public void setName(String name) {
+		this.name.set(name);
+	}
 
-    public StringProperty locationProperty() {
-        return location;
-    }
+	@Override
+	public String getLocation() {
+		return location.get();
+	}
 
-    public void setLocation(String location) {
-        this.location.set(location);
-    }
+	public StringProperty locationProperty() {
+		return location;
+	}
+
+	public void setLocation(String location) {
+		this.location.set(location);
+	}
 }

@@ -198,6 +198,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     public MenuItem copyTreeItem;
     public MenuItem copyListItem;
     public MenuButton leftButton;
+    public Menu menuTemplates;
     public Label htmlPro;
     public Label pdfPro;
     public Label ebookPro;
@@ -3310,8 +3311,11 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         });
     }
 	
-	public void addTemplateMenuItems(String name) {
-		MenuItem menuItem1 = new MenuItem("name");
-		this.leftButton.getItems().add(2, menuItem1);
+	public void setTemplateMenuItems(List<? extends PdfTemplateI> templates) {
+		menuTemplates.getItems().clear();
+		templates.stream()
+		         .map(t -> new MenuItem(t.getName()))
+		         .forEach(mi -> menuTemplates.getItems().add(mi));
 	}
+
 }
