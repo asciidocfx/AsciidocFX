@@ -29,8 +29,10 @@ import javafx.beans.property.ListProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.scene.control.MenuButton;
 import javafx.scene.control.TableView;
 
 
@@ -58,6 +60,7 @@ public class PdfConfigBean extends AsciidoctorConfigBase<PdfConfigAttributes> {
         this.controller = controller;
         this.threadService = threadService;
 		this.asciidoctor = asciidoctor;
+		templates.addListener((observable, oldValue, newValue) -> controller.addTemplateMenuItems(newValue.toString()));
 	}
 
     @Override

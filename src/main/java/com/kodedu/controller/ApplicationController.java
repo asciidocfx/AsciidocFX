@@ -92,6 +92,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Bean;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
@@ -3308,4 +3309,9 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
         });
     }
+	
+	public void addTemplateMenuItems(String name) {
+		MenuItem menuItem1 = new MenuItem("name");
+		this.leftButton.getItems().add(2, menuItem1);
+	}
 }
