@@ -339,44 +339,46 @@ public abstract class AsciidoctorConfigBase<T extends LoadedAttributes> extends 
     }
 
     public Attributes getAsciiDocAttributes(Map<String, Object> originalDocAttributes) {
-        Map<String, String> map = new HashMap<>();
+        Map<String, String> map = new LinkedHashMap<>();
         ObservableList<AttributesTable> attributes = getAttributes();
         for (AttributesTable attribute : attributes) {
             String key = attribute.getAttribute();
             String value = attribute.getValue();
-            if (Objects.nonNull(key) || Objects.nonNull(value)) {
+            if (Objects.nonNull(key) &&
+                    Objects.nonNull(value) &&
+                    !value.equalsIgnoreCase("false")) {
+                if (value.equalsIgnoreCase("true")) {
+                    value = "";
+                }
                 map.put(key, value);
             }
         }
-        Map<String, Object> cloneMap = new HashMap<>(map);
-        for (Map.Entry<String, String> entry : map.entrySet()) {
-            String key = entry.getKey();
-            if(originalDocAttributes.containsKey(key)){
-                Object value = originalDocAttributes.get(key);
-                if(Objects.nonNull(value)){
-                    cloneMap.put(key, value);
-                }
-            }
+        Map<String, Object> cloneMap = new LinkedHashMap<>(map);
+
+        for (Map.Entry<String, Object> entry : originalDocAttributes.entrySet()) {
+            cloneMap.put(entry.getKey(), entry.getValue());
         }
 
         String docdir = (String) originalDocAttributes.get("docdir");
         cloneMap = resolveExtensionBuilderAttributes(docdir, cloneMap);
-        for (Map.Entry<String, Object> entry : originalDocAttributes.entrySet()) {
-            if(!cloneMap.containsKey(entry.getKey())){
-                cloneMap.put(entry.getKey(), entry.getValue());
-            }
-        }
+
         AttributesBuilder attributesBuilder = Attributes.builder();
         for (Map.Entry<String, Object> entry : cloneMap.entrySet()) {
             attributesBuilder.attribute(entry.getKey(), entry.getValue());
         }
+
+        // since notitle is required to control
+        if (map.containsKey("showtitle") && map.containsValue("")) {
+            attributesBuilder.showTitle(true);
+        }
+
         return attributesBuilder.build();
     }
 
     List<String> node_extensions = List.of("mmdc","vg2png","vg2svg","nomnoml","bytefield");
     Map<String, Path> extensionPathMap = new HashMap<>();
     private Map<String, Object> resolveExtensionBuilderAttributes(String docdir, Map<String, Object> docAttributes) {
-        Map<String, Object> map = new HashMap<>(docAttributes);
+        Map<String, Object> map = new LinkedHashMap<>(docAttributes);
 
         if(Objects.isNull(docdir)){
             return map;
