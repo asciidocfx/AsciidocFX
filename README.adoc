@@ -215,12 +215,24 @@ image::uml-example.png[]
 
 NOTE: In some UML elements, PlantUML needs to work with Graphviz. Because of this, you should install `Graphviz` manually for your platform. After installing Graphviz, you should set `GRAPHVIZ_DOT` environment variable to `dot` executable in Graphviz.
 
-== Mermaid Extension (Experimental)
+== Mermaid Extension
 
 [quote]
 ____
 Mermaid lets you create diagrams using text and code. This simplifies the maintenance of complex diagrams. **See more examples**: https://mermaid-js.github.io/
 ____
+
+[NOTE]
+====
+mermaid-cli has to be installed for mermaid diagrams generation.
+
+[source,bash]
+----
+npm install @mermaid-js/mermaid-cli
+----
+
+Installation details: https://github.com/mermaid-js/mermaid-cli#install-locally
+====
 
 [source,asciidoc]
 ----

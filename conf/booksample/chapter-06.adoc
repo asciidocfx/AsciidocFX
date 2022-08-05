@@ -3,7 +3,7 @@
 You can use filesystem viewer extension to demonstrate (((filesystem tree)))filesystem tree. We have two type of fs tree style.
 
 .Filesystem Tree
-[tree,target="filesystem-tree-viewer"]
+[tree,target="filesystem-tree-viewer",width=300]
 --
 #booksample
 ##asciidoctor.css
@@ -23,7 +23,7 @@ You can use filesystem viewer extension to demonstrate (((filesystem tree)))file
 --
 
 .Filesystem Tree
-[tree,target="filesystem-tree-viewer-new"]
+[tree,target="filesystem-tree-viewer-new",width=300]
 --
 root
 |-- photos

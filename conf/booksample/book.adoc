@@ -6,6 +6,7 @@ Author Name
 :toc: left
 :toclevels: 2
 :numbered:
+:showtitle:
 
 
 ////
