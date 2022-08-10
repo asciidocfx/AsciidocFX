@@ -4,7 +4,7 @@
     "safe":"unsafe",
     "sourcemap":true,
     "attributes":{
-        "showtitle":"true",
+        "showtitle": "true",
         "icons":"font@",
         "source-highlighter":"highlight.js",
         "idprefix":"true",

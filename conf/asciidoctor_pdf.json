@@ -5,6 +5,7 @@
 	"header_footer": true,
 	"converter": "ASCIIDOCTOR",
 	"attributes": {
+		"showtitle": "true",
 		"allow-uri-read": "true",
 		"source-highlighter": "rouge",
 		"icons": "font",
