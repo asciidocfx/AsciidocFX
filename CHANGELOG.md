@@ -2,6 +2,12 @@
 
 All notable changes are documented in this file.
 
+## [Version ~1.7.6](https://github.com/asciidocfx/AsciidocFX/releases/tag/v1.7.5) (08.2022)
+
+* Spring Boot version update
+* Plantuml version update
+* Bug fixes
+
 ## [Version ~1.7.5](https://github.com/asciidocfx/AsciidocFX/releases/tag/v1.7.5) (07.2022)
 
 * install4j version upgrade
