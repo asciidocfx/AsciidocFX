@@ -49,22 +49,21 @@
 <script src="/afx/dynamic/mathjax/MathJax.js"></script>
 <script type="text/javascript">
 
-    function Atom(formula, imagesDir, imageTarget, completableFuture) {
+    function Atom(formula, imageInfo, completableFuture) {
         this.formula = formula;
-        this.imagesDir = imagesDir;
-        this.imageTarget = imageTarget;
+        this.imageInfo = imageInfo;
         this.completableFuture = completableFuture;
         this.hashCode = function () {
-            return (this.formula + this.imagesDir + this.imageTarget + this.completableFuture);
+            return (this.formula + this.imageInfo.hashCode() + this.completableFuture);
         }
     }
 
     var atoms = [];
     var cache = {};
     var starter = Promise.resolve();
-    function processFormula(formula, imagesDir, imageTarget, completableFuture) {
+    function processFormula(formula, imageInfo, completableFuture) {
 
-        atoms.push(new Atom(formula, imagesDir, imageTarget, completableFuture));
+        atoms.push(new Atom(formula, imageInfo, completableFuture));
 
         starter = starter.then(function () {
             return new Promise(function (resolved, rejected) {
@@ -83,7 +82,7 @@
                     return;
                 }
 
-                var cacheHit = cache[popped.imageTarget];
+                var cacheHit = cache[popped.imageInfo.imageTarget()];
                 var hashCode = popped.hashCode();
 
                 if (cacheHit && cacheHit == hashCode) {
@@ -96,8 +95,8 @@
                 if ((typeof MathJax) != "undefined") {
                     MathJax.Hub.Queue(["Typeset", MathJax.Hub], function () {
                         try {
-                            afx.snapshotFormula(popped.formula, popped.imagesDir, popped.imageTarget, popped.completableFuture);
-                            cache[popped.imageTarget] = hashCode;
+                            afx.snapshotFormula(popped.formula, popped.imageInfo, popped.completableFuture);
+                            cache[popped.imageInfo.imageTarget()] = hashCode;
                         }
                         catch (e) {
                             // handled in java code

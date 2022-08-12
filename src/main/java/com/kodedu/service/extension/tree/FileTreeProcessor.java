@@ -39,9 +39,9 @@ public class FileTreeProcessor {
             threadService.runActionLater(() -> {
                 try {
                     if (content.split("#").length > content.split("\\|-").length) {
-                        treeService.createFileTree(content, type, imageInfo.imagesDir(), imageInfo.imagePath(), name, completableFuture);
+                        treeService.createFileTree(content, type, imageInfo, name, completableFuture);
                     } else {
-                        treeService.createHighlightFileTree(content, type, imageInfo.imagesDir(), imageInfo.imagePath(), name, completableFuture);
+                        treeService.createHighlightFileTree(content, type, imageInfo, name, completableFuture);
                     }
                 } catch (Exception e) {
                     completableFuture.completeExceptionally(e);

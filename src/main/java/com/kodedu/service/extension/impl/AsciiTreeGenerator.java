@@ -40,6 +40,7 @@ public class AsciiTreeGenerator {
         try (Stream<Path> folderStream = IOHelper.list(folder);) {
             folderStream
                     .filter(Predicate.not(IOHelper::isHidden))
+                    .sorted()
                     .forEach(p -> {
                         if (Files.isDirectory(p))
                             tree.getChildren().add(createInitialTree(p, indent + 1, new Tree()));
@@ -156,9 +157,9 @@ public class AsciiTreeGenerator {
 
             if (Objects.nonNull(leaf.getParent())) {
                 if (Objects.isNull(leaf.getNextSibling()))
-                    sb.append("`--");
+                    sb.append("└── ");
                 else
-                    sb.append("|--");
+                    sb.append("├── ");
             }
 
             sb.append(leaf.getName());
@@ -174,7 +175,7 @@ public class AsciiTreeGenerator {
                 localTree = Optional.ofNullable(localTree.get().getParent());
                 localTree.ifPresent(p -> {
                     if (Objects.nonNull(p.getNextSibling()))
-                        sb.append("  |");
+                        sb.append("   |");
                     else
                         sb.append("   ");
                 });

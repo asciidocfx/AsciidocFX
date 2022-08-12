@@ -9,6 +9,7 @@ import com.kodedu.other.TrimWhite;
 import com.kodedu.other.Tuple;
 import com.kodedu.service.ThreadService;
 import com.kodedu.service.cache.BinaryCacheService;
+import com.kodedu.service.extension.ImageInfo;
 import com.kodedu.service.extension.TreeService;
 import com.kodedu.service.ui.AwesomeService;
 import javafx.embed.swing.SwingFXUtils;
@@ -72,24 +73,25 @@ public class TreeServiceImpl implements TreeService {
 
 
     @Override
-    public void createFileTree(String tree, String type, String imagesDir,
-                               String imageTarget, String nodename, CompletableFuture completed) {
+    public void createFileTree(String tree, String type, ImageInfo imageInfo, String nodename, CompletableFuture completed) {
 
-        Objects.requireNonNull(imageTarget);
+        String imageTargetStr = imageInfo.imageTarget();
+        Objects.requireNonNull(imageTargetStr);
 
-        boolean cachedResource = imageTarget.contains("/afx/cache");
+        boolean cachedResource = imageTargetStr.contains("/afx/cache");
 
-        if (!imageTarget.contains(".png") && !cachedResource){
+        if (!imageTargetStr.contains(".png") && !cachedResource){
             completed.complete(null);
             return;
         }
 
-        Integer cacheHit = current.getCache().get(imageTarget);
+        Integer cacheHit = current.getCache().get(imageTargetStr);
 
-        int hashCode = (imageTarget + imagesDir + type + tree).hashCode();
+        String imagePathStr = imageInfo.imagePath();
+        int hashCode = (imageTargetStr + imageInfo.imagesDir() + imagePathStr + type + tree).hashCode();
         if (Objects.isNull(cacheHit) || hashCode != cacheHit) {
 
-            logger.debug("Tree extension is started for {}", imageTarget);
+            logger.debug("Tree extension is started for {}", imageTargetStr);
 
             try {
                 List<String> strings = Arrays.asList(tree.split("\\r?\\n"));
@@ -224,16 +226,16 @@ public class TreeServiceImpl implements TreeService {
                     BufferedImage bufferedImage = SwingFXUtils.fromFXImage(writableImage, null);
 
                     if (!cachedResource) {
-                        Path imagePath = Paths.get(imageTarget);
+                        Path imagePath = Paths.get(imagePathStr);
                         IOHelper.imageWrite(bufferedImage, "png", imagePath.toFile());
                         controller.clearImageCache(imagePath);
 
                     } else {
-                        binaryCacheService.putBinary(imageTarget, bufferedImage);
-                        controller.clearImageCache(imageTarget);
+                        binaryCacheService.putBinary(imageTargetStr, bufferedImage);
+                        controller.clearImageCache(imageTargetStr);
                     }
 
-                    logger.debug("Tree extension is ended for {}", imageTarget);
+                    logger.debug("Tree extension is ended for {}", imageTargetStr);
 
                     controller.getRootAnchor().getChildren().remove(fileView);
 
@@ -248,7 +250,7 @@ public class TreeServiceImpl implements TreeService {
             completed.complete(null);
         }
 
-        current.getCache().put(imageTarget, hashCode);
+        current.getCache().put(imageTargetStr, hashCode);
     }
 
     private void applyFolderIcon(TreeItem<Tuple<Integer, String>> lastItem) {
@@ -266,20 +268,21 @@ public class TreeServiceImpl implements TreeService {
     }
 
     @Override
-    public void createHighlightFileTree(String tree, String type, String imagesDir,
-                                        String imageTarget, String nodename, CompletableFuture completed) {
-        Objects.requireNonNull(imageTarget);
+    public void createHighlightFileTree(String tree, String type, ImageInfo imageInfo, String nodename, CompletableFuture completed) {
 
-        boolean cachedResource = imageTarget.contains("/afx/cache");
+        String imageTargetStr = imageInfo.imageTarget();
+        boolean cachedResource = imageTargetStr.contains("/afx/cache");
 
-        if (!imageTarget.contains(".png") && !cachedResource){
+        if (!imageTargetStr.contains(".png") && !cachedResource){
             completed.complete(null);
             return;
         }
 
-        Integer cacheHit = current.getCache().get(imageTarget);
+        Integer cacheHit = current.getCache().get(imageTargetStr);
 
-        int hashCode = (imageTarget + imagesDir + type + tree).hashCode();
+        String imagePathStr = imageInfo.imagePath();
+        String imagesDirStr = imageInfo.imagesDir();
+        int hashCode = (imagePathStr + imagesDirStr + imagePathStr + type + tree).hashCode();
         if (Objects.isNull(cacheHit) || hashCode != cacheHit) {
 
             Path path = current.currentTab().getParentOrWorkdir();
@@ -319,14 +322,12 @@ public class TreeServiceImpl implements TreeService {
                             BufferedImage trimmed = trimWhite.trim(bufferedImage);
 
                             if (!cachedResource) {
-
-                                Path imagePath = Paths.get(imageTarget);
+                                Path imagePath = Paths.get(imagePathStr);
                                 IOHelper.imageWrite(trimmed, "png", imagePath.toFile());
-                                controller.clearImageCache(imagePath);
                             } else {
-                                binaryCacheService.putBinary(imageTarget, bufferedImage);
-                                controller.clearImageCache(imageTarget);
+                                binaryCacheService.putBinary(imageTargetStr, trimmed);
                             }
+                            controller.clearImageCache(imageTargetStr);
                             completed.complete(null);
 
                             threadService.runActionLater(() -> {
@@ -342,6 +343,6 @@ public class TreeServiceImpl implements TreeService {
             completed.complete(null);
         }
 
-        current.getCache().put(imageTarget, hashCode);
+        current.getCache().put(imageTargetStr, hashCode);
     }
 }

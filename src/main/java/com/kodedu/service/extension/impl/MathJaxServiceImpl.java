@@ -7,6 +7,7 @@ import com.kodedu.other.Current;
 import com.kodedu.other.TrimWhite;
 import com.kodedu.service.ThreadService;
 import com.kodedu.service.cache.BinaryCacheService;
+import com.kodedu.service.extension.ImageInfo;
 import com.kodedu.service.extension.MathJaxService;
 
 import javafx.concurrent.Worker;
@@ -91,17 +92,17 @@ public class MathJaxServiceImpl implements MathJaxService {
     }
 
     @Override
-    public void processFormula(String formula, String imagesDir, String imageTarget, CompletableFuture completableFuture) {
+    public void processFormula(String formula, ImageInfo imageInfo, CompletableFuture completableFuture) {
 
         threadService.runActionLater(() -> {
 
             if (initialized) {
                 getWindow().setMember("afx", this);
-                getWindow().call("processFormula", formula, imagesDir, imageTarget, completableFuture);
+                getWindow().call("processFormula", formula, imageInfo, completableFuture);
             } else {
                 initialize(() -> {
                     getWindow().setMember("afx", this);
-                    getWindow().call("processFormula", formula, imagesDir, imageTarget, completableFuture);
+                    getWindow().call("processFormula", formula, imageInfo, completableFuture);
                 });
             }
 
@@ -130,21 +131,22 @@ public class MathJaxServiceImpl implements MathJaxService {
     }
 
     @Override
-    public void snapshotFormula(String formula, String imagesDir, String imageTarget, CompletableFuture completableFuture) {
+    public void snapshotFormula(String formula, ImageInfo imageInfo, CompletableFuture completableFuture) {
 
         try {
-            Objects.requireNonNull(imageTarget);
 
-            boolean cachedResource = imageTarget.contains("/afx/cache");
+            String imageTargetStr = imageInfo.imageTarget();
+            boolean cachedResource = imageTargetStr.contains("/afx/cache");
 
-            if (!imageTarget.contains(".png") && !cachedResource){
+            if (!imageTargetStr.contains(".png") && !cachedResource){
                 completeSnapShot(completableFuture);
                 return;
             }
 
-            Integer cacheHit = current.getCache().get(imageTarget);
+            Integer cacheHit = current.getCache().get(imageTargetStr);
 
-            int hashCode = (imageTarget + imagesDir + formula).hashCode();
+            String imagePathStr = imageInfo.imagePath();
+            int hashCode = (imageTargetStr + imagePathStr + imageInfo.imagesDir() + formula).hashCode();
 
             if (Objects.isNull(cacheHit) || hashCode != cacheHit) {
 
@@ -158,22 +160,22 @@ public class MathJaxServiceImpl implements MathJaxService {
                         TrimWhite trimWhite = new TrimWhite();
                         BufferedImage trimmed = trimWhite.trim(bufferedImage);
                         if (!cachedResource) {
-                            Path imagePath = Paths.get(imageTarget);
+                            Path imagePath = Paths.get(imagePathStr);
                             IOHelper.imageWrite(trimmed, "png", imagePath.toFile());
                             threadService.runActionLater(() -> {
                                 controller.clearImageCache(imagePath);
                             });
                         } else {
-                            binaryCacheService.putBinary(imageTarget, trimmed);
+                            binaryCacheService.putBinary(imageTargetStr, trimmed);
                             threadService.runActionLater(() -> {
-                                controller.clearImageCache(imageTarget);
+                                controller.clearImageCache(imageTargetStr);
                             });
                         }
 
                         completeSnapShot(completableFuture);
 
-                        current.getCache().put(imageTarget, hashCode);
-                        logger.debug("MathJax extension is ended for {}", imageTarget);
+                        current.getCache().put(imageTargetStr, hashCode);
+                        logger.debug("MathJax extension is ended for {}", imageTargetStr);
 
                     } catch (Exception e) {
                         logger.error("Problem occured while generating MathJax png", e);

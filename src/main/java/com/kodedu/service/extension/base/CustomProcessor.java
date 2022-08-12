@@ -33,21 +33,22 @@ public interface CustomProcessor {
         String docdir = (String) parent.getDocument().getAttributes().get("docdir");
         String imagesDir = getImagesDir(parent);
         String imageTarget = (String) attributes.getOrDefault("file", attributes.get("target"));
-        String format = (String) attributes.getOrDefault("format","png");
-        if(Objects.nonNull(imageTarget) && Objects.nonNull(format)){
+        String imagePath = null;
+        String format = (String) attributes.getOrDefault("format", "png");
+        if (Objects.nonNull(imageTarget) && Objects.nonNull(format)) {
             imageTarget = String.format("%s.%s", imageTarget, format);
         }
         String imageMd5 = cachedImageUri(content);
         if (Objects.isNull(imageTarget)) {
             int port = Integer.parseInt(environment.getProperty("local.server.port"));
             imageTarget = "http://localhost:" + port + "/afx/cache/" + imageMd5 + ".png";
-        }
-
-        boolean isPreview = (boolean) parent.getDocument().getAttributes().getOrDefault("preview", false);
-        boolean isDataUri = parent.getDocument().hasAttribute("data-uri");
-        String imagePath = Paths.get(docdir).resolve(imagesDir).resolve(imageTarget).toString();
-        if (isPreview && !isDataUri) {
-            imageTarget += "?cache" + imageMd5; // for html cache
+        } else {
+            boolean isPreview = (boolean) parent.getDocument().getAttributes().getOrDefault("preview", false);
+            boolean isDataUri = parent.getDocument().hasAttribute("data-uri");
+            imagePath = Paths.get(docdir).resolve(imagesDir).resolve(imageTarget).toString();
+            if (isPreview && !isDataUri) {
+                imageTarget += "?cache" + imageMd5; // for html cache
+            }
         }
 
         return new ImageInfo(imagesDir, imageTarget, imagePath);

@@ -4,6 +4,7 @@ import com.kodedu.config.ExtensionConfigBean;
 import com.kodedu.controller.ApplicationController;
 import com.kodedu.other.Current;
 import com.kodedu.service.ThreadService;
+import com.kodedu.service.cache.BinaryCacheService;
 import javafx.scene.chart.AreaChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
@@ -15,8 +16,9 @@ import org.springframework.stereotype.Component;
 @Component("area-bean")
 public class AreaChartBuilderServiceImpl extends XYChartBuilderServiceImpl {
 
-    public AreaChartBuilderServiceImpl(ThreadService threadService, Current current, ApplicationController controller, ExtensionConfigBean extensionConfigBean) {
-        super(threadService, current, controller, extensionConfigBean);
+    public AreaChartBuilderServiceImpl(ThreadService threadService, Current current, ApplicationController controller,
+                                       ExtensionConfigBean extensionConfigBean, BinaryCacheService binaryCacheService) {
+        super(threadService, current, controller, extensionConfigBean, binaryCacheService);
     }
 
     @Override

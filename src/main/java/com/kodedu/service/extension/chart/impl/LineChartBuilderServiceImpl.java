@@ -4,6 +4,7 @@ import com.kodedu.config.ExtensionConfigBean;
 import com.kodedu.controller.ApplicationController;
 import com.kodedu.other.Current;
 import com.kodedu.service.ThreadService;
+import com.kodedu.service.cache.BinaryCacheService;
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
@@ -16,8 +17,9 @@ import org.springframework.stereotype.Component;
 @Component("line-bean")
 public class LineChartBuilderServiceImpl extends XYChartBuilderServiceImpl {
 
-    public LineChartBuilderServiceImpl(ThreadService threadService, Current current, ApplicationController controller, ExtensionConfigBean extensionConfigBean) {
-        super(threadService, current, controller, extensionConfigBean);
+    public LineChartBuilderServiceImpl(ThreadService threadService, Current current, ApplicationController controller,
+                                       ExtensionConfigBean extensionConfigBean, BinaryCacheService binaryCacheService) {
+        super(threadService, current, controller, extensionConfigBean, binaryCacheService);
     }
 
     @Override

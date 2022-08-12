@@ -5,6 +5,9 @@ import com.kodedu.controller.ApplicationController;
 import com.kodedu.helper.IOHelper;
 import com.kodedu.other.Current;
 import com.kodedu.service.ThreadService;
+import com.kodedu.service.cache.BinaryCacheService;
+import com.kodedu.service.extension.ImageInfo;
+import com.kodedu.service.extension.chart.ChartBuilderService;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingFXUtils;
@@ -13,10 +16,14 @@ import javafx.scene.Node;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.chart.PieChart;
 import javafx.scene.image.WritableImage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.awt.image.BufferedImage;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
@@ -30,25 +37,33 @@ public class PieChartBuilderServiceImpl extends ChartBuilderServiceImpl {
     private final Current current;
     private final ApplicationController controller;
     private final ExtensionConfigBean extensionConfigBean;
+    private final BinaryCacheService binaryCacheService;
+
+    private final Logger logger = LoggerFactory.getLogger(PieChartBuilderServiceImpl.class);
 
     @Autowired
-    public PieChartBuilderServiceImpl(ThreadService threadService, Current current, ApplicationController controller, ExtensionConfigBean extensionConfigBean) {
+    public PieChartBuilderServiceImpl(ThreadService threadService, Current current, ApplicationController controller,
+                                      ExtensionConfigBean extensionConfigBean, BinaryCacheService binaryCacheService) {
         super(threadService, current, controller);
         this.threadService = threadService;
         this.current = current;
         this.controller = controller;
         this.extensionConfigBean = extensionConfigBean;
+        this.binaryCacheService = binaryCacheService;
     }
 
     @Override
-    public boolean chartBuild(String chartContent, String imagesDir, String imageTarget, Map<String, String> optMap, CompletableFuture completableFuture) {
+    public boolean chartBuild(String chartContent, ImageInfo imageInfo, Map<String, String> optMap, CompletableFuture completableFuture) {
 
-        boolean chartBuild = super.chartBuild(chartContent, imagesDir, imageTarget, optMap, completableFuture);
+        boolean chartBuild = super.chartBuild(chartContent, imageInfo, optMap, completableFuture);
 
         if (!chartBuild) {
             completableFuture.complete(null);
             return chartBuild;
         }
+
+        String imageTargetStr = imageInfo.imageTarget();
+        boolean cachedResource = imageTargetStr.contains("/afx/cache");
 
         String[] split = chartContent.split("\\r?\\n");
         List<String> lines = Arrays.asList(split);
@@ -130,9 +145,16 @@ public class PieChartBuilderServiceImpl extends ChartBuilderServiceImpl {
             WritableImage writableImage = pieChart.snapshot(new SnapshotParameters(), null);
             controller.getRootAnchor().getChildren().remove(pieChart);
             BufferedImage bufferedImage = SwingFXUtils.fromFXImage(writableImage, null);
-            IOHelper.imageWrite(bufferedImage, "png", imagePath.toFile());
+
+            if (!cachedResource) {
+                Path imagePath = Paths.get(imageInfo.imagePath());
+                IOHelper.imageWrite(bufferedImage, "png", imagePath.toFile());
+            } else {
+                binaryCacheService.putBinary(imageTargetStr, bufferedImage);
+            }
+            controller.clearImageCache(imageTargetStr);
+            logger.debug("Chart extension is ended for {}", imageTargetStr);
             completableFuture.complete(null);
-            controller.clearImageCache(imagePath);
 
         });
 

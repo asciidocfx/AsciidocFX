@@ -3,6 +3,7 @@ package com.kodedu.service.extension.chart.impl;
 import com.kodedu.controller.ApplicationController;
 import com.kodedu.other.Current;
 import com.kodedu.service.ThreadService;
+import com.kodedu.service.extension.ImageInfo;
 import com.kodedu.service.extension.chart.ChartBuilderService;
 
 import javafx.scene.chart.*;
@@ -22,7 +23,6 @@ public abstract class ChartBuilderServiceImpl implements ChartBuilderService {
     private final Current current;
     private final ApplicationController controller;
     protected Path currentRoot;
-    protected Path imagePath;
 
     public ChartBuilderServiceImpl(ThreadService threadService, Current current, ApplicationController controller) {
         this.threadService = threadService;
@@ -31,24 +31,23 @@ public abstract class ChartBuilderServiceImpl implements ChartBuilderService {
     }
 
     @Override
-    public boolean chartBuild(String chartContent, String imagesDir, String imageTarget, Map<String, String> optMap, CompletableFuture completableFuture) {
+    public boolean chartBuild(String chartContent, ImageInfo imageInfo, Map<String, String> optMap, CompletableFuture completableFuture) {
 
-        if (!imageTarget.contains(".png")) {
+        if (!imageInfo.imageTarget().contains(".png")) {
             return false;
         }
 
-        Integer cacheHit = current.getCache().get(imageTarget);
-        int hashCode = (imageTarget + imagesDir + chartContent).hashCode() + optMap.hashCode();
+        Integer cacheHit = current.getCache().get(imageInfo.imageTarget());
+        int hashCode = (imageInfo.imageTarget() + imageInfo.imagePath() + imageInfo.imagesDir() + chartContent).hashCode() + optMap.hashCode();
 
         if (Objects.nonNull(cacheHit))
             if (hashCode == cacheHit) {
                 return false;
             }
 
-        current.getCache().put(imageTarget, hashCode);
+        current.getCache().put(imageInfo.imageTarget(), hashCode);
 
         currentRoot = current.currentTab().getParentOrWorkdir();
-        imagePath = Paths.get(imageTarget);
 
         return true;
     }

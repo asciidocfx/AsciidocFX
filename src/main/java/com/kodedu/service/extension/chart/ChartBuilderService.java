@@ -1,5 +1,7 @@
 package com.kodedu.service.extension.chart;
 
+import com.kodedu.service.extension.ImageInfo;
+
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
@@ -8,7 +10,7 @@ import java.util.concurrent.CompletableFuture;
  */
 public interface ChartBuilderService {
 
-    public boolean chartBuild(String chartContent, String imagesDir, String imageTarget, Map<String,
+    public boolean chartBuild(String chartContent, ImageInfo imageInfo, Map<String,
             String> optMap, CompletableFuture completableFuture);
 
 }

@@ -52,7 +52,7 @@ public class FxChartBlockProcessor extends CustomBlockProcessor implements Custo
 
 		completableFuture.runAsync(()->{
 			threadService.runActionLater(() -> {
-				chartProvider.getProvider(chartType).chartBuild(content, imageInfo.imagesDir(), imageInfo.imagePath(), optMap, completableFuture);
+				chartProvider.getProvider(chartType).chartBuild(content, imageInfo, optMap, completableFuture);
 			});
 		}, threadService.executor());
 

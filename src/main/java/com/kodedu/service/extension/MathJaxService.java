@@ -13,12 +13,12 @@ public interface MathJaxService {
 
     public void reload();
 
-    public void processFormula(String formula, String imagesDir, String imageTarget, CompletableFuture completableFuture);
+    public void processFormula(String formula, ImageInfo imageInfo, CompletableFuture completableFuture);
 
     public JSObject getWindow();
 
     public WebView getWebView();
 
-    public void snapshotFormula(String formula, String imagesDir, String imageTarget, CompletableFuture completableFuture);
+    public void snapshotFormula(String formula, ImageInfo imageInfo, CompletableFuture completableFuture);
 
 }

@@ -466,22 +466,11 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         });
     }
 
-    @WebkitCall(from = "asciidoctor-math")
-    public void math(String formula, String type, String imagesDir, String imageTarget, String nodename) {
-
-        mathJaxService.processFormula(formula, imagesDir, imageTarget, null);
-    }
-
     @WebkitCall(from = "asciidoctor-mermaid")
     public void mermaid(String content, String type, String imagesDir, String imageTarget, String nodename) {
         threadService.runActionLater(() -> {
             mermaidService.createMermaidDiagram(content, type, imagesDir, imageTarget, nodename, false);
         });
-    }
-
-    @WebkitCall(from = "mathjax.html")
-    public void snapshotFormula(String formula, String imagesDir, String imageTarget) {
-        mathJaxService.snapshotFormula(formula, imagesDir, imageTarget, null);
     }
 
     private void generateHtml() {
@@ -496,28 +485,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
         threadService.runTaskLater(() -> {
             htmlBookService.convert(askPath);
-        });
-    }
-
-    public void tree(String content, String type, String imagesDir, String imageTarget, String nodename) {
-        if (content.split("#").length > content.split("\\|-").length) {
-            createFileTree(content, type, imagesDir, imageTarget, nodename);
-        } else {
-            createHighlightFileTree(content, type, imagesDir, imageTarget, nodename);
-        }
-    }
-
-    public void createFileTree(String tree, String type, String imagesDir, String imageTarget, String nodename) {
-
-        threadService.runTaskLater(() -> {
-            treeService.createFileTree(tree, type, imagesDir, imageTarget, nodename, CompletableFuture.completedFuture(null));
-        });
-    }
-
-    public void createHighlightFileTree(String tree, String type, String imagesDir, String imageTarget, String nodename) {
-
-        threadService.runTaskLater(() -> {
-            treeService.createHighlightFileTree(tree, type, imagesDir, imageTarget, nodename, CompletableFuture.completedFuture(null));
         });
     }
 
@@ -2226,51 +2193,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         this.plantuml(ditaa, type, imagesDir, imageTarget, nodename, options);
     }
 
-    @WebkitCall(from = "asciidoctor-chart")
-    public void chartBuildFromCsv(String csvFile, String imagesDir, String imageTarget, String chartType, String options) {
-
-        threadService.runActionLater(() -> {
-            if (isNull(imageTarget) || isNull(chartType)) {
-                return;
-            }
-
-            current.currentPath().map(Path::getParent).ifPresent(root -> {
-                threadService.runTaskLater(() -> {
-                    String csvContent = IOHelper.readFile(root.resolve(csvFile));
-
-                    threadService.runActionLater(() -> {
-                        try {
-                            Map<String, String> optMap = parseChartOptions(options);
-                            optMap.put("csv-file", csvFile);
-                            chartProvider.getProvider(chartType).chartBuild(csvContent, imagesDir, imageTarget, optMap, null);
-
-                        } catch (Exception e) {
-                            logger.info(e.getMessage(), e);
-                        }
-                    });
-                });
-            });
-        });
-    }
-
-    @WebkitCall(from = "asciidoctor-chart")
-    public void chartBuild(String chartContent, String imagesDir, String imageTarget, String chartType, String options) {
-
-        if (isNull(imageTarget) || isNull(chartType)) {
-            return;
-        }
-
-        threadService.runActionLater(() -> {
-            try {
-                Map<String, String> optMap = parseChartOptions(options);
-                chartProvider.getProvider(chartType).chartBuild(chartContent, imagesDir, imageTarget, optMap, null);
-
-            } catch (Exception e) {
-                logger.info(e.getMessage(), e);
-            }
-        });
-    }
-
     private Map<String, String> parseChartOptions(String options) {
         Map<String, String> optMap = new HashMap<>();
         if (nonNull(options)) {
@@ -2883,13 +2805,17 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     }
 
     public void clearImageCache(Path imagePath) {
-        rightShowerHider.getShowing()
-                .ifPresent(w -> w.clearImageCache(imagePath));
+        threadService.runActionLater(() -> {
+            rightShowerHider.getShowing()
+                    .ifPresent(w -> w.clearImageCache(imagePath));
+        });
     }
 
     public void clearImageCache(String imagePath) {
-        rightShowerHider.getShowing()
-                .ifPresent(w -> w.clearImageCache(imagePath));
+        threadService.runActionLater(() -> {
+            rightShowerHider.getShowing()
+                    .ifPresent(w -> w.clearImageCache(imagePath));
+        });
     }
 
     public ObservableList<DocumentMode> getModeList() {

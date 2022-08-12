@@ -7,8 +7,6 @@ import java.util.concurrent.CompletableFuture;
  */
 public interface TreeService extends DefaultSettings {
     public final static String label = "core::service::extension::Tree";
-    public void createFileTree(String tree, String type, String imagesDir,
-                               String imageTarget, String nodename, CompletableFuture completed);
-    public void createHighlightFileTree(String tree, String type, String imagesDir,
-                                        String imageTarget, String nodename,CompletableFuture completed);
+    public void createFileTree(String tree, String type, ImageInfo imageInfo, String nodename, CompletableFuture completed);
+    public void createHighlightFileTree(String tree, String type,ImageInfo imageInfo, String nodename,CompletableFuture completed);
 }
