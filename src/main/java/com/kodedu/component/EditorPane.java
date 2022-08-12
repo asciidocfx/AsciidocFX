@@ -25,10 +25,7 @@ import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
 import javafx.scene.control.*;
-import javafx.scene.input.Dragboard;
-import javafx.scene.input.KeyEvent;
-import javafx.scene.input.MouseButton;
-import javafx.scene.input.MouseEvent;
+import javafx.scene.input.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
@@ -564,9 +561,14 @@ public class EditorPane extends AnchorPane {
             }
         });
 
+        getWebView().setOnDragOver(event -> {
+            event.acceptTransferModes(TransferMode.ANY);
+        });
+
         getWebView().setOnDragDropped(event -> {
             Dragboard dragboard = event.getDragboard();
             boolean success = false;
+            myTab.saveDoc();
 
             if (dragboard.hasFiles() && !dragboard.hasString()) {
 
@@ -578,7 +580,7 @@ public class EditorPane extends AnchorPane {
 
                         threadService.runTaskLater(() -> {
                             StringBuffer buffer = new StringBuffer();
-                            buffer.append("[tree,file=\"\"]");
+                            buffer.append("[tree]");
                             buffer.append("\n--\n");
                             buffer.append(asciiTreeGenerator.generate(path));
                             buffer.append("\n--");
