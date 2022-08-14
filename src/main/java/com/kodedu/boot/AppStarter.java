@@ -31,6 +31,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -39,6 +42,7 @@ import java.nio.file.Files;
 import java.nio.file.NotDirectoryException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.SecureRandom;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Consumer;
@@ -62,10 +66,8 @@ public class AppStarter extends Application {
     public void start(final Stage stage) {
 
         Thread.setDefaultUncaughtExceptionHandler((t, e) -> logger.error(e.getMessage(), e));
-
+        initializeSSLContext();
         loadRequiredFonts();
-
-//        System.setProperty("nashorn.typeInfo.maxFiles", "5");
 
         // http://bit.ly/1Euk8hh
         System.setProperty("jsse.enableSNIExtension", "false");
@@ -97,6 +99,18 @@ public class AppStarter extends Application {
             }
         }).start();
 
+    }
+
+    private void initializeSSLContext() {
+        try {
+            SSLContext sc = SSLContext.getInstance("SSL");
+            sc.init(null, new TrustManager[]{new FakeTrustManager()}, new SecureRandom());
+            HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+            HttpsURLConnection.setDefaultHostnameVerifier((h, s) -> true);
+            SSLContext.setDefault(sc);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     static {
