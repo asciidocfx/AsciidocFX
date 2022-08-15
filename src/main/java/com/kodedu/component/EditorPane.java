@@ -162,6 +162,7 @@ public class EditorPane extends AnchorPane {
             }
 
             updatePreviewUrl();
+            rerender();
         }
     }
 

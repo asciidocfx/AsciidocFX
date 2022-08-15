@@ -11,6 +11,7 @@ import com.kodedu.service.DirectoryService;
 import com.kodedu.service.ThreadService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 /**
@@ -23,6 +24,7 @@ public class HtmlPane extends ViewPanel {
     private final DocbookConfigBean docbookConfigBean;
     private final HtmlConfigBean htmlConfigBean;
     private final ThreadService threadService;
+    private final Environment environment;
 
     @Value("${application.index.url}")
     private String indexUrl;
@@ -34,16 +36,23 @@ public class HtmlPane extends ViewPanel {
     private final DirectoryService directoryService;
 
     @Autowired
-    public HtmlPane(ThreadService threadService, ApplicationController controller, Current current, PreviewConfigBean previewConfigBean, DocbookConfigBean docbookConfigBean, HtmlConfigBean htmlConfigBean, EditorConfigBean editorConfigBean, AsciidocWebkitConverter asciidocWebkitConverter, DirectoryService directoryService) {
+    public HtmlPane(ThreadService threadService, ApplicationController controller, Current current, PreviewConfigBean previewConfigBean, DocbookConfigBean docbookConfigBean, HtmlConfigBean htmlConfigBean, EditorConfigBean editorConfigBean, Environment environment, AsciidocWebkitConverter asciidocWebkitConverter, DirectoryService directoryService) {
         super(threadService, controller, current, editorConfigBean);
         this.previewConfigBean = previewConfigBean;
         this.docbookConfigBean = docbookConfigBean;
         this.htmlConfigBean = htmlConfigBean;
         this.threadService = threadService;
+        this.environment = environment;
         this.asciidocWebkitConverter = asciidocWebkitConverter;
         this.directoryService = directoryService;
     }
 
+    public void loadInitialUrl() {
+        int port = Integer.parseInt(environment.getProperty("local.server.port"));
+        threadService.runActionLater(() -> {
+            load(String.format(previewUrl, port, directoryService.interPath()));
+        }, true);
+    }
 
     @Override
     public void load(String url) {
