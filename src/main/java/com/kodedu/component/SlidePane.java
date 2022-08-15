@@ -80,10 +80,8 @@ public class SlidePane extends ViewPanel {
     }
 
     public void replaceSlides(String rendered) {
-        getWindow().setMember("afx", controller);
-        String backendExt = backend + "Ext";
         try {
-            ((JSObject) getWindow().eval(backendExt)).call("replaceSlides", rendered);
+            getSlideObject().call("replaceSlides", rendered);
         } catch (Exception e) {
 //            logger.debug("{} is not found while replacing slide, but don't worry.", backendExt, e);
         }
@@ -92,12 +90,17 @@ public class SlidePane extends ViewPanel {
 
     @Override
     public void runScroller(String text) {
-        String backendExt = backend + "Ext";
         try {
-            ((JSObject) getWindow().eval(backendExt)).call("flipCurrentPage", text);
+            getSlideObject().call("flipCurrentPage", text);
         } catch (Exception e) {
 //            logger.debug("{} is not found while flipping page, but don't worry.", backendExt, e);
         }
+    }
+
+    private JSObject getSlideObject() {
+        String backendExt = backend + "Ext";
+        getWindow().setMember("afx", controller);
+        return (JSObject) getWindow().eval(backendExt);
     }
 
     @Override

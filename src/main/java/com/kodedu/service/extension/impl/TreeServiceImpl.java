@@ -228,11 +228,9 @@ public class TreeServiceImpl implements TreeService {
                     if (!cachedResource) {
                         Path imagePath = Paths.get(imagePathStr);
                         IOHelper.imageWrite(bufferedImage, "png", imagePath.toFile());
-                        controller.clearImageCache(imagePath);
 
                     } else {
                         binaryCacheService.putBinary(imageTargetStr, bufferedImage);
-                        controller.clearImageCache(imageTargetStr);
                     }
 
                     logger.debug("Tree extension is ended for {}", imageTargetStr);
@@ -327,7 +325,6 @@ public class TreeServiceImpl implements TreeService {
                             } else {
                                 binaryCacheService.putBinary(imageTargetStr, trimmed);
                             }
-                            controller.clearImageCache(imageTargetStr);
                             completed.complete(null);
 
                             threadService.runActionLater(() -> {

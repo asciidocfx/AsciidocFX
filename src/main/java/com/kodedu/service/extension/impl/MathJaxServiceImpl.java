@@ -162,14 +162,8 @@ public class MathJaxServiceImpl implements MathJaxService {
                         if (!cachedResource) {
                             Path imagePath = Paths.get(imagePathStr);
                             IOHelper.imageWrite(trimmed, "png", imagePath.toFile());
-                            threadService.runActionLater(() -> {
-                                controller.clearImageCache(imagePath);
-                            });
                         } else {
                             binaryCacheService.putBinary(imageTargetStr, trimmed);
-                            threadService.runActionLater(() -> {
-                                controller.clearImageCache(imageTargetStr);
-                            });
                         }
 
                         completeSnapShot(completableFuture);

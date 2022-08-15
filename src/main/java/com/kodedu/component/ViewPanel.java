@@ -105,10 +105,6 @@ public abstract class ViewPanel extends AnchorPane {
 
         detachPreviewItem.selectedProperty().bindBidirectional(editorConfigBean.detachedPreviewProperty());
 
-        MenuItem refresh = MenuItemBuilt.item("Clear image cache").click(e -> {
-            webEngine().executeScript("clearImageCache()");
-        });
-
         getWebView().setOnContextMenuRequested(event -> {
 
             ObservableList<Window> windows = Window.getWindows();
@@ -268,24 +264,6 @@ public abstract class ViewPanel extends AnchorPane {
     public abstract void scrollByPosition(String text);
 
     public abstract void scrollByLine(String text);
-
-    public void clearImageCache(Path imagePath) {
-
-        Optional.ofNullable(imagePath)
-                .map(Path::getFileName)
-                .map(Path::toString)
-                .ifPresent(this::clearImageCache);
-    }
-
-    ;
-
-    public void clearImageCache(String imagePath) {
-
-        threadService.runActionLater(() -> {
-            webEngine().executeScript(String.format("clearImageCache(\"%s\")", imagePath));
-        });
-
-    }
 
     public static void setMarkReAtached() {
         if (nonNull(detachPreviewItem)) {

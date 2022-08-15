@@ -129,10 +129,6 @@ public class PlantUmlServiceImpl implements PlantUmlService {
                 IOHelper.close(os);
 
                 logger.debug("UML extension is ended for {}", imageTarget);
-
-                threadService.runActionLater(() -> {
-                    controller.clearImageCache(umlPath);
-                });
             } catch (Exception e) {
                 logger.error("Problem occured while generating UML diagram", e);
             } finally {

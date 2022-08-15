@@ -232,7 +232,6 @@ public abstract class XYChartBuilderServiceImpl extends ChartBuilderServiceImpl 
         } else {
             binaryCacheService.putBinary(imageTargetStr, bufferedImage);
         }
-        controller.clearImageCache(imageTargetStr);
         logger.debug("Chart extension is ended for {}", imageTargetStr);
         completableFuture.complete(null);
 

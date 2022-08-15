@@ -36,6 +36,19 @@ revealjsExt.findNextNode = function (lineno) {
     return node || $("<div></div>");
 }
 
+var clearCacheAction = new BufferedAction();
+revealjsExt.clearImageCache= function clearImageCache(imageName) {
+    clearCacheAction.buff(function () {
+        $("body").find("img").each(function () {
+            var image = $(this);
+            var srcAttr = image.attr("src");
+            if (srcAttr) {
+                image.attr("src", srcAttr);
+            }
+        });
+    }, 500);
+}
+
 $("body").on("click", function (event) {
 
     var elem = $(event.target);

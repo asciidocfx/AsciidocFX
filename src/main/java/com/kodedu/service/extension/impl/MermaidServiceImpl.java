@@ -121,10 +121,8 @@ public class MermaidServiceImpl implements MermaidService {
                                 Path treePath = path.resolve(imageTarget);
                                 IOHelper.createDirectories(path.resolve(imagesDir));
                                 IOHelper.imageWrite(trimmed, "png", treePath.toFile());
-                                controller.clearImageCache(treePath);
                             } else {
                                 binaryCacheService.putBinary(imageTarget, trimmed);
-                                controller.clearImageCache(imageTarget);
                             }
 
                             current.getCache().put(imageTarget, hashCode);

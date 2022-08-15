@@ -48,4 +48,6 @@ function refreshUI(data) {
 
 }
 
-alert("PREVIEW_LOADED");
+(function () {
+    alert("PREVIEW_LOADED");
+})();
