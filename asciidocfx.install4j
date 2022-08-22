@@ -443,6 +443,7 @@ return console.askYesNo(message, true);
             </add>
           </property>
           <property name="executableName" type="string">Updater</property>
+          <property name="splashMessage" type="string">AsciidocFX Auto Updater</property>
           <property name="useCustomIcon" type="boolean" value="true" />
           <property name="windowTitle" type="string">${i18n:updater.WindowTitle("${compiler:sys.fullName}")}</property>
         </serializedBean>
@@ -1191,7 +1192,4 @@ return true;</property>
       </jreBundle>
     </macosFolder>
   </mediaSets>
-  <buildIds>
-    <mediaSet refId="1110" />
-  </buildIds>
 </install4j>
