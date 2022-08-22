@@ -1711,7 +1711,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                 }
 
                 HttpResponse.BodySubscriber<String> bodySubscriber = HttpResponse.BodySubscribers.ofString(Charset.defaultCharset());
-                int statusCode = HttpClient.newBuilder().followRedirects(HttpClient.Redirect.ALWAYS)
+                int statusCode = HttpClient.newBuilder().followRedirects(HttpClient.Redirect.NEVER)
                         .build()
                         .send(HttpRequest.newBuilder(URI.create("http://asciidocfx.com")).build(), info -> {
                             return bodySubscriber;
