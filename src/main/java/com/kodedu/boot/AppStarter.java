@@ -34,6 +34,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
+import java.awt.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -61,10 +62,12 @@ public class AppStarter extends Application {
     private static Stage stage;
     private ThreadService threadService;
     private ConfigurationService configurationService;
+    private Image logoImage;
 
     @Override
     public void start(final Stage stage) {
-
+        stage.setTitle("AsciidocFX");
+        logoImage = setApplicationIcon(stage);
         Thread.setDefaultUncaughtExceptionHandler((t, e) -> logger.error(e.getMessage(), e));
         initializeSSLContext();
         loadRequiredFonts();
@@ -164,16 +167,7 @@ public class AppStarter extends Application {
         }
 
         Scene scene = new Scene(root);
-
-        stage.setTitle("AsciidocFX");
-        Image logoImage;
-        try (InputStream logoStream = AppStarter.class.getResourceAsStream("/logo.png")) {
-            logoImage = new Image(logoStream);
-        }
-        stage.getIcons().add(logoImage);
         threadService.runActionLater(stage::setScene, scene);
-
-        controller.initializeApp();
 
         stage.setOnShowing(e -> {
 
@@ -189,6 +183,7 @@ public class AppStarter extends Application {
 
         stage.setOnShown(e -> {
             controller.bindConfigurations();
+            controller.initializeApp();
             controller.showConfigLoaderOnNewInstall();
             int random = ThreadLocalRandom.current().nextInt(1, 11);
             if (random == 1) {
@@ -272,6 +267,20 @@ public class AppStarter extends Application {
         stage.widthProperty().addListener(controller::stageWidthChanged);
         stage.heightProperty().addListener(controller::stageWidthChanged);
 
+    }
+
+    private Image setApplicationIcon(Stage stage) {
+        Image logoImage = null;
+        try (InputStream logoStream = AppStarter.class.getResourceAsStream("/logo.png")) {
+            logoImage = new Image(logoStream);
+            stage.getIcons().clear();
+            stage.getIcons().add(logoImage);
+            java.awt.Image image = Toolkit.getDefaultToolkit().getImage(AppStarter.class.getResource("/logo.png"));
+            Taskbar.getTaskbar().setIconImage(image);
+        } catch (Exception e) {
+
+        }
+        return logoImage;
     }
 
     private void setMaximized() {
