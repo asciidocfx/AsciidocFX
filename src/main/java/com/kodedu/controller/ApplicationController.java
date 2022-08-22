@@ -14,7 +14,10 @@ import com.kodedu.helper.IOHelper;
 import com.kodedu.keyboard.KeyHelper;
 import com.kodedu.logging.MyLog;
 import com.kodedu.logging.TableViewLogAppender;
-import com.kodedu.other.*;
+import com.kodedu.other.ConverterResult;
+import com.kodedu.other.Current;
+import com.kodedu.other.DocumentMode;
+import com.kodedu.other.Item;
 import com.kodedu.outline.Section;
 import com.kodedu.service.*;
 import com.kodedu.service.convert.docbook.DocBookConverter;
@@ -96,9 +99,13 @@ import javax.imageio.stream.ImageInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.InetAddress;
+import java.net.URI;
 import java.net.URL;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.nio.BufferUnderflowException;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -117,7 +124,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.kodedu.helper.IOHelper.getInstallationPath;
-import static java.nio.file.StandardOpenOption.*;
+import static java.nio.file.StandardOpenOption.CREATE_NEW;
+import static java.nio.file.StandardOpenOption.WRITE;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
@@ -534,9 +542,9 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     public void initializeApp() {
 
         port = Integer.parseInt(environment.getProperty("local.server.port"));
+        htmlPane.loadInitialUrl();
 
         checkDuplicatedJars();
-        initializeNashornConverter();
         initializeTerminal();
 
         terminalTabPane.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
@@ -768,14 +776,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         htmlPane.webEngine().setOnAlert(event -> {
             if ("PREVIEW_LOADED".equals(event.getData())) {
                 htmlPane.setMember("afx", this);
-                current.currentEditor().rerender();
-            }
-        });
-
-        asciidocWebkitConverter.webEngine().setOnAlert(event -> {
-            if ("WORKER_LOADED".equals(event.getData())) {
-                asciidocWebkitConverter.setMember("afx", this);
-                htmlPane.load(String.format(previewUrl, port, directoryService.interPath()));
             }
         });
 
@@ -1274,10 +1274,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         }
     }
 
-    private void initializeNashornConverter() {
-//        nashornEngineConverter.initialize();
-    }
-
     public boolean getStopRendering() {
         return stopRendering.get();
     }
@@ -1514,6 +1510,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         }
 
         SplitPane.Divider verticalDivider = mainVerticalSplitPane.getDividers().get(0);
+        mainVerticalSplitPane.setDividerPositions(1.0);
         mainVerticalSplitPane.addEventFilter(MouseEvent.MOUSE_RELEASED, event -> {
             double position = verticalDivider.getPosition();
             if (position > 0.1 && position < 0.9) {
@@ -1713,11 +1710,18 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                     return;
                 }
 
-                if (!InetAddress.getByName("asciidocfx.com").isReachable(5000)) {
+                HttpResponse.BodySubscriber<String> bodySubscriber = HttpResponse.BodySubscribers.ofString(Charset.defaultCharset());
+                int statusCode = HttpClient.newBuilder().followRedirects(HttpClient.Redirect.ALWAYS)
+                        .build()
+                        .send(HttpRequest.newBuilder(URI.create("http://asciidocfx.com")).build(), info -> {
+                            return bodySubscriber;
+                        }).statusCode();
+
+                if (statusCode > 399 || statusCode < 200) {
                     return;
                 }
 
-                ApplicationLauncher.launchApplication("504", null, false, new ApplicationLauncher.Callback() {
+                ApplicationLauncher.launchApplicationInProcess("504", null, new ApplicationLauncher.Callback() {
                             public void exited(int exitValue) {
                                 //TODO add your code here (not invoked on event dispatch thread)
                             }
@@ -1725,7 +1729,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                             public void prepareShutdown() {
                                 //TODO add your code here (not invoked on event dispatch thread)
                             }
-                        }
+                        }, ApplicationLauncher.WindowMode.FRAME, null
                 );
             } catch (Exception e) {
                 // logger.warn("Problem occured while checking new version", e);
@@ -2295,17 +2299,11 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                 }
 
             } else if ("html".equalsIgnoreCase(mode)) {
-//                if (liveReloadPane.getReady()) {
-//                    liveReloadPane.updateDomdom();
-//                } else {
                 threadService.buff("htmlEditor")
                         .schedule(() -> {
                             liveReloadPane.load(String.format(liveUrl, port, directoryService.interPath()));
                         }, 500, TimeUnit.MILLISECONDS);
-//                }
-
                 rightShowerHider.showNode(liveReloadPane);
-
             }
 
         } catch (Exception e) {
@@ -2802,20 +2800,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         }
 
         dialog.showAndWait().ifPresent(consumer);
-    }
-
-    public void clearImageCache(Path imagePath) {
-        threadService.runActionLater(() -> {
-            rightShowerHider.getShowing()
-                    .ifPresent(w -> w.clearImageCache(imagePath));
-        });
-    }
-
-    public void clearImageCache(String imagePath) {
-        threadService.runActionLater(() -> {
-            rightShowerHider.getShowing()
-                    .ifPresent(w -> w.clearImageCache(imagePath));
-        });
     }
 
     public ObservableList<DocumentMode> getModeList() {
