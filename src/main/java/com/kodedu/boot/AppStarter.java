@@ -50,6 +50,7 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import static java.awt.Taskbar.Feature.ICON_IMAGE;
 import static javafx.scene.input.KeyCombination.SHORTCUT_DOWN;
 
 public class AppStarter extends Application {
@@ -275,8 +276,11 @@ public class AppStarter extends Application {
             logoImage = new Image(logoStream);
             stage.getIcons().clear();
             stage.getIcons().add(logoImage);
-            java.awt.Image image = Toolkit.getDefaultToolkit().getImage(AppStarter.class.getResource("/logo.png"));
-            Taskbar.getTaskbar().setIconImage(image);
+            Taskbar taskbar = Taskbar.getTaskbar();
+            if (taskbar.isSupported(ICON_IMAGE)) {
+                java.awt.Image image = Toolkit.getDefaultToolkit().getImage(AppStarter.class.getResource("/logo.png"));
+                taskbar.setIconImage(image);
+            }
         } catch (Exception e) {
 
         }
