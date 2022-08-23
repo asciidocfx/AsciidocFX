@@ -10,6 +10,7 @@ import com.kodedu.config.*;
 import com.kodedu.engine.AsciidocAsciidoctorjConverter;
 import com.kodedu.engine.AsciidocConverterProvider;
 import com.kodedu.engine.AsciidocWebkitConverter;
+import com.kodedu.helper.DesktopHelper;
 import com.kodedu.helper.IOHelper;
 import com.kodedu.helper.TaskbarHelper;
 import com.kodedu.keyboard.KeyHelper;
@@ -187,9 +188,9 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     public ListView<Item> recentListView;
     public MenuItem openFileTreeItem;
     public MenuItem deletePathItem;
-    public MenuItem openFolderTreeItem;
+    public MenuItem browseFolderTreeItem;
     public MenuItem openFileListItem;
-    public MenuItem openFolderListItem;
+    public MenuItem browseFolderListItem;
     public MenuItem copyPathListItem;
     public MenuItem copyTreeItem;
     public MenuItem copyListItem;
@@ -808,20 +809,12 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
         deletePathItem.setOnAction(this::deleteSelectedItems);
 
-        openFolderTreeItem.setOnAction(event -> {
-            Path path = tabService.getSelectedTabPath();
-            path = Files.isDirectory(path) ? path : path.getParent();
-            if (nonNull(path)) {
-                openInDesktop(path);
-            }
+        browseFolderTreeItem.setOnAction(event -> {
+            browseFileOrFolder(tabService.getSelectedTabPath());
         });
 
-        openFolderListItem.setOnAction(event -> {
-            Path path = recentListView.getSelectionModel().getSelectedItem().getPath();
-            path = Files.isDirectory(path) ? path : path.getParent();
-            if (nonNull(path)) {
-                openInDesktop(path);
-            }
+        browseFolderListItem.setOnAction(event -> {
+            browseFileOrFolder(recentListView.getSelectionModel().getSelectedItem().getPath());
         });
 
         openFileListItem.setOnAction(this::openRecentListFile);
@@ -943,6 +936,20 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         }, true);
 
         this.checkNewVersion();
+    }
+
+    public void browseFileOrFolder(Path path) {
+        final Path[] paths = {path};
+        DesktopHelper.getDesktop()
+                .filter(d -> d.isSupported(Desktop.Action.BROWSE_FILE_DIR))
+                .ifPresentOrElse(d -> {
+                    d.browseFileDirectory(paths[0].toFile());
+                }, () -> {
+                    paths[0] = Files.isDirectory(paths[0]) ? paths[0] : paths[0].getParent();
+                    if (nonNull(paths[0])) {
+                        openInDesktop(paths[0]);
+                    }
+                });
     }
 
     public void showConfigLoaderOnNewInstall() {
@@ -1139,9 +1146,27 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                                     continue;
                                 }
 
-                                IOHelper.deleteDirectory(path);
+                                DesktopHelper.getDesktop()
+                                        .filter(d-> d.isSupported(Desktop.Action.MOVE_TO_TRASH))
+                                        .ifPresentOrElse(d -> {
+                                            boolean movedToTrash = d.moveToTrash(path.toFile());
+                                            if (!movedToTrash) {
+                                                IOHelper.deleteDirectory(path);
+                                            }
+                                        }, () -> {
+                                            IOHelper.deleteDirectory(path);
+                                        });
                             } else {
-                                IOHelper.deleteIfExists(path);
+                                DesktopHelper.getDesktop()
+                                        .filter(d -> d.isSupported(Desktop.Action.MOVE_TO_TRASH))
+                                        .ifPresentOrElse(d -> {
+                                            boolean movedToTrash = d.moveToTrash(path.toFile());
+                                            if (!movedToTrash) {
+                                                IOHelper.deleteIfExists(path);
+                                            }
+                                        }, () -> {
+                                            IOHelper.deleteIfExists(path);
+                                        });
                             }
 
 //                            fileSystemView.getSelectionModel().select(selectedIndex);

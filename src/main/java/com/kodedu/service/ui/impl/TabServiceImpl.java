@@ -307,8 +307,7 @@ public class TabServiceImpl implements TabService {
 
         menuItem7.setOnAction(event -> {
             current.currentPath()
-                    .map(Path::getParent)
-                    .ifPresent(controller::openInDesktop);
+                    .ifPresent(controller::browseFileOrFolder);
         });
 
         MenuItem copyItem = MenuItemBuilt.item("Copy").click(event -> {
@@ -377,7 +376,7 @@ public class TabServiceImpl implements TabService {
         } else if (pathResolver.isPDF(path) || pathResolver.isArchive(path) || pathResolver.isVideo(path) || pathResolver.isOffice(path)) {
             controller.openInDesktop(path);
         } else {
-
+// TODO: Charset check
             Optional<Long> size = IOHelper.size(path);
 
             int hangFileSizeLimit = controller.getHangFileSizeLimit();

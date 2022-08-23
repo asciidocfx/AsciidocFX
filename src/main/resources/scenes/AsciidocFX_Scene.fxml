@@ -244,7 +244,7 @@
                                                                         <MenuItem onAction="#refreshFileView"
                                                                                   mnemonicParsing="false" text="Refresh"/>
                                                                         <MenuItem id="openFolderTreeItem"
-                                                                                  fx:id="openFolderTreeItem"
+                                                                                  fx:id="browseFolderTreeItem"
                                                                                   mnemonicParsing="false"
                                                                                   text="Browse"/>
                                                                         <SeparatorMenuItem fx:id="renameSeparator"/>
@@ -304,7 +304,7 @@
                                                                         <MenuItem fx:id="openFileListItem"
                                                                                   mnemonicParsing="false"
                                                                                   text="Open"/>
-                                                                        <MenuItem fx:id="openFolderListItem"
+                                                                        <MenuItem fx:id="browseFolderListItem"
                                                                                   mnemonicParsing="false"
                                                                                   text="Browse"/>
                                                                         <MenuItem fx:id="copyPathListItem"
