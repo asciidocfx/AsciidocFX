@@ -118,8 +118,7 @@ public class TabServiceImpl implements TabService {
 
         ObservableList<Tab> tabs = controller.getTabPane().getTabs();
         for (Tab tab : tabs) {
-            if (tab instanceof MyTab) {
-                MyTab myTab = (MyTab) tab;
+            if (tab instanceof MyTab myTab) {
                 Path currentPath = myTab.getPath();
                 if (Objects.nonNull(currentPath))
                     if (currentPath.equals(path)) {

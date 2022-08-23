@@ -5,6 +5,7 @@ import com.kodedu.config.ConfigurationService;
 import com.kodedu.config.EditorConfigBean;
 import com.kodedu.controller.ApplicationController;
 import com.kodedu.helper.IOHelper;
+import com.kodedu.helper.TaskbarHelper;
 import com.kodedu.service.DirectoryService;
 import com.kodedu.service.FileOpenListener;
 import com.kodedu.service.ThreadService;
@@ -254,6 +255,7 @@ public class AppStarter extends Application {
         final ThreadService threadService = context.getBean(ThreadService.class);
 
         controller.initializeTabWatchListener();
+        controller.initializeTaskBarPopupMenuListener();
 
         threadService.start(() -> {
             try {
@@ -276,11 +278,12 @@ public class AppStarter extends Application {
             logoImage = new Image(logoStream);
             stage.getIcons().clear();
             stage.getIcons().add(logoImage);
-            Taskbar taskbar = Taskbar.getTaskbar();
-            if (taskbar.isSupported(ICON_IMAGE)) {
-                java.awt.Image image = Toolkit.getDefaultToolkit().getImage(AppStarter.class.getResource("/logo.png"));
-                taskbar.setIconImage(image);
-            }
+            TaskbarHelper.getTaskBar()
+                    .filter(t -> t.isSupported(ICON_IMAGE))
+                    .ifPresent(t -> {
+                        java.awt.Image image = Toolkit.getDefaultToolkit().getImage(AppStarter.class.getResource("/logo.png"));
+                        t.setIconImage(image);
+                    });
         } catch (Exception e) {
 
         }

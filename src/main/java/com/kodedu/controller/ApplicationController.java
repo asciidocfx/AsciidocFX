@@ -11,6 +11,7 @@ import com.kodedu.engine.AsciidocAsciidoctorjConverter;
 import com.kodedu.engine.AsciidocConverterProvider;
 import com.kodedu.engine.AsciidocWebkitConverter;
 import com.kodedu.helper.IOHelper;
+import com.kodedu.helper.TaskbarHelper;
 import com.kodedu.keyboard.KeyHelper;
 import com.kodedu.logging.MyLog;
 import com.kodedu.logging.TableViewLogAppender;
@@ -61,6 +62,11 @@ import javafx.geometry.Insets;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.TextField;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTreeCell;
@@ -68,6 +74,7 @@ import javafx.scene.image.Image;
 import javafx.scene.input.*;
 import javafx.scene.layout.*;
 import javafx.scene.text.Text;
+import javafx.stage.Window;
 import javafx.stage.*;
 import javafx.util.Duration;
 import netscape.javascript.JSObject;
@@ -96,6 +103,7 @@ import javax.annotation.PostConstruct;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
+import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -111,6 +119,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledFuture;
@@ -3277,5 +3286,28 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     public void refreshFileView(ActionEvent actionEvent) {
         fileBrowser.cleanRefresh();
+    }
+
+    public void initializeTaskBarPopupMenuListener() {
+        getTabPane().getTabs().addListener((ListChangeListener<Tab>) c -> {
+            ObservableList<? extends Tab> tabs = c.getList();
+            TaskbarHelper.getTaskBar()
+                    .filter(t-> t.isSupported(Taskbar.Feature.MENU))
+                    .ifPresent(taskbar -> {
+                        PopupMenu menu = new PopupMenu("Tabs");
+                        for (Tab tab : tabs) {
+                            String tabText = tab instanceof MyTab myTab ? myTab.getTabText() : tab.getText();
+                            java.awt.MenuItem item = new java.awt.MenuItem(tabText);
+                            menu.add(item);
+                            item.addActionListener(e -> {
+                                threadService.runActionLater(() -> {
+                                    tab.getTabPane().getSelectionModel().select(tab);
+                                }, true);
+                            });
+                        }
+                        taskbar.setMenu(menu);
+                    });
+
+        });
     }
 }
