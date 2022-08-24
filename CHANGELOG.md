@@ -2,7 +2,16 @@
 
 All notable changes are documented in this file.
 
-## [Version ~1.7.6](https://github.com/asciidocfx/AsciidocFX/releases/tag/v1.7.5) (08.2022)
+## [Version ~1.7.7](https://github.com/asciidocfx/AsciidocFX/releases/tag/v1.7.7) (08.2022)
+
+* Move deleted files to trash (when possible)
+* Add AsciidocFX icon to the app
+* Add progress indicator to taskbar (when possible)
+* Fix auto updater issue
+* Fix issue to show images from https://
+* Bug fixes
+
+## [Version ~1.7.6](https://github.com/asciidocfx/AsciidocFX/releases/tag/v1.7.6) (08.2022)
 
 * Spring Boot version update
 * Plantuml version update
