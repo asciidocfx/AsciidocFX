@@ -3311,7 +3311,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         });
     }
 	
-	public void setTemplateMenuItems(List<? extends PdfTemplateI> templates) {
+	public void setTemplateMenuItems(List<? extends MetaAsciidocTemplateI> templates) {
 		menuTemplates.getItems().clear();
 		templates.stream()
 		         .map(t -> new MenuItem(t.getName()))

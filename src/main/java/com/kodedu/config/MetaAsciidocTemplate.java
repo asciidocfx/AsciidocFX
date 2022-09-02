@@ -4,7 +4,7 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
 
-public class PdfTemplateLocation implements PdfTemplateI {
+public class MetaAsciidocTemplate implements MetaAsciidocTemplateI {
 
 	private final StringProperty name = new SimpleStringProperty();
 	private final StringProperty location = new SimpleStringProperty();

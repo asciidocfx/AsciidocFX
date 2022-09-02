@@ -1,6 +1,6 @@
 package com.kodedu.config;
 
-public interface PdfTemplateI {
+public interface MetaAsciidocTemplateI {
 
 	String getName();
 
