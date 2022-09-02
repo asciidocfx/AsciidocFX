@@ -3314,8 +3314,22 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 	public void setTemplateMenuItems(List<? extends MetaAsciidocTemplateI> templates) {
 		menuTemplates.getItems().clear();
 		templates.stream()
-		         .map(t -> new MenuItem(t.getName()))
+		         .map(t -> createMenuItem(t))
 		         .forEach(mi -> menuTemplates.getItems().add(mi));
+	}
+
+	private MenuItem createMenuItem(MetaAsciidocTemplateI t) {
+		var item = new CustomMenuItem(new Label(t.getName()));
+
+		StringBuilder msg = new StringBuilder();
+		msg.append("Location: ").append(t.getLocation());
+		if (!StringUtils.isBlank(t.getDescription())) {
+			msg.append("\n\n").append(t.getDescription());
+		}
+
+		var tooltip = new Tooltip(msg.toString());
+		Tooltip.install(item.getContent(), tooltip);
+		return item;
 	}
 
 }
