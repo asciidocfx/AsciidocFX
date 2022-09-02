@@ -43,7 +43,7 @@ public class CacheSuffixAppenderProcessor extends Treeprocessor {
             if (node instanceof BlockImpl block) {
                 if ("image".equals(block.getContext())) {
                     String target = (String) block.getAttribute("target");
-                    if (Objects.nonNull(target) && !target.contains("?cache")) {
+                    if (Objects.nonNull(target) && !target.contains("?cache") && !target.startsWith("http")) {
 
                         String cachedir = (String) block.getAttribute("cachedir", ".asciidoctor/diagram");
                         Path cachePath = Paths.get(docdir).resolve(cachedir).resolve(target + ".cache");
