@@ -37,8 +37,9 @@ public class ConfigurationService {
     private final ExtensionConfigBean extensionConfigBean;
     private final Epub3ConfigBean epub3ConfigBean;
     private final RevealjsConfigBean revealjsConfigBean;
+    private final PdfConfigBean pdfConfigBean;
+	private final TemplatesConfigBean templatesConfigBean;
     private VBox configBox;
-    private final AsciidoctorConfigBase<PdfConfigAttributes> pdfConfigBean;
 
     @Autowired
     public ConfigurationService(LocationConfigBean locationConfigBean, EditorConfigBean editorConfigBean,
@@ -46,7 +47,9 @@ public class ConfigurationService {
                                 DocbookConfigBean docbookConfigBean, ApplicationController controller,
                                 StoredConfigBean storedConfigBean, ThreadService threadService,
                                 SpellcheckConfigBean spellcheckConfigBean, TerminalConfigBean terminalConfigBean,
-                                ExtensionConfigBean extensionConfigBean, Epub3ConfigBean epub3ConfigBean, RevealjsConfigBean revealjsConfigBean, AsciidoctorConfigBase<PdfConfigAttributes> pdfConfigBean) {
+                                ExtensionConfigBean extensionConfigBean, Epub3ConfigBean epub3ConfigBean,
+                                RevealjsConfigBean revealjsConfigBean, PdfConfigBean pdfConfigBean,
+                                TemplatesConfigBean templatesConfigBean) {
         this.locationConfigBean = locationConfigBean;
         this.editorConfigBean = editorConfigBean;
         this.previewConfigBean = previewConfigBean;
@@ -61,6 +64,7 @@ public class ConfigurationService {
         this.epub3ConfigBean = epub3ConfigBean;
         this.revealjsConfigBean = revealjsConfigBean;
         this.pdfConfigBean = pdfConfigBean;
+        this.templatesConfigBean = templatesConfigBean;
     }
 
     public void loadConfigurations(Runnable... runnables) {
@@ -77,6 +81,7 @@ public class ConfigurationService {
         pdfConfigBean.load();
         epub3ConfigBean.load();
         revealjsConfigBean.load();
+        templatesConfigBean.load();
 
         List<ConfigurationBase> configBeanList = Arrays.asList(
                 editorConfigBean,
@@ -89,7 +94,8 @@ public class ConfigurationService {
                 extensionConfigBean,
                 pdfConfigBean,
                 epub3ConfigBean,
-                revealjsConfigBean
+                revealjsConfigBean,
+                templatesConfigBean
 //                ,spellcheckConfigBean
         );
 

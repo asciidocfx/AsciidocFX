@@ -2,6 +2,7 @@ package com.kodedu.service.convert.pdf;
 
 import com.kodedu.config.AsciidoctorConfigBase;
 import com.kodedu.config.PdfConfigAttributes;
+import com.kodedu.config.PdfConfigBean;
 import com.kodedu.controller.ApplicationController;
 import com.kodedu.other.Current;
 import com.kodedu.other.ExtensionFilters;
@@ -38,12 +39,12 @@ public class AsciidoctorPdfBookConverter implements DocumentConverter<String> {
     private final ThreadService threadService;
     private final DirectoryService directoryService;
     private final Current current;
-	private final AsciidoctorConfigBase<PdfConfigAttributes> pdfConfigBean;
+	private final PdfConfigBean pdfConfigBean;
 	private final Asciidoctor doctor;
 
     @Autowired
     public AsciidoctorPdfBookConverter(final ApplicationController asciiDocController,
-                            final IndikatorService indikatorService, final AsciidoctorConfigBase<PdfConfigAttributes> pdfConfigBean,
+                            final IndikatorService indikatorService, final PdfConfigBean pdfConfigBean,
                             final ThreadService threadService, final DirectoryService directoryService,
                             final Current current, @Qualifier("standardDoctor") Asciidoctor doctor) {
         this.asciiDocController = asciiDocController;

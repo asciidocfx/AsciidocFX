@@ -1,0 +1,193 @@
+package com.kodedu.config;
+
+import com.kodedu.config.factory.TableFactory;
+import com.kodedu.controller.ApplicationController;
+import com.kodedu.helper.IOHelper;
+import com.kodedu.service.ThreadService;
+
+import org.springframework.stereotype.Component;
+
+import java.io.Reader;
+import java.nio.file.Path;
+import java.util.Map;
+import java.util.Objects;
+import java.util.ResourceBundle;
+
+import javax.json.Json;
+import javax.json.JsonObject;
+import javax.json.JsonObjectBuilder;
+import javax.json.JsonReader;
+import javax.json.JsonString;
+import javax.json.JsonValue;
+
+//import com.dooapp.fxform.annotation.Accessor;
+
+import com.dooapp.fxform.FXForm;
+import com.dooapp.fxform.builder.FXFormBuilder;
+import com.dooapp.fxform.handler.NamedFieldHandler;
+import com.dooapp.fxform.view.factory.DefaultFactoryProvider;
+
+import javafx.beans.property.ListProperty;
+import javafx.beans.property.SimpleListProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.geometry.Insets;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TableView;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+
+@Component
+public class TemplatesConfigBean extends ConfigurationBase {
+
+    private final ListProperty<PdfTemplateLocation> templates;
+    private final ThreadService threadService;
+	private final ApplicationController controller;
+
+    private final Button saveButton = new Button("Save");
+    private final Button loadButton = new Button("Load");
+    private final Label infoLabel = new Label();
+
+    public TemplatesConfigBean(ApplicationController controller, ThreadService threadService) {
+        super(controller, threadService);
+        this.threadService = threadService;
+        this.controller = controller;
+        templates = new SimpleListProperty<>(FXCollections.observableArrayList());
+    }
+
+	@Override
+	public String formName() {
+		return "Template Settings";
+	}
+
+	@Override
+	public Path getConfigPath() {
+		return super.resolveConfigPath("templates_config.json");
+	}
+
+	public ObservableList<PdfTemplateLocation> getTemplates() {
+		return templates.get();
+	}
+
+	public ListProperty<PdfTemplateLocation> templatesProperty() {
+		return templates;
+	}
+
+	public void setTemplates(ObservableList<PdfTemplateLocation> templates) {
+		this.templates.set(templates);
+	}
+
+    public FXForm getConfigForm() {
+        FXForm configForm = new FXFormBuilder<>()
+                .resourceBundle(ResourceBundle.getBundle("templatesConfig"))
+                .includeAndReorder(
+                        "templates").build();
+
+        return configForm;
+    }
+
+    @Override
+    public VBox createForm() {
+
+        FXForm configForm = getConfigForm();
+
+        DefaultFactoryProvider previewConfigFormProvider = getFxFormFactoryProvider();
+        configForm.setEditorFactoryProvider(previewConfigFormProvider);
+
+        configForm.setSource(this);
+
+        VBox vBox = new VBox();
+        vBox.getChildren().add(configForm);
+
+
+        saveButton.setOnAction(this::save);
+
+        loadButton.setOnAction(this::load);
+        HBox box = new HBox(5, saveButton, loadButton, infoLabel);
+        box.setPadding(new Insets(0, 0, 15, 5));
+        vBox.getChildren().add(box);
+
+        return vBox;
+    }
+
+	@Override
+    public void load(Path configPath, ActionEvent... actionEvent) {
+
+        infoLabel.setText("Loading...");
+
+        Reader fileReader = IOHelper.fileReader(configPath);
+        JsonReader jsonReader = Json.createReader(fileReader);
+
+        JsonObject jsonObject = jsonReader.readObject();
+
+        JsonObject templates = jsonObject.getJsonObject("templates");
+        
+        IOHelper.close(jsonReader, fileReader);
+
+        threadService.runActionLater(() -> {
+
+            ObservableList<PdfTemplateLocation> templateList = FXCollections.observableArrayList();
+            if (Objects.nonNull(templates)) {
+                for (Map.Entry<String, JsonValue> template : templates.entrySet()) {
+                    var templateLoc = new PdfTemplateLocation();
+                    templateLoc.setName(template.getKey());
+                    templateLoc.setLocation(((JsonString) template.getValue()).getString());
+                    templateList.add(templateLoc);
+                }
+            }
+
+            setTemplates(templateList);
+
+            fadeOut(infoLabel, "Loaded...");
+        });
+    }
+
+	@Override
+    public JsonObject getJSON() {
+        JsonObjectBuilder templateObject = Json.createObjectBuilder();
+
+        ObservableList<PdfTemplateLocation> templates = getTemplates();
+
+        for (PdfTemplateLocation template : templates) {
+            String value = template.getLocation();
+            if ("false".equalsIgnoreCase(value)) {
+                continue;
+            }
+            String key = template.getName();
+
+            if (Objects.nonNull(key) || Objects.nonNull(value)) {
+                templateObject.add(key, value);
+            }
+
+        }
+
+        JsonObjectBuilder objectBuilder = Json.createObjectBuilder();
+
+        objectBuilder.add("templates", templateObject);
+
+        return objectBuilder.build();
+    }
+
+	@Override
+    public void save(ActionEvent... actionEvent) {
+        infoLabel.setText("Saving...");
+        saveJson(getJSON());
+    	controller.setTemplateMenuItems(getTemplates());
+        fadeOut(infoLabel, "Saved...");
+    }
+
+    @Override
+	public void load(ActionEvent... actionEvent) {
+		super.load(actionEvent);
+		controller.setTemplateMenuItems(getTemplates());
+	}
+
+	private DefaultFactoryProvider getFxFormFactoryProvider() {
+		DefaultFactoryProvider previewConfigFormProvider = new DefaultFactoryProvider();
+	    previewConfigFormProvider.addFactory(new NamedFieldHandler("templates"), new TableFactory(new TableView()));
+		return previewConfigFormProvider;
+	}
+
+}
