@@ -133,7 +133,13 @@ public class TemplatesConfigBean extends ConfigurationBase {
                 for (Map.Entry<String, JsonValue> template : templates.entrySet()) {
                     var templateLoc = new PdfTemplateLocation();
                     templateLoc.setName(template.getKey());
-                    templateLoc.setLocation(((JsonString) template.getValue()).getString());
+                    
+                    var locDescTuple = template.getValue().asJsonObject();
+                    var location = locDescTuple.getString("location");
+                    var description = locDescTuple.getString("description", "");
+                    
+                    templateLoc.setLocation(location);
+                    templateLoc.setDescription(description);
                     templateList.add(templateLoc);
                 }
             }
@@ -145,30 +151,33 @@ public class TemplatesConfigBean extends ConfigurationBase {
     }
 
 	@Override
-    public JsonObject getJSON() {
-        JsonObjectBuilder templateObject = Json.createObjectBuilder();
+	public JsonObject getJSON() {
+		JsonObjectBuilder templatesObject = Json.createObjectBuilder();
 
-        ObservableList<PdfTemplateLocation> templates = getTemplates();
+		ObservableList<PdfTemplateLocation> templates = getTemplates();
 
-        for (PdfTemplateLocation template : templates) {
-            String value = template.getLocation();
-            if ("false".equalsIgnoreCase(value)) {
-                continue;
-            }
-            String key = template.getName();
+		for (PdfTemplateLocation template : templates) {
+			String key = template.getName();
+			String location = template.getLocation();
+			String description = template.getDescription();
 
-            if (Objects.nonNull(key) || Objects.nonNull(value)) {
-                templateObject.add(key, value);
-            }
+			JsonObjectBuilder locDescObj = Json.createObjectBuilder();
+			locDescObj.add("location", location);
+			if (Objects.nonNull(description)) {
+				locDescObj.add("description", description);
+			}
 
-        }
+			if (Objects.nonNull(key) || Objects.nonNull(location)) {
+				templatesObject.add(key, locDescObj);
+			}
+		}
 
-        JsonObjectBuilder objectBuilder = Json.createObjectBuilder();
+		JsonObjectBuilder objectBuilder = Json.createObjectBuilder();
 
-        objectBuilder.add("templates", templateObject);
+		objectBuilder.add("templates", templatesObject);
 
-        return objectBuilder.build();
-    }
+		return objectBuilder.build();
+	}
 
 	@Override
     public void save(ActionEvent... actionEvent) {

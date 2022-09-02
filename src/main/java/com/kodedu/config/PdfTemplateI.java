@@ -6,4 +6,6 @@ public interface PdfTemplateI {
 
 	String getLocation();
 
+	String getDescription();
+
 }
