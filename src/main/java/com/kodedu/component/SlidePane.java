@@ -51,20 +51,6 @@ public class SlidePane extends ViewPanel {
         threadService.runActionLater(() -> {
             getWindow().setMember("afx", controller);
             ReadOnlyObjectProperty<Worker.State> stateProperty = webEngine().getLoadWorker().stateProperty();
-            WebView popupView = new WebView();
-            Stage stage = new Stage();
-            stage.initModality(Modality.WINDOW_MODAL);
-            stage.setScene(new Scene(popupView));
-            stage.setTitle("AsciidocFX");
-            InputStream logoStream = SlidePane.class.getResourceAsStream("/logo.png");
-            stage.getIcons().add(new Image(logoStream));
-            webEngine().setCreatePopupHandler(param -> {
-                if (!stage.isShowing()) {
-                    stage.show();
-                    popupView.requestFocus();
-                }
-                return popupView.getEngine();
-            });
             stateProperty.addListener(this::stateListener);
         });
     }
@@ -72,10 +58,9 @@ public class SlidePane extends ViewPanel {
     private void stateListener(ObservableValue<? extends Worker.State> observable, Worker.State oldValue, Worker.State newValue) {
         if (newValue == Worker.State.SUCCEEDED) {
             getWindow().setMember("afx", controller);
-            if ("revealjs".equals(backend))
-                this.loadJs("/afx/worker/js/?p=js/jquery.js", "/afx/worker/js/?p=js/reveal-extensions.js");
-            if ("deckjs".equals(backend))
-                this.loadJs("/afx/worker/js/?p=js/deck-extensions.js");
+            if ("revealjs".equals(backend)) {
+                this.loadJs("js/?p=js/jquery.js", "js/?p=js/reveal-extensions.js","js/?p=js/firebug-import.js");
+            }
         }
     }
 

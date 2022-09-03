@@ -11,18 +11,23 @@ import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Worker;
+import javafx.event.EventType;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.CheckMenuItem;
 import javafx.scene.control.ContextMenu;
-import javafx.scene.control.MenuItem;
 import javafx.scene.control.Separator;
+import javafx.scene.image.Image;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 import javafx.stage.Window;
 import netscape.javascript.JSObject;
 import org.slf4j.Logger;
@@ -30,7 +35,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 
 import javax.annotation.PostConstruct;
-import java.nio.file.Path;
+import java.io.InputStream;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -68,7 +73,43 @@ public abstract class ViewPanel extends AnchorPane {
             this.getChildren().add(getWebView());
             initializeMargins();
             initializePreviewContextMenus();
+            initializePopupView();
+            setupFirebugEventHandler();
         });
+    }
+
+    private void setupFirebugEventHandler() {
+        getWebView().addEventHandler(EventType.ROOT, e -> {
+            if (e instanceof KeyEvent ke &&
+                    ke.getCode() == KeyCode.F12) {
+                showFirebug();
+            }
+        });
+    }
+
+    private void initializePopupView() {
+        WebView popupView = new WebView();
+        Stage stage = new Stage();
+        stage.initModality(Modality.WINDOW_MODAL);
+        stage.setScene(new Scene(popupView));
+        stage.setTitle("AsciidocFX");
+        InputStream logoStream = SlidePane.class.getResourceAsStream("/logo.png");
+        stage.getIcons().add(new Image(logoStream));
+        webEngine().setCreatePopupHandler(param -> {
+            if (!stage.isShowing()) {
+                stage.show();
+                popupView.requestFocus();
+            }
+            return popupView.getEngine();
+        });
+    }
+
+    private void showFirebug() {
+        executeScript("showFirebug();");
+    }
+
+    protected void executeScript(String script) {
+        webEngine().executeScript(script);
     }
 
     public void enableScrollingAndJumping() {
@@ -237,7 +278,7 @@ public abstract class ViewPanel extends AnchorPane {
             for (String jsPath : jsPaths) {
                 String format = String.format("var scriptEl = document.createElement('script');\n" +
                         "scriptEl.setAttribute('src','" + genericUrl + "');\n" +
-                        "document.querySelector('body').appendChild(scriptEl);", controller.getPort(), jsPath);
+                        "document.querySelector('head').appendChild(scriptEl);", controller.getPort(), jsPath);
                 webEngine().executeScript(format);
             }
         });
