@@ -1,10 +1,12 @@
 package com.kodedu.config;
 
+import com.kodedu.template.AsciidocTemplate;
+
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
 
-public class MetaAsciidocTemplate implements MetaAsciidocTemplateI {
+public class MetaAsciidocTemplate extends AsciidocTemplate {
 
 	private final StringProperty name = new SimpleStringProperty();
 	private final StringProperty location = new SimpleStringProperty();

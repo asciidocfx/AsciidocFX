@@ -39,6 +39,7 @@ import com.kodedu.service.ui.IndikatorService;
 import com.kodedu.service.ui.TabService;
 import com.kodedu.service.ui.TooltipTimeFixService;
 import com.kodedu.spell.dictionary.DictionaryService;
+import com.kodedu.template.MetaAsciidocTemplateI;
 import com.kodedu.terminalfx.TerminalBuilder;
 import com.kodedu.terminalfx.TerminalTab;
 import com.kodedu.terminalfx.config.TerminalConfig;
@@ -79,6 +80,8 @@ import javafx.stage.Window;
 import javafx.stage.*;
 import javafx.util.Duration;
 import netscape.javascript.JSObject;
+
+import org.apache.commons.lang3.StringUtils;
 import org.asciidoctor.Asciidoctor;
 import org.asciidoctor.Attributes;
 import org.asciidoctor.Options;
@@ -3329,6 +3332,9 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
 		var tooltip = new Tooltip(msg.toString());
 		Tooltip.install(item.getContent(), tooltip);
+		
+		item.setOnAction((evt) -> getSelectedItemOrWorkspacePath().ifPresent((p) -> t.furnish(p)));
+		
 		return item;
 	}
 

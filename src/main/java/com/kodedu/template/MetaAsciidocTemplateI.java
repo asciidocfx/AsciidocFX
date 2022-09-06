@@ -1,4 +1,6 @@
-package com.kodedu.config;
+package com.kodedu.template;
+
+import java.nio.file.Path;
 
 public interface MetaAsciidocTemplateI {
 
@@ -7,5 +9,7 @@ public interface MetaAsciidocTemplateI {
 	String getLocation();
 
 	String getDescription();
+
+	void furnish(Path directory);
 
 }
