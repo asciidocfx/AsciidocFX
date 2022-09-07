@@ -27,7 +27,8 @@ public class MetaAsciidocTemplate extends AsciidocTemplate {
 
 	@Override
 	public String getLocation() {
-		return location.get();
+		var loc = location.get();
+		return loc == null ? "" : loc;
 	}
 
 	public StringProperty locationProperty() {
