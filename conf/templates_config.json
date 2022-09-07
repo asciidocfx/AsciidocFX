@@ -1,6 +1,6 @@
 {
 	"templates": {
-		"CJK (Chinese)": {
+		"CJK (Chinese/Japanese/Korean)": {
 			"location": "https://github.com/asciidocfx/asciidoctor-cjk-demo/archive/refs/heads/master.zip",
 			"description": "A custom Asciidoc theme containing CJK fonts. Download size is about 38 MB."
 		}

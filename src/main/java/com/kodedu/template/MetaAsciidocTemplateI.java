@@ -1,5 +1,7 @@
 package com.kodedu.template;
 
+import com.kodedu.other.ZipUtils;
+
 import java.nio.file.Path;
 
 public interface MetaAsciidocTemplateI {
@@ -15,6 +17,6 @@ public interface MetaAsciidocTemplateI {
 
 	String getDescription();
 
-	void furnish(Path targetDir) throws Exception;
+	void furnish(Path targetDir, ZipUtils zipUtils) throws Exception;
 
 }

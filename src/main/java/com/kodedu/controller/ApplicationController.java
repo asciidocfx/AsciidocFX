@@ -20,6 +20,7 @@ import com.kodedu.other.ConverterResult;
 import com.kodedu.other.Current;
 import com.kodedu.other.DocumentMode;
 import com.kodedu.other.Item;
+import com.kodedu.other.ZipUtils;
 import com.kodedu.outline.Section;
 import com.kodedu.service.*;
 import com.kodedu.service.convert.docbook.DocBookConverter;
@@ -331,6 +332,9 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     @Autowired
     private EventService eventService;
+    
+    @Autowired
+    private ZipUtils zipUtils;
 
     private Stage stage;
     private List<WebSocketSession> sessionList = new ArrayList<>();
@@ -3335,7 +3339,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
 		item.setOnAction((evt) -> getSelectedItemOrWorkspacePath().ifPresent((p) -> {
 			try {
-				t.furnish(p);
+				t.furnish(p, zipUtils);
 			} catch (Exception e) {
 				logger.error("Could not supply the template %s".formatted(t.getName()), e);
 			}

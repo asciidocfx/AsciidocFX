@@ -1,5 +1,7 @@
 package com.kodedu.template;
 
+import com.kodedu.other.ZipUtils;
+
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpClient.Redirect;
@@ -17,7 +19,7 @@ public abstract class AsciidocTemplate implements MetaAsciidocTemplateI {
 
     
 	@Override
-	public void furnish(Path targetDir) throws Exception {
+	public void furnish(Path targetDir, ZipUtils zipUtils) throws Exception {
 
 		var locationLowCase = getLocation().toLowerCase();
 
@@ -31,7 +33,8 @@ public abstract class AsciidocTemplate implements MetaAsciidocTemplateI {
 		}
 
 		if (locationLowCase.endsWith(".zip")) {
-			// extract zip file
+			zipUtils.unzip(templateInTarget.toAbsolutePath().toString(), targetDir.toFile());
+			Files.delete(templateInTarget);
 		}
 	}
 
