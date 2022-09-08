@@ -2,6 +2,11 @@
 
 All notable changes are documented in this file.
 
+## [Version ~1.7.8](https://github.com/asciidocfx/AsciidocFX/releases/tag/v1.7.8) (09.2022)
+
+* Fix Showing Firebug on preview
+* Fix attribute resolution issue
+
 ## [Version ~1.7.7](https://github.com/asciidocfx/AsciidocFX/releases/tag/v1.7.7) (08.2022)
 
 * Move deleted files to trash (when possible)
