@@ -134,6 +134,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.kodedu.helper.IOHelper.getInstallationPath;
+import static com.kodedu.service.extension.processor.DocumentAttributeProcessor.DOCUMENT_MAP;
+import static com.kodedu.service.extension.processor.DocumentAttributeProcessor.DOC_UUID;
 import static java.nio.file.StandardOpenOption.CREATE_NEW;
 import static java.nio.file.StandardOpenOption.WRITE;
 import static java.util.Objects.isNull;
@@ -2284,6 +2286,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     private void renderLoop() throws InterruptedException {
 
         renderLoopSemaphore.acquire();
+        DOCUMENT_MAP.clear();
 
         if (stopRendering.get()) {
             return;
@@ -2302,12 +2305,16 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
             if ("asciidoc".equalsIgnoreCase(mode)) {
 
-                Attributes attributes = Attributes.builder().allowUriRead(true).build();
-                Document document = plainDoctor.load(text, Options.builder()
+                String uuid = UUID.randomUUID().toString();
+                plainDoctor.convert(text, Options.builder()
                         .safe(SafeMode.UNSAFE)
                         .sourcemap(true)
                         .baseDir(current.currentTab().getParentOrWorkdir().toFile())
-                        .attributes(attributes).build());
+                        .attributes(Attributes.builder()
+                                .allowUriRead(true)
+                                .attribute(DOC_UUID, uuid)
+                                .build()).build());
+                Document document = (Document) DOCUMENT_MAP.get(uuid);
 
                 String backend = (String) document.getAttribute("backend", "html5");
 

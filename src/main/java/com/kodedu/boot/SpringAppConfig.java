@@ -25,6 +25,7 @@ import com.kodedu.service.extension.math.MathBlockProcessor;
 import com.kodedu.service.extension.math.MathInlineMacroProcessor;
 import com.kodedu.service.extension.processor.CacheSuffixAppenderProcessor;
 import com.kodedu.service.extension.processor.DataLineProcessor;
+import com.kodedu.service.extension.processor.DocumentAttributeProcessor;
 import com.kodedu.service.extension.processor.ExtensionPreprocessor;
 import com.kodedu.service.extension.tree.FileTreeBlockMacroProcessor;
 import com.kodedu.service.extension.tree.FileTreeBlockProcessor;
@@ -106,12 +107,14 @@ public class SpringAppConfig extends SpringBootServletInitializer implements Web
     }
 
     @Bean(destroyMethod = "shutdown")
-    public Asciidoctor plainDoctor() {
+    public Asciidoctor plainDoctor(DocumentAttributeProcessor documentAttributeProcessor) {
         Asciidoctor doctor = Asciidoctor.Factory.create();
         doctor.requireLibrary("asciidoctor-diagram");
         doctor.requireLibrary("asciidoctor-epub3");
         doctor.requireLibrary("asciidoctor-revealjs");
         doctor.unregisterAllExtensions();
+        doctor.javaExtensionRegistry()
+                        .postprocessor(documentAttributeProcessor);
         return doctor;
     }
 
