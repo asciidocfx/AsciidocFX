@@ -209,7 +209,7 @@
                                                                   text="Asciidoc Cheatsheet"/>
                                                         <MenuItem mnemonicParsing="false" onAction="#generateSampleBook"
                                                                   text="Sample Book"/>
-                                                        <Menu fx:id="menuTemplates" text="PDF Templates" mnemonicParsing="false">
+                                                        <Menu fx:id="menuTemplates" text="Templates" mnemonicParsing="false">
                                                         </Menu>          
                                                         <SeparatorMenuItem/>
                                                         <MenuItem mnemonicParsing="false" onAction="#bugReport"
