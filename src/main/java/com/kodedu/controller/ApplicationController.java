@@ -3337,15 +3337,29 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 		var tooltip = new Tooltip(msg.toString());
 		Tooltip.install(item.getContent(), tooltip);
 
-		item.setOnAction((evt) -> getSelectedItemOrWorkspacePath().ifPresent((p) -> {
-			try {
-				t.furnish(p, zipUtils);
-			} catch (Exception e) {
-				logger.error("Could not supply the template %s".formatted(t.getName()), e);
-			}
-		}));
+		item.setOnAction((evt) -> _templateMenuItemOnClick(t));
 
 		return item;
+	}
+
+	private void _templateMenuItemOnClick(MetaAsciidocTemplateI t) {
+		Optional<Path> targetPath = getSelectedItemOrWorkspacePath();
+		if(targetPath.isPresent()) {
+			Path tarPath = targetPath.get();
+			if(!Files.isDirectory(tarPath)) {
+				tarPath = tarPath.getParent();
+			}
+			if(tarPath != null) {
+				final var target = tarPath;
+				threadService.runTaskLater(()->{
+				try {
+					t.furnish(target, zipUtils);
+				} catch (Exception e) {
+					logger.error("Could not supply the template %s".formatted(t.getName()), e);
+				}}
+				);
+			}
+		}
 	}
 
 }
