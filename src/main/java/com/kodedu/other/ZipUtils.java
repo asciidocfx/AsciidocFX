@@ -14,6 +14,8 @@ import java.util.zip.ZipFile;
 @Component
 public class ZipUtils {
 	
+	static final String ZIP_SLIP_ERROR_MSG = "Entry is outside of the target dir: ";
+
 	/**
 	 * Unzips a file into the given folder.
 	 * Code taken from: https://stackoverflow.com/q/9324933/2021763
@@ -21,14 +23,21 @@ public class ZipUtils {
 	 * 
 	 * @param fileZip
 	 * @param destDir
+	 * @param skipRoot on true the root folder (if one exists) will be ignored
+	 *        e.g. each file and folder move one folder up in the hierarchy
 	 * @throws IOException
 	 */
-	public void unzip(String fileZip, File destDir) throws IOException {
+	public void unzip(String fileZip, File destDir, boolean skipRoot) throws IOException {
 		try (ZipFile zipFile = new ZipFile(fileZip)) {
+			int cutOff = skipRoot ? determineRootFolderNameLength(zipFile) : 0;
+
 			Enumeration<? extends ZipEntry> entries = zipFile.entries();
 			while (entries.hasMoreElements()) {
 				ZipEntry entry = entries.nextElement();
-				File entryDestination = newFile(destDir, entry);
+				File entryDestination = newFile(destDir, entry, cutOff);
+				if (entryDestination == null) {
+					continue;
+				}
 				if (entry.isDirectory()) {
 					entryDestination.mkdirs();
 				} else {
@@ -50,20 +59,56 @@ public class ZipUtils {
 	 * 
 	 * @param destinationDir
 	 * @param zipEntry
-	 * @return
+	 * @param cutOff 
+	 * @return the File to write to. Might be null, when the root folder is skipped
 	 * @throws IOException
 	 */
-	private File newFile(File destinationDir, ZipEntry zipEntry) throws IOException {
-		File destFile = new File(destinationDir, zipEntry.getName());
+	private File newFile(File destinationDir, ZipEntry zipEntry, int cutOff) throws IOException {
+		String entryName = zipEntry.getName();
+		entryName = entryName.substring(cutOff);
+		if (entryName.isEmpty()) {
+			return null;
+		}
+
+		File destFile = new File(destinationDir, entryName);
 
 		String destDirPath = destinationDir.getCanonicalPath();
 		String destFilePath = destFile.getCanonicalPath();
 
 		if (!destFilePath.startsWith(destDirPath + File.separator)) {
-			throw new IOException("Entry is outside of the target dir: " + zipEntry.getName());
+			throw new IOException(ZIP_SLIP_ERROR_MSG + entryName);
 		}
 
 		return destFile;
+	}
+
+	/**
+	 * Find a common name prefix (stops with first /) of all files in the zip archive.
+	 * 
+	 * 
+	 * @param zipFile2
+	 * @return
+	 * @throws IOException
+	 */
+	private int determineRootFolderNameLength(ZipFile zipFile) throws IOException {
+		Enumeration<? extends ZipEntry> entries = zipFile.entries();
+		String prefix = null;
+		while (entries.hasMoreElements()) {
+			ZipEntry entry = entries.nextElement();
+			String[] parts = entry.getName().split("/", 2);
+			if (prefix == null) {
+				prefix = parts[0];
+			} else if (!prefix.equals(parts[0])) {
+				prefix = null;
+				break;
+			}
+		}
+		
+		if (prefix != null) {
+			// split removes the '/', therefore + 1
+			return prefix.length() + 1;
+		}
+		return 0;
 	}
 
 }

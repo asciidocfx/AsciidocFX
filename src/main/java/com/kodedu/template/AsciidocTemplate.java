@@ -33,7 +33,7 @@ public abstract class AsciidocTemplate implements MetaAsciidocTemplateI {
 		}
 
 		if (locationLowCase.endsWith(".zip")) {
-			zipUtils.unzip(templateInTarget.toAbsolutePath().toString(), targetDir.toFile());
+			zipUtils.unzip(templateInTarget.toAbsolutePath().toString(), targetDir.toFile(), true);
 			Files.delete(templateInTarget);
 		}
 	}
