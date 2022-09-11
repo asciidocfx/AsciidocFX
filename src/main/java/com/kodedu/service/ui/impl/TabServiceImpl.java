@@ -123,6 +123,11 @@ public class TabServiceImpl implements TabService {
                 if (Objects.nonNull(currentPath))
                     if (currentPath.equals(path)) {
                         myTab.select(); // Select already added tab
+                        threadService.runActionLater(() -> {
+                            for (Runnable runnable : runnables) {
+                                runnable.run();
+                            }
+                        });
                         return;
                     }
             }

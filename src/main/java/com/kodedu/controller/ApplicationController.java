@@ -2059,8 +2059,16 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                 outlineTreeView.setOnMouseClicked(event -> {
                     try {
                         TreeItem<Section> item = outlineTreeView.getSelectionModel().getSelectedItem();
-                        EditorPane editorPane = current.currentEditor();
-                        editorPane.moveCursorTo(item.getValue().getLineno());
+                        Path path = item.getValue().getPath();
+                        if (Objects.nonNull(path) && Files.exists(path)) {
+                            tabService.addTab(path, () -> {
+                                EditorPane editorPane = current.currentEditor();
+                                editorPane.moveCursorTo(item.getValue().getLineno());
+                            });
+                        } else {
+                            EditorPane editorPane = current.currentEditor();
+                            editorPane.moveCursorTo(item.getValue().getLineno());
+                        }
                     } catch (Exception e) {
                         logger.error("Problem occured while jumping from outline");
                     }
@@ -2071,65 +2079,23 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                 outlineTreeView.getRoot().getChildren().clear();
             }
 
-            for (Section section : sections) {
-                TreeItem<Section> sectionItem = new TreeItem<>(section);
-                sectionItem.setExpanded(true);
-                outlineTreeView.getRoot().getChildren().add(sectionItem);
-
-                TreeSet<Section> subsections = section.getSubsections();
-                for (Section subsection : subsections) {
-                    TreeItem<Section> subItem = new TreeItem<>(subsection);
-                    subItem.setExpanded(true);
-                    sectionItem.getChildren().add(subItem);
-                    this.addSubSections(subItem, subsection.getSubsections());
-                }
-            }
+              for (Section section : sections) {
+                  TreeItem<Section> sectionItem = new TreeItem<>(section);
+                  sectionItem.setExpanded(true);
+                  outlineTreeView.getRoot().getChildren().add(sectionItem);
+                  appendSubSection(sectionItem, section);
+              }
         });	
 	}
 
-    private void addSubSections(TreeItem<Section> subItem, TreeSet<Section> outlineList) {
-        for (Section section : outlineList) {
-            TreeItem<Section> sectionItem = new TreeItem<>(section);
-            subItem.getChildren().add(sectionItem);
-
-            TreeSet<Section> subsections = section.getSubsections();
-            for (Section subsection : subsections) {
-                TreeItem<Section> item = new TreeItem<>(subsection);
-                sectionItem.getChildren().add(item);
-                this.addSubSections(item, subsection.getSubsections());
-            }
+    private void appendSubSection(TreeItem<Section> sectionItem, Section section) {
+        TreeSet<Section> subsections = section.getSubsections();
+        for (Section subsection : subsections) {
+            TreeItem<Section> subItem = new TreeItem<>(subsection);
+            subItem.setExpanded(true);
+            sectionItem.getChildren().add(subItem);
+            appendSubSection(subItem, subsection);
         }
-    }
-
-    Section lastParent = null;
-    Section lastSection = null;
-
-    @WebkitCall(from = "index")
-    public void fillOutline(String parentLineNo, String level, String title, String lineno, String id) {
-
-        Section section = new Section();
-        section.setLevel(Integer.valueOf(level));
-        section.setTitle(title);
-        section.setLineno(Integer.valueOf(lineno));
-        section.setId(id);
-
-        if (isNull(parentLineNo)) {
-            outlineList.add(section);
-            lastParent = section;
-        } else if (nonNull(lastSection)) {
-            if (nonNull(lastParent) && lastSection.getLevel().compareTo(section.getLevel()) > 0) {
-                lastParent.getSubsections().add(section);
-                section.setParent(lastParent);
-            } else if (lastSection.getLevel().compareTo(section.getLevel()) < 0) {
-                lastSection.getSubsections().add(section);
-                section.setParent(lastSection);
-            } else {
-                lastSection.getParent().getSubsections().add(section);
-                section.setParent(lastSection.getParent());
-            }
-        }
-
-        lastSection = section;
     }
 
     @FXML

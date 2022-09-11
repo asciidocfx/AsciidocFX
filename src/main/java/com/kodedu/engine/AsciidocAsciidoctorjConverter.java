@@ -78,7 +78,7 @@ public class AsciidocAsciidoctorjConverter extends ViewPanel implements Asciidoc
 		if (doc instanceof Document document) {
 			threadService.runTaskLater(() -> {
 				Outliner outliner = new Outliner();
-				List<Section> sections = outliner.fillOutlines(document);
+				List<Section> sections = outliner.getOutlineSections(document);
 				controller.finishOutline(sections);
 			});
 		}

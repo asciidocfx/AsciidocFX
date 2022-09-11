@@ -1,5 +1,6 @@
 package com.kodedu.outline;
 
+import java.nio.file.Path;
 import java.util.Objects;
 import java.util.TreeSet;
 
@@ -8,12 +9,26 @@ import java.util.TreeSet;
  */
 public class Section implements Comparable<Section> {
 
+    public Section() {
+    }
+
+    public Section(Integer level, String title, Integer lineno, String id, Path path, Section parent) {
+        this.level = level;
+        this.title = title;
+        this.lineno = lineno;
+        this.id = id;
+        this.path = path;
+        this.parent = parent;
+    }
+
     private Integer level;
     private String title;
     private Integer lineno;
     private String id;
-    private TreeSet<Section> subsections;
+    private TreeSet<Section> subsections = new TreeSet<>();
     private Section parent;
+
+    private Path path;
 
     public Integer getLevel() {
         return level;
@@ -48,13 +63,15 @@ public class Section implements Comparable<Section> {
     }
 
     public TreeSet<Section> getSubsections() {
-        if (Objects.isNull(subsections))
-            subsections = new TreeSet<>();
         return subsections;
     }
 
-    public void setSubsections(TreeSet<Section> subsections) {
-        this.subsections = subsections;
+    public Path getPath() {
+        return path;
+    }
+
+    public void setPath(Path path) {
+        this.path = path;
     }
 
     @Override
