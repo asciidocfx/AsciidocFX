@@ -6,5 +6,5 @@ import javafx.collections.ObservableList;
 
 public class PdfConfigAttributes implements LoadedAttributes {
 	PdfConverterType converter;
-	ObservableList<MetaAsciidocTemplate> templates; 
+	ObservableList<AsciidocTemplateFx> templates; 
 }

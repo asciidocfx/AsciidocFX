@@ -4,7 +4,7 @@ import com.kodedu.controller.ApplicationController;
 import com.kodedu.service.ThreadService;
 import com.kodedu.service.UnzipService;
 import com.kodedu.service.ui.IndikatorService;
-import com.kodedu.template.MetaAsciidocTemplateI;
+import com.kodedu.template.AsciidocTemplateI;
 
 import org.springframework.stereotype.Component;
 
@@ -43,7 +43,7 @@ public class TemplateSubMenu {
 		this.indikatorService = indikatorService;
 	}
 
-	public void setTemplateMenuItems(final List<? extends MetaAsciidocTemplateI> templates) {
+	public void setTemplateMenuItems(final List<? extends AsciidocTemplateI> templates) {
 		Menu templateMenu = applicationController.getTemplateMenu();
 		templateMenu.getItems().clear();
 		templates.stream()
@@ -51,7 +51,7 @@ public class TemplateSubMenu {
 		         .forEach(mi -> templateMenu.getItems().add(mi));
 	}
 
-	private MenuItem createMenuItem(final MetaAsciidocTemplateI template) {
+	private MenuItem createMenuItem(final AsciidocTemplateI template) {
 		var item = new CustomMenuItem(new Label(template.getName()));
 
 		StringBuilder msg = new StringBuilder();
@@ -68,7 +68,7 @@ public class TemplateSubMenu {
 		return item;
 	}
 
-	private void templateMenuItemOnClick(final MetaAsciidocTemplateI template) {
+	private void templateMenuItemOnClick(final AsciidocTemplateI template) {
 		Optional<Path> targetPath = applicationController.getSelectedItemOrWorkspacePath();
 		if (targetPath.isPresent()) {
 			Path tarPath = targetPath.get();

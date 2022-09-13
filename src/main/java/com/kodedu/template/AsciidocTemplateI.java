@@ -4,7 +4,7 @@ import com.kodedu.service.UnzipService;
 
 import java.nio.file.Path;
 
-public interface MetaAsciidocTemplateI {
+public interface AsciidocTemplateI {
 
 	/**
 	 * @return the name of the template

@@ -6,7 +6,7 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
 
-public class MetaAsciidocTemplate extends AsciidocTemplate {
+public class AsciidocTemplateFx extends AsciidocTemplate {
 
 	private final StringProperty name = new SimpleStringProperty();
 	private final StringProperty location = new SimpleStringProperty();

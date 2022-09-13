@@ -15,7 +15,7 @@ import java.nio.file.StandardOpenOption;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class AsciidocTemplate implements MetaAsciidocTemplateI {
+public abstract class AsciidocTemplate implements AsciidocTemplateI {
     private Logger logger = LoggerFactory.getLogger(AsciidocTemplate.class);
 
     

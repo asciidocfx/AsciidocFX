@@ -43,7 +43,7 @@ import javafx.scene.layout.VBox;
 @Component
 public class TemplatesConfigBean extends ConfigurationBase {
 
-    private final ListProperty<MetaAsciidocTemplate> templates;
+    private final ListProperty<AsciidocTemplateFx> templates;
     private final ThreadService threadService;
 	private final ApplicationController controller;
 
@@ -72,15 +72,15 @@ public class TemplatesConfigBean extends ConfigurationBase {
 		return super.resolveConfigPath("templates_config.json");
 	}
 
-	public ObservableList<MetaAsciidocTemplate> getTemplates() {
+	public ObservableList<AsciidocTemplateFx> getTemplates() {
 		return templates.get();
 	}
 
-	public ListProperty<MetaAsciidocTemplate> templatesProperty() {
+	public ListProperty<AsciidocTemplateFx> templatesProperty() {
 		return templates;
 	}
 
-	public void setTemplates(ObservableList<MetaAsciidocTemplate> templates) {
+	public void setTemplates(ObservableList<AsciidocTemplateFx> templates) {
 		this.templates.set(templates);
 	}
 
@@ -133,10 +133,10 @@ public class TemplatesConfigBean extends ConfigurationBase {
 
         threadService.runActionLater(() -> {
 
-            ObservableList<MetaAsciidocTemplate> templateList = FXCollections.observableArrayList();
+            ObservableList<AsciidocTemplateFx> templateList = FXCollections.observableArrayList();
             if (Objects.nonNull(templates)) {
                 for (Map.Entry<String, JsonValue> template : templates.entrySet()) {
-                    var templateLoc = new MetaAsciidocTemplate();
+                    var templateLoc = new AsciidocTemplateFx();
                     templateLoc.setName(template.getKey());
                     
                     var locDescTuple = template.getValue().asJsonObject();
@@ -159,9 +159,9 @@ public class TemplatesConfigBean extends ConfigurationBase {
 	public JsonObject getJSON() {
 		JsonObjectBuilder templatesObject = Json.createObjectBuilder();
 
-		ObservableList<MetaAsciidocTemplate> templates = getTemplates();
+		ObservableList<AsciidocTemplateFx> templates = getTemplates();
 
-		for (MetaAsciidocTemplate template : templates) {
+		for (AsciidocTemplateFx template : templates) {
 			String key = template.getName();
 			String location = template.getLocation();
 			String description = template.getDescription();
