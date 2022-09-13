@@ -82,7 +82,7 @@ public class UnzipService {
 		if (!destFilePath.startsWith(destDirPath + File.separator)) {
 			throw new IOException(ZIP_SLIP_ERROR_MSG + entryName);
 		}
-		if(createNew && !destFile.exists()) {
+		if(createNew && destFile.exists()) {
 			throw new FileAlreadyExistsException(destFile.getAbsolutePath());
 		}
 

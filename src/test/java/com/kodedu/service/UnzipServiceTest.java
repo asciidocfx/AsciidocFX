@@ -3,9 +3,8 @@ package com.kodedu.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import com.kodedu.service.UnzipService;
-
 import java.io.IOException;
+import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
@@ -34,6 +33,27 @@ class UnzipServiceTest {
 		assertThat(file).exists();
 		file = targetDir.resolve("3.txt");
 		assertThat(file).exists();
+	}
+	
+	@Test
+	public void testUnzip_unzipTwice_overwrite(@TempDir Path targetDir) throws IOException {
+		zipUtils.unzip("src/test/resources/com/kodedu/other/ZipUtils/flat_files.zip", targetDir.toFile(), false, false);
+		zipUtils.unzip("src/test/resources/com/kodedu/other/ZipUtils/flat_files.zip", targetDir.toFile(), false, false);
+
+		Path file = targetDir.resolve("1.txt");
+		assertThat(file).exists();
+		file = targetDir.resolve("2.txt");
+		assertThat(file).exists();
+		file = targetDir.resolve("3.txt");
+		assertThat(file).exists();
+	}
+	
+	@Test
+	public void testUnzip_unzipTwice_noOverwrite(@TempDir Path targetDir) throws IOException {
+		assertThatThrownBy(() -> {
+		zipUtils.unzip("src/test/resources/com/kodedu/other/ZipUtils/flat_files.zip", targetDir.toFile(), false, true);
+		zipUtils.unzip("src/test/resources/com/kodedu/other/ZipUtils/flat_files.zip", targetDir.toFile(), false, true);
+		}).isInstanceOf(FileAlreadyExistsException.class);
 	}
 	
 	@Test
@@ -93,7 +113,7 @@ class UnzipServiceTest {
 	}
 	
 	@Test
-	public void testUnzip_twoFolders(@TempDir Path targetDir) throws IOException {
+	public void testUnzip_twoRootFolders(@TempDir Path targetDir, @TempDir Path targetDir2) throws IOException {
 		zipUtils.unzip("src/test/resources/com/kodedu/other/ZipUtils/two_folders.zip", targetDir.toFile(), false, true);
 		var expectedFiles = List.of("root1/1.txt", "root1/2.txt", "root1/3.txt",
 		                            "root2/1.txt", "root2/2.txt", "root2/3.txt");
@@ -101,9 +121,9 @@ class UnzipServiceTest {
 		                                   .map(targetDir::resolve);
 		assertThat(stream).allMatch(p -> Files.exists(p));
 
-		zipUtils.unzip("src/test/resources/com/kodedu/other/ZipUtils/two_folders.zip", targetDir.toFile(), true, true);
+		zipUtils.unzip("src/test/resources/com/kodedu/other/ZipUtils/two_folders.zip", targetDir2.toFile(), true, true);
 		stream = expectedFiles.stream()
-		                      .map(targetDir::resolve);
+		                      .map(targetDir2::resolve);
 		assertThat(stream).allMatch(p -> Files.exists(p));
 	}
 }
