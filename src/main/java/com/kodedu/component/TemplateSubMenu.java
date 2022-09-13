@@ -1,8 +1,9 @@
 package com.kodedu.component;
 
 import com.kodedu.controller.ApplicationController;
-import com.kodedu.other.ZipUtils;
 import com.kodedu.service.ThreadService;
+import com.kodedu.service.UnzipService;
+import com.kodedu.service.ui.IndikatorService;
 import com.kodedu.template.MetaAsciidocTemplateI;
 
 import org.springframework.stereotype.Component;
@@ -29,17 +30,20 @@ public class TemplateSubMenu {
 
     private final ApplicationController applicationController;
     private final ThreadService threadService;
-    private final ZipUtils zipUtils;
+    private final UnzipService zipUtils;
+	private final IndikatorService indikatorService;
     
 	public TemplateSubMenu(ApplicationController applicationController,
-	        ThreadService threadService, ZipUtils zipUtils) {
+	        ThreadService threadService, UnzipService zipUtils,
+	        IndikatorService indikatorService) {
 		super();
 		this.applicationController = applicationController;
 		this.threadService = threadService;
 		this.zipUtils = zipUtils;
+		this.indikatorService = indikatorService;
 	}
 
-	public void setTemplateMenuItems(List<? extends MetaAsciidocTemplateI> templates) {
+	public void setTemplateMenuItems(final List<? extends MetaAsciidocTemplateI> templates) {
 		Menu templateMenu = applicationController.getTemplateMenu();
 		templateMenu.getItems().clear();
 		templates.stream()
@@ -47,39 +51,42 @@ public class TemplateSubMenu {
 		         .forEach(mi -> templateMenu.getItems().add(mi));
 	}
 
-	private MenuItem createMenuItem(MetaAsciidocTemplateI t) {
-		var item = new CustomMenuItem(new Label(t.getName()));
+	private MenuItem createMenuItem(final MetaAsciidocTemplateI template) {
+		var item = new CustomMenuItem(new Label(template.getName()));
 
 		StringBuilder msg = new StringBuilder();
-		msg.append("Location: ").append(t.getLocation());
-		if (!StringUtils.isBlank(t.getDescription())) {
-			msg.append("\n\n").append(t.getDescription());
+		msg.append("Location: ").append(template.getLocation());
+		if (!StringUtils.isBlank(template.getDescription())) {
+			msg.append("\n\n").append(template.getDescription());
 		}
 
 		var tooltip = new Tooltip(msg.toString());
 		Tooltip.install(item.getContent(), tooltip);
 
-		item.setOnAction((evt) -> templateMenuItemOnClick(t));
+		item.setOnAction((evt) -> templateMenuItemOnClick(template));
 
 		return item;
 	}
 
-	private void templateMenuItemOnClick(MetaAsciidocTemplateI t) {
-		Optional<Path> targetPath =  applicationController.getSelectedItemOrWorkspacePath();
-		if(targetPath.isPresent()) {
+	private void templateMenuItemOnClick(final MetaAsciidocTemplateI template) {
+		Optional<Path> targetPath = applicationController.getSelectedItemOrWorkspacePath();
+		if (targetPath.isPresent()) {
 			Path tarPath = targetPath.get();
-			if(!Files.isDirectory(tarPath)) {
+			if (!Files.isDirectory(tarPath)) {
 				tarPath = tarPath.getParent();
 			}
-			if(tarPath != null) {
-				final var target = tarPath;
-				threadService.runTaskLater(()->{
-				try {
-					t.provide(target, zipUtils);
-				} catch (Exception e) {
-					logger.error("Could not supply the template %s".formatted(t.getName()), e);
-				}}
-				);
+			if (tarPath != null) {
+				final var targetDir = tarPath;
+				threadService.runTaskLater(() -> {
+					try {
+						indikatorService.startProgressBar();
+						template.provide(targetDir, zipUtils);
+					} catch (Exception e) {
+						logger.error("Could not supply the template %s".formatted(template.getName()), e);
+					} finally {
+						indikatorService.stopProgressBar();
+					}
+				});
 			}
 		}
 	}
