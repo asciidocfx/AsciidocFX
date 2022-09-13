@@ -23,6 +23,11 @@ import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.Tooltip;
 
+/**
+ * Component which handles the creation of template menu entries.
+ * Also adds them to the Menu.
+ *
+ */
 @Component
 public class TemplateSubMenu {
 
@@ -43,7 +48,7 @@ public class TemplateSubMenu {
 		this.indikatorService = indikatorService;
 	}
 
-	public void setTemplateMenuItems(final List<? extends AsciidocTemplateI> templates) {
+	public void setMenuItems(final List<? extends AsciidocTemplateI> templates) {
 		Menu templateMenu = applicationController.getTemplateMenu();
 		templateMenu.getItems().clear();
 		templates.stream()
@@ -52,20 +57,16 @@ public class TemplateSubMenu {
 	}
 
 	private MenuItem createMenuItem(final AsciidocTemplateI template) {
-		var item = new CustomMenuItem(new Label(template.getName()));
+		var builder = MenuItemBuilt.item(template.getName()); 
 
-		StringBuilder msg = new StringBuilder();
-		msg.append("Location: ").append(template.getLocation());
+		StringBuilder tooltipMsg = new StringBuilder();
+		tooltipMsg.append("Location: ").append(template.getLocation());
 		if (!StringUtils.isBlank(template.getDescription())) {
-			msg.append("\n\n").append(template.getDescription());
+			tooltipMsg.append("\n\n").append(template.getDescription());
 		}
+		builder.tip(tooltipMsg.toString());
 
-		var tooltip = new Tooltip(msg.toString());
-		Tooltip.install(item.getContent(), tooltip);
-
-		item.setOnAction((evt) -> templateMenuItemOnClick(template));
-
-		return item;
+		return builder.click((evt) -> templateMenuItemOnClick(template));
 	}
 
 	private void templateMenuItemOnClick(final AsciidocTemplateI template) {

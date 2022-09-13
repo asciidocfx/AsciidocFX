@@ -18,7 +18,6 @@ import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 import javax.json.JsonReader;
-import javax.json.JsonString;
 import javax.json.JsonValue;
 
 //import com.dooapp.fxform.annotation.Accessor;
@@ -40,6 +39,11 @@ import javafx.scene.control.TableView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
+/**
+ * Handles the config page for the Asciidoc Templates.
+ * 
+ *
+ */
 @Component
 public class TemplatesConfigBean extends ConfigurationBase {
 
@@ -188,14 +192,14 @@ public class TemplatesConfigBean extends ConfigurationBase {
     public void save(ActionEvent... actionEvent) {
         infoLabel.setText("Saving...");
         saveJson(getJSON());
-    	templateSubMenu.setTemplateMenuItems(getTemplates());
+    	templateSubMenu.setMenuItems(getTemplates());
         fadeOut(infoLabel, "Saved...");
     }
 
     @Override
 	public void load(ActionEvent... actionEvent) {
 		super.load(actionEvent);
-		templateSubMenu.setTemplateMenuItems(getTemplates());
+		templateSubMenu.setMenuItems(getTemplates());
 	}
 
 	private DefaultFactoryProvider getFxFormFactoryProvider() {

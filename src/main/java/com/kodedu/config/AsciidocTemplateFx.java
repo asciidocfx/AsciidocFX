@@ -5,7 +5,11 @@ import com.kodedu.template.AsciidocTemplate;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
-
+/**
+ * 
+ * AsciidocTemplate which can be shown in the JavaFx based configuration
+ *
+ */
 public class AsciidocTemplateFx extends AsciidocTemplate {
 
 	private final StringProperty name = new SimpleStringProperty();
