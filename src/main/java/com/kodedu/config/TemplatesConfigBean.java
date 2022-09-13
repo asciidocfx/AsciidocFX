@@ -1,5 +1,6 @@
 package com.kodedu.config;
 
+import com.kodedu.component.TemplateSubMenu;
 import com.kodedu.config.factory.TableFactory;
 import com.kodedu.controller.ApplicationController;
 import com.kodedu.helper.IOHelper;
@@ -49,11 +50,15 @@ public class TemplatesConfigBean extends ConfigurationBase {
     private final Button saveButton = new Button("Save");
     private final Button loadButton = new Button("Load");
     private final Label infoLabel = new Label();
+	private final TemplateSubMenu templateSubMenu;
 
-    public TemplatesConfigBean(ApplicationController controller, ThreadService threadService) {
+    public TemplatesConfigBean(ApplicationController controller,
+    		                   ThreadService threadService,
+    		                   TemplateSubMenu templateSubMenu) {
         super(controller, threadService);
         this.threadService = threadService;
         this.controller = controller;
+        this.templateSubMenu = templateSubMenu;
         templates = new SimpleListProperty<>(FXCollections.observableArrayList());
     }
 
@@ -183,14 +188,14 @@ public class TemplatesConfigBean extends ConfigurationBase {
     public void save(ActionEvent... actionEvent) {
         infoLabel.setText("Saving...");
         saveJson(getJSON());
-    	controller.setTemplateMenuItems(getTemplates());
+    	templateSubMenu.setTemplateMenuItems(getTemplates());
         fadeOut(infoLabel, "Saved...");
     }
 
     @Override
 	public void load(ActionEvent... actionEvent) {
 		super.load(actionEvent);
-		controller.setTemplateMenuItems(getTemplates());
+		templateSubMenu.setTemplateMenuItems(getTemplates());
 	}
 
 	private DefaultFactoryProvider getFxFormFactoryProvider() {

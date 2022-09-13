@@ -40,7 +40,6 @@ import com.kodedu.service.ui.IndikatorService;
 import com.kodedu.service.ui.TabService;
 import com.kodedu.service.ui.TooltipTimeFixService;
 import com.kodedu.spell.dictionary.DictionaryService;
-import com.kodedu.template.MetaAsciidocTemplateI;
 import com.kodedu.terminalfx.TerminalBuilder;
 import com.kodedu.terminalfx.TerminalTab;
 import com.kodedu.terminalfx.config.TerminalConfig;
@@ -82,7 +81,6 @@ import javafx.stage.*;
 import javafx.util.Duration;
 import netscape.javascript.JSObject;
 
-import org.apache.commons.lang3.StringUtils;
 import org.asciidoctor.Asciidoctor;
 import org.asciidoctor.Attributes;
 import org.asciidoctor.Options;
@@ -96,7 +94,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Bean;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
@@ -2707,7 +2704,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
      * Get tñe path to a selected item in tñe view or to tñe workspace if no item is selected
      * @return The selected path or workspace (or an empty optional if neither is set)
      */
-    private Optional<Path> getSelectedItemOrWorkspacePath() {
+    public Optional<Path> getSelectedItemOrWorkspacePath() {
         TreeItem<Item> selection = fileSystemView.getSelectionModel().getSelectedItem();
         return Optional.ofNullable(selection)
                 .map(s -> s.getValue().getPath())
@@ -3317,49 +3314,9 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
         });
     }
-	
-	public void setTemplateMenuItems(List<? extends MetaAsciidocTemplateI> templates) {
-		menuTemplates.getItems().clear();
-		templates.stream()
-		         .map(t -> createMenuItem(t))
-		         .forEach(mi -> menuTemplates.getItems().add(mi));
-	}
 
-	private MenuItem createMenuItem(MetaAsciidocTemplateI t) {
-		var item = new CustomMenuItem(new Label(t.getName()));
-
-		StringBuilder msg = new StringBuilder();
-		msg.append("Location: ").append(t.getLocation());
-		if (!StringUtils.isBlank(t.getDescription())) {
-			msg.append("\n\n").append(t.getDescription());
-		}
-
-		var tooltip = new Tooltip(msg.toString());
-		Tooltip.install(item.getContent(), tooltip);
-
-		item.setOnAction((evt) -> _templateMenuItemOnClick(t));
-
-		return item;
-	}
-
-	private void _templateMenuItemOnClick(MetaAsciidocTemplateI t) {
-		Optional<Path> targetPath = getSelectedItemOrWorkspacePath();
-		if(targetPath.isPresent()) {
-			Path tarPath = targetPath.get();
-			if(!Files.isDirectory(tarPath)) {
-				tarPath = tarPath.getParent();
-			}
-			if(tarPath != null) {
-				final var target = tarPath;
-				threadService.runTaskLater(()->{
-				try {
-					t.furnish(target, zipUtils);
-				} catch (Exception e) {
-					logger.error("Could not supply the template %s".formatted(t.getName()), e);
-				}}
-				);
-			}
-		}
+	public Menu getTemplateMenu() {
+		return menuTemplates;
 	}
 
 }

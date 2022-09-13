@@ -17,6 +17,6 @@ public interface MetaAsciidocTemplateI {
 
 	String getDescription();
 
-	void furnish(Path targetDir, ZipUtils zipUtils) throws Exception;
+	void provide(Path targetDir, ZipUtils zipUtils) throws Exception;
 
 }

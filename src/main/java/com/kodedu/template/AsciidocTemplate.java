@@ -19,7 +19,7 @@ public abstract class AsciidocTemplate implements MetaAsciidocTemplateI {
 
     
 	@Override
-	public void furnish(Path targetDir, ZipUtils zipUtils) throws Exception {
+	public void provide(Path targetDir, ZipUtils zipUtils) throws Exception {
 
 		var locationLowCase = getLocation().toLowerCase();
 
