@@ -1,6 +1,7 @@
-package com.kodedu.config;
+package com.kodedu.config.templates;
 
 import com.kodedu.component.TemplateSubMenu;
+import com.kodedu.config.ConfigurationBase;
 import com.kodedu.config.factory.TableFactory;
 import com.kodedu.controller.ApplicationController;
 import com.kodedu.helper.IOHelper;
@@ -91,8 +92,8 @@ public class TemplatesConfigBean extends ConfigurationBase {
     public FXForm getConfigForm() {
         FXForm configForm = new FXFormBuilder<>()
                 .resourceBundle(ResourceBundle.getBundle("templatesConfig"))
-                .includeAndReorder(
-                        "templates").build();
+                .includeAndReorder("templates")
+                .build();
 
         return configForm;
     }

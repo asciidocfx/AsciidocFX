@@ -1,6 +1,4 @@
-package com.kodedu.config;
-
-import com.kodedu.template.AsciidocTemplate;
+package com.kodedu.config.templates;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -10,7 +8,7 @@ import javafx.beans.property.StringProperty;
  * AsciidocTemplate which can be shown in the JavaFx based configuration
  *
  */
-public class AsciidocTemplateFx extends AsciidocTemplate {
+public class AsciidocTemplateFx implements AsciidocTemplateI {
 
 	private final StringProperty name = new SimpleStringProperty();
 	private final StringProperty location = new SimpleStringProperty();

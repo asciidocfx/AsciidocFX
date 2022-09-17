@@ -1,6 +1,8 @@
-package com.kodedu.template;
+package com.kodedu.service;
 
-import com.kodedu.service.UnzipService;
+import com.kodedu.config.templates.AsciidocTemplateI;
+
+import org.springframework.stereotype.Component;
 
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -15,22 +17,32 @@ import java.nio.file.StandardOpenOption;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class AsciidocTemplate implements AsciidocTemplateI {
-    private Logger logger = LoggerFactory.getLogger(AsciidocTemplate.class);
+@Component
+public class TemplateService {
 
-    
-	@Override
-	public final void provide(Path targetDir, UnzipService zipUtils) throws Exception {
+    private Logger logger = LoggerFactory.getLogger(TemplateService.class);
 
-		var locationLowCase = getLocation().toLowerCase();
+	/**
+	 * Depending on the location of the template downloads it or copies the file. If
+	 * it is a zip-archive it should be extracted. During the process no existing
+	 * files should be overwritten.
+	 * 
+	 * @param targetDir
+	 * @param zipUtils
+	 * @throws Exception
+	 */
+	public final void provide(AsciidocTemplateI template, Path targetDir, UnzipService zipUtils) throws Exception {
+
+		final var location = template.getLocation();
+		var locationLowCase = location.toLowerCase();
 
 		Path templateInTarget;
 		if (locationLowCase.startsWith("http")) {
-			logger.debug("Downloading template from: {}", getLocation());
-			templateInTarget = download(targetDir, new URI(getLocation()));
+			logger.debug("Downloading template from: {}", location);
+			templateInTarget = download(targetDir, new URI(location));
 		} else {
-			logger.debug("Coping template from: {}", getLocation());
-			var locPath = Path.of(getLocation());
+			logger.debug("Coping template from: {}", location);
+			var locPath = Path.of(location);
 			templateInTarget = targetDir.resolve(locPath.getFileName());
 			Files.copy(locPath, templateInTarget);
 		}
@@ -41,7 +53,7 @@ public abstract class AsciidocTemplate implements AsciidocTemplateI {
 			zipUtils.unzip(zipFile, targetDir.toFile(), true, true);
 			Files.delete(templateInTarget);
 		}
-		logger.debug("Template provided: {}", getLocation());
+		logger.debug("Template provided: {}", location);
 	}
 
 	private Path download(Path directory, URI location) throws Exception {
@@ -65,7 +77,4 @@ public abstract class AsciidocTemplate implements AsciidocTemplateI {
 		return response.body();
 
 	}
-	
-	
-
 }
