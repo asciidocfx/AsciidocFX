@@ -3,7 +3,7 @@ package com.kodedu.service.extension.impl;
 import com.kodedu.config.ExtensionConfigBean;
 import com.kodedu.controller.ApplicationController;
 import com.kodedu.helper.IOHelper;
-import com.kodedu.helper.StyleHelper;
+import com.kodedu.helper.FxHelper;
 import com.kodedu.other.Current;
 import com.kodedu.other.TrimWhite;
 import com.kodedu.other.Tuple;
@@ -28,16 +28,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import org.springframework.util.DigestUtils;
 import org.springframework.util.StringUtils;
 
 import java.awt.image.BufferedImage;
-import java.nio.charset.Charset;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
-import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -258,7 +255,7 @@ public class TreeServiceImpl implements TreeService {
 
     private TreeView getSnaphotTreeView() {
         TreeView fileView = new TreeView();
-        StyleHelper.addClass(fileView, "tree-extension");
+        FxHelper.addClass(fileView, "tree-extension");
         fileView.setLayoutX(-14000);
         fileView.setLayoutY(-14000);
         fileView.setMinSize(0, 0);

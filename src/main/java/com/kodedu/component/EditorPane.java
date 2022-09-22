@@ -5,7 +5,7 @@ import com.kodedu.config.FoldStyle;
 import com.kodedu.config.SpellcheckConfigBean;
 import com.kodedu.controller.ApplicationController;
 import com.kodedu.helper.IOHelper;
-import com.kodedu.helper.StyleHelper;
+import com.kodedu.helper.FxHelper;
 import com.kodedu.keyboard.KeyHelper;
 import com.kodedu.service.DirectoryService;
 import com.kodedu.service.ParserService;
@@ -208,15 +208,9 @@ public class EditorPane extends AnchorPane {
     }
 
     private void initializeMargins() {
-        AnchorPane.setBottomAnchor(this, 0D);
-        AnchorPane.setTopAnchor(this, 0D);
-        AnchorPane.setLeftAnchor(this, 0D);
-        AnchorPane.setRightAnchor(this, 0D);
+        FxHelper.fitToParent(this);
         VBox.setVgrow(this, Priority.ALWAYS);
-        AnchorPane.setBottomAnchor(webView, 0D);
-        AnchorPane.setTopAnchor(webView, 0D);
-        AnchorPane.setLeftAnchor(webView, 0D);
-        AnchorPane.setRightAnchor(webView, 0D);
+        FxHelper.fitToParent(webView);
         VBox.setVgrow(webView, Priority.ALWAYS);
     }
 
@@ -770,7 +764,7 @@ public class EditorPane extends AnchorPane {
         }
 
         final SeparatorMenuItem menuItem = new SeparatorMenuItem();
-        StyleHelper.addClass(menuItem, "spell-suggestion");
+        FxHelper.addClass(menuItem, "spell-suggestion");
         spells.add(menuItem);
 
         contextMenuItems.addAll(0, spells);

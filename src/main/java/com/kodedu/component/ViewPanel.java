@@ -2,6 +2,7 @@ package com.kodedu.component;
 
 import com.kodedu.config.EditorConfigBean;
 import com.kodedu.controller.ApplicationController;
+import com.kodedu.helper.FxHelper;
 import com.kodedu.other.Current;
 import com.kodedu.service.ThreadService;
 import com.sun.javafx.scene.control.ContextMenuContent;
@@ -179,15 +180,9 @@ public abstract class ViewPanel extends AnchorPane {
     }
 
     protected void initializeMargins() {
-        AnchorPane.setBottomAnchor(this, 0D);
-        AnchorPane.setTopAnchor(this, 0D);
-        AnchorPane.setLeftAnchor(this, 0D);
-        AnchorPane.setRightAnchor(this, 0D);
+        FxHelper.fitToParent(this);
         VBox.setVgrow(this, Priority.ALWAYS);
-        AnchorPane.setBottomAnchor(getWebView(), 0D);
-        AnchorPane.setTopAnchor(getWebView(), 0D);
-        AnchorPane.setLeftAnchor(getWebView(), 0D);
-        AnchorPane.setRightAnchor(getWebView(), 0D);
+        FxHelper.fitToParent(getWebView());
         VBox.setVgrow(getWebView(), Priority.ALWAYS);
     }
 

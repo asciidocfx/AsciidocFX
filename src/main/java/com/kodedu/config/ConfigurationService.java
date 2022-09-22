@@ -100,7 +100,9 @@ public class ConfigurationService {
 //                ,spellcheckConfigBean
         );
 
-        ScrollPane formsPane = new ScrollPane();
+        ScrollPane formScrollPane = new ScrollPane();
+        formScrollPane.setFitToHeight(true);
+        formScrollPane.setFitToWidth(true);
 
         ToggleGroup toggleGroup = new ToggleGroup();
         controller.setConfigToggleGroup(toggleGroup);
@@ -112,8 +114,9 @@ public class ConfigurationService {
 
         for (ConfigurationBase configBean : configBeanList) {
             VBox form = configBean.createForm();
+            form.setPadding(new Insets(0, 5, 5, 0));
             ToggleButton toggleButton = ToggleButtonBuilt.item(configBean.formName()).click(event -> {
-                formsPane.setContent(form);
+                formScrollPane.setContent(form);
             });
             toggleButtons.add(toggleButton);
 
@@ -124,7 +127,7 @@ public class ConfigurationService {
         final VBox finalEditorConfigForm = editorConfigForm;
         threadService.runActionLater(() -> {
 
-            formsPane.setContent(finalEditorConfigForm);
+            formScrollPane.setContent(finalEditorConfigForm);
 
             for (ToggleButton toggleButton : toggleButtons) {
                 toggleGroup.getToggles().add(toggleButton);
@@ -133,9 +136,9 @@ public class ConfigurationService {
 
             configBox = controller.getConfigBox();
             configBox.getChildren().add(flowPane);
-            configBox.getChildren().add(formsPane);
+            configBox.getChildren().add(formScrollPane);
 
-            VBox.setVgrow(formsPane, Priority.ALWAYS);
+            VBox.setVgrow(formScrollPane, Priority.ALWAYS);
 
             for (Runnable runnable : runnables) {
                 runnable.run();

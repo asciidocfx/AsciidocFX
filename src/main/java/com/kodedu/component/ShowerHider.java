@@ -1,5 +1,6 @@
 package com.kodedu.component;
 
+import com.kodedu.helper.FxHelper;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -25,10 +26,7 @@ public class ShowerHider extends AnchorPane {
             final ObservableList<? extends Node> nodes = c.getList();
             if (!nodes.isEmpty()) {
                 final Node node = nodes.get(0);
-                AnchorPane.setBottomAnchor(node, 0.0);
-                AnchorPane.setTopAnchor(node, 0.0);
-                AnchorPane.setLeftAnchor(node, 0.0);
-                AnchorPane.setRightAnchor(node, 0.0);
+                FxHelper.fitToParent(node);
             }
         });
 

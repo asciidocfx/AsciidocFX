@@ -11,7 +11,9 @@ import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.util.Callback;
 import javafx.util.converter.DefaultStringConverter;
@@ -35,10 +37,11 @@ public class TableFactory implements Callback<Void, FXFormNode> {
     @Override
     public FXFormNode call(Void param) {
         tableView.setEditable(true);
-        tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        tableView.setColumnResizePolicy(TableView.UNCONSTRAINED_RESIZE_POLICY);
         tableView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 
-        return new FXFormNodeWrapper(new VBox(3, tableView, new HBox(5, addButton, removeButton)), tableView.itemsProperty()) {
+        VBox vBox = new VBox(7, tableView, new HBox(5, addButton, removeButton));
+        return new FXFormNodeWrapper(vBox, tableView.itemsProperty()) {
 
             @Override
             public void init(Element element, AbstractFXForm fxForm) {

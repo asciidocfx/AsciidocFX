@@ -1,7 +1,7 @@
 package com.kodedu.component;
 
 
-import com.kodedu.helper.StyleHelper;
+import com.kodedu.helper.FxHelper;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.BooleanProperty;
 import javafx.event.ActionEvent;
@@ -38,7 +38,7 @@ public class CheckItemBuilt {
     }
 
     public CheckItemBuilt clazz(String clazz) {
-        StyleHelper.addClass(menuItem, clazz);
+        FxHelper.addClass(menuItem, clazz);
         return this;
     }
 

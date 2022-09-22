@@ -1,6 +1,6 @@
 package com.kodedu.component;
 
-import com.kodedu.helper.StyleHelper;
+import com.kodedu.helper.FxHelper;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.control.TableCell;
@@ -99,7 +99,7 @@ public class TextFieldTableCell<S, T> extends TableCell<S, T> {
      *                  type T.
      */
     public TextFieldTableCell(StringConverter<T> converter) {
-        StyleHelper.addClass(this, "text-field-table-cell");
+        FxHelper.addClass(this, "text-field-table-cell");
         setConverter(converter);
     }
 

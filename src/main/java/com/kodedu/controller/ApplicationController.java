@@ -12,6 +12,7 @@ import com.kodedu.engine.AsciidocConverterProvider;
 import com.kodedu.engine.AsciidocWebkitConverter;
 import com.kodedu.helper.DesktopHelper;
 import com.kodedu.helper.IOHelper;
+import com.kodedu.helper.FxHelper;
 import com.kodedu.helper.TaskbarHelper;
 import com.kodedu.keyboard.KeyHelper;
 import com.kodedu.logging.MyLog;
@@ -1007,7 +1008,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             if (!detachStage.isShowing()) {
                 splitPane.getItems().remove(previewBox);
                 AnchorPane anchorPane = new AnchorPane();
-                fitToParent(anchorPane);
+                FxHelper.fitToParent(anchorPane);
                 anchorPane.getChildren().add(previewBox);
                 Scene scene = new Scene(anchorPane);
                 detachStage.setScene(scene);
@@ -2535,13 +2536,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     @FXML
     public void saveDoc(Event actionEvent) {
         current.currentTab().saveDoc();
-    }
-
-    public void fitToParent(Node node) {
-        AnchorPane.setTopAnchor(node, 0.0);
-        AnchorPane.setBottomAnchor(node, 0.0);
-        AnchorPane.setLeftAnchor(node, 0.0);
-        AnchorPane.setRightAnchor(node, 0.0);
     }
 
     public void saveAndCloseCurrentTab() {
