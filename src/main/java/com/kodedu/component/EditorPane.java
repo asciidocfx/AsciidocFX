@@ -44,8 +44,10 @@ import org.springframework.stereotype.Component;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.attribute.FileTime;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -91,6 +93,8 @@ public class EditorPane extends AnchorPane {
     private Number pageX;
     private Number pageY;
     private MyTab myTab;
+    private Map<String, Object> attributes = new ConcurrentHashMap<>();
+    private Object attributesLock = new Object();
 
     @Autowired
     public EditorPane(ApplicationController controller, EditorConfigBean editorConfigBean, ThreadService threadService, ShortcutProvider shortcutProvider, ApplicationContext applicationContext, TabService tabService, AsciiTreeGenerator asciiTreeGenerator, ParserService parserService, SpellcheckConfigBean spellcheckConfigBean, DirectoryService directoryService) {
@@ -826,5 +830,24 @@ public class EditorPane extends AnchorPane {
 
     public void setTab(MyTab myTab) {
         this.myTab = myTab;
+    }
+
+    public void updateAttributes(Map<String, Object> attributes) {
+        synchronized (attributesLock) {
+            this.attributes.clear();
+            this.attributes.putAll(attributes);
+        }
+    }
+
+    public Map<String, Object> getAttributes() {
+        return attributes;
+    }
+
+    public Path getImagePath(){
+        Map<String, Object> attributes = getAttributes();
+        String docdir = (String) attributes.getOrDefault("docdir", directoryService.workingDirectory().toString());
+        String imagesDir = (String) attributes.getOrDefault("imagesdir", "images");
+        Path imagePath = Paths.get(docdir).resolve(imagesDir);
+        return imagePath;
     }
 }

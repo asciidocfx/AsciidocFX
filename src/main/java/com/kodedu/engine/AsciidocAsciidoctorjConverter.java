@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.asciidoctor.Asciidoctor;
@@ -93,6 +94,8 @@ public class AsciidocAsciidoctorjConverter extends ViewPanel implements Asciidoc
 
 	public ConverterResult convert(Document document, String text) {
 		String backend = (String) document.getAttribute("backend", "html5");
+		Map<String, Object> attributes = document.getAttributes();
+		current.currentEditor().updateAttributes(attributes);
 		return switch (backend) {
 			case "html5" -> convert(document, text, previewConfigBean);
 			case "revealjs" -> convert(document, text, revealjsConfigBean);
