@@ -23,6 +23,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.Event;
 import javafx.event.EventHandler;
+import javafx.event.EventType;
 import javafx.geometry.Bounds;
 import javafx.scene.control.*;
 import javafx.scene.input.*;
@@ -115,6 +116,24 @@ public class EditorPane extends AnchorPane {
         webEngine().setConfirmHandler(this::handleConfirm);
         initializeMargins();
         initializeEditorContextMenus();
+        setupFirebugEventHandler();
+    }
+
+    private void setupFirebugEventHandler() {
+        getWebView().addEventHandler(EventType.ROOT, e -> {
+            if (e instanceof KeyEvent ke &&
+                    ke.getCode() == KeyCode.F12) {
+                showFirebug();
+            }
+        });
+    }
+
+    private void showFirebug() {
+        executeScript("showFirebug();");
+    }
+
+    protected void executeScript(String script) {
+        webEngine().executeScript(script);
     }
 
     private Boolean handleConfirm(String param) {
