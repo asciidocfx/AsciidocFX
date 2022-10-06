@@ -43,6 +43,15 @@ function updateMarkupScroll(row) {
     lastEditorRow = row;
 };
 
+editor.on("dblclick", function (e) {
+    let position = editor.getCursorPosition();
+    let token = editor.session.getTokenAt(position.row, position.column);
+    console.log("Token:", token);
+    if (token.type == "markup.underline.list.include_link" && token.value) {
+        afx.openInclude(token.value);
+    }
+});
+
 editor.getSession().on('changeScrollTop', function (scroll) {
 
     var maxTop = editor.renderer.layerConfig.maxHeight - editor.renderer.$size.scrollerHeight + editor.renderer.scrollMargin.bottom;

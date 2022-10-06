@@ -95,7 +95,7 @@ ace.define("ace/mode/asciidoc_highlight_rules", ["require", "exports", "module",
                 token: ["text", "markup.list.macro", "keyword", "string"],
                 regex: /(\w+)(footnote(?:ref)?::?)([^\s\[]+)?(\[.*?\])?/
             }, {
-                token: ["markup.list.macro", "keyword", "string"],
+                token: ["markup.list.macro", "markup.underline.list.include_link", "string"],
                 regex: /([a-zA-Z\-][\w\.\/\-]*::?)([^\s\[]+)(\[.*?\])?/
             }, {
                 token: ["markup.list.macro", "keyword"], regex: /([a-zA-Z\-][\w\.\/\-]+::?)(\[.*?\])/
