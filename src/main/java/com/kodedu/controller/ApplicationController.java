@@ -122,10 +122,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.*;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.Semaphore;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
@@ -788,6 +785,8 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         htmlPane.webEngine().setOnAlert(event -> {
             if ("PREVIEW_LOADED".equals(event.getData())) {
                 htmlPane.setMember("afx", this);
+                adocPreviewReadyLatch.countDown();
+                current.currentEditor().rerender();
             }
         });
 
@@ -1811,6 +1810,16 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     }
 
     @WebkitCall
+    public void openInclude(String file) {
+        String docdir = (String) current.currentEditor().getAttributes()
+                .getOrDefault("docdir", directoryService.workingDirectory().toString());
+        Path path = Paths.get(docdir).resolve(file);
+        if (Files.exists(path)) {
+            tabService.addTab(path);
+        }
+    }
+
+    @WebkitCall
     public void updateStatusBox(long row, long column, long linecount, long wordcount) {
         threadService.runActionLater(() -> {
             String charset = getCurrent().currentPath().map(IOHelper::getEncoding).orElse("-");
@@ -2248,11 +2257,12 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     private volatile AtomicReference<TextChangeEvent> latestTextChangeEvent = new AtomicReference<>();
     private Semaphore renderLoopSemaphore = new Semaphore(1);
+    private CountDownLatch adocPreviewReadyLatch =new CountDownLatch(1);
 
     private void renderLoop() throws InterruptedException {
+        adocPreviewReadyLatch.await(5, TimeUnit.SECONDS);
 
         renderLoopSemaphore.acquire();
-        DOCUMENT_MAP.clear();
 
         if (stopRendering.get()) {
             return;
@@ -2271,16 +2281,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
             if ("asciidoc".equalsIgnoreCase(mode)) {
 
-                String uuid = UUID.randomUUID().toString();
-                plainDoctor.convert(text, Options.builder()
-                        .safe(SafeMode.UNSAFE)
-                        .sourcemap(true)
-                        .baseDir(current.currentTab().getParentOrWorkdir().toFile())
-                        .attributes(Attributes.builder()
-                                .allowUriRead(true)
-                                .attribute(DOC_UUID, uuid)
-                                .build()).build());
-                Document document = (Document) DOCUMENT_MAP.get(uuid);
+                Document document = loadDocument(text);
 
                 String backend = (String) document.getAttribute("backend", "html5");
 
@@ -2316,6 +2317,26 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         } catch (Exception e) {
             logger.error("Problem occured while rendering content", e);
         }
+    }
+
+    public Document loadDocument(String text) {
+        String uuid = UUID.randomUUID().toString();
+        MyTab currentTab = current.currentTab();
+        if(Objects.nonNull(currentTab)){
+            plainDoctor.convert(text, Options.builder()
+                    .safe(SafeMode.UNSAFE)
+                    .sourcemap(true)
+                    .baseDir(currentTab.getParentOrWorkdir().toFile())
+                    .attributes(Attributes.builder()
+                            .allowUriRead(true)
+                            .attribute(DOC_UUID, uuid)
+                            .build()).build());
+            Document document = (Document) DOCUMENT_MAP.get(uuid);
+            DOCUMENT_MAP.remove(uuid);
+            return document;
+        }
+
+        return null;
     }
 
     private void updateRendered(String rendered) {
