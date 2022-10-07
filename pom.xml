@@ -247,6 +247,18 @@
             <version>2.2.3</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.eclipse.jgit</groupId>
+            <artifactId>org.eclipse.jgit</artifactId>
+            <version>6.3.0.202209071007-r</version>
+        </dependency>
+
+        <dependency>
+            <groupId>net.lingala.zip4j</groupId>
+            <artifactId>zip4j</artifactId>
+            <version>2.11.2</version>
+        </dependency>
+
         <!--  Uncomment 'scope' for local run -->
 
         <dependency>
@@ -580,6 +592,10 @@
         <repository>
             <id>ej-technologies</id>
             <url>https://maven.ej-technologies.com/repository</url>
+        </repository>
+        <repository>
+            <id>Eclipse Maven Repo</id>
+            <url>https://repo.eclipse.org/content/groups/releases/</url>
         </repository>
     </repositories>
 

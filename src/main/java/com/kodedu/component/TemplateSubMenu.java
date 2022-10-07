@@ -4,22 +4,17 @@ import com.kodedu.config.templates.AsciidocTemplateI;
 import com.kodedu.controller.ApplicationController;
 import com.kodedu.service.TemplateService;
 import com.kodedu.service.ThreadService;
-import com.kodedu.service.UnzipService;
 import com.kodedu.service.ui.IndikatorService;
-
-import org.springframework.stereotype.Component;
-
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.List;
-import java.util.Optional;
-
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuItem;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
-import javafx.scene.control.Menu;
-import javafx.scene.control.MenuItem;
+import java.nio.file.Files;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * Component which handles the creation of template menu entries.
@@ -33,18 +28,16 @@ public class TemplateSubMenu {
 
     private final ApplicationController applicationController;
     private final ThreadService threadService;
-    private final UnzipService zipUtils;
 	private final IndikatorService indikatorService;
 	private final TemplateService templateService;
     
 	public TemplateSubMenu(ApplicationController applicationController,
-	        ThreadService threadService, UnzipService zipUtils,
+	        ThreadService threadService,
 	        IndikatorService indikatorService,
 	        TemplateService templateService) {
 		super();
 		this.applicationController = applicationController;
 		this.threadService = threadService;
-		this.zipUtils = zipUtils;
 		this.indikatorService = indikatorService;
 		this.templateService = templateService;
 	}
@@ -71,25 +64,20 @@ public class TemplateSubMenu {
 	}
 
 	private void templateMenuItemOnClick(final AsciidocTemplateI template) {
-		Optional<Path> targetPath = applicationController.getSelectedItemOrWorkspacePath();
-		if (targetPath.isPresent()) {
-			Path tarPath = targetPath.get();
-			if (!Files.isDirectory(tarPath)) {
-				tarPath = tarPath.getParent();
-			}
-			if (tarPath != null) {
-				final var targetDir = tarPath;
-				threadService.runTaskLater(() -> {
-					try {
-						indikatorService.startProgressBar();
-						templateService.provide(template, targetDir, zipUtils);
-					} catch (Exception e) {
-						logger.error("Could not supply the template %s".formatted(template.getName()), e);
-					} finally {
-						indikatorService.stopProgressBar();
-					}
+		applicationController.getSelectedItemOrWorkspacePath()
+				.map(p -> !Files.isDirectory(p) ? p.getParent() : p)
+				.filter(Objects::nonNull)
+				.ifPresent(targetDir -> {
+					threadService.runTaskLater(() -> {
+						try {
+							indikatorService.startProgressBar();
+							templateService.provide(template, targetDir);
+						} catch (Exception e) {
+							logger.error("Could not supply the template %s".formatted(template.getName()), e);
+						} finally {
+							indikatorService.stopProgressBar();
+						}
+					});
 				});
-			}
-		}
 	}
 }

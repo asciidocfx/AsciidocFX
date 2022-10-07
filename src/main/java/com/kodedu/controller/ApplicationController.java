@@ -329,10 +329,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     @Autowired
     private EventService eventService;
-    
-    @Autowired
-    private UnzipService zipUtils;
-
     private Stage stage;
     private List<WebSocketSession> sessionList = new ArrayList<>();
     private Scene scene;
@@ -871,6 +867,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             if (selectedItems.size() > 1) {
                 renameFile.setVisible(false);
                 newMenu.setVisible(false);
+                menuTemplates.setVisible(false);
                 addToFavoriteDir.setVisible(false);
                 renameSeparator.setVisible(false);
                 if (favoriteDirMenu.getItems().size() > 0) {
@@ -894,6 +891,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
                 boolean isDirectory = Files.isDirectory(path);
                 newMenu.setVisible(isDirectory);
+                menuTemplates.setVisible(isDirectory);
                 renameFile.setVisible(!isDirectory);
                 renameSeparator.setVisible(true);
                 addToFavoriteDir.setVisible(isDirectory);
