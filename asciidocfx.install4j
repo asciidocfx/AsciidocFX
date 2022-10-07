@@ -8,7 +8,7 @@
       <registry />
     </searchSequence>
     <codeSigning macEnabled="true" macPkcs12File="${compiler:env.GITHUB_WORKSPACE}/code_sign.p12" />
-    <jreBundles jdkProviderId="Adoptium" release="18/jdk-18.0.1+10" />
+    <jreBundles jdkProviderId="Adoptium" release="19/jdk-19+36" />
   </application>
   <files globalExcludeSuffixes="bin" defaultOverwriteMode="1" launcherOverwriteMode="1" defaultFileMode="755" preserveSymlinks="false">
     <mountPoints>
