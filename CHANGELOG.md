@@ -2,6 +2,15 @@
 
 All notable changes are documented in this file.
 
+## [Version ~1.7.9](https://github.com/asciidocfx/AsciidocFX/releases/tag/v1.7.9) (10.2022)
+
+* Java/JavaFX 19 upgrade
+* Fix render issue on startup
+* Dependency updates Spring Boot, AsciidoctorJ
+* AsciidocFX templates feature allows template from zip, git, and local directory
+* Open included Asciidoc files via double-click
+* Enable firebug debugger in preview and editor pane (Ctrl/Cmd + F12)
+
 ## [Version ~1.7.8](https://github.com/asciidocfx/AsciidocFX/releases/tag/v1.7.8) (09.2022)
 
 * Fix Showing Firebug on preview
