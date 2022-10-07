@@ -2264,7 +2264,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     private CountDownLatch adocPreviewReadyLatch =new CountDownLatch(1);
 
     private void renderLoop() throws InterruptedException {
-        adocPreviewReadyLatch.await(5, TimeUnit.SECONDS);
+        adocPreviewReadyLatch.await(30, TimeUnit.SECONDS);
 
         renderLoopSemaphore.acquire();
 

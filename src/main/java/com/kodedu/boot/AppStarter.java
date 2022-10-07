@@ -187,17 +187,18 @@ public class AppStarter extends Application {
             controller.bindConfigurations();
             controller.initializeApp();
             controller.showConfigLoaderOnNewInstall();
-            int random = ThreadLocalRandom.current().nextInt(1, 11);
-            if (random == 1) {
-                controller.showSupportAsciidocFX();
-            }
         });
 
         threadService.runActionLater(() -> {
             setMaximized();
 
-            if (controller.getTabPane().getTabs().isEmpty()) {
-                controller.newDoc();
+            int random = ThreadLocalRandom.current().nextInt(1, 11);
+            if (random == 1) {
+                controller.showSupportAsciidocFX();
+            } else {
+                if (controller.getTabPane().getTabs().isEmpty()) {
+                    controller.newDoc();
+                }
             }
 
             stage.show();
