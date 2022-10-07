@@ -1,8 +1,24 @@
 {
-	"templates": {
-		"CJK (Chinese/Japanese/Korean)": {
-			"location": "https://github.com/asciidocfx/asciidoctor-cjk-demo/archive/refs/heads/master.zip",
-			"description": "A custom Asciidoc theme containing CJK fonts. Download size is about 38 MB."
-		}
-	}
+  "templates": {
+    "Asciidoc Book": {
+      "location": "https://github.com/asciidocfx/Asciidoc-Book-Demo",
+      "description": "Asciidoc Book Demo"
+    },
+    "Asciidoc Cheatsheet": {
+      "location": "https://github.com/asciidocfx/Asciidoc-Cheatsheet",
+      "description": "Asciidoc Cheatsheet"
+    },
+    "Asciidoc Slide (Reveal.js)": {
+      "location": "https://github.com/rahmanusta/Asciidoc-RevealJs-Demo",
+      "description" : "Asciidoc Reveal.js Slide Demo"
+    },
+    "Asciidoctor PDF Word Like Demo": {
+      "location": "https://github.com/asciidocfx/Asciidoctor-PDF-Word-Like-Demo",
+      "description" : "Asciidoctor PDF Word Like Demo"
+    },
+    "Asciidoctor PDF CJK Demo": {
+      "location": "https://github.com/asciidocfx/Asciidoctor-CJK-Demo",
+      "description": "A custom Asciidoc theme containing CJK fonts. Download size is about 38 MB."
+    }
+  }
 }
