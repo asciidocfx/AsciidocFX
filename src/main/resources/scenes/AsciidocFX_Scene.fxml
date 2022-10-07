@@ -205,11 +205,6 @@
                                                         <FontIcon iconLiteral="fa-ellipsis-h"/>
                                                     </graphic>
                                                     <items>
-                                                        <MenuItem mnemonicParsing="false" onAction="#generateCheatSheet"
-                                                                  text="Asciidoc Cheatsheet"/>
-                                                        <MenuItem mnemonicParsing="false" onAction="#generateSampleBook"
-                                                                  text="Sample Book"/>
-                                                        <SeparatorMenuItem/>
                                                         <MenuItem mnemonicParsing="false" onAction="#bugReport"
                                                                   text="Bug Report"/>
                                                         <MenuItem mnemonicParsing="false" onAction="#openCommunityForum"
@@ -265,6 +260,9 @@
                                                                                           onAction="#newSlide"
                                                                                           text="New Slide"/>
                                                                             </items>
+                                                                        </Menu>
+                                                                        <Menu fx:id="menuTemplates" text="New Template"
+                                                                              mnemonicParsing="false">
                                                                         </Menu>
                                                                         <SeparatorMenuItem/>
                                                                         <MenuItem mnemonicParsing="false"

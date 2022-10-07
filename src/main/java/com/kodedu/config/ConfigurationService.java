@@ -1,7 +1,7 @@
 package com.kodedu.config;
 
 import com.kodedu.component.ToggleButtonBuilt;
-import com.kodedu.config.PdfConfigBean.PdfConfigAttributes;
+import com.kodedu.config.templates.TemplatesConfigBean;
 import com.kodedu.controller.ApplicationController;
 import com.kodedu.service.ThreadService;
 import javafx.geometry.Insets;
@@ -38,8 +38,9 @@ public class ConfigurationService {
     private final ExtensionConfigBean extensionConfigBean;
     private final Epub3ConfigBean epub3ConfigBean;
     private final RevealjsConfigBean revealjsConfigBean;
+    private final PdfConfigBean pdfConfigBean;
+	private final TemplatesConfigBean templatesConfigBean;
     private VBox configBox;
-    private final AsciidoctorConfigBase<PdfConfigAttributes> pdfConfigBean;
 
     @Autowired
     public ConfigurationService(LocationConfigBean locationConfigBean, EditorConfigBean editorConfigBean,
@@ -47,7 +48,9 @@ public class ConfigurationService {
                                 DocbookConfigBean docbookConfigBean, ApplicationController controller,
                                 StoredConfigBean storedConfigBean, ThreadService threadService,
                                 SpellcheckConfigBean spellcheckConfigBean, TerminalConfigBean terminalConfigBean,
-                                ExtensionConfigBean extensionConfigBean, Epub3ConfigBean epub3ConfigBean, RevealjsConfigBean revealjsConfigBean, AsciidoctorConfigBase<PdfConfigAttributes> pdfConfigBean) {
+                                ExtensionConfigBean extensionConfigBean, Epub3ConfigBean epub3ConfigBean,
+                                RevealjsConfigBean revealjsConfigBean, PdfConfigBean pdfConfigBean,
+                                TemplatesConfigBean templatesConfigBean) {
         this.locationConfigBean = locationConfigBean;
         this.editorConfigBean = editorConfigBean;
         this.previewConfigBean = previewConfigBean;
@@ -62,6 +65,7 @@ public class ConfigurationService {
         this.epub3ConfigBean = epub3ConfigBean;
         this.revealjsConfigBean = revealjsConfigBean;
         this.pdfConfigBean = pdfConfigBean;
+        this.templatesConfigBean = templatesConfigBean;
     }
 
     public void loadConfigurations(Runnable... runnables) {
@@ -78,6 +82,7 @@ public class ConfigurationService {
         pdfConfigBean.load();
         epub3ConfigBean.load();
         revealjsConfigBean.load();
+        templatesConfigBean.load();
 
         List<ConfigurationBase> configBeanList = Arrays.asList(
                 editorConfigBean,
@@ -90,11 +95,14 @@ public class ConfigurationService {
                 extensionConfigBean,
                 pdfConfigBean,
                 epub3ConfigBean,
-                revealjsConfigBean
+                revealjsConfigBean,
+                templatesConfigBean
 //                ,spellcheckConfigBean
         );
 
-        ScrollPane formsPane = new ScrollPane();
+        ScrollPane formScrollPane = new ScrollPane();
+        formScrollPane.setFitToHeight(true);
+        formScrollPane.setFitToWidth(true);
 
         ToggleGroup toggleGroup = new ToggleGroup();
         controller.setConfigToggleGroup(toggleGroup);
@@ -106,8 +114,9 @@ public class ConfigurationService {
 
         for (ConfigurationBase configBean : configBeanList) {
             VBox form = configBean.createForm();
+            form.setPadding(new Insets(0, 5, 5, 0));
             ToggleButton toggleButton = ToggleButtonBuilt.item(configBean.formName()).click(event -> {
-                formsPane.setContent(form);
+                formScrollPane.setContent(form);
             });
             toggleButtons.add(toggleButton);
 
@@ -118,7 +127,7 @@ public class ConfigurationService {
         final VBox finalEditorConfigForm = editorConfigForm;
         threadService.runActionLater(() -> {
 
-            formsPane.setContent(finalEditorConfigForm);
+            formScrollPane.setContent(finalEditorConfigForm);
 
             for (ToggleButton toggleButton : toggleButtons) {
                 toggleGroup.getToggles().add(toggleButton);
@@ -127,9 +136,9 @@ public class ConfigurationService {
 
             configBox = controller.getConfigBox();
             configBox.getChildren().add(flowPane);
-            configBox.getChildren().add(formsPane);
+            configBox.getChildren().add(formScrollPane);
 
-            VBox.setVgrow(formsPane, Priority.ALWAYS);
+            VBox.setVgrow(formScrollPane, Priority.ALWAYS);
 
             for (Runnable runnable : runnables) {
                 runnable.run();

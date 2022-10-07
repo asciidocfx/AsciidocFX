@@ -140,6 +140,11 @@ public abstract class ConfigurationBase {
 
     public abstract void save(ActionEvent... actionEvent);
 
+    /**
+     * Creates a JSON object which represents the current configuration of this object.
+     * The JSON object is e.g. used when saving the configuration to a file.  
+     * @return a JsonObject representing the current state of the configuration
+     */
     public abstract JsonObject getJSON();
 
     public void setOnConfigChanged(Runnable runnable) {

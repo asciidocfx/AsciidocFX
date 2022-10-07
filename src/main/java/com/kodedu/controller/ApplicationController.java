@@ -12,6 +12,7 @@ import com.kodedu.engine.AsciidocConverterProvider;
 import com.kodedu.engine.AsciidocWebkitConverter;
 import com.kodedu.helper.DesktopHelper;
 import com.kodedu.helper.IOHelper;
+import com.kodedu.helper.FxHelper;
 import com.kodedu.helper.TaskbarHelper;
 import com.kodedu.keyboard.KeyHelper;
 import com.kodedu.logging.MyLog;
@@ -79,6 +80,7 @@ import javafx.stage.Window;
 import javafx.stage.*;
 import javafx.util.Duration;
 import netscape.javascript.JSObject;
+
 import org.asciidoctor.Asciidoctor;
 import org.asciidoctor.Attributes;
 import org.asciidoctor.Options;
@@ -194,6 +196,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     public MenuItem copyTreeItem;
     public MenuItem copyListItem;
     public MenuButton leftButton;
+    public Menu menuTemplates;
     public Label htmlPro;
     public Label pdfPro;
     public Label ebookPro;
@@ -323,7 +326,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     @Autowired
     private EventService eventService;
-
     private Stage stage;
     private List<WebSocketSession> sessionList = new ArrayList<>();
     private Scene scene;
@@ -864,6 +866,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             if (selectedItems.size() > 1) {
                 renameFile.setVisible(false);
                 newMenu.setVisible(false);
+                menuTemplates.setVisible(false);
                 addToFavoriteDir.setVisible(false);
                 renameSeparator.setVisible(false);
                 if (favoriteDirMenu.getItems().size() > 0) {
@@ -887,6 +890,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
                 boolean isDirectory = Files.isDirectory(path);
                 newMenu.setVisible(isDirectory);
+                menuTemplates.setVisible(isDirectory);
                 renameFile.setVisible(!isDirectory);
                 renameSeparator.setVisible(true);
                 addToFavoriteDir.setVisible(isDirectory);
@@ -1001,7 +1005,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             if (!detachStage.isShowing()) {
                 splitPane.getItems().remove(previewBox);
                 AnchorPane anchorPane = new AnchorPane();
-                fitToParent(anchorPane);
+                FxHelper.fitToParent(anchorPane);
                 anchorPane.getChildren().add(previewBox);
                 Scene scene = new Scene(anchorPane);
                 detachStage.setScene(scene);
@@ -2553,13 +2557,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         current.currentTab().saveDoc();
     }
 
-    public void fitToParent(Node node) {
-        AnchorPane.setTopAnchor(node, 0.0);
-        AnchorPane.setBottomAnchor(node, 0.0);
-        AnchorPane.setLeftAnchor(node, 0.0);
-        AnchorPane.setRightAnchor(node, 0.0);
-    }
-
     public void saveAndCloseCurrentTab() {
 //        this.saveDoc();
         threadService.runActionLater(current.currentTab()::close);
@@ -2719,7 +2716,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
      * Get tñe path to a selected item in tñe view or to tñe workspace if no item is selected
      * @return The selected path or workspace (or an empty optional if neither is set)
      */
-    private Optional<Path> getSelectedItemOrWorkspacePath() {
+    public Optional<Path> getSelectedItemOrWorkspacePath() {
         TreeItem<Item> selection = fileSystemView.getSelectionModel().getSelectedItem();
         return Optional.ofNullable(selection)
                 .map(s -> s.getValue().getPath())
@@ -3329,4 +3326,9 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
         });
     }
+
+	public Menu getTemplateMenu() {
+		return menuTemplates;
+	}
+
 }

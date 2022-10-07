@@ -1,7 +1,7 @@
 package com.kodedu.component;
 
 
-import com.kodedu.helper.StyleHelper;
+import com.kodedu.helper.FxHelper;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.MenuItem;
@@ -52,7 +52,7 @@ public class MenuItemBuilt {
     }
 
     public MenuItemBuilt clazz(String clazz) {
-        StyleHelper.addClass(menuItem, clazz);
+        FxHelper.addClass(menuItem, clazz);
         return this;
     }
 }

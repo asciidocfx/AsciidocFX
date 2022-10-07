@@ -9,6 +9,7 @@ import com.kodedu.config.StoredConfigBean;
 import com.kodedu.controller.ApplicationController;
 import com.kodedu.helper.IOHelper;
 import com.kodedu.helper.OSHelper;
+import com.kodedu.helper.FxHelper;
 import com.kodedu.other.Current;
 import com.kodedu.other.ExtensionFilters;
 import com.kodedu.other.Item;
@@ -146,7 +147,7 @@ public class TabServiceImpl implements TabService {
         });
 
         Node editorVBox = editorService.createEditorVBox(editorPane, tab);
-        controller.fitToParent(editorVBox);
+        FxHelper.fitToParent(editorVBox);
 
         anchorPane.getChildren().add(editorVBox);
         tab.setContent(anchorPane);
@@ -180,7 +181,7 @@ public class TabServiceImpl implements TabService {
         AnchorPane anchorPane = new AnchorPane();
 
         Node editorVBox = editorService.createEditorVBox(editorPane, tab);
-        controller.fitToParent(editorVBox);
+        FxHelper.fitToParent(editorVBox);
         anchorPane.getChildren().add(editorVBox);
 
         tab.setContent(anchorPane);

@@ -8,6 +8,8 @@
     <logger name="org.hibernate" level="ERROR"/>
     <logger name="org.jboss" level="ERROR"/>
     <logger name="com.dooapp" level="ERROR"/>
+    <logger name="org.eclipse.jgit" level="WARN"/>
+    <logger name="com.pty4j.util" level="WARN"/>
 
     <property resource="application.properties"/>
 
