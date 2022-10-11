@@ -67,7 +67,7 @@ public class TemplateService {
 
 		}
 
-		Path filePath = _getTargetFilePath(targetDir, locationLowCase, location);
+		Path filePath = getTargetFilePath(targetDir, locationLowCase, location);
 
 		if(isGitRepository){
 			if(Files.exists(filePath)){
@@ -106,7 +106,7 @@ public class TemplateService {
 		logger.debug("Template provided: {}", location);
 	}
 
-	private Path _getTargetFilePath(Path targetDir, String location, final String locationLowCase) {
+	private Path getTargetFilePath(Path targetDir, String location, final String locationLowCase) {
 		if (locationLowCase.startsWith("http:") || locationLowCase.startsWith("https:")) {
 			// remove only first colon, as we are not interested in it
 			// colons are not allowed in WindowsPath, on PosixPath they are allowed
