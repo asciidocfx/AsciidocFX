@@ -53,7 +53,7 @@ public class TemplateService {
 	public final void provide(AsciidocTemplateI template, Path targetDir) throws Exception {
 
 		final var location = template.getLocation();
-		var locationLowCase = location.toLowerCase();
+		final var locationLowCase = location.toLowerCase();
 
 		boolean isGitRepository = false;
 		try {
@@ -67,24 +67,22 @@ public class TemplateService {
 
 		}
 
-		Path locationPath = Paths.get(location);
-		Path fileName = locationPath.getFileName();
-		final Path[] filePath = {targetDir.resolve(fileName)};
+		Path filePath = _getTargetFilePath(targetDir, locationLowCase, location);
 
 		if(isGitRepository){
-			if(Files.exists(filePath[0])){
-				filePath[0] = getNewFolder(targetDir);
+			if(Files.exists(filePath)){
+				filePath = getNewFolder(targetDir);
 			}
-			Files.createDirectories(filePath[0]);
+			Files.createDirectories(filePath);
 			logger.info("Cloning template from {}", location);
 			try (Git git = Git.cloneRepository()
 					.setURI(locationLowCase)
-					.setDirectory(filePath[0].toFile())
+					.setDirectory(filePath.toFile())
 					.call();) {
 			}
 		} else if (locationLowCase.startsWith("http")) {
 			logger.debug("Downloading template from: {}", location);
-			Path zipPath = download(filePath[0], new URI(location));
+			Path zipPath = download(filePath, new URI(location));
 			if (locationLowCase.endsWith(".zip")) {
 				Path newFolder = getNewFolder(targetDir);
 				Files.createDirectories(newFolder);
@@ -94,6 +92,7 @@ public class TemplateService {
 				IOHelper.deleteIfExists(zipPath);
 			}
 		} else {
+			Path locationPath = Paths.get(location);
 			if (Files.exists(locationPath)) {
 				logger.debug("Coping template from: {}", location);
 				Path newFolder = getNewFolder(targetDir);
@@ -105,6 +104,17 @@ public class TemplateService {
 		}
 
 		logger.debug("Template provided: {}", location);
+	}
+
+	private Path _getTargetFilePath(Path targetDir, String location, final String locationLowCase) {
+		if (locationLowCase.startsWith("http:") || locationLowCase.startsWith("https:")) {
+			// remove only first colon, as we are not interested in it
+			// colons are not allowed in WindowsPath, on PosixPath they are allowed
+			location = location.replaceFirst(":", "");
+		}
+		Path locationPath = Paths.get(location);
+		Path fileName = locationPath.getFileName();
+		return targetDir.resolve(fileName);
 	}
 
 	private void squeezeFolder(Path newFolder) throws IOException {
