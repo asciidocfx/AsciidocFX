@@ -2,12 +2,13 @@ package com.kodedu.service;
 
 import com.kodedu.component.DialogBuilder;
 import com.kodedu.config.templates.AsciidocTemplateI;
-
 import com.kodedu.helper.IOHelper;
 import net.lingala.zip4j.ZipFile;
+import org.apache.commons.io.FilenameUtils;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.lib.Ref;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -17,7 +18,10 @@ import java.net.http.HttpClient.Redirect;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
-import java.nio.file.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
@@ -25,9 +29,6 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import static java.nio.file.StandardOpenOption.*;
 
@@ -67,8 +68,7 @@ public class TemplateService {
 
 		}
 
-		Path locationPath = Paths.get(location);
-		Path fileName = locationPath.getFileName();
+		String fileName = FilenameUtils.getName(location);
 		final Path[] filePath = {targetDir.resolve(fileName)};
 
 		if(isGitRepository){
@@ -82,7 +82,7 @@ public class TemplateService {
 					.setDirectory(filePath[0].toFile())
 					.call();) {
 			}
-		} else if (locationLowCase.startsWith("http")) {
+		} else if (locationLowCase.startsWith("http://") || locationLowCase.startsWith("https://")) {
 			logger.debug("Downloading template from: {}", location);
 			Path zipPath = download(filePath[0], new URI(location));
 			if (locationLowCase.endsWith(".zip")) {
@@ -94,6 +94,7 @@ public class TemplateService {
 				IOHelper.deleteIfExists(zipPath);
 			}
 		} else {
+			Path locationPath = Paths.get(location);
 			if (Files.exists(locationPath)) {
 				logger.debug("Coping template from: {}", location);
 				Path newFolder = getNewFolder(targetDir);
