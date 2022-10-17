@@ -70,7 +70,7 @@ public class DocBookConverter implements DocbookTraversable, DocumentConverter<S
     public void convert(boolean askPath, Consumer<String>... nextStep) {
 
         Path currentTabPath = current.currentPath().get();
-        Path currentTabPathDir = currentTabPath.getParent();
+        Path workdir = current.currentTab().getParentOrWorkdir();
 
         String asciidoc = current.currentEditorValue();
 
@@ -85,7 +85,7 @@ public class DocBookConverter implements DocbookTraversable, DocumentConverter<S
                 Attributes attributes = docbookConfigBean.getAsciiDocAttributes(asciidoc);
 
                 Options options = Options.builder()
-                        .baseDir(docbookPath.getParent().toFile())
+                        .baseDir(workdir.toFile())
                         .toFile(docbookPath.toFile())
                         .backend("docbook5")
                         .safe(safe)

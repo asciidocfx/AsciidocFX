@@ -13,6 +13,7 @@ import com.kodedu.service.ThreadService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -109,7 +110,7 @@ public class AsciidocAsciidoctorjConverter extends ViewPanel implements Asciidoc
 		Attributes attributes = configBean.getAsciiDocAttributes(document.getAttributes());
 		attributes.setAttribute("preview", true);
 
-		var workdir = controller.getCurrent().currentTab().getParentOrWorkdir();
+		Path workdir = controller.getCurrent().currentTab().getParentOrWorkdir();
 
 		Options options = Options.builder()
 		                         .backend(backend)

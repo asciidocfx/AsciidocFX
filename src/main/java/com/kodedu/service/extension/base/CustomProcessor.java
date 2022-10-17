@@ -47,7 +47,7 @@ public interface CustomProcessor {
             boolean isDataUri = parent.getDocument().hasAttribute("data-uri");
             imagePath = Paths.get(docdir).resolve(imagesDir).resolve(imageTarget).toString();
             if (isPreview && !isDataUri) {
-                imageTarget += "?cache" + imageMd5; // for html cache
+                imageTarget += "?cache=" + imageMd5; // for html cache
             }
         }
 

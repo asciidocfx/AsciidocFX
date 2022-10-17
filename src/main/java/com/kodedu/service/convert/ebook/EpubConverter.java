@@ -78,6 +78,7 @@ public class EpubConverter {
         threadService.runTaskLater(() -> {
             final Path epubPath = directoryService.getSaveOutputPath(ExtensionFilters.EPUB, askPath);
             File destFile = epubPath.toFile();
+            Path workdir = current.currentTab().getParentOrWorkdir();
 
             indikatorService.startProgressBar();
             logger.debug("Epub conversion started");
@@ -87,7 +88,7 @@ public class EpubConverter {
                 attributes.setExperimental(true);
 
                 Options options = Options.builder()
-                        .baseDir(destFile.getParentFile())
+                        .baseDir(workdir.toFile())
                         .toFile(destFile)
                         .backend("epub3")
                         .safe(SafeMode.UNSAFE)

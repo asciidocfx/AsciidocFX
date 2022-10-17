@@ -68,6 +68,8 @@ public class AsciidoctorPdfBookConverter implements DocumentConverter<String> {
 
 			File destFile = pdfPath.toFile();
 
+			Path workdir = current.currentTab().getParentOrWorkdir();
+
 			indikatorService.startProgressBar();
 			logger.debug("PDF conversion started");
 
@@ -75,7 +77,7 @@ public class AsciidoctorPdfBookConverter implements DocumentConverter<String> {
 				SafeMode safe = convertSafe(pdfConfigBean.getSafe());
 				Attributes attributes = pdfConfigBean.getAsciiDocAttributes(asciidoc);
 				Options options = Options.builder()
-						.baseDir(destFile.getParentFile())
+						.baseDir(workdir.toFile())
 						.toFile(destFile)
 						.backend("pdf")
 						.safe(safe)

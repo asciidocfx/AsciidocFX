@@ -64,17 +64,17 @@ public class HtmlBookConverter implements Traversable, DocumentConverter<String>
 
             Path htmlBookPath = directoryService.getSaveOutputPath(ExtensionFilters.HTML, askPath);
             File destFile = htmlBookPath.toFile();
+            Path workdir = current.currentTab().getParentOrWorkdir();
 
             indikatorService.startProgressBar();
             logger.debug("HTML conversion started");
 
             final String asciidoc = current.currentEditorValue();
-            Path path = current.currentPath().get();
 
             Attributes attributes = htmlConfigBean.getAsciiDocAttributes(asciidoc);
 
             Options options = Options.builder()
-                    .baseDir(destFile.getParentFile())
+                    .baseDir(workdir.toFile())
                     .toFile(destFile)
                     .backend(htmlConfigBean.getBackend())
                     .headerFooter(htmlConfigBean.getHeader_footer())
