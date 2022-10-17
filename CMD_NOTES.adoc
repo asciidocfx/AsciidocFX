@@ -1,5 +1,5 @@
 base64 code_sign.p12 | pbcopy
-git tag -a v1.7.9 -m "Version 1.7.9"
-git tag -d v1.7.9
-git push --delete origin v1.7.9
+git tag -a v1.8.0 -m "Version 1.8.0"
+git tag -d v1.8.0
+git push --delete origin v1.8.0
 git push --atomic --tags

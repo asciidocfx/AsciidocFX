@@ -5,7 +5,7 @@
 
     <groupId>com.kodedu</groupId>
     <artifactId>AsciidocFX</artifactId>
-    <version>1.7.9</version>
+    <version>1.8.0</version>
     <packaging>jar</packaging>
 
     <name>AsciidocFX</name>
