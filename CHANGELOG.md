@@ -2,6 +2,10 @@
 
 All notable changes are documented in this file.
 
+## [Version ~1.8.1](https://github.com/asciidocfx/AsciidocFX/releases/tag/v1.8.1) (11.2022)
+
+* Bugfix for backend attributes resolution
+
 ## [Version ~1.8.0](https://github.com/asciidocfx/AsciidocFX/releases/tag/v1.8.0) (10.2022)
 
 * Bugfix for templates
