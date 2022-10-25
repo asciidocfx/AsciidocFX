@@ -24,7 +24,7 @@ public class Outliner {
         for (StructuralNode node : blocks) {
             if (node instanceof org.asciidoctor.ast.Section section) {
                 int level = section.getLevel();
-                String title = section.getTitle();
+                String title = section.getTitle(); // TODO: Get title returns <></> for html titles
                 int lineNumber = section.getSourceLocation().getLineNumber();
                 String id = section.getId();
                 String file = section.getSourceLocation().getFile();

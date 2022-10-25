@@ -88,6 +88,7 @@ public class SpringAppConfig extends SpringBootServletInitializer implements Web
                                       MathInlineMacroProcessor mathInlineMacroProcessor,
                                       CacheSuffixAppenderProcessor cacheSuffixAppenderProcessor) {
         Asciidoctor doctor = Asciidoctor.Factory.create();
+        doctor.requireLibrary("asciidoctor-pdf");
         doctor.requireLibrary("asciidoctor-diagram");
         doctor.requireLibrary("asciidoctor-epub3");
         doctor.requireLibrary("asciidoctor-revealjs");
@@ -109,6 +110,7 @@ public class SpringAppConfig extends SpringBootServletInitializer implements Web
     @Bean(destroyMethod = "shutdown")
     public Asciidoctor plainDoctor(DocumentAttributeProcessor documentAttributeProcessor) {
         Asciidoctor doctor = Asciidoctor.Factory.create();
+        doctor.requireLibrary("asciidoctor-pdf");
         doctor.requireLibrary("asciidoctor-diagram");
         doctor.requireLibrary("asciidoctor-epub3");
         doctor.requireLibrary("asciidoctor-revealjs");

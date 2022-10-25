@@ -329,6 +329,7 @@ public abstract class AsciidoctorConfigBase<T extends LoadedAttributes> extends 
 
     public Attributes getAsciiDocAttributes(String asciidoc) {
         Document document = asciidoctor.load(asciidoc, Options.builder()
+                .backend(getBackend())
                 .safe(SafeMode.UNSAFE)
                 .sourcemap(true)
                 .baseDir(controller.getCurrent().currentTab().getParentOrWorkdir().toFile())
