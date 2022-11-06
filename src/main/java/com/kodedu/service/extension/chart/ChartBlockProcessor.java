@@ -1,6 +1,8 @@
 package com.kodedu.service.extension.chart;
 
 import static java.util.Objects.nonNull;
+import static org.asciidoctor.extension.Contexts.*;
+import static org.asciidoctor.extension.Contexts.PARAGRAPH;
 
 import com.kodedu.service.ThreadService;
 
@@ -25,7 +27,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Name("chart")
-@Contexts({Contexts.OPEN, Contexts.EXAMPLE, Contexts.SIDEBAR, Contexts.LITERAL, Contexts.LISTING})
+@Contexts({OPEN, EXAMPLE, SIDEBAR, LITERAL, LISTING, QUOTE, PASS, PARAGRAPH})
 @ContentModel(ContentModel.EMPTY)
 @Component
 @Scope("prototype")

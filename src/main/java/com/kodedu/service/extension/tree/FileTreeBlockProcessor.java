@@ -20,8 +20,11 @@ import org.springframework.stereotype.Component;
 import java.util.Collections;
 import java.util.Map;
 
+import static org.asciidoctor.extension.Contexts.*;
+import static org.asciidoctor.extension.Contexts.PARAGRAPH;
+
 @Name("tree")
-@Contexts({Contexts.OPEN, Contexts.EXAMPLE, Contexts.SIDEBAR, Contexts.LITERAL, Contexts.LISTING})
+@Contexts({OPEN, EXAMPLE, SIDEBAR, LITERAL, LISTING, QUOTE, PASS, PARAGRAPH})
 @ContentModel(ContentModel.EMPTY)
 @Component
 @Scope("prototype")
