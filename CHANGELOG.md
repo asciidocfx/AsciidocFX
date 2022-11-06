@@ -2,6 +2,11 @@
 
 All notable changes are documented in this file.
 
+## [Version ~1.8.2](https://github.com/asciidocfx/AsciidocFX/releases/tag/v1.8.2) (11.2022)
+
+* Bugfix for math extension https://github.com/asciidocfx/AsciidocFX/issues/574
+* Color picker height fix
+
 ## [Version ~1.8.1](https://github.com/asciidocfx/AsciidocFX/releases/tag/v1.8.1) (11.2022)
 
 * Bugfix for backend attributes resolution
