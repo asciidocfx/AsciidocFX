@@ -1,4 +1,0 @@
-[preface]
-== Example Preface
-
-Optional preface.

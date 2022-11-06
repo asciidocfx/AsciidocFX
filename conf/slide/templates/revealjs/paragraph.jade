@@ -1,7 +1,0 @@
-div.paragraph(id=node.$id(),class=node.$role())
-  if node.$title() != false
-    div(class="title") !{node.$title()}
-  if node['$has_role?']('small')
-    small !{node.$content()}
-  else
-    p !{node.$content()}

@@ -1,6 +1,0 @@
-div.audioblock(id=node.$id(),class=[node.$style(), node.$role()])
-  if node.$title() != false
-    div.title !{node.$captioned_title()}
-  div.content
-    audio(src=node.$media_uri(node.$attr('target')),autoplay=node.$option('autoplay', ""),controls=node.$option('nocontrols', ""),loop=node.$option('loop', ""))
-      | "Your browser does not support the audio tag."

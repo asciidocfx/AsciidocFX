@@ -307,7 +307,7 @@ You can use `Tex` or `MathML` languages for describing mathematical formulas in 
 .For Example (Tex)
 [source,tex]
 ----
-[math,target="tex-formula"]
+[latexmath,target="tex-formula"]
 --
 \begin{align}
 \dot{x} & = \sigma(y-x) \\
@@ -324,7 +324,7 @@ image::tex-formula.png[]
 .For Example (MathML)
 [source,xml]
 ----
-[math,target="mathml-formula"]
+[mathml,target="mathml-formula"]
 --
 <math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
   <mi>x</mi>

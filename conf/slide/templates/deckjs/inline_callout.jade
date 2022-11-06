@@ -1,9 +1,0 @@
-if node.document.$attr("icons") == "font"
-  - num = "(" + node.$text() + ")"
-  i.conum(data-value=node.$text())
-  b !{num}
-else if node.document.$attr("icons", false)
-  img(src=node.$icon_uri("callouts/#{node.$text()}"),alt=node.$text())
-else
-  - num = "(" + node.$text() + ")"
-  b !{num}

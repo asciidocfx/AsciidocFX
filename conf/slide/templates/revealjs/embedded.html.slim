@@ -1,9 +1,0 @@
-- unless notitle || !has_header?
-  h1 id=@id =@header.title
-=content
-- unless !footnotes? || attr?(:nofootnotes)
-  #footnotes
-    hr
-    - footnotes.each do |fn|
-      .footnote id='_footnote_#{fn.index}'
-        <a href="#_footnoteref_#{fn.index}">#{fn.index}</a>. #{fn.text}

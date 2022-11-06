@@ -1,9 +1,0 @@
-div.olist(id=node.$id(),class=[node.$style(), node.$role()])
-  if node['$title?']()
-    div.title  !{node.$title()}
-  ol(class=node.$style(),start=node.$attr('start', ""),type=node.$list_marker_keyword())
-    each item in node.$items()
-      li(class=[(node['$option?']('step') || node['$has_role?']('step')) ? "fragment" : ""])
-        p !{item.$text()}
-        if item['$blocks?']()
-          | !{item.$content()}

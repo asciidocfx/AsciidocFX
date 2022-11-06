@@ -1,4 +1,0 @@
-[dedication]
-== Example Dedication
-
-Optional dedication.

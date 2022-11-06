@@ -1,9 +1,0 @@
-.olist id=@id class=[@style,role]
-  - if title?
-    .title=title
-  ol class=@style start=(attr :start) type=list_marker_keyword
-    - items.each do |item|
-      li class=('fragment' if (option? :step) or (has_role? 'step'))
-        p=item.text
-        - if item.blocks?
-          =item.content
