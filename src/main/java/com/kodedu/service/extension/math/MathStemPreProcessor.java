@@ -34,15 +34,15 @@ public interface MathStemPreProcessor {
             finalContent = content;
         }
 
-        if ("latexmath".equals(name)) {
+        if (name.startsWith("latexmath")) {
             finalContent = latexmathWrap(content);
         }
 
-        if ("asciimath".equals(name)) {
+        if (name.startsWith("asciimath")) {
             finalContent = asciimathWrap(content);
         }
 
-        if ("mathml".equals(name)) {
+        if (name.startsWith("mathml")) {
             // mathml: nothing to change
             finalContent = content;
         }

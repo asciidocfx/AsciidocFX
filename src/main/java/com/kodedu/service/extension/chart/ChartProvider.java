@@ -10,8 +10,11 @@ import org.springframework.stereotype.Component;
 @Component
 public class ChartProvider {
 
-    @Autowired
-    private ApplicationContext applicationContext;
+    private final ApplicationContext applicationContext;
+
+    public ChartProvider(ApplicationContext applicationContext) {
+        this.applicationContext = applicationContext;
+    }
 
     public ChartBuilderService getProvider(String type) {
         return (ChartBuilderService) applicationContext.getBean(type + "-bean");

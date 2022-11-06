@@ -67,8 +67,11 @@ public interface CustomProcessor {
                             Map<String, Object> attributes, ImageInfo imageInfo,
                             String content);
 
-    default Object processMacro(ContentNode parent, String target, Map<String, Object> attributes,
-                                Environment environment) {
+    /*
+    It is used when inline or block macro has a target file to read
+     */
+    default Object processMacroLongFormat(ContentNode parent, String target, Map<String, Object> attributes,
+                                          Environment environment) {
         HashMap<String, Object> attributesCopy = new HashMap<>(attributes);
         attributesCopy.put("target", target);
         String docdir = (String) parent.getDocument().getAttributes().get("docdir");
@@ -81,6 +84,19 @@ public interface CustomProcessor {
         String content = IOHelper.readFile(path);
 
         // TODO: Check if it is correct content to preprocess
+        content = preProcessContent(parent, reader, attributesCopy, content);
+        ImageInfo imageInfo = getImageInfo(environment, attributesCopy, parent, content);
+        return process(parent, reader, attributesCopy, imageInfo, content);
+    }
+
+    /*
+    It is used when inline macro has :short feature, and has no target to read
+     */
+    default Object processMacroShortFormat(ContentNode parent, String target, Map<String, Object> attributes,
+                                           Environment environment) {
+        HashMap<String, Object> attributesCopy = new HashMap<>(attributes);
+        Reader reader = null; // reader is not available for block macro
+        String content = (String) attributes.get("text");
         content = preProcessContent(parent, reader, attributesCopy, content);
         ImageInfo imageInfo = getImageInfo(environment, attributesCopy, parent, content);
         return process(parent, reader, attributesCopy, imageInfo, content);

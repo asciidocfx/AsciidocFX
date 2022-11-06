@@ -16,7 +16,14 @@ public abstract class CustomInlineMacroProcessor extends InlineMacroProcessor im
 
     @Override
     public Object process(ContentNode parent, String target, Map<String, Object> attributes) {
-        return processMacro(parent, target, attributes, environment);
+        Map<String, Object> config = getConfig();
+        String format = (String) config.getOrDefault("format", ":long");
+        if (format.contains("short")) {
+            return processMacroShortFormat(parent, target, attributes, environment);
+        } else {
+            return processMacroLongFormat(parent, target, attributes, environment);
+        }
+
     }
 
 }

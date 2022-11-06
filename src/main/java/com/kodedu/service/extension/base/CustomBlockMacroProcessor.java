@@ -16,7 +16,7 @@ public abstract class CustomBlockMacroProcessor  extends BlockMacroProcessor imp
 
     @Override
     public Object process(StructuralNode parent, String target, Map<String, Object> attributes) {
-        return processMacro(parent, target, attributes, environment);
+        return processMacroLongFormat(parent, target, attributes, environment);
     }
 
 }

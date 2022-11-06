@@ -18,11 +18,11 @@ package com.kodedu.boot;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kodedu.controller.ApplicationController;
-import com.kodedu.service.extension.chart.FxChartBlockProcessor;
+import com.kodedu.service.extension.chart.ChartBlockProcessor;
 
-import com.kodedu.service.extension.math.MathBlockMacroProcessor;
-import com.kodedu.service.extension.math.MathBlockProcessor;
-import com.kodedu.service.extension.math.MathInlineMacroProcessor;
+import com.kodedu.service.extension.math.blockmacro.MathBlockMacroProcessor;
+import com.kodedu.service.extension.math.block.MathBlockProcessor;
+import com.kodedu.service.extension.math.inlinemacro.MathInlineMacroProcessor;
 import com.kodedu.service.extension.processor.CacheSuffixAppenderProcessor;
 import com.kodedu.service.extension.processor.DataLineProcessor;
 import com.kodedu.service.extension.processor.DocumentAttributeProcessor;
@@ -30,6 +30,7 @@ import com.kodedu.service.extension.processor.ExtensionPreprocessor;
 import com.kodedu.service.extension.tree.FileTreeBlockMacroProcessor;
 import com.kodedu.service.extension.tree.FileTreeBlockProcessor;
 import com.kodedu.service.extension.tree.FileTreeInlineMacroProcessor;
+import org.asciidoctor.extension.JavaExtensionRegistry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
@@ -77,32 +78,41 @@ public class SpringAppConfig extends SpringBootServletInitializer implements Web
 
     @Bean(destroyMethod = "shutdown")
     @Primary
-    public Asciidoctor standardDoctor(FxChartBlockProcessor fxChartBlockProcessor,
+    public Asciidoctor standardDoctor(ChartBlockProcessor fxChartBlockProcessor,
                                       FileTreeBlockProcessor treeBlockProcessor,
-                                      MathBlockProcessor mathBlockProcessor,
+                                      MathBlockProcessor[] mathBlockProcessor,
                                       ExtensionPreprocessor extensionPreprocessor,
                                       FileTreeBlockMacroProcessor fileTreeBlockMacroProcessor,
                                       FileTreeInlineMacroProcessor fileTreeInlineMacroProcessor,
                                       DataLineProcessor dataLineProcessor,
-                                      MathBlockMacroProcessor mathBlockMacroProcessor,
-                                      MathInlineMacroProcessor mathInlineMacroProcessor,
+                                      MathBlockMacroProcessor[] mathBlockMacroProcessor,
+                                      MathInlineMacroProcessor[] mathInlineMacroProcessor,
                                       CacheSuffixAppenderProcessor cacheSuffixAppenderProcessor) {
         Asciidoctor doctor = Asciidoctor.Factory.create();
         doctor.requireLibrary("asciidoctor-pdf");
         doctor.requireLibrary("asciidoctor-diagram");
         doctor.requireLibrary("asciidoctor-epub3");
         doctor.requireLibrary("asciidoctor-revealjs");
-        doctor.javaExtensionRegistry()
+        JavaExtensionRegistry registry = doctor.javaExtensionRegistry()
                 .treeprocessor(dataLineProcessor)
                 .block(fxChartBlockProcessor)
                 .block(treeBlockProcessor)
-                .block(mathBlockProcessor)
                 .preprocessor(extensionPreprocessor)
                 .blockMacro(fileTreeBlockMacroProcessor)
-                .blockMacro(mathBlockMacroProcessor)
                 .inlineMacro(fileTreeInlineMacroProcessor)
-                .inlineMacro(mathInlineMacroProcessor)
                 .treeprocessor(cacheSuffixAppenderProcessor);
+
+        for (MathInlineMacroProcessor inlineMacroProcessor : mathInlineMacroProcessor) {
+            registry.inlineMacro(inlineMacroProcessor);
+        }
+
+        for (MathBlockProcessor blockProcessor : mathBlockProcessor) {
+            registry.block(blockProcessor);
+        }
+
+        for (MathBlockMacroProcessor blockMacroProcessor : mathBlockMacroProcessor) {
+            registry.blockMacro(blockMacroProcessor);
+        }
 
         return doctor;
     }

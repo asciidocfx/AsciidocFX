@@ -29,14 +29,14 @@ import org.slf4j.LoggerFactory;
 @ContentModel(ContentModel.EMPTY)
 @Component
 @Scope("prototype")
-public class FxChartBlockProcessor extends CustomBlockProcessor implements CustomProcessor {
+public class ChartBlockProcessor extends CustomBlockProcessor implements CustomProcessor {
 
-    private final Logger logger = LoggerFactory.getLogger(FxChartBlockProcessor.class);
+    private final Logger logger = LoggerFactory.getLogger(ChartBlockProcessor.class);
 
     private final ChartProvider chartProvider;
 	private final ThreadService threadService;
     
-    public FxChartBlockProcessor(Environment environment, ChartProvider chartProvider, ThreadService threadService) {
+    public ChartBlockProcessor(Environment environment, ChartProvider chartProvider, ThreadService threadService) {
 		super(environment);
 		this.chartProvider = chartProvider;
     	this.threadService = threadService;
@@ -52,7 +52,8 @@ public class FxChartBlockProcessor extends CustomBlockProcessor implements Custo
 
 		completableFuture.runAsync(()->{
 			threadService.runActionLater(() -> {
-				chartProvider.getProvider(chartType).chartBuild(content, imageInfo, optMap, completableFuture);
+				chartProvider.getProvider(chartType)
+						.chartBuild(content, imageInfo, optMap, completableFuture);
 			});
 		}, threadService.executor());
 

@@ -13,8 +13,10 @@ import java.util.List;
 @Scope("prototype")
 public class ExtensionPreprocessor extends Preprocessor {
 
-    private final List<String> extensions = List.of("stem", "asciimath", "latexmath", "mathml", "math", "plantuml",
-            "uml", "ditaa", "graphviz", "tree", "mermaid","chart");
+    private final List<String> blockExtensions = List.of("stem", "asciimath", "latexmath", "mathml", "math", "plantuml",
+            "uml", "ditaa", "graphviz", "tree", "mermaid", "chart");
+
+    private final List<String> mathExtensions = List.of("stem", "asciimath", "latexmath", "mathml", "tex");
 
     @Override
     public void process(Document document, PreprocessorReader reader) {
@@ -22,17 +24,49 @@ public class ExtensionPreprocessor extends Preprocessor {
         List<String> newLines = new ArrayList<>();
 
         for (String line : lines) {
-            line = line.replaceAll("\\[uml,", "[plantuml,");
-            line = line.replaceAll("\\[uml]", "[plantuml]");
-            for (String extension : extensions) {
-                if (line.startsWith("[" + extension + ",") && line.contains("file=\"")) {
-                    line = line.replace("file=\"", "target=\"");
-                    break;
-                }
-            }
+            line = correctUmlBlocks(line);
+            line = correctTargetInBlocks(line);
+            line = correctInlineMathExtensions(line);
+            line = correctBlockMathExtensions(line);
             newLines.add(line);
         }
 
         reader.restoreLines(newLines);
+    }
+
+    private String correctBlockMathExtensions(String line) {
+        for (String mathExtension : mathExtensions) {
+            if (line.startsWith("[" + mathExtension)) {
+                line = line.replace("[" + mathExtension, "[" + mathExtension + "_");
+            }
+        }
+        return line;
+    }
+
+    private String correctInlineMathExtensions(String line) {
+        for (String mathExtension : mathExtensions) {
+            String textStart = mathExtension + ":";
+            String textInMiddle = " " + mathExtension + ":";
+            if (line.startsWith(textStart) || line.contains(textInMiddle)) {
+                line = line.replace(textStart, mathExtension + "_:");
+            }
+        }
+        return line;
+    }
+
+    private String correctTargetInBlocks(String line) {
+        for (String extension : blockExtensions) {
+            if (line.startsWith("[" + extension + ",") && line.contains("file=\"")) {
+                line = line.replace("file=\"", "target=\"");
+                break;
+            }
+        }
+        return line;
+    }
+
+    private String correctUmlBlocks(String line) {
+        line = line.replaceAll("\\[uml,", "[plantuml,");
+        line = line.replaceAll("\\[uml]", "[plantuml]");
+        return line;
     }
 }

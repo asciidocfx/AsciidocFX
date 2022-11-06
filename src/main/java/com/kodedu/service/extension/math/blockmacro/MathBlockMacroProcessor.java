@@ -1,35 +1,29 @@
-package com.kodedu.service.extension.math;
+package com.kodedu.service.extension.math.blockmacro;
 
 import com.kodedu.service.ThreadService;
 import com.kodedu.service.extension.ImageInfo;
 import com.kodedu.service.extension.MathJaxService;
-import com.kodedu.service.extension.base.CustomInlineMacroProcessor;
+import com.kodedu.service.extension.base.CustomBlockMacroProcessor;
+import com.kodedu.service.extension.math.MathProcessor;
+import com.kodedu.service.extension.math.MathStemPreProcessor;
 import org.asciidoctor.ast.ContentNode;
-import org.asciidoctor.ast.PhraseNode;
-import org.asciidoctor.extension.Name;
+import org.asciidoctor.ast.StructuralNode;
 import org.asciidoctor.extension.Reader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.Scope;
 import org.springframework.core.env.Environment;
-import org.springframework.stereotype.Component;
 
-import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
-@Name("math")
-@Component
-@Scope("prototype")
-public class MathInlineMacroProcessor extends CustomInlineMacroProcessor implements MathStemPreProcessor {
+public class MathBlockMacroProcessor extends CustomBlockMacroProcessor implements MathStemPreProcessor {
 
-    private final Logger logger = LoggerFactory.getLogger(MathInlineMacroProcessor.class);
+    private final Logger logger = LoggerFactory.getLogger(MathBlockMacroProcessor.class);
 
     private final MathJaxService mathJaxService;
     private final ThreadService threadService;
     private final MathProcessor mathProcessor;
 
-    public MathInlineMacroProcessor(Environment environment, MathJaxService mathJaxService, ThreadService threadService, MathProcessor mathProcessor) {
+    public MathBlockMacroProcessor(Environment environment, MathJaxService mathJaxService, ThreadService threadService, MathProcessor mathProcessor) {
         super(environment);
         this.mathJaxService = mathJaxService;
         this.threadService = threadService;
@@ -46,7 +40,7 @@ public class MathInlineMacroProcessor extends CustomInlineMacroProcessor impleme
     public Object process(ContentNode parent, Reader reader, Map<String, Object> attributes, ImageInfo imageInfo, String content) {
 
         mathProcessor.process(imageInfo, content);
-        return createInlineImage(parent, attributes, imageInfo);
+        return createBlockImage((StructuralNode) parent, attributes, imageInfo);
     }
 
 }
