@@ -3,8 +3,8 @@ package com.kodedu.config;
 import java.nio.file.Path;
 import java.util.ResourceBundle;
 
-import javax.json.JsonObject;
-import javax.json.JsonObjectBuilder;
+import jakarta.json.JsonObject;
+import jakarta.json.JsonObjectBuilder;
 
 import org.asciidoctor.Asciidoctor;
 import org.springframework.beans.factory.annotation.Autowired;

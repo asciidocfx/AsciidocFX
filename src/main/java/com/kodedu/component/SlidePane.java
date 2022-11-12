@@ -6,6 +6,7 @@ import com.kodedu.engine.AsciidocWebkitConverter;
 import com.kodedu.other.Current;
 import com.kodedu.service.DirectoryService;
 import com.kodedu.service.ThreadService;
+import jakarta.annotation.PostConstruct;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Worker;
@@ -21,7 +22,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
 import java.io.InputStream;
 
 /**

@@ -8,6 +8,7 @@ import com.kodedu.service.PathMapper;
 import com.kodedu.service.ThreadService;
 import com.kodedu.service.ui.FileBrowseService;
 import com.kodedu.service.ui.TabService;
+import jakarta.annotation.PostConstruct;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Tab;
 import org.slf4j.Logger;
@@ -16,7 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
 import java.nio.file.*;
 import java.util.List;
 import java.util.Map;

@@ -13,7 +13,7 @@ import javafx.scene.layout.VBox;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import javax.json.*;
+import jakarta.json.*;
 import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Path;

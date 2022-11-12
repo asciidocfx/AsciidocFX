@@ -15,11 +15,11 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.ResourceBundle;
 
-import javax.json.Json;
-import javax.json.JsonObject;
-import javax.json.JsonObjectBuilder;
-import javax.json.JsonReader;
-import javax.json.JsonValue;
+import jakarta.json.Json;
+import jakarta.json.JsonObject;
+import jakarta.json.JsonObjectBuilder;
+import jakarta.json.JsonReader;
+import jakarta.json.JsonValue;
 
 //import com.dooapp.fxform.annotation.Accessor;
 

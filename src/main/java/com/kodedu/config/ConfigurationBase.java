@@ -15,11 +15,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 
-import javax.json.Json;
-import javax.json.JsonObject;
-import javax.json.JsonStructure;
-import javax.json.JsonWriter;
-import javax.json.stream.JsonGenerator;
+import jakarta.json.Json;
+import jakarta.json.JsonObject;
+import jakarta.json.JsonStructure;
+import jakarta.json.JsonWriter;
+import jakarta.json.stream.JsonGenerator;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
 import java.lang.reflect.Field;

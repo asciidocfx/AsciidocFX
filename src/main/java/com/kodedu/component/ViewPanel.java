@@ -6,6 +6,7 @@ import com.kodedu.helper.FxHelper;
 import com.kodedu.other.Current;
 import com.kodedu.service.ThreadService;
 import com.sun.javafx.scene.control.ContextMenuContent;
+import jakarta.annotation.PostConstruct;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
@@ -35,7 +36,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 
-import javax.annotation.PostConstruct;
 import java.io.InputStream;
 import java.util.Objects;
 import java.util.Optional;
