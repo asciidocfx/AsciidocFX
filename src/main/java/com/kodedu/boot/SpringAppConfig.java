@@ -57,7 +57,7 @@ public class SpringAppConfig extends SpringBootServletInitializer implements Web
 
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-        registry.addHandler(applicationController, "/ws", "/ws**", "/ws/**").withSockJS();
+        registry.addHandler(applicationController, "/ws", "/ws*", "/ws/*").withSockJS();
     }
 
     @Override
