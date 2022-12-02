@@ -26,9 +26,10 @@ public class ThreadServiceImpl implements ThreadService {
     private final ExecutorService singleExecutor;
 
     public ThreadServiceImpl() {
-        scheduledWorker = Executors.newSingleThreadScheduledExecutor();
-        threadPollWorker = Executors.newWorkStealingPool(16);
-        singleExecutor = Executors.newSingleThreadExecutor();
+        ThreadFactory threadFactory = Thread.ofVirtual().factory();
+        scheduledWorker = Executors.newSingleThreadScheduledExecutor(threadFactory);
+        threadPollWorker = Executors.newVirtualThreadPerTaskExecutor();
+        singleExecutor = Executors.newSingleThreadExecutor(threadFactory);
         uiSemaphore = new Semaphore(1);
         buffMap = new ConcurrentHashMap<>();
     }

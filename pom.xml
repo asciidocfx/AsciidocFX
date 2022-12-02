@@ -12,7 +12,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <java.version>18</java.version>
+        <java.version>19</java.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <mainClass>com.kodedu.boot.AppStarter</mainClass>
@@ -76,22 +76,8 @@
             <artifactId>spring-boot-starter-web</artifactId>
             <exclusions>
                 <exclusion>
-                    <groupId>org.springframework.boot</groupId>
-                    <artifactId>spring-boot-starter-tomcat</artifactId>
-                </exclusion>
-                <exclusion>
                     <artifactId>aopalliance</artifactId>
                     <groupId>aopalliance</groupId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-undertow</artifactId>
-            <exclusions>
-                <exclusion>
-                    <artifactId>jboss-annotations-api_1.2_spec</artifactId>
-                    <groupId>org.jboss.spec.javax.annotation</groupId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -348,6 +334,9 @@
                 <configuration>
                     <source>${java.version}</source>
                     <target>${java.version}</target>
+                    <compilerArgs>
+                        <compilerArg>--enable-preview</compilerArg>
+                    </compilerArgs>
                 </configuration>
             </plugin>
             <plugin>
@@ -409,10 +398,12 @@
                                 -Duser.language=en
                                 -Duser.country=US
                                 -Dfile.encoding=UTF-8
-                                -Xms128M
-                                -Xmx756M
+                                --enable-preview
+                                -Xms256M
+                                -Xmx1G
                                 -Djava.awt.headless=false
                                 -Dsun.java2d.metal=true
+                                -Djavafx.autoproxy.disable=true
                                 -Dorg.apache.xml.dtm.DTMManager=org.apache.xml.dtm.ref.DTMManagerDefault
                                 --add-opens
                                 java.base/sun.nio.ch=ALL-UNNAMED
