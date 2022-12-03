@@ -1,5 +1,5 @@
-base64 code_sign.p12 | pbcopy
-base64 asciidocfx.pfx | pbcopy
+base64 -i code_sign.p12 | pbcopy
+base64 -i asciidocfx.pfx | pbcopy
 git tag -a v1.8.3 -m "Version 1.8.3"
 git tag -d v1.8.3
 git push --delete origin v1.8.3
