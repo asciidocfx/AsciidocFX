@@ -1,4 +1,4 @@
-= Asciidoc Book Editor based on JavaFX 18
+= Asciidoc Book Editor based on JavaFX 19
 :experimental:
 ifdef::env-github[]
 :toc:
