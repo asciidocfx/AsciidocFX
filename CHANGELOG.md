@@ -2,6 +2,13 @@
 
 All notable changes are documented in this file.
 
+## [Version ~1.8.3](https://github.com/asciidocfx/AsciidocFX/releases/tag/v1.8.3) (12.2022)
+
+* Java 19 Virtual Threads
+* Sign Windows installers
+* Install4J 10 Upgrade
+* Spring Boot 3, and AsciidoctorJ version upgrade
+
 ## [Version ~1.8.2](https://github.com/asciidocfx/AsciidocFX/releases/tag/v1.8.2) (11.2022)
 
 * Bugfix for math extension https://github.com/asciidocfx/AsciidocFX/issues/574

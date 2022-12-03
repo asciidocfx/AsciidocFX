@@ -9,7 +9,7 @@ ifndef::env-github[]
 :toc-placement: left
 endif::[]
 :imagesdir: images
-:asciidocfx-version: 1.8.2
+:asciidocfx-version: 1.8.3
 :download-root: https://github.com/asciidocfx/AsciidocFX/releases/download/v{asciidocfx-version}/
 
 image:https://opencollective.com/AsciidocFX/backers/badge.svg["Backers on Open Collective", link="#backers"]
