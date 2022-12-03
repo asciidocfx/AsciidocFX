@@ -17,8 +17,9 @@
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <mainClass>com.kodedu.boot.AppStarter</mainClass>
         <install4j.home>${env.GITHUB_WORKSPACE}/install4j9.0.7</install4j.home>
-        <install4j.licenseKey>${env.LICENSE_KEY_9}</install4j.licenseKey>
-        <install4j.keyStorePassword>${env.MAC_KEYSTORE_PASSWORD}</install4j.keyStorePassword>
+        <install4j.licenseKey>${env.LICENSE_KEY_10}</install4j.licenseKey>
+        <install4j.macKeyStorePassword>${env.MAC_KEYSTORE_PASSWORD}</install4j.macKeyStorePassword>
+        <install4j.winKeyStorePassword>${env.WIN_KEYSTORE_PASSWORD}</install4j.winKeyStorePassword>
         <openjfx.version>19</openjfx.version>
         <ikonli.version>12.3.1</ikonli.version>
         <jaxb.version>2.3.2</jaxb.version>
@@ -533,7 +534,8 @@
                                     <projectFile>${project.basedir}/asciidocfx.install4j</projectFile>
                                     <installDir>${install4j.home}</installDir>
                                     <license>${install4j.licenseKey}</license>
-                                    <macKeystorePassword>${install4j.keyStorePassword}</macKeystorePassword>
+                                    <macKeystorePassword>${install4j.macKeyStorePassword}</macKeystorePassword>
+                                    <winKeystorePassword>${install4j.winKeyStorePassword}</winKeystorePassword>
                                 </configuration>
                             </execution>
                         </executions>

@@ -9,10 +9,12 @@ on:
   pull_request:
       
 env:
-  INSTALL4J_URL: https://download-gcdn.ej-technologies.com/install4j/install4j_linux-x64_9_0_7.tar.gz
-  LICENSE_KEY_9: ${{ secrets.LICENSE_KEY_9 }}
+  INSTALL4J_URL: https://download.ej-technologies.com/install4j/install4j_linux-x64_10_0_4.tar.gz
+  LICENSE_KEY_10: ${{ secrets.LICENSE_KEY_10 }}
   CODE_SIGN_P12: ${{ secrets.CODE_SIGN_P12 }}
+  WIN_CODE_SIGN_PFX: ${{ secrets.WIN_CODE_SIGN_PFX }}
   MAC_KEYSTORE_PASSWORD: ${{ secrets.MAC_KEYSTORE_PASSWORD }}
+  WIN_KEYSTORE_PASSWORD: ${{ secrets.WIN_KEYSTORE_PASSWORD }}
 
 jobs:
   build:
@@ -30,9 +32,11 @@ jobs:
     - name: Download install4j
       run: |
          wget --tries=3 ${{ env.INSTALL4J_URL }}
-         tar zxvf install4j_linux-x64_9_0_7.tar.gz     
-    - name: Add signing key
-      run: 'echo "$CODE_SIGN_P12" | base64 -d  >code_sign.p12'  
+         tar zxvf install4j_linux-x64_10_0_4.tar.gz
+    - name: Add signing key for MAC
+      run: 'echo "$CODE_SIGN_P12" | base64 -d  >code_sign.p12'
+    - name: Add signing key for WIN
+      run: 'echo "$WIN_CODE_SIGN_PFX" | base64 -d  >win_code_sign.pfx'
     - name: Build with install4j
       run: mvn -B -DskipTests -T 1.5C -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.httpconnectionManager.ttlSeconds=600 clean install -P install4j  
     - name: Prepare release notes

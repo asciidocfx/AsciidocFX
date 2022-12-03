@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<install4j version="9.0.7" transformSequenceNumber="9">
-  <directoryPresets config="/Users/usta/projects/AsciidocFX/jmods" />
+<install4j version="10.0.4" transformSequenceNumber="10">
+  <directoryPresets config="/Users/usta/Library/CloudStorage/GoogleDrive-rahman.usta.88@gmail.com/My Drive/projects/AsciidocFX/cert/asciidocfx.pfx" />
   <application name="AsciidocFX" applicationId="7853-9376-5862-1224" mediaDir="target" compression="4" lzmaCompression="true" excludeSignedFromPacking="false" shortName="AsciidocFX" publisher="AsciidocFX" publisherWeb="http://asciidocfx.com" version="1.8.2" macVolumeId="b98c377570068f5e" javaMinVersion="19" javaMaxVersion="19" allowBetaVM="true">
     <searchSequence>
       <envVar name="JAVA_HOME" />
       <envVar name="JDK_HOME" />
       <registry />
     </searchSequence>
-    <codeSigning macEnabled="true" macPkcs12File="${compiler:env.GITHUB_WORKSPACE}/code_sign.p12" />
-    <jreBundles jdkProviderId="Adoptium" release="19/jdk-19+36" />
+    <codeSigning macEnabled="true" macPkcs12File="${compiler:env.GITHUB_WORKSPACE}/code_sign.p12" windowsEnabled="true" windowsPkcs12File="${compiler:env.GITHUB_WORKSPACE}/win_code_sign.pfx" />
+    <jreBundles jdkProviderId="Adoptium" release="19/jdk-19.0.1+10" />
   </application>
-  <files globalExcludeSuffixes="bin" defaultOverwriteMode="1" launcherOverwriteMode="1" defaultFileMode="755" preserveSymlinks="false">
+  <files globalExcludeSuffixes="bin" defaultOverwriteMode="1" launcherOverwriteMode="1" defaultFileMode="755">
     <mountPoints>
       <mountPoint id="23" />
     </mountPoints>
@@ -37,10 +37,12 @@
 -Duser.language=en
 -Duser.country=US
 -Dfile.encoding=UTF-8
--Xms128M
--Xmx756M
+-Xms256M
+-Xmx1024M
+--enable-preview
 -Djava.awt.headless=false
 -Dsun.java2d.metal=true
+-Djavafx.autoproxy.disable=true
 -Dorg.apache.xml.dtm.DTMManager=org.apache.xml.dtm.ref.DTMManagerDefault
 --add-opens
 java.base/sun.nio.ch=ALL-UNNAMED
@@ -120,6 +122,12 @@ javafx.controls/com.sun.javafx.scene.control=ALL-UNNAMED
       <iconImageFiles>
         <file path="src/main/resources/logo.png" />
       </iconImageFiles>
+      <macStaticAssociations>
+        <fileAssociation extension="adoc" description="Asciidoc File" role="editor" />
+        <fileAssociation extension="asciidoc" description="Asciidoc File" role="editor" />
+        <fileAssociation extension="ad" description="Asciidoc File" role="editor" />
+        <fileAssociation extension="asc" description="Asciidoc File" role="editor" />
+      </macStaticAssociations>
     </launcher>
   </launchers>
   <installerGui autoUpdateDescriptorUrl="https://asciidocfx.com/releases/updates.xml" useAutoUpdateBaseUrl="true" autoUpdateBaseUrl="https://asciidocfx.com/releases/">
@@ -299,7 +307,6 @@ return console.askOkCancel(message, true);
                       <property name="description" type="string">Asciidoc File</property>
                       <property name="extension" type="string">adoc</property>
                       <property name="launcherId" type="string">24</property>
-                      <property name="macRole" type="enum" class="com.install4j.runtime.beans.actions.desktop.MacAssociationRole" value="EDITOR" />
                     </serializedBean>
                   </action>
                   <action id="228" beanClass="com.install4j.runtime.beans.actions.desktop.CreateFileAssociationAction" actionElevationType="elevated">
@@ -307,7 +314,6 @@ return console.askOkCancel(message, true);
                       <property name="description" type="string">Asciidoc File</property>
                       <property name="extension" type="string">asciidoc</property>
                       <property name="launcherId" type="string">24</property>
-                      <property name="macRole" type="enum" class="com.install4j.runtime.beans.actions.desktop.MacAssociationRole" value="EDITOR" />
                     </serializedBean>
                   </action>
                   <action id="230" beanClass="com.install4j.runtime.beans.actions.desktop.CreateFileAssociationAction" actionElevationType="elevated">
@@ -315,7 +321,6 @@ return console.askOkCancel(message, true);
                       <property name="description" type="string">Asciidoc File</property>
                       <property name="extension" type="string">ad</property>
                       <property name="launcherId" type="string">24</property>
-                      <property name="macRole" type="enum" class="com.install4j.runtime.beans.actions.desktop.MacAssociationRole" value="EDITOR" />
                     </serializedBean>
                   </action>
                   <action id="225" beanClass="com.install4j.runtime.beans.actions.desktop.CreateFileAssociationAction" actionElevationType="elevated">
@@ -323,7 +328,6 @@ return console.askOkCancel(message, true);
                       <property name="description" type="string">Asciidoc File</property>
                       <property name="extension" type="string">asc</property>
                       <property name="launcherId" type="string">24</property>
-                      <property name="macRole" type="enum" class="com.install4j.runtime.beans.actions.desktop.MacAssociationRole" value="EDITOR" />
                     </serializedBean>
                   </action>
                 </beans>
@@ -1156,7 +1160,7 @@ return true;</property>
     </styles>
   </installerGui>
   <mediaSets>
-    <windows name="Windows Installer" id="86" mediaFileName="AsciidocFX_Windows">
+    <windows name="Windows Installer" id="86" mediaFileName="AsciidocFX_Windows" architecture="64">
       <jreBundle usePack200="false" includedJre="windows-amd64-12">
         <modules>
           <jmodDirectory location="jmods/windows" />
@@ -1170,7 +1174,7 @@ return true;</property>
         </modules>
       </jreBundle>
     </macosFolder>
-    <windowsArchive name="Windows Archive" id="223" mediaFileName="AsciidocFX_Windows">
+    <windowsArchive name="Windows Archive" id="223" mediaFileName="AsciidocFX_Windows" architecture="64">
       <jreBundle includedJre="windows-amd64-12">
         <modules>
           <jmodDirectory location="jmods/windows" />
