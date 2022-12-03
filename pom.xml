@@ -149,7 +149,7 @@
         <dependency>
             <groupId>com.install4j</groupId>
             <artifactId>install4j-runtime</artifactId>
-            <version>9.0.7</version>
+            <version>10.0.4</version>
             <!--            <scope>provided</scope>-->
         </dependency>
         <dependency>
