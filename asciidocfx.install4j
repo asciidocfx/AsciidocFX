@@ -7,7 +7,7 @@
       <envVar name="JDK_HOME" />
       <registry />
     </searchSequence>
-    <codeSigning macEnabled="true" macPkcs12File="${compiler:env.GITHUB_WORKSPACE}/code_sign.p12" windowsEnabled="true" windowsPkcs12File="${compiler:env.GITHUB_WORKSPACE}/win_code_sign.pfx" />
+    <codeSigning macEnabled="true" macPkcs12File="${compiler:env.GITHUB_WORKSPACE}/mac_code_sign.p12" windowsEnabled="true" windowsPkcs12File="${compiler:env.GITHUB_WORKSPACE}/win_code_sign.pfx" />
     <jreBundles jdkProviderId="Adoptium" release="19/jdk-19.0.1+10" />
   </application>
   <files globalExcludeSuffixes="bin" defaultOverwriteMode="1" launcherOverwriteMode="1" defaultFileMode="755">

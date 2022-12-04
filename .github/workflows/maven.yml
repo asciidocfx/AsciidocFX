@@ -11,7 +11,7 @@ on:
 env:
   INSTALL4J_URL: https://download.ej-technologies.com/install4j/install4j_linux-x64_10_0_4.tar.gz
   LICENSE_KEY_10: ${{ secrets.LICENSE_KEY_10 }}
-  CODE_SIGN_P12: ${{ secrets.CODE_SIGN_P12 }}
+  MAC_CODE_SIGN_P12: ${{ secrets.MAC_CODE_SIGN_P12 }}
   WIN_CODE_SIGN_PFX: ${{ secrets.WIN_CODE_SIGN_PFX }}
   MAC_KEYSTORE_PASSWORD: ${{ secrets.MAC_KEYSTORE_PASSWORD }}
   WIN_KEYSTORE_PASSWORD: ${{ secrets.WIN_KEYSTORE_PASSWORD }}
@@ -34,7 +34,7 @@ jobs:
          wget --tries=3 ${{ env.INSTALL4J_URL }}
          tar zxvf install4j_linux-x64_10_0_4.tar.gz
     - name: Add signing key for MAC
-      run: 'echo "$CODE_SIGN_P12" | base64 -d  >code_sign.p12'
+      run: 'echo "$MAC_CODE_SIGN_P12" | base64 -d  >mac_code_sign.p12'
     - name: Add signing key for WIN
       run: 'echo "$WIN_CODE_SIGN_PFX" | base64 -d  >win_code_sign.pfx'
     - name: Build with install4j
