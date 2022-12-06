@@ -2,9 +2,9 @@ package com.kodedu.service.impl;
 
 import com.kodedu.helper.OSHelper;
 import com.kodedu.service.PathOrderService;
-
 import org.springframework.stereotype.Component;
 
+import java.nio.file.Files;
 import java.nio.file.Path;
 
 /**
@@ -14,6 +14,14 @@ import java.nio.file.Path;
 public class PathOrderServiceImpl implements PathOrderService {
     @Override
     public int comparePaths(Path first, Path second) {
+
+        if (Files.isDirectory(first) && !Files.isDirectory(second)) {
+            return -1;
+        }
+
+        if (Files.isDirectory(second) && !Files.isDirectory(first)) {
+            return 1;
+        }
 
         if (OSHelper.isMac() || OSHelper.isWindows())
             return first.getFileName().toString().compareToIgnoreCase(second.getFileName().toString());
