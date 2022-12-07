@@ -256,9 +256,6 @@
                                                                                           mnemonicParsing="false"
                                                                                           onAction="#createFolder"
                                                                                           text="New Folder"/>
-                                                                                <MenuItem fx:id="newSlide"
-                                                                                          onAction="#newSlide"
-                                                                                          text="New Slide"/>
                                                                             </items>
                                                                         </Menu>
                                                                         <Menu fx:id="menuTemplates" text="New Template"

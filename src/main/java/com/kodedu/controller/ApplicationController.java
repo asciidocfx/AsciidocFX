@@ -2844,39 +2844,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     }
 
     @FXML
-    public void newSlide(ActionEvent actionEvent) {
-
-        DialogBuilder dialog = DialogBuilder.newFolderDialog();
-
-        dialog.showAndWait().map(String::trim).ifPresent(folderName -> {
-            if (dialog.isShowing()) {
-                dialog.hide();
-            }
-
-            if (folderName.matches(DialogBuilder.FOLDER_NAME_REGEX)) {
-
-                Path path = getSelectedItemOrWorkspacePath().orElseThrow(() -> {
-                    throw new IllegalStateException("Can't add a slide without a workspace or a selected item in the view");
-                });
-
-                Path folderPath = path.resolve(folderName);
-
-                threadService.runTaskLater(() -> {
-                    IOHelper.createDirectories(folderPath);
-                    indikatorService.startProgressBar();
-                    IOHelper.copyDirectory(getConfigPath().resolve("slide/frameworks"), folderPath);
-                    indikatorService.stopProgressBar();
-                    threadService.runActionLater(() -> {
-                        tabService.addTab(folderPath.resolve("slide.adoc"));
-                    });
-                    directoryService.changeWorkigDir(folderPath);
-                });
-            }
-        });
-
-    }
-
-    @FXML
     public void addToFavoriteDir(ActionEvent actionEvent) {
         Path selectedTabPath = tabService.getSelectedTabPath();
         if (Files.isDirectory(selectedTabPath)) {
