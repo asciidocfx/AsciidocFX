@@ -190,7 +190,6 @@ public class AppStarter extends Application {
             controller.bindConfigurations();
             controller.initializeApp();
             controller.showConfigLoaderOnNewInstall();
-            context.getBean(IndikatorService.class).startProgressBar();
             logger.debug("AsciidocFX started in {} ms.", System.currentTimeMillis() - startTime);
         });
 

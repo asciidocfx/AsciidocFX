@@ -1,6 +1,5 @@
 package com.kodedu.service;
 
-import com.kodedu.service.ui.IndikatorService;
 import org.asciidoctor.Asciidoctor;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.event.ContextRefreshedEvent;
@@ -27,11 +26,6 @@ public class AsciidoctorFactory {
         Thread.startVirtualThread(() -> {
             plainDoctor = context.getBean("plainDoctor", Asciidoctor.class);
             plainDoctorReady.countDown();
-        });
-        Thread.startVirtualThread(() -> {
-            waitLatch(standardDoctorReady);
-            waitLatch(plainDoctorReady);
-            context.getBean(IndikatorService.class).stopProgressBar();
         });
     }
 
