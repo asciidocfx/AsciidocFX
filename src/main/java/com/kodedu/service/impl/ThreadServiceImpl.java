@@ -114,8 +114,7 @@ public class ThreadServiceImpl implements ThreadService {
 
     @Override
     public void start(Runnable runnable) {
-        Thread thread = new Thread(runnable);
-        thread.start();
+        threadPollWorker.submit(runnable);
     }
 
     @Override
