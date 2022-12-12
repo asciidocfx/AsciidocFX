@@ -85,7 +85,7 @@ editor.getSession().on('changeScrollTop', function (scroll) {
 var updateStatusAction = new BufferedAction();
 function updateStatusBox() {
 
-    updateStatusAction.buff(function () {
+    updateStatusAction.throttle(function () {
         var cursorPosition = editor.getCursorPosition();
         var row = cursorPosition.row;
         var column = cursorPosition.column;
@@ -114,15 +114,13 @@ editor.getSession().selection.on('changeCursor', function (e) {
 var renderAction = new BufferedAction();
 var editorChangeListener = function (obj) {
 
-    if (afterFirstChange)
+    if (afterFirstChange) {
         editorPane.appendWildcard();
+    }
 
-    renderAction.buff(function () {
-        afx.textListener(editor.getValue(), editorMode(), editorPane.getPath());
-    }, 100);
+    afx.textListener(editor.getValue(), editorMode(), editorPane.getPath());
 
     checkSpelling();
-
 };
 
 function clearTypoMarkers() {
@@ -287,10 +285,9 @@ function initializeEmmet(mode) {
 
 var rerenderAction = new BufferedAction();
 function rerender() {
-    rerenderAction.buff(function () {
-        afx.textListener(editor.getValue(), editorMode(), editorPane.getPath());
-        updateStatusBox();
-    }, 100);
+    afx.textListener(editor.getValue(), editorMode(), editorPane.getPath());
+    updateStatusBox();
+
     if (markers.length == 0) {
         checkSpelling();
     }
