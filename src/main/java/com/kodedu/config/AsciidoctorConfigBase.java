@@ -1,45 +1,17 @@
 package com.kodedu.config;
 
+import com.dooapp.fxform.FXForm;
+import com.dooapp.fxform.builder.FXFormBuilder;
+import com.dooapp.fxform.handler.NamedFieldHandler;
+import com.dooapp.fxform.view.factory.DefaultFactoryProvider;
 import com.kodedu.config.AsciidoctorConfigBase.LoadedAttributes;
 import com.kodedu.config.factory.ListChoiceBoxFactory;
 import com.kodedu.config.factory.TableFactory;
 import com.kodedu.controller.ApplicationController;
 import com.kodedu.helper.IOHelper;
 import com.kodedu.service.ThreadService;
-
-import java.io.Reader;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.*;
-
-import jakarta.json.Json;
-import jakarta.json.JsonObject;
-import jakarta.json.JsonObjectBuilder;
-import jakarta.json.JsonReader;
-import jakarta.json.JsonString;
-import jakarta.json.JsonValue;
-
-import org.asciidoctor.*;
-import org.asciidoctor.ast.Document;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-//import com.dooapp.fxform.annotation.Accessor;
-
-import com.dooapp.fxform.FXForm;
-import com.dooapp.fxform.builder.FXFormBuilder;
-import com.dooapp.fxform.handler.NamedFieldHandler;
-import com.dooapp.fxform.view.factory.DefaultFactoryProvider;
-
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.ListProperty;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleListProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import jakarta.json.*;
+import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -50,6 +22,21 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TableView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import org.asciidoctor.Attributes;
+import org.asciidoctor.AttributesBuilder;
+import org.asciidoctor.Options;
+import org.asciidoctor.SafeMode;
+import org.asciidoctor.ast.Document;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.Reader;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.*;
+
+import static com.kodedu.service.AsciidoctorFactory.getPlainDoctor;
 
 /**
  * Created by usta on 17.07.2015.
@@ -69,7 +56,6 @@ public abstract class AsciidoctorConfigBase<T extends LoadedAttributes> extends 
     private ListProperty<AttributesTable> attributes = new SimpleListProperty<>(FXCollections.observableArrayList());
 
     private final ApplicationController controller;
-    private final Asciidoctor asciidoctor;
 
     private final ThreadService threadService;
 
@@ -81,11 +67,10 @@ public abstract class AsciidoctorConfigBase<T extends LoadedAttributes> extends 
     private final Button loadButton = new Button("Load");
     private final Label infoLabel = new Label();
 
-    public AsciidoctorConfigBase(ApplicationController controller, ThreadService threadService, Asciidoctor asciidoctor) {
+    public AsciidoctorConfigBase(ApplicationController controller, ThreadService threadService) {
         super(controller, threadService);
         this.controller = controller;
         this.threadService = threadService;
-        this.asciidoctor = asciidoctor;
     }
 
     public String getBackend() {
@@ -328,7 +313,7 @@ public abstract class AsciidoctorConfigBase<T extends LoadedAttributes> extends 
     }
 
     public Attributes getAsciiDocAttributes(String asciidoc) {
-        Document document = asciidoctor.load(asciidoc, Options.builder()
+        Document document = getPlainDoctor().load(asciidoc, Options.builder()
                 .backend(getBackend())
                 .safe(SafeMode.UNSAFE)
                 .sourcemap(true)

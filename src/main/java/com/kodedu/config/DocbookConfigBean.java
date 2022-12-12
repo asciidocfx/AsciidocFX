@@ -3,10 +3,7 @@ package com.kodedu.config;
 import com.kodedu.config.AsciidoctorConfigBase.NoAttributes;
 import com.kodedu.controller.ApplicationController;
 import com.kodedu.service.ThreadService;
-
-import org.asciidoctor.Asciidoctor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import java.nio.file.Path;
@@ -19,7 +16,6 @@ public class DocbookConfigBean extends AsciidoctorConfigBase<NoAttributes> {
 
     private final ApplicationController controller;
     private final ThreadService threadService;
-    private final Asciidoctor asciidoctor;
 
     @Override
     public String formName() {
@@ -27,12 +23,10 @@ public class DocbookConfigBean extends AsciidoctorConfigBase<NoAttributes> {
     }
 
     @Autowired
-    public DocbookConfigBean(ApplicationController controller, ThreadService threadService,
-                             @Qualifier("plainDoctor") Asciidoctor asciidoctor) {
-        super(controller, threadService, asciidoctor);
+    public DocbookConfigBean(ApplicationController controller, ThreadService threadService) {
+        super(controller, threadService);
         this.controller = controller;
         this.threadService = threadService;
-        this.asciidoctor = asciidoctor;
     }
 
     @Override

@@ -4,31 +4,26 @@ import com.kodedu.config.DocbookConfigBean;
 import com.kodedu.controller.ApplicationController;
 import com.kodedu.engine.AsciidocConverterProvider;
 import com.kodedu.helper.IOHelper;
-import com.kodedu.helper.XMLHelper;
 import com.kodedu.other.Current;
 import com.kodedu.other.ExtensionFilters;
+import com.kodedu.service.AsciidoctorFactory;
 import com.kodedu.service.DirectoryService;
 import com.kodedu.service.ThreadService;
 import com.kodedu.service.convert.DocumentConverter;
 import com.kodedu.service.ui.IndikatorService;
-import org.asciidoctor.Asciidoctor;
 import org.asciidoctor.Attributes;
 import org.asciidoctor.Options;
 import org.asciidoctor.SafeMode;
-import org.joox.Match;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
-import org.xml.sax.InputSource;
 
-import java.io.StringReader;
 import java.nio.file.Path;
 import java.util.function.Consumer;
 
 import static com.kodedu.helper.AsciidoctorHelper.convertSafe;
-import static org.joox.JOOX.$;
+import static com.kodedu.service.AsciidoctorFactory.getStandardDoctor;
 
 /**
  * Created by usta on 19.07.2014.
@@ -47,13 +42,11 @@ public class DocBookConverter implements DocbookTraversable, DocumentConverter<S
     private final DirectoryService directoryService;
     private final ApplicationController applicationController;
 
-    private final Asciidoctor asciidoctor;
-
     @Autowired
     public DocBookConverter(Current current, AsciidocConverterProvider converterProvider,
                             DocbookValidator docbookValidator, DocbookConfigBean docbookConfigBean,
                             ThreadService threadService,
-                            IndikatorService indikatorService, DirectoryService directoryService, ApplicationController applicationController, @Qualifier("standardDoctor") Asciidoctor asciidoctor) {
+                            IndikatorService indikatorService, DirectoryService directoryService, ApplicationController applicationController) {
         this.current = current;
         this.converterProvider = converterProvider;
         this.docbookValidator = docbookValidator;
@@ -62,7 +55,6 @@ public class DocBookConverter implements DocbookTraversable, DocumentConverter<S
         this.indikatorService = indikatorService;
         this.directoryService = directoryService;
         this.applicationController = applicationController;
-        this.asciidoctor = asciidoctor;
     }
 
 
@@ -94,7 +86,7 @@ public class DocBookConverter implements DocbookTraversable, DocumentConverter<S
                         .attributes(attributes)
                         .build();
 
-                asciidoctor.convert(asciidoc, options);
+                getStandardDoctor().convert(asciidoc, options);
                 String rendered = IOHelper.readFile(docbookPath);
                 boolean validated = docbookValidator.validateDocbook(rendered);
 

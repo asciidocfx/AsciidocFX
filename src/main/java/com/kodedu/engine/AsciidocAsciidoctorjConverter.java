@@ -9,7 +9,12 @@ import com.kodedu.other.Current;
 import com.kodedu.outline.Outliner;
 import com.kodedu.outline.Section;
 import com.kodedu.service.ThreadService;
-
+import org.asciidoctor.Attributes;
+import org.asciidoctor.Options;
+import org.asciidoctor.SafeMode;
+import org.asciidoctor.ast.Document;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -18,15 +23,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import org.asciidoctor.Asciidoctor;
-import org.asciidoctor.Attributes;
-import org.asciidoctor.Options;
-import org.asciidoctor.SafeMode;
-import org.asciidoctor.ast.Document;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import static com.kodedu.helper.AsciidoctorHelper.convertSafe;
+import static com.kodedu.service.AsciidoctorFactory.getStandardDoctor;
 
 @Component("AsciidoctorjEngine")
 public class AsciidocAsciidoctorjConverter extends ViewPanel implements AsciidocConvertible {
@@ -38,19 +36,16 @@ public class AsciidocAsciidoctorjConverter extends ViewPanel implements Asciidoc
 	private final DocbookConfigBean docbookConfigBean;
 	private final ThreadService threadService;
 
-	private final Asciidoctor doctor;
-
     @Autowired
 	public AsciidocAsciidoctorjConverter(ThreadService threadService, ApplicationController controller,
 										 Current current, EditorConfigBean editorConfigBean,
 										 PreviewConfigBean previewConfigBean, HtmlConfigBean htmlConfigBean,
-										 RevealjsConfigBean revealjsConfigBean, DocbookConfigBean docbookConfigBean, Asciidoctor doctor) {
+										 RevealjsConfigBean revealjsConfigBean, DocbookConfigBean docbookConfigBean) {
 		super(threadService, controller, current, editorConfigBean);
 		this.previewConfigBean = previewConfigBean;
 		this.threadService = threadService;
 		this.revealjsConfigBean = revealjsConfigBean;
 		this.docbookConfigBean = docbookConfigBean;
-		this.doctor = doctor;
 	}
 
 	@Override
@@ -125,7 +120,7 @@ public class AsciidocAsciidoctorjConverter extends ViewPanel implements Asciidoc
 		// The generated plantuml images are in the wrong location
 		// See also https://github.com/asciidoctor/asciidoctorj-diagram/issues/25
 		// String converted = doc.convert();
-		String converted = doctor.convert(text, options);
+		String converted = getStandardDoctor().convert(text, options);
 		logger.info("Converted Asciidoc to {}", backend.toUpperCase());
 
         final String taskId = UUID.randomUUID().toString();

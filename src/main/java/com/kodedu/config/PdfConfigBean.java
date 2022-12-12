@@ -29,7 +29,6 @@ public class PdfConfigBean extends AsciidoctorConfigBase<PdfConfigAttributes> {
 
     private final ApplicationController controller;
     private final ThreadService threadService;
-	private final Asciidoctor asciidoctor;
 
     private ObjectProperty<PdfConverterType> converter = new SimpleObjectProperty<>(PdfConverterType.FOP);
 
@@ -41,12 +40,10 @@ public class PdfConfigBean extends AsciidoctorConfigBase<PdfConfigAttributes> {
     }
 
     @Autowired
-    public PdfConfigBean(ApplicationController controller, ThreadService threadService,
-						 @Qualifier("plainDoctor") Asciidoctor asciidoctor) {
-        super(controller, threadService, asciidoctor);
+    public PdfConfigBean(ApplicationController controller, ThreadService threadService) {
+        super(controller, threadService);
         this.controller = controller;
         this.threadService = threadService;
-		this.asciidoctor = asciidoctor;
 	}
 
     @Override

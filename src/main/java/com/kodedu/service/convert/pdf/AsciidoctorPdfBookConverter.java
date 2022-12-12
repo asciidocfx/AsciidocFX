@@ -1,23 +1,20 @@
 package com.kodedu.service.convert.pdf;
 
-import com.kodedu.config.AsciidoctorConfigBase;
-import com.kodedu.config.PdfConfigAttributes;
 import com.kodedu.config.PdfConfigBean;
 import com.kodedu.controller.ApplicationController;
 import com.kodedu.other.Current;
 import com.kodedu.other.ExtensionFilters;
+import com.kodedu.service.AsciidoctorFactory;
 import com.kodedu.service.DirectoryService;
 import com.kodedu.service.ThreadService;
 import com.kodedu.service.convert.DocumentConverter;
 import com.kodedu.service.ui.IndikatorService;
-import org.asciidoctor.Asciidoctor;
 import org.asciidoctor.Attributes;
 import org.asciidoctor.Options;
 import org.asciidoctor.SafeMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
@@ -25,6 +22,7 @@ import java.nio.file.Path;
 import java.util.function.Consumer;
 
 import static com.kodedu.helper.AsciidoctorHelper.convertSafe;
+import static com.kodedu.service.AsciidoctorFactory.getStandardDoctor;
 
 /**
  * Created by usta on 09.04.2015.
@@ -40,20 +38,18 @@ public class AsciidoctorPdfBookConverter implements DocumentConverter<String> {
     private final DirectoryService directoryService;
     private final Current current;
 	private final PdfConfigBean pdfConfigBean;
-	private final Asciidoctor doctor;
 
     @Autowired
     public AsciidoctorPdfBookConverter(final ApplicationController asciiDocController,
                             final IndikatorService indikatorService, final PdfConfigBean pdfConfigBean,
                             final ThreadService threadService, final DirectoryService directoryService,
-                            final Current current, @Qualifier("standardDoctor") Asciidoctor doctor) {
+                            final Current current) {
         this.asciiDocController = asciiDocController;
         this.indikatorService = indikatorService;
         this.threadService = threadService;
         this.directoryService = directoryService;
         this.current = current;
         this.pdfConfigBean = pdfConfigBean;
-        this.doctor = doctor;
     }
 
 
@@ -85,7 +81,7 @@ public class AsciidoctorPdfBookConverter implements DocumentConverter<String> {
 						.headerFooter(pdfConfigBean.getHeader_footer())
 						.attributes(attributes)
 						.build();
-				doctor.convert(asciidoc, options);
+				getStandardDoctor().convert(asciidoc, options);
 				asciiDocController.addRemoveRecentList(pdfPath);
 			} finally {
 				indikatorService.stopProgressBar();

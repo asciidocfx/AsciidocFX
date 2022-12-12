@@ -19,9 +19,8 @@ package com.kodedu.boot;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kodedu.controller.ApplicationController;
 import com.kodedu.service.extension.chart.ChartBlockProcessor;
-
-import com.kodedu.service.extension.math.blockmacro.MathBlockMacroProcessor;
 import com.kodedu.service.extension.math.block.MathBlockProcessor;
+import com.kodedu.service.extension.math.blockmacro.MathBlockMacroProcessor;
 import com.kodedu.service.extension.math.inlinemacro.MathInlineMacroProcessor;
 import com.kodedu.service.extension.processor.CacheSuffixAppenderProcessor;
 import com.kodedu.service.extension.processor.DataLineProcessor;
@@ -30,12 +29,13 @@ import com.kodedu.service.extension.processor.ExtensionPreprocessor;
 import com.kodedu.service.extension.tree.FileTreeBlockMacroProcessor;
 import com.kodedu.service.extension.tree.FileTreeBlockProcessor;
 import com.kodedu.service.extension.tree.FileTreeInlineMacroProcessor;
+import org.asciidoctor.Asciidoctor;
 import org.asciidoctor.extension.JavaExtensionRegistry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.boot.web.embedded.tomcat.TomcatProtocolHandlerCustomizer;
+import org.springframework.boot.web.embedded.undertow.UndertowServletWebServerFactory;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.*;
 import org.springframework.core.task.AsyncTaskExecutor;
@@ -47,8 +47,6 @@ import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry
 
 import java.util.Base64;
 import java.util.concurrent.Executors;
-
-import org.asciidoctor.Asciidoctor;
 
 
 @Configuration
@@ -83,6 +81,7 @@ public class SpringAppConfig extends SpringBootServletInitializer implements Web
 
     @Bean(destroyMethod = "shutdown")
     @Primary
+    @Lazy
     public Asciidoctor standardDoctor(ChartBlockProcessor fxChartBlockProcessor,
                                       FileTreeBlockProcessor treeBlockProcessor,
                                       MathBlockProcessor[] mathBlockProcessor,
@@ -123,6 +122,7 @@ public class SpringAppConfig extends SpringBootServletInitializer implements Web
     }
 
     @Bean(destroyMethod = "shutdown")
+    @Lazy
     public Asciidoctor plainDoctor(DocumentAttributeProcessor documentAttributeProcessor) {
         Asciidoctor doctor = Asciidoctor.Factory.create();
         doctor.requireLibrary("asciidoctor-pdf");
@@ -143,13 +143,6 @@ public class SpringAppConfig extends SpringBootServletInitializer implements Web
     @Bean(TaskExecutionAutoConfiguration.APPLICATION_TASK_EXECUTOR_BEAN_NAME)
     public AsyncTaskExecutor asyncTaskExecutor() {
         return new TaskExecutorAdapter(Executors.newVirtualThreadPerTaskExecutor());
-    }
-
-    @Bean
-    public TomcatProtocolHandlerCustomizer<?> protocolHandlerVirtualThreadExecutorCustomizer() {
-        return protocolHandler -> {
-            protocolHandler.setExecutor(Executors.newVirtualThreadPerTaskExecutor());
-        };
     }
 
 }

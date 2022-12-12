@@ -19,7 +19,6 @@ public class PreviewConfigBean extends AsciidoctorConfigBase<NoAttributes> {
 
     private final ApplicationController controller;
     private final ThreadService threadService;
-    private final Asciidoctor asciidoctor;
 
     @Override
     public String formName() {
@@ -27,12 +26,10 @@ public class PreviewConfigBean extends AsciidoctorConfigBase<NoAttributes> {
     }
 
     @Autowired
-    public PreviewConfigBean(ApplicationController controller, ThreadService threadService,
-                             @Qualifier("plainDoctor") Asciidoctor asciidoctor) {
-        super(controller, threadService, asciidoctor);
+    public PreviewConfigBean(ApplicationController controller, ThreadService threadService) {
+        super(controller, threadService);
         this.controller = controller;
         this.threadService = threadService;
-        this.asciidoctor = asciidoctor;
     }
 
     @Override

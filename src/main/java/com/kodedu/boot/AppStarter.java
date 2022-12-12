@@ -2,13 +2,13 @@ package com.kodedu.boot;
 
 import com.install4j.api.launcher.StartupNotification;
 import com.kodedu.config.ConfigurationService;
-import com.kodedu.config.EditorConfigBean;
 import com.kodedu.controller.ApplicationController;
 import com.kodedu.helper.IOHelper;
 import com.kodedu.helper.TaskbarHelper;
 import com.kodedu.service.DirectoryService;
 import com.kodedu.service.FileOpenListener;
 import com.kodedu.service.ThreadService;
+import com.kodedu.service.ui.IndikatorService;
 import com.kodedu.service.ui.TabService;
 import com.kodedu.terminalfx.helper.ThreadHelper;
 import de.tototec.cmdoption.CmdlineParser;
@@ -60,14 +60,15 @@ public class AppStarter extends Application {
 
     private static ApplicationController controller;
     private static ConfigurableApplicationContext context;
-    private EditorConfigBean editorConfigBean;
     private static Stage stage;
     private ThreadService threadService;
     private ConfigurationService configurationService;
     private Image logoImage;
+    private long startTime;
 
     @Override
     public void start(final Stage stage) {
+        this.startTime = System.currentTimeMillis();
         stage.setTitle("AsciidocFX");
         logoImage = setApplicationIcon(stage);
         Thread.setDefaultUncaughtExceptionHandler((t, e) -> logger.error(e.getMessage(), e));
@@ -96,13 +97,13 @@ public class AppStarter extends Application {
             System.exit(0);
         }
 
-        new Thread(() -> {
+        Thread.startVirtualThread(() -> {
             try {
                 startApp(stage, config);
             } catch (final Throwable e) {
                 logger.error("Problem occured while starting AsciidocFX", e);
             }
-        }).start();
+        });
 
     }
 
@@ -119,9 +120,9 @@ public class AppStarter extends Application {
     }
 
     static {
-        ThreadHelper.start(() -> {
+        Thread.startVirtualThread(() -> {
             StartupNotification.registerStartupListener(parameters -> {
-                ThreadHelper.start(() -> {
+                Thread.startVirtualThread(() -> {
                     while ((context == null && stage == null) || !stage.isShowing()) {
                         ThreadHelper.sleep(10);
                     }
@@ -154,8 +155,10 @@ public class AppStarter extends Application {
     private void startApp(final Stage stage, final CmdlineConfig config) throws Throwable {
 
         this.stage = stage;
-        context = SpringApplication.run(SpringAppConfig.class);
-        editorConfigBean = context.getBean(EditorConfigBean.class);
+        SpringApplication app = new SpringApplication(SpringAppConfig.class);
+//        app.setApplicationStartup(new BufferingApplicationStartup(20000));
+        context = app.run(new String[]{});
+        logger.debug("Spring context loaded in {} ms.", System.currentTimeMillis() - startTime);
         controller = context.getBean(ApplicationController.class);
         threadService = context.getBean(ThreadService.class);
         configurationService = context.getBean(ConfigurationService.class);
@@ -187,6 +190,8 @@ public class AppStarter extends Application {
             controller.bindConfigurations();
             controller.initializeApp();
             controller.showConfigLoaderOnNewInstall();
+            context.getBean(IndikatorService.class).startProgressBar();
+            logger.debug("AsciidocFX started in {} ms.", System.currentTimeMillis() - startTime);
         });
 
         threadService.runActionLater(() -> {
