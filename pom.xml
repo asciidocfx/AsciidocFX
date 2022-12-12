@@ -78,8 +78,22 @@
             <artifactId>spring-boot-starter-web</artifactId>
             <exclusions>
                 <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-tomcat</artifactId>
+                </exclusion>
+                <exclusion>
                     <artifactId>aopalliance</artifactId>
                     <groupId>aopalliance</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-undertow</artifactId>
+            <exclusions>
+                <exclusion>
+                    <artifactId>jboss-annotations-api_1.2_spec</artifactId>
+                    <groupId>org.jboss.spec.javax.annotation</groupId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -213,7 +227,7 @@
             <artifactId>icu4j-charset</artifactId>
             <version>71.1</version>
         </dependency>
-        
+
         <dependency>
             <groupId>org.asciidoctor</groupId>
             <artifactId>asciidoctorj</artifactId>
@@ -308,11 +322,21 @@
            <artifactId>spring-boot-starter-test</artifactId>
            <scope>test</scope>
         </dependency>
+<!--        <dependency>-->
+<!--            <groupId>org.springframework.boot</groupId>-->
+<!--            <artifactId>spring-boot-starter-actuator</artifactId>-->
+<!--        </dependency>-->
         <dependency>
             <groupId>org.testfx</groupId>
             <artifactId>testfx-junit5</artifactId>
             <version>4.0.16-alpha</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context-indexer</artifactId>
+            <version>6.0.2</version>
+            <optional>true</optional>
         </dependency>
 
     </dependencies>
@@ -339,6 +363,13 @@
                     <compilerArgs>
                         <compilerArg>--enable-preview</compilerArg>
                     </compilerArgs>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.springframework</groupId>
+                            <artifactId>spring-context-indexer</artifactId>
+                            <version>6.0.2</version>
+                        </path>
+                    </annotationProcessorPaths>
                 </configuration>
             </plugin>
             <plugin>
@@ -369,6 +400,22 @@
                     </execution>
                 </executions>
             </plugin>
+<!--            Remove scope=provided for javafx dependencies to run via javafx plugin-->
+<!--            <plugin>-->
+<!--                <groupId>org.openjfx</groupId>-->
+<!--                <artifactId>javafx-maven-plugin</artifactId>-->
+<!--                <version>0.0.8</version>-->
+<!--                <configuration>-->
+<!--                    <mainClass>com.kodedu.boot.AppStarter</mainClass>-->
+<!--                    <options>-->
+<!--                        <option>&#45;&#45;add-opens java.base/sun.nio.ch=ALL-UNNAMED</option>-->
+<!--                        <option>&#45;&#45;add-opens java.base/java.io=ALL-UNNAMED</option>-->
+<!--                        <option>&#45;&#45;add-opens javafx.controls/javafx.scene.control=ALL-UNNAMED</option>-->
+<!--                        <option>&#45;&#45;add-opens javafx.base/com.sun.javafx.collections=javafx.web</option>-->
+<!--                        <option>&#45;&#45;add-opens javafx.base/com.sun.javafx.collections=ALL-UNNAMED</option>-->
+<!--                    </options>-->
+<!--                </configuration>-->
+<!--            </plugin>-->
         </plugins>
     </build>
 
