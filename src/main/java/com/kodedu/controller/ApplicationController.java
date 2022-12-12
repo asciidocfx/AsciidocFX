@@ -11,8 +11,8 @@ import com.kodedu.engine.AsciidocAsciidoctorjConverter;
 import com.kodedu.engine.AsciidocConverterProvider;
 import com.kodedu.engine.AsciidocWebkitConverter;
 import com.kodedu.helper.DesktopHelper;
-import com.kodedu.helper.IOHelper;
 import com.kodedu.helper.FxHelper;
+import com.kodedu.helper.IOHelper;
 import com.kodedu.helper.TaskbarHelper;
 import com.kodedu.keyboard.KeyHelper;
 import com.kodedu.logging.MyLog;
@@ -81,8 +81,6 @@ import javafx.stage.Window;
 import javafx.stage.*;
 import javafx.util.Duration;
 import netscape.javascript.JSObject;
-
-import org.asciidoctor.Asciidoctor;
 import org.asciidoctor.Attributes;
 import org.asciidoctor.Options;
 import org.asciidoctor.SafeMode;
@@ -92,7 +90,6 @@ import org.kordamp.ikonli.javafx.FontIcon;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.env.Environment;
@@ -226,13 +223,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     @Autowired
     public AsciidocAsciidoctorjConverter asciidoctorjConverter;
-
-    @Autowired
-    private Asciidoctor asciidoctor;
-
-    @Autowired
-    @Qualifier("plainDoctor")
-    private Asciidoctor plainDoctor;
 
     @Autowired
     private EditorConfigBean editorConfigBean;
@@ -567,16 +557,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         });
 
         Arrays.asList(htmlPane, slidePane, liveReloadPane).forEach(viewPanel -> VBox.getVgrow(viewPanel));
-
-        threadService.runTaskLater(() -> {
-            while (true) {
-                try {
-                    renderLoop();
-                } catch (Exception e) {
-                    logger.error(e.getMessage(), e);
-                }
-            }
-        });
 
         progressBar.prefWidthProperty().bind(rightShowerHider.widthProperty());
 
@@ -2260,23 +2240,31 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     }
 
     private volatile AtomicReference<TextChangeEvent> latestTextChangeEvent = new AtomicReference<>();
-    private Semaphore renderLoopSemaphore = new Semaphore(1);
-    private CountDownLatch adocPreviewReadyLatch =new CountDownLatch(1);
+    private CountDownLatch adocPreviewReadyLatch = new CountDownLatch(1);
+    private Semaphore semaphore = new Semaphore(1);
+    private void renderInRow() throws InterruptedException {
+        try {
+            semaphore.acquire();
+            renderText();
+        } catch (InterruptedException e) {
+            throw e;
+        } finally {
+            semaphore.release();
+        }
+    }
 
-    private void renderLoop() throws InterruptedException {
-        adocPreviewReadyLatch.await(30, TimeUnit.SECONDS);
-
-        renderLoopSemaphore.acquire();
-
+    private void renderText() throws InterruptedException {
         if (stopRendering.get()) {
             return;
         }
 
-        TextChangeEvent textChangeEvent = latestTextChangeEvent.get();
+        adocPreviewReadyLatch.await(30, TimeUnit.SECONDS);
 
-        if (isNull(textChangeEvent)) {
+        if (Objects.isNull(latestTextChangeEvent.get())) {
             return;
         }
+
+        TextChangeEvent textChangeEvent = latestTextChangeEvent.getAndSet(null);
 
         String text = textChangeEvent.getText();
         String mode = textChangeEvent.getMode();
@@ -2290,23 +2278,20 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                 String backend = (String) document.getAttribute("backend", "html5");
 
                 ConverterResult converterResult = asciidoctorjConverter.convert(document, text);
-
-                if (lastConverterResult != null) {
-                    if (converterResult.getDateTime().isBefore(lastConverterResult.getDateTime())) {
-                        return;
-                    }
-                }
-
                 this.lastConverterResult = converterResult;
 
+                if (Objects.nonNull(latestTextChangeEvent.get())) {
+                    return;
+                }
+
                 if (Objects.equals(backend, "html5")) {
-                    updateRendered(this.lastConverterResult.getRendered());
+                    updateRendered(converterResult.getRendered());
                     rightShowerHider.showNode(htmlPane);
                 }
 
                 if (Objects.equals(backend, "revealjs")) {
                     slidePane.setBackend(backend);
-                    slideConverter.convert(this.lastConverterResult.getRendered());
+                    slideConverter.convert(converterResult.getRendered());
                     rightShowerHider.showNode(slidePane);
                 }
 
@@ -2327,7 +2312,8 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         String uuid = UUID.randomUUID().toString();
         MyTab currentTab = current.currentTab();
         if(Objects.nonNull(currentTab)){
-            plainDoctor.convert(text, Options.builder()
+            AsciidoctorFactory.getPlainDoctor()
+                    .convert(text, Options.builder()
                     .safe(SafeMode.UNSAFE)
                     .sourcemap(true)
                     .baseDir(currentTab.getParentOrWorkdir().toFile())
@@ -2370,9 +2356,13 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     @WebkitCall(from = "editor")
     public void textListener(String text, String mode, Path path) {
         latestTextChangeEvent.set(new TextChangeEvent(text, mode, path));
-        if (renderLoopSemaphore.hasQueuedThreads()) {
-            renderLoopSemaphore.release();
-        }
+        threadService.runTaskLater(() -> {
+            try {
+                renderInRow();
+            } catch (InterruptedException e) {
+                logger.error(e.getMessage());
+            }
+        });
     }
 
     @WebkitCall(from = "editor")
