@@ -1,5 +1,7 @@
 package com.kodedu.other;
 
+import org.asciidoctor.ast.Document;
+
 import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -14,10 +16,19 @@ public class ConverterResult {
     private String rendered;
     private String backend;
 
+    private Document document;
+
     public ConverterResult(String taskId, String rendered, String backend) {
         this.taskId = taskId;
         this.rendered = rendered;
         this.backend = backend;
+    }
+
+    public ConverterResult(String taskId, String rendered, String backend, Document document) {
+        this.taskId = taskId;
+        this.rendered = rendered;
+        this.backend = backend;
+        this.document = document;
     }
 
     public void setRendered(String rendered) {
@@ -38,6 +49,14 @@ public class ConverterResult {
 
     public boolean isBackend(String backend) {
         return backend.equals(this.backend);
+    }
+
+    public Document getDocument() {
+        return document;
+    }
+
+    public void setDocument(Document document) {
+        this.document = document;
     }
 
     public String getTaskId() {

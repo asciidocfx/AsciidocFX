@@ -25,6 +25,8 @@ import java.util.UUID;
 
 import static com.kodedu.helper.AsciidoctorHelper.convertSafe;
 import static com.kodedu.service.AsciidoctorFactory.getStandardDoctor;
+import static com.kodedu.service.extension.processor.DocumentAttributeProcessor.DOCUMENT_MAP;
+import static com.kodedu.service.extension.processor.DocumentAttributeProcessor.DOC_UUID;
 
 @Component("AsciidoctorjEngine")
 public class AsciidocAsciidoctorjConverter extends ViewPanel implements AsciidocConvertible {
@@ -104,6 +106,8 @@ public class AsciidocAsciidoctorjConverter extends ViewPanel implements Asciidoc
 		String backend = (String) document.getAttribute("backend", "html5");
 		Attributes attributes = configBean.getAsciiDocAttributes(document.getAttributes());
 		attributes.setAttribute("preview", true);
+		String docUUID = UUID.randomUUID().toString();
+		attributes.setAttribute(DOC_UUID, docUUID);
 
 		Path workdir = controller.getCurrent().currentTab().getParentOrWorkdir();
 
@@ -121,12 +125,15 @@ public class AsciidocAsciidoctorjConverter extends ViewPanel implements Asciidoc
 		// See also https://github.com/asciidoctor/asciidoctorj-diagram/issues/25
 		// String converted = doc.convert();
 		String converted = getStandardDoctor().convert(text, options);
+		Document finalDocument = (Document) DOCUMENT_MAP.get(docUUID);
+		current.currentEditor().setLastDocument(finalDocument);
+		DOCUMENT_MAP.remove(docUUID);
 		logger.info("Converted Asciidoc to {}", backend.toUpperCase());
 
         final String taskId = UUID.randomUUID().toString();
-		ConverterResult res = new ConverterResult(taskId, converted, backend);
+		ConverterResult res = new ConverterResult(taskId, converted, backend, finalDocument);
 		
-		fillOutlines(document);
+		fillOutlines(finalDocument);
 		return res;
 	}
 

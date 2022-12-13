@@ -91,7 +91,8 @@ public class SpringAppConfig extends SpringBootServletInitializer implements Web
                                       DataLineProcessor dataLineProcessor,
                                       MathBlockMacroProcessor[] mathBlockMacroProcessor,
                                       MathInlineMacroProcessor[] mathInlineMacroProcessor,
-                                      CacheSuffixAppenderProcessor cacheSuffixAppenderProcessor) {
+                                      CacheSuffixAppenderProcessor cacheSuffixAppenderProcessor,
+                                      DocumentAttributeProcessor documentAttributeProcessor) {
         Asciidoctor doctor = Asciidoctor.Factory.create();
         doctor.requireLibrary("asciidoctor-pdf");
         doctor.requireLibrary("asciidoctor-diagram");
@@ -104,7 +105,8 @@ public class SpringAppConfig extends SpringBootServletInitializer implements Web
                 .preprocessor(extensionPreprocessor)
                 .blockMacro(fileTreeBlockMacroProcessor)
                 .inlineMacro(fileTreeInlineMacroProcessor)
-                .treeprocessor(cacheSuffixAppenderProcessor);
+                .treeprocessor(cacheSuffixAppenderProcessor)
+                .postprocessor(documentAttributeProcessor);
 
         for (MathInlineMacroProcessor inlineMacroProcessor : mathInlineMacroProcessor) {
             registry.inlineMacro(inlineMacroProcessor);
