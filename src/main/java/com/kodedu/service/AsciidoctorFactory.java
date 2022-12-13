@@ -4,9 +4,12 @@ import org.asciidoctor.Asciidoctor;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import java.util.concurrent.CountDownLatch;
+
+import static org.springframework.core.Ordered.HIGHEST_PRECEDENCE;
 
 @Component
 public class AsciidoctorFactory {
@@ -17,15 +20,16 @@ public class AsciidoctorFactory {
     private static Asciidoctor plainDoctor;
 
     @EventListener
+    @Order(HIGHEST_PRECEDENCE)
     public void handleContextRefreshEvent(ContextRefreshedEvent event) {
         ApplicationContext context = event.getApplicationContext();
         Thread.startVirtualThread(() -> {
-            standardDoctor = context.getBean("standardDoctor", Asciidoctor.class);
-            standardDoctorReady.countDown();
-        });
-        Thread.startVirtualThread(() -> {
             plainDoctor = context.getBean("plainDoctor", Asciidoctor.class);
             plainDoctorReady.countDown();
+        });
+        Thread.startVirtualThread(() -> {
+            standardDoctor = context.getBean("standardDoctor", Asciidoctor.class);
+            standardDoctorReady.countDown();
         });
     }
 
