@@ -132,8 +132,7 @@ public class AsciidocAsciidoctorjConverter extends ViewPanel implements Asciidoc
 
         final String taskId = UUID.randomUUID().toString();
 		ConverterResult res = new ConverterResult(taskId, converted, backend, finalDocument);
-		
-		fillOutlines(finalDocument);
+		fillOutlines(document); // Somehow files are not generated with finalDocument
 		return res;
 	}
 
