@@ -34,6 +34,7 @@ import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import javafx.util.Callback;
 import netscape.javascript.JSObject;
+import org.asciidoctor.ast.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -96,6 +97,7 @@ public class EditorPane extends AnchorPane {
     private MyTab myTab;
     private Map<String, Object> attributes = new ConcurrentHashMap<>();
     private Object attributesLock = new Object();
+    private Document lastDocument;
 
     @Autowired
     public EditorPane(ApplicationController controller, EditorConfigBean editorConfigBean, ThreadService threadService, ShortcutProvider shortcutProvider, ApplicationContext applicationContext, TabService tabService, AsciiTreeGenerator asciiTreeGenerator, ParserService parserService, SpellcheckConfigBean spellcheckConfigBean, DirectoryService directoryService) {
@@ -862,5 +864,13 @@ public class EditorPane extends AnchorPane {
         String imagesDir = (String) attributes.getOrDefault("imagesdir", "images");
         Path imagePath = Paths.get(docdir).resolve(imagesDir);
         return imagePath;
+    }
+
+    public void setLastDocument(Document lastDocument) {
+        this.lastDocument = lastDocument;
+    }
+
+    public Document getLastDocument() {
+        return lastDocument;
     }
 }

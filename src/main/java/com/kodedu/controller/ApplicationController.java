@@ -2322,6 +2322,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                             .attribute(DOC_UUID, uuid)
                             .build()).build());
             Document document = (Document) DOCUMENT_MAP.get(uuid);
+            currentTab.getEditorPane().setLastDocument(document);
             DOCUMENT_MAP.remove(uuid);
             return document;
         }

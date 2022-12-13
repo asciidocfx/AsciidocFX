@@ -3,12 +3,13 @@ package com.kodedu.service.impl;
 import com.kodedu.controller.ApplicationController;
 import com.kodedu.helper.IOHelper;
 import com.kodedu.other.Constants;
+import com.kodedu.other.Current;
 import com.kodedu.service.DirectoryService;
 import com.kodedu.service.ParserService;
 import com.kodedu.service.PathResolverService;
-
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.Image;
+import org.asciidoctor.ast.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +30,8 @@ import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.stream.Collectors;
 
+import static java.util.Objects.nonNull;
+
 /**
  * Created by usta on 16.12.2014.
  */
@@ -42,6 +45,9 @@ public class ParserServiceImpl implements ParserService {
 
     @Autowired
     private ApplicationController asciiDocController;
+
+    @Autowired
+    private Current current;
 
     private Logger logger = LoggerFactory.getLogger(ParserService.class);
 
@@ -65,23 +71,31 @@ public class ParserServiceImpl implements ParserService {
     @Override
     public Optional<String> toImageBlock(Image image) {
         Path currentPath = directoryService.currentParentOrWorkdir();
-        IOHelper.createDirectories(currentPath.resolve("images"));
+        Document document = current.currentTab().getEditorPane().getLastDocument();
+        String imagesDir = (String) document.getAttribute("imagesdir");
+        String imagesPasteDir = (String) document.getAttribute("images_paste_dir", Objects.toString(imagesDir, "images"));
+        boolean hasImagesDir = nonNull(imagesDir) && !imagesDir.isEmpty();
+
+        IOHelper.createDirectories(currentPath.resolve(imagesPasteDir));
 
         List<String> buffer = new LinkedList<>();
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(asciiDocController.getClipboardImageFilePattern());
         Path path = IOHelper.getPath(dateTimeFormatter.format(LocalDateTime.now()));
 
-        Path targetImage = currentPath.resolve("images").resolve(path.getFileName());
+        Path targetImage = currentPath.resolve(imagesPasteDir).resolve(path.getFileName());
 
         try {
             BufferedImage fromFXImage = SwingFXUtils.fromFXImage(image, null);
             ImageIO.write(fromFXImage, "png", targetImage.toFile());
-
         } catch (Exception e) {
-            logger.error("Problem occured while saving clipboard image {}", targetImage, e);
+            logger.error("Image is null or is not supported {}", image.getUrl(), e);
         }
 
-        buffer.add(String.format("image::images/%s[]", path.getFileName()));
+//        if(hasImagesDir){
+//            buffer.add(String.format("image::%s[]", path.getFileName()));
+//        }else{
+        buffer.add(String.format("image::../%s/%s[]", imagesPasteDir, path.getFileName()));
+//        }
 
         if (buffer.size() > 0)
             return Optional.of(String.join("\n", buffer));
@@ -147,7 +161,7 @@ public class ParserServiceImpl implements ParserService {
                 includePath = path.toAbsolutePath();
             }
 
-            if (Objects.nonNull(includePath)) {
+            if (nonNull(includePath)) {
                 consumer.accept(includePath);
             }
         }
