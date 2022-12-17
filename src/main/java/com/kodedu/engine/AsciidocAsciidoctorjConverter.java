@@ -24,7 +24,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import static com.kodedu.helper.AsciidoctorHelper.convertSafe;
-import static com.kodedu.service.AsciidoctorFactory.getStandardDoctor;
+import static com.kodedu.service.AsciidoctorFactory.getHtmlDoctor;
 import static com.kodedu.service.extension.processor.DocumentAttributeProcessor.DOCUMENT_MAP;
 import static com.kodedu.service.extension.processor.DocumentAttributeProcessor.DOC_UUID;
 
@@ -124,7 +124,7 @@ public class AsciidocAsciidoctorjConverter extends ViewPanel implements Asciidoc
 		// The generated plantuml images are in the wrong location
 		// See also https://github.com/asciidoctor/asciidoctorj-diagram/issues/25
 		// String converted = doc.convert();
-		String converted = getStandardDoctor().convert(textChangeEvent.getText(), options);
+		String converted = getHtmlDoctor().convert(textChangeEvent.getText(), options);
 		Document finalDocument = (Document) DOCUMENT_MAP.get(docUUID);
 		current.currentEditor().setLastDocument(finalDocument);
 		DOCUMENT_MAP.remove(docUUID);

@@ -78,35 +78,114 @@ public class SpringAppConfig extends SpringBootServletInitializer implements Web
         return Base64.getEncoder();
     }
 
+    /*
+        Used for standard html5 backend
+    */
     @Bean(destroyMethod = "shutdown")
-    @Primary
     @Lazy
-    public Asciidoctor standardDoctor(ChartBlockProcessor fxChartBlockProcessor,
-                                      FileTreeBlockProcessor treeBlockProcessor,
-                                      MathBlockProcessor[] mathBlockProcessor,
-                                      ExtensionPreprocessor extensionPreprocessor,
-                                      FileTreeBlockMacroProcessor fileTreeBlockMacroProcessor,
-                                      FileTreeInlineMacroProcessor fileTreeInlineMacroProcessor,
-                                      DataLineProcessor dataLineProcessor,
-                                      MathBlockMacroProcessor[] mathBlockMacroProcessor,
-                                      MathInlineMacroProcessor[] mathInlineMacroProcessor,
-                                      CacheSuffixAppenderProcessor cacheSuffixAppenderProcessor,
-                                      DocumentAttributeProcessor documentAttributeProcessor) {
+    public Asciidoctor htmlDoctor(ChartBlockProcessor fxChartBlockProcessor,
+                                  FileTreeBlockProcessor treeBlockProcessor,
+                                  MathBlockProcessor[] mathBlockProcessor,
+                                  ExtensionPreprocessor extensionPreprocessor,
+                                  FileTreeBlockMacroProcessor fileTreeBlockMacroProcessor,
+                                  FileTreeInlineMacroProcessor fileTreeInlineMacroProcessor,
+                                  DataLineProcessor dataLineProcessor,
+                                  MathBlockMacroProcessor[] mathBlockMacroProcessor,
+                                  MathInlineMacroProcessor[] mathInlineMacroProcessor,
+                                  CacheSuffixAppenderProcessor cacheSuffixAppenderProcessor,
+                                  DocumentAttributeProcessor documentAttributeProcessor) {
+        Asciidoctor asciidoctor = createAsciidoctor();
+        registerDefaultExtensions(asciidoctor,
+                fxChartBlockProcessor,
+                treeBlockProcessor,
+                mathBlockProcessor,
+                extensionPreprocessor,
+                fileTreeBlockMacroProcessor,
+                fileTreeInlineMacroProcessor,
+                dataLineProcessor,
+                mathBlockMacroProcessor,
+                mathInlineMacroProcessor,
+                cacheSuffixAppenderProcessor)
+                // Extra extensions
+                .postprocessor(documentAttributeProcessor);
+
+        return asciidoctor;
+    }
+
+    /*
+        Used for non-html5 backend like pdf, epub3 etc.
+    */
+    @Bean(destroyMethod = "shutdown")
+    @Lazy
+    public Asciidoctor nonHtmlDoctor(ChartBlockProcessor fxChartBlockProcessor,
+                                     FileTreeBlockProcessor treeBlockProcessor,
+                                     MathBlockProcessor[] mathBlockProcessor,
+                                     ExtensionPreprocessor extensionPreprocessor,
+                                     FileTreeBlockMacroProcessor fileTreeBlockMacroProcessor,
+                                     FileTreeInlineMacroProcessor fileTreeInlineMacroProcessor,
+                                     DataLineProcessor dataLineProcessor,
+                                     MathBlockMacroProcessor[] mathBlockMacroProcessor,
+                                     MathInlineMacroProcessor[] mathInlineMacroProcessor,
+                                     CacheSuffixAppenderProcessor cacheSuffixAppenderProcessor) {
+        Asciidoctor asciidoctor = createAsciidoctor();
+        registerDefaultExtensions(asciidoctor,
+                fxChartBlockProcessor,
+                treeBlockProcessor,
+                mathBlockProcessor,
+                extensionPreprocessor,
+                fileTreeBlockMacroProcessor,
+                fileTreeInlineMacroProcessor,
+                dataLineProcessor,
+                mathBlockMacroProcessor,
+                mathInlineMacroProcessor,
+                cacheSuffixAppenderProcessor);
+        return asciidoctor;
+    }
+
+    /*
+     Used for plan render of an Asciidoctor document,
+     to read attributes, document etc.
+     */
+    @Bean(destroyMethod = "shutdown")
+    @Lazy
+    public Asciidoctor plainDoctor(DocumentAttributeProcessor documentAttributeProcessor) {
+        Asciidoctor asciidoctor = createAsciidoctor();
+        JavaExtensionRegistry registry = asciidoctor.javaExtensionRegistry();
+        registry.postprocessor(documentAttributeProcessor);
+        return asciidoctor;
+    }
+
+    private Asciidoctor createAsciidoctor() {
         Asciidoctor doctor = Asciidoctor.Factory.create();
         doctor.requireLibrary("openssl");
         doctor.requireLibrary("asciidoctor-pdf");
         doctor.requireLibrary("asciidoctor-diagram");
         doctor.requireLibrary("asciidoctor-epub3");
         doctor.requireLibrary("asciidoctor-revealjs");
-        JavaExtensionRegistry registry = doctor.javaExtensionRegistry()
+        return doctor;
+    }
+
+    public JavaExtensionRegistry registerDefaultExtensions(Asciidoctor doctor,
+                                                           ChartBlockProcessor fxChartBlockProcessor,
+                                                           FileTreeBlockProcessor treeBlockProcessor,
+                                                           MathBlockProcessor[] mathBlockProcessor,
+                                                           ExtensionPreprocessor extensionPreprocessor,
+                                                           FileTreeBlockMacroProcessor fileTreeBlockMacroProcessor,
+                                                           FileTreeInlineMacroProcessor fileTreeInlineMacroProcessor,
+                                                           DataLineProcessor dataLineProcessor,
+                                                           MathBlockMacroProcessor[] mathBlockMacroProcessor,
+                                                           MathInlineMacroProcessor[] mathInlineMacroProcessor,
+                                                           CacheSuffixAppenderProcessor cacheSuffixAppenderProcessor) {
+
+        JavaExtensionRegistry registry = doctor.javaExtensionRegistry();
+        registry
                 .treeprocessor(dataLineProcessor)
                 .block(fxChartBlockProcessor)
                 .block(treeBlockProcessor)
                 .preprocessor(extensionPreprocessor)
                 .blockMacro(fileTreeBlockMacroProcessor)
                 .inlineMacro(fileTreeInlineMacroProcessor)
-                .treeprocessor(cacheSuffixAppenderProcessor)
-                .postprocessor(documentAttributeProcessor);
+                .treeprocessor(cacheSuffixAppenderProcessor);
 
         for (MathInlineMacroProcessor inlineMacroProcessor : mathInlineMacroProcessor) {
             registry.inlineMacro(inlineMacroProcessor);
@@ -119,27 +198,11 @@ public class SpringAppConfig extends SpringBootServletInitializer implements Web
         for (MathBlockMacroProcessor blockMacroProcessor : mathBlockMacroProcessor) {
             registry.blockMacro(blockMacroProcessor);
         }
-
-        return doctor;
-    }
-
-    @Bean(destroyMethod = "shutdown")
-    @Lazy
-    public Asciidoctor plainDoctor(DocumentAttributeProcessor documentAttributeProcessor) {
-        Asciidoctor doctor = Asciidoctor.Factory.create();
-        doctor.requireLibrary("openssl");
-        doctor.requireLibrary("asciidoctor-pdf");
-        doctor.requireLibrary("asciidoctor-diagram");
-        doctor.requireLibrary("asciidoctor-epub3");
-        doctor.requireLibrary("asciidoctor-revealjs");
-        doctor.unregisterAllExtensions();
-        doctor.javaExtensionRegistry()
-                        .postprocessor(documentAttributeProcessor);
-        return doctor;
+        return registry;
     }
 
     @Bean
-    public ObjectMapper objectMapper(){
+    public ObjectMapper objectMapper() {
         return new ObjectMapper();
     }
 

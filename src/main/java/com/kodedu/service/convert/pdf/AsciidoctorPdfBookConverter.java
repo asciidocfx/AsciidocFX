@@ -4,7 +4,6 @@ import com.kodedu.config.PdfConfigBean;
 import com.kodedu.controller.ApplicationController;
 import com.kodedu.other.Current;
 import com.kodedu.other.ExtensionFilters;
-import com.kodedu.service.AsciidoctorFactory;
 import com.kodedu.service.DirectoryService;
 import com.kodedu.service.ThreadService;
 import com.kodedu.service.convert.DocumentConverter;
@@ -22,7 +21,7 @@ import java.nio.file.Path;
 import java.util.function.Consumer;
 
 import static com.kodedu.helper.AsciidoctorHelper.convertSafe;
-import static com.kodedu.service.AsciidoctorFactory.getStandardDoctor;
+import static com.kodedu.service.AsciidoctorFactory.getNonHtmlDoctor;
 
 /**
  * Created by usta on 09.04.2015.
@@ -81,7 +80,7 @@ public class AsciidoctorPdfBookConverter implements DocumentConverter<String> {
 						.headerFooter(pdfConfigBean.getHeader_footer())
 						.attributes(attributes)
 						.build();
-				getStandardDoctor().convert(asciidoc, options);
+				getNonHtmlDoctor().convert(asciidoc, options);
 				asciiDocController.addRemoveRecentList(pdfPath);
 			} finally {
 				indikatorService.stopProgressBar();

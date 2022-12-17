@@ -13,11 +13,13 @@ import static org.springframework.core.Ordered.HIGHEST_PRECEDENCE;
 
 @Component
 public class AsciidoctorFactory {
-
-    private static CountDownLatch standardDoctorReady = new CountDownLatch(1);
     private static CountDownLatch plainDoctorReady = new CountDownLatch(1);
-    private static Asciidoctor standardDoctor;
+    private static CountDownLatch htmlDoctorReady = new CountDownLatch(1);
+    private static CountDownLatch nonHtmlDoctorReady = new CountDownLatch(1);
     private static Asciidoctor plainDoctor;
+    private static Asciidoctor htmlDoctor;
+    private static Asciidoctor nonHtmlDoctor;
+
 
     @EventListener
     @Order(HIGHEST_PRECEDENCE)
@@ -28,14 +30,26 @@ public class AsciidoctorFactory {
             plainDoctorReady.countDown();
         });
         Thread.startVirtualThread(() -> {
-            standardDoctor = context.getBean("standardDoctor", Asciidoctor.class);
-            standardDoctorReady.countDown();
+            waitLatch(plainDoctorReady);
+            htmlDoctor = context.getBean("htmlDoctor", Asciidoctor.class);
+            htmlDoctorReady.countDown();
+        });
+        Thread.startVirtualThread(() -> {
+            waitLatch(plainDoctorReady);
+            waitLatch(htmlDoctorReady);
+            nonHtmlDoctor = context.getBean("nonHtmlDoctor", Asciidoctor.class);
+            nonHtmlDoctorReady.countDown();
         });
     }
 
-    public static Asciidoctor getStandardDoctor() {
-        waitLatch(standardDoctorReady);
-        return standardDoctor;
+    public static Asciidoctor getHtmlDoctor() {
+        waitLatch(htmlDoctorReady);
+        return htmlDoctor;
+    }
+
+    public static Asciidoctor getNonHtmlDoctor() {
+        waitLatch(nonHtmlDoctorReady);
+        return nonHtmlDoctor;
     }
 
     public static Asciidoctor getPlainDoctor() {

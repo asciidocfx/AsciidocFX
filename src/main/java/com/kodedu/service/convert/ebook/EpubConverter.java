@@ -5,7 +5,6 @@ import com.kodedu.controller.ApplicationController;
 import com.kodedu.helper.IOHelper;
 import com.kodedu.other.Current;
 import com.kodedu.other.ExtensionFilters;
-import com.kodedu.service.AsciidoctorFactory;
 import com.kodedu.service.DirectoryService;
 import com.kodedu.service.PathResolverService;
 import com.kodedu.service.ThreadService;
@@ -29,7 +28,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static com.kodedu.service.AsciidoctorFactory.getStandardDoctor;
+import static com.kodedu.service.AsciidoctorFactory.getNonHtmlDoctor;
 
 /**
  * Created by usta on 30.08.2014.
@@ -98,7 +97,7 @@ public class EpubConverter {
                         .attributes(attributes)
                         .build();
 
-                getStandardDoctor().convert(asciidoc, options);
+                getNonHtmlDoctor().convert(asciidoc, options);
 
                 indikatorService.stopProgressBar();
                 logger.debug("Epub conversion ended");

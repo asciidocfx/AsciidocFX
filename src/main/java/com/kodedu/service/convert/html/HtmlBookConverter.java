@@ -5,7 +5,6 @@ import com.kodedu.controller.ApplicationController;
 import com.kodedu.engine.AsciidocConverterProvider;
 import com.kodedu.other.Current;
 import com.kodedu.other.ExtensionFilters;
-import com.kodedu.service.AsciidoctorFactory;
 import com.kodedu.service.DirectoryService;
 import com.kodedu.service.ThreadService;
 import com.kodedu.service.convert.DocumentConverter;
@@ -23,7 +22,7 @@ import java.nio.file.Path;
 import java.util.function.Consumer;
 
 import static com.kodedu.helper.AsciidoctorHelper.convertSafe;
-import static com.kodedu.service.AsciidoctorFactory.getStandardDoctor;
+import static com.kodedu.service.AsciidoctorFactory.getHtmlDoctor;
 
 /**
  * Created by usta on 30.08.2014.
@@ -81,7 +80,7 @@ public class HtmlBookConverter implements Traversable, DocumentConverter<String>
                     .attributes(attributes)
                     .build();
 
-            getStandardDoctor().convert(asciidoc, options);
+            getHtmlDoctor().convert(asciidoc, options);
 
             controller.addRemoveRecentList(htmlBookPath);
 
