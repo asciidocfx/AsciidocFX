@@ -1,6 +1,10 @@
 package com.kodedu.other;
 
-import java.awt.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.awt.Color;
+import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 
 /**
@@ -8,9 +12,33 @@ import java.awt.image.BufferedImage;
  */
 public class TrimWhite {
 
+    private static final Logger logger = LoggerFactory.getLogger(TrimWhite.class);
+
     public BufferedImage trim(BufferedImage img) {
-        BufferedImage bufferedImage = AutoCrop.autoCrop(img, 5);
-        return bufferedImage;
+        BufferedImage trimmedImage = null;
+        try {
+            trimmedImage = AutoCrop.autoCrop(img, 5);
+        } catch (Exception e) {
+            logger.warn("Trim failed for image: {}", img, e);
+            trimmedImage = tryTrimAlternative(img);
+        }
+        return trimmedImage;
+    }
+
+    private BufferedImage tryTrimAlternative(BufferedImage img) {
+        try {
+            int width = getTrimmedWidth(img) + 5;
+            int height = getTrimmedHeight(img) + 5;
+
+            BufferedImage newImg = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+            Graphics g = newImg.createGraphics();
+            g.drawImage(img, 0, 0, null);
+            g.dispose();
+            return newImg;
+        } catch (Exception e) {
+            logger.warn("Trim failed for image: {}", img, e);
+            return img;
+        }
     }
 
     private int getTrimmedWidth(BufferedImage img) {
@@ -20,7 +48,7 @@ public class TrimWhite {
 
         for (int i = 0; i < height; i++) {
             for (int j = width - 1; j >= 0; j--) {
-                if (!ColorUtils.match(Color.WHITE,img.getRGB(j, i) ,5) &&
+                if (!ColorUtils.match(Color.WHITE, img.getRGB(j, i), 5) &&
                         j > trimmedWidth) {
                     trimmedWidth = j;
                     break;
@@ -38,7 +66,7 @@ public class TrimWhite {
 
         for (int i = 0; i < width; i++) {
             for (int j = height - 1; j >= 0; j--) {
-                if (!ColorUtils.match(Color.WHITE,img.getRGB(i, j) ,5) &&
+                if (!ColorUtils.match(Color.WHITE, img.getRGB(i, j), 5) &&
                         j > trimmedHeight) {
                     trimmedHeight = j;
                     break;
