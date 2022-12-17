@@ -35,7 +35,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.boot.web.embedded.undertow.UndertowServletWebServerFactory;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.*;
 import org.springframework.core.task.AsyncTaskExecutor;
@@ -94,6 +93,7 @@ public class SpringAppConfig extends SpringBootServletInitializer implements Web
                                       CacheSuffixAppenderProcessor cacheSuffixAppenderProcessor,
                                       DocumentAttributeProcessor documentAttributeProcessor) {
         Asciidoctor doctor = Asciidoctor.Factory.create();
+        doctor.requireLibrary("openssl");
         doctor.requireLibrary("asciidoctor-pdf");
         doctor.requireLibrary("asciidoctor-diagram");
         doctor.requireLibrary("asciidoctor-epub3");
@@ -127,6 +127,7 @@ public class SpringAppConfig extends SpringBootServletInitializer implements Web
     @Lazy
     public Asciidoctor plainDoctor(DocumentAttributeProcessor documentAttributeProcessor) {
         Asciidoctor doctor = Asciidoctor.Factory.create();
+        doctor.requireLibrary("openssl");
         doctor.requireLibrary("asciidoctor-pdf");
         doctor.requireLibrary("asciidoctor-diagram");
         doctor.requireLibrary("asciidoctor-epub3");
