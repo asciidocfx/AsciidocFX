@@ -90,18 +90,18 @@ public class AsciidocAsciidoctorjConverter extends ViewPanel implements Asciidoc
 		return null;
 	}
 
-	public ConverterResult convert(Document document, String text) {
+	public ConverterResult convert(Document document, TextChangeEvent textChangeEvent) {
 		String backend = (String) document.getAttribute("backend", "html5");
 		Map<String, Object> attributes = document.getAttributes();
 		current.currentEditor().updateAttributes(attributes);
 		return switch (backend) {
-			case "html5" -> convert(document, text, previewConfigBean);
-			case "revealjs" -> convert(document, text, revealjsConfigBean);
+			case "html5" -> convert(document, textChangeEvent, previewConfigBean);
+			case "revealjs" -> convert(document, textChangeEvent, revealjsConfigBean);
 			default -> throw new RuntimeException("Backend not found: " + backend);
 		};
 	}
-	
-	private ConverterResult convert(Document document, String text, AsciidoctorConfigBase<?> configBean) {
+
+	private ConverterResult convert(Document document, TextChangeEvent textChangeEvent, AsciidoctorConfigBase<?> configBean) {
 		SafeMode safe = convertSafe(configBean.getSafe());
 		String backend = (String) document.getAttribute("backend", "html5");
 		Attributes attributes = configBean.getAsciiDocAttributes(document.getAttributes());
@@ -124,7 +124,7 @@ public class AsciidocAsciidoctorjConverter extends ViewPanel implements Asciidoc
 		// The generated plantuml images are in the wrong location
 		// See also https://github.com/asciidoctor/asciidoctorj-diagram/issues/25
 		// String converted = doc.convert();
-		String converted = getStandardDoctor().convert(text, options);
+		String converted = getStandardDoctor().convert(textChangeEvent.getText(), options);
 		Document finalDocument = (Document) DOCUMENT_MAP.get(docUUID);
 		current.currentEditor().setLastDocument(finalDocument);
 		DOCUMENT_MAP.remove(docUUID);

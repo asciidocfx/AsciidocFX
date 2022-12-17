@@ -72,6 +72,13 @@ public class IOHelper {
         }
     }
 
+    public static boolean containsPath(Path path1, Path path2) {
+        if (Objects.isNull(path1) || Objects.isNull(path2)) {
+            return false;
+        }
+        return path2.normalize().toString().startsWith(path1.normalize().toString());
+    }
+
     public static String readFile(Path path) {
         String content = "";
 

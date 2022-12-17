@@ -129,6 +129,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static com.kodedu.helper.IOHelper.containsPath;
 import static com.kodedu.helper.IOHelper.getInstallationPath;
 import static com.kodedu.service.extension.processor.DocumentAttributeProcessor.DOCUMENT_MAP;
 import static com.kodedu.service.extension.processor.DocumentAttributeProcessor.DOC_UUID;
@@ -2266,18 +2267,18 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
         TextChangeEvent textChangeEvent = latestTextChangeEvent.getAndSet(null);
 
-        String text = textChangeEvent.getText();
         String mode = textChangeEvent.getMode();
 
         try {
 
             if ("asciidoc".equalsIgnoreCase(mode)) {
 
-                Document document = loadDocument(text);
+                prependAsciidoctorConfig(textChangeEvent);
+                Document document = loadDocument(textChangeEvent.getText());
 
                 String backend = (String) document.getAttribute("backend", "html5");
 
-                ConverterResult converterResult = asciidoctorjConverter.convert(document, text);
+                ConverterResult converterResult = asciidoctorjConverter.convert(document, textChangeEvent);
                 this.lastConverterResult = converterResult;
 
                 if (Objects.nonNull(latestTextChangeEvent.get())) {
@@ -2306,6 +2307,52 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         } catch (Exception e) {
             logger.error("Problem occured while rendering content", e);
         }
+    }
+
+    private void prependAsciidoctorConfig(TextChangeEvent textChangeEvent) {
+        Path path = textChangeEvent.getPath();
+        if (Objects.isNull(path)) {
+            return; // path is not ready
+        }
+
+        Path parent = path.getParent();
+        String text = textChangeEvent.getText();
+        Path workingDirectory = directoryService.workingDirectory();
+
+        StringBuffer stringBuffer = new StringBuffer();
+        Path asciidoctorConfigDir = null;
+        while (containsPath(workingDirectory, parent)) {
+            Path[] configPaths = new Path[]{
+                    parent.resolve(".asciidoctorconfig"),
+                    parent.resolve(".asciidoctorconfig.adoc")
+            };
+            for (Path configPath : configPaths) {
+                if (Files.exists(configPath)) {
+                    String configText = IOHelper.readFile(configPath);
+                    stringBuffer.insert(0, "\n");
+                    stringBuffer.insert(0, configText);
+                    stringBuffer.insert(0, "\n");
+                    stringBuffer.insert(0, String.format("// Configuration > %s", configPath));
+                    stringBuffer.insert(0, "\n");
+                    if (Objects.isNull(asciidoctorConfigDir)) {
+                        asciidoctorConfigDir = parent;
+                    }
+                    break;
+                }
+            }
+            parent = parent.getParent();
+        }
+
+        if (Objects.nonNull(asciidoctorConfigDir)) {
+            stringBuffer.insert(0, "\n");
+            stringBuffer.insert(0, String.format(":asciidoctorconfigdir: %s", asciidoctorConfigDir));
+            stringBuffer.insert(0, "\n");
+            stringBuffer.insert(0,"// Asciidoctor Configuration Directory");
+            stringBuffer.append("\n");
+        }
+
+        stringBuffer.append(text);
+        textChangeEvent.setText(stringBuffer.toString());
     }
 
     public Document loadDocument(String text) {
