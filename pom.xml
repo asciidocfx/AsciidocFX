@@ -40,6 +40,16 @@
 
     <dependencies>
         <dependency>
+            <groupId>io.github.toolfactory</groupId>
+            <artifactId>jvm-driver</artifactId>
+            <version>9.4.2</version>
+        </dependency>
+        <dependency>
+            <groupId>io.github.classgraph</groupId>
+            <artifactId>classgraph</artifactId>
+            <version>4.8.152</version>
+        </dependency>
+        <dependency>
             <groupId>jakarta.json</groupId>
             <artifactId>jakarta.json-api</artifactId>
             <version>2.1.1</version>
@@ -620,6 +630,16 @@
                 <updatePolicy>always</updatePolicy>
             </releases>
             <url>https://github.com/javaterminal/TerminalFX/raw/master/releases</url>
+        </repository>
+
+        <repository>
+            <id>afxagent-repo</id>
+            <releases>
+                <enabled>true</enabled>
+                <checksumPolicy>warn</checksumPolicy>
+                <updatePolicy>always</updatePolicy>
+            </releases>
+            <url>https://github.com/asciidocfx/afxagent/raw/master/releases</url>
         </repository>
         <repository>
             <id>javacomm-repo</id>

@@ -95,20 +95,21 @@ public class SpringAppConfig extends SpringBootServletInitializer implements Web
                                   CacheSuffixAppenderProcessor cacheSuffixAppenderProcessor,
                                   DocumentAttributeProcessor documentAttributeProcessor) {
         Asciidoctor asciidoctor = createAsciidoctor();
-        registerDefaultExtensions(asciidoctor,
-                fxChartBlockProcessor,
-                treeBlockProcessor,
-                mathBlockProcessor,
-                extensionPreprocessor,
-                fileTreeBlockMacroProcessor,
-                fileTreeInlineMacroProcessor,
-                dataLineProcessor,
-                mathBlockMacroProcessor,
-                mathInlineMacroProcessor,
-                cacheSuffixAppenderProcessor)
-                // Extra extensions
-                .postprocessor(documentAttributeProcessor);
-
+        Thread.startVirtualThread(() -> {
+            registerDefaultExtensions(asciidoctor,
+                    fxChartBlockProcessor,
+                    treeBlockProcessor,
+                    mathBlockProcessor,
+                    extensionPreprocessor,
+                    fileTreeBlockMacroProcessor,
+                    fileTreeInlineMacroProcessor,
+                    dataLineProcessor,
+                    mathBlockMacroProcessor,
+                    mathInlineMacroProcessor,
+                    cacheSuffixAppenderProcessor)
+                    // Extra extensions
+                    .postprocessor(documentAttributeProcessor);
+        });
         return asciidoctor;
     }
 
@@ -128,17 +129,19 @@ public class SpringAppConfig extends SpringBootServletInitializer implements Web
                                      MathInlineMacroProcessor[] mathInlineMacroProcessor,
                                      CacheSuffixAppenderProcessor cacheSuffixAppenderProcessor) {
         Asciidoctor asciidoctor = createAsciidoctor();
-        registerDefaultExtensions(asciidoctor,
-                fxChartBlockProcessor,
-                treeBlockProcessor,
-                mathBlockProcessor,
-                extensionPreprocessor,
-                fileTreeBlockMacroProcessor,
-                fileTreeInlineMacroProcessor,
-                dataLineProcessor,
-                mathBlockMacroProcessor,
-                mathInlineMacroProcessor,
-                cacheSuffixAppenderProcessor);
+        Thread.startVirtualThread(() -> {
+            registerDefaultExtensions(asciidoctor,
+                    fxChartBlockProcessor,
+                    treeBlockProcessor,
+                    mathBlockProcessor,
+                    extensionPreprocessor,
+                    fileTreeBlockMacroProcessor,
+                    fileTreeInlineMacroProcessor,
+                    dataLineProcessor,
+                    mathBlockMacroProcessor,
+                    mathInlineMacroProcessor,
+                    cacheSuffixAppenderProcessor);
+        });
         return asciidoctor;
     }
 
@@ -150,18 +153,22 @@ public class SpringAppConfig extends SpringBootServletInitializer implements Web
     @Lazy
     public Asciidoctor plainDoctor(DocumentAttributeProcessor documentAttributeProcessor) {
         Asciidoctor asciidoctor = createAsciidoctor();
-        JavaExtensionRegistry registry = asciidoctor.javaExtensionRegistry();
-        registry.postprocessor(documentAttributeProcessor);
+        Thread.startVirtualThread(() -> {
+            JavaExtensionRegistry registry = asciidoctor.javaExtensionRegistry();
+            registry.postprocessor(documentAttributeProcessor);
+        });
         return asciidoctor;
     }
 
     private Asciidoctor createAsciidoctor() {
         Asciidoctor doctor = Asciidoctor.Factory.create();
-        doctor.requireLibrary("openssl");
-        doctor.requireLibrary("asciidoctor-pdf");
-        doctor.requireLibrary("asciidoctor-diagram");
-        doctor.requireLibrary("asciidoctor-epub3");
-        doctor.requireLibrary("asciidoctor-revealjs");
+        Thread.startVirtualThread(() -> {
+            doctor.requireLibrary("openssl");
+            doctor.requireLibrary("asciidoctor-diagram");
+            doctor.requireLibrary("asciidoctor-pdf");
+            doctor.requireLibrary("asciidoctor-epub3");
+            doctor.requireLibrary("asciidoctor-revealjs");
+        });
         return doctor;
     }
 
