@@ -72,8 +72,8 @@ public class AppStarter extends Application {
         stage.setTitle("AsciidocFX");
         logoImage = setApplicationIcon(stage);
         Thread.setDefaultUncaughtExceptionHandler((t, e) -> logger.error(e.getMessage(), e));
-        initializeSSLContext();
-        loadRequiredFonts();
+        Thread.startVirtualThread(() -> initializeSSLContext());
+        Thread.startVirtualThread(() -> loadRequiredFonts());
 
         // http://bit.ly/1Euk8hh
         System.setProperty("jsse.enableSNIExtension", "false");

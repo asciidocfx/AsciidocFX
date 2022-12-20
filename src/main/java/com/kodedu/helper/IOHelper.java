@@ -21,7 +21,9 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 import java.awt.image.BufferedImage;
 import java.io.*;
+import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URL;
 import java.net.URLDecoder;
 import java.nio.ByteBuffer;
 import java.nio.charset.CharacterCodingException;
@@ -645,5 +647,14 @@ public class IOHelper {
             }
         }
         return installationPath;
+    }
+
+    public static URL toURL(Path path) {
+        try {
+            return path.toUri().toURL();
+        } catch (MalformedURLException e) {
+            logger.error("Problem occurred while converting {} to URL", path, e);
+        }
+        return null;
     }
 }

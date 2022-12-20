@@ -5,7 +5,6 @@ import io.github.classgraph.ClassGraph;
 import io.github.classgraph.ClassInfo;
 import io.github.classgraph.ClassInfoList;
 import io.github.classgraph.ScanResult;
-import org.apache.commons.io.IOUtils;
 import org.asciidoctor.Asciidoctor;
 import org.asciidoctor.extension.ExtensionGroup;
 import org.asciidoctor.jruby.extension.spi.ExtensionRegistry;
@@ -23,6 +22,9 @@ import java.net.URLClassLoader;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 public class UserExtension {
@@ -56,37 +58,43 @@ public class UserExtension {
             return;
         }
         extensionGroup.unregister();
-        registerRubyExtensions(adoc, extensions);
-        registerJavaExtensions(adoc, extensions);
+        try (ExecutorService executorService = Executors.newVirtualThreadPerTaskExecutor();) {
+            executorService.submit(() -> registerRubyExtensions(adoc, extensions));
+            executorService.submit(() -> registerJavaExtensions(adoc, extensions));
+        }
         extensionGroup.register();
         this.extensions = extensions;
     }
 
     private void registerJavaExtensions(Asciidoctor adoc, List<Path> extensions) {
-        List<Path> javaExtensions = extensions.stream().filter(p -> p.toString().endsWith(".jar")).collect(Collectors.toList());
-        for (Path javaExtension : javaExtensions) {
-            try (ScanResult scanResult = new ClassGraph()
-                    .addClassLoader(new URLClassLoader(new URL[]{javaExtension.toUri().toURL()}))
-                    .enableClassInfo()
-                    .scan()) {
-                ClassInfoList classInfoList = scanResult.getClassesImplementing(ExtensionRegistry.class);
-                for (ClassInfo classInfo : classInfoList) {
+        URL[] urls = extensions.stream()
+                .filter(p -> p.toString().endsWith(".jar"))
+                .map(p -> IOHelper.toURL(p))
+                .filter(Objects::nonNull)
+                .toArray(size -> new URL[size]);
+        try (ScanResult scanResult = new ClassGraph()
+                .addClassLoader(new URLClassLoader(urls))
+                .enableClassInfo()
+                .scan()) {
+            ClassInfoList classInfoList = scanResult.getClassesImplementing(ExtensionRegistry.class);
+            for (ClassInfo classInfo : classInfoList) {
+                try {
                     ExtensionRegistry o = (ExtensionRegistry) classInfo.loadClass().getDeclaredConstructor().newInstance();
                     logger.info("Loading {} extension", o.getClass().getSimpleName());
                     o.register(adoc);
+                } catch (Exception e) {
+                    logger.error("Loading {} extension has failed", classInfo.getSimpleName());
                 }
-            } catch (Exception e) {
-                logger.error("Loading {} extension has failed", javaExtension, e);
             }
         }
     }
 
     private void registerRubyExtensions(Asciidoctor adoc, List<Path> extensions) {
+        Ruby ruby = JRubyRuntimeContext.get(adoc);
         List<Path> rubyExtensions = extensions.stream().filter(p -> p.toString().endsWith(".rb")).collect(Collectors.toList());
         for (Path rubyExtension : rubyExtensions) {
             try (InputStream inputStream = new FileInputStream(rubyExtension.toFile())) {
                 extensionGroup.loadRubyClass(inputStream);
-                Ruby ruby = JRubyRuntimeContext.get(adoc);
 //                RubyEnumerator rubyEnumerator = (RubyEnumerator) ruby.getModule("ObjectSpace")
 //                        .callMethod("each_object", ruby.getClass("Class"));
                 RubyModule objectModule = ruby.getModule("Object");

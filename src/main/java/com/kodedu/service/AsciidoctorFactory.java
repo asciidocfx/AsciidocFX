@@ -70,14 +70,13 @@ public class AsciidoctorFactory {
         }
         UserExtension userExtension = userExtensionMap.compute(doctor, (adoc, uEx) -> {
             if (Objects.nonNull(uEx)) {
-                uEx.registerExtensions(adoc, extensions);
                 return uEx;
             }
             UserExtension extension = new UserExtension();
             extension.setExtensionGroup(adoc.createGroup());
-            extension.registerExtensions(adoc, extensions);
             return extension;
         });
+        userExtension.registerExtensions(doctor, extensions);
     }
 
     public static Asciidoctor getHtmlDoctor() {
