@@ -283,12 +283,14 @@ public class AppStarter extends Application {
             logoImage = new Image(logoStream);
             stage.getIcons().clear();
             stage.getIcons().add(logoImage);
-            TaskbarHelper.getTaskBar()
-                    .filter(t -> t.isSupported(ICON_IMAGE))
-                    .ifPresent(t -> {
-                        java.awt.Image image = Toolkit.getDefaultToolkit().getImage(AppStarter.class.getResource("/logo.png"));
-                        t.setIconImage(image);
-                    });
+            Thread.startVirtualThread(() -> {
+                TaskbarHelper.getTaskBar()
+                        .filter(t -> t.isSupported(ICON_IMAGE))
+                        .ifPresent(t -> {
+                            java.awt.Image image = Toolkit.getDefaultToolkit().getImage(AppStarter.class.getResource("/logo.png"));
+                            t.setIconImage(image);
+                        });
+            });
         } catch (Exception e) {
 
         }
