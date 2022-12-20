@@ -631,16 +631,6 @@
             </releases>
             <url>https://github.com/javaterminal/TerminalFX/raw/master/releases</url>
         </repository>
-
-        <repository>
-            <id>afxagent-repo</id>
-            <releases>
-                <enabled>true</enabled>
-                <checksumPolicy>warn</checksumPolicy>
-                <updatePolicy>always</updatePolicy>
-            </releases>
-            <url>https://github.com/asciidocfx/afxagent/raw/master/releases</url>
-        </repository>
         <repository>
             <id>javacomm-repo</id>
             <releases>
