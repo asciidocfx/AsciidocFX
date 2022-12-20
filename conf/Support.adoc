@@ -1,4 +1,4 @@
-== Support us!
+== Help us out!
 
 AsciidocFX  is an *open-source* editor for the Asciidoc markup language. We require your support to dedicate more time on this fabulous tool!
 
@@ -6,11 +6,11 @@ You can support us in the following ways:
 
 . https://opencollective.com/AsciidocFX
 
-. https://www.patreon.com/asciidocfx
+. https://github.com/sponsors/asciidocfx
 
 We are also open if you have business ideas/sponsorship offers for the AsciidocFX.
 
 You can contact with us merhaba@kodedu.com.
 
-image::public/logo.png[]
+image::https://github.com/asciidocfx/AsciidocFX/raw/master/conf/public/logo.png[]
 __**AsciidocFX Team**__.
