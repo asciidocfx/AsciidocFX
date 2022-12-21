@@ -64,7 +64,9 @@ public class AsciidoctorFactory {
             return;
         }
 
-        List<Path> extensions = IOHelper.list(libDir).filter(p -> p.toString().endsWith(".rb") || p.toString().endsWith(".jar")).sorted().toList();
+        List<Path> extensions = IOHelper.walk(libDir,2)
+                .filter(p -> p.toString().endsWith(".rb") || p.toString().endsWith(".jar"))
+                .sorted().toList();
         if(extensions.isEmpty()){
             return;
         }
