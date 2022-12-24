@@ -56,7 +56,7 @@ import static javafx.scene.input.KeyCombination.SHORTCUT_DOWN;
 
 public class AppStarter extends Application {
 
-    private static Logger logger = LoggerFactory.getLogger(AppStarter.class);
+    private Logger logger = LoggerFactory.getLogger(AppStarter.class);
 
     private static ApplicationController controller;
     private static ConfigurableApplicationContext context;

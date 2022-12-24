@@ -13,8 +13,11 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.stream.IntStream;
 
 import static org.springframework.core.Ordered.HIGHEST_PRECEDENCE;
 
@@ -28,6 +31,11 @@ public class AsciidoctorFactory {
     private static Asciidoctor nonHtmlDoctor;
     private static DirectoryService directoryService;
     private static Map<Asciidoctor, UserExtension> userExtensionMap = new ConcurrentHashMap<>();
+
+    private static BlockingQueue<Asciidoctor> blockingQueue = new LinkedBlockingQueue<>(3);
+
+    private static String[] defaultLibraries = {"openssl", "asciidoctor-diagram", "asciidoctor-pdf",
+            "asciidoctor-epub3", "asciidoctor-revealjs"};
 
 
     @EventListener
@@ -97,6 +105,25 @@ public class AsciidoctorFactory {
         waitLatch(plainDoctorReady);
         checkUserExtensions(plainDoctor);
         return plainDoctor;
+    }
+
+    static {
+        IntStream.rangeClosed(1, 3)
+                .forEach(i -> Thread.startVirtualThread(() -> {
+                    Asciidoctor asciidoctor = Asciidoctor.Factory.create();
+                    blockingQueue.add(asciidoctor);
+                    asciidoctor.requireLibrary(defaultLibraries);
+                }));
+    }
+
+    public static Asciidoctor getAsciidoctor() {
+        Asciidoctor doctor;
+        try {
+            doctor = blockingQueue.take();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        return doctor;
     }
 
     private static void waitLatch(CountDownLatch countDownLatch) {
