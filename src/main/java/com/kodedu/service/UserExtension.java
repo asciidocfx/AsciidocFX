@@ -36,6 +36,7 @@ public class UserExtension {
 
     private List<String> extensionSuperclasses = List.of("BlockMacroProcessor", "BlockProcessor", "DocinfoProcessor", "IncludeProcessor",
             "InlineMacroProcessor", "Postprocessor", "Preprocessor", "Treeprocessor").stream().map(e -> "Asciidoctor::Extensions::" + e).collect(Collectors.toList());
+    private ExecutorService executorService;
 
     public void setExtensionGroup(ExtensionGroup extensionGroup) {
         this.extensionGroup = extensionGroup;
@@ -75,7 +76,7 @@ public class UserExtension {
         try (ScanResult scanResult = new ClassGraph()
                 .addClassLoader(new URLClassLoader(urls))
                 .enableClassInfo()
-                .scan()) {
+                .scan(getExecutorService(), 8)) {
             ClassInfoList classInfoList = scanResult.getClassesImplementing(ExtensionRegistry.class);
             for (ClassInfo classInfo : classInfoList) {
                 try {
@@ -87,6 +88,13 @@ public class UserExtension {
                 }
             }
         }
+    }
+
+    private ExecutorService getExecutorService() {
+        if (Objects.isNull(executorService)) {
+            this.executorService = Executors.newVirtualThreadPerTaskExecutor();
+        }
+        return executorService;
     }
 
     private void registerRubyExtensions(Asciidoctor adoc, List<Path> extensions) {
