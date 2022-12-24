@@ -304,11 +304,13 @@ public class EditorPane extends AnchorPane {
     }
 
     public void rerender(Object... args) {
-        try {
-            webEngine().executeScript("rerender()");
-        } catch (Exception e) {
-            // no-op
-        }
+        threadService.runActionLater(() -> {
+            try {
+                webEngine().executeScript("rerender()");
+            } catch (Exception e) {
+                // no-op
+            }
+        });
     }
 
     public void focus() {
