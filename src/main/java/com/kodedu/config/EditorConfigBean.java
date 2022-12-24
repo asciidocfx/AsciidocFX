@@ -41,6 +41,7 @@ import java.io.Reader;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.*;
+import java.util.concurrent.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -505,12 +506,22 @@ public class EditorConfigBean extends ConfigurationBase {
 
         fadeOut(infoLabel, "Loading...");
 
-        List<String> aceThemeList = new LinkedList<>(IOHelper.readAllLines(getConfigDirectory().resolve("ace_themes.txt")));
-        List<String> languageList = this.languageList();
-        List<String> systemFonts = Font.getFamilies();
+        Future<List<String>> aceFuture;
+        Future<List<String>> languageFeature;
+        Future<List<String>> systemFontsFeature;
+        Future<List<String>> detectedMonoFuture;
+        try (ExecutorService executors = Executors.newVirtualThreadPerTaskExecutor()) {
+            aceFuture = executors.submit(() -> new LinkedList<>(IOHelper.readAllLines(getConfigDirectory().resolve("ace_themes.txt"))));
+            languageFeature = executors.submit(() -> this.languageList());
+            systemFontsFeature = executors.submit(() -> Font.getFamilies());
+            detectedMonoFuture = executors.submit(() -> getDetectedMonospacedFonts());
+        }
+        List<String> aceThemeList = getResult(aceFuture);
+        List<String> languageList = getResult(languageFeature);
+        List<String> systemFonts = getResult(systemFontsFeature);
         List<String> fontFamilies = new ArrayList(systemFonts);
 
-        List<String> detectedMonoSpacedFonts = getDetectedMonospacedFonts();
+        List<String> detectedMonoSpacedFonts = getResult(detectedMonoFuture);
         List<String> knownMonoFonts = getKnownMonoFonts(systemFonts);
 
         List<String> aceFontFamilies = Stream.concat(knownMonoFonts.stream(), detectedMonoSpacedFonts.stream())
@@ -646,6 +657,16 @@ public class EditorConfigBean extends ConfigurationBase {
         });
     }
 
+    private <T> T getResult(Future<T> aceFuture) {
+        try {
+            return aceFuture.get();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        } catch (ExecutionException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     private List<String> getKnownMonoFonts(List<String> systemFonts) {
         return systemFonts.stream()
                 .filter(f -> f.contains("Mono") || f.contains("Consol") || f.contains("Courier")
@@ -713,29 +734,7 @@ public class EditorConfigBean extends ConfigurationBase {
 
     private List<String> languageList() {
         Path configPath = controller.getConfigPath();
-
-        try (Stream<Path> languageStream = IOHelper.list(configPath.resolve("docbook/common"));) {
-            List<String> languageList = languageStream.parallel().filter(p -> !p.endsWith("xml"))
-                    .map(path -> {
-                        try {
-                            Match $ = JOOX.$(path.toFile());
-                            String language = $.attr("language");
-                            String languageName = $.attr("english-language-name");
-
-                            Objects.requireNonNull(languageName);
-                            Objects.requireNonNull(language);
-
-                            return language;
-                        } catch (Exception ex) {
-                            // no-op
-                        }
-
-                        return null;
-                    })
-                    .filter(Objects::nonNull)
-                    .collect(Collectors.toList());
-            return languageList;
-        }
+        return IOHelper.readAllLines(configPath.resolve("language_list.txt"));
     }
 
     @Override
