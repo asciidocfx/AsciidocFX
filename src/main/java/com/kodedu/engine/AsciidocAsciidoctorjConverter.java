@@ -8,7 +8,9 @@ import com.kodedu.other.ConverterResult;
 import com.kodedu.other.Current;
 import com.kodedu.outline.Outliner;
 import com.kodedu.outline.Section;
+import com.kodedu.service.AsciidoctorFactory;
 import com.kodedu.service.ThreadService;
+import org.asciidoctor.Asciidoctor;
 import org.asciidoctor.Attributes;
 import org.asciidoctor.Options;
 import org.asciidoctor.SafeMode;
@@ -21,10 +23,12 @@ import org.springframework.stereotype.Component;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 
 import static com.kodedu.helper.AsciidoctorHelper.convertSafe;
 import static com.kodedu.service.AsciidoctorFactory.getHtmlDoctor;
+import static com.kodedu.service.AsciidoctorFactory.getRevealDoctor;
 import static com.kodedu.service.extension.processor.DocumentAttributeProcessor.DOCUMENT_MAP;
 import static com.kodedu.service.extension.processor.DocumentAttributeProcessor.DOC_UUID;
 
@@ -116,7 +120,7 @@ public class AsciidocAsciidoctorjConverter extends ViewPanel implements Asciidoc
 		                         .baseDir(workdir.toFile())
 		                         .safe(safe)
 		                         .sourcemap(configBean.getSourcemap())
-		                         .headerFooter(configBean.getHeader_footer())
+		                         .headerFooter(true)
 		                         .attributes(attributes)
 		                         .build();
 
@@ -124,7 +128,8 @@ public class AsciidocAsciidoctorjConverter extends ViewPanel implements Asciidoc
 		// The generated plantuml images are in the wrong location
 		// See also https://github.com/asciidoctor/asciidoctorj-diagram/issues/25
 		// String converted = doc.convert();
-		String converted = getHtmlDoctor().convert(textChangeEvent.getText(), options);
+		Asciidoctor asciidoctor = Objects.equals(backend,"revealjs") ? getRevealDoctor() : getHtmlDoctor();
+		String converted = asciidoctor.convert(textChangeEvent.getText(), options);
 		Document finalDocument = (Document) DOCUMENT_MAP.get(docUUID);
 		current.currentEditor().setLastDocument(finalDocument);
 		DOCUMENT_MAP.remove(docUUID);

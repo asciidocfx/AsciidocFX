@@ -24,19 +24,17 @@ import static org.springframework.core.Ordered.HIGHEST_PRECEDENCE;
 @Component
 public class AsciidoctorFactory {
     private static CountDownLatch plainDoctorReady = new CountDownLatch(1);
+    private static CountDownLatch revealDoctorReady = new CountDownLatch(1);
     private static CountDownLatch htmlDoctorReady = new CountDownLatch(1);
     private static CountDownLatch nonHtmlDoctorReady = new CountDownLatch(1);
     private static Asciidoctor plainDoctor;
+    private static Asciidoctor revealDoctor;
     private static Asciidoctor htmlDoctor;
     private static Asciidoctor nonHtmlDoctor;
     private static DirectoryService directoryService;
     private static Map<Asciidoctor, UserExtension> userExtensionMap = new ConcurrentHashMap<>();
 
-    private static BlockingQueue<Asciidoctor> blockingQueue = new LinkedBlockingQueue<>(3);
-
-    private static String[] defaultLibraries = {"openssl", "asciidoctor-diagram", "asciidoctor-pdf",
-            "asciidoctor-epub3", "asciidoctor-revealjs"};
-
+    private static BlockingQueue<Asciidoctor> blockingQueue = new LinkedBlockingQueue<>(4);
 
     @EventListener
     @Order(HIGHEST_PRECEDENCE)
@@ -56,6 +54,12 @@ public class AsciidoctorFactory {
             waitLatch(htmlDoctorReady);
             nonHtmlDoctor = context.getBean("nonHtmlDoctor", Asciidoctor.class);
             nonHtmlDoctorReady.countDown();
+        });
+        Thread.startVirtualThread(() -> {
+            waitLatch(plainDoctorReady);
+            waitLatch(htmlDoctorReady);
+            revealDoctor = context.getBean("revealDoctor", Asciidoctor.class);
+            revealDoctorReady.countDown();
         });
         Thread.startVirtualThread(() -> {
             directoryService = context.getBean(DirectoryService.class);
@@ -107,12 +111,17 @@ public class AsciidoctorFactory {
         return plainDoctor;
     }
 
+    public static Asciidoctor getRevealDoctor() {
+        waitLatch(revealDoctorReady);
+        checkUserExtensions(revealDoctor);
+        return revealDoctor;
+    }
+
     static {
-        IntStream.rangeClosed(1, 3)
+        IntStream.rangeClosed(1, 4)
                 .forEach(i -> Thread.startVirtualThread(() -> {
                     Asciidoctor asciidoctor = Asciidoctor.Factory.create();
                     blockingQueue.add(asciidoctor);
-                    asciidoctor.requireLibrary(defaultLibraries);
                 }));
     }
 

@@ -31,14 +31,16 @@ import com.kodedu.service.extension.tree.FileTreeBlockMacroProcessor;
 import com.kodedu.service.extension.tree.FileTreeBlockProcessor;
 import com.kodedu.service.extension.tree.FileTreeInlineMacroProcessor;
 import org.asciidoctor.Asciidoctor;
-import org.asciidoctor.Options;
 import org.asciidoctor.extension.JavaExtensionRegistry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
-import org.springframework.context.annotation.*;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.core.task.AsyncTaskExecutor;
 import org.springframework.core.task.support.TaskExecutorAdapter;
 import org.springframework.web.client.RestTemplate;
@@ -47,11 +49,7 @@ import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
 import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
 
 import java.util.Base64;
-import java.util.List;
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Executors;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.stream.IntStream;
 
 
 @Configuration
@@ -101,6 +99,43 @@ public class SpringAppConfig extends SpringBootServletInitializer implements Web
                                   CacheSuffixAppenderProcessor cacheSuffixAppenderProcessor,
                                   DocumentAttributeProcessor documentAttributeProcessor) {
         Asciidoctor asciidoctor = AsciidoctorFactory.getAsciidoctor();
+        asciidoctor.requireLibrary("openssl", "asciidoctor-diagram");
+        Thread.startVirtualThread(() -> {
+            registerDefaultExtensions(asciidoctor,
+                    fxChartBlockProcessor,
+                    treeBlockProcessor,
+                    mathBlockProcessor,
+                    extensionPreprocessor,
+                    fileTreeBlockMacroProcessor,
+                    fileTreeInlineMacroProcessor,
+                    dataLineProcessor,
+                    mathBlockMacroProcessor,
+                    mathInlineMacroProcessor,
+                    cacheSuffixAppenderProcessor)
+                    // Extra extensions
+                    .postprocessor(documentAttributeProcessor);
+        });
+        return asciidoctor;
+    }
+
+    /*
+        Used for reveal.js backend
+    */
+    @Bean(destroyMethod = "shutdown")
+    @Lazy
+    public Asciidoctor revealDoctor(ChartBlockProcessor fxChartBlockProcessor,
+                                  FileTreeBlockProcessor treeBlockProcessor,
+                                  MathBlockProcessor[] mathBlockProcessor,
+                                  ExtensionPreprocessor extensionPreprocessor,
+                                  FileTreeBlockMacroProcessor fileTreeBlockMacroProcessor,
+                                  FileTreeInlineMacroProcessor fileTreeInlineMacroProcessor,
+                                  DataLineProcessor dataLineProcessor,
+                                  MathBlockMacroProcessor[] mathBlockMacroProcessor,
+                                  MathInlineMacroProcessor[] mathInlineMacroProcessor,
+                                  CacheSuffixAppenderProcessor cacheSuffixAppenderProcessor,
+                                  DocumentAttributeProcessor documentAttributeProcessor) {
+        Asciidoctor asciidoctor = AsciidoctorFactory.getAsciidoctor();
+        asciidoctor.requireLibrary("openssl", "asciidoctor-diagram", "asciidoctor-revealjs");
         Thread.startVirtualThread(() -> {
             registerDefaultExtensions(asciidoctor,
                     fxChartBlockProcessor,
@@ -135,6 +170,7 @@ public class SpringAppConfig extends SpringBootServletInitializer implements Web
                                      MathInlineMacroProcessor[] mathInlineMacroProcessor,
                                      CacheSuffixAppenderProcessor cacheSuffixAppenderProcessor) {
         Asciidoctor asciidoctor = AsciidoctorFactory.getAsciidoctor();
+        asciidoctor.requireLibrary("openssl", "asciidoctor-diagram", "asciidoctor-pdf", "asciidoctor-epub3");
         Thread.startVirtualThread(() -> {
             registerDefaultExtensions(asciidoctor,
                     fxChartBlockProcessor,
@@ -159,6 +195,7 @@ public class SpringAppConfig extends SpringBootServletInitializer implements Web
     @Lazy
     public Asciidoctor plainDoctor(DocumentAttributeProcessor documentAttributeProcessor) {
         Asciidoctor asciidoctor = AsciidoctorFactory.getAsciidoctor();
+        asciidoctor.requireLibrary("openssl", "asciidoctor-revealjs");
         Thread.startVirtualThread(() -> {
             JavaExtensionRegistry registry = asciidoctor.javaExtensionRegistry();
             registry.postprocessor(documentAttributeProcessor);

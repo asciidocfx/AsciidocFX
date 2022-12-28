@@ -5,10 +5,6 @@
     <meta charset="UTF-8">
     <link rel="stylesheet" href="/afx/resource/css/?p=css/three-dots.css" type="text/css"/>
     <link rel="stylesheet" href="/afx/resource/css/?p=css/grid.css" type="text/css"/>
-    <link rel="stylesheet" href="/afx/resource/css/?p=css/hljs.css" type="text/css"/>
-    <link rel="stylesheet" href="/afx/resource/css/?p=css/prettify.css" type="text/css"/>
-    <link rel="stylesheet" href="/afx/resource/css/?p=css/font-awesome.css"/>
-    <link rel="stylesheet" href="/afx/dynamic/css/?p=asciidoctor-default.css"/>
     <link rel="stylesheet" href="/afx/dynamic/css/?p=asciidoctor-default-overrides.css"/>
 </head>
 <body>
@@ -20,35 +16,11 @@
     </div>
 </div>
 
-<script src="/afx/resource/js/?p=js/jquery.js"></script>
+<script id="jquery" src="/afx/resource/js/?p=js/jquery.js"></script>
+<script src="/afx/resource/js/?p=js/buffhelper.js"></script>
 <script src="/afx/resource/js/?p=js/sockjs.js"></script>
-<script src="/afx/resource/js/?p=js/highlight.pack.js"></script>
-<script src="/afx/resource/js/?p=js/prettify.js"></script>
-
-<script>
-    var soket = new SockJS("/ws");
-
-    function refreshUI(data) {
-
-        var $placeholder = $("#placeholder");
-        $placeholder.html(data);
-
-        document.querySelectorAll('pre code').forEach((block) => {
-            hljs.highlightBlock(block);
-        });
-
-        prettyPrint();
-
-    }
-
-    soket.onmessage = function (e) {
-        refreshUI(e.data);
-    };
-
-    soket.onerror = soket.onclose = function (e) {
-        $(".row.connection-closed").show();
-    };
-
-</script>
+<script src="/afx/resource/js/?p=js/morphdom-options.js"></script>
+<script src="/afx/resource/js/?p=js/morphdom.js"></script>
+<script src="/afx/resource/js/?p=js/index.js"></script>
 </body>
 </html>

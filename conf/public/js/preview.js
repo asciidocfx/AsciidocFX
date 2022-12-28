@@ -1,13 +1,14 @@
 var $placeholder = $("#placeholder");
 
 var clearCacheAction = new BufferedAction();
+
 function clearImageCache(imageName) {
     clearCacheAction.buff(function () {
         $placeholder.find("img").each(function () {
             var image = $(this);
             var srcAttr = image.attr("src");
             if (srcAttr) {
-                    image.attr("src", srcAttr);
+                image.attr("src", srcAttr);
             }
         });
     }, 500);
@@ -32,18 +33,15 @@ var sourceHighlightAction = new BufferedAction();
 
 function refreshUI(data) {
 
-    if (data.lastIndexOf("<!DOCTYPE html>", 0) === 0) {
-        data = "<p>You sent full DOCTYPE!</p>";
-    }
-
-    $placeholder.html(data);
+    // $(".asciidocfx-container").remove();
+    morphdom(document.documentElement, data, morphdomOptions);
 
     sourceHighlightAction.buff(function () {
-        document.querySelectorAll('pre code').forEach((block) => {
-            hljs.highlightBlock(block);
-        });
-
-        prettyPrint();
+        document.querySelectorAll('pre.highlight > code[data-lang]')
+            .forEach((block) => {
+                hljs.highlightBlock(block);
+            });
+        // prettyPrint();
     }, 1000);
 
 }
