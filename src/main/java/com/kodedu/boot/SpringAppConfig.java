@@ -195,7 +195,7 @@ public class SpringAppConfig extends SpringBootServletInitializer implements Web
     @Lazy
     public Asciidoctor plainDoctor(DocumentAttributeProcessor documentAttributeProcessor) {
         Asciidoctor asciidoctor = AsciidoctorFactory.getAsciidoctor();
-        asciidoctor.requireLibrary("openssl", "asciidoctor-revealjs");
+        asciidoctor.requireLibrary("openssl", "asciidoctor-revealjs", "asciidoctor-pdf", "asciidoctor-epub3");
         Thread.startVirtualThread(() -> {
             JavaExtensionRegistry registry = asciidoctor.javaExtensionRegistry();
             registry.postprocessor(documentAttributeProcessor);

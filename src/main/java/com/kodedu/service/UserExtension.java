@@ -2,12 +2,17 @@ package com.kodedu.service;
 
 import com.kodedu.helper.IOHelper;
 import io.github.classgraph.ClassGraph;
-import io.github.classgraph.ClassInfo;
-import io.github.classgraph.ClassInfoList;
 import io.github.classgraph.ScanResult;
 import org.asciidoctor.Asciidoctor;
+import org.asciidoctor.extension.BlockMacroProcessor;
+import org.asciidoctor.extension.BlockProcessor;
+import org.asciidoctor.extension.DocinfoProcessor;
 import org.asciidoctor.extension.ExtensionGroup;
-import org.asciidoctor.jruby.extension.spi.ExtensionRegistry;
+import org.asciidoctor.extension.IncludeProcessor;
+import org.asciidoctor.extension.InlineMacroProcessor;
+import org.asciidoctor.extension.Postprocessor;
+import org.asciidoctor.extension.Preprocessor;
+import org.asciidoctor.extension.Treeprocessor;
 import org.asciidoctor.jruby.internal.JRubyRuntimeContext;
 import org.jruby.Ruby;
 import org.jruby.RubyClass;
@@ -34,8 +39,10 @@ public class UserExtension {
     private List<Path> extensions = new ArrayList<>();
     private ExtensionGroup extensionGroup;
 
-    private List<String> extensionSuperclasses = List.of("BlockMacroProcessor", "BlockProcessor", "DocinfoProcessor", "IncludeProcessor",
-            "InlineMacroProcessor", "Postprocessor", "Preprocessor", "Treeprocessor").stream().map(e -> "Asciidoctor::Extensions::" + e).collect(Collectors.toList());
+    private List<Class> extensionClasses = List.of(BlockMacroProcessor.class, BlockProcessor.class, DocinfoProcessor.class, IncludeProcessor.class,
+            InlineMacroProcessor.class, Postprocessor.class, Preprocessor.class, Treeprocessor.class);
+    private List<String> extensionSuperclasses = extensionClasses.stream().map(e -> "Asciidoctor::Extensions::" + e.getSimpleName()).toList();
+
     private ExecutorService executorService;
 
     public void setExtensionGroup(ExtensionGroup extensionGroup) {
@@ -59,11 +66,13 @@ public class UserExtension {
             return;
         }
         extensionGroup.unregister();
-        try (ExecutorService executorService = Executors.newVirtualThreadPerTaskExecutor();) {
-            executorService.submit(() -> registerRubyExtensions(adoc, extensions));
-            executorService.submit(() -> registerJavaExtensions(adoc, extensions));
+        if (!extensions.isEmpty()) {
+            try (ExecutorService executorService = Executors.newVirtualThreadPerTaskExecutor();) {
+                executorService.submit(() -> registerRubyExtensions(adoc, extensions));
+                executorService.submit(() -> registerJavaExtensions(adoc, extensions));
+            }
+            extensionGroup.register();
         }
-        extensionGroup.register();
         this.extensions = extensions;
     }
 
@@ -77,16 +86,38 @@ public class UserExtension {
                 .addClassLoader(new URLClassLoader(urls))
                 .enableClassInfo()
                 .scan(getExecutorService(), 8)) {
-            ClassInfoList classInfoList = scanResult.getClassesImplementing(ExtensionRegistry.class);
-            for (ClassInfo classInfo : classInfoList) {
-                try {
-                    ExtensionRegistry o = (ExtensionRegistry) classInfo.loadClass().getDeclaredConstructor().newInstance();
-                    logger.info("Loading {} extension", o.getClass().getSimpleName());
-                    o.register(adoc);
-                } catch (Exception e) {
-                    logger.error("Loading {} extension has failed", classInfo.getSimpleName());
-                }
-            }
+            extensionClasses.stream()
+                    .map(c -> scanResult.getSubclasses(c))
+                    .flatMap(c -> c.stream())
+                    .filter(c -> !c.getPackageInfo().getName().startsWith("com.kodedu"))
+                    .filter(c -> c.getSubclasses().isEmpty())
+                    .forEach(classInfo -> {
+                        try {
+                            Class<?> extensionClass = classInfo.loadClass();
+                            logger.info("Loading {} extension", classInfo.getSimpleName());
+                            if (BlockMacroProcessor.class.isAssignableFrom(extensionClass)) {
+                                extensionGroup.blockMacro((Class<? extends BlockMacroProcessor>) extensionClass);
+                            } else if (BlockProcessor.class.isAssignableFrom(extensionClass)) {
+                                extensionGroup.block((Class<? extends BlockProcessor>) extensionClass);
+                            } else if (DocinfoProcessor.class.isAssignableFrom(extensionClass)) {
+                                extensionGroup.docinfoProcessor((Class<? extends DocinfoProcessor>) extensionClass);
+                            } else if (IncludeProcessor.class.isAssignableFrom(extensionClass)) {
+                                extensionGroup.includeProcessor((Class<? extends IncludeProcessor>) extensionClass);
+                            } else if (InlineMacroProcessor.class.isAssignableFrom(extensionClass)) {
+                                extensionGroup.inlineMacro((Class<? extends InlineMacroProcessor>) extensionClass);
+                            } else if (Postprocessor.class.isAssignableFrom(extensionClass)) {
+                                extensionGroup.postprocessor((Class<? extends Postprocessor>) extensionClass);
+                            } else if (Preprocessor.class.isAssignableFrom(extensionClass)) {
+                                extensionGroup.preprocessor((Class<? extends Preprocessor>) extensionClass);
+                            } else if (Treeprocessor.class.isAssignableFrom(extensionClass)) {
+                                extensionGroup.treeprocessor((Class<? extends Treeprocessor>) extensionClass);
+                            } else {
+                                logger.warn("Extension type not found: {}", classInfo.getSimpleName());
+                            }
+                        } catch (Exception e) {
+                            logger.error("Loading {} extension has failed", classInfo.getSimpleName(), e);
+                        }
+                    });
         }
     }
 

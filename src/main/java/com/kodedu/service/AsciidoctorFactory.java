@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -73,15 +74,17 @@ public class AsciidoctorFactory {
         Path workingDir = directoryService.workingDirectory();
         Path libDir = workingDir.resolve(".asciidoctor/lib");
         if (Files.notExists(libDir)) {
+            UserExtension userExtension = userExtensionMap.get(doctor);
+            if (Objects.nonNull(userExtension)) {
+                userExtension.registerExtensions(doctor, new ArrayList<>());
+            }
             return;
         }
 
-        List<Path> extensions = IOHelper.walk(libDir,2)
+        List<Path> extensions = IOHelper.walk(libDir, 2)
                 .filter(p -> p.toString().endsWith(".rb") || p.toString().endsWith(".jar"))
                 .sorted().toList();
-        if(extensions.isEmpty()){
-            return;
-        }
+
         UserExtension userExtension = userExtensionMap.compute(doctor, (adoc, uEx) -> {
             if (Objects.nonNull(uEx)) {
                 return uEx;
