@@ -29,20 +29,9 @@ function updateBase64Url(index, base64) {
     afx.cutCopy(clonedContent.html());
 }
 
-var sourceHighlightAction = new BufferedAction();
-
 function refreshUI(data) {
 
-    // $(".asciidocfx-container").remove();
     morphdom(document.documentElement, data, morphdomOptions);
-
-    sourceHighlightAction.buff(function () {
-        document.querySelectorAll('pre.highlight > code[data-lang]')
-            .forEach((block) => {
-                hljs.highlightBlock(block);
-            });
-        // prettyPrint();
-    }, 1000);
 
 }
 

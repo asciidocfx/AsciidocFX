@@ -1,22 +1,8 @@
-function isEqualScript(fromEl, toEl) {
-    if (fromEl.nodeName === "SCRIPT" && toEl.nodeName === "SCRIPT") {
-        let $fromEl = $(fromEl);
-        let $toEl = $(toEl);
-        let fromSrc = $fromEl.attr("src");
-        let toSrc = $toEl.attr("src");
-        if (fromSrc && toSrc && (fromSrc === toSrc) && fromSrc.length > 1) {
-            return true;
-        } else {
-            let fromHtml = $fromEl.html();
-            let toHtml = $toEl.html();
-            if (fromHtml && toHtml && (fromHtml === toHtml) && fromHtml.length > 1) {
-                return true
-            }
-        }
-    }
-    return false;
-}
-
+let afterFunctions = [];
+const onAfterChanges = rafThrottle(() => {
+    afterFunctions.forEach(f => f())
+    afterFunctions = [];
+});
 
 function replaceScript(toEl, fromEl) {
     let script = document.createElement('script');
@@ -24,36 +10,48 @@ function replaceScript(toEl, fromEl) {
         script.setAttribute(attr.nodeName, attr.nodeValue)
     })
 
-    let last = $("script#jquery");
-    if (last.length && $(toEl).hasClass("ordered")) {
-        console.log("Moving before:", fromEl, last);
-        $(fromEl).insertBefore(last);
+    let $putJs = $("script#put-js");
+    if ($putJs.length) {
+        console.log("Moving script", fromEl, "before", $putJs.get(0));
+        $(fromEl).insertBefore($putJs);
     }
     script.innerHTML = toEl.innerHTML;
-    try {
-        fromEl.replaceWith(script);
-    } catch (e) {
-        console.error(e);
-    }
+    afterFunctions.push(function () {
+        try {
+            fromEl.replaceWith(script);
+        } catch (e) {
+            console.error(e);
+        }
+    });
+    onAfterChanges();
 }
 
+var addedScripts = [];
 var morphdomOptions = {
     onNodeAdded: function (node) {
         if (node.nodeName === 'SCRIPT') {
-            this.replaceScript(node, node);
+            addedScripts.push(node);
+            console.log("New script added", node);
+            replaceScript(node, node);
         }
     },
+    onElUpdated: function (el) {
+        onAfterChanges();
+    },
     onBeforeNodeAdded: function (node) {
-        if (node.nodeName === "SCRIPT") {
-            let $node = $(node);
-            $node.addClass("ordered");
-        }
+        onAfterChanges();
         return node;
     },
     onBeforeNodeDiscarded: function (node) {
+        onAfterChanges();
         if (node.nodeName === "SCRIPT") {
             let src = node.getAttribute("src");
             if (src && src.includes("/afx/resource/js")) {
+                return false;
+            }
+            let index = addedScripts.findIndex(n => n.isEqualNode(node));
+            if (index >= 0) {
+                addedScripts.splice(index, 1);
                 return false;
             }
         } else if (node.nodeName === "LINK") {
@@ -63,17 +61,18 @@ var morphdomOptions = {
             }
         }
         if (node.nodeName !== "#text") {
-            console.log("Discarded", node)
+            console.log("Discarded node", node)
         }
         return true;
     }, onBeforeElUpdated: function (fromEl, toEl) {
+        onAfterChanges();
         if (fromEl.nodeName === "SCRIPT" && toEl.nodeName === "SCRIPT") {
-            console.log("onBeforeElUpdated:", fromEl, toEl)
-            this.replaceScript(toEl, fromEl);
+            console.log("Element", fromEl, "will updated to", toEl)
+            replaceScript(toEl, fromEl);
             return false;
         } else {
             if (fromEl.isEqualNode(toEl)) {
-                console.log("Equal Node", fromEl, toEl)
+                console.log("Skipping update (Equal node)", fromEl, toEl)
                 return false;
             }
         }
