@@ -12,6 +12,7 @@
         "imagesdir": "images",
         "allow-uri-read": "true",
         "experimental": "true",
-        "data-uri": "true"
+        "data-uri": "true",
+        "source-highlighter": "highlight.js"
     }
 }

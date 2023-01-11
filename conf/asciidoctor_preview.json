@@ -12,6 +12,7 @@
         "apply-image-cacher": "true",
         "imagesdir": "images",
         "allow-uri-read": "true",
-        "experimental": "true"
+        "experimental": "true",
+        "nofooter": "true"
     }
 }
