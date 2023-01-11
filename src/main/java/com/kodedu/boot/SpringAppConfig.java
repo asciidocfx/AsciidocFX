@@ -99,9 +99,10 @@ public class SpringAppConfig extends SpringBootServletInitializer implements Web
                                   CacheSuffixAppenderProcessor cacheSuffixAppenderProcessor,
                                   DocumentAttributeProcessor documentAttributeProcessor) {
         Asciidoctor asciidoctor = AsciidoctorFactory.getAsciidoctor();
-        asciidoctor.requireLibrary("openssl", "asciidoctor-diagram");
+        JavaExtensionRegistry registry = asciidoctor.javaExtensionRegistry();
+        registry.postprocessor(documentAttributeProcessor);
         Thread.startVirtualThread(() -> {
-            registerDefaultExtensions(asciidoctor,
+            registerDefaultExtensions(registry,
                     fxChartBlockProcessor,
                     treeBlockProcessor,
                     mathBlockProcessor,
@@ -111,9 +112,8 @@ public class SpringAppConfig extends SpringBootServletInitializer implements Web
                     dataLineProcessor,
                     mathBlockMacroProcessor,
                     mathInlineMacroProcessor,
-                    cacheSuffixAppenderProcessor)
-                    // Extra extensions
-                    .postprocessor(documentAttributeProcessor);
+                    cacheSuffixAppenderProcessor);
+            asciidoctor.requireLibrary("openssl", "asciidoctor-diagram");
         });
         return asciidoctor;
     }
@@ -135,9 +135,10 @@ public class SpringAppConfig extends SpringBootServletInitializer implements Web
                                   CacheSuffixAppenderProcessor cacheSuffixAppenderProcessor,
                                   DocumentAttributeProcessor documentAttributeProcessor) {
         Asciidoctor asciidoctor = AsciidoctorFactory.getAsciidoctor();
-        asciidoctor.requireLibrary("openssl", "asciidoctor-diagram", "asciidoctor-revealjs");
+        JavaExtensionRegistry registry = asciidoctor.javaExtensionRegistry();
+        registry.postprocessor(documentAttributeProcessor);
         Thread.startVirtualThread(() -> {
-            registerDefaultExtensions(asciidoctor,
+            registerDefaultExtensions(registry,
                     fxChartBlockProcessor,
                     treeBlockProcessor,
                     mathBlockProcessor,
@@ -147,9 +148,8 @@ public class SpringAppConfig extends SpringBootServletInitializer implements Web
                     dataLineProcessor,
                     mathBlockMacroProcessor,
                     mathInlineMacroProcessor,
-                    cacheSuffixAppenderProcessor)
-                    // Extra extensions
-                    .postprocessor(documentAttributeProcessor);
+                    cacheSuffixAppenderProcessor);
+            asciidoctor.requireLibrary("openssl", "asciidoctor-diagram", "asciidoctor-revealjs");
         });
         return asciidoctor;
     }
@@ -170,9 +170,9 @@ public class SpringAppConfig extends SpringBootServletInitializer implements Web
                                      MathInlineMacroProcessor[] mathInlineMacroProcessor,
                                      CacheSuffixAppenderProcessor cacheSuffixAppenderProcessor) {
         Asciidoctor asciidoctor = AsciidoctorFactory.getAsciidoctor();
-        asciidoctor.requireLibrary("openssl", "asciidoctor-diagram", "asciidoctor-pdf", "asciidoctor-epub3");
+        JavaExtensionRegistry registry = asciidoctor.javaExtensionRegistry();
         Thread.startVirtualThread(() -> {
-            registerDefaultExtensions(asciidoctor,
+            registerDefaultExtensions(registry,
                     fxChartBlockProcessor,
                     treeBlockProcessor,
                     mathBlockProcessor,
@@ -183,6 +183,7 @@ public class SpringAppConfig extends SpringBootServletInitializer implements Web
                     mathBlockMacroProcessor,
                     mathInlineMacroProcessor,
                     cacheSuffixAppenderProcessor);
+            asciidoctor.requireLibrary("openssl", "asciidoctor-diagram", "asciidoctor-pdf", "asciidoctor-epub3");
         });
         return asciidoctor;
     }
@@ -195,16 +196,16 @@ public class SpringAppConfig extends SpringBootServletInitializer implements Web
     @Lazy
     public Asciidoctor plainDoctor(DocumentAttributeProcessor documentAttributeProcessor) {
         Asciidoctor asciidoctor = AsciidoctorFactory.getAsciidoctor();
-        asciidoctor.requireLibrary("openssl", "asciidoctor-revealjs", "asciidoctor-pdf", "asciidoctor-epub3");
+        JavaExtensionRegistry registry = asciidoctor.javaExtensionRegistry();
+        registry.postprocessor(documentAttributeProcessor);
         Thread.startVirtualThread(() -> {
-            JavaExtensionRegistry registry = asciidoctor.javaExtensionRegistry();
-            registry.postprocessor(documentAttributeProcessor);
+            asciidoctor.requireLibrary("openssl", "asciidoctor-revealjs", "asciidoctor-pdf", "asciidoctor-epub3");
         });
         return asciidoctor;
     }
 
 
-    public JavaExtensionRegistry registerDefaultExtensions(Asciidoctor doctor,
+    public JavaExtensionRegistry registerDefaultExtensions(JavaExtensionRegistry registry,
                                                            ChartBlockProcessor fxChartBlockProcessor,
                                                            FileTreeBlockProcessor treeBlockProcessor,
                                                            MathBlockProcessor[] mathBlockProcessor,
@@ -216,7 +217,6 @@ public class SpringAppConfig extends SpringBootServletInitializer implements Web
                                                            MathInlineMacroProcessor[] mathInlineMacroProcessor,
                                                            CacheSuffixAppenderProcessor cacheSuffixAppenderProcessor) {
 
-        JavaExtensionRegistry registry = doctor.javaExtensionRegistry();
         registry
                 .treeprocessor(dataLineProcessor)
                 .block(fxChartBlockProcessor)

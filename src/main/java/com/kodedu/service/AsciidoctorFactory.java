@@ -42,28 +42,18 @@ public class AsciidoctorFactory {
     public void handleContextRefreshEvent(ContextRefreshedEvent event) {
         ApplicationContext context = event.getApplicationContext();
         Thread.startVirtualThread(() -> {
+            initializeDoctors();
+            Thread.startVirtualThread(() -> {
+                directoryService = context.getBean(DirectoryService.class);
+            });
             plainDoctor = context.getBean("plainDoctor", Asciidoctor.class);
             plainDoctorReady.countDown();
-        });
-        Thread.startVirtualThread(() -> {
-            waitLatch(plainDoctorReady);
             htmlDoctor = context.getBean("htmlDoctor", Asciidoctor.class);
             htmlDoctorReady.countDown();
-        });
-        Thread.startVirtualThread(() -> {
-            waitLatch(plainDoctorReady);
-            waitLatch(htmlDoctorReady);
             nonHtmlDoctor = context.getBean("nonHtmlDoctor", Asciidoctor.class);
             nonHtmlDoctorReady.countDown();
-        });
-        Thread.startVirtualThread(() -> {
-            waitLatch(plainDoctorReady);
-            waitLatch(htmlDoctorReady);
             revealDoctor = context.getBean("revealDoctor", Asciidoctor.class);
             revealDoctorReady.countDown();
-        });
-        Thread.startVirtualThread(() -> {
-            directoryService = context.getBean(DirectoryService.class);
         });
     }
 
@@ -120,12 +110,14 @@ public class AsciidoctorFactory {
         return revealDoctor;
     }
 
-    static {
-        IntStream.rangeClosed(1, 4)
-                .forEach(i -> Thread.startVirtualThread(() -> {
-                    Asciidoctor asciidoctor = Asciidoctor.Factory.create();
-                    blockingQueue.add(asciidoctor);
-                }));
+    public void initializeDoctors() {
+        Thread.startVirtualThread(() -> {
+            IntStream.rangeClosed(1, 4)
+                    .forEach(i -> {
+                        Asciidoctor asciidoctor = Asciidoctor.Factory.create();
+                        blockingQueue.add(asciidoctor);
+                    });
+        });
     }
 
     public static Asciidoctor getAsciidoctor() {

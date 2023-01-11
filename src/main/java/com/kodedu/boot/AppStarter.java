@@ -72,8 +72,10 @@ public class AppStarter extends Application {
         stage.setTitle("AsciidocFX");
         logoImage = setApplicationIcon(stage);
         Thread.setDefaultUncaughtExceptionHandler((t, e) -> logger.error(e.getMessage(), e));
-        Thread.startVirtualThread(() -> initializeSSLContext());
-        Thread.startVirtualThread(() -> loadRequiredFonts());
+        Thread.startVirtualThread(() -> {
+            initializeSSLContext();
+            loadRequiredFonts();
+        });
 
         // http://bit.ly/1Euk8hh
         System.setProperty("jsse.enableSNIExtension", "false");
@@ -119,16 +121,11 @@ public class AppStarter extends Application {
         }
     }
 
-    static {
+    public void registerStartupListener() {
         Thread.startVirtualThread(() -> {
             StartupNotification.registerStartupListener(parameters -> {
-                Thread.startVirtualThread(() -> {
-                    while ((context == null && stage == null) || !stage.isShowing()) {
-                        ThreadHelper.sleep(10);
-                    }
-                    FileOpenListener fileOpenListener = context.getBean(FileOpenListener.class);
-                    fileOpenListener.startupPerformed(parameters);
-                });
+                FileOpenListener fileOpenListener = context.getBean(FileOpenListener.class);
+                fileOpenListener.startupPerformed(parameters);
             });
         });
     }
@@ -183,7 +180,7 @@ public class AppStarter extends Application {
             configurationService.loadConfigurations();
             controller.applyInitialConfigurations();
             controller.checkStageInsideScreens();
-
+            registerStartupListener();
         });
 
         stage.setOnShown(e -> {
