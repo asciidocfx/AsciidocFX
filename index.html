@@ -4,8 +4,8 @@
 <meta charset="UTF-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="generator" content="Asciidoctor 2.0.17">
-<title>Asciidoc Book Editor based on JavaFX 18</title>
+<meta name="generator" content="Asciidoctor 2.0.18">
+<title>Asciidoc Book Editor based on JavaFX 19</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /*! Asciidoctor default stylesheet | MIT License | https://asciidoctor.org */
@@ -84,10 +84,10 @@ code{font-family:"Droid Sans Mono","DejaVu Sans Mono",monospace;font-weight:400;
 ul,ol,dl{line-height:1.6;margin-bottom:1.25em;list-style-position:outside;font-family:inherit}
 ul,ol{margin-left:1.5em}
 ul li ul,ul li ol{margin-left:1.25em;margin-bottom:0}
-ul.square li ul,ul.circle li ul,ul.disc li ul{list-style:inherit}
-ul.square{list-style-type:square}
 ul.circle{list-style-type:circle}
 ul.disc{list-style-type:disc}
+ul.square{list-style-type:square}
+ul.circle ul:not([class]),ul.disc ul:not([class]),ul.square ul:not([class]){list-style:inherit}
 ol li ul,ol li ol{margin-left:1.25em;margin-bottom:0}
 dl dt{margin-bottom:.3125em;font-weight:bold}
 dl dd{margin-bottom:1.25em}
@@ -435,10 +435,11 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 #footer-text{color:rgba(0,0,0,.6);font-size:.9em}}
 @media amzn-kf8{#header,#content,#footnotes,#footer{padding:0}}
 </style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.3/styles/github.min.css">
 </head>
 <body class="article toc2 toc-left">
 <div id="header">
-<h1>Asciidoc Book Editor based on JavaFX 18</h1>
+<h1>Asciidoc Book Editor based on JavaFX 19</h1>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
 <ul class="sectlevel1">
@@ -640,34 +641,44 @@ In all releases we use AdoptOpenJDK JREs, so you will not have any licensing iss
 <tbody>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Mac</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://github.com/asciidocfx/AsciidocFX/releases/download/v1.8.3/AsciidocFX_Mac.dmg">AsciidocFX_Mac.dmg</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://github.com/asciidocfx/AsciidocFX/releases/download/v1.8.4/AsciidocFX_Mac.dmg">AsciidocFX_Mac.dmg</a></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Mac M1</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://github.com/asciidocfx/AsciidocFX/releases/download/v1.8.3/AsciidocFX_Mac_M1.dmg">AsciidocFX_Mac_M1.dmg</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://github.com/asciidocfx/AsciidocFX/releases/download/v1.8.4/AsciidocFX_Mac_M1.dmg">AsciidocFX_Mac_M1.dmg</a></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Windows</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://github.com/asciidocfx/AsciidocFX/releases/download/v1.8.3/AsciidocFX_Windows.exe">AsciidocFX_Windows.exe</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://github.com/asciidocfx/AsciidocFX/releases/download/v1.8.4/AsciidocFX_Windows.exe">AsciidocFX_Windows.exe</a></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Windows</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://github.com/asciidocfx/AsciidocFX/releases/download/v1.8.3/AsciidocFX_Windows.zip">AsciidocFX_Windows.zip</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://github.com/asciidocfx/AsciidocFX/releases/download/v1.8.4/AsciidocFX_Windows.zip">AsciidocFX_Windows.zip</a></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Linux</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://github.com/asciidocfx/AsciidocFX/releases/download/v1.8.3/AsciidocFX_Linux.tar.gz">AsciidocFX_Linux.tar.gz</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://github.com/asciidocfx/AsciidocFX/releases/download/v1.8.4/AsciidocFX_Linux.tar.gz">AsciidocFX_Linux.tar.gz</a></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Linux DEB</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://github.com/asciidocfx/AsciidocFX/releases/download/v1.8.4/AsciidocFX_Linux_Deb.deb">AsciidocFX_Linux.deb</a></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Linux RPM</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://github.com/asciidocfx/AsciidocFX/releases/download/v1.8.4/AsciidocFX_Linux_Rpm.rpm">AsciidocFX_Linux.rpm</a></p></td>
 </tr>
 </tbody>
 </table>
 <div class="sect2">
 <h3 id="install-on-linux"><a class="anchor" href="#install-on-linux"></a>Install on Linux</h3>
 <div class="paragraph">
-<p>After the download is completed, untar the package in your preferred directory.</p>
+<p>You can install AsciidocFX through the Deb or Rpm installers or via Archive file.</p>
 </div>
 <div class="listingblock">
+<div class="title">Archive file</div>
 <div class="content">
-<pre class="highlight"><code class="language-bash" data-lang="bash">$ cd bin
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ tar –xvzf AsciidocFX_Linux.tar.gz
+$ cd AsciidocFX/bin
 $ ./AsciidocFX</code></pre>
 </div>
 </div>
@@ -758,7 +769,7 @@ $ ./AsciidocFX</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-java" data-lang="java">.UML Diagram Example
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">.UML Diagram Example
 [plantuml,target="uml-example"]
 --
 abstract class AbstractList
@@ -830,7 +841,7 @@ In some UML elements, PlantUML needs to work with Graphviz. Because of this, you
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-bash" data-lang="bash">npm install @mermaid-js/mermaid-cli</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">npm install @mermaid-js/mermaid-cli</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -842,7 +853,7 @@ In some UML elements, PlantUML needs to work with Graphviz. Because of this, you
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-asciidoc" data-lang="asciidoc">[mermaid,target="mermaid-graph"]
+<pre class="highlightjs highlight"><code class="language-asciidoc hljs" data-lang="asciidoc">[mermaid,target="mermaid-graph"]
 --
 graph TD
     A[Start] --&gt; B{Is it?};
@@ -860,7 +871,7 @@ graph TD
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-asciidoc" data-lang="asciidoc">[mermaid,target="mermaid-flowchart"]
+<pre class="highlightjs highlight"><code class="language-asciidoc hljs" data-lang="asciidoc">[mermaid,target="mermaid-flowchart"]
 --
 flowchart TB
     c1--&gt;a2
@@ -897,7 +908,7 @@ flowchart TB
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-asciidoc" data-lang="asciidoc">.ditaa Diagram Example
+<pre class="highlightjs highlight"><code class="language-asciidoc hljs" data-lang="asciidoc">.ditaa Diagram Example
 [ditaa,target="ditaa-example"]
 --
     +--------+   +-------+    +-------+
@@ -931,7 +942,7 @@ flowchart TB
 <div class="listingblock">
 <div class="title">For Example (Tex)</div>
 <div class="content">
-<pre class="highlight"><code class="language-tex" data-lang="tex">[latexmath_,target="tex-formula"]
+<pre class="highlightjs highlight"><code class="language-tex hljs" data-lang="tex">[latexmath_,target="tex-formula"]
 --
 \begin{align}
 \dot{x} &amp; = \sigma(y-x) \\
@@ -954,7 +965,7 @@ flowchart TB
 <div class="listingblock">
 <div class="title">For Example (MathML)</div>
 <div class="content">
-<pre class="highlight"><code class="language-xml" data-lang="xml">[mathml_,target="mathml-formula"]
+<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="xml">[mathml_,target="mathml-formula"]
 --
 &lt;math xmlns="http://www.w3.org/1998/Math/MathML" display="block"&gt;
   &lt;mi&gt;x&lt;/mi&gt;
@@ -1007,7 +1018,7 @@ flowchart TB
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-java" data-lang="java">[tree,target="tree-view"]
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">[tree,target="tree-view"]
 --
 #src
 ##main
@@ -1040,7 +1051,7 @@ flowchart TB
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-java" data-lang="java">[tree,target="tree-view-new"]
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">[tree,target="tree-view-new"]
 --
 root
 |-- photos
@@ -1242,7 +1253,7 @@ We are generating builds with <strong>Github Actions</strong> automatically.
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-asciidoc" data-lang="asciidoc">include::_settings_reveal.adoc[]</code></pre>
+<pre class="highlightjs highlight"><code class="language-asciidoc hljs" data-lang="asciidoc">include::_settings_reveal.adoc[]</code></pre>
 </div>
 </div>
 </div>
@@ -1543,8 +1554,15 @@ This means, that on a German "QWERTZ" layout the shortcuts for <code>undo</code>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2022-11-06 18:16:06 +0100
+Last updated 2023-01-11 13:09:43 +0100
 </div>
 </div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.3/highlight.min.js"></script>
+<script>
+if (!hljs.initHighlighting.called) {
+  hljs.initHighlighting.called = true
+  ;[].slice.call(document.querySelectorAll('pre.highlight > code[data-lang]')).forEach(function (el) { hljs.highlightBlock(el) })
+}
+</script>
 </body>
 </html>

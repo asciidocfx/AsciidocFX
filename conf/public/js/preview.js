@@ -1,10 +1,8 @@
-var $placeholder = $("#placeholder");
-
 var clearCacheAction = new BufferedAction();
 
 function clearImageCache(imageName) {
     clearCacheAction.buff(function () {
-        $placeholder.find("img").each(function () {
+        $("body").find("img").each(function () {
             var image = $(this);
             var srcAttr = image.attr("src");
             if (srcAttr) {
@@ -16,7 +14,7 @@ function clearImageCache(imageName) {
 
 function imageToBase64Url() {
 
-    window.clonedContent = $placeholder.clone();
+    window.clonedContent = $("body").clone();
     clonedContent.find("img").each(function (index) {
         afx.imageToBase64Url(this.src, index);
     });

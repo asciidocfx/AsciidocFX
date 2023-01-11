@@ -1,7 +1,6 @@
-var placeholder = $("#placeholder");
 function runScroller(lineno) {
     //lineno++;
-    var node = placeholder.find(".data-line-" + lineno);
+    var node = $("body").find(".data-line-" + lineno);
     if (node.length > 0) {
         node.get(0).scrollIntoView(true);
     }
@@ -46,7 +45,7 @@ function findLowerBound(lineno) {
     var node;
     while (lineno >= 0) {
         lineno--;
-        node = placeholder.find(".data-line-" + lineno);
+        node = $("body").find(".data-line-" + lineno);
         if (node.length > 0)
             break;
     }

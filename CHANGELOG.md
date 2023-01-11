@@ -2,6 +2,15 @@
 
 All notable changes are documented in this file.
 
+## [Version ~1.8.4](https://github.com/asciidocfx/AsciidocFX/releases/tag/v1.8.4) (01.2023)
+
+* Bug fixes
+* Load ruby and jar extensions dynamically
+* Implement .asciidoctorconfig feature
+* Implement images_paste_dir feature
+* Undertow back for fast startup
+* Morphdom integration
+
 ## [Version ~1.8.3](https://github.com/asciidocfx/AsciidocFX/releases/tag/v1.8.3) (12.2022)
 
 * Java 19 Virtual Threads

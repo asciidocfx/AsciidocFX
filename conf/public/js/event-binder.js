@@ -1,4 +1,4 @@
-$("#placeholder").on("click", function (event) {
+$("body").on("click", function (event) {
     var elem = $(event.target);
 
     if (elem.is("[class*=data-line]")) {

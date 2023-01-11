@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <install4j version="10.0.4" transformSequenceNumber="10">
   <directoryPresets config="/Users/usta/Library/CloudStorage/GoogleDrive-rahman.usta.88@gmail.com/My Drive/projects/AsciidocFX/cert/asciidocfx.pfx" />
-  <application name="AsciidocFX" applicationId="7853-9376-5862-1224" mediaDir="target" compression="4" lzmaCompression="true" excludeSignedFromPacking="false" shortName="AsciidocFX" publisher="AsciidocFX" publisherWeb="http://asciidocfx.com" version="1.8.3" macVolumeId="b98c377570068f5e" javaMinVersion="19" javaMaxVersion="19" allowBetaVM="true">
+  <application name="AsciidocFX" applicationId="7853-9376-5862-1224" mediaDir="target" compression="4" lzmaCompression="true" excludeSignedFromPacking="false" shortName="AsciidocFX" publisher="AsciidocFX" publisherWeb="http://asciidocfx.com" version="1.8.4" macVolumeId="b98c377570068f5e" javaMinVersion="19" javaMaxVersion="19" allowBetaVM="true">
     <searchSequence>
       <envVar name="JAVA_HOME" />
       <envVar name="JDK_HOME" />
@@ -1181,7 +1181,7 @@ return true;</property>
         </modules>
       </jreBundle>
     </windowsArchive>
-    <unixArchive name="Unix Archive" id="1110" mediaFileName="AsciidocFX_Linux">
+    <unixArchive name="Linux Archive" id="1110" mediaFileName="AsciidocFX_Linux">
       <jreBundle>
         <modules>
           <jmodDirectory location="jmods/linux" />
@@ -1195,5 +1195,19 @@ return true;</property>
         </modules>
       </jreBundle>
     </macosFolder>
+    <linuxDeb name="Linux Deb Archive" id="1125" mediaFileName="AsciidocFX_Linux_Deb">
+      <jreBundle>
+        <modules>
+          <jmodDirectory location="jmods/linux" />
+        </modules>
+      </jreBundle>
+    </linuxDeb>
+    <linuxRPM name="Linux RPM" id="1140" mediaFileName="AsciidocFX_Linux_Rpm" arch="x86_64">
+      <jreBundle>
+        <modules>
+          <jmodDirectory location="jmods/linux" />
+        </modules>
+      </jreBundle>
+    </linuxRPM>
   </mediaSets>
 </install4j>

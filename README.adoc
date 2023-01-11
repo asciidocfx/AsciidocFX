@@ -9,7 +9,7 @@ ifndef::env-github[]
 :toc-placement: left
 endif::[]
 :imagesdir: images
-:asciidocfx-version: 1.8.3
+:asciidocfx-version: 1.8.4
 :download-root: https://github.com/asciidocfx/AsciidocFX/releases/download/v{asciidocfx-version}/
 
 image:https://opencollective.com/AsciidocFX/backers/badge.svg["Backers on Open Collective", link="#backers"]
@@ -71,15 +71,21 @@ NOTE: In all releases we use AdoptOpenJDK JREs, so you will not have any licensi
 | Windows | {download-root}AsciidocFX_Windows.zip[AsciidocFX_Windows.zip]
 | Linux
 | {download-root}AsciidocFX_Linux.tar.gz[AsciidocFX_Linux.tar.gz]
+| Linux DEB
+| {download-root}AsciidocFX_Linux_Deb.deb[AsciidocFX_Linux.deb]
+| Linux RPM
+| {download-root}AsciidocFX_Linux_Rpm.rpm[AsciidocFX_Linux.rpm]
 |====================
 
 === Install on Linux
 
-After the download is completed, untar the package in your preferred directory.
+You can install AsciidocFX through the Deb or Rpm installers or via Archive file.
 
+.Archive file
 [source,bash]
 ----
-$ cd bin
+$ tar –xvzf AsciidocFX_Linux.tar.gz
+$ cd AsciidocFX/bin
 $ ./AsciidocFX
 ----
 
@@ -383,6 +389,7 @@ You can represent filesystem tree in following `tree` block. There is two style 
 #####image.png
 --
 ----
+
 
 == Filesystem Tree output
 

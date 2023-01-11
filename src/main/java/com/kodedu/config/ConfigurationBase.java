@@ -47,7 +47,7 @@ public abstract class ConfigurationBase {
     @Value("${application.version}")
     private String afxVersion;
 
-    private static final List<String> ignoreVersionList = List.of("1.7.5", "1.7.6", "1.7.7", "1.7.8", "1.7.9", "1.8.0", "1.8.1", "1.8.2", "1.8.3");
+    private static final List<String> ignoreVersionList = List.of("1.7.5", "1.7.6", "1.7.7", "1.7.8", "1.7.9", "1.8.0", "1.8.1", "1.8.2", "1.8.3","1.8.4");
 
     public static ObjectProperty<Path> configRootLocation = new SimpleObjectProperty<>();
 
