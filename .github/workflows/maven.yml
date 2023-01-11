@@ -56,6 +56,8 @@ jobs:
           target/media/AsciidocFX_Mac.dmg
           target/media/AsciidocFX_Mac_M1.dmg
           target/media/AsciidocFX_Linux.tar.gz
+          target/media/AsciidocFX_Linux_Deb.deb
+          target/media/AsciidocFX_Linux_Rpm.rpm
           target/media/AsciidocFX_Windows.exe
           target/media/AsciidocFX_Windows.zip
           target/media/updates.xml  
