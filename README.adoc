@@ -1,4 +1,4 @@
-= Asciidoc Book Editor based on JavaFX 19
+= Asciidoc Editor based on JavaFX 19
 :experimental:
 ifdef::env-github[]
 :toc:
@@ -17,7 +17,7 @@ image:https://opencollective.com/AsciidocFX/sponsors/badge.svg["Sponsors on Open
 image:https://api.travis-ci.org/asciidocfx/AsciidocFX.svg?branch=master[Build Status,link="https://travis-ci.org/asciidocfx/AsciidocFX"]
 image:https://badges.gitter.im/Join%20Chat.svg["Gitter", link="https://gitter.im/asciidocfx/AsciidocFX"]
 
-Asciidoc FX is a book / document editor to build PDF, Epub, Mobi and HTML books, documents and slides. AsciidocFX is also a winner of https://www.oracle.com/corporate/pressrelease/dukes-award-102815.html[Duke's Choice Award 2015].
+Asciidoc FX is an WYSIWYG editor for Asciidoc markup language. You can build PDF, Epub, and HTML books, documents and slides. AsciidocFX is also a winner of https://www.oracle.com/corporate/pressrelease/dukes-award-102815.html[Duke's Choice Award 2015].
 
 .AsciidocFX - Duke's Choice Award 2015 winner
 image::asciidocfx.png[]
@@ -86,6 +86,7 @@ You can install AsciidocFX through the Deb or Rpm installers or via Archive file
 ----
 $ tar –xvzf AsciidocFX_Linux.tar.gz
 $ cd AsciidocFX/bin
+$ chmod +X ./AsciidocFX
 $ ./AsciidocFX
 ----
 
