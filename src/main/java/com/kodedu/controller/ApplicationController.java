@@ -543,6 +543,9 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     public void initializeApp() {
 
+        tabPane.setTabDragPolicy(TabPane.TabDragPolicy.REORDER);
+        terminalTabPane.setTabDragPolicy(TabPane.TabDragPolicy.REORDER);
+
         port = Integer.parseInt(environment.getProperty("local.server.port"));
         htmlPane.loadInitialUrl();
 
