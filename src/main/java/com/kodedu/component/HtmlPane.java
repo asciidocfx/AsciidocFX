@@ -1,9 +1,6 @@
 package com.kodedu.component;
 
-import com.kodedu.config.DocbookConfigBean;
-import com.kodedu.config.EditorConfigBean;
-import com.kodedu.config.HtmlConfigBean;
-import com.kodedu.config.PreviewConfigBean;
+import com.kodedu.config.*;
 import com.kodedu.controller.ApplicationController;
 import com.kodedu.engine.AsciidocWebkitConverter;
 import com.kodedu.other.Current;
@@ -75,6 +72,11 @@ public class HtmlPane extends ViewPanel {
     @Override
     public void browse() {
         controller.browseInDesktop(String.format(indexUrl, controller.getPort(), directoryService.interPath()));
+    }
+
+    @Override
+    public void browse(BrowserType browserType) {
+        controller.browseInDesktop(browserType, String.format(indexUrl, controller.getPort(), directoryService.interPath()));
     }
 
     @Override

@@ -83,6 +83,7 @@ public class EditorConfigBean extends ConfigurationBase {
     private ObjectProperty<Integer> hangFileSizeLimit = new SimpleObjectProperty<>(3);
     public ObjectProperty<FoldStyle> foldStyle = new SimpleObjectProperty<>(FoldStyle.DEFAULT);
 
+    public ObjectProperty<BrowserType> browser = new SimpleObjectProperty<>(BrowserType.DEFAULT);
 
     private Logger logger = LoggerFactory.getLogger(EditorConfigBean.class);
 
@@ -410,6 +411,18 @@ public class EditorConfigBean extends ConfigurationBase {
         return foldStyle;
     }
 
+    public BrowserType getBrowser() {
+        return browser.get();
+    }
+
+    public ObjectProperty<BrowserType> browserProperty() {
+        return browser;
+    }
+
+    public void setBrowser(BrowserType browser) {
+        this.browser.set(browser);
+    }
+
     public void setFoldStyle(FoldStyle foldStyle) {
         this.foldStyle.set(foldStyle);
     }
@@ -460,7 +473,7 @@ public class EditorConfigBean extends ConfigurationBase {
 
         FXForm editorConfigForm = new FXFormBuilder<>()
                 .resourceBundle(ResourceBundle.getBundle("editorConfig"))
-                .includeAndReorder("editorTheme", "aceTheme", "detachedPreview", "validateDocbook", "fontFamily", "aceFontFamily", "aceFontSize",
+                .includeAndReorder("browser", "editorTheme", "aceTheme", "detachedPreview", "validateDocbook", "fontFamily", "aceFontFamily", "aceFontSize",
                         "scrollSpeed", "useWrapMode", "wrapLimit", "foldStyle", "showGutter", "defaultLanguage", "autoUpdate","showHiddenFiles",
                         "clipboardImageFilePattern", "hangFileSizeLimit", "extensionImageScale")
                 .build();
@@ -564,7 +577,8 @@ public class EditorConfigBean extends ConfigurationBase {
         boolean autoUpdate = jsonObject.getBoolean("autoUpdate", true);
         final boolean validateDocbook = jsonObject.getBoolean("validateDocbook", false);
         String clipboardImageFilePattern = jsonObject.getString("clipboardImageFilePattern", "'Image'-ddMMyy-hhmmss.SSS'.png'");
-        String foldStyle = jsonObject.getString("foldStyle", "default");
+        String foldStyle = jsonObject.getString("foldStyle", "DEFAULT");
+        String browser = jsonObject.getString("browser", "DEFAULT");
         int hangFileSizeLimit = jsonObject.getInt("hangFileSizeLimit", 3);
         String editorTheme = jsonObject.getString("editorTheme");
 
@@ -631,6 +645,10 @@ public class EditorConfigBean extends ConfigurationBase {
 
             if (FoldStyle.contains(foldStyle)) {
                 this.setFoldStyle(FoldStyle.valueOf(foldStyle));
+            }
+
+            if (BrowserType.contains(browser)) {
+                this.setBrowser(BrowserType.valueOf(browser));
             }
 
             if (jsonObject.containsKey("scrollSpeed")) {
@@ -778,6 +796,7 @@ public class EditorConfigBean extends ConfigurationBase {
                 .add("previewScreenWidth", getPreviewScreenWidth())
                 .add("previewScreenHeight", getPreviewScreenHeight())
                 .add("foldStyle", getFoldStyle().name())
+                .add("browser", getBrowser().name())
                 .add("hangFileSizeLimit", getHangFileSizeLimit());
 
         return objectBuilder.build();

@@ -210,6 +210,11 @@
             <version>${ikonli.version}</version>
         </dependency>
         <dependency>
+            <groupId>com.vaadin</groupId>
+            <artifactId>open</artifactId>
+            <version>8.5.0</version>
+        </dependency>
+        <dependency>
             <groupId>com.kodedu.terminalfx</groupId>
             <artifactId>terminalfx</artifactId>
             <version>1.2.0</version>

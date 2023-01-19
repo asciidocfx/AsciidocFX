@@ -43,6 +43,8 @@ import com.kodedu.spell.dictionary.DictionaryService;
 import com.kodedu.terminalfx.TerminalBuilder;
 import com.kodedu.terminalfx.TerminalTab;
 import com.kodedu.terminalfx.config.TerminalConfig;
+import com.vaadin.open.App;
+import com.vaadin.open.Open;
 import jakarta.annotation.PostConstruct;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
@@ -749,6 +751,14 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             }
         });
 
+        ContextMenu browserContextMenu = new ContextMenu();
+        browserContextMenu.getStyleClass().add("build-menu");
+        List<MenuItem> browserMenuItem = Stream.of(BrowserType.values()).map(b -> MenuItemBuilt.item(b.name()).click(event -> {
+            externalBrowse(b);
+        })).collect(Collectors.toList());
+        browserContextMenu.getItems().addAll(browserMenuItem);
+        browserPro.setContextMenu(browserContextMenu);
+
         fileSystemView.setCellFactory(param -> {
             TreeCell<Item> cell = new TextFieldTreeCell<Item>();
             cell.setOnDragDetected(event -> {
@@ -1187,12 +1197,26 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         }
     }
 
+    public void browseInDesktop(BrowserType browserType, String url) {
+        threadService.runTaskLater(() -> {
+            try {
+                String asciiUri = UriComponentsBuilder.fromUriString(url).build().toUri().toASCIIString();
+                if (Objects.isNull(browserType) || BrowserType.DEFAULT == browserType) {
+                    threadService.runActionLater(() -> hostServices.showDocument(asciiUri));
+                } else {
+                    boolean isOpened = Open.open(asciiUri, App.valueOf(browserType.name()));
+                    if (!isOpened) {
+                        threadService.runActionLater(() -> hostServices.showDocument(asciiUri));
+                    }
+                }
+            } catch (Exception e) {
+                logger.error(e.getMessage(), e);
+            }
+        });
+    }
+
     public void browseInDesktop(String url) {
-        try {
-            hostServices.showDocument(UriComponentsBuilder.fromUriString(url).build().toUri().toASCIIString());
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-        }
+        browseInDesktop(editorConfigBean.getBrowser(), url);
     }
 
     private ScheduledFuture<?> scheduledFuture = null;
@@ -2004,6 +2028,10 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     public void externalBrowse() {
         rightShowerHider.getShowing().ifPresent(ViewPanel::browse);
+    }
+
+    public void externalBrowse(BrowserType browserType) {
+        rightShowerHider.getShowing().ifPresent(v-> v.browse(browserType));
     }
 
     ChangeListener<Boolean> outlineTabChangeListener;
@@ -3059,6 +3087,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     @FXML
     public void togglePreviewView(ActionEvent actionEvent) {
+        browserPro.setVisible(true);
         final ToggleButton source = (ToggleButton) actionEvent.getSource();
         splitPane.setDividerPosition(1, source.isSelected() ? 0.59 : 1);
         if (source.isSelected()) {
@@ -3069,6 +3098,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     @FXML
     public void toggleZenMode(ActionEvent actionEvent) {
+        browserPro.setVisible(true);
         final ToggleButton source = (ToggleButton) actionEvent.getSource();
         final boolean selected = source.isSelected();
 
@@ -3088,6 +3118,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     @FXML
     public void toggleConfigurationView(ActionEvent actionEvent) {
+        browserPro.setVisible(false);
         final ToggleButton source = (ToggleButton) actionEvent.getSource();
         splitPane.setDividerPosition(1, source.isSelected() ? 0.59 : 1);
         if (source.isSelected()) {

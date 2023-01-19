@@ -1,5 +1,6 @@
 package com.kodedu.component;
 
+import com.kodedu.config.BrowserType;
 import com.kodedu.config.EditorConfigBean;
 import com.kodedu.controller.ApplicationController;
 import com.kodedu.helper.FxHelper;
@@ -191,6 +192,11 @@ public abstract class ViewPanel extends AnchorPane {
             final String documentURI = webEngine().getDocument().getDocumentURI();
             controller.browseInDesktop(documentURI);
         });
+    }
+
+    public void browse(BrowserType browserType) {
+        final String documentURI = webEngine().getDocument().getDocumentURI();
+        controller.browseInDesktop(browserType, documentURI);
     }
 
     public static CheckMenuItem getDetachPreviewItem() {
