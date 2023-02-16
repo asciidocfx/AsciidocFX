@@ -5,7 +5,7 @@ package com.kodedu.helper;
  */
 public class OSHelper {
 
-    private static final String OS = System.getProperty("os.name").toLowerCase();
+    private static final String OS = System.getProperty("os.name", "generic").toLowerCase();
 
     public static boolean isWindows() {
 
