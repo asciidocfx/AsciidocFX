@@ -19,7 +19,7 @@ public class PathResolverServiceImpl implements PathResolverService {
     private final PathMatcher markdownMatcher = FileSystems.getDefault().getPathMatcher("glob:{**.md,**.markdown}");
     private final PathMatcher htmlMatcher = FileSystems.getDefault().getPathMatcher("glob:**.{htm,html}");
     private final PathMatcher docBookMatcher = FileSystems.getDefault().getPathMatcher("glob:**.xml");
-    private final PathMatcher ascMatcher = FileSystems.getDefault().getPathMatcher("glob:**.{asc,asciidoc,ad,adoc,txt}");
+    private final PathMatcher ascMatcher = FileSystems.getDefault().getPathMatcher("glob:**.{asc,asciidoc,ad,adoc,jam,txt}");
     private final PathMatcher imageMatcher = FileSystems.getDefault().getPathMatcher("glob:**.{png,svg,jpg,jpeg,bmp,gif}");
     private final PathMatcher pptMatcher = FileSystems.getDefault().getPathMatcher("glob:**.{ppt,pptx,odp,fodp}");
     private final PathMatcher excelMatcher = FileSystems.getDefault().getPathMatcher("glob:**.{xls,xlsx,ods,fods}");
@@ -32,7 +32,7 @@ public class PathResolverServiceImpl implements PathResolverService {
     private final PathMatcher mobiMatcher = FileSystems.getDefault().getPathMatcher("glob:**.{mobi,azw,azw3}");
     private final PathMatcher anyMatcher = FileSystems.getDefault().getPathMatcher("glob:**.{*}");
     private final PathMatcher uniqueMatcher = FileSystems.getDefault().getPathMatcher("glob:{license,readme,gradlew}");
-    private final PathMatcher bookMatcher = FileSystems.getDefault().getPathMatcher("glob:{**book.asc,**book.txt,**book.asciidoc,**book.adoc,**book.ad}");
+    private final PathMatcher bookMatcher = FileSystems.getDefault().getPathMatcher("glob:{**book.asc,**book.txt,**book.asciidoc,**book.adoc,**book.ad,**book.jam}");
     private final PathMatcher wordMatcher = FileSystems.getDefault().getPathMatcher("glob:**.{doc,dot,docx,docm,dotx,dotm,docb,odt,fodt}");
 
     @Override

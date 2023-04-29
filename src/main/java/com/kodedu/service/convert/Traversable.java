@@ -14,7 +14,7 @@ import java.util.regex.Pattern;
 public interface Traversable {
 
     public Pattern ascIncludeRegex = Pattern.compile("(?<=include::)(?<path>.*?)(?=\\[(.*?)\\])");
-    public Pattern mdIncludeRegex = Pattern.compile("\\[.*?\\]\\((?<path>.*\\.(md|markdown|asc|adoc|asciidoc|ad|txt))\\)");
+    public Pattern mdIncludeRegex = Pattern.compile("\\[.*?\\]\\((?<path>.*\\.(md|markdown|asc|adoc|jam|asciidoc|ad|txt))\\)");
 
     public default void traverseLines(List<String> lines, StringBuffer buffer, Path rootPath) {
 

@@ -121,6 +121,8 @@ public class AsciidocAsciidoctorjConverter extends ViewPanel implements Asciidoc
 		                         .safe(safe)
 		                         .sourcemap(configBean.getSourcemap())
 		                         .headerFooter(true)
+				                 .inPlace(false)
+				                 .toFile(false)
 		                         .attributes(attributes)
 		                         .build();
 
@@ -129,7 +131,9 @@ public class AsciidocAsciidoctorjConverter extends ViewPanel implements Asciidoc
 		// See also https://github.com/asciidoctor/asciidoctorj-diagram/issues/25
 		// String converted = doc.convert();
 		Asciidoctor asciidoctor = Objects.equals(backend,"revealjs") ? getRevealDoctor() : getHtmlDoctor();
-		String converted = asciidoctor.convert(textChangeEvent.getText(), options);
+		String converted = Objects.nonNull(textChangeEvent.getPath())
+				? asciidoctor.convertFile(textChangeEvent.getPath().toFile(), options) :
+				asciidoctor.convert(textChangeEvent.getText(), options)  ;
 		Document finalDocument = (Document) DOCUMENT_MAP.get(docUUID);
 		current.currentEditor().setLastDocument(finalDocument);
 		DOCUMENT_MAP.remove(docUUID);

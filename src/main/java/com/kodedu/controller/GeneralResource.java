@@ -59,7 +59,7 @@ public class GeneralResource {
         if (Objects.nonNull(p)) {
             Path path = directoryService.findPathInPublic(p);
             fileService.processFile(request, response, path);
-        } else if (finalURI.matches(".*\\.(asc|asciidoc|ad|adoc|md|markdown)$")) {
+        } else if (finalURI.matches(".*\\.(asc|asciidoc|ad|adoc|jam|md|markdown)$")) {
 
             current.currentPath().ifPresent(path -> {
 

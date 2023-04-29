@@ -3,7 +3,7 @@
     "name": "asciidoc",
     "caption": "AsciiDoc",
     "mode": "ace/mode/asciidoc",
-    "extensions": "asciidoc|adoc|asc|ad"
+    "extensions": "asciidoc|adoc|asc|ad|jam"
   },
   {
     "name": "markdown",

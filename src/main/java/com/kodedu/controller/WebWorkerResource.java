@@ -70,7 +70,7 @@ public class WebWorkerResource {
             finalURI = payload.param("path");
         }
 
-        if (finalURI.matches(".*\\.(asc|asciidoc|ad|adoc|md|markdown)$")) {
+        if (finalURI.matches(".*\\.(asc|asciidoc|ad|adoc|jam|md|markdown)$")) {
 
             if (finalURI.startsWith("//")) {
                 finalURI = finalURI.replace("//", "http://");
