@@ -76,16 +76,6 @@ public abstract class ViewPanel extends AnchorPane {
             initializeMargins();
             initializePreviewContextMenus();
             initializePopupView();
-            setupFirebugEventHandler();
-        });
-    }
-
-    private void setupFirebugEventHandler() {
-        getWebView().addEventHandler(EventType.ROOT, e -> {
-            if (e instanceof KeyEvent ke &&
-                    ke.getCode() == KeyCode.F12) {
-                showFirebug();
-            }
         });
     }
 
