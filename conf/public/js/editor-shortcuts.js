@@ -16,6 +16,7 @@ function addNewCommand(key, value) {
 // default keys https://searchcode.com/codesearch/view/58959997/
 editor.commands.addCommand({
     name: 'cut-1',
+    description : 'Cuts the selection in editor',
     bindKey: {win: 'Ctrl-X', mac: 'Command-X'},
     exec: function (editor) {
 
@@ -44,6 +45,7 @@ editor.commands.addCommand({
 
 editor.commands.addCommand({
     name: 'copy-1',
+    description : 'Copies the selection in editor',
     bindKey: {win: 'Ctrl-C', mac: 'Command-C'},
     exec: function (editor) {
         afx.cutCopy(editor.getCopyText());
@@ -54,6 +56,7 @@ editor.commands.addCommand({
 
 editor.commands.addCommand({
     name: 'paste-1',
+    description : 'Pastes from clipboard to AsciidocFX editor',
     bindKey: {win: 'Ctrl-Shift-V', mac: 'Command-Shift-V'},
     exec: function (editor) {
 
@@ -572,6 +575,7 @@ function gotoLine(line, column){
 
 editor.commands.addCommand({
     name: 'underline-selected',
+    description: "Underline selection",
     bindKey: {win: 'Ctrl-U', mac: 'Command-U'},
     exec: function () {
         afx.getShortcutProvider().getProvider().addUnderline();
@@ -581,6 +585,7 @@ editor.commands.addCommand({
 
 editor.commands.addCommand({
     name: 'bold-selected',
+    description: "Bold selection",
     bindKey: {win: 'Ctrl-B', mac: 'Command-B'},
     exec: function () {
         afx.getShortcutProvider().getProvider().addBold();
@@ -590,6 +595,7 @@ editor.commands.addCommand({
 
 editor.commands.addCommand({
     name: 'add-heading',
+    description: "Append Heading",
     bindKey: {win: 'Ctrl-H', mac: 'Ctrl-H'},
     exec: function () {
         afx.getShortcutProvider().getProvider().addHeading();
@@ -599,6 +605,7 @@ editor.commands.addCommand({
 
 editor.commands.addCommand({
     name: 'line-numbers',
+    description: "Show line numbers",
     bindKey: {win: 'Ctrl-L', mac: 'Command-L'},
     exec: showLineNumbers,
     readOnly: true
@@ -606,6 +613,7 @@ editor.commands.addCommand({
 
 editor.commands.addCommand({
     name: 'codify-selected',
+    description: "Codify selection",
     bindKey: {win: 'Ctrl-Shift-C', mac: 'Command-Shift-C'},
     exec: function (editor) {
         formatText(editor, matchCode, "`", "`");
@@ -615,6 +623,7 @@ editor.commands.addCommand({
 
 editor.commands.addCommand({
     name: 'italicize-selected',
+    description: "Italic selection",
     bindKey: {
         win: 'Ctrl-i|Ctrl-İ|Ctrl-ı|Ctrl-I',
         mac: 'Command-i|Command-İ|Command-ı|Command-I'
@@ -627,23 +636,20 @@ editor.commands.addCommand({
 
 editor.commands.addCommand({
     name: 'firebug-lite',
+    description: "Show Firebug Console",
     bindKey: {
         win: 'F12',
         mac: 'F12'
     },
     exec: function () {
-        if (!document.querySelectorAll("#firebug-script").length) {
-            var head = document.querySelector("head");
-            var js = document.createElement("script");
-            js.src = "http://getfirebug.com/firebug-lite.js#startOpened=true";
-            head.appendChild(js);
-        }
+        showFirebug();
     },
     readOnly: true
 });
 
 editor.commands.addCommand({
     name: 'source-generate',
+    description: "Text snippets",
     bindKey: {win: 'Tab', mac: 'Tab'},
     exec: function (editor, selection) {
 
@@ -744,7 +750,7 @@ editor.commands.addCommand({
 //            "tbl3,2" tab
         var tableMatch = textRange.match(/tbl(\d+)(\.|,)(\d+)/);
 
-        if (Array.isArray(tableMatch))
+        if (Array.isArray(tableMatch)) {
             if (tableMatch.length == 4) { // table generator
 
                 editor.removeToLineStart();
@@ -755,6 +761,7 @@ editor.commands.addCommand({
                 afx.getShortcutProvider().getProvider().addBasicTable(row, column);
                 return;
             }
+        }
 
         editor.indent();
     },
