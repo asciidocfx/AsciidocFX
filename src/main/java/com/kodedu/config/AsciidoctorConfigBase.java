@@ -4,6 +4,7 @@ import com.dooapp.fxform.FXForm;
 import com.dooapp.fxform.builder.FXFormBuilder;
 import com.dooapp.fxform.handler.NamedFieldHandler;
 import com.dooapp.fxform.view.factory.DefaultFactoryProvider;
+import com.kodedu.component.MyTab;
 import com.kodedu.config.AsciidoctorConfigBase.LoadedAttributes;
 import com.kodedu.config.factory.ListChoiceBoxFactory;
 import com.kodedu.config.factory.TableFactory;
@@ -36,6 +37,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
+import static com.kodedu.other.Constants.DOC_FILE_ATTR;
 import static com.kodedu.service.AsciidoctorFactory.getPlainDoctor;
 
 /**
@@ -313,12 +315,14 @@ public abstract class AsciidoctorConfigBase<T extends LoadedAttributes> extends 
     }
 
     public Attributes getAsciiDocAttributes(String asciidoc) {
+        MyTab currentTab = controller.getCurrent().currentTab();
+        Path path = currentTab.getPath();
         Document document = getPlainDoctor().load(asciidoc, Options.builder()
                 .backend(getBackend())
                 .safe(SafeMode.UNSAFE)
                 .sourcemap(true)
-                .baseDir(controller.getCurrent().currentTab().getParentOrWorkdir().toFile())
-                .attributes(Attributes.builder().allowUriRead(true).build()).build());
+                .baseDir(currentTab.getParentOrWorkdir().toFile())
+                .attributes(Attributes.builder().allowUriRead(true).attribute(DOC_FILE_ATTR, Objects.nonNull(path) ? path.toString() : null).build()).build());
         Map<String, Object> defaultAttributes = document.getAttributes();
 
         return getAsciiDocAttributes(defaultAttributes);

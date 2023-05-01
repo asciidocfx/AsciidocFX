@@ -27,6 +27,7 @@ import java.util.Objects;
 import java.util.UUID;
 
 import static com.kodedu.helper.AsciidoctorHelper.convertSafe;
+import static com.kodedu.other.Constants.DOC_FILE_ATTR;
 import static com.kodedu.service.AsciidoctorFactory.getHtmlDoctor;
 import static com.kodedu.service.AsciidoctorFactory.getRevealDoctor;
 import static com.kodedu.service.extension.processor.DocumentAttributeProcessor.DOCUMENT_MAP;
@@ -110,6 +111,8 @@ public class AsciidocAsciidoctorjConverter extends ViewPanel implements Asciidoc
 		String backend = (String) document.getAttribute("backend", "html5");
 		Attributes attributes = configBean.getAsciiDocAttributes(document.getAttributes());
 		attributes.setAttribute("preview", true);
+		Path path = textChangeEvent.getPath();
+		attributes.setAttribute(DOC_FILE_ATTR, Objects.nonNull(path) ? path.toString() : null);
 		String docUUID = UUID.randomUUID().toString();
 		attributes.setAttribute(DOC_UUID, docUUID);
 

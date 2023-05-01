@@ -133,6 +133,7 @@ import java.util.stream.Stream;
 
 import static com.kodedu.helper.IOHelper.containsPath;
 import static com.kodedu.helper.IOHelper.getInstallationPath;
+import static com.kodedu.other.Constants.DOC_FILE_ATTR;
 import static com.kodedu.service.extension.processor.DocumentAttributeProcessor.DOCUMENT_MAP;
 import static com.kodedu.service.extension.processor.DocumentAttributeProcessor.DOC_UUID;
 import static java.nio.file.StandardOpenOption.CREATE_NEW;
@@ -2305,7 +2306,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             if ("asciidoc".equalsIgnoreCase(mode)) {
 
                 prependAsciidoctorConfig(textChangeEvent);
-                Document document = loadDocument(textChangeEvent.getText());
+                Document document = loadDocument(textChangeEvent);
 
                 String backend = (String) document.getAttribute("backend", "html5");
 
@@ -2386,18 +2387,20 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         textChangeEvent.setText(stringBuffer.toString());
     }
 
-    public Document loadDocument(String text) {
+    public Document loadDocument(TextChangeEvent textChangeEvent) {
         String uuid = UUID.randomUUID().toString();
         MyTab currentTab = current.currentTab();
         if(Objects.nonNull(currentTab)){
+            Path path = textChangeEvent.getPath();
             AsciidoctorFactory.getPlainDoctor()
-                    .convert(text, Options.builder()
+                    .convert(textChangeEvent.getText(), Options.builder()
                     .safe(SafeMode.UNSAFE)
                     .sourcemap(true)
                     .baseDir(currentTab.getParentOrWorkdir().toFile())
                     .attributes(Attributes.builder()
                             .allowUriRead(true)
                             .attribute(DOC_UUID, uuid)
+                            .attribute(DOC_FILE_ATTR, Objects.nonNull(path) ? path.toString() : null)
                             .build()).build());
             Document document = (Document) DOCUMENT_MAP.get(uuid);
             currentTab.getEditorPane().setLastDocument(document);
