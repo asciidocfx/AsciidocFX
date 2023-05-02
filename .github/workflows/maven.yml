@@ -23,10 +23,10 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-    - name: Set up JDK 19
+    - name: Set up JDK 20
       uses: actions/setup-java@v3
       with:
-        java-version: '19'
+        java-version: '20'
         distribution: 'temurin'
         cache: maven
     - name: Download install4j

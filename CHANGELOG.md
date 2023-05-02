@@ -2,6 +2,14 @@
 
 All notable changes are documented in this file.
 
+## [Version ~1.8.5](https://github.com/asciidocfx/AsciidocFX/releases/tag/v1.8.5) (05.2023)
+
+* Version updates
+* Java 20, JavaFX 20 upgrade
+* Open with External browser support
+* Changes for Jamal macro language
+* Moveable tab pane
+
 ## [Version ~1.8.4](https://github.com/asciidocfx/AsciidocFX/releases/tag/v1.8.4) (01.2023)
 
 * Bug fixes
