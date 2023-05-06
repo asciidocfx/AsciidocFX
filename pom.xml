@@ -20,6 +20,7 @@
         <install4j.home>${env.GITHUB_WORKSPACE}/install4j${install4j.version}</install4j.home>
         <install4j.licenseKey>${env.LICENSE_KEY_10}</install4j.licenseKey>
         <install4j.macKeyStorePassword>${env.MAC_KEYSTORE_PASSWORD}</install4j.macKeyStorePassword>
+        <install4j.appSpecificPassword>${env.MAC_APP_PASSWORD}</install4j.appSpecificPassword>
         <install4j.winKeyStorePassword>${env.WIN_KEYSTORE_PASSWORD}</install4j.winKeyStorePassword>
         <openjfx.version>20.0.1</openjfx.version>
         <ikonli.version>12.3.1</ikonli.version>
@@ -605,6 +606,7 @@
                                     <license>${install4j.licenseKey}</license>
                                     <macKeystorePassword>${install4j.macKeyStorePassword}</macKeystorePassword>
                                     <winKeystorePassword>${install4j.winKeyStorePassword}</winKeystorePassword>
+                                    <appleIdPassword>${install4j.appSpecificPassword}</appleIdPassword>
                                 </configuration>
                             </execution>
                         </executions>
