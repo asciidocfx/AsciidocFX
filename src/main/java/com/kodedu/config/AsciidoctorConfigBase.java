@@ -344,8 +344,8 @@ public abstract class AsciidoctorConfigBase<T extends LoadedAttributes> extends 
             }
         }
         Map<String, Object> cloneMap = new LinkedHashMap<>(map);
-        for (Map.Entry<String, String> entry : map.entrySet()) {
-            cloneMap.put(entry.getKey(), originalDocAttributes.getOrDefault(entry.getKey(), entry.getValue()));
+        for (Map.Entry<String, Object> entry : originalDocAttributes.entrySet()) {
+            cloneMap.put(entry.getKey(), entry.getValue());
         }
 
         String docdir = (String) originalDocAttributes.get("docdir");
