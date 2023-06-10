@@ -46,6 +46,10 @@ public class DataLineProcessor extends Treeprocessor {
 			}
 			int lineNo = sourceLocation.getLineNumber();
 			node.addRole("data-line-" + lineNo);
+			List<StructuralNode> blocks = node.getBlocks();
+			for (StructuralNode block : blocks) {
+				addDataLineInformation(block);
+			}
 		}
 	}
 
