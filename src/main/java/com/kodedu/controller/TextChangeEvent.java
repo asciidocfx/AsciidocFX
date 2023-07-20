@@ -1,6 +1,7 @@
 package com.kodedu.controller;
 
 import java.nio.file.Path;
+import java.util.Objects;
 
 public class TextChangeEvent {
     private String text;
@@ -35,5 +36,9 @@ public class TextChangeEvent {
 
     public void setPath(Path path) {
         this.path = path;
+    }
+
+    public String getPathText() {
+        return Objects.nonNull(path) ? path.toString() : null;
     }
 }

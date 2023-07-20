@@ -27,6 +27,7 @@ import com.kodedu.service.extension.processor.CacheSuffixAppenderProcessor;
 import com.kodedu.service.extension.processor.DataLineProcessor;
 import com.kodedu.service.extension.processor.DocumentAttributeProcessor;
 import com.kodedu.service.extension.processor.ExtensionPreprocessor;
+import com.kodedu.service.extension.processor.XrefIncludeProcessor;
 import com.kodedu.service.extension.tree.FileTreeBlockMacroProcessor;
 import com.kodedu.service.extension.tree.FileTreeBlockProcessor;
 import com.kodedu.service.extension.tree.FileTreeInlineMacroProcessor;
@@ -94,6 +95,7 @@ public class SpringAppConfig extends SpringBootServletInitializer implements Web
                                   FileTreeBlockMacroProcessor fileTreeBlockMacroProcessor,
                                   FileTreeInlineMacroProcessor fileTreeInlineMacroProcessor,
                                   DataLineProcessor dataLineProcessor,
+                                  XrefIncludeProcessor xrefIncludeProcessor,
                                   MathBlockMacroProcessor[] mathBlockMacroProcessor,
                                   MathInlineMacroProcessor[] mathInlineMacroProcessor,
                                   CacheSuffixAppenderProcessor cacheSuffixAppenderProcessor,
@@ -110,6 +112,7 @@ public class SpringAppConfig extends SpringBootServletInitializer implements Web
                     fileTreeBlockMacroProcessor,
                     fileTreeInlineMacroProcessor,
                     dataLineProcessor,
+                    xrefIncludeProcessor,
                     mathBlockMacroProcessor,
                     mathInlineMacroProcessor,
                     cacheSuffixAppenderProcessor);
@@ -130,6 +133,7 @@ public class SpringAppConfig extends SpringBootServletInitializer implements Web
                                   FileTreeBlockMacroProcessor fileTreeBlockMacroProcessor,
                                   FileTreeInlineMacroProcessor fileTreeInlineMacroProcessor,
                                   DataLineProcessor dataLineProcessor,
+                                  XrefIncludeProcessor xrefIncludeProcessor,
                                   MathBlockMacroProcessor[] mathBlockMacroProcessor,
                                   MathInlineMacroProcessor[] mathInlineMacroProcessor,
                                   CacheSuffixAppenderProcessor cacheSuffixAppenderProcessor,
@@ -146,6 +150,7 @@ public class SpringAppConfig extends SpringBootServletInitializer implements Web
                     fileTreeBlockMacroProcessor,
                     fileTreeInlineMacroProcessor,
                     dataLineProcessor,
+                    xrefIncludeProcessor,
                     mathBlockMacroProcessor,
                     mathInlineMacroProcessor,
                     cacheSuffixAppenderProcessor);
@@ -166,6 +171,7 @@ public class SpringAppConfig extends SpringBootServletInitializer implements Web
                                      FileTreeBlockMacroProcessor fileTreeBlockMacroProcessor,
                                      FileTreeInlineMacroProcessor fileTreeInlineMacroProcessor,
                                      DataLineProcessor dataLineProcessor,
+                                     XrefIncludeProcessor xrefIncludeProcessor,
                                      MathBlockMacroProcessor[] mathBlockMacroProcessor,
                                      MathInlineMacroProcessor[] mathInlineMacroProcessor,
                                      CacheSuffixAppenderProcessor cacheSuffixAppenderProcessor) {
@@ -180,6 +186,7 @@ public class SpringAppConfig extends SpringBootServletInitializer implements Web
                     fileTreeBlockMacroProcessor,
                     fileTreeInlineMacroProcessor,
                     dataLineProcessor,
+                    xrefIncludeProcessor,
                     mathBlockMacroProcessor,
                     mathInlineMacroProcessor,
                     cacheSuffixAppenderProcessor);
@@ -213,12 +220,14 @@ public class SpringAppConfig extends SpringBootServletInitializer implements Web
                                                            FileTreeBlockMacroProcessor fileTreeBlockMacroProcessor,
                                                            FileTreeInlineMacroProcessor fileTreeInlineMacroProcessor,
                                                            DataLineProcessor dataLineProcessor,
+                                                           XrefIncludeProcessor xrefIncludeProcessor,
                                                            MathBlockMacroProcessor[] mathBlockMacroProcessor,
                                                            MathInlineMacroProcessor[] mathInlineMacroProcessor,
                                                            CacheSuffixAppenderProcessor cacheSuffixAppenderProcessor) {
 
         registry
                 .treeprocessor(dataLineProcessor)
+                .includeProcessor(xrefIncludeProcessor)
                 .block(fxChartBlockProcessor)
                 .block(treeBlockProcessor)
                 .preprocessor(extensionPreprocessor)

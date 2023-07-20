@@ -318,23 +318,15 @@ public class EditorPane extends AnchorPane {
     }
 
     public void moveCursorTo(Integer lineno) {
-
         if (Objects.nonNull(lineno)) {
-
             final Optional<ViewPanel> viewPanelOptional = controller.getRightShowerHider().getShowing();
-
             viewPanelOptional.ifPresent(ViewPanel::disableScrollingAndJumping);
-
-
             try {
-                webEngine().executeScript(String.format("editor.gotoLine(%d,3,false)", (lineno)));
-                webEngine().executeScript(String.format("editor.scrollToLine(%d,false,false,function(){})", (lineno - 1)));
+                executeScript(String.format("moveCursorTo(%s)", lineno));
             } catch (Exception e) {
                 logger.error("Error occured while moving cursor to line {}", lineno);
             }
-
             viewPanelOptional.ifPresent(ViewPanel::enableScrollingAndJumping);
-
         }
     }
 

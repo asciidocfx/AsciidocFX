@@ -6,10 +6,11 @@ import com.kodedu.controller.ApplicationController;
 import com.kodedu.controller.TextChangeEvent;
 import com.kodedu.other.ConverterResult;
 import com.kodedu.other.Current;
+import com.kodedu.other.RefProps;
 import com.kodedu.outline.Outliner;
 import com.kodedu.outline.Section;
-import com.kodedu.service.AsciidoctorFactory;
 import com.kodedu.service.ThreadService;
+import com.kodedu.service.extension.processor.XrefDocumentProcessor;
 import org.asciidoctor.Asciidoctor;
 import org.asciidoctor.Attributes;
 import org.asciidoctor.Options;
@@ -40,19 +41,20 @@ public class AsciidocAsciidoctorjConverter extends ViewPanel implements Asciidoc
 	
     private final PreviewConfigBean previewConfigBean;
     private final RevealjsConfigBean revealjsConfigBean;
-	private final DocbookConfigBean docbookConfigBean;
 	private final ThreadService threadService;
+	private final XrefDocumentProcessor xrefDocumentProcessor;
 
-    @Autowired
+	@Autowired
 	public AsciidocAsciidoctorjConverter(ThreadService threadService, ApplicationController controller,
 										 Current current, EditorConfigBean editorConfigBean,
-										 PreviewConfigBean previewConfigBean, HtmlConfigBean htmlConfigBean,
-										 RevealjsConfigBean revealjsConfigBean, DocbookConfigBean docbookConfigBean) {
+										 PreviewConfigBean previewConfigBean,
+										 RevealjsConfigBean revealjsConfigBean,
+										 XrefDocumentProcessor xrefDocumentProcessor) {
 		super(threadService, controller, current, editorConfigBean);
 		this.previewConfigBean = previewConfigBean;
 		this.threadService = threadService;
 		this.revealjsConfigBean = revealjsConfigBean;
-		this.docbookConfigBean = docbookConfigBean;
+		this.xrefDocumentProcessor = xrefDocumentProcessor;
 	}
 
 	@Override
@@ -111,8 +113,7 @@ public class AsciidocAsciidoctorjConverter extends ViewPanel implements Asciidoc
 		String backend = (String) document.getAttribute("backend", "html5");
 		Attributes attributes = configBean.getAsciiDocAttributes(document.getAttributes());
 		attributes.setAttribute("preview", true);
-		Path path = textChangeEvent.getPath();
-		attributes.setAttribute(DOC_FILE_ATTR, Objects.nonNull(path) ? path.toString() : null);
+		attributes.setAttribute(DOC_FILE_ATTR, textChangeEvent.getPathText());
 		String docUUID = UUID.randomUUID().toString();
 		attributes.setAttribute(DOC_UUID, docUUID);
 
@@ -123,6 +124,7 @@ public class AsciidocAsciidoctorjConverter extends ViewPanel implements Asciidoc
 		                         .baseDir(workdir.toFile())
 		                         .safe(safe)
 		                         .sourcemap(configBean.getSourcemap())
+								 .catalogAssets(true)
 		                         .headerFooter(true)
 				                 .inPlace(false)
 				                 .toFile(false)
@@ -134,7 +136,8 @@ public class AsciidocAsciidoctorjConverter extends ViewPanel implements Asciidoc
 		// See also https://github.com/asciidoctor/asciidoctorj-diagram/issues/25
 		// String converted = doc.convert();
 		Asciidoctor asciidoctor = Objects.equals(backend,"revealjs") ? getRevealDoctor() : getHtmlDoctor();
-		String converted = asciidoctor.convert(textChangeEvent.getText(), options)  ;
+		String content = textChangeEvent.getText();
+		String converted = asciidoctor.convert(content, options)  ;
 		Document finalDocument = (Document) DOCUMENT_MAP.get(docUUID);
 		current.currentEditor().setLastDocument(finalDocument);
 		DOCUMENT_MAP.remove(docUUID);
@@ -142,8 +145,17 @@ public class AsciidocAsciidoctorjConverter extends ViewPanel implements Asciidoc
 
         final String taskId = UUID.randomUUID().toString();
 		ConverterResult res = new ConverterResult(taskId, converted, backend, finalDocument);
-		fillOutlines(document); // Somehow files are not generated with finalDocument
+		threadService.runTaskLater(() -> {
+			fillOutlines(document); // Somehow files are not generated with finalDocument ,source lines are negative!!
+			fillReferences(document, content);
+		});
 		return res;
+	}
+
+	private void fillReferences(Document document, String content) {
+		Map<String, List<RefProps>> crossReferences = xrefDocumentProcessor.getCrossReferences(document, content);
+		Map<String, List<RefProps>> refs = xrefDocumentProcessor.getReferences(document);
+		controller.fillReferences(crossReferences, refs);
 	}
 
 	@Override

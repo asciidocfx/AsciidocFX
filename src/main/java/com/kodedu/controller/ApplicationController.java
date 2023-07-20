@@ -21,6 +21,7 @@ import com.kodedu.other.ConverterResult;
 import com.kodedu.other.Current;
 import com.kodedu.other.DocumentMode;
 import com.kodedu.other.Item;
+import com.kodedu.other.RefProps;
 import com.kodedu.outline.Section;
 import com.kodedu.service.*;
 import com.kodedu.service.convert.docbook.DocBookConverter;
@@ -52,6 +53,8 @@ import javafx.animation.Timeline;
 import javafx.application.HostServices;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -144,6 +147,7 @@ import static java.util.Objects.nonNull;
 @Component
 public class ApplicationController extends TextWebSocketHandler implements Initializable {
 
+    private Logger logger = LoggerFactory.getLogger(ApplicationController.class);
     public Label goUpLabel;
     public VBox terminalLeftBox;
     public TabPane terminalTabPane;
@@ -164,7 +168,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     public Button newTerminalButton;
     public Button closeTerminalButton;
     public Button recordTerminalButton;
-    private Logger logger = LoggerFactory.getLogger(ApplicationController.class);
+    public TreeTableView refTreeTableView;
     public VBox logVBox;
     public Label statusText;
     public SplitPane editorSplitPane;
@@ -218,6 +222,8 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     private BooleanProperty stopRendering = new SimpleBooleanProperty(false);
 
     private static ObservableList<MyLog> logList = FXCollections.synchronizedObservableList(FXCollections.observableArrayList());
+
+    private final CrossReferenceHistory crossReferenceHistory = new CrossReferenceHistory();
 
     @Autowired
     public HtmlPane htmlPane;
@@ -1833,6 +1839,54 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     }
 
     @WebkitCall
+    public void showReference(String refId, String f) {
+        threadService.runTaskLater(() -> {
+            String file = parseFile(f);
+            crossReferenceHistory.getRefsHistoryMap().values()
+                    .stream()
+                    .flatMap(r -> r.stream()).filter(r -> {
+                        if (Objects.nonNull(refId) && Objects.nonNull(file)) {
+                            return r.hasFileName() && (IOHelper.contains(r.path(), Paths.get(file)) ||
+                                    (r.file().endsWith(file))) && Objects.equals(refId, r.origRefId());
+                        }
+                        return Objects.nonNull(refId) && Objects.equals(refId, r.origRefId());
+                    })
+                    .findFirst()
+                    .ifPresent(r -> {
+                        threadService.runActionLater(() -> {
+                            if (r.hasFileName()) {
+                                tabService.addTab(r.path(), () -> {
+                                    current.currentEditor().moveCursorTo(r.lineNumber());
+                                });
+                            } else {
+                                current.currentEditor().moveCursorTo(r.lineNumber());
+                            }
+                        });
+                    });
+        });
+    }
+
+    private String parseFile(String file) {
+        if(Objects.isNull(file)){
+            return null;
+        }
+
+        final String[] result = {file};
+
+        Map<String, Object> attributes = current.currentEditor().getLastDocument().getAttributes();
+
+        Scanner scanner = new Scanner(file);
+        scanner.findAll(Pattern.compile("\\{(\\w+?)\\}"))
+                .forEach(res -> {
+                    String attribute = res.group(1);
+                    if (attributes.containsKey(attribute)) {
+                        result[0] = result[0].replaceAll(String.format("\\{%s\\}", attribute), (String) attributes.get(attribute));
+                    }
+                });
+        return result[0];
+    }
+
+    @WebkitCall
     public void updateStatusBox(long row, long column, long linecount, long wordcount) {
         threadService.runActionLater(() -> {
             String charset = getCurrent().currentPath().map(IOHelper::getEncoding).orElse("-");
@@ -2035,84 +2089,166 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         rightShowerHider.getShowing().ifPresent(v-> v.browse(browserType));
     }
 
-    ChangeListener<Boolean> outlineTabChangeListener;
+    public void fillReferences(Map<String, List<RefProps>> crossReferences, Map<String, List<RefProps>> refs) {
 
-    @WebkitCall(from = "index")
-    public void fillOutlines(Object doc) {
+        this.crossReferenceHistory.setCrossReferences(crossReferences);
+        this.crossReferenceHistory.setRefs(refs);
 
-        if (outlineTreeView.isVisible()) {
-            converterProvider.get(previewConfigBean).fillOutlines(doc);
+        if (crossReferences.isEmpty() && refs.isEmpty()) {
+            return;
         }
 
-        if (nonNull(outlineTabChangeListener)) {
-            outlineTreeView.visibleProperty().removeListener(outlineTabChangeListener);
-        }
+        TreeTableColumn<RefProps, String> fileColumn = new TreeTableColumn<>("File");
+        fileColumn.setSortable(false);
+        TreeTableColumn<RefProps, String> refColumn = new TreeTableColumn<>("Ref");
+        refColumn.setSortable(true);
+        TreeTableColumn<RefProps, Number> lineColumn = new TreeTableColumn<>("Line");
+        lineColumn.setSortable(true);
 
-        outlineTabChangeListener = (observable, oldValue, newValue) -> {
-            if (newValue) {
-                converterProvider.get(previewConfigBean).fillOutlines(doc);
+        TreeItem<RefProps> rootItem = new TreeItem<>(new RefProps(null, -1, null));
+        rootItem.setExpanded(true);
+        TreeItem<RefProps> refRootItem = new TreeItem<>(new RefProps("#Refs", -1, null), new FontIcon(FontAwesome.ANCHOR));
+        refRootItem.setExpanded(true);
+        TreeItem<RefProps> xrefRootItem = new TreeItem<>(new RefProps("#Cross Refs", -1, null), new FontIcon(FontAwesome.LINK));
+        xrefRootItem.setExpanded(true);
+        rootItem.getChildren().add(refRootItem);
+        rootItem.getChildren().add(xrefRootItem);
+
+        fileColumn.setCellValueFactory(param -> {
+            RefProps props = param.getValue().getValue();
+            String path = props.file();
+            SimpleStringProperty prop = new SimpleStringProperty();
+            if (Objects.isNull(path)) {
+                prop.setValue("");
+            } else if (props.hasDash()) {
+                prop.setValue(path.substring(1));
+            } else {
+                prop.setValue(Paths.get(path).getFileName().toString());
             }
-        };
-        outlineTreeView.visibleProperty().addListener(outlineTabChangeListener);
+            return prop;
+        });
+        refColumn.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().getValue().refId()));
+        lineColumn.setCellValueFactory(param -> {
+            int lineNumber = param.getValue().getValue().lineNumber();
+            return new SimpleObjectProperty(lineNumber < 0 ? null : lineNumber);
+        });
 
-    }
+        for (Map.Entry<String, List<RefProps>> entry : refs.entrySet()) {
+            String key = entry.getKey();
+            List<RefProps> value = entry.getValue();
+            TreeItem<RefProps> item = new TreeItem<>(new RefProps(key, -1, null, false));
+            item.setExpanded(true);
+            List<RefProps> refsHistorySet = new ArrayList<>();
+            refsHistorySet.addAll(value);
+            List<RefProps> existingRefs = crossReferenceHistory.getRefsHistoryMap().getOrDefault(key, Collections.emptyList());
+            for (RefProps existingRef : existingRefs) {
+                if (!refsHistorySet.contains(existingRef)) {
+                    refsHistorySet.add(existingRef);
+                }
+            }
+            crossReferenceHistory.getRefsHistoryMap().put(key, refsHistorySet);
+            for (RefProps xrefIncludeProps : value) {
+                TreeItem<RefProps> subItem = new TreeItem<>(xrefIncludeProps);
+                subItem.setExpanded(true);
+                item.getChildren().add(subItem);
+            }
+            refRootItem.getChildren().add(item);
+        }
 
-    @WebkitCall(from = "index")
-    public void clearOutline() {
-        outlineList = new ArrayList<>();
-    }
+        for (Map.Entry<String, List<RefProps>> entry : crossReferences.entrySet()) {
+            TreeItem<RefProps> item = new TreeItem<>(new RefProps(entry.getKey(), -1, null, true));
+            item.setExpanded(true);
+            for (RefProps props : entry.getValue()) {
+                TreeItem<RefProps> subItem = new TreeItem<>(props);
+                subItem.setExpanded(true);
+                item.getChildren().add(subItem);
+            }
+            xrefRootItem.getChildren().add(item);
+        }
 
-    @WebkitCall(from = "index")
-	public void finishOutline() {
-		finishOutline(outlineList);
-	}
-
-    public void finishOutline(List<Section> sections) {
-	      threadService.runActionLater(() -> {
-
-            if (outlineTreeView.getRoot() == null) {
-                TreeItem<Section> rootItem = new TreeItem<>();
-                rootItem.setExpanded(true);
-                Section rootSection = new Section();
-                rootSection.setLevel(-1);
-                String outlineTitle = "Outline";
-                rootSection.setTitle(outlineTitle);
-
-                rootItem.setValue(rootSection);
-
-                outlineTreeView.setRoot(rootItem);
-
-                outlineTreeView.setOnMouseClicked(event -> {
-                    try {
-                        TreeItem<Section> item = outlineTreeView.getSelectionModel().getSelectedItem();
-                        Path path = item.getValue().getPath();
-                        if (Objects.nonNull(path) && Files.exists(path)) {
+        threadService.runActionLater(() -> {
+            refTreeTableView.getColumns().setAll(fileColumn, refColumn, lineColumn);
+            refTreeTableView.setRoot(rootItem);
+            TreeTableView.TreeTableViewSelectionModel<RefProps> selectionModel = refTreeTableView.getSelectionModel();
+            selectionModel.setSelectionMode(SelectionMode.MULTIPLE);
+            refTreeTableView.setOnMouseClicked(e -> {
+                if (e.getSource() instanceof TreeTableView<?> tableView) {
+                    TreeItem<?> selectedItem = selectionModel.getSelectedItem();
+                    if (Objects.nonNull(selectedItem) &&
+                            selectedItem.getValue() instanceof RefProps props &&
+                            props.hasFileName()) {
+                        Path path = Paths.get(props.file());
+                        if (e.getClickCount() == 2) {
                             tabService.addTab(path, () -> {
-                                EditorPane editorPane = current.currentEditor();
-                                editorPane.moveCursorTo(item.getValue().getLineno());
+                                current.currentEditor().moveCursorTo(props.lineNumber());
                             });
                         } else {
+                            String refId = props.origRefId();
+                            String target = props.origRefTarget();
+                            ObservableList<TreeItem<RefProps>> values = props.isCross() ? refRootItem.getChildren() : xrefRootItem.getChildren();
+                            values.stream()
+                                    .flatMap(r -> r.getChildren().stream())
+                                    .filter(r -> {
+                                        RefProps refProps = r.getValue();
+                                        if (Objects.nonNull(refId) && Objects.nonNull(target)) {
+                                            return Objects.equals(refProps.origRefId(), refId) &&
+                                                    refProps.hasFileName() &&
+                                                    (IOHelper.contains(refProps.path(), Paths.get(target)) || refProps.file().endsWith(target));
+                                        }
+                                        return Objects.nonNull(refId) && (Objects.equals(refProps.origRefId(), refId));
+                                    })
+                                    .forEach(r -> selectionModel.select(r));
+                        }
+                    }
+                }
+            });
+        });
+    }
+
+    public void finishOutline(List<Section> sections) {
+
+        if (outlineTreeView.getRoot() == null) {
+            TreeItem<Section> rootItem = new TreeItem<>();
+            rootItem.setExpanded(true);
+            Section rootSection = new Section();
+            rootSection.setLevel(-1);
+            String outlineTitle = "Outline";
+            rootSection.setTitle(outlineTitle);
+
+            rootItem.setValue(rootSection);
+
+            outlineTreeView.setRoot(rootItem);
+
+            outlineTreeView.setOnMouseClicked(event -> {
+                try {
+                    TreeItem<Section> item = outlineTreeView.getSelectionModel().getSelectedItem();
+                    Path path = item.getValue().getPath();
+                    if (Objects.nonNull(path) && Files.exists(path)) {
+                        tabService.addTab(path, () -> {
                             EditorPane editorPane = current.currentEditor();
                             editorPane.moveCursorTo(item.getValue().getLineno());
-                        }
-                    } catch (Exception e) {
-                        logger.error("Problem occured while jumping from outline");
+                        });
+                    } else {
+                        EditorPane editorPane = current.currentEditor();
+                        editorPane.moveCursorTo(item.getValue().getLineno());
                     }
-                });
-            }
+                } catch (Exception e) {
+                    logger.error("Problem occured while jumping from outline");
+                }
+            });
+        }
 
-            if (sections.size() > 0) {
-                outlineTreeView.getRoot().getChildren().clear();
-            }
+        if (sections.size() > 0) {
+            outlineTreeView.getRoot().getChildren().clear();
+        }
 
-              for (Section section : sections) {
-                  TreeItem<Section> sectionItem = new TreeItem<>(section);
-                  sectionItem.setExpanded(true);
-                  outlineTreeView.getRoot().getChildren().add(sectionItem);
-                  appendSubSection(sectionItem, section);
-              }
-        });	
-	}
+        for (Section section : sections) {
+            TreeItem<Section> sectionItem = new TreeItem<>(section);
+            sectionItem.setExpanded(true);
+            outlineTreeView.getRoot().getChildren().add(sectionItem);
+            appendSubSection(sectionItem, section);
+        }
+    }
 
     private void appendSubSection(TreeItem<Section> sectionItem, Section section) {
         TreeSet<Section> subsections = section.getSubsections();
@@ -2392,16 +2528,18 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         MyTab currentTab = current.currentTab();
         if(Objects.nonNull(currentTab)){
             Path path = textChangeEvent.getPath();
-            AsciidoctorFactory.getPlainDoctor()
-                    .convert(textChangeEvent.getText(), Options.builder()
+            Options options = Options.builder()
                     .safe(SafeMode.UNSAFE)
                     .sourcemap(true)
+                    .catalogAssets(true)
                     .baseDir(currentTab.getParentOrWorkdir().toFile())
                     .attributes(Attributes.builder()
                             .allowUriRead(true)
                             .attribute(DOC_UUID, uuid)
-                            .attribute(DOC_FILE_ATTR, Objects.nonNull(path) ? path.toString() : null)
-                            .build()).build());
+                            .attribute(DOC_FILE_ATTR, textChangeEvent.getPathText())
+                            .build()).build();
+            AsciidoctorFactory.getPlainDoctor()
+                    .convert(textChangeEvent.getText(), options);
             Document document = (Document) DOCUMENT_MAP.get(uuid);
             currentTab.getEditorPane().setLastDocument(document);
             DOCUMENT_MAP.remove(uuid);
@@ -3076,6 +3214,16 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         splitPane.setDividerPosition(0, source.isSelected() ? 0.17 : 0);
         if (source.isSelected()) {
             leftShowerHider.showDefaultNode();
+        }
+    }
+
+    public void toggleXrefView(ActionEvent actionEvent) {
+        final ToggleButton source = (ToggleButton) actionEvent.getSource();
+        splitPane.setDividerPosition(0, source.isSelected() ? 0.17 : 0);
+        if (source.isSelected()) {
+            leftShowerHider.showNode(refTreeTableView, () -> {
+                current.currentEditor().rerender(); // to refit columns
+            });
         }
     }
 

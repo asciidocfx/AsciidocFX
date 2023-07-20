@@ -132,6 +132,20 @@
                         </ToggleButton>
                         <ToggleButton toggleGroup="$leftToggleGroup"
                                       styleClass="corner-toggle-button,corner-bottom-half"
+                                      onAction="#toggleXrefView"
+                                      prefHeight="80" prefWidth="20">
+
+                            <graphic>
+                                <Group>
+                                    <Label text="References" rotate="-90"></Label>
+                                </Group>
+                            </graphic>
+                            <padding>
+                                <Insets bottom="0" top="0" left="0" right="0"></Insets>
+                            </padding>
+                        </ToggleButton>
+                        <ToggleButton toggleGroup="$leftToggleGroup"
+                                      styleClass="corner-toggle-button,corner-bottom-half"
                                       onAction="#toggleRecentView"
                                       prefHeight="80" prefWidth="20">
                             <graphic>
@@ -291,6 +305,7 @@
                                                     </master>
                                                     <slaves>
                                                         <TreeView fx:id="outlineTreeView"/>
+                                                        <TreeTableView fx:id="refTreeTableView" showRoot="false"/>
                                                         <ListView id="recetListView" fx:id="recentListView"
                                                                   styleClass="recentListView">
                                                             <contextMenu>

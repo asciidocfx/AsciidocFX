@@ -317,12 +317,13 @@ public abstract class AsciidoctorConfigBase<T extends LoadedAttributes> extends 
     public Attributes getAsciiDocAttributes(String asciidoc) {
         MyTab currentTab = controller.getCurrent().currentTab();
         Path path = currentTab.getPath();
+        String pathText = Objects.nonNull(path) ? path.toString() : null;
         Document document = getPlainDoctor().load(asciidoc, Options.builder()
                 .backend(getBackend())
                 .safe(SafeMode.UNSAFE)
                 .sourcemap(true)
                 .baseDir(currentTab.getParentOrWorkdir().toFile())
-                .attributes(Attributes.builder().allowUriRead(true).attribute(DOC_FILE_ATTR, Objects.nonNull(path) ? path.toString() : null).build()).build());
+                .attributes(Attributes.builder().allowUriRead(true).attribute(DOC_FILE_ATTR, pathText).build()).build());
         Map<String, Object> defaultAttributes = document.getAttributes();
 
         return getAsciiDocAttributes(defaultAttributes);

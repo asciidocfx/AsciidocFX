@@ -43,12 +43,30 @@ function updateMarkupScroll(row) {
     lastEditorRow = row;
 };
 
+function moveCursorTo(line) {
+    // editor.gotoLine(line, 0, false);
+    editor.scrollToLine(line - 1, false, false, function () {
+    });
+    let {id} = editor.getSession().highlightLines(line - 1, line - 1, null, false);
+    setTimeout(() => {
+        editor.getSession().removeMarker(id);
+    }, 1000);
+}
+
+
 editor.on("dblclick", function (e) {
     let position = editor.getCursorPosition();
     let token = editor.session.getTokenAt(position.row, position.column);
     console.log("Token:", token);
-    if (token.type == "markup.underline.list.include_link" && token.value) {
-        afx.openInclude(token.value);
+    if (token.value) {
+        setTimeout(() => {
+            if (token.type == "markup.underline.list.include_link") {
+                afx.openInclude(token.value);
+            } else if (token.type == "markup.underline.list.xref_link" || token.type == "markup.underline.list.xref_id") {
+                let [refId = null, file = null] = token.value.split("#").reverse();
+                afx.showReference(refId, file);
+            }
+        }, 250)
     }
 });
 

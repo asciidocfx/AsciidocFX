@@ -48,7 +48,7 @@ public class ShowerHider extends AnchorPane {
         });
     }
 
-    public void showNode(Node node) {
+    public void showNode(Node node, Runnable... runnables) {
 
         if (!slaves.contains(node)) {
             slaves.add(node);
@@ -61,6 +61,9 @@ public class ShowerHider extends AnchorPane {
         Platform.runLater(() -> {
             getChildren().clear();
             getChildren().add(node);
+            for (Runnable runnable : runnables) {
+                runnable.run();
+            }
         });
     }
 
