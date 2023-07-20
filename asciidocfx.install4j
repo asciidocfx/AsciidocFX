@@ -112,6 +112,8 @@ javafx.graphics/com.sun.javafx.css=ALL-UNNAMED
 javafx.base/com.sun.javafx.collections=javafx.web
 --add-opens
 javafx.controls/javafx.scene.control=ALL-UNNAMED
+--add-opens 
+javafx.controls/javafx.scene.control.skin=ALL-UNNAMED
 --add-exports
 javafx.base/com.sun.javafx.property=ALL-UNNAMED
 --add-exports
