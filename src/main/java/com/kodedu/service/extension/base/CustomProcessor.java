@@ -4,6 +4,7 @@ import com.kodedu.helper.IOHelper;
 import com.kodedu.service.extension.ImageInfo;
 import org.asciidoctor.ast.Block;
 import org.asciidoctor.ast.ContentNode;
+import org.asciidoctor.ast.Document;
 import org.asciidoctor.ast.PhraseNode;
 import org.asciidoctor.ast.StructuralNode;
 import org.asciidoctor.extension.Reader;
@@ -30,7 +31,10 @@ public interface CustomProcessor {
     }
 
     default ImageInfo getImageInfo(Environment environment, Map<String, Object> attributes, ContentNode parent, String content) {
-        String docdir = (String) parent.getDocument().getAttributes().get("docdir");
+        Document document = parent.getDocument();
+        Map<String, Object> documentAttributes = document.getAttributes();
+        String docdir = (String) documentAttributes.get("docdir");
+        String docfile = (String) documentAttributes.get("docfile");
         String imagesDir = getImagesDir(parent);
         String imageTarget = (String) attributes.getOrDefault("file", attributes.get("target"));
         String imagePath = null;
@@ -39,12 +43,15 @@ public interface CustomProcessor {
             imageTarget = String.format("%s.%s", imageTarget, format);
         }
         String imageMd5 = cachedImageUri(content);
-        if (Objects.isNull(imageTarget)) {
+        boolean isPreview = (boolean) documentAttributes.getOrDefault("preview", false);
+        boolean isDataUri = document.hasAttribute("data-uri");
+        if (Objects.isNull(imageTarget) && isPreview) { // TODO: May be deleted later
             int port = Integer.parseInt(environment.getProperty("local.server.port"));
             imageTarget = "http://localhost:" + port + "/afx/cache/" + imageMd5 + ".png";
         } else {
-            boolean isPreview = (boolean) parent.getDocument().getAttributes().getOrDefault("preview", false);
-            boolean isDataUri = parent.getDocument().hasAttribute("data-uri");
+            if (Objects.isNull(imageTarget)) {
+                imageTarget = String.format("%s.%s", imageMd5, format);
+            }
             imagePath = Paths.get(docdir).resolve(imagesDir).resolve(imageTarget).toString();
             if (isPreview && !isDataUri) {
                 imageTarget += "?cache=" + imageMd5; // for html cache
