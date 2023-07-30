@@ -154,7 +154,11 @@ ace.define("ace/mode/asciidoc_highlight_rules", ["require", "exports", "module",
             }, {
                 token: ["markup.list.macro", "keyword"],
                 regex: /([a-zA-Z\-][\w\.\/\-]+::?)(\[.*?\])/
-            }, {token: "keyword", regex: /^:.+?:(?= |$)/}],
+            }, {token: "keyword", regex: /^:.+?:(?= |$)/},
+            { token: ["markup.list.macro", "markup.underline.list.include_link", "string"], regex: /(include::?)([^\s\[]+)(\[.*?\])?/ },
+            { token: ["markup.list.macro", "markup.underline.list.xref_link", "string"], regex: /(xref::?)([^\s\[]+)(\[.*?\])?/ },
+            { token: ["keyword", "markup.underline.list.xref_id", "keyword"], regex: /(<<)(.*?)(>>)/ }
+            ],
             quotes: [{token: "string.italic", regex: /__[^_\s].*?__/}, {
                 token: "string.italic",
                 regex: t("_")
