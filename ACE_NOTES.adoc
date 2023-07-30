@@ -1,0 +1,33 @@
+== Ace Version Update Follow up
+
+=== Update mode-asciidoc.js
+
+.macros
+[source,javascript]
+----
+token: ["markup.list.macro", "keyword", "string"]
+
+TO
+
+token: ["markup.list.macro", "markup.underline.list.include_link", "string"]
+
+AND
+
+{ token: ["markup.list.macro", "markup.underline.list.include_link", "string"], regex: /(include::?)([^\s\[]+)(\[.*?\])?/ },
+{ token: ["markup.list.macro", "markup.underline.list.xref_link", "string"], regex: /(xref::?)([^\s\[]+)(\[.*?\])?/ },
+{ token: ["keyword", "markup.underline.list.xref_id", "keyword"], regex: /(<<)(.*?)(>>)/ }
+----
+
+=== Add new languages
+
+Languages in conf/ace_doctypes.json
+
+=== Replace asciidoc extensions
+
+----
+asciidoc|adoc
+
+TO
+
+asciidoc|adoc|asc|ad|jam
+----
