@@ -528,6 +528,12 @@
     "extensions": "py"
   },
   {
+    "name": "prql",
+    "caption": "PRQL",
+    "mode": "ace/mode/prql",
+    "extensions": "prql"
+  },
+  {
     "name": "r",
     "caption": "R",
     "mode": "ace/mode/r",
