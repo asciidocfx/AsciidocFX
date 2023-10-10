@@ -4,12 +4,21 @@ document.addEventListener("DOMNodeInserted", function (event) {
     if (element.is("#content")) {
         element.on("click", function (event) {
             var elem = $(event.target);
+            if (elem.is("a")) {
+                event.preventDefault();
+            }
             if (elem.is("[class*=data-line]")) {
                 var line = elem.attr('class').match(/data-line-(\d+)/)[1];
                 afx.moveCursorTo(line);
             } else {
                 var line = elem.closest("[class*=data-line]").attr('class').match(/data-line-(\d+)/)[1];
                 afx.moveCursorTo(line);
+            }
+        });
+        element.on("dblclick", function (event) {
+            var elem = $(event.target);
+            if (elem.is("a")) {
+                afx.browseInDesktop(null, elem.attr("href"))
             }
         });
     }
