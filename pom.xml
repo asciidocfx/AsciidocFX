@@ -16,7 +16,7 @@
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <mainClass>com.kodedu.boot.AppStarter</mainClass>
-        <install4j.version>10.0.4</install4j.version>
+        <install4j.version>10.0.6</install4j.version>
         <install4j.home>${env.GITHUB_WORKSPACE}/install4j${install4j.version}</install4j.home>
         <install4j.licenseKey>${env.LICENSE_KEY_10}</install4j.licenseKey>
         <install4j.macKeyStorePassword>${env.MAC_KEYSTORE_PASSWORD}</install4j.macKeyStorePassword>
@@ -279,7 +279,7 @@
         <dependency>
             <groupId>org.eclipse.jgit</groupId>
             <artifactId>org.eclipse.jgit</artifactId>
-            <version>6.6.0.202305301015-r</version>
+            <version>6.7.0.202309050840-r</version>
         </dependency>
 
         <dependency>
