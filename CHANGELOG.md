@@ -2,6 +2,16 @@
 
 All notable changes are documented in this file.
 
+## [Version ~1.8.6](https://github.com/asciidocfx/AsciidocFX/releases/tag/v1.8.6) (10.2023)
+
+* Version updates
+* Java 21, JavaFX 21 upgrade
+* Shortcut Editor
+* Cross-reference window
+* Update ace version
+* Open links in preview
+* Bux fixes
+
 ## [Version ~1.8.5](https://github.com/asciidocfx/AsciidocFX/releases/tag/v1.8.5) (05.2023)
 
 * Version updates
