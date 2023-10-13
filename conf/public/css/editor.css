@@ -58,3 +58,7 @@ body {
 .ace_include_link:hover, .ace_xref_link:hover, .ace_xref_id:hover {
     text-decoration: underline !important;
 }
+
+/*.ace_content {*/
+/*    transform: translate(5px, 5px) !important;*/
+/*}*/

@@ -15,7 +15,7 @@ function addNewCommand(key, value) {
 
 // default keys https://searchcode.com/codesearch/view/58959997/
 editor.commands.addCommand({
-    name: 'cut-1',
+    name: 'cutX',
     description : 'Cuts the selection in editor',
     bindKey: {win: 'Ctrl-X', mac: 'Command-X'},
     exec: function (editor) {
@@ -44,7 +44,7 @@ editor.commands.addCommand({
 //});
 
 editor.commands.addCommand({
-    name: 'copy-1',
+    name: 'copyX',
     description : 'Copies the selection in editor',
     bindKey: {win: 'Ctrl-C', mac: 'Command-C'},
     exec: function (editor) {
@@ -55,7 +55,7 @@ editor.commands.addCommand({
 });
 
 editor.commands.addCommand({
-    name: 'paste-1',
+    name: 'pasteX',
     description : 'Pastes from clipboard to AsciidocFX editor',
     bindKey: {win: 'Ctrl-Shift-V', mac: 'Command-Shift-V'},
     exec: function (editor) {
@@ -105,14 +105,6 @@ editor.commands.addCommand({
 //     readOnly: true
 // });
 
-editor.commands.addCommand({
-    name: 'ctrl-duplicate',
-    bindKey: {win: 'Ctrl-D', mac: 'Command-D'},
-    exec: function (editor) {
-        editor.copyLinesDown();
-    },
-    readOnly: false
-});
 
 var formatText = function (editor, matcher, firstCharacter, lastCharacter) {
 
@@ -648,8 +640,8 @@ editor.commands.addCommand({
 });
 
 editor.commands.addCommand({
-    name: 'source-generate',
-    description: "Text snippets",
+    name: 'indent',
+    description: "Tab and Text snippets",
     bindKey: {win: 'Tab', mac: 'Tab'},
     exec: function (editor, selection) {
 

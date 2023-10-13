@@ -1,12 +1,16 @@
 package com.kodedu.component;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.kodedu.commands.EditorCommand;
 import com.kodedu.config.EditorConfigBean;
 import com.kodedu.config.FoldStyle;
+import com.kodedu.config.ShortCutConfigBean;
 import com.kodedu.config.SpellcheckConfigBean;
 import com.kodedu.controller.ApplicationController;
-import com.kodedu.helper.IOHelper;
 import com.kodedu.helper.FxHelper;
-import com.kodedu.keyboard.KeyHelper;
+import com.kodedu.helper.IOHelper;
 import com.kodedu.service.DirectoryService;
 import com.kodedu.service.ParserService;
 import com.kodedu.service.ThreadService;
@@ -14,6 +18,8 @@ import com.kodedu.service.extension.impl.AsciiTreeGenerator;
 import com.kodedu.service.shortcut.ShortcutProvider;
 import com.kodedu.service.ui.TabService;
 import com.kodedu.spell.dictionary.Token;
+import jakarta.annotation.PostConstruct;
+import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -30,6 +36,7 @@ import javafx.scene.input.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import javafx.scene.web.PopupFeatures;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import javafx.util.Callback;
@@ -50,7 +57,12 @@ import java.nio.file.Paths;
 import java.nio.file.attribute.FileTime;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
+
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
+import static javafx.scene.input.KeyEvent.KEY_RELEASED;
 
 /**
  * Created by usta on 09.04.2015.
@@ -59,7 +71,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @Scope("prototype")
 public class EditorPane extends AnchorPane {
 
-    private final WebView webView;
+    private final WebView webView = new WebView();
     private final Logger logger = LoggerFactory.getLogger(EditorPane.class);
     private final ApplicationController controller;
     private final EditorConfigBean editorConfigBean;
@@ -70,7 +82,9 @@ public class EditorPane extends AnchorPane {
     private final AsciiTreeGenerator asciiTreeGenerator;
     private final ParserService parserService;
     private final SpellcheckConfigBean spellcheckConfigBean;
-    private final ObservableList<Runnable> handleReadyTasks;
+
+    private final ShortCutConfigBean shortCutConfigBean;
+    private final ObservableList<Runnable> handleReadyTasks = FXCollections.observableArrayList();
     private String mode = "ace/mode/asciidoc";
     private String initialEditorValue = "";
     private Path path;
@@ -83,6 +97,9 @@ public class EditorPane extends AnchorPane {
     private final AtomicBoolean contextOpen = new AtomicBoolean(false);
 
     private final BooleanProperty changedProperty = new SimpleBooleanProperty(false);
+
+    private final static List<EditorCommand> nativeKeyMappings = new ArrayList<>();
+    private static final CountDownLatch keyMappingReady = new CountDownLatch(1);
 
     @Value("${application.live.url}")
     private String liveUrl;
@@ -98,10 +115,10 @@ public class EditorPane extends AnchorPane {
     private Map<String, Object> attributes = new ConcurrentHashMap<>();
     private Object attributesLock = new Object();
     private Document lastDocument;
+    private EventHandler contextMenuRequested;
 
     @Autowired
-    public EditorPane(ApplicationController controller, EditorConfigBean editorConfigBean, ThreadService threadService, ShortcutProvider shortcutProvider, ApplicationContext applicationContext, TabService tabService, AsciiTreeGenerator asciiTreeGenerator, ParserService parserService, SpellcheckConfigBean spellcheckConfigBean, DirectoryService directoryService) {
-        this.setVisible(false);
+    public EditorPane(ApplicationController controller, EditorConfigBean editorConfigBean, ThreadService threadService, ShortcutProvider shortcutProvider, ApplicationContext applicationContext, TabService tabService, AsciiTreeGenerator asciiTreeGenerator, ParserService parserService, SpellcheckConfigBean spellcheckConfigBean, ShortCutConfigBean shortCutConfigBean, DirectoryService directoryService) {
         this.controller = controller;
         this.editorConfigBean = editorConfigBean;
         this.threadService = threadService;
@@ -110,37 +127,54 @@ public class EditorPane extends AnchorPane {
         this.tabService = tabService;
         this.asciiTreeGenerator = asciiTreeGenerator;
         this.spellcheckConfigBean = spellcheckConfigBean;
+        this.shortCutConfigBean = shortCutConfigBean;
         this.directoryService = directoryService;
-        this.handleReadyTasks = FXCollections.observableArrayList();
         this.parserService = parserService;
-        this.webView = new WebView();
-        this.ready.addListener(this::afterEditorReady);
-        webEngine().setConfirmHandler(this::handleConfirm);
-        initializeMargins();
-        initializeEditorContextMenus();
-        setupFirebugEventHandler();
     }
 
-    private void setupFirebugEventHandler() {
-        getWebView().addEventHandler(EventType.ROOT, e -> {
-            if (e instanceof KeyEvent ke &&
-                    ke.getCode() == KeyCode.F12) {
-                showFirebug();
-            }
+    @PostConstruct
+    public void afterInit() {
+        this.setVisible(false);
+        this.ready.addListener(this::afterEditorReady);
+        webEngine().setConfirmHandler(this::handleConfirm);
+        webEngine().setCreatePopupHandler(this::popupHandler);
+        initializeMargins();
+        initializeEditorContextMenus();
+        enableEventHandler();
+    }
+
+    private WebEngine popupHandler(PopupFeatures popupFeatures) {
+        WebView wv2 = new WebView();
+        wv2.getEngine().locationProperty().addListener((observableValue, s, t1) -> {
+           if(Objects.isNull(s) && Objects.nonNull(t1)){
+               controller.browseInDesktop(null, t1);
+           }
         });
+        return wv2.getEngine();
+    }
+
+    public static List<EditorCommand> getNativeKeyMappings() {
+        try {
+            keyMappingReady.await();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        return nativeKeyMappings;
     }
 
     private void showFirebug() {
         executeScript("showFirebug();");
     }
 
-    protected void executeScript(String script) {
-        webEngine().executeScript(script);
+    protected Object executeScript(String script) {
+        return webEngine().executeScript(script);
     }
 
     private Boolean handleConfirm(String param) {
         if ("command:ready".equals(param)) {
-            afterEditorLoaded();
+            Platform.runLater(() -> {
+                afterEditorLoaded();
+            });
         }
         return false;
     }
@@ -150,8 +184,9 @@ public class EditorPane extends AnchorPane {
         getWindow().setMember("editorPane", this);
         updateOptions();
 
-        if (Objects.nonNull(path)) {
-            threadService.runTaskLater(() -> {
+        threadService.runTaskLater(() -> {
+            shortCutConfigBean.awaitDisabledLoading();
+            if (nonNull(path)) {
                 try {
                     final String content = IOHelper.readFile(path);
                     setLastModifiedTime(IOHelper.getLastModifiedTime(path));
@@ -165,14 +200,15 @@ public class EditorPane extends AnchorPane {
                 } catch (Exception e) {
                     myTab.closeIt();
                 }
-
-            });
-        } else {
-            setInitialized();
-            setEditorValue(initialEditorValue);
-            resetUndoManager();
-            ready.setValue(true);
-        }
+            } else {
+                threadService.runActionLater(() -> {
+                    setInitialized();
+                    setEditorValue(initialEditorValue);
+                    resetUndoManager();
+                    ready.setValue(true);
+                });
+            }
+        });
 
         this.getChildren().add(webView);
         webView.requestFocus();
@@ -458,7 +494,7 @@ public class EditorPane extends AnchorPane {
         Menu languageMenu = new Menu("Spell Checker");
         languageMenu.getItems().addAll(editorLanguage, defaultLanguage, disableSpeller);
 
-        EventHandler<Event> contextMenuRequested = event -> {
+        this.contextMenuRequested = event -> {
 
             final ObservableList<MenuItem> contextMenuItems = contextMenu.getItems();
 
@@ -531,32 +567,6 @@ public class EditorPane extends AnchorPane {
             checkWordSuggestions();
 
         };
-
-        getWebView().addEventHandler(KeyEvent.KEY_PRESSED, event -> {
-            if (KeyHelper.isContextMenu(event)) {
-                event.consume();
-                contextMenuRequested.handle(event);
-                return;
-            }
-
-            if (contextMenu.isShowing()) {
-                contextMenu.hide();
-            }
-
-            if (KeyHelper.isControlG(event)) {
-                DialogBuilder dialogBuilder = DialogBuilder.newJumpLineDialog();
-                dialogBuilder.showAndWait().ifPresent(this::jumpLine);
-            }
-
-        });
-
-        getWebView().addEventFilter(KeyEvent.ANY, event -> {
-            if (contextOpen.get()) {
-                if (KeyHelper.isEnter(event)) {
-                    event.consume();
-                }
-            }
-        });
 
         contextMenu.setOnHidden(event -> {
             threadService.runActionLater(() -> {
@@ -752,6 +762,100 @@ public class EditorPane extends AnchorPane {
         webEngine().executeScript("editor.removeToLineStart()");
     }
 
+    public ShortCutConfigBean getShortCutConfigBean() {
+        return shortCutConfigBean;
+    }
+
+    KeyCombination keyCombination = null;
+
+    EventHandler<Event> editorEventFilter = event -> {
+        if (event instanceof KeyEvent e) {
+
+            if (nonNull(keyCombination)) {
+                if (e.getEventType() == KEY_RELEASED) {
+                    if (keyCombination.match(e)) {
+                        e.consume();
+                        if (getShortCutConfigBean().isDebugMode()) {
+                            logger.warn("Releasing: {} {}", keyCombination, e.getEventType());
+                        }
+                        keyCombination = null;
+                        return;
+                    }
+                } else {
+                    e.consume();
+                    if (getShortCutConfigBean().isDebugMode()) {
+                        logger.warn("Skipping: {} {}", keyCombination, e.getEventType());
+                    }
+                    return;
+                }
+            }
+
+            if (!isEditorFocused()) {
+                return;
+            }
+
+            KeyCombination matchedCombination = null;
+            EditorCommand matchedCommand = null;
+            for (EditorCommand editorCommand : getShortCutConfigBean().getShortcuts()) {
+                if (nonNull(matchedCombination)) {
+                    break;
+                }
+                List<KeyCombination> combinationList = editorCommand.getKeyCombination();
+                for (KeyCombination combination : combinationList) {
+                    if (combination.match(e)) {
+                        matchedCombination = combination;
+                        matchedCommand = editorCommand;
+                        break;
+                    }
+                }
+            }
+
+            if (nonNull(matchedCombination)) {
+                execCommand(matchedCommand.getName());
+                e.consume();
+                keyCombination = matchedCombination;
+                if (getShortCutConfigBean().isDebugMode()) {
+                    logger.warn("Matched: Key={} Event={} Command={} ", keyCombination, e.getEventType(), matchedCommand.getName());
+                }
+            }
+        }
+    };
+    public void enableEventHandler() {
+        shortCutConfigBean.disableProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue) {
+                removeEventFilter(EventType.ROOT, editorEventFilter);
+            } else {
+                removeEventFilter(EventType.ROOT, editorEventFilter);
+                addEventFilter(EventType.ROOT, editorEventFilter);
+            }
+        });
+        boolean isShortcutConfigDisabled = shortCutConfigBean.isDisabled();
+        if (!isShortcutConfigDisabled) {
+            removeEventFilter(EventType.ROOT, editorEventFilter);
+            addEventFilter(EventType.ROOT, editorEventFilter);
+        }
+    }
+
+    @WebkitCall(from = "editor.js")
+    public void updateEditorCommands(String commandListJson) {
+        if (!nativeKeyMappings.isEmpty()) {
+            return;
+        }
+        List<EditorCommand> editorCommandList;
+        try {
+            editorCommandList = new ObjectMapper().readValue(commandListJson, new TypeReference<>() {
+            });
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+        editorCommandList.forEach(e -> {
+            e.setNative(true);
+        });
+
+        nativeKeyMappings.addAll(editorCommandList);
+        keyMappingReady.countDown();
+    }
+
     public void addTypo(Token token) {
         String tokenClass = token.isEmptySuggestion() ? "misspelled" : "misspelled-strong";
 
@@ -760,6 +864,11 @@ public class EditorPane extends AnchorPane {
                 token.getStart(),
                 token.getEnd(),
                 tokenClass));
+    }
+
+    public boolean isEditorFocused() {
+        Object script = executeScript("isEditorFocused()");
+        return (boolean) script;
     }
 
     public void showSuggestions(List<String> suggestions) {
@@ -866,5 +975,10 @@ public class EditorPane extends AnchorPane {
 
     public Document getLastDocument() {
         return lastDocument;
+    }
+
+    @WebkitCall
+    public boolean isShortcutConfigDisabled() {
+        return shortCutConfigBean.isDisabled();
     }
 }

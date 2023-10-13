@@ -25,6 +25,7 @@ import java.util.Objects;
 @Component
 public class ConfigurationService {
 
+    private final ShortCutConfigBean shortCutConfigBean;
     private final LocationConfigBean locationConfigBean;
     private final EditorConfigBean editorConfigBean;
     private final PreviewConfigBean previewConfigBean;
@@ -43,7 +44,7 @@ public class ConfigurationService {
     private VBox configBox;
 
     @Autowired
-    public ConfigurationService(LocationConfigBean locationConfigBean, EditorConfigBean editorConfigBean,
+    public ConfigurationService(ShortCutConfigBean shortCutConfigBean, LocationConfigBean locationConfigBean, EditorConfigBean editorConfigBean,
                                 PreviewConfigBean previewConfigBean, HtmlConfigBean htmlConfigBean,
                                 DocbookConfigBean docbookConfigBean, ApplicationController controller,
                                 StoredConfigBean storedConfigBean, ThreadService threadService,
@@ -51,6 +52,7 @@ public class ConfigurationService {
                                 ExtensionConfigBean extensionConfigBean, Epub3ConfigBean epub3ConfigBean,
                                 RevealjsConfigBean revealjsConfigBean, PdfConfigBean pdfConfigBean,
                                 TemplatesConfigBean templatesConfigBean) {
+        this.shortCutConfigBean = shortCutConfigBean;
         this.locationConfigBean = locationConfigBean;
         this.editorConfigBean = editorConfigBean;
         this.previewConfigBean = previewConfigBean;
@@ -70,6 +72,7 @@ public class ConfigurationService {
 
     public void loadConfigurations(Runnable... runnables) {
 
+        shortCutConfigBean.load();
         locationConfigBean.load();
         storedConfigBean.load();
         editorConfigBean.load();
@@ -85,6 +88,7 @@ public class ConfigurationService {
         templatesConfigBean.load();
 
         List<ConfigurationBase> configBeanList = Arrays.asList(
+                shortCutConfigBean,
                 editorConfigBean,
                 terminalConfigBean,
                 locationConfigBean,

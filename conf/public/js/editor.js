@@ -1,6 +1,7 @@
 var editor = ace.edit("editor");
-editor.renderer.setScrollMargin(10, 0, 10, 0);
+editor.renderer.setScrollMargin(5, 0);
 var modelist = ace.require("ace/ext/modelist");
+var keyboard = ace.require("ace/ext/menu_tools/get_editor_keyboard_shortcuts");
 var range = ace.require("ace/range");
 var TokenIterator = ace.require("ace/token_iterator").TokenIterator;
 editor.renderer.setShowGutter(false);
@@ -316,9 +317,84 @@ function editorMode() {
     return mode.replace("ace/mode/", "");
 }
 
+function normalizeShortcut(shortcut) {
+    shortcut = shortcut.replaceAll(" ", "|");
+    shortcut = shortcut.replaceAll(/cmd/gi, "Command");
+    shortcut = shortcut.replaceAll(/pageup/gi, "Page Up");
+    shortcut = shortcut.replaceAll(/pagedown/gi, "Page Down");
+    return shortcut.split("|").map(s => {
+        let dashSplit = s.split("-");
+        return dashSplit.map(d => (`${d[0].toUpperCase()}${d.slice(1)}`)).join("+");
+    }).join("|");
+}
+
+function updateCommands() {
+    editor.setKeyboardHandler(ace.require("ace/keyboard/vscode").handler);
+    var keyboardHandler = editor.getKeyboardHandler();
+    var commandKeyBinding = keyboardHandler.commandKeyBinding;
+    var bindingKeys = Object.keys(commandKeyBinding);
+    console.log("Binding keys", commandKeyBinding)
+    var bindingMap = {};
+    var extraCommands =[];
+    bindingKeys.filter(s => s.constructor == String).forEach(shortcut => {
+        let command = commandKeyBinding[shortcut];
+        bindingMap[command] = bindingMap[command] || [];
+        bindingMap[command].push(shortcut);
+    });
+    bindingKeys.filter(s => s.constructor == String).forEach(shortcut => {
+        let command = commandKeyBinding[shortcut];
+        if (bindingMap[command].constructor == Array) {
+            bindingMap[command] = bindingMap[command].join("|");
+        }
+    });
+    bindingKeys.filter(s => s.constructor == Object).forEach(shortcut => {
+        extraCommands.push(shortcut);
+    });
+
+    let keyMap = editor.commands.commands;
+    let keys = Object.keys(keyMap);
+
+    let commandList = [];
+
+    keys.forEach(k => {
+        let key = keyMap[k];
+        let mappings = Array.isArray(key) ? key : [key];
+        mappings = [...mappings, ...extraCommands];
+        mappings.forEach(mapping => {
+            let {name, description=null, bindKey, exec} = mapping;
+            editor.commands.removeCommand(name, true);
+
+            let element = bindingMap[name];
+            let winShortcut = bindKey?.win || element || null;
+            let macShortcut = bindKey?.mac || element || null;
+
+            if (macShortcut) {
+                macShortcut = normalizeShortcut(macShortcut);
+            }
+
+            if (winShortcut) {
+                winShortcut = normalizeShortcut(winShortcut);
+            }
+
+            console.log("Commands", name, element, winShortcut, macShortcut);
+
+            commandList.push({ name, description, win: winShortcut, mac: macShortcut});
+        });
+    });
+
+    editorPane.updateEditorCommands(JSON.stringify(commandList));
+}
+
+function isEditorFocused() {
+    return editor.textInput.getElement() == document.activeElement
+}
+
 function setInitialized() {
     editor.getSession().on('change', editorChangeListener);
     updateStatusBox();
+    if (!editorPane.isShortcutConfigDisabled()) {
+        updateCommands();
+    }
 }
 
 function resetUndoManager() {

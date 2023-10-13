@@ -18,6 +18,8 @@ public class KeyHelper {
     private static final KeyPairs DELETE = new KeyPairs(KeyCode.DELETE);
     private static final KeyPairs ENTER = new KeyPairs(KeyCode.ENTER);
     private static final KeyPairs UP = new KeyPairs(KeyCode.UP, KeyCode.KP_UP);
+    private static final KeyPairs LEFT = new KeyPairs(KeyCode.LEFT, KeyCode.LEFT);
+    private static final KeyPairs RIGHT = new KeyPairs(KeyCode.RIGHT, KeyCode.RIGHT);
     private static final KeyPairs DOWN = new KeyPairs(KeyCode.DOWN, KeyCode.KP_DOWN);
     private static final KeyPairs BACK_SPACE = new KeyPairs(KeyCode.BACK_SPACE);
     private static final KeyPairs FILE_LEGALS = new KeyPairs(KeyCode.SPACE, KeyCode.PERIOD, KeyCode.DECIMAL, KeyCode.MINUS, KeyCode.DEAD_TILDE, KeyCode.DOLLAR);
@@ -32,6 +34,10 @@ public class KeyHelper {
 
     public static boolean isContextMenu(KeyEvent event) {
         return CONTEXT_MENU.match(event);
+    }
+
+    public static boolean isDirection(KeyEvent event) {
+        return UP.match(event) || DOWN.match(event) || LEFT.match(event) || RIGHT.match(event);
     }
 
     public static boolean isDown(KeyEvent event) {

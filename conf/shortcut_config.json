@@ -1,0 +1,28 @@
+{
+  "shortcuts": [
+    {
+      "name": "copylinesdown",
+      "desc": "Copy Lines Down",
+      "win": "Ctrl+D",
+      "mac": "Command+D"
+    },
+    {
+      "name": "fold",
+      "desc": "Fold",
+      "win": "Alt-L|Ctrl-F1",
+      "mac": "Command-Alt-L|Command-F1"
+    },
+    {
+      "name": "openlink",
+      "desc": "Open Link",
+      "win": "Ctrl+F3",
+      "mac": "F3"
+    },
+    {
+      "name": "unfold",
+      "desc": "Unfold",
+      "win": "Alt-Shift-L|Ctrl-Shift-F1",
+      "mac": "Command-Alt-Shift-L|Command-Shift-F1"
+    }
+  ]
+}

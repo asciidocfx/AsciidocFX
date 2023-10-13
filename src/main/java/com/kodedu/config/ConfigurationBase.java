@@ -30,14 +30,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.CountDownLatch;
 
 /**
  * Created by usta on 19.07.2015.
  */
 public abstract class ConfigurationBase {
 
-    private final ApplicationController controller;
-    private final ThreadService threadService;
+    protected final ApplicationController controller;
+    protected final ThreadService threadService;
 
     public abstract String formName();
 
