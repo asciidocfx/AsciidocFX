@@ -151,7 +151,6 @@ public class ShortCutConfigBean extends ConfigurationBase {
                 shortcutListContainer.getChildren().setAll(boxList);
             });
             shortcuts.get().addListener((ListChangeListener<EditorCommand>) c -> {
-                System.out.println();
             });
             FXFormNodeWrapper wrapper = new FXFormNodeWrapper(shortcutListContainer, shortcuts);
             return wrapper;
@@ -219,8 +218,8 @@ public class ShortCutConfigBean extends ConfigurationBase {
 
     @Override
     public Path getConfigPath() {
-        return Path.of("/Users/usta/projects/AsciidocFX/conf/shortcut_config.json");
-//        return super.resolveConfigPath("shortcut_config.json");
+//        return Path.of("/Users/usta/projects/AsciidocFX/conf/shortcut_config.json");
+        return super.resolveConfigPath("shortcut_config.json");
     }
 
     @Override
