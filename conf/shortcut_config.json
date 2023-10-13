@@ -1,4 +1,7 @@
 {
+  "disabled": false,
+  "debugMode": false,
+  "dumpMode": false,
   "shortcuts": [
     {
       "name": "copylinesdown",

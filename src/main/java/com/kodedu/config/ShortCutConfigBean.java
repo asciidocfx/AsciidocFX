@@ -64,7 +64,7 @@ public class ShortCutConfigBean extends ConfigurationBase {
 
     @Override
     public String formName() {
-        return "Editor shortcuts";
+        return "Shortcut Settings";
     }
 
     private class CheckBoxFactory implements Callback<Void, FXFormNode> {
@@ -140,6 +140,7 @@ public class ShortCutConfigBean extends ConfigurationBase {
                             command.setMinWidth(100);
                             command.textProperty().addListener((observable2, oldValue2, newValue2) -> {
                                 e.setName(newValue2);
+                                e.setNative(false);
                             });
                             command.setTooltip(new Tooltip(e.getName()));
                             HBox.setHgrow(shortcut, Priority.ALWAYS);

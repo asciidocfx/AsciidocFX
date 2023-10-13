@@ -774,6 +774,7 @@ public class EditorPane extends AnchorPane {
             if (nonNull(keyCombination)) {
                 if (e.getEventType() == KEY_RELEASED) {
                     if (keyCombination.match(e)) {
+                        // Event already consumed on key_press
                         e.consume();
                         if (getShortCutConfigBean().isDebugMode()) {
                             logger.warn("Releasing: {} {}", keyCombination, e.getEventType());
@@ -782,6 +783,7 @@ public class EditorPane extends AnchorPane {
                         return;
                     }
                 } else {
+                    // Skip key_type ?
                     e.consume();
                     if (getShortCutConfigBean().isDebugMode()) {
                         logger.warn("Skipping: {} {}", keyCombination, e.getEventType());
