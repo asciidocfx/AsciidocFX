@@ -9,7 +9,7 @@ on:
   pull_request:
       
 env:
-  INSTALL4J_URL: https://download.ej-technologies.com/install4j/install4j_linux-x64_10_0_4.tar.gz
+  INSTALL4J_URL: https://download.ej-technologies.com/install4j/install4j_linux-x64_10_0_6.tar.gz
   LICENSE_KEY_10: ${{ secrets.LICENSE_KEY_10 }}
   MAC_CODE_SIGN_P12: ${{ secrets.MAC_CODE_SIGN_P12 }}
   WIN_CODE_SIGN_PFX: ${{ secrets.WIN_CODE_SIGN_PFX }}
@@ -25,16 +25,16 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-    - name: Set up JDK 20
+    - name: Set up JDK 21
       uses: actions/setup-java@v3
       with:
-        java-version: '20'
-        distribution: 'temurin'
+        java-version: '21'
+        distribution: 'adopt'
         cache: maven
     - name: Download install4j
       run: |
          wget --tries=3 ${{ env.INSTALL4J_URL }}
-         tar zxvf install4j_linux-x64_10_0_4.tar.gz
+         tar zxvf install4j_linux-x64_10_0_6.tar.gz
     - name: Add signing key for MAC
       run: 'echo "$MAC_CODE_SIGN_P12" | base64 -d  >mac_code_sign.p12'
     - name: Add signing key for WIN
