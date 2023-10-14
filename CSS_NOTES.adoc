@@ -1,0 +1,7 @@
+== text-rendering:optimizeLegibility
+
+text-rendering:optimizeLegibility causes issue on \r and shows an empty box instead of space. To fix that issue I replace it to
+
+``
+text-rendering:auto
+``
