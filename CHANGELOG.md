@@ -10,6 +10,7 @@ All notable changes are documented in this file.
 * Cross-reference window
 * Update ace version
 * Open links in preview
+* Search in webview
 * Bux fixes
 
 ## [Version ~1.8.5](https://github.com/asciidocfx/AsciidocFX/releases/tag/v1.8.5) (05.2023)
