@@ -63,6 +63,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static javafx.scene.input.KeyEvent.KEY_RELEASED;
+import static javafx.scene.input.KeyEvent.KEY_TYPED;
 
 /**
  * Created by usta on 09.04.2015.
@@ -782,7 +783,7 @@ public class EditorPane extends AnchorPane {
                         keyCombination = null;
                         return;
                     }
-                } else {
+                } else if (e.getEventType() == KEY_TYPED) {
                     // Skip key_type ?
                     e.consume();
                     if (getShortCutConfigBean().isDebugMode()) {
