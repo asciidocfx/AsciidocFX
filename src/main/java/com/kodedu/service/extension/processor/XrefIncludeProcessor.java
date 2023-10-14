@@ -8,6 +8,7 @@ import org.asciidoctor.extension.PreprocessorReader;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
@@ -26,7 +27,7 @@ public class XrefIncludeProcessor extends IncludeProcessor {
     public void process(Document document, PreprocessorReader reader, String target, Map<String, Object> attributes) {
 
         Path dirPath = Paths.get(reader.getDir());
-        Path targetPath = dirPath.resolve(target);
+        Path targetPath = resolveTargetPath(document, dirPath, target);
         String targetString = targetPath.toString();
         String readed = reader.read();
         String content = IOHelper.readFile(targetPath);
@@ -39,6 +40,19 @@ public class XrefIncludeProcessor extends IncludeProcessor {
         int lineNumber = reader.getLineNumber();
         reader.pushInclude(readed, target, target, lineNumber, attributes);
         reader.pushInclude(content, target, target, lineNumber, attributes);
+    }
+
+    private Path resolveTargetPath(Document document, Path dirPath, String target) {
+        Path resolvedPath = dirPath.resolve(target);
+        if (Files.exists(resolvedPath)) {
+            return resolvedPath;
+        }
+        // Alternative resolution for attributes-{lang}.adoc
+        Path alternatePath = Paths.get((String) document.getAttribute("docdir")).resolve(resolvedPath);
+        if (Files.exists(alternatePath)) {
+            return alternatePath;
+        }
+        return resolvedPath;
     }
 
 }
