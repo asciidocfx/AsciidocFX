@@ -69,11 +69,11 @@ public class AppStarter extends Application {
     @Override
     public void start(final Stage stage) {
         this.startTime = System.currentTimeMillis();
+        initializeSSLContext();
         stage.setTitle("AsciidocFX");
         logoImage = setApplicationIcon(stage);
         Thread.setDefaultUncaughtExceptionHandler((t, e) -> logger.error(e.getMessage(), e));
         Thread.startVirtualThread(() -> {
-            initializeSSLContext();
             loadRequiredFonts();
         });
 
