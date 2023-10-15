@@ -91,7 +91,7 @@ public abstract class ViewPanel extends AnchorPane {
 
     private void initializeSearchBox(VBox box) {
         TextField searchField = new TextField("");
-        searchField.prefHeight(30);
+        searchField.setPrefHeight(27);
         Button prev = new Button();
         prev.setGraphic(new FontIcon(FontAwesome.ARROW_CIRCLE_UP));
         Button next = new Button();
@@ -101,7 +101,7 @@ public abstract class ViewPanel extends AnchorPane {
         BorderPane searchBox = new BorderPane();
         searchBox.setVisible(false);
         searchBox.setManaged(searchBox.isVisible());
-        searchBox.setRight(new HBox(5, searchField, prev, next, cancel));
+        searchBox.setRight(new HBox(3, searchField, prev, next, cancel));
         box.getChildren().addAll(searchBox, getWebView());
         searchField.textProperty().addListener((observable, oldValue, newValue) -> {
             search(newValue, true);
