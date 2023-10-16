@@ -90,12 +90,11 @@ public class DocBookConverter implements DocbookTraversable, DocumentConverter<R
                 getHtmlDoctor().convert(asciidoc, options);
                 String rendered = IOHelper.readFile(docbookPath);
                 docbookValidator.validateDocbook(rendered);
-                onSuccessfulConversation(nextStep, rendered);
-
                 logger.debug("Docbook5 conversion ended");
+                onSuccessfulConversation(nextStep, rendered);
             } catch (Exception e) {
-                onFailedConversation(nextStep, e);
                 logger.error("Problem occured while converting to Docbook", e);
+                onFailedConversation(nextStep, e);
             } finally {
                 indikatorService.stopProgressBar();
                 applicationController.addRemoveRecentList(docbookPath);

@@ -10,6 +10,7 @@ import com.kodedu.service.DirectoryService;
 import com.kodedu.service.FileOpenListener;
 import com.kodedu.service.ThreadService;
 import com.kodedu.service.convert.docbook.DocBookConverter;
+import com.kodedu.service.convert.ebook.EpubConverter;
 import com.kodedu.service.convert.html.HtmlBookConverter;
 import com.kodedu.service.convert.pdf.PdfBookConverter;
 import com.kodedu.service.ui.TabService;
@@ -361,15 +362,19 @@ public class AppStarter extends Application {
     }
 
     private void processFileConversion(CmdlineConfig config) {
+        Consumer<RenderResult> renderResultConsumer = getRenderResultConsumer();
         if (StringUtils.containsIgnoreCase(config.backend, "pdf")) {
             PdfBookConverter pdfBookConverter = context.getBean(PdfBookConverter.class);
-            pdfBookConverter.convert(false, getRenderResultConsumer());
+            pdfBookConverter.convert(false, renderResultConsumer);
         } else if (StringUtils.containsIgnoreCase(config.backend, "html")) {
             HtmlBookConverter htmlBookConverter = context.getBean(HtmlBookConverter.class);
-            htmlBookConverter.convert(false, getRenderResultConsumer());
+            htmlBookConverter.convert(false, renderResultConsumer);
         } else if (StringUtils.containsIgnoreCase(config.backend, "docbook")) {
             DocBookConverter docBookConverter = context.getBean(DocBookConverter.class);
-            docBookConverter.convert(false, getRenderResultConsumer());
+            docBookConverter.convert(false, renderResultConsumer);
+        } else if (StringUtils.containsIgnoreCase(config.backend, "epub")) {
+            EpubConverter epubConverter = context.getBean(EpubConverter.class);
+            epubConverter.convert(false, renderResultConsumer);
         }
     }
 

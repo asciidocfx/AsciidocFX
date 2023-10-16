@@ -481,7 +481,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     private void convertEpub(boolean askPath) {
         threadService.runTaskLater(() -> {
-            epubConverter.produceEpub3(askPath);
+            epubConverter.convert(askPath);
         });
     }
 

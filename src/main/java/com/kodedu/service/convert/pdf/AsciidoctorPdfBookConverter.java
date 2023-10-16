@@ -85,8 +85,8 @@ public class AsciidoctorPdfBookConverter implements DocumentConverter<RenderResu
 				asciiDocController.addRemoveRecentList(pdfPath);
 				onSuccessfulConversation(nextStep, destFile);
 			} catch (Exception e) {
-				onFailedConversation(nextStep, e);
 				logger.error("Problem occured while converting to PDF", e);
+				onFailedConversation(nextStep, e);
 			} finally {
 				indikatorService.stopProgressBar();
 				logger.debug("PDF conversion ended");

@@ -5,9 +5,11 @@ import com.kodedu.controller.ApplicationController;
 import com.kodedu.helper.IOHelper;
 import com.kodedu.other.Current;
 import com.kodedu.other.ExtensionFilters;
+import com.kodedu.other.RenderResult;
 import com.kodedu.service.DirectoryService;
 import com.kodedu.service.PathResolverService;
 import com.kodedu.service.ThreadService;
+import com.kodedu.service.convert.DocumentConverter;
 import com.kodedu.service.convert.docbook.DocBookConverter;
 import com.kodedu.service.ui.IndikatorService;
 import org.asciidoctor.Attributes;
@@ -25,6 +27,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -34,7 +37,7 @@ import static com.kodedu.service.AsciidoctorFactory.getNonHtmlDoctor;
  * Created by usta on 30.08.2014.
  */
 @Component
-public class EpubConverter {
+public class EpubConverter implements DocumentConverter<RenderResult> {
 
     private final Logger logger = LoggerFactory.getLogger(EpubConverter.class);
 
@@ -61,20 +64,9 @@ public class EpubConverter {
         this.epub3ConfigBean = epub3ConfigBean;
     }
 
-    public void produceEpub3Temp() {
-         produceEpub3(false, true);
-    }
+    @Override
+    public void convert(boolean askPath, Consumer<RenderResult>... nextStep) {
 
-    public void produceEpub3(boolean askPath) {
-         produceEpub3(askPath, false);
-    }
-
-    private void produceEpub3(boolean askPath, boolean isTemp) {
-
-        Path currentTabPath = current.currentPath().get();
-        Path currentTabPathDir = currentTabPath.getParent();
-        Path configPath = asciiDocController.getConfigPath();
-        String tabText = current.getCurrentTabText().replace("*", "").trim();
         String asciidoc = current.currentEditorValue();
 
         threadService.runTaskLater(() -> {
@@ -103,9 +95,12 @@ public class EpubConverter {
                 logger.debug("Epub conversion ended");
 
                 asciiDocController.addRemoveRecentList(epubPath);
+
+                onSuccessfulConversation(nextStep, destFile);
             } catch (Exception e) {
                 indikatorService.stopProgressBar();
                 logger.error("Epub conversion has failed", e);
+                onFailedConversation(nextStep, e);
             }
 
         });

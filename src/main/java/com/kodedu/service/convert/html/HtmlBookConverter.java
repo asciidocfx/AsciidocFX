@@ -89,8 +89,8 @@ public class HtmlBookConverter implements Traversable, DocumentConverter<RenderR
             logger.debug("HTML conversion ended");
             onSuccessfulConversation(nextStep, destFile);
         } catch (Exception e) {
-            onFailedConversation(nextStep, e);
             logger.error("Problem occured while converting to HTML", e);
+            onFailedConversation(nextStep, e);
         } finally {
             indikatorService.stopProgressBar();
         }
