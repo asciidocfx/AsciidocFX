@@ -5,12 +5,14 @@ import com.kodedu.config.ConfigurationService;
 import com.kodedu.controller.ApplicationController;
 import com.kodedu.helper.IOHelper;
 import com.kodedu.helper.TaskbarHelper;
+import com.kodedu.other.RenderResult;
 import com.kodedu.service.DirectoryService;
 import com.kodedu.service.FileOpenListener;
 import com.kodedu.service.ThreadService;
-import com.kodedu.service.ui.IndikatorService;
+import com.kodedu.service.convert.docbook.DocBookConverter;
+import com.kodedu.service.convert.html.HtmlBookConverter;
+import com.kodedu.service.convert.pdf.PdfBookConverter;
 import com.kodedu.service.ui.TabService;
-import com.kodedu.terminalfx.helper.ThreadHelper;
 import de.tototec.cmdoption.CmdlineParser;
 import de.tototec.cmdoption.CmdlineParserException;
 import javafx.application.Application;
@@ -27,6 +29,7 @@ import javafx.scene.text.Font;
 import javafx.stage.Modality;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
@@ -45,6 +48,8 @@ import java.nio.file.NotDirectoryException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.SecureRandom;
+import java.util.Arrays;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Consumer;
@@ -56,7 +61,7 @@ import static javafx.scene.input.KeyCombination.SHORTCUT_DOWN;
 
 public class AppStarter extends Application {
 
-    private Logger logger = LoggerFactory.getLogger(AppStarter.class);
+    private static Logger logger = LoggerFactory.getLogger(AppStarter.class);
 
     private static ApplicationController controller;
     private static ConfigurableApplicationContext context;
@@ -65,11 +70,11 @@ public class AppStarter extends Application {
     private ConfigurationService configurationService;
     private Image logoImage;
     private long startTime;
+    public static CmdlineConfig config;
 
     @Override
     public void start(final Stage stage) {
         this.startTime = System.currentTimeMillis();
-        initializeSSLContext();
         stage.setTitle("AsciidocFX");
         logoImage = setApplicationIcon(stage);
         Thread.setDefaultUncaughtExceptionHandler((t, e) -> logger.error(e.getMessage(), e));
@@ -77,18 +82,28 @@ public class AppStarter extends Application {
             loadRequiredFonts();
         });
 
-        // http://bit.ly/1Euk8hh
-        System.setProperty("jsse.enableSNIExtension", "false");
-//        System.setProperty("https.protocols", "SSLv3");
+        Thread.startVirtualThread(() -> {
+            try {
+                startApp(stage);
+            } catch (final Throwable e) {
+                logger.error("Problem occured while starting AsciidocFX", e);
+            }
+        });
 
-        System.setProperty("sun.net.http.allowRestrictedHeaders", "true");
-        System.setProperty("java.awt.headless", "false");
+    }
 
+    private static void setupMonocle() {
+        System.setProperty("monocle.platform", "Headless");
+        System.setProperty("glass.platform", "Monocle");
+        System.setProperty("prism.order", "sw");
+    }
+
+    private static CmdlineConfig parseCmdArgs(String[] args) {
         final CmdlineConfig config = new CmdlineConfig();
         final CmdlineParser cp = new CmdlineParser(config);
 
         try {
-            cp.parse(getParameters().getRaw().toArray(new String[0]));
+            cp.parse(args);
         } catch (final CmdlineParserException e) {
             System.err.println("Invalid commandline given: " + e.getMessage());
             System.exit(1);
@@ -98,20 +113,21 @@ public class AppStarter extends Application {
             cp.usage();
             System.exit(0);
         }
-
-        Thread.startVirtualThread(() -> {
-            try {
-                startApp(stage, config);
-            } catch (final Throwable e) {
-                logger.error("Problem occured while starting AsciidocFX", e);
-            }
-        });
-
+        return config;
     }
 
-    private void initializeSSLContext() {
+    private static void setJvmProperties() {
+        // http://bit.ly/1Euk8hh
+        System.setProperty("jsse.enableSNIExtension", "false");
+//        System.setProperty("https.protocols", "SSLv3");
+
+        System.setProperty("sun.net.http.allowRestrictedHeaders", "true");
+        System.setProperty("java.awt.headless", "false");
+    }
+
+    private static void initializeSSLContext() {
         try {
-            SSLContext sc = SSLContext.getInstance("SSL");
+            SSLContext sc = SSLContext.getInstance("TLS");
             sc.init(null, new TrustManager[]{new FakeTrustManager()}, new SecureRandom());
             HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
             HttpsURLConnection.setDefaultHostnameVerifier((h, s) -> true);
@@ -121,9 +137,10 @@ public class AppStarter extends Application {
         }
     }
 
-    public void registerStartupListener() {
-        Thread.startVirtualThread(() -> {
-            StartupNotification.registerStartupListener(parameters -> {
+    public void registerAssociatedFileHandler() {
+        StartupNotification.registerStartupListener(parameters -> {
+            threadService.runTaskLater(() -> {
+                controller.waitAdocPreviewReadyLatch();
                 FileOpenListener fileOpenListener = context.getBean(FileOpenListener.class);
                 fileOpenListener.startupPerformed(parameters);
             });
@@ -149,7 +166,7 @@ public class AppStarter extends Application {
         }
     }
 
-    private void startApp(final Stage stage, final CmdlineConfig config) throws Throwable {
+    private void startApp(final Stage stage) throws Throwable {
 
         this.stage = stage;
         SpringApplication app = new SpringApplication(SpringAppConfig.class);
@@ -157,6 +174,7 @@ public class AppStarter extends Application {
         context = app.run(new String[]{});
         logger.debug("Spring context loaded in {} ms.", System.currentTimeMillis() - startTime);
         controller = context.getBean(ApplicationController.class);
+        registerAssociatedFileHandler();
         threadService = context.getBean(ThreadService.class);
         configurationService = context.getBean(ConfigurationService.class);
 
@@ -180,7 +198,6 @@ public class AppStarter extends Application {
             configurationService.loadConfigurations();
             controller.applyInitialConfigurations();
             controller.checkStageInsideScreens();
-            registerStartupListener();
         });
 
         stage.setOnShown(e -> {
@@ -261,6 +278,7 @@ public class AppStarter extends Application {
 
         threadService.start(() -> {
             try {
+                controller.waitAdocPreviewReadyLatch();
                 registerStartupListener(config);
             } catch (Exception e) {
                 logger.error("Problem occured in startup listener", e);
@@ -326,7 +344,13 @@ public class AppStarter extends Application {
                         if (workingDirectory == null) {
                             directoryService.changeWorkigDir(file.toPath().getParent());
                         }
-                        tabService.addTab(file.toPath());
+                        tabService.addTab(file.toPath(), () -> {
+                            threadService.runTaskLater(() -> {
+                                if (Objects.nonNull(config.backend)) {
+                                    processFileConversion(config);
+                                }
+                            });
+                        });
                     } else {
                         // TODO: do we want to create such a file on demand?
                         logger.error("Cannot open non-existent file: {}", file);
@@ -334,6 +358,38 @@ public class AppStarter extends Application {
                 });
             }
         });
+    }
+
+    private void processFileConversion(CmdlineConfig config) {
+        if (StringUtils.containsIgnoreCase(config.backend, "pdf")) {
+            PdfBookConverter pdfBookConverter = context.getBean(PdfBookConverter.class);
+            pdfBookConverter.convert(false, getRenderResultConsumer());
+        } else if (StringUtils.containsIgnoreCase(config.backend, "html")) {
+            HtmlBookConverter htmlBookConverter = context.getBean(HtmlBookConverter.class);
+            htmlBookConverter.convert(false, getRenderResultConsumer());
+        } else if (StringUtils.containsIgnoreCase(config.backend, "docbook")) {
+            DocBookConverter docBookConverter = context.getBean(DocBookConverter.class);
+            docBookConverter.convert(false, getRenderResultConsumer());
+        }
+    }
+
+    private Consumer<RenderResult> getRenderResultConsumer() {
+        return renderResult -> {
+            if (renderResult.isSuccessful()) {
+                logger.info("Completed {}", renderResult.getDestination());
+            } else {
+                Exception exception = renderResult.getException();
+                logger.info("Error {}", exception.getMessage(), exception);
+            }
+
+            if (!config.noQuitAfter) {
+                try {
+                    stop();
+                } catch (Exception e) {
+                    logger.error(e.getMessage(), e);
+                }
+            }
+        };
     }
 
     private Path resolveWorkingDirectory(CmdlineConfig config) {
@@ -396,6 +452,15 @@ public class AppStarter extends Application {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
+        setJvmProperties();
+        config = parseCmdArgs(args);
+        logger.info("Args {}", Arrays.stream(args).collect(Collectors.joining(",")));
+        logger.info("Parsed cmd configs: {}", config);
+        if (config.headless) {
+            logger.info("Starting in headless mode..");
+            setupMonocle();
+        }
+        initializeSSLContext();
         launch(args);
     }
 

@@ -4,6 +4,7 @@ import com.kodedu.config.PdfConfigBean;
 import com.kodedu.controller.ApplicationController;
 import com.kodedu.other.Current;
 import com.kodedu.other.ExtensionFilters;
+import com.kodedu.other.RenderResult;
 import com.kodedu.service.DirectoryService;
 import com.kodedu.service.ThreadService;
 import com.kodedu.service.convert.DocumentConverter;
@@ -27,7 +28,7 @@ import static com.kodedu.service.AsciidoctorFactory.getNonHtmlDoctor;
  * Created by usta on 09.04.2015.
  */
 @Component
-public class AsciidoctorPdfBookConverter implements DocumentConverter<String> {
+public class AsciidoctorPdfBookConverter implements DocumentConverter<RenderResult> {
 
     private final Logger logger = LoggerFactory.getLogger(AsciidoctorPdfBookConverter.class);
 
@@ -53,7 +54,7 @@ public class AsciidoctorPdfBookConverter implements DocumentConverter<String> {
 
 
     @Override
-	public void convert(boolean askPath, Consumer<String>... nextStep) {
+	public void convert(boolean askPath, Consumer<RenderResult>... nextStep) {
 
 		String asciidoc = current.currentEditorValue();
 
@@ -82,6 +83,10 @@ public class AsciidoctorPdfBookConverter implements DocumentConverter<String> {
 						.build();
 				getNonHtmlDoctor().convert(asciidoc, options);
 				asciiDocController.addRemoveRecentList(pdfPath);
+				onSuccessfulConversation(nextStep, destFile);
+			} catch (Exception e) {
+				onFailedConversation(nextStep, e);
+				logger.error("Problem occured while converting to PDF", e);
 			} finally {
 				indikatorService.stopProgressBar();
 				logger.debug("PDF conversion ended");

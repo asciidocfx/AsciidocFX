@@ -3521,4 +3521,11 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 		return menuTemplates;
 	}
 
+    public void waitAdocPreviewReadyLatch() {
+        try {
+            adocPreviewReadyLatch.await();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

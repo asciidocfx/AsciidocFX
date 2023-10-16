@@ -6,6 +6,7 @@ import com.kodedu.engine.AsciidocConverterProvider;
 import com.kodedu.helper.IOHelper;
 import com.kodedu.other.Current;
 import com.kodedu.other.ExtensionFilters;
+import com.kodedu.other.RenderResult;
 import com.kodedu.service.DirectoryService;
 import com.kodedu.service.ThreadService;
 import com.kodedu.service.convert.DocumentConverter;
@@ -28,7 +29,7 @@ import static com.kodedu.service.AsciidoctorFactory.getHtmlDoctor;
  * Created by usta on 19.07.2014.
  */
 @Component
-public class DocBookConverter implements DocbookTraversable, DocumentConverter<String> {
+public class DocBookConverter implements DocbookTraversable, DocumentConverter<RenderResult> {
 
     private Logger logger = LoggerFactory.getLogger(DocBookConverter.class);
 
@@ -58,9 +59,10 @@ public class DocBookConverter implements DocbookTraversable, DocumentConverter<S
 
 
     @Override
-    public void convert(boolean askPath, Consumer<String>... nextStep) {
+    public void convert(boolean askPath, Consumer<RenderResult>... nextStep) {
 
-        Path currentTabPath = current.currentPath().get();
+        logger.debug("Docbook5 conversion started");
+
         Path workdir = current.currentTab().getParentOrWorkdir();
 
         String asciidoc = current.currentEditorValue();
@@ -87,18 +89,15 @@ public class DocBookConverter implements DocbookTraversable, DocumentConverter<S
 
                 getHtmlDoctor().convert(asciidoc, options);
                 String rendered = IOHelper.readFile(docbookPath);
-                boolean validated = docbookValidator.validateDocbook(rendered);
+                docbookValidator.validateDocbook(rendered);
+                onSuccessfulConversation(nextStep, rendered);
 
-                if (!validated)
-                    return;
-
-                for (Consumer<String> step : nextStep) {
-                    step.accept(rendered);
-                }
+                logger.debug("Docbook5 conversion ended");
+            } catch (Exception e) {
+                onFailedConversation(nextStep, e);
+                logger.error("Problem occured while converting to Docbook", e);
             } finally {
                 indikatorService.stopProgressBar();
-                logger.debug("Docbook5 conversion ended");
-
                 applicationController.addRemoveRecentList(docbookPath);
             }
         });

@@ -2,6 +2,7 @@ package com.kodedu.service.convert.pdf;
 
 import com.kodedu.config.PdfConfigBean;
 import com.kodedu.config.PdfConverterType;
+import com.kodedu.other.RenderResult;
 import com.kodedu.service.convert.DocumentConverter;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Component
-public class PdfBookConverter implements DocumentConverter<String> {
+public class PdfBookConverter implements DocumentConverter<RenderResult> {
 
     private final Logger logger = LoggerFactory.getLogger(PdfBookConverter.class);
 
@@ -32,7 +33,7 @@ public class PdfBookConverter implements DocumentConverter<String> {
 
 
     @Override
-	public void convert(boolean askPath, Consumer<String>... nextStep) {
+	public void convert(boolean askPath, Consumer<RenderResult>... nextStep) {
 		if (PdfConverterType.ASCIIDOCTOR.equals(pdfConfigBean.getPdfConverterType())) {
 			asciidoctorPdfBookConverter.convert(askPath, nextStep);
 		} else {

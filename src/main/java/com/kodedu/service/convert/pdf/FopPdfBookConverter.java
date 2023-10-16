@@ -8,6 +8,7 @@ import com.kodedu.controller.ApplicationController;
 import com.kodedu.helper.IOHelper;
 import com.kodedu.other.Current;
 import com.kodedu.other.ExtensionFilters;
+import com.kodedu.other.RenderResult;
 import com.kodedu.service.DirectoryService;
 import com.kodedu.service.PathResolverService;
 import com.kodedu.service.ThreadService;
@@ -44,7 +45,7 @@ import org.slf4j.LoggerFactory;
  * Created by usta on 09.04.2015.
  */
 @Component
-public class FopPdfBookConverter implements DocumentConverter<String> {
+public class FopPdfBookConverter implements DocumentConverter<RenderResult> {
 
     private final Logger logger = LoggerFactory.getLogger(FopPdfBookConverter.class);
 
@@ -72,7 +73,7 @@ public class FopPdfBookConverter implements DocumentConverter<String> {
 
 
     @Override
-    public void convert(boolean askPath, Consumer<String>... nextStep) {
+    public void convert(boolean askPath, Consumer<RenderResult>... nextStep) {
 
         final Path currentTabPath = current.currentPath().get();
         final Path currentTabPathDir = currentTabPath.getParent();
@@ -88,7 +89,7 @@ public class FopPdfBookConverter implements DocumentConverter<String> {
                 logger.debug("PDF conversion started");
 
                 final Path docbookTempfile = IOHelper.createTempFile(currentTabPathDir, ".xml");
-                IOHelper.writeToFile(docbookTempfile, docbook, CREATE, WRITE, TRUNCATE_EXISTING);
+                IOHelper.writeToFile(docbookTempfile, docbook.getContent(), CREATE, WRITE, TRUNCATE_EXISTING);
 
                 try (OutputStream outputStream = new BufferedOutputStream(new FileOutputStream(pdfPath.toFile()));) {
                     // Setup XSLT
@@ -119,8 +120,11 @@ public class FopPdfBookConverter implements DocumentConverter<String> {
                     FormattingResults foResults = fop.getResults();
 
                     logger.info("Generated {} pages in total.", foResults.getPageCount());
+                    IOHelper.close(outputStream);
+                    onSuccessfulConversation(nextStep, pdfPath.toFile());
 
                 } catch (Exception e) {
+                    onFailedConversation(nextStep, e);
                     logger.error("Problem occured while converting to PDF", e);
                 } finally {
                     indikatorService.stopProgressBar();

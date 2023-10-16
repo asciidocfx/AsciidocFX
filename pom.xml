@@ -166,7 +166,7 @@
         <dependency>
             <groupId>de.tototec</groupId>
             <artifactId>de.tototec.cmdoption</artifactId>
-            <version>0.6.0</version>
+            <version>0.7.1</version>
         </dependency>
 <!--        https://github.com/asciidoctor/asciidoctor-diagram/tree/master/deps/plantuml/lib/asciidoctor-diagram/plantuml-->
         <dependency>
@@ -294,25 +294,30 @@
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-swing</artifactId>
             <version>${openjfx.version}</version>
-<!--            <scope>provided</scope>-->
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-controls</artifactId>
             <version>${openjfx.version}</version>
-<!--            <scope>provided</scope>-->
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-web</artifactId>
             <version>${openjfx.version}</version>
-<!--            <scope>provided</scope>-->
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-fxml</artifactId>
             <version>${openjfx.version}</version>
-<!--            <scope>provided</scope>-->
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>one.jpro</groupId>
+            <artifactId>openjfx-monocle</artifactId>
+            <version>jfx-${openjfx.version}</version>
         </dependency>
         <!-- Add test dependencies -->
         <dependency>
@@ -475,13 +480,16 @@
                                 -Duser.language=en
                                 -Duser.country=US
                                 -Dfile.encoding=UTF-8
-                                --enable-preview
-                                -Xms256M
-                                -Xmx1G
+                                -XX:+OptimizeStringConcat
+                                -Xms512M
+                                -Xmx750M
                                 -Djava.awt.headless=false
+                                --enable-preview
                                 -Dsun.java2d.metal=true
-                                -Djavafx.autoproxy.disable=true
                                 -Dorg.apache.xml.dtm.DTMManager=org.apache.xml.dtm.ref.DTMManagerDefault
+                                -Djdk.xml.xpathExprGrpLimit=0
+                                -Djdk.xml.xpathExprOpLimit=0
+                                -Djdk.xml.xpathTotalOpLimit=0
                                 --add-opens
                                 java.base/sun.nio.ch=ALL-UNNAMED
                                 --add-opens
@@ -550,12 +558,21 @@
                                 javafx.base/com.sun.javafx.collections=javafx.web
                                 --add-opens
                                 javafx.controls/javafx.scene.control=ALL-UNNAMED
+                                --add-opens
+                                javafx.controls/javafx.scene.control.skin=ALL-UNNAMED
+                                --add-opens
+                                javafx.graphics/javafx.scene.input=ALL-UNNAMED
+                                --add-opens
+                                javafx.web/javafx.scene.web=ALL-UNNAMED
+                                --add-opens
+                                javafx.web/com.sun.webkit=ALL-UNNAMED
                                 --add-exports
                                 javafx.base/com.sun.javafx.property=ALL-UNNAMED
                                 --add-exports
                                 javafx.controls/com.sun.javafx.scene.control=ALL-UNNAMED
                                 --add-modules=ALL-MODULE-PATH
                                 --add-modules=javafx.controls,javafx.fxml,javafx.graphics,javafx.media,javafx.swing,javafx.web
+                                -Djavafx.autoproxy.disable=true
                             </extraJvmArguments>
                             <!--&#45;&#45;add-opens javafx.base/com.sun.javafx.collections=javafx.web-->
                             <!--&#45;&#45;add-exports javafx.controls/com.sun.javafx.scene.control=ALL-UNNAMED-->

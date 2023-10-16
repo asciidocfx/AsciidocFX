@@ -5,6 +5,7 @@ import com.kodedu.controller.ApplicationController;
 import com.kodedu.engine.AsciidocConverterProvider;
 import com.kodedu.other.Current;
 import com.kodedu.other.ExtensionFilters;
+import com.kodedu.other.RenderResult;
 import com.kodedu.service.DirectoryService;
 import com.kodedu.service.ThreadService;
 import com.kodedu.service.convert.DocumentConverter;
@@ -28,7 +29,7 @@ import static com.kodedu.service.AsciidoctorFactory.getHtmlDoctor;
  * Created by usta on 30.08.2014.
  */
 @Component
-public class HtmlBookConverter implements Traversable, DocumentConverter<String> {
+public class HtmlBookConverter implements Traversable, DocumentConverter<RenderResult> {
 
     private final Logger logger = LoggerFactory.getLogger(HtmlBookConverter.class);
 
@@ -55,7 +56,7 @@ public class HtmlBookConverter implements Traversable, DocumentConverter<String>
     }
 
     @Override
-    public void convert(boolean askPath, Consumer<String>... nextStep) {
+    public void convert(boolean askPath, Consumer<RenderResult>... nextStep) {
 
         try {
 
@@ -86,7 +87,9 @@ public class HtmlBookConverter implements Traversable, DocumentConverter<String>
 
             indikatorService.stopProgressBar();
             logger.debug("HTML conversion ended");
+            onSuccessfulConversation(nextStep, destFile);
         } catch (Exception e) {
+            onFailedConversation(nextStep, e);
             logger.error("Problem occured while converting to HTML", e);
         } finally {
             indikatorService.stopProgressBar();

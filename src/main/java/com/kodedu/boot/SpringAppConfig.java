@@ -103,7 +103,7 @@ public class SpringAppConfig extends SpringBootServletInitializer implements Web
         Asciidoctor asciidoctor = AsciidoctorFactory.getAsciidoctor();
         JavaExtensionRegistry registry = asciidoctor.javaExtensionRegistry();
         registry.postprocessor(documentAttributeProcessor);
-        Thread.startVirtualThread(() -> {
+        runAsyncConditionally(() -> {
             registerDefaultExtensions(registry,
                     fxChartBlockProcessor,
                     treeBlockProcessor,
@@ -141,7 +141,7 @@ public class SpringAppConfig extends SpringBootServletInitializer implements Web
         Asciidoctor asciidoctor = AsciidoctorFactory.getAsciidoctor();
         JavaExtensionRegistry registry = asciidoctor.javaExtensionRegistry();
         registry.postprocessor(documentAttributeProcessor);
-        Thread.startVirtualThread(() -> {
+        runAsyncConditionally(() -> {
             registerDefaultExtensions(registry,
                     fxChartBlockProcessor,
                     treeBlockProcessor,
@@ -157,6 +157,14 @@ public class SpringAppConfig extends SpringBootServletInitializer implements Web
             asciidoctor.requireLibrary("openssl", "asciidoctor-diagram", "asciidoctor-revealjs");
         });
         return asciidoctor;
+    }
+
+    private void runAsyncConditionally(Runnable runnable) {
+        if (AppStarter.config.isCmdStart()) {
+            runnable.run();
+        } else {
+            Thread.startVirtualThread(runnable);
+        }
     }
 
     /*
@@ -177,7 +185,7 @@ public class SpringAppConfig extends SpringBootServletInitializer implements Web
                                      CacheSuffixAppenderProcessor cacheSuffixAppenderProcessor) {
         Asciidoctor asciidoctor = AsciidoctorFactory.getAsciidoctor();
         JavaExtensionRegistry registry = asciidoctor.javaExtensionRegistry();
-        Thread.startVirtualThread(() -> {
+        runAsyncConditionally(() -> {
             registerDefaultExtensions(registry,
                     fxChartBlockProcessor,
                     treeBlockProcessor,
@@ -205,7 +213,7 @@ public class SpringAppConfig extends SpringBootServletInitializer implements Web
         Asciidoctor asciidoctor = AsciidoctorFactory.getAsciidoctor();
         JavaExtensionRegistry registry = asciidoctor.javaExtensionRegistry();
         registry.postprocessor(documentAttributeProcessor);
-        Thread.startVirtualThread(() -> {
+        runAsyncConditionally(() -> {
             asciidoctor.requireLibrary("openssl", "asciidoctor-revealjs", "asciidoctor-pdf", "asciidoctor-epub3");
         });
         return asciidoctor;
