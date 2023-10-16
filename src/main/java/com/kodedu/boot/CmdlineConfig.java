@@ -16,7 +16,7 @@ public class CmdlineConfig {
     @CmdOption(names = {"--workdir", "-w"}, args = "DIRECTORY", description = "Working directory to use when generating opened files views")
     String workingDirectory = null;
 
-    @CmdOption(names = {"--backend", "-b"}, args = "BACKEND", description = "Defines output format: pdf, html, docbook")
+    @CmdOption(names = {"--backend", "-b"}, args = "BACKEND", description = "Defines output format: pdf, html, docbook, epub")
     String backend = null;
 
     @CmdOption(names = {"--headless", "-H"}, description = "Selects to start AsciidocFX in headless mode")
