@@ -1,5 +1,6 @@
 package com.kodedu.config;
 
+import com.kodedu.boot.AppStarter;
 import com.kodedu.controller.ApplicationController;
 import com.kodedu.helper.IOHelper;
 import com.kodedu.service.ThreadService;
@@ -115,6 +116,11 @@ public abstract class ConfigurationBase {
     }
 
     protected void saveJson(JsonStructure jsonStructure) {
+
+        if (AppStarter.config.isHeadless()) {
+            return;
+        }
+
         Map<String, Object> properties = new HashMap<>(1);
         properties.put(JsonGenerator.PRETTY_PRINTING, true);
 

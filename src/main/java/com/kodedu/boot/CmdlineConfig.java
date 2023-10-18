@@ -29,6 +29,10 @@ public class CmdlineConfig {
         return !files.isEmpty();
     }
 
+    public boolean isHeadless() {
+        return headless;
+    }
+
     @Override
     public String toString() {
         return "CmdlineConfig{" +

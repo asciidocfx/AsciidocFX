@@ -137,8 +137,8 @@ public class PieChartBuilderServiceImpl extends ChartBuilderServiceImpl {
             node.setStyle(String.format("-fx-text-fill: %s; -fx-font-size: %s;", titleColor, titleSize));
         }
 
-        pieChart.setLayoutX(-28000);
-        pieChart.setLayoutY(-28000);
+        pieChart.setLayoutX(getXPosition());
+        pieChart.setLayoutY(0);
 
         threadService.runActionLater(() -> {
             controller.getRootAnchor().getChildren().add(pieChart);
