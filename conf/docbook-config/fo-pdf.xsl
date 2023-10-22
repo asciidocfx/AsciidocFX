@@ -59,15 +59,15 @@
     -->
 
     <xsl:template name="pickfont-sans">
-        <xsl:text>Sans-serif,Arial,Arial Unicode MS,Helvetica,serif,Georgia,Times New Roman</xsl:text>
+        <xsl:text>WenQuanYi Micro Hei,Microsoft YaHei,Sans-serif,Arial,Arial Unicode MS,Helvetica,serif,Georgia,Times New Roman</xsl:text>
     </xsl:template>
 
     <xsl:template name="pickfont-serif">
-        <xsl:text>Sans-serif,Arial,Arial Unicode MS,Helvetica,serif,Georgia,Times New Roman</xsl:text>
+        <xsl:text>WenQuanYi Micro Hei,Microsoft YaHei,Sans-serif,Arial,Arial Unicode MS,Helvetica,serif,Georgia,Times New Roman</xsl:text>
     </xsl:template>
 
     <xsl:template name="pickfont-mono">
-        <xsl:text>Liberation Mono,Lucida Console,Monaco,Consolas,Courier New,Courier,monospace,Arial Unicode MS,Lucida Sans Unicode</xsl:text>
+        <xsl:text>WenQuanYi Micro Hei Mono,Microsoft YaHei,Liberation Mono,Lucida Console,Monaco,Consolas,Courier New,Courier,monospace,Arial Unicode MS,Lucida Sans Unicode</xsl:text>
     </xsl:template>
 
     <xsl:template name="pickfont-dingbat">
@@ -75,12 +75,13 @@
     </xsl:template>
 
     <xsl:template name="pickfont-symbol">
-        <xsl:text>Symbol,ZapfDingbats</xsl:text>
+        <xsl:text>WenQuanYi Micro Hei,Microsoft YaHei,Symbol,ZapfDingbats</xsl:text>
     </xsl:template>
 
     <xsl:template name="pickfont-math">
-        <xsl:text>Liberation Serif,Sans-serif,serif,Times-Roman</xsl:text>
+        <xsl:text>WenQuanYi Micro Hei,Microsoft YaHei,Liberation Serif,Sans-serif,serif,Times-Roman</xsl:text>
     </xsl:template>
+
 
     <!--
       Fonts
