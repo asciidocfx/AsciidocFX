@@ -9,7 +9,6 @@ import com.kodedu.component.*;
 import com.kodedu.config.*;
 import com.kodedu.engine.AsciidocAsciidoctorjConverter;
 import com.kodedu.engine.AsciidocConverterProvider;
-import com.kodedu.engine.AsciidocWebkitConverter;
 import com.kodedu.helper.DesktopHelper;
 import com.kodedu.helper.FxHelper;
 import com.kodedu.helper.IOHelper;
@@ -227,9 +226,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     @Autowired
     public HtmlPane htmlPane;
-
-    @Autowired
-    public AsciidocWebkitConverter asciidocWebkitConverter;
 
     @Autowired
     public AsciidocAsciidoctorjConverter asciidoctorjConverter;
@@ -792,8 +788,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                 current.currentEditor().rerender();
             }
         });
-
-        asciidocWebkitConverter.load(String.format(workerUrl, port));
 
         openFileTreeItem.setOnAction(event -> {
 
@@ -2326,18 +2320,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         current.currentEditor().moveCursorTo(line);
     }
 
-    @WebkitCall(from = "editor")
-    public void scrollByPosition(String text) {
-        threadService.runActionLater(() -> {
-            try {
-                String selection = asciidocWebkitConverter.findRenderedSelection(text);
-                rightShowerHider.getShowing().ifPresent(w -> w.scrollByPosition(selection));
-            } catch (Exception e) {
-                logger.debug(e.getMessage(), e);
-            }
-        });
-    }
-
     @WebkitCall(from = "asciidoctor-uml")
     public void uml(String uml, String type, String imagesDir, String imageTarget, String nodename, String options) throws IOException {
         plantuml(uml, type, imagesDir, imageTarget, nodename, options);
@@ -2375,37 +2357,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             }
         }
         return optMap;
-    }
-
-    @WebkitCall(from = "converter.js")
-    public void completeWebWorkerExceptionally(Object taskId) {
-        threadService.runTaskLater(() -> {
-            final Map<String, CompletableFuture<ConverterResult>> workerTasks = asciidocWebkitConverter.getWebWorkerTasks();
-            Optional.ofNullable(workerTasks.get(taskId))
-                    .filter(c -> !c.isDone())
-                    .ifPresent(c -> {
-                        final RuntimeException ex = new RuntimeException(String.format("Task: %s is not completed", taskId));
-                        c.completeExceptionally(ex);
-                    });
-            workerTasks.remove(taskId);
-        });
-    }
-
-    @WebkitCall(from = "converter.js")
-    public void completeWebWorker(String taskId, String rendered, String backend, String doctype) {
-        threadService.runTaskLater(() -> {
-            final ConverterResult converterResult = new ConverterResult(taskId, rendered, backend);
-            final Map<String, CompletableFuture<ConverterResult>> workerTasks = asciidocWebkitConverter.getWebWorkerTasks();
-            final CompletableFuture<ConverterResult> completableFuture = workerTasks.get(converterResult.getTaskId());
-
-            Optional.ofNullable(completableFuture)
-                    .filter(c -> !c.isDone())
-                    .ifPresent(c -> {
-                        c.complete(converterResult);
-                    });
-
-            workerTasks.remove(converterResult.getTaskId());
-        });
     }
 
     private volatile AtomicReference<TextChangeEvent> latestTextChangeEvent = new AtomicReference<>();
@@ -2618,11 +2569,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         });
     }
 
-    @WebkitCall
-    public String getTemplate(String templateDir) {
-        return asciidocWebkitConverter.getTemplate(templateDir);
-    }
-
     public void cutCopy(String data) {
         ClipboardContent clipboardContent = new ClipboardContent();
         clipboardContent.putString(data.replaceAll("\\R", "\n"));
@@ -2724,11 +2670,8 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
         try {
 
-            if (systemClipboard.hasHtml() || asciidocWebkitConverter.isHtml(systemClipboard.getString())) {
+            if (systemClipboard.hasHtml()) {
                 String content = Optional.ofNullable(systemClipboard.getHtml()).orElse(systemClipboard.getString());
-                if (current.currentTab().isAsciidoc() || current.currentTab().isMarkdown()) {
-                    content = (String) asciidocWebkitConverter.call(current.currentTab().htmlToMarkupFunction(), content);
-                }
                 editorPane.insert(content);
                 return;
             }
@@ -3072,32 +3015,6 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     @FXML
     public void showSettings() {
 
-    }
-
-    @WebkitCall(from = "editor-shortcut")
-    public void showWorkerPane() {
-        threadService.runActionLater(() -> {
-
-            ToggleButton toggleButton = new ToggleButton();
-            toggleButton.setPrefSize(20, 80);
-            toggleButton.setToggleGroup(rightToggleGroup);
-            toggleButton.getStyleClass().addAll("corner-toggle-button", "corner-bottom-half");
-            final Label label = new Label("Worker");
-            label.setRotate(90);
-            toggleButton.setGraphic(new Group(label));
-            toggleButton.setPadding(Insets.EMPTY);
-            toggleButton.setOnAction(this::toggleWorkerView);
-            toggleButton.fire();
-
-            final ObservableList<Node> children = rightTooglesBox.getChildren();
-
-            children.add(toggleButton);
-
-        });
-    }
-
-    private void toggleWorkerView(ActionEvent actionEvent) {
-        rightShowerHider.showNode(asciidocWebkitConverter);
     }
 
     public void addRemoveRecentList(Path path) {

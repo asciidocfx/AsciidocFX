@@ -2,7 +2,6 @@ package com.kodedu.component;
 
 import com.kodedu.config.EditorConfigBean;
 import com.kodedu.controller.ApplicationController;
-import com.kodedu.engine.AsciidocWebkitConverter;
 import com.kodedu.other.Current;
 import com.kodedu.service.DirectoryService;
 import com.kodedu.service.ThreadService;
@@ -35,14 +34,11 @@ public class SlidePane extends ViewPanel {
 
     @Value("${application.slide.url}")
     private String slideUrl;
-    private final AsciidocWebkitConverter asciidocWebkitConverter;
     private final DirectoryService directoryService;
 
     @Autowired
-    public SlidePane(ThreadService threadService, ApplicationController controller, Current current, AsciidocWebkitConverter asciidocWebkitConverter, EditorConfigBean editorConfigBean, DirectoryService directoryService) {
+    public SlidePane(ThreadService threadService, ApplicationController controller, Current current, EditorConfigBean editorConfigBean, DirectoryService directoryService) {
         super(threadService, controller, current, editorConfigBean);
-        this.asciidocWebkitConverter = asciidocWebkitConverter;
-
         this.directoryService = directoryService;
     }
 

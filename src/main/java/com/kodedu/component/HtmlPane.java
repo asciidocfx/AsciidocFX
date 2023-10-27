@@ -2,7 +2,6 @@ package com.kodedu.component;
 
 import com.kodedu.config.*;
 import com.kodedu.controller.ApplicationController;
-import com.kodedu.engine.AsciidocWebkitConverter;
 import com.kodedu.other.Current;
 import com.kodedu.service.DirectoryService;
 import com.kodedu.service.ThreadService;
@@ -29,18 +28,16 @@ public class HtmlPane extends ViewPanel {
     @Value("${application.preview.url}")
     private String previewUrl;
 
-    private final AsciidocWebkitConverter asciidocWebkitConverter;
     private final DirectoryService directoryService;
 
     @Autowired
-    public HtmlPane(ThreadService threadService, ApplicationController controller, Current current, PreviewConfigBean previewConfigBean, DocbookConfigBean docbookConfigBean, HtmlConfigBean htmlConfigBean, EditorConfigBean editorConfigBean, Environment environment, AsciidocWebkitConverter asciidocWebkitConverter, DirectoryService directoryService) {
+    public HtmlPane(ThreadService threadService, ApplicationController controller, Current current, PreviewConfigBean previewConfigBean, DocbookConfigBean docbookConfigBean, HtmlConfigBean htmlConfigBean, EditorConfigBean editorConfigBean, Environment environment, DirectoryService directoryService) {
         super(threadService, controller, current, editorConfigBean);
         this.previewConfigBean = previewConfigBean;
         this.docbookConfigBean = docbookConfigBean;
         this.htmlConfigBean = htmlConfigBean;
         this.threadService = threadService;
         this.environment = environment;
-        this.asciidocWebkitConverter = asciidocWebkitConverter;
         this.directoryService = directoryService;
     }
 
