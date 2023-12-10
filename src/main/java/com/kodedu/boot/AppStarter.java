@@ -52,7 +52,9 @@ import java.security.SecureRandom;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -63,6 +65,9 @@ import static javafx.scene.input.KeyCombination.SHORTCUT_DOWN;
 public class AppStarter extends Application {
 
     private static Logger logger = LoggerFactory.getLogger(AppStarter.class);
+
+    private static AtomicReference<String> startupParameters = new AtomicReference<>();
+    private static CountDownLatch startupParameterLatch = new CountDownLatch(1);
 
     private static ApplicationController controller;
     private static ConfigurableApplicationContext context;
@@ -138,13 +143,10 @@ public class AppStarter extends Application {
         }
     }
 
-    public void registerAssociatedFileHandler() {
+    public static void registerAssociatedFileHandler() {
         StartupNotification.registerStartupListener(parameters -> {
-            threadService.runTaskLater(() -> {
-                controller.waitAdocPreviewReadyLatch();
-                FileOpenListener fileOpenListener = context.getBean(FileOpenListener.class);
-                fileOpenListener.startupPerformed(parameters);
-            });
+            startupParameters.set(parameters);
+            startupParameterLatch.countDown();
         });
     }
 
@@ -175,9 +177,9 @@ public class AppStarter extends Application {
         context = app.run(new String[]{});
         logger.debug("Spring context loaded in {} ms.", System.currentTimeMillis() - startTime);
         controller = context.getBean(ApplicationController.class);
-        registerAssociatedFileHandler();
         threadService = context.getBean(ThreadService.class);
         configurationService = context.getBean(ConfigurationService.class);
+        openStartupFiles();
 
         final FXMLLoader parentLoader = new FXMLLoader();
         parentLoader.setControllerFactory(context::getBean);
@@ -291,6 +293,18 @@ public class AppStarter extends Application {
         stage.widthProperty().addListener(controller::stageWidthChanged);
         stage.heightProperty().addListener(controller::stageWidthChanged);
 
+    }
+
+    private void openStartupFiles() {
+        threadService.runTaskLater(() -> {
+            try {
+                startupParameterLatch.await();
+                context.getBean(ApplicationController.class).waitAdocPreviewReadyLatch();
+                context.getBean(FileOpenListener.class).startupPerformed(startupParameters.get());
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 
     private Image setApplicationIcon(Stage stage) {
@@ -457,6 +471,7 @@ public class AppStarter extends Application {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
+        registerAssociatedFileHandler();
         setJvmProperties();
         config = parseCmdArgs(args);
         logger.info("Args {}", Arrays.stream(args).collect(Collectors.joining(",")));
