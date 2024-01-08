@@ -32,6 +32,8 @@ public class XrefIncludeProcessor extends IncludeProcessor {
     private static final Pattern NEWLINE_RX = Pattern.compile("\\r\\n?|\\n");
     private static final Pattern TAG_DIRECTIVE_RX = Pattern.compile("\\b(?:tag|(e)nd)::(\\S+?)\\[\\](?=$|[ \\r])", Pattern.MULTILINE);
 
+    record FilterContent(String content, Integer lineNo){}
+
     private HttpClient httpClient = HttpClient.newBuilder()
             .followRedirects(HttpClient.Redirect.ALWAYS)
             .build();
@@ -62,8 +64,7 @@ public class XrefIncludeProcessor extends IncludeProcessor {
             }
         }
 
-        String readed = reader.read();
-        int startLineNumber = reader.getLineNumber();
+        int startLineNumber = 1;
 
         Map<String, List<RefProps>> xrefMap = XrefHelper.parseXrefs(targetString, content);
 
@@ -72,19 +73,18 @@ public class XrefIncludeProcessor extends IncludeProcessor {
 
         List<Integer> lineNums = getLines(attributes);
         if (!lineNums.isEmpty()) {
-            Object[] tuple = filterLinesByLineNumbers(content, lineNums);
-            content = (String) tuple[0];
-            startLineNumber = (int) tuple[1];
+            FilterContent tuple  = filterLinesByLineNumbers(content, lineNums);
+            content = tuple.content();
+            startLineNumber = tuple.lineNo();
         } else {
             Map<String, Boolean> tags = getTags(attributes);
             if (!tags.isEmpty()) {
-                Object[] tuple = filterLinesByTags(content, target, tags);
-                content = (String) tuple[0];
-                startLineNumber = (int) tuple[1];
+                FilterContent tuple = filterLinesByTags(content, target, tags);
+                content = tuple.content();
+                startLineNumber = tuple.lineNo();
             }
         }
 
-        reader.pushInclude(readed, target, targetString, startLineNumber, attributes);
         reader.pushInclude(content, target, targetString, startLineNumber, attributes);
     }
 
@@ -195,9 +195,9 @@ public class XrefIncludeProcessor extends IncludeProcessor {
         return resolvedPath;
     }
 
-    public Object[] filterLinesByLineNumbers(String fileContent, List<Integer> linenums) {
+    public FilterContent filterLinesByLineNumbers(String fileContent, List<Integer> linenums) {
         int lineNum = 0;
-        int startLineNum = 0;
+        Integer startLineNum = null;
         boolean selectRest = false;
         List<String> lines = new ArrayList<>();
 
@@ -206,13 +206,13 @@ public class XrefIncludeProcessor extends IncludeProcessor {
             lineNum++;
 
             if (selectRest || (selectRest = linenums.get(0) == Integer.MAX_VALUE)) {
-                if (startLineNum == 0) {
+                if (Objects.isNull(startLineNum)) {
                     startLineNum = lineNum;
                 }
                 lines.add(line);
             } else {
                 if (linenums.get(0) == lineNum) {
-                    if (startLineNum == 0) {
+                    if (Objects.isNull(startLineNum)) {
                         startLineNum = lineNum;
                     }
                     linenums.removeFirst();
@@ -224,10 +224,12 @@ public class XrefIncludeProcessor extends IncludeProcessor {
             }
         }
 
-        return new Object[]{String.join(System.lineSeparator(), lines), startLineNum};
+        String content = String.join(System.lineSeparator(), lines);
+        Integer lineNo = Objects.requireNonNullElse(startLineNum, 1);
+        return new FilterContent(content, lineNo);
     }
 
-    public Object[] filterLinesByTags(String fileContent, String target, Map<String, Boolean> tags) {
+    public FilterContent filterLinesByTags(String fileContent, String target, Map<String, Boolean> tags) {
         Boolean selectingDefault, selecting, wildcard = null;
         Boolean globstar = tags.get("**");
         Boolean star = tags.get("*");
@@ -263,7 +265,7 @@ public class XrefIncludeProcessor extends IncludeProcessor {
         List<String> foundTags = new ArrayList<>();
         String activeTag = null;
         int lineNum = 0;
-        int startLineNum = 0;
+        Integer startLineNum = null;
 
         for (String line : fileContent.split(NEWLINE_RX.pattern())) {
             lineNum++;
@@ -296,7 +298,7 @@ public class XrefIncludeProcessor extends IncludeProcessor {
                     tagStack.add(0, new String[]{activeTag = thisTag, String.valueOf(selecting), String.valueOf(lineNum)});
                 }
             } else if (selecting) {
-                if (startLineNum == 0) {
+                if (Objects.isNull(startLineNum)) {
                     startLineNum = lineNum;
                 }
                 lines.add(line);
@@ -319,7 +321,9 @@ public class XrefIncludeProcessor extends IncludeProcessor {
                     tags.size() > 1 ? "s" : "", String.join(", ", tags.keySet()), target);
         }
 
-        return new Object[]{String.join(System.lineSeparator(), lines), startLineNum > 0 ? startLineNum : 1};
+        String content = String.join(System.lineSeparator(), lines);
+        Integer lineNo = Objects.requireNonNullElse(startLineNum, 1);
+        return new FilterContent(content, lineNo);
     }
 
     private boolean isHttpOrHttps(String url) {
