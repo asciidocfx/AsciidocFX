@@ -22,7 +22,7 @@
         <install4j.macKeyStorePassword>${env.MAC_KEYSTORE_PASSWORD}</install4j.macKeyStorePassword>
         <install4j.appSpecificPassword>${env.MAC_APP_PASSWORD}</install4j.appSpecificPassword>
         <install4j.winKeyStorePassword>${env.WIN_KEYSTORE_PASSWORD}</install4j.winKeyStorePassword>
-        <openjfx.version>21</openjfx.version>
+        <openjfx.version>21.0.1</openjfx.version>
         <ikonli.version>12.3.1</ikonli.version>
         <jaxb.version>2.3.2</jaxb.version>
         <jacoco.version>0.8.7</jacoco.version>
@@ -315,9 +315,9 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>one.jpro</groupId>
+            <groupId>io.github.sebivenlo</groupId>
             <artifactId>openjfx-monocle</artifactId>
-            <version>jfx-${openjfx.version}</version>
+            <version>jdk-${openjfx.version}</version>
         </dependency>
         <!-- Add test dependencies -->
         <dependency>
@@ -667,15 +667,15 @@
             </releases>
             <url>https://github.com/javaterminal/TerminalFX/raw/master/releases</url>
         </repository>
-        <repository>
-            <id>javacomm-repo</id>
-            <releases>
-                <enabled>true</enabled>
-                <checksumPolicy>warn</checksumPolicy>
-                <updatePolicy>always</updatePolicy>
-            </releases>
-            <url>https://www.sparetimelabs.com/maven2</url>
-        </repository>
+<!--        <repository>-->
+<!--            <id>javacomm-repo</id>-->
+<!--            <releases>-->
+<!--                <enabled>true</enabled>-->
+<!--                <checksumPolicy>warn</checksumPolicy>-->
+<!--                <updatePolicy>always</updatePolicy>-->
+<!--            </releases>-->
+<!--            <url>https://www.sparetimelabs.com/maven2</url>-->
+<!--        </repository>-->
         <repository>
             <id>jcenter-central</id>
             <name>jcenter</name>
