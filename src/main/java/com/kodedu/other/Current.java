@@ -49,7 +49,11 @@ public class Current {
     }
 
     public EditorPane currentEditor() {
-        return currentTab().getEditorPane();
+        MyTab currentTab = currentTab();
+        if (Objects.isNull(currentTab)) {
+            return null;
+        }
+        return currentTab.getEditorPane();
     }
 
     public WebEngine currentEngine() {

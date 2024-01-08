@@ -2397,7 +2397,12 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
                 String backend = (String) document.getAttribute("backend", "html5");
 
-                ConverterResult converterResult = asciidoctorjConverter.convert(document, textChangeEvent);
+                EditorPane editorPane = current.currentEditor();
+                if (Objects.isNull(editorPane)) {
+                    return;
+                }
+
+                ConverterResult converterResult = asciidoctorjConverter.convert(document, editorPane, textChangeEvent);
                 this.lastConverterResult = converterResult;
 
                 if (Objects.nonNull(latestTextChangeEvent.get())) {
