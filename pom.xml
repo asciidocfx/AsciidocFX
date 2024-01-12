@@ -25,7 +25,7 @@
         <openjfx.version>21</openjfx.version>
         <ikonli.version>12.3.1</ikonli.version>
         <jaxb.version>2.3.2</jaxb.version>
-        <jacoco.version>0.8.7</jacoco.version>
+        <jacoco.version>0.8.11</jacoco.version>
         <logunit.version>1.1.0</logunit.version>
     </properties>
 
