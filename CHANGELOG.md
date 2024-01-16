@@ -2,6 +2,13 @@
 
 All notable changes are documented in this file.
 
+## [Version ~1.8.7](https://github.com/asciidocfx/AsciidocFX/releases/tag/v1.8.7) (01.2024)
+
+* Version updates
+* Resolve tags and filters in include
+* Fix file open issue
+* Bux fixes
+
 ## [Version ~1.8.6](https://github.com/asciidocfx/AsciidocFX/releases/tag/v1.8.6) (16.2023)
 
 * Version updates

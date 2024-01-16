@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <install4j version="10.0.6" transformSequenceNumber="10">
   <directoryPresets config="/Users/usta/Library/CloudStorage/GoogleDrive-rahman.usta.88@gmail.com/My Drive/projects/AsciidocFX/cert/asciidocfx.pfx" />
-  <application name="AsciidocFX" applicationId="7853-9376-5862-1224" mediaDir="target" compression="4" lzmaCompression="true" excludeSignedFromPacking="false" shortName="AsciidocFX" publisher="AsciidocFX" publisherWeb="http://asciidocfx.com" version="1.8.6" macVolumeId="b98c377570068f5e" javaMinVersion="21" javaMaxVersion="21" allowBetaVM="true">
+  <application name="AsciidocFX" applicationId="7853-9376-5862-1224" mediaDir="target" compression="4" lzmaCompression="true" excludeSignedFromPacking="false" shortName="AsciidocFX" publisher="AsciidocFX" publisherWeb="http://asciidocfx.com" version="1.8.7" macVolumeId="b98c377570068f5e" javaMinVersion="21" javaMaxVersion="21" allowBetaVM="true">
     <searchSequence>
       <envVar name="JAVA_HOME" />
       <envVar name="JDK_HOME" />
       <registry />
     </searchSequence>
     <codeSigning macEnabled="true" macPkcs12File="${compiler:env.GITHUB_WORKSPACE}/mac_code_sign.p12" windowsEnabled="true" windowsPkcs12File="${compiler:env.GITHUB_WORKSPACE}/win_code_sign.pfx" macNotarize="true" appleId="${compiler:env.MAC_APPLE_ID}" />
-    <jreBundles jdkProviderId="AdoptOpenJDK" release="21/jdk-21+35" />
+    <jreBundles jdkProviderId="AdoptOpenJDK" release="21/jdk-21.0.1+12" />
   </application>
   <files globalExcludeSuffixes="bin" defaultOverwriteMode="1" launcherOverwriteMode="1" defaultFileMode="755">
     <mountPoints>
