@@ -538,46 +538,117 @@ AsciidocFX uses Java, JavaScript and XML related technologies.
 
 You can configurate AsciidocFX with Settings page (Press kbd:[Ctrl+F4]). The all configs located in [Install_Dir]/conf folder.
 
-== Some Shortcuts
+== Editor Shortcuts
 
-AFX supports this ace shortcuts https://github.com/ajaxorg/ace/wiki/Default-Keyboard-Shortcuts and custom shortcuts listed below . If you suggest us any shortcut request, we can implement it.
+Editor in AsciidocFX is based on Ace.js ( https://github.com/ajaxorg/ace/wiki/Default-Keyboard-Shortcuts ) . AsciidocFX supports the keyboard shortcuts listed below. All are configurable under `Settings > Shortcut` settings. Keyboard events are handled by AsciidocFX, if you any reason want it handled by Ace.js itself, you can disable "Custom Shortcut Handler" in settings.
 
-[width="100%",options="header,footer"]
-|===
-|Shortcut |Detail
-|kbd:[Ctrl+F4] | Show settings
-|kbd:[Ctrl+V] |Converts and pastes selection
-|kbd:[Ctrl+Shift+V] |Pastes selection
-|kbd:[tblx&#44;y + Tab] |Generates asciidoc table (x=row,y=column)
-|kbd:[tblx.y + Tab] |Generates asciidoc table (x=row,y=column)
-|kbd:[src + Tab] |Generates asciidoc source block (default lang: java)
-|kbd:[src.lang + Tab] |Generates asciidoc source block by lang
-|kbd:[src&#44;lang + Tab] |Generates asciidoc source block by lang
-|kbd:[img + Tab] |Generates image section
-|kbd:[book + Tab] |Generates book header section
-|kbd:[article + Tab] |Generates article header section
-|kbd:[uml + Tab] |Generates UML block
-|kbd:[math + Tab] |Generates Math block
-|kbd:[tree + Tab] |Generates Tree block
-|kbd:[quote + Tab] |Generates Quote block
-|kbd:[Ctrl+B] |Bolds selection
-|kbd:[Ctrl+F] |Find Text
-|kbd:[Ctrl+F] , kbd:[Ctrl+F] |Find and Replace Text
-|kbd:[Ctrl+I] |Italices selection
-|kbd:[Ctrl+U] |Underlines selection
-|kbd:[Ctrl+H] |Highlights selection
-|kbd:[Ctrl+D] |Duplicates selection
-|kbd:[Ctrl+L] |Displays line numbers
-|kbd:[Ctrl+X] |Removes current line
-|kbd:[Ctrl+N] |Creates new empty doc
-|kbd:[Ctrl+M] |Maximizes the tab pane
-|kbd:[Ctrl+S] |Saves current doc
-|kbd:[Ctrl+W] |Saves and closes current doc
-|kbd:[Ctrl+Shift+C] |Surrounds backtick `` selection
-|kbd:[Ctrl+Mouse_Scroll_Up] | Zoom in
-|kbd:[Ctrl+Mouse_Scroll_Down] | Zoom out
-|kbd:[F12] | Opens Firebug Lite (Requires Internet Connection)
-|===
+[cols="4*", options="header"]
+|====
+| Description | Shortcut (Win/Linux) | Shortcut (Mac) | Command Name
+| Add cursor above | kbd:[Ctrl+Alt+Up] | kbd:[Ctrl+Alt+Up] | addCursorAbove
+| Add cursor above (skip current) | kbd:[Ctrl+Alt+Shift+Up] | kbd:[Ctrl+Alt+Shift+Up] | addCursorAboveSkipCurrent
+| Add cursor below | kbd:[Ctrl+Alt+Down] | kbd:[Ctrl+Alt+Down] | addCursorBelow
+| Add cursor below (skip current) | kbd:[Ctrl+Alt+Shift+Down] | kbd:[Ctrl+Alt+Shift+Down] | addCursorBelowSkipCurrent
+| Add new line after the current line | kbd:[Command+Return] | kbd:[Command+Return] | addLineAfter
+| Add new line before the current line | kbd:[Command+Shift+Return] | kbd:[Command+Shift+Return] | addLineBefore
+| Align cursors | kbd:[Ctrl+Alt+A] | kbd:[Ctrl+Alt+A] | alignCursors
+| Append Heading | kbd:[Ctrl+H] | kbd:[Ctrl+H] | add-heading
+| Backspace | kbd:[Shift+Backspace] OR kbd:[Backspace] | kbd:[Ctrl+Backspace] OR kbd:[Shift+Backspace] OR kbd:[Backspace] OR kbd:[Ctrl+H] | backspace
+| Block indent | kbd:[Ctrl+] | kbd:[Ctrl+] | blockindent
+| Block outdent | kbd:[Ctrl+[ ] | kbd:[Ctrl+[ ] | blockoutdent
+| Bold selection | kbd:[Ctrl+B] | kbd:[Command+B] | bold-selected
+| Center selection | | kbd:[Ctrl+L] | centerselection
+| Change language mode... | kbd:[Command+K] OR kbd:[Input+M] | kbd:[Command+K] OR kbd:[Input+M] | modeSelect
+| Codify selection | kbd:[Ctrl+Shift+C] | kbd:[Command+Shift+C] | codify-selected
+| Copies the selection in editor | kbd:[Ctrl+C] | kbd:[Command+C] | copyX
+| Copy Lines Down | kbd:[Ctrl+D] | kbd:[Command+D] | copylinesdown
+| Copy lines up | kbd:[Alt+Shift+Up] | kbd:[Command+Option+Up] | copylinesup
+| Cuts the selection in editor | kbd:[Ctrl+X] | kbd:[Command+X] | cutX
+| Delete | kbd:[Delete] OR kbd:[Ctrl+D] OR kbd:[Shift+Delete] | kbd:[Delete] OR kbd:[Ctrl+D] OR kbd:[Shift+Delete] | del
+| Duplicate selection | kbd:[Ctrl+Shift+D] | kbd:[Command+Shift+D] | duplicateSelection
+| Expand to line | kbd:[Ctrl+Shift+L] | kbd:[Command+Shift+L] | expandtoline
+| Expand to matching | kbd:[Ctrl+Shift+M] | kbd:[Ctrl+Shift+M] | expandToMatching
+| Find | kbd:[Ctrl+F] | kbd:[Command+F] | find
+| Find all | kbd:[Ctrl+Alt+K] | kbd:[Ctrl+Alt+G] | findAll
+| Find next | kbd:[Ctrl+K] | kbd:[Command+G] | findnext
+| Find previous | kbd:[Ctrl+Shift+K] | kbd:[Command+Shift+G] | findprevious
+| Fold | kbd:[Alt-L] OR kbd:[Ctrl-F1] | kbd:[Command-Alt-L] OR kbd:[Command-F1] | fold
+| Fold all | kbd:[Command+K] OR kbd:[Command+0] | kbd:[Ctrl+Command+Option+0] | foldall
+| Fold all comments | | kbd:[Ctrl+Command+Option+0] | foldAllComments
+| Fold other | kbd:[Alt+0] | kbd:[Command+Option+0] | foldOther
+| Go line down | kbd:[Down] OR kbd:[Ctrl+N] | kbd:[Down] OR kbd:[Ctrl+N] | golinedown
+| Go line up | kbd:[Up] OR kbd:[Ctrl+P] | kbd:[Up] OR kbd:[Ctrl+P] | golineup
+| Go to end | kbd:[Ctrl+End] | kbd:[Command+End] OR kbd:[Command+Down] | gotoend
+| Go to left | kbd:[Left] OR kbd:[Ctrl+B] | kbd:[Left] OR kbd:[Ctrl+B] | gotoleft
+| Go to line end | kbd:[Alt+Right] OR kbd:[End] | kbd:[Command+Right] OR kbd:[End] OR kbd:[Ctrl+E] | gotolineend
+| Go to line start | kbd:[Alt+Left] OR kbd:[Home] | kbd:[Command+Left] OR kbd:[Home] OR kbd:[Ctrl+A] | gotolinestart
+| Go to line... | kbd:[Ctrl+L] | kbd:[Command+L] | gotoline
+| Go to next error | kbd:[Alt+E] | kbd:[F4] | goToNextError
+| Go to page down | kbd:[Page Down] OR kbd:[Ctrl+V] | kbd:[Page Down] OR kbd:[Ctrl+V] | gotopagedown
+| Go to previous error | kbd:[Alt+Shift+E] | kbd:[Shift+F4] | goToPreviousError
+| Go to right | kbd:[Right] OR kbd:[Ctrl+F] | kbd:[Right] OR kbd:[Ctrl+F] | gotoright
+| Go to start | kbd:[Ctrl+Home] | kbd:[Command+Home] OR kbd:[Command+Up] | gotostart
+| Go to word left | kbd:[Ctrl+Left] | kbd:[Option+Left] | gotowordleft
+| Go to word right | kbd:[Ctrl+Right] | kbd:[Option+Right] | gotowordright
+| Italic selection | kbd:[Ctrl+I] OR kbd:[Ctrl+İ] OR kbd:[Ctrl+I] OR kbd:[Ctrl+I] | kbd:[Command+I] OR kbd:[Command+İ] OR kbd:[Command+I] OR kbd:[Command+I] | italicize-selected
+| Jump to matching | kbd:[Ctrl+\] OR kbd:[Ctrl+P] | kbd:[Command+\] | jumptomatching
+| Modify number down | kbd:[Ctrl+Shift+Down] | kbd:[Alt+Shift+Down] | modifyNumberDown
+| Modify number up | kbd:[Ctrl+Shift+Up] | kbd:[Alt+Shift+Up] | modifyNumberUp
+| Move lines down | kbd:[Alt+Down] | kbd:[Option+Down] | movelinesdown
+| Move lines up | kbd:[Alt+Up] | kbd:[Option+Up] | movelinesup
+| Open Link | kbd:[Ctrl+F3] | kbd:[F3] | openlink
+| Open command palette | kbd:[F1] | kbd:[F1] | openCommandPallete
+| Outdent | kbd:[Shift+Tab] | kbd:[Shift+Tab] | outdent
+| Page down | kbd:[Ctrl+Page Down] | kbd:[Option+Page Down] | pagedown
+| Page up | kbd:[Ctrl+Page Up] | kbd:[Option+Page Up] | pageup
+| Pastes from clipboard to AsciidocFX editor | kbd:[Ctrl+Shift+V] | kbd:[Command+Shift+V] | pasteX
+| Redo | kbd:[Ctrl+Shift+Z] OR kbd:[Ctrl+Y] | kbd:[Command+Shift+Z] OR kbd:[Command+Y] | redo
+| Remove line | kbd:[Ctrl+D] | kbd:[Command+D] | removeline
+| Remove to line end | kbd:[Alt+Delete] | kbd:[Ctrl+K] OR kbd:[Command+Delete] | removetolineend
+| Remove to line start | kbd:[Alt+Backspace] | kbd:[Command+Backspace] | removetolinestart
+| Remove word left | kbd:[Ctrl+Backspace] | kbd:[Alt+Backspace] OR kbd:[Ctrl+Alt+Backspace] | removewordleft
+| Remove word right | kbd:[Ctrl+Delete] | kbd:[Alt+Delete] | removewordright
+| Replace | kbd:[Ctrl+H] | kbd:[Command+Option+F] | replace
+| Replay macro | kbd:[Ctrl+Shift+E] | kbd:[Command+Shift+E] | replaymacro
+| Select all | kbd:[Ctrl+A] | kbd:[Command+A] | selectall
+| Select down | kbd:[Shift+Down] OR kbd:[Ctrl+Shift+N] | kbd:[Shift+Down] OR kbd:[Ctrl+Shift+N] | selectdown
+| Select left | kbd:[Shift+Left] OR kbd:[Ctrl+Shift+B] | kbd:[Shift+Left] OR kbd:[Ctrl+Shift+B] | selectleft
+| Select more after | kbd:[Ctrl+Alt+Right] | kbd:[Ctrl+Alt+Right] | selectMoreAfter
+| Select more before | kbd:[Ctrl+Alt+Left] | kbd:[Ctrl+Alt+Left] | selectMoreBefore
+| Select next after | kbd:[Ctrl+Alt+Shift+Right] | kbd:[Ctrl+Alt+Shift+Right] | selectNextAfter
+| Select next before | kbd:[Ctrl+Alt+Shift+Left] | kbd:[Ctrl+Alt+Shift+Left] | selectNextBefore
+| Select or find next | kbd:[Alt+K] | kbd:[Ctrl+G] | selectOrFindNext
+| Select or find previous | kbd:[Alt+Shift+K] | kbd:[Ctrl+Shift+G] | selectOrFindPrevious
+| Select right | kbd:[Shift+Right] | kbd:[Shift+Right] | selectright
+| Select to end | kbd:[Ctrl+Shift+End] | kbd:[Command+Shift+End] OR kbd:[Command+Shift+Down] | selecttoend
+| Select to line end | kbd:[Alt+Shift+Right] | kbd:[Command+Shift+Right] OR kbd:[Shift+End] OR kbd:[Ctrl+Shift+E] | selecttolineend
+| Select to line start | kbd:[Alt+Shift+Left] | kbd:[Command+Shift+Left] OR kbd:[Ctrl+Shift+A] | selecttolinestart
+| Select to matching | kbd:[Ctrl+Shift+\] OR kbd:[Ctrl+Shift+P] | kbd:[Command+Shift+\] | selecttomatching
+| Select to start | kbd:[Ctrl+Shift+Home] | kbd:[Command+Shift+Home] OR kbd:[Command+Shift+Up] | selecttostart
+| Select up | kbd:[Shift+Up] OR kbd:[Ctrl+Shift+P] | kbd:[Shift+Up] OR kbd:[Ctrl+Shift+P] | selectup
+| Select word left | kbd:[Ctrl+Shift+Left] | kbd:[Option+Shift+Left] | selectwordleft
+| Select word right | kbd:[Ctrl+Shift+Right] | kbd:[Option+Shift+Right] | selectwordright
+| Show Firebug Console | kbd:[F12] | kbd:[F12] | firebug-lite
+| Show line numbers | kbd:[Ctrl+L] | kbd:[Command+L] | line-numbers
+| Show settings menu | kbd:[Ctrl+,] | kbd:[Command+,] | showSettingsMenu
+| Sort lines | kbd:[Ctrl+Alt+S] | kbd:[Command+Alt+S] | sortlines
+| Split into lines | kbd:[Alt+Shift+I] | kbd:[Alt+Shift+I] | splitSelectionIntoLines
+| Split line | | kbd:[Ctrl+O] | splitline
+| Split selection into lines | kbd:[Ctrl+Alt+L] | kbd:[Ctrl+Alt+L] | toggleSplitSelectionIntoLines
+| Tab and Text snippets | kbd:[Tab] | kbd:[Tab] | indent
+| To lowercase | kbd:[Ctrl+Shift+U] | kbd:[Ctrl+Shift+U] | tolowercase
+| To uppercase | kbd:[Ctrl+U] | kbd:[Ctrl+U] | touppercase
+| Toggle block comment | kbd:[Ctrl+Shift+/] | kbd:[Command+Shift+/] | toggleBlockComment
+| Toggle comment | kbd:[Ctrl+/] | kbd:[Command+/] | togglecomment
+| Toggle fold widget | kbd:[F2] | kbd:[F2] | toggleFoldWidget
+| Toggle parent fold widget | kbd:[Alt+F2] | kbd:[Alt+F2] | toggleParentFoldWidget
+| Toggle recording | kbd:[Ctrl+Alt+E] | kbd:[Command+Option+E] | togglerecording
+| Transpose letters | kbd:[Alt+Shift+X] | kbd:[Ctrl+T] | transposeletters
+| Underline selection | kbd:[Ctrl+U] | kbd:[Command+U] | underline-selected
+| Undo | kbd:[Ctrl+Z] | kbd:[Command+Z] | undo
+| Unfold | kbd:[Alt-Shift-L] OR kbd:[Ctrl-Shift-F1] | kbd:[Command-Alt-Shift-L] OR kbd:[Command-Shift-F1] | unfold
+| Unfold all | kbd:[Alt+Shift+0] | kbd:[Command+Option+Shift+0] | unfoldall
+|====
 
 == Known Issues
 
