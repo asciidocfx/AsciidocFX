@@ -481,6 +481,13 @@ function getCursorCoordinates() {
     return editor.renderer.textToScreenCoordinates(editor.getCursorPosition());
 }
 
+var resizeBufferAction = new BufferedAction();
+function resizeAceEditor() {
+    resizeBufferAction.buff(() => {
+        editor.resize();
+    }, 250);
+}
+
 /*function onGutterMouseDown(e) {
     console.log("onGutterMouseDown");
 

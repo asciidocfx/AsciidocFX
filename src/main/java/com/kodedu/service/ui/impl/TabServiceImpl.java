@@ -474,7 +474,10 @@ public class TabServiceImpl implements TabService {
                     .map(e -> (MyTab) e)
                     .map(MyTab::getEditorPane)
                     .filter(EditorPane::getReady)
-                    .ifPresent(EditorPane::updatePreviewUrl);
+                    .ifPresent(editorPane -> {
+                        editorPane.resizeAceEditor();
+                        editorPane.updatePreviewUrl();
+                    });
         });
     }
 

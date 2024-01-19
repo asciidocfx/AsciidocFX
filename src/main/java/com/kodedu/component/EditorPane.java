@@ -139,9 +139,21 @@ public class EditorPane extends AnchorPane {
         this.ready.addListener(this::afterEditorReady);
         webEngine().setConfirmHandler(this::handleConfirm);
         webEngine().setCreatePopupHandler(this::popupHandler);
+        getWebView().widthProperty().addListener(w -> resizeAceEditor());
+        getWebView().heightProperty().addListener(h -> resizeAceEditor());
         initializeMargins();
         initializeEditorContextMenus();
         enableEventHandler();
+    }
+
+    public void resizeAceEditor() {
+        threadService.runActionLater(() -> {
+            try {
+                executeScript("resizeAceEditor();");
+            } catch (Exception e) {
+
+            }
+        });
     }
 
     private WebEngine popupHandler(PopupFeatures popupFeatures) {
