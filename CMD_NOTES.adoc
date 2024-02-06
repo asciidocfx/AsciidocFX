@@ -1,6 +1,6 @@
 base64 -i code_sign.p12 | pbcopy
 base64 -i asciidocfx.pfx | pbcopy
-git tag -a v1.8.7 -m "Version 1.8.7"
-git tag -d v1.8.7
-git push --delete origin v1.8.7
+git tag -a v1.8.8 -m "Version 1.8.8"
+git tag -d v1.8.8
+git push --delete origin v1.8.8
 git push --atomic --tags

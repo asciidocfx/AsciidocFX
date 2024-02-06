@@ -59,11 +59,11 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
-import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
-import static javafx.scene.input.KeyEvent.KEY_RELEASED;
-import static javafx.scene.input.KeyEvent.KEY_TYPED;
+import static javafx.scene.input.KeyEvent.*;
 
 /**
  * Created by usta on 09.04.2015.
@@ -779,33 +779,42 @@ public class EditorPane extends AnchorPane {
         return shortCutConfigBean;
     }
 
-    KeyCombination keyCombination = null;
+    final AtomicReference<KeyCombination> keyCombination = new AtomicReference<>();
 
     EventHandler<Event> editorEventFilter = event -> {
         if (event instanceof KeyEvent e) {
 
-            if (nonNull(keyCombination)) {
+            if (e.getCode() == KeyCode.ESCAPE) {
+                keyCombination.set(null);
+                return;
+            }
+
+            if (nonNull(keyCombination.get())) {
                 if (e.getEventType() == KEY_RELEASED) {
-                    if (keyCombination.match(e)) {
+                    if (keyCombination.get().match(e)) {
                         // Event already consumed on key_press
-                        e.consume();
                         if (getShortCutConfigBean().isDebugMode()) {
-                            logger.warn("Releasing: {} {}", keyCombination, e.getEventType());
+                            logger.warn("Releasing: {} {}", keyCombination.get(), e.getEventType());
                         }
-                        keyCombination = null;
+                        keyCombination.set(null);
+                        e.consume();
                         return;
                     }
                 } else if (e.getEventType() == KEY_TYPED) {
                     // Skip key_type ?
                     e.consume();
                     if (getShortCutConfigBean().isDebugMode()) {
-                        logger.warn("Skipping: {} {}", keyCombination, e.getEventType());
+                        logger.warn("Skipping: {} {}", keyCombination.get(), e.getEventType());
                     }
                     return;
                 }
             }
 
             if (!isEditorFocused()) {
+                return;
+            }
+
+            if(e.getEventType() != KEY_PRESSED){
                 return;
             }
 
@@ -827,11 +836,11 @@ public class EditorPane extends AnchorPane {
 
             if (nonNull(matchedCombination)) {
                 execCommand(matchedCommand.getName());
-                e.consume();
-                keyCombination = matchedCombination;
+                keyCombination.set(matchedCombination);
                 if (getShortCutConfigBean().isDebugMode()) {
-                    logger.warn("Matched: Key={} Event={} Command={} ", keyCombination, e.getEventType(), matchedCommand.getName());
+                    logger.warn("Matched: Key={} Event={} Command={} ", keyCombination.get(), e.getEventType(), matchedCommand.getName());
                 }
+                e.consume();
             }
         }
     };

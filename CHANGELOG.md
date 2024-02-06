@@ -2,6 +2,12 @@
 
 All notable changes are documented in this file.
 
+## [Version ~1.8.8](https://github.com/asciidocfx/AsciidocFX/releases/tag/v1.8.8) (02.2024)
+
+* Resize ace editor on window resize or tab change
+* Fix duplicate key event on key handler
+* Bux fixes
+
 ## [Version ~1.8.7](https://github.com/asciidocfx/AsciidocFX/releases/tag/v1.8.7) (01.2024)
 
 * Version updates

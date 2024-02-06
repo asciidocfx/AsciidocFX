@@ -40,7 +40,7 @@ public class XrefIncludeProcessor extends IncludeProcessor {
 
     @Override
     public boolean handles(String target) {
-        return true;
+        return Objects.nonNull(target) && !target.isEmpty() && !target.contains("*");
     }
 
     @Override
