@@ -7,6 +7,11 @@ import javafx.scene.layout.AnchorPane;
 
 public class FxHelper {
 
+    public static void setVisible(Node node, boolean visible){
+        node.visibleProperty().set(visible);
+        node.managedProperty().set(visible);
+    }
+
     public static void fitToParent(Node node) {
         AnchorPane.setTopAnchor(node, 0.0);
         AnchorPane.setBottomAnchor(node, 0.0);
