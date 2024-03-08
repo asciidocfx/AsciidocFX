@@ -55,11 +55,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.attribute.FileTime;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static java.util.Objects.nonNull;
@@ -73,6 +74,7 @@ import static javafx.scene.input.KeyEvent.*;
 public class EditorPane extends AnchorPane {
 
     private final WebView webView = new WebView();
+    private final ObjectMapper objectMapper = new ObjectMapper();
     private final Logger logger = LoggerFactory.getLogger(EditorPane.class);
     private final ApplicationController controller;
     private final EditorConfigBean editorConfigBean;
@@ -181,6 +183,15 @@ public class EditorPane extends AnchorPane {
 
     protected Object executeScript(String script) {
         return webEngine().executeScript(script);
+    }
+
+    protected <T> T executeScript(String script, Class<T> javaType) {
+        String object = (String) webEngine().executeScript(script);
+        try {
+            return objectMapper.readValue(object, javaType);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private Boolean handleConfirm(String param) {
@@ -303,6 +314,11 @@ public class EditorPane extends AnchorPane {
 
     public Object call(String methodName, Object... args) {
         return getWindow().call(methodName, args);
+    }
+
+    public Object callOnEditor(String methodName, Object... args) {
+        JSObject editor = (JSObject) getWindow().getMember("editor");
+        return editor.call(methodName, args);
     }
 
     public WebEngine webEngine() {
@@ -463,6 +479,43 @@ public class EditorPane extends AnchorPane {
 
     public String editorSelection() {
         return (String) webEngine().executeScript("editor.session.getTextRange(editor.getSelectionRange())");
+    }
+
+    public record Point(Integer row, Integer column){}
+
+    public record Range(Point start, Point end){
+        public Range zero() {
+            Point point = new Point(0, 0);
+            return new Range(point, point);
+        }
+    }
+
+    public Range getSelectionRange(){
+        Range range = executeScript("getSelectionRange()", Range.class);
+        return range;
+    }
+
+    public void replaceSelection(String newText){
+        call("replaceSelection", newText);
+    }
+
+    public void insertText(String newText, boolean clear){
+        call("insertText", newText, clear);
+    }
+
+    public void setEditorDisabled(boolean disabled){
+        callOnEditor("setReadOnly", disabled);
+    }
+
+    public String getCurrentLineText(){
+        return (String) call("getCurrentLineText");
+    }
+
+    public void moveCursorLineEnd(){
+        call("moveCursorLineEnd");
+    }
+    public void clearText(){
+        executeScript("editor.setValue('')");
     }
 
     public void initializeEditorContextMenus() {
@@ -779,84 +832,67 @@ public class EditorPane extends AnchorPane {
         return shortCutConfigBean;
     }
 
-    final AtomicReference<KeyCombination> keyCombination = new AtomicReference<>();
+    private final AtomicReference<Instant> lastMatch = new AtomicReference<>(Instant.now());
 
     EventHandler<Event> editorEventFilter = event -> {
         if (event instanceof KeyEvent e) {
 
-            if (e.getCode() == KeyCode.ESCAPE) {
-                keyCombination.set(null);
+            EventType<KeyEvent> eventType = e.getEventType();
+
+            if (eventType == KEY_TYPED) {
+                Duration duration = Duration.between(lastMatch.get(), Instant.now());
+                long durationMillis = duration.toMillis();
+                if (durationMillis < 500) {
+                    e.consume();
+                    logger.info("Ignoring Event={}. Event matched just recently in {} ms", eventType, durationMillis);
+                }
                 return;
             }
 
-            if (nonNull(keyCombination.get())) {
-                if (e.getEventType() == KEY_RELEASED) {
-                    if (keyCombination.get().match(e)) {
-                        // Event already consumed on key_press
-                        if (getShortCutConfigBean().isDebugMode()) {
-                            logger.warn("Releasing: {} {}", keyCombination.get(), e.getEventType());
-                        }
-                        keyCombination.set(null);
-                        e.consume();
-                        return;
-                    }
-                } else if (e.getEventType() == KEY_TYPED) {
-                    // Skip key_type ?
-                    e.consume();
-                    if (getShortCutConfigBean().isDebugMode()) {
-                        logger.warn("Skipping: {} {}", keyCombination.get(), e.getEventType());
-                    }
-                    return;
-                }
+            if (eventType != KEY_PRESSED && eventType != KEY_TYPED) {
+                return;
             }
 
             if (!isEditorFocused()) {
                 return;
             }
 
-            if(e.getEventType() != KEY_PRESSED){
-                return;
-            }
+            ObservableList<EditorCommand> editorCommands = getShortCutConfigBean().getShortcuts();
+            editorCommands
+                    .stream()
+                    .filter(c -> c.getKeyCombination().stream().anyMatch(k -> k.match(e)))
+                    .findFirst()
+                    .ifPresent(c -> {
+                        e.consume();
+                        execCommand(c.getName());
+                        if (getShortCutConfigBean().isDebugMode()) {
+                            c.getKeyCombination()
+                                    .stream()
+                                    .filter(k -> k.match(e))
+                                    .findFirst()
+                                    .ifPresent(k -> {
+                                        logger.warn("Matched: Key={} Event={} Command={} ",
+                                                k, eventType, c.getName());
+                                    });
 
-            KeyCombination matchedCombination = null;
-            EditorCommand matchedCommand = null;
-            for (EditorCommand editorCommand : getShortCutConfigBean().getShortcuts()) {
-                if (nonNull(matchedCombination)) {
-                    break;
-                }
-                List<KeyCombination> combinationList = editorCommand.getKeyCombination();
-                for (KeyCombination combination : combinationList) {
-                    if (combination.match(e)) {
-                        matchedCombination = combination;
-                        matchedCommand = editorCommand;
-                        break;
-                    }
-                }
-            }
-
-            if (nonNull(matchedCombination)) {
-                execCommand(matchedCommand.getName());
-                keyCombination.set(matchedCombination);
-                if (getShortCutConfigBean().isDebugMode()) {
-                    logger.warn("Matched: Key={} Event={} Command={} ", keyCombination.get(), e.getEventType(), matchedCommand.getName());
-                }
-                e.consume();
-            }
+                        }
+                        lastMatch.set(Instant.now());
+                    });
         }
     };
     public void enableEventHandler() {
         shortCutConfigBean.disableProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue) {
-                removeEventFilter(EventType.ROOT, editorEventFilter);
+                removeEventFilter(ANY, editorEventFilter);
             } else {
-                removeEventFilter(EventType.ROOT, editorEventFilter);
-                addEventFilter(EventType.ROOT, editorEventFilter);
+                removeEventFilter(ANY, editorEventFilter);
+                addEventFilter(ANY, editorEventFilter);
             }
         });
         boolean isShortcutConfigDisabled = shortCutConfigBean.isDisabled();
         if (!isShortcutConfigDisabled) {
-            removeEventFilter(EventType.ROOT, editorEventFilter);
-            addEventFilter(EventType.ROOT, editorEventFilter);
+            removeEventFilter(ANY, editorEventFilter);
+            addEventFilter(ANY, editorEventFilter);
         }
     }
 
@@ -1004,5 +1040,13 @@ public class EditorPane extends AnchorPane {
     @WebkitCall
     public boolean isShortcutConfigDisabled() {
         return shortCutConfigBean.isDisabled();
+    }
+
+    public String getLanguage() {
+        return (String) executeScript("getLanguage()");
+    }
+
+    public void moveScrollToCursor(){
+        call("moveScrollToCursor");
     }
 }

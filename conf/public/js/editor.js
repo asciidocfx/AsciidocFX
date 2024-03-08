@@ -523,4 +523,47 @@ var onThemeLoaded = function () {
     editorPane.onThemeLoaded();
 };
 
+function getLanguage() {
+    var session = editor.getSession();
+    var fullMode = session.getMode().$id;
+    var modeWithoutPrefix = fullMode.replace('ace/mode/', '');
+    return modeWithoutPrefix;
+}
+
+function getSelectionRange() {
+    let range = editor.getSelectionRange();
+    return JSON.stringify(range);
+}
+
+function replaceSelection(newText){
+    var selection = editor.getSelectionRange();
+    editor.session.replace(selection, newText);
+    // editor.moveCursorTo(selection.start.row, selection.start.col); // consider having seperate function
+}
+
+function insertText(word, clear) {
+    if (clear) {
+        editor.setValue("");
+    }
+    editor.session.insert(editor.getCursorPosition(), word);
+
+}
+
+function moveScrollToCursor(){
+    editor.scrollToLine(editor.selection.getCursor().row + 1, false, false, function () {
+    });
+}
+
+function getCurrentLineText() {
+    var cursor = editor.getCursorPosition();
+    var currentLine = editor.session.getLine(cursor.row);
+    return currentLine;
+}
+
+function moveCursorLineEnd() {
+    var currentPosition = editor.getCursorPosition();
+    var lineEndPosition = editor.getSession().getLine(currentPosition.row).length;
+    editor.moveCursorTo(currentPosition.row, lineEndPosition);
+}
+
 editor.renderer.on("themeLoaded", onThemeLoaded);
