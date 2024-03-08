@@ -123,10 +123,6 @@ public class AppStarter extends Application {
     }
 
     private static void setJvmProperties() {
-        // http://bit.ly/1Euk8hh
-        System.setProperty("jsse.enableSNIExtension", "false");
-//        System.setProperty("https.protocols", "SSLv3");
-
         System.setProperty("sun.net.http.allowRestrictedHeaders", "true");
         System.setProperty("java.awt.headless", "false");
     }
@@ -139,7 +135,7 @@ public class AppStarter extends Application {
             HttpsURLConnection.setDefaultHostnameVerifier((h, s) -> true);
             SSLContext.setDefault(sc);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
         }
     }
 
