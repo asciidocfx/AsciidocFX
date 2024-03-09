@@ -36,7 +36,7 @@
     </appender>
 
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${HOME:-${USERPROFILE}}/${application.config.folder}/log/asciidocfx.log</file>
+        <file>${HOME:-${USERPROFILE}}/${application.config.folder}/asciidocfx.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <!-- daily rollover -->
             <fileNamePattern>asciidocfx.%d{yyyy-MM-dd}.log</fileNamePattern>

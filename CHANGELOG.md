@@ -1,6 +1,11 @@
 # Changelog
 
 All notable changes are documented in this file.
+## [Version ~1.8.9](https://github.com/asciidocfx/AsciidocFX/releases/tag/v1.8.9) (03.2024)
+
+* Linux Arm Package
+* Key handler bug fixes
+* Fix https issues
 
 ## [Version ~1.8.8](https://github.com/asciidocfx/AsciidocFX/releases/tag/v1.8.8) (02.2024)
 

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <install4j version="10.0.7" transformSequenceNumber="10">
   <directoryPresets config="/Users/usta/Library/CloudStorage/GoogleDrive-rahman.usta.88@gmail.com/My Drive/projects/AsciidocFX/cert/asciidocfx.pfx" />
-  <application name="AsciidocFX" applicationId="7853-9376-5862-1224" mediaDir="target" compression="4" lzmaCompression="true" excludeSignedFromPacking="false" shortName="AsciidocFX" publisher="AsciidocFX" publisherWeb="http://asciidocfx.com" version="1.8.8" macVolumeId="b98c377570068f5e" javaMinVersion="21" javaMaxVersion="21" allowBetaVM="true">
+  <application name="AsciidocFX" applicationId="7853-9376-5862-1224" mediaDir="target" compression="4" lzmaCompression="true" excludeSignedFromPacking="false" shortName="AsciidocFX" publisher="AsciidocFX" publisherWeb="http://asciidocfx.com" version="1.8.9" macVolumeId="b98c377570068f5e" javaMinVersion="21" javaMaxVersion="21" allowBetaVM="true">
     <searchSequence>
       <envVar name="JAVA_HOME" />
       <envVar name="JDK_HOME" />
@@ -20,7 +20,7 @@
   </files>
   <launchers>
     <launcher name="AsciidocFX" id="24">
-      <executable name="AsciidocFX" iconSet="true" stderrFile="log/asciidocfx.log" stderrMode="append" redirectStdout="true" stdoutFile="log/asciidocfx.log" stdoutMode="append" executableMode="gui" singleInstance="true" dpiAware="true" />
+      <executable name="AsciidocFX" iconSet="true" stderrFile="asciidocfx_err.log" stderrMode="append" redirectStdout="true" stdoutFile="asciidocfx_out.log" stdoutMode="append" executableMode="gui" singleInstance="true" dpiAware="true" />
       <splashScreen bitmapFile="E:/asciidoc-fx-editor.png">
         <text>
           <statusLine y="20" text="AsciidocFX" />
@@ -123,6 +123,8 @@ javafx.graphics/javafx.scene.input=ALL-UNNAMED
 javafx.web/javafx.scene.web=ALL-UNNAMED 
 --add-opens 
 javafx.web/com.sun.webkit=ALL-UNNAMED
+--add-opens 
+javafx.controls/com.sun.javafx.scene.control.skin=ALL-UNNAMED
 --add-exports
 javafx.base/com.sun.javafx.property=ALL-UNNAMED
 --add-exports
@@ -1220,5 +1222,12 @@ return true;</property>
         </modules>
       </jreBundle>
     </linuxRPM>
+    <linuxDeb name="Linux Arm Deb Archive" id="1146" mediaFileName="AsciidocFX_Linux_Arm_Deb">
+      <jreBundle platform="linux-aarch64">
+        <modules>
+          <jmodDirectory location="jmods/linux-arm" />
+        </modules>
+      </jreBundle>
+    </linuxDeb>
   </mediaSets>
 </install4j>
