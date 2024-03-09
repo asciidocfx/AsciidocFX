@@ -2,17 +2,20 @@ package com.kodedu.config;
 
 import com.dooapp.fxform.FXForm;
 import com.dooapp.fxform.builder.FXFormBuilder;
+import com.dooapp.fxform.filter.ExcludeFilter;
 import com.dooapp.fxform.handler.NamedFieldHandler;
 import com.dooapp.fxform.view.FXFormNode;
 import com.dooapp.fxform.view.FXFormNodeWrapper;
 import com.dooapp.fxform.view.factory.DefaultFactoryProvider;
 import com.kodedu.commands.EditorCommand;
 import com.kodedu.component.EditorPane;
+import com.kodedu.config.factory.LabeledFieldFactory;
 import com.kodedu.controller.ApplicationController;
 import com.kodedu.helper.IOHelper;
 import com.kodedu.helper.OSHelper;
 import com.kodedu.service.ThreadService;
 import jakarta.json.*;
+import javafx.application.Platform;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
@@ -54,6 +57,7 @@ public class ShortCutConfigBean extends ConfigurationBase {
     private BooleanProperty disable = new SimpleBooleanProperty(false);
     private BooleanProperty debugMode = new SimpleBooleanProperty(false);
     private BooleanProperty dumpMode = new SimpleBooleanProperty(false);
+    private IntegerProperty keyTypeLimit = new SimpleIntegerProperty(50);
     private StringProperty filter = new SimpleStringProperty("");
 
     private ListProperty<EditorCommand> shortcuts = new SimpleListProperty<>(FXCollections.observableArrayList());
@@ -164,12 +168,21 @@ public class ShortCutConfigBean extends ConfigurationBase {
 
         FXForm fxForm = new FXFormBuilder<>()
                 .resourceBundle(ResourceBundle.getBundle("shortcuts"))
-                .includeAndReorder("disable", "debugMode", "dumpMode", "filter", "shortcuts")
+                .includeAndReorder("disable", "debugMode", "keyTypeLimit", "dumpMode", "filter", "shortcuts")
                 .build();
+        ExcludeFilter commentExclusion = new ExcludeFilter("keyTypeLimit");
+        debugModeProperty().addListener((obs, oldValue, newValue) -> {
+            if (newValue) {
+                Platform.runLater(() -> fxForm.getFilters().remove(commentExclusion));
+            } else {
+                Platform.runLater(() -> fxForm.addFilters(commentExclusion));
+            }
+        });
 
         DefaultFactoryProvider provider = new DefaultFactoryProvider();
         provider.addFactory(new NamedFieldHandler("disable"), new DisableCheckBoxFactory("Disable custom shortcut handler."));
         provider.addFactory(new NamedFieldHandler("debugMode"), new CheckBoxFactory("Enable shortcut debug mode"));
+        provider.addFactory(new NamedFieldHandler("keyTypeLimit"), new LabeledFieldFactory("Time in millis to ignores key_type events in case event match"));
         provider.addFactory(new NamedFieldHandler("dumpMode"), new CheckBoxFactory("Dump all shortcuts in shortcut_config.json"));
         provider.addFactory(new NamedFieldHandler("filter"), new FilterViewFactory());
         provider.addFactory(new NamedFieldHandler("shortcuts"), new ShortcutViewFactory());
@@ -243,6 +256,9 @@ public class ShortCutConfigBean extends ConfigurationBase {
 
             boolean dumpMode = jsonObject.getBoolean("dumpMode", false);
             this.dumpMode.set(dumpMode);
+
+            int keyTypeLimit = jsonObject.getInt("keyTypeLimit", 50);
+            this.keyTypeLimit.set(keyTypeLimit);
 
             List<EditorCommand> savedCommands = new ArrayList<>();
             if (jsonObject.containsKey("shortcuts")) {
@@ -324,6 +340,7 @@ public class ShortCutConfigBean extends ConfigurationBase {
         objectBuilder.add("disabled", disable.get());
         objectBuilder.add("debugMode", debugMode.get());
         objectBuilder.add("dumpMode", dumpMode.get());
+        objectBuilder.add("keyTypeLimit", keyTypeLimit.get());
         objectBuilder.add("shortcuts", values);
         return objectBuilder.build();
     }
@@ -350,6 +367,18 @@ public class ShortCutConfigBean extends ConfigurationBase {
 
     public BooleanProperty debugModeProperty() {
         return debugMode;
+    }
+
+    public int getKeyTypeLimit() {
+        return keyTypeLimit.get();
+    }
+
+    public IntegerProperty keyTypeLimitProperty() {
+        return keyTypeLimit;
+    }
+
+    public void setKeyTypeLimit(int keyTypeLimit) {
+        this.keyTypeLimit.set(keyTypeLimit);
     }
 
     public void awaitDisabledLoading() {

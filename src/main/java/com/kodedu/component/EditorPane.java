@@ -839,17 +839,26 @@ public class EditorPane extends AnchorPane {
 
             EventType<KeyEvent> eventType = e.getEventType();
 
+            boolean debugMode = getShortCutConfigBean().isDebugMode();
+
+            if (debugMode) {
+                logger.info("Pressed key: Event={}, Code={}, Text={}, Char={}", e.getEventType(), e.getCode(), e.getText(), e.getCharacter());
+            }
+
             if (eventType == KEY_TYPED) {
                 Duration duration = Duration.between(lastMatch.get(), Instant.now());
                 long durationMillis = duration.toMillis();
-                if (durationMillis < 500) {
+                if (durationMillis < getKeyTypeLimit()) {
                     e.consume();
-                    logger.info("Ignoring Event={}. Event matched just recently in {} ms", eventType, durationMillis);
+                    if (debugMode) {
+                        logger.info("Ignoring Event={},  Char={}, Text={}. Event matched just recently in {} ms",
+                                eventType, e.getCharacter(), e.getText(), durationMillis);
+                    }
                 }
                 return;
             }
 
-            if (eventType != KEY_PRESSED && eventType != KEY_TYPED) {
+            if (eventType != KEY_PRESSED) {
                 return;
             }
 
@@ -865,13 +874,13 @@ public class EditorPane extends AnchorPane {
                     .ifPresent(c -> {
                         e.consume();
                         execCommand(c.getName());
-                        if (getShortCutConfigBean().isDebugMode()) {
+                        if (debugMode) {
                             c.getKeyCombination()
                                     .stream()
                                     .filter(k -> k.match(e))
                                     .findFirst()
                                     .ifPresent(k -> {
-                                        logger.warn("Matched: Key={} Event={} Command={} ",
+                                        logger.info("Matched: Key={} Event={} Command={} ",
                                                 k, eventType, c.getName());
                                     });
 
@@ -880,6 +889,11 @@ public class EditorPane extends AnchorPane {
                     });
         }
     };
+
+    private int getKeyTypeLimit() {
+        return shortCutConfigBean.getKeyTypeLimit();
+    }
+
     public void enableEventHandler() {
         shortCutConfigBean.disableProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue) {
