@@ -40,7 +40,7 @@ jobs:
     - name: Add signing key for WIN
       run: 'echo "$WIN_CODE_SIGN_PFX" | base64 -d  >win_code_sign.pfx'
     - name: Build with install4j
-      run: mvn -B -DskipTests -T 1.5C -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.httpconnectionManager.ttlSeconds=600 clean install -P install4j  
+      run: mvn -B -DskipTests -T 1.5C -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.httpconnectionManager.ttlSeconds=600 clean install -P install4j-package,install4j-build
     - name: Prepare release notes
       run: |
         awk -e '/^## /{a+=1} {if(a>1)exit} {if(a==1){print $0}}' CHANGELOG.md >RELEASE_MESSAGE.md

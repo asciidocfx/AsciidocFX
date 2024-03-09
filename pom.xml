@@ -454,7 +454,7 @@
 
     <profiles>
         <profile>
-            <id>install4j</id>
+            <id>install4j-package</id>
             <build>
                 <plugins>
                     <plugin>
@@ -612,6 +612,13 @@
                             </execution>
                         </executions>
                     </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>install4j-build</id>
+            <build>
+                <plugins>
                     <plugin>
                         <groupId>com.install4j</groupId>
                         <artifactId>install4j-maven</artifactId>
