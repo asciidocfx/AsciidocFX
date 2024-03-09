@@ -60,6 +60,7 @@ jobs:
           target/media/AsciidocFX_Linux.tar.gz
           target/media/AsciidocFX_Linux_Deb.deb
           target/media/AsciidocFX_Linux_Rpm.rpm
+          target/media/AsciidocFX_Linux_Arm_Deb.deb
           target/media/AsciidocFX_Windows.exe
           target/media/AsciidocFX_Windows.zip
           target/media/updates.xml  
