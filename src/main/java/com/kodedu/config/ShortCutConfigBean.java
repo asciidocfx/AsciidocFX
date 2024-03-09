@@ -170,13 +170,10 @@ public class ShortCutConfigBean extends ConfigurationBase {
                 .resourceBundle(ResourceBundle.getBundle("shortcuts"))
                 .includeAndReorder("disable", "debugMode", "keyTypeLimit", "dumpMode", "filter", "shortcuts")
                 .build();
-        ExcludeFilter commentExclusion = new ExcludeFilter("keyTypeLimit");
+        ExcludeFilter keyTypeLimitExcludeFilter = new ExcludeFilter("keyTypeLimit");
+        showHideKeyTypeLimit(debugModeProperty().get(), fxForm, keyTypeLimitExcludeFilter);
         debugModeProperty().addListener((obs, oldValue, newValue) -> {
-            if (newValue) {
-                Platform.runLater(() -> fxForm.getFilters().remove(commentExclusion));
-            } else {
-                Platform.runLater(() -> fxForm.addFilters(commentExclusion));
-            }
+            showHideKeyTypeLimit(newValue, fxForm, keyTypeLimitExcludeFilter);
         });
 
         DefaultFactoryProvider provider = new DefaultFactoryProvider();
@@ -228,6 +225,14 @@ public class ShortCutConfigBean extends ConfigurationBase {
         fxForm.setSource(this);
 
         return vBox;
+    }
+
+    private static void showHideKeyTypeLimit(Boolean newValue, FXForm fxForm, ExcludeFilter commentExclusion) {
+        if (newValue) {
+            Platform.runLater(() -> fxForm.getFilters().remove(commentExclusion));
+        } else {
+            Platform.runLater(() -> fxForm.addFilters(commentExclusion));
+        }
     }
 
     @Override
