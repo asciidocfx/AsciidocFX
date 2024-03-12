@@ -39,6 +39,8 @@ import java.util.*;
 import java.util.concurrent.CountDownLatch;
 import java.util.stream.Collectors;
 
+import static com.kodedu.other.JsonHelper.getJsonArrayOrEmpty;
+
 @Component
 public class ShortCutConfigBean extends ConfigurationBase {
 
@@ -248,6 +250,8 @@ public class ShortCutConfigBean extends ConfigurationBase {
 
         threadService.runTaskLater(() -> {
 
+            createConfigFileIfNotExist(configPath);
+
             Reader fileReader = IOHelper.fileReader(configPath);
             JsonReader jsonReader = Json.createReader(fileReader);
 
@@ -266,30 +270,30 @@ public class ShortCutConfigBean extends ConfigurationBase {
             this.keyTypeLimit.set(keyTypeLimit);
 
             List<EditorCommand> savedCommands = new ArrayList<>();
-            if (jsonObject.containsKey("shortcuts")) {
-                JsonArray jsonArray = jsonObject.getJsonArray("shortcuts");
-                List<EditorCommand> loadedCommands = jsonArray.stream().map(j -> j.asJsonObject())
-                        .map(o -> {
-                            try {
-                                String name = o.getString("name");
-                                String desc = o.getString("desc", "");
-                                EditorCommand editorCommand = new EditorCommand();
-                                if (o.containsKey("win")) {
-                                    editorCommand.setWin(o.getString("win"));
-
-                                }
-                                if (o.containsKey("mac")) {
-                                    editorCommand.setMac(o.getString("mac"));
-                                }
-                                editorCommand.setName(name);
-                                editorCommand.setDescription(desc);
-                                return editorCommand;
-                            } catch (Exception e) {
-                                throw new RuntimeException(e);
+            JsonArray jsonArray = getJsonArrayOrEmpty(jsonObject, "shortcuts");
+            List<EditorCommand> loadedCommands = jsonArray.stream().map(j -> j.asJsonObject())
+                    .map(o -> {
+                        try {
+                            String name = o.getString("name");
+                            String desc = o.getString("desc", "");
+                            EditorCommand editorCommand = new EditorCommand();
+                            if (o.containsKey("win")) {
+                                editorCommand.setWin(o.getString("win"));
                             }
-                        }).collect(Collectors.toList());
-                savedCommands.addAll(loadedCommands);
-            }
+                            if (o.containsKey("mac")) {
+                                editorCommand.setMac(o.getString("mac"));
+                            }
+                            editorCommand.setName(name);
+                            editorCommand.setDescription(desc);
+                            return editorCommand;
+                        } catch (Exception e) {
+                            logger.error(e.getMessage(), e);
+                            return null;
+                        }
+                    })
+                    .filter(Objects::nonNull)
+                    .collect(Collectors.toList());
+            savedCommands.addAll(loadedCommands);
 
             List<EditorCommand> editorKeyMapping = EditorPane.getNativeKeyMappings();
 

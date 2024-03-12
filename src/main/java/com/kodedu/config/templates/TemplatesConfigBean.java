@@ -5,6 +5,7 @@ import com.kodedu.config.ConfigurationBase;
 import com.kodedu.config.factory.TableFactory;
 import com.kodedu.controller.ApplicationController;
 import com.kodedu.helper.IOHelper;
+import com.kodedu.other.JsonHelper;
 import com.kodedu.service.ThreadService;
 
 import org.springframework.stereotype.Component;
@@ -125,14 +126,15 @@ public class TemplatesConfigBean extends ConfigurationBase {
 	@Override
     public void load(Path configPath, ActionEvent... actionEvent) {
 
-        infoLabel.setText("Loading...");
+        fadeOut(infoLabel, "Loading...");
 
+        createConfigFileIfNotExist(configPath);
         Reader fileReader = IOHelper.fileReader(configPath);
         JsonReader jsonReader = Json.createReader(fileReader);
 
         JsonObject jsonObject = jsonReader.readObject();
 
-        JsonObject templates = jsonObject.getJsonObject("templates");
+        JsonObject templates =  JsonHelper.getJsonObjectOrEmpty(jsonObject, "templates");
         
         IOHelper.close(jsonReader, fileReader);
 

@@ -166,6 +166,8 @@ public class LocationConfigBean extends ConfigurationBase {
 
         loadPathDefaults();
 
+        createConfigFileIfNotExist(configPath);
+
         Reader fileReader = IOHelper.fileReader(configPath);
         JsonReader jsonReader = Json.createReader(fileReader);
 

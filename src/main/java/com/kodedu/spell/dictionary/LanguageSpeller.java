@@ -71,10 +71,8 @@ public class LanguageSpeller {
             resultList.addAll(runOnWords);
             resultList.addAll(replacements);
             return resultList;
-        } catch (IllegalArgumentException | BufferUnderflowException bufex) {
-//            logger.debug(bufex.getMessage(), bufex);
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
+        } catch (Throwable e) {
+//            logger.error(e.getMessage(), e);
         }
         return resultList;
     }

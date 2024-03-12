@@ -19,6 +19,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Objects;
 
+import static com.kodedu.other.JsonHelper.getJsonArrayOrEmpty;
+
 /**
  * Created by usta on 07.08.2015.
  */
@@ -86,13 +88,14 @@ public class StoredConfigBean extends ConfigurationBase {
     @Override
     public void load(Path configPath, ActionEvent... actionEvent) {
 
+        createConfigFileIfNotExist(configPath);
         Reader fileReader = IOHelper.fileReader(configPath);
         JsonReader jsonReader = Json.createReader(fileReader);
 
         JsonObject jsonObject = jsonReader.readObject();
 
-        JsonArray recentFiles = jsonObject.getJsonArray("recentFiles");
-        JsonArray favoriteDirectories = jsonObject.getJsonArray("favoriteDirectories");
+        JsonArray recentFiles = getJsonArrayOrEmpty(jsonObject, "recentFiles");
+        JsonArray favoriteDirectories = getJsonArrayOrEmpty(jsonObject, "favoriteDirectories");
         String workingDirectory = jsonObject.getString("workingDirectory", System.getProperty("user.home"));
 
         IOHelper.close(jsonReader, fileReader);

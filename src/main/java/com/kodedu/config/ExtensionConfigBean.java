@@ -143,6 +143,8 @@ public class ExtensionConfigBean extends ConfigurationBase {
 
         fadeOut(infoLabel, "Loading...");
 
+        createConfigFileIfNotExist(configPath);
+
         Reader fileReader = IOHelper.fileReader(configPath);
         JsonReader jsonReader = Json.createReader(fileReader);
 

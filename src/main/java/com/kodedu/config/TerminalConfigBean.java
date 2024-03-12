@@ -12,6 +12,7 @@ import com.kodedu.config.factory.SliderFactory;
 import com.kodedu.config.factory.SpinnerFactory;
 import com.kodedu.controller.ApplicationController;
 import com.kodedu.helper.IOHelper;
+import com.kodedu.other.JsonHelper;
 import com.kodedu.service.ThreadService;
 import com.kodedu.service.ui.TabService;
 import com.kodedu.terminalfx.config.TerminalConfig;
@@ -390,6 +391,8 @@ public class TerminalConfigBean extends ConfigurationBase {
 
         fadeOut(infoLabel, "Loading...");
 
+        createConfigFileIfNotExist(configPath);
+
         Reader fileReader = IOHelper.fileReader(configPath);
         JsonReader jsonReader = Json.createReader(fileReader);
 
@@ -439,7 +442,7 @@ public class TerminalConfigBean extends ConfigurationBase {
             this.setUserCss(userCss);
             this.setInitialized(initialized);
 
-            if (jsonObject.containsKey("scrollWhellMoveMultiplier")) {
+            if (JsonHelper.containsNumber(jsonObject,"scrollWhellMoveMultiplier")) {
                 this.setScrollWhellMoveMultiplier(jsonObject.getJsonNumber("scrollWhellMoveMultiplier").doubleValue());
             }
 

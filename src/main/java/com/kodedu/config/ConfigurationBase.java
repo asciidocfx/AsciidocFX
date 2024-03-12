@@ -4,6 +4,7 @@ import com.kodedu.boot.AppStarter;
 import com.kodedu.controller.ApplicationController;
 import com.kodedu.helper.IOHelper;
 import com.kodedu.service.ThreadService;
+import jakarta.json.*;
 import javafx.animation.FadeTransition;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -16,12 +17,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 
-import jakarta.json.Json;
-import jakarta.json.JsonObject;
-import jakarta.json.JsonStructure;
-import jakarta.json.JsonWriter;
 import jakarta.json.stream.JsonGenerator;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.lang.reflect.Field;
 import java.nio.file.Files;
@@ -31,12 +29,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.CountDownLatch;
+
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.nio.file.StandardOpenOption.CREATE_NEW;
+import static java.nio.file.StandardOpenOption.WRITE;
 
 /**
  * Created by usta on 19.07.2015.
  */
 public abstract class ConfigurationBase {
+
+    protected final Logger logger = LoggerFactory.getLogger(ConfigurationBase.class);
 
     protected final ApplicationController controller;
     protected final ThreadService threadService;
@@ -48,8 +51,6 @@ public abstract class ConfigurationBase {
 
     @Value("${application.version}")
     private String afxVersion;
-
-    private static final List<String> ignoreVersionList = List.of("1.7.5", "1.7.6", "1.7.7", "1.7.8", "1.7.9", "1.8.0", "1.8.1", "1.8.2", "1.8.3", "1.8.4", "1.8.5", "1.8.6", "1.8.7", "1.8.8", "1.8.9");
 
     public static ObjectProperty<Path> configRootLocation = new SimpleObjectProperty<>();
 
@@ -73,8 +74,6 @@ public abstract class ConfigurationBase {
     public void setConfigRootLocation(Path configRootLocation) {
         this.configRootLocation.set(configRootLocation);
     }
-
-    private Logger logger = LoggerFactory.getLogger(ConfigurationBase.class);
 
     public ConfigurationBase(ApplicationController controller, ThreadService threadService) {
         this.controller = controller;
@@ -102,6 +101,16 @@ public abstract class ConfigurationBase {
     public Path getConfigDirectory() {
         Path configPath = controller.getConfigPath();
         return configPath;
+    }
+
+    public void createConfigFileIfNotExist(Path configPath) {
+        try {
+            if (!Files.exists(configPath)) {
+                Files.writeString(configPath, "{}", UTF_8, CREATE_NEW, WRITE);
+            }
+        } catch (IOException e) {
+            logger.error(e.getMessage(), e);
+        }
     }
 
 
@@ -175,10 +184,6 @@ public abstract class ConfigurationBase {
     }
 
     public void loadPreviousConfiguration(String configDir) {
-
-        if(ignoreVersionList.contains(afxVersion)){
-            return;
-        }
 
         Path defaultConfigPath = getConfigPath();
         Path fileName = defaultConfigPath.getFileName();

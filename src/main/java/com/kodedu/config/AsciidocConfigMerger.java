@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static com.kodedu.other.JsonHelper.getJsonObjectOrEmpty;
 import static org.apache.commons.io.FilenameUtils.getBaseName;
 import static org.apache.commons.io.FilenameUtils.getExtension;
 
@@ -41,7 +42,7 @@ public class AsciidocConfigMerger {
             String asciidoc = event.getText();
             Matcher matcher = attributePattern.matcher(asciidoc);
 
-            JsonObject currentAttributes = config.getJsonObject("attributes");
+            JsonObject currentAttributes = getJsonObjectOrEmpty(config, "attributes");
 
             JsonObjectBuilder finalBuilder = Json.createObjectBuilder();
             JsonArrayBuilder finalAttrBuilder = Json.createArrayBuilder();

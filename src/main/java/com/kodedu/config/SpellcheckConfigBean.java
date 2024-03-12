@@ -158,6 +158,8 @@ public class SpellcheckConfigBean extends ConfigurationBase {
 
         loadFoundDictionaries();
 
+        createConfigFileIfNotExist(configPath);
+
         Reader fileReader = IOHelper.fileReader(configPath);
         JsonReader jsonReader = Json.createReader(fileReader);
 

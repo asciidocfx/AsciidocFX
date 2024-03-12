@@ -10,6 +10,7 @@ import com.kodedu.config.factory.ListChoiceBoxFactory;
 import com.kodedu.config.factory.TableFactory;
 import com.kodedu.controller.ApplicationController;
 import com.kodedu.helper.IOHelper;
+import com.kodedu.other.JsonHelper;
 import com.kodedu.service.ThreadService;
 import jakarta.json.*;
 import javafx.beans.property.*;
@@ -202,7 +203,7 @@ public abstract class AsciidoctorConfigBase<T extends LoadedAttributes> extends 
         boolean sourcemap = jsonObject.getBoolean("sourcemap", false);
         String backend = jsonObject.getString("backend", null);
         boolean header_footer = jsonObject.getBoolean("header_footer", false);
-        JsonObject attributes = jsonObject.getJsonObject("attributes");
+        JsonObject attributes = JsonHelper.getJsonObjectOrEmpty(jsonObject, "attributes");
         String jsPlatform = jsonObject.getString("jsPlatform", "Webkit");
         
         T childClassAttributes = this.loadAdditionalAttributes(jsonObject);

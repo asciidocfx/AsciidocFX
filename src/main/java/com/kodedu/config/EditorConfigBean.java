@@ -13,6 +13,7 @@ import com.kodedu.config.factory.SliderFactory;
 import com.kodedu.config.factory.SpinnerFactory;
 import com.kodedu.controller.ApplicationController;
 import com.kodedu.helper.IOHelper;
+import com.kodedu.other.JsonHelper;
 import com.kodedu.service.ThreadService;
 import com.kodedu.service.ui.TabService;
 import javafx.beans.property.*;
@@ -540,6 +541,8 @@ public class EditorConfigBean extends ConfigurationBase {
         List<String> aceFontFamilies = Stream.concat(knownMonoFonts.stream(), detectedMonoSpacedFonts.stream())
                 .distinct().collect(Collectors.toList());
 
+        createConfigFileIfNotExist(configPath);
+
         Reader fileReader = IOHelper.fileReader(configPath);
         JsonReader jsonReader = Json.createReader(fileReader);
 
@@ -651,21 +654,21 @@ public class EditorConfigBean extends ConfigurationBase {
                 this.setBrowser(BrowserType.valueOf(browser));
             }
 
-            if (jsonObject.containsKey("scrollSpeed")) {
+            if (JsonHelper.containsNumber(jsonObject,"scrollSpeed")) {
                 this.setScrollSpeed(jsonObject.getJsonNumber("scrollSpeed").doubleValue());
             }
 
-            if (jsonObject.containsKey("firstSplitter")) {
+            if (JsonHelper.containsNumber(jsonObject,"firstSplitter")) {
                 JsonNumber firstSplitter = jsonObject.getJsonNumber("firstSplitter");
                 this.setFirstSplitter(firstSplitter.doubleValue());
             }
 
-            if (jsonObject.containsKey("secondSplitter")) {
+            if (JsonHelper.containsNumber(jsonObject,"secondSplitter")) {
                 JsonNumber secondSplitter = jsonObject.getJsonNumber("secondSplitter");
                 this.setSecondSplitter(secondSplitter.doubleValue());
             }
 
-            if (jsonObject.containsKey("verticalSplitter")) {
+            if (JsonHelper.containsNumber(jsonObject,"verticalSplitter")) {
                 JsonNumber secondSplitter = jsonObject.getJsonNumber("verticalSplitter");
                 this.setVerticalSplitter(secondSplitter.doubleValue());
             }
@@ -707,44 +710,44 @@ public class EditorConfigBean extends ConfigurationBase {
     }
 
     private void setMainStagePositions(JsonObject jsonObject) {
-        if (jsonObject.containsKey("screenX")) {
+        if (JsonHelper.containsNumber(jsonObject,"screenX")) {
             double screenX = jsonObject.getJsonNumber("screenX").doubleValue();
             this.setScreenX(screenX);
         }
 
-        if (jsonObject.containsKey("screenY")) {
+        if (JsonHelper.containsNumber(jsonObject,"screenY")) {
             double screenY = jsonObject.getJsonNumber("screenY").doubleValue();
             this.setScreenY(screenY);
         }
 
-        if (jsonObject.containsKey("screenWidth")) {
+        if (JsonHelper.containsNumber(jsonObject,"screenWidth")) {
             double screenWidth = jsonObject.getJsonNumber("screenWidth").doubleValue();
             this.setScreenWidth(screenWidth);
         }
 
-        if (jsonObject.containsKey("screenHeight")) {
+        if (JsonHelper.containsNumber(jsonObject,"screenHeight")) {
             double screenHeight = jsonObject.getJsonNumber("screenHeight").doubleValue();
             this.setScreenHeight(screenHeight);
         }
     }
 
     private void setDetachedStagePositions(JsonObject jsonObject) {
-        if (jsonObject.containsKey("previewScreenX")) {
+        if (JsonHelper.containsNumber(jsonObject,"previewScreenX")) {
             double screenX = jsonObject.getJsonNumber("previewScreenX").doubleValue();
             this.setPreviewScreenX(screenX);
         }
 
-        if (jsonObject.containsKey("previewScreenY")) {
+        if (JsonHelper.containsNumber(jsonObject,"previewScreenY")) {
             double screenY = jsonObject.getJsonNumber("previewScreenY").doubleValue();
             this.setPreviewScreenY(screenY);
         }
 
-        if (jsonObject.containsKey("previewScreenWidth")) {
+        if (JsonHelper.containsNumber(jsonObject,"previewScreenWidth")) {
             double screenWidth = jsonObject.getJsonNumber("previewScreenWidth").doubleValue();
             this.setPreviewScreenWidth(screenWidth);
         }
 
-        if (jsonObject.containsKey("previewScreenHeight")) {
+        if (JsonHelper.containsNumber(jsonObject,"previewScreenHeight")) {
             double screenHeight = jsonObject.getJsonNumber("previewScreenHeight").doubleValue();
             this.setPreviewScreenHeight(screenHeight);
         }
