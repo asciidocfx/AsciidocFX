@@ -80,7 +80,7 @@
 
                         <graphic>
                             <Group>
-                                <Label text="Log"></Label>
+                                <Label text="Events"></Label>
                             </Group>
                         </graphic>
                         <padding>
