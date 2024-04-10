@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import java.nio.file.Files;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -48,19 +49,24 @@ public class XrefIncludeProcessor extends IncludeProcessor {
         Path targetPath = null;
         String targetString = null;
         String content = null;
+        
         if (isUri(target)) {
             targetString = target;
-            content = readUri(targetString);
+            content = readUri(targetString, attributes.containsKey("optional-option"));
         } else {
             String dir = reader.getDir();
             if (isUri(dir)) {
                 URI uri = URI.create(dir).resolve(target);
                 targetString = uri.toString();
-                content = readUri(uri);
+                content = readUri(uri, attributes.containsKey("optional-option"));
             } else {
                 targetPath = resolveTargetPath(document, Paths.get(dir), target);
                 targetString = targetPath.toString();
-                content = IOHelper.readFile(targetPath);
+                if (attributes.containsKey("optional-option") && !Files.exists(targetPath)) {
+                    content = "";
+                } else {
+                    content = IOHelper.readFile(targetPath);
+                }
             }
         }
 
@@ -92,7 +98,7 @@ public class XrefIncludeProcessor extends IncludeProcessor {
         return Objects.nonNull(target) && isHttpOrHttps(target);
     }
 
-    private String readUri(URI uri) {
+    private String readUri(URI uri, boolean optional) {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(uri)
                 .GET()
@@ -100,12 +106,16 @@ public class XrefIncludeProcessor extends IncludeProcessor {
         try {
             return httpClient.send(request, HttpResponse.BodyHandlers.ofString()).body();
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            if (optional) {
+                return "";
+            } else {
+                throw new RuntimeException(e);
+            }
         }
     }
 
-    private String readUri(String uri) {
-        return readUri(URI.create(uri));
+    private String readUri(String uri, boolean optional) {
+        return readUri(URI.create(uri), optional);
     }
 
     public List<Integer> getLines(Map<String, Object> attrs) {
