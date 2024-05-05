@@ -49,20 +49,21 @@ public class XrefIncludeProcessor extends IncludeProcessor {
         Path targetPath = null;
         String targetString = null;
         String content = null;
-        
+
+        boolean isOptional = attributes.containsKey("optional-option");
         if (isUri(target)) {
             targetString = target;
-            content = readUri(targetString, attributes.containsKey("optional-option"));
+            content = readUri(targetString, isOptional);
         } else {
             String dir = reader.getDir();
             if (isUri(dir)) {
                 URI uri = URI.create(dir).resolve(target);
                 targetString = uri.toString();
-                content = readUri(uri, attributes.containsKey("optional-option"));
+                content = readUri(uri, isOptional);
             } else {
                 targetPath = resolveTargetPath(document, Paths.get(dir), target);
                 targetString = targetPath.toString();
-                if (attributes.containsKey("optional-option") && !Files.exists(targetPath)) {
+                if (isOptional && !Files.exists(targetPath)) {
                     content = "";
                 } else {
                     content = IOHelper.readFile(targetPath);
