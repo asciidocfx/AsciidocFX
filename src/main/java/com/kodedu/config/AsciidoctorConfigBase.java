@@ -37,6 +37,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.kodedu.other.Constants.DOC_FILE_ATTR;
 import static com.kodedu.service.AsciidoctorFactory.getPlainDoctor;
@@ -346,8 +347,13 @@ public abstract class AsciidoctorConfigBase<T extends LoadedAttributes> extends 
             }
         }
         Map<String, Object> cloneMap = new LinkedHashMap<>(map);
+        List<String> ignoredAttributes = getIgnoredAttributes(originalDocAttributes);
         for (Map.Entry<String, Object> entry : originalDocAttributes.entrySet()) {
-            cloneMap.put(entry.getKey(), entry.getValue());
+            String key = entry.getKey();
+            Object value = entry.getValue();
+            if (!ignoredAttributes.contains(key)) {
+                cloneMap.put(key, value);
+            }
         }
 
         String docdir = (String) originalDocAttributes.get("docdir");
@@ -364,6 +370,24 @@ public abstract class AsciidoctorConfigBase<T extends LoadedAttributes> extends 
         }
 
         return attributesBuilder.build();
+    }
+
+    private List<String> getIgnoredAttributes(Map<String, Object> attributes) {
+        return attributes.entrySet().stream().flatMap(e -> {
+            String attr = e.getKey();
+            Object value = e.getValue();
+            List<String> attrs = new ArrayList<>();
+            if (attr.contains("count") && value instanceof Number) {
+                attrs.add(attr);
+            }
+            if (attr.contains("count") && value instanceof String s) {
+                String[] split = s.split(":");
+                if (split.length > 0) {
+                    attrs.add(split[0].trim());
+                }
+            }
+            return attrs.stream();
+        }).collect(Collectors.toList());
     }
 
     List<String> node_extensions = List.of("mmdc","vg2png","vg2svg","nomnoml","bytefield");
