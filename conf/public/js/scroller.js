@@ -2,7 +2,7 @@ function runScroller(lineno) {
     //lineno++;
     var node = $("body").find(".data-line-" + lineno);
     if (node.length > 0) {
-        node.get(0).scrollIntoView(true);
+        node.get(0).scrollIntoView({ behavior: "smooth", block: "start" });
     }
     else {
         var latestNode = findLowerBound(lineno);
@@ -32,7 +32,11 @@ function runScroller(lineno) {
                             var result = ((Math.abs(maxTop - minTop) * div) / 150) + Math.abs(minTop);
 
                             if (result != Infinity && result > 0)
-                                window.scrollTo(0, result);
+                                window.scrollTo({
+                                    top: result,
+                                    behavior: 'smooth',
+                                });
+
                         }
                     }
                 }

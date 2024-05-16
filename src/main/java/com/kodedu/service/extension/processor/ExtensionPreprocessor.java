@@ -1,40 +1,39 @@
 package com.kodedu.service.extension.processor;
 
-import org.asciidoctor.ast.Document;
-import org.asciidoctor.extension.Preprocessor;
-import org.asciidoctor.extension.PreprocessorReader;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Component
 @Scope("prototype")
-public class ExtensionPreprocessor extends Preprocessor {
+public class ExtensionPreprocessor {
 
-    private final List<String> blockExtensions = List.of("stem", "asciimath", "latexmath", "mathml", "math", "plantuml",
+    private static final List<String> blockExtensions = List.of("stem", "asciimath", "latexmath", "mathml", "math", "plantuml",
             "uml", "ditaa", "graphviz", "tree", "mermaid", "chart");
 
-    private final List<String> mathExtensions = List.of("stem", "asciimath", "latexmath", "mathml", "tex");
+    private static final List<String> mathExtensions = List.of("stem", "asciimath", "latexmath", "mathml", "tex");
 
-    @Override
-    public void process(Document document, PreprocessorReader reader) {
-        List<String> lines = reader.readLines();
-        List<String> newLines = new ArrayList<>();
+    public static String correctExtensionBlocks(String content) {
 
-        for (String line : lines) {
-            line = correctUmlBlocks(line);
-            line = correctTargetInBlocks(line);
-            line = correctInlineMathExtensions(line);
-            line = correctBlockMathExtensions(line);
-            newLines.add(line);
+        if (Objects.isNull(content)) {
+            return null;
         }
 
-        reader.restoreLines(newLines);
+        String[] lines = content.split("\\R");
+        return Arrays.stream(lines)
+                .map(ExtensionPreprocessor::correctUmlBlocks)
+                .map(ExtensionPreprocessor::correctTargetInBlocks)
+                .map(ExtensionPreprocessor::correctInlineMathExtensions)
+                .map(ExtensionPreprocessor::correctBlockMathExtensions)
+                .collect(Collectors.joining("\n"));
+
     }
 
-    private String correctBlockMathExtensions(String line) {
+    private static String correctBlockMathExtensions(String line) {
         for (String mathExtension : mathExtensions) {
             if (line.startsWith("[" + mathExtension)) {
                 line = line.replace("[" + mathExtension, "[" + mathExtension + "_");
@@ -43,7 +42,7 @@ public class ExtensionPreprocessor extends Preprocessor {
         return line;
     }
 
-    private String correctInlineMathExtensions(String line) {
+    private static String correctInlineMathExtensions(String line) {
         for (String mathExtension : mathExtensions) {
             String textStart = mathExtension + ":";
             String textInMiddle = " " + mathExtension + ":";
@@ -54,7 +53,7 @@ public class ExtensionPreprocessor extends Preprocessor {
         return line;
     }
 
-    private String correctTargetInBlocks(String line) {
+    private static String correctTargetInBlocks(String line) {
         for (String extension : blockExtensions) {
             if (line.startsWith("[" + extension + ",") && line.contains("file=\"")) {
                 line = line.replace("file=\"", "target=\"");
@@ -64,7 +63,7 @@ public class ExtensionPreprocessor extends Preprocessor {
         return line;
     }
 
-    private String correctUmlBlocks(String line) {
+    private static String correctUmlBlocks(String line) {
         line = line.replaceAll("\\[uml,", "[plantuml,");
         line = line.replaceAll("\\[uml]", "[plantuml]");
         return line;

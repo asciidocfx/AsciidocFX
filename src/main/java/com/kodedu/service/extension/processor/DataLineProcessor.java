@@ -2,7 +2,9 @@ package com.kodedu.service.extension.processor;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
+import org.asciidoctor.ast.Cursor;
 import org.asciidoctor.ast.Document;
 import org.asciidoctor.ast.StructuralNode;
 import org.asciidoctor.extension.Treeprocessor;
@@ -33,22 +35,32 @@ public class DataLineProcessor extends Treeprocessor {
 		// Therefore they must be treated as Object and instanceof check is needed
 		List<StructuralNode> nodes = document.findBy(SELECTOR);
 		for (Object node : nodes) {
-			addDataLineInformation(node);
+			addDataLineInformation(document, node);
 		}
 		return document;
 	}
 	
-	private void addDataLineInformation(Object obj) {
+	private void addDataLineInformation(Document document, Object obj) {
 		if (obj instanceof StructuralNode node) {
-			var sourceLocation = node.getSourceLocation();
+			Cursor sourceLocation = node.getSourceLocation();
 			if (sourceLocation == null) {
 				return;
 			}
+
+			Cursor documentSourceLocation = document.getSourceLocation();
+			if (Objects.nonNull(documentSourceLocation)) {
+				String documentFile = documentSourceLocation.getFile();
+				String nodeFile = sourceLocation.getFile();
+				if (!Objects.equals(documentFile, nodeFile)) {
+					return;
+				}
+			}
+
 			int lineNo = sourceLocation.getLineNumber();
 			node.addRole("data-line-" + lineNo);
 			List<StructuralNode> blocks = node.getBlocks();
 			for (StructuralNode block : blocks) {
-				addDataLineInformation(block);
+				addDataLineInformation(document, block);
 			}
 		}
 	}

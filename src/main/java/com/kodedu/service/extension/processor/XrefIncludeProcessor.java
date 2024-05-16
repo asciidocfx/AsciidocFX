@@ -92,6 +92,8 @@ public class XrefIncludeProcessor extends IncludeProcessor {
             }
         }
 
+        content = ExtensionPreprocessor.correctExtensionBlocks(content);
+
         reader.pushInclude(content, target, targetString, startLineNumber, attributes);
     }
 
