@@ -156,9 +156,9 @@ public class UserExtension {
                                             case "DocinfoProcessor" -> extensionGroup.rubyDocinfoProcessor(className);
                                             case "IncludeProcessor" -> extensionGroup.rubyIncludeProcessor(className);
                                             case "InlineMacroProcessor" -> extensionGroup.rubyInlineMacro(className);
-                                            case "Postprocessor" -> extensionGroup.rubyPostprocessor(className);
-                                            case "Preprocessor" -> extensionGroup.rubyPreprocessor(className);
-                                            case "Treeprocessor" -> extensionGroup.rubyTreeprocessor(className);
+                                            case "Postprocessor", "PostProcessor" -> extensionGroup.rubyPostprocessor(className);
+                                            case "Preprocessor", "PreProcessor" -> extensionGroup.rubyPreprocessor(className);
+                                            case "Treeprocessor","TreeProcessor" -> extensionGroup.rubyTreeprocessor(className);
                                             default -> logger.warn("Extension type not found: {}", extensionType);
                                         }
                                     });
