@@ -2494,8 +2494,10 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
                             .attribute(DOC_UUID, uuid)
                             .attribute(DOC_FILE_ATTR, textChangeEvent.getPathText())
                             .build()).build();
+            String text = textChangeEvent.getText();
+            String content = ExtensionPreprocessor.correctExtensionBlocks(text);
             AsciidoctorFactory.getPlainDoctor()
-                    .convert(textChangeEvent.getText(), options);
+                    .convert(content, options);
             Document document = (Document) DOCUMENT_MAP.get(uuid);
             currentTab.getEditorPane().setLastDocument(document);
             DOCUMENT_MAP.remove(uuid);

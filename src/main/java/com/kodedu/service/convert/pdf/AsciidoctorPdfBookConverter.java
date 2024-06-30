@@ -81,7 +81,8 @@ public class AsciidoctorPdfBookConverter implements DocumentConverter<RenderResu
 						.headerFooter(pdfConfigBean.getHeader_footer())
 						.attributes(attributes)
 						.build();
-				getNonHtmlDoctor().convert(asciidoc, options);
+				String content = ExtensionPreprocessor.correctExtensionBlocks(asciidoc);
+				getNonHtmlDoctor().convert(content, options);
 				asciiDocController.addRemoveRecentList(pdfPath);
 				onSuccessfulConversation(nextStep, destFile);
 			} catch (Exception e) {

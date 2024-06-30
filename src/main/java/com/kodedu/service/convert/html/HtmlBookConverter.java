@@ -81,7 +81,9 @@ public class HtmlBookConverter implements Traversable, DocumentConverter<RenderR
                     .attributes(attributes)
                     .build();
 
-            getHtmlDoctor().convert(asciidoc, options);
+            String content = ExtensionPreprocessor.correctExtensionBlocks(asciidoc);
+
+            getHtmlDoctor().convert(content, options);
 
             controller.addRemoveRecentList(htmlBookPath);
 

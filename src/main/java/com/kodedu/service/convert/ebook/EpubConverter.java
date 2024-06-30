@@ -89,7 +89,9 @@ public class EpubConverter implements DocumentConverter<RenderResult> {
                         .attributes(attributes)
                         .build();
 
-                getNonHtmlDoctor().convert(asciidoc, options);
+                String content = ExtensionPreprocessor.correctExtensionBlocks(asciidoc);
+
+                getNonHtmlDoctor().convert(content, options);
 
                 indikatorService.stopProgressBar();
                 logger.debug("Epub conversion ended");

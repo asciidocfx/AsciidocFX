@@ -87,7 +87,8 @@ public class DocBookConverter implements DocbookTraversable, DocumentConverter<R
                         .attributes(attributes)
                         .build();
 
-                getHtmlDoctor().convert(asciidoc, options);
+                String content = ExtensionPreprocessor.correctExtensionBlocks(asciidoc);
+                getHtmlDoctor().convert(content, options);
                 String rendered = IOHelper.readFile(docbookPath);
                 docbookValidator.validateDocbook(rendered);
                 logger.debug("Docbook5 conversion ended");

@@ -137,7 +137,8 @@ public class AsciidocAsciidoctorjConverter extends ViewPanel implements Asciidoc
 		// See also https://github.com/asciidoctor/asciidoctorj-diagram/issues/25
 		// String converted = doc.convert();
 		Asciidoctor asciidoctor = Objects.equals(backend,"revealjs") ? getRevealDoctor() : getHtmlDoctor();
-		String content = textChangeEvent.getText();
+		String text = textChangeEvent.getText();
+		String content = ExtensionPreprocessor.correctExtensionBlocks(text);
 		String converted = asciidoctor.convert(content, options)  ;
 		Document finalDocument = (Document) DOCUMENT_MAP.get(docUUID);
 		editorPane.setLastDocument(finalDocument);
