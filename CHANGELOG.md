@@ -1,6 +1,15 @@
 # Changelog
 
 All notable changes are documented in this file.
+## [Version ~1.8.10](https://github.com/asciidocfx/AsciidocFX/releases/tag/v1.8.10) (06.2024)
+
+* Support optional in include processor
+* Fix counter issue
+* Extra extension matchers
+* Scrolling improvements
+* JavaFX upgrade
+
+All notable changes are documented in this file.
 ## [Version ~1.8.9](https://github.com/asciidocfx/AsciidocFX/releases/tag/v1.8.9) (03.2024)
 
 * Linux Arm Package
