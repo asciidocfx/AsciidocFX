@@ -11,6 +11,7 @@ import com.kodedu.service.PathResolverService;
 import com.kodedu.service.ThreadService;
 import com.kodedu.service.convert.DocumentConverter;
 import com.kodedu.service.convert.docbook.DocBookConverter;
+import com.kodedu.service.extension.processor.ExtensionPreprocessor;
 import com.kodedu.service.ui.IndikatorService;
 import org.asciidoctor.Attributes;
 import org.asciidoctor.Options;

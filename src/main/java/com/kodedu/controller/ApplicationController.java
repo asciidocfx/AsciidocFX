@@ -33,6 +33,7 @@ import com.kodedu.service.extension.MermaidService;
 import com.kodedu.service.extension.PlantUmlService;
 import com.kodedu.service.extension.TreeService;
 import com.kodedu.service.extension.chart.ChartProvider;
+import com.kodedu.service.extension.processor.ExtensionPreprocessor;
 import com.kodedu.service.shortcut.ShortcutProvider;
 import com.kodedu.service.table.AsciidocTableController;
 import com.kodedu.service.ui.FileBrowseService;

@@ -8,6 +8,7 @@ import com.kodedu.other.RenderResult;
 import com.kodedu.service.DirectoryService;
 import com.kodedu.service.ThreadService;
 import com.kodedu.service.convert.DocumentConverter;
+import com.kodedu.service.extension.processor.ExtensionPreprocessor;
 import com.kodedu.service.ui.IndikatorService;
 import org.asciidoctor.Attributes;
 import org.asciidoctor.Options;

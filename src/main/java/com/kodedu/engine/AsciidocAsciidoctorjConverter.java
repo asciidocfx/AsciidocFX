@@ -11,6 +11,7 @@ import com.kodedu.other.RefProps;
 import com.kodedu.outline.Outliner;
 import com.kodedu.outline.Section;
 import com.kodedu.service.ThreadService;
+import com.kodedu.service.extension.processor.ExtensionPreprocessor;
 import com.kodedu.service.extension.processor.XrefDocumentProcessor;
 import org.asciidoctor.Asciidoctor;
 import org.asciidoctor.Attributes;
