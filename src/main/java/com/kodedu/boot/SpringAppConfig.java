@@ -238,7 +238,6 @@ public class SpringAppConfig extends SpringBootServletInitializer implements Web
                 .includeProcessor(xrefIncludeProcessor)
                 .block(fxChartBlockProcessor)
                 .block(treeBlockProcessor)
-                .preprocessor(extensionPreprocessor)
                 .blockMacro(fileTreeBlockMacroProcessor)
                 .inlineMacro(fileTreeInlineMacroProcessor)
                 .treeprocessor(cacheSuffixAppenderProcessor);

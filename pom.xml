@@ -22,7 +22,8 @@
         <install4j.macKeyStorePassword>${env.MAC_KEYSTORE_PASSWORD}</install4j.macKeyStorePassword>
         <install4j.appSpecificPassword>${env.MAC_APP_PASSWORD}</install4j.appSpecificPassword>
         <install4j.winKeyStorePassword>${env.WIN_KEYSTORE_PASSWORD}</install4j.winKeyStorePassword>
-        <openjfx.version>21.0.1</openjfx.version>
+        <openjfx.version>22.0.1</openjfx.version>
+        <openjfx-monocle.version>jdk-21.0.1</openjfx-monocle.version>
         <ikonli.version>12.3.1</ikonli.version>
         <jaxb.version>2.3.2</jaxb.version>
         <jacoco.version>0.8.7</jacoco.version>
@@ -36,19 +37,19 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.2.1</version>
+        <version>3.3.1</version>
     </parent>
 
     <dependencies>
         <dependency>
             <groupId>io.github.toolfactory</groupId>
             <artifactId>jvm-driver</artifactId>
-            <version>9.6.0</version>
+            <version>9.7.1</version>
         </dependency>
         <dependency>
             <groupId>io.github.classgraph</groupId>
             <artifactId>classgraph</artifactId>
-            <version>4.8.165</version>
+            <version>4.8.174</version>
         </dependency>
         <dependency>
             <groupId>jakarta.json</groupId>
@@ -317,7 +318,7 @@
         <dependency>
             <groupId>io.github.sebivenlo</groupId>
             <artifactId>openjfx-monocle</artifactId>
-            <version>jdk-${openjfx.version}</version>
+            <version>${openjfx-monocle.version}</version>
         </dependency>
         <!-- Add test dependencies -->
         <dependency>
