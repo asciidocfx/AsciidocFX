@@ -7,7 +7,7 @@ import jakarta.json.JsonValue;
 public class JsonHelper {
     public static JsonArray getJsonArrayOrEmpty(JsonObject jsonObject, String key) {
 
-        if (jsonObject.containsKey(key) && jsonObject.getValueType() == JsonValue.ValueType.ARRAY) {
+        if (jsonObject.containsKey(key) && jsonObject.get(key).getValueType() == JsonValue.ValueType.ARRAY) {
             return jsonObject.getJsonArray(key);
         }
         return JsonValue.EMPTY_JSON_ARRAY;
