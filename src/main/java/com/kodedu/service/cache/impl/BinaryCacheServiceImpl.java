@@ -91,7 +91,7 @@ public class BinaryCacheServiceImpl implements BinaryCacheService {
     private void shrinkCache() {
         threadService.runTaskLater(() -> {
             Collection<CacheData> values = cache.values();
-            logger.debug("Shrink cache: {}", values.size());
+            logger.debug("Shrinking cache, total entries: {}", values.size());
             values
                     .stream()
                     .filter(e -> e.inMemory())
@@ -101,7 +101,7 @@ public class BinaryCacheServiceImpl implements BinaryCacheService {
                         return l2.compareTo(l1);
                     }).limit(5)
                     .forEach(cacheData -> {
-                        logger.debug("Shrinked: {}", cacheData.key());
+                        logger.debug("Shrunk cache entry: {}", cacheData.key());
                         byte[] bytes = cacheData.readBytes();
                         saveInDisk(cacheData.key(), bytes);
                         totalSize.addAndGet(-bytes.length);
