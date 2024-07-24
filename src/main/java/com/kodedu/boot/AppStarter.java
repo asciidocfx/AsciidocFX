@@ -351,7 +351,7 @@ public class AppStarter extends Application {
                 config.files.stream().forEach(f -> {
                     File file = new File(f).getAbsoluteFile();
                     if (file.exists()) {
-                        logger.info("Opening file as requsted from cmdline: {}", file);
+                        logger.info("Opening file as requested from cmdline: {}", file);
                         if (workingDirectory == null) {
                             directoryService.changeWorkigDir(file.toPath().getParent());
                         }
