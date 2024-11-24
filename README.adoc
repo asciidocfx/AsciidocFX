@@ -668,7 +668,7 @@ Text Artifacts (Rainbowing) on Text::
 
 == Changelog
 
-To see what has changed in recent versions of AsciidocFX, see the https://github.com/asciidocfx/AsciidocFX/blob/master/CHANGELOG.asc[CHANGELOG]
+To see what has changed in recent versions of AsciidocFX, see the https://github.com/asciidocfx/AsciidocFX/blob/master/CHANGELOG.md[CHANGELOG]
 
 == Support
 
