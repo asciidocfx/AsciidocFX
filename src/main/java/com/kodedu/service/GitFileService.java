@@ -36,8 +36,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -51,7 +49,6 @@ public class GitFileService {
     private final Logger logger = LoggerFactory.getLogger(GitFileService.class);
 
     public final Map<Path, Git> map = new ConcurrentHashMap<>();
-    public final Map<Path, ReentrantLock> reentrantLockMap = new ConcurrentHashMap<>();
 
     private final ThreadServiceImpl threadService;
     private final DirectoryServiceImpl directoryService;
@@ -64,14 +61,12 @@ public class GitFileService {
         this.fileHistoryConfigBean = fileHistoryConfigBean;
     }
 
-    public void commitFileChanges(Path workingDirectory, Path currentFile) {
+    public synchronized void commitFileChanges(Path workingDirectory, Path currentFile) {
         Path gitPath = null;
         Path closestGitPath = null;
         boolean hasSubGit = false;
         try {
             gitPath = resolveGitPath(workingDirectory, currentFile);
-            ReentrantLock reentrantLock = getLockForPath(gitPath);
-            reentrantLock.tryLock(10, TimeUnit.SECONDS);
             Git git = getGitByPath(gitPath);
 
             String pathPattern = getGitFilePattern(currentFile, gitPath);
@@ -102,7 +97,6 @@ public class GitFileService {
             if (hasSubGit) {
                 IOHelper.move(closestGitPath.resolve(".git2"), closestGitPath.resolve(".git"), ATOMIC_MOVE);
             }
-            releaseLock(gitPath);
         }
 
     }
@@ -116,26 +110,10 @@ public class GitFileService {
         }
     }
 
-    private ReentrantLock getLockForPath(Path gitPath) {
-        return reentrantLockMap.compute(gitPath, (p, rl) -> Objects.nonNull(rl) ? rl : new ReentrantLock());
-    }
 
-    private void releaseLock(Path gitPath) {
-        ReentrantLock reentrantLock = getLockForPath(gitPath);
-        try {
-            if (reentrantLock.isLocked() && reentrantLock.isHeldByCurrentThread()) {
-                reentrantLock.unlock();
-            }
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-        }
-    }
-
-    public void showFileHistory(Path workingDirectory, Path currentFile) {
+    public synchronized void showFileHistory(Path workingDirectory, Path currentFile) {
         Path gitPath = resolveGitPath(workingDirectory, currentFile);
         try {
-            ReentrantLock reentrantLock = getLockForPath(gitPath);
-            reentrantLock.tryLock(10, TimeUnit.SECONDS);
             Git git = getGitByPath(gitPath);
             String pathPattern = getGitFilePattern(currentFile, gitPath);
             LogCommand logCommand = git.log();
@@ -163,10 +141,7 @@ public class GitFileService {
             });
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
-        } finally {
-            releaseLock(gitPath);
         }
-
     }
 
     private static String getGitFilePattern(Path currentFile, Path gitPath) {
@@ -265,7 +240,7 @@ public class GitFileService {
         return null;
     }
 
-    public boolean isNewFile(Repository repository, Path gitPath, Path currentFile) throws IOException {
+    private boolean isNewFile(Repository repository, Path gitPath, Path currentFile) throws IOException {
         ObjectId lastCommitId = repository.resolve(Constants.HEAD);
 
         // if there's no commit, it's definitely a new file
@@ -355,7 +330,7 @@ public class GitFileService {
         return commitMessage;
     }
 
-    public AbstractTreeIterator prepareTreeParser(Repository repository, String ref) throws IOException {
+    private AbstractTreeIterator prepareTreeParser(Repository repository, String ref) throws IOException {
         Ref head = repository.findRef(ref);
         if (Objects.isNull(head)) {
             return new EmptyTreeIterator();
@@ -381,9 +356,8 @@ public class GitFileService {
         }
     }
 
-    public Git getGitByPath(Path path) {
+    private Git getGitByPath(Path path) {
         return map.compute(path, this::getGitByPath);
-
     }
 
     private Git getGitByPath(Path path, Git git) {
@@ -425,7 +399,7 @@ public class GitFileService {
         return git;
     }
 
-    public void checkAndCreateRepository(Path directory) {
+    private void checkAndCreateRepository(Path directory) {
 
         try (FileRepository repository = new FileRepository(directory.resolve(".git").toFile())) {
             boolean isGitRepo = true;
