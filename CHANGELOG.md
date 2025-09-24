@@ -1,6 +1,12 @@
 # Changelog
 
 All notable changes are documented in this file.
+## [Version ~1.8.11](https://github.com/asciidocfx/AsciidocFX/releases/tag/v1.8.11) (10.2025)
+
+* Java/FX 25
+* File history
+* Bug fixes
+
 ## [Version ~1.8.10](https://github.com/asciidocfx/AsciidocFX/releases/tag/v1.8.10) (06.2024)
 
 * Support optional in include processor
