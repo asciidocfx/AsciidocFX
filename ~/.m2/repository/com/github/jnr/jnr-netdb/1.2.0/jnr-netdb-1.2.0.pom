@@ -1,0 +1,106 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.sonatype.oss</groupId>
+    <artifactId>oss-parent</artifactId>
+    <version>7</version>
+  </parent>
+
+  <groupId>com.github.jnr</groupId>
+  <artifactId>jnr-netdb</artifactId>
+  <packaging>jar</packaging>
+  <version>1.2.0</version>
+  <name>jnr-netdb</name>
+  <description>Lookup TCP and UDP services from java</description>
+  <url>http://github.com/jnr/jnr-netdb</url>
+
+  <licenses>
+    <license>
+      <name>The Apache Software License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+
+  <scm>
+    <connection>scm:git:git@github.com:jnr/jnr-netdb.git</connection>
+    <developerConnection>scm:git:git@github.com:jnr/jnr-netdb.git</developerConnection>
+    <url>git@github.com:jnr/jnr-netdb.git</url>
+  </scm>
+
+  <developers>
+    <developer>
+      <id>wmeissner</id>
+      <name>Wayne Meissner</name>
+      <email>wmeissner@gmail.com</email>
+    </developer>
+  </developers>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <maven.compiler.source>8</maven.compiler.source>
+    <maven.compiler.target>8</maven.compiler.target>
+  </properties>
+    
+  <dependencies>
+
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.11</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>com.github.jnr</groupId>
+      <artifactId>jnr-ffi</artifactId>
+      <version>2.2.0</version>
+      <scope>compile</scope>
+    </dependency>
+
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>2.3.1</version>
+        <configuration>
+          <archive>
+            <manifestEntries>
+              <Automatic-Module-Name>org.jnrproject.netdb</Automatic-Module-Name>
+            </manifestEntries>
+          </archive>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.8.1</version>
+      </plugin>
+    </plugins>
+  </build>
+
+  <profiles>
+    <profile>
+      <id>java9</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <configuration>
+              <!-- Use -release compiler option rather than source/target if 9+ -->
+              <release>${maven.compiler.target}</release>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+      <activation>
+        <jdk>[9,)</jdk>
+      </activation>
+    </profile>
+  </profiles>
+
+</project>

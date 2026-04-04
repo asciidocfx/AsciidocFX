@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (c) 2011, 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+-->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.eclipse.parsson</groupId>
+        <artifactId>parsson-bundles</artifactId>
+        <version>1.1.1</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <groupId>org.eclipse.parsson</groupId>
+    <artifactId>jakarta.json</artifactId>
+    <version>1.1.1</version>
+    <name>JSON-P with Parsson Provider</name>
+    <description>Default provider for Jakarta JSON Processing</description>
+
+    <dependencies>
+        <dependency>
+            <groupId>jakarta.json</groupId>
+            <artifactId>jakarta.json-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.parsson</groupId>
+            <artifactId>parsson</artifactId>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+
+    <properties>
+        <dep.sources>${project.build.directory}/generated-sources/dependencies</dep.sources>
+    </properties>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>unpack-sources</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>unpack-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <includeScope>provided</includeScope>
+                            <classifier>sources</classifier>
+                            <excludeTransitive>true</excludeTransitive>
+                            <excludes>module-info.*,META-INF/services/**, META-INF/MANIFEST.MF</excludes>
+                            <outputDirectory>${dep.sources}</outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>add-resource</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>add-resource</goal>
+                        </goals>
+                        <configuration>
+                            <resources>
+                                <resource>
+                                    <directory>${dep.sources}</directory>
+                                    <excludes>
+                                        <exclude>**/*.java</exclude>
+                                    </excludes>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>add-source</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>add-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>${dep.sources}</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.glassfish.build</groupId>
+                <artifactId>spec-version-maven-plugin</artifactId>
+                <configuration>
+                    <spec>
+                        <nonFinal>${non.final}</nonFinal>
+                        <jarType>impl</jarType>
+                        <specVersion>${spec_version}</specVersion>
+                        <newSpecVersion>${new_spec_version}</newSpecVersion>
+                        <specImplVersion>${new_spec_impl_version}</specImplVersion>
+                        <implVersion>${impl_version}</implVersion>
+                        <newImplVersion>${new_impl_version}</newImplVersion>
+                        <apiPackage>${api_package}</apiPackage>
+                        <implNamespace>${impl_namespace}</implNamespace>
+                    </spec>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>set-spec-properties</goal>
+                            <!-- TODO:
+                            glassfish-spec-version-maven-plugin needs to be updated
+                            in order to check 'jakarta.' prefixed values in manifest entries
+                            -->
+                            <!--<goal>check-module</goal>-->
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>osgi-manifest</id>
+                        <goals>
+                            <goal>manifest</goal>
+                        </goals>
+                        <configuration>
+                            <instructions>
+                                <Bundle-Version>${spec.bundle.version}</Bundle-Version>
+                                <Bundle-SymbolicName>${spec.bundle.symbolic-name}</Bundle-SymbolicName>
+                                <Extension-Name>${spec.extension.name}</Extension-Name>
+                                <Implementation-Version>${spec.implementation.version}</Implementation-Version>
+                                <Specification-Vendor>Eclipse Foundation</Specification-Vendor>
+                                <Specification-Version>${spec.specification.version}</Specification-Version>
+                                <DynamicImport-Package>*</DynamicImport-Package>
+                                <Export-Package>!org.eclipse.parsson,*</Export-Package>
+                                <Import-Package>
+                                    org.glassfish.hk2.osgiresourcelocator;resolution:=optional,
+                                    *
+                                </Import-Package>
+                            </instructions>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
+                        <manifest>
+                            <addDefaultEntries>false</addDefaultEntries>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addDefaultEntries>false</addDefaultEntries>
+                        </manifest>
+                    </archive>
+                    <release>11</release>
+                    <notimestamp>true</notimestamp>
+                    <docfilessubdirs>true</docfilessubdirs>
+                    <description>JSON Processing API documentation</description>
+                    <doctitle>JSON Processing API documentation</doctitle>
+                    <windowtitle>JSON Processing API documentation</windowtitle>
+                    <header><![CDATA[<br>JSON Processing API v${project.version}]]></header>
+                    <bottom><![CDATA[
+Comments to: <a href="mailto:jsonp-dev@eclipse.org">jsonp-dev@eclipse.org</a>.<br>
+Copyright &#169; 2019, 2022 Eclipse Foundation. All rights reserved.<br>
+Use is subject to <a href="{@docRoot}/doc-files/speclicense.html" target="_top">license terms</a>.]]>
+                    </bottom>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (c) 2018, 2022 Oracle and/or its affiliates and others.
+    All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+-->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.eclipse.ee4j</groupId>
+        <artifactId>project</artifactId>
+        <version>1.0.8</version>
+        <relativePath/>
+    </parent>
+
+    <groupId>jakarta.websocket</groupId>
+    <artifactId>jakarta.websocket-all</artifactId>
+    <version>2.1.1</version>
+    <packaging>pom</packaging>
+
+    <name>Jakarta WebSocket API Parent</name>
+    <description>Jakarta WebSocket API Parent</description>
+    <url>https://projects.eclipse.org/projects/ee4j.websocket</url>
+
+    <inceptionYear>2012</inceptionYear>
+
+    <developers>
+        <developer>
+            <id>jakarta-ee4j-websocket</id>
+            <name>Jakarta WebSocket Developers</name>
+            <organization>Eclipse Foundation</organization>
+            <email>websocket-dev@eclipse.org</email>
+        </developer>
+    </developers>
+
+    <contributors>
+       <contributor>
+           <name>Jakarta WebSocket Contributors</name>
+           <email>websocket-dev@eclipse.org</email>
+           <url>https://github.com/eclipse-ee4j/websocket-api/graphs/contributors</url>
+       </contributor>
+    </contributors>
+
+    <mailingLists>
+        <mailingList>
+            <name>WebSocket dev mailing list</name>
+            <post>websocket-dev@eclipse.org</post>
+            <subscribe>https://dev.eclipse.org/mailman/listinfo/websocket-dev</subscribe>
+            <unsubscribe>https://dev.eclipse.org/mailman/listinfo/websocket-dev</unsubscribe>
+            <archive>https://dev.eclipse.org/mhonarc/lists/websocket-dev</archive>
+        </mailingList>
+    </mailingLists>
+
+    <scm>
+        <connection>scm:git:https://github.com/eclipse-ee4j/websocket-api.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com/eclipse-ee4j/websocket-api.git</developerConnection>
+        <url>https://github.com/eclipse-ee4j/websocket-api</url>
+        <tag>HEAD</tag>
+    </scm>
+
+    <issueManagement>
+        <system>github</system>
+        <url>https://github.com/eclipse-ee4j/websocket-api/issues</url>
+    </issueManagement>
+
+    <properties>
+        <!-- Make sure the spec version is in sync with the maven version -->
+        <spec.version>2.1</spec.version>
+        <bundle.version>${project.version}</bundle.version>
+        <vendorName>Eclipse Foundation</vendorName>
+    </properties>
+
+    <build>
+      <pluginManagement>
+        <plugins>
+            <!-- Sets minimal Maven version to 3.5.4 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <version>3.0.0-M3</version>
+                <executions>
+                    <execution>
+                        <id>enforce-maven</id>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                                <requireMavenVersion>
+                                    <version>3.5.4</version>
+                                    <message>You need Maven 3.5.4 or higher</message>
+                                </requireMavenVersion>
+                            </rules>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        
+            <!-- Restricts the Java version to 1.8 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.1</version>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                    <compilerArgument>-Xlint:unchecked</compilerArgument>
+                </configuration>
+            </plugin>
+
+            <!-- Checks copyright / license headers -->
+            <plugin>
+                <groupId>org.glassfish.copyright</groupId>
+                <artifactId>glassfish-copyright-maven-plugin</artifactId>
+                <version>2.3</version>
+                <configuration>
+                    <excludeFile>etc/config/copyright-exclude</excludeFile>
+                    <!--svn|mercurial|git - defaults to svn -->
+                    <scm>git</scm>
+                    <!-- turn on/off debugging -->
+                    <debug>false</debug>
+                    <!-- skip files not under SCM -->
+                    <scmOnly>true</scmOnly>
+                    <!-- turn off warnings -->
+                    <warn>true</warn>
+                    <!-- for use with repair -->
+                    <update>false</update>
+                    <!-- check that year is correct -->
+                    <ignoreYear>false</ignoreYear>
+                    <templateFile>etc/config/copyright-eclipse.txt</templateFile>
+                    <alternateTemplateFile>etc/config/copyright-oracle.txt</alternateTemplateFile>
+                </configuration>
+            </plugin>
+
+            <!-- Creates the OSGi MANIFEST.MF file -->
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <version>5.1.1</version>
+                <configuration>
+                    <instructions>
+                        <Bundle-Description>Jakarta WebSocket ${spec.version}</Bundle-Description>
+                        <Bundle-SymbolicName>${bundle.symbolicName}</Bundle-SymbolicName>
+                        <Bundle-Version>${bundle.version}</Bundle-Version>
+                        <Extension-Name>${extensionName}</Extension-Name>
+                        <Specification-Version>${spec.version}</Specification-Version>
+                        <Specification-Vendor>${vendorName}</Specification-Vendor>
+                        <Implementation-Version>${project.version}</Implementation-Version>
+                        <Implementation-Vendor>${vendorName}</Implementation-Vendor>
+                        <Export-Package>jakarta.websocket.*</Export-Package>
+                    </instructions>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>bundle-manifest</id>
+                        <phase>process-classes</phase>
+                        <goals>
+                            <goal>manifest</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Adds the manifest file created by the org.apache.felix:maven-bundle-plugin -->
+            <plugin>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.1.0</version>
+                <configuration>
+                    <archive>
+                        <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
+                    </archive>
+                </configuration>
+            </plugin>
+
+            <!-- Creates the source jar -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>3.0.1</version>
+                <configuration>
+                    <includePom>true</includePom>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar-no-fork</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Create Javadoc for API jar -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.1.1</version>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                        <configuration>
+                            <source>1.8</source>
+                            <additionalJOption>-Xdoclint:none</additionalJOption>
+                            <description>Jakarta WebSocket API documentation</description>
+                            <doctitle>Jakarta WebSocket API documentation</doctitle>
+                            <windowtitle>Jakarta WebSocket API documentation</windowtitle>
+                            <header><![CDATA[Jakarta WebSocket API v${project.version}]]></header>
+                            <bottom><![CDATA[
+Comments to: <a href="mailto:websocket-dev@eclipse.org">websocket-dev@eclipse.org</a>.<br>
+Copyright &#169; 2018, 2021 Eclipse Foundation. All rights reserved.<br>
+Use is subject to <a href="{@docRoot}/doc-files/EFSL.html" target="_top">license terms</a>.]]>
+                            </bottom>
+                            <docfilessubdirs>true</docfilessubdirs>
+                            <groups>
+                                <group>
+                                    <title>Jakarta WebSocket API Documentation</title>
+                                    <packages>
+                                        jakarta.websocket*
+                                    </packages>
+                                </group>
+                            </groups>
+                            <tags>
+                                <tag>
+                                    <name>implSpec</name>
+                                    <placement>a</placement>
+                                    <head>Implementation Requirements:</head>
+                                </tag>
+                            </tags>
+                            <links>
+                                <link>https://docs.oracle.com/javase/8/docs/api/</link>
+                            </links>
+                            <includeDependencySources>true</includeDependencySources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+      </pluginManagement>
+    </build>
+
+    <modules>
+        <module>client</module>
+        <module>server</module>
+    </modules>
+</project>

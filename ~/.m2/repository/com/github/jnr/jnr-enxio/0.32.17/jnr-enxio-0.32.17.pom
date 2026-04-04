@@ -1,0 +1,158 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.sonatype.oss</groupId>
+    <artifactId>oss-parent</artifactId>
+    <version>7</version>
+  </parent>
+
+  <groupId>com.github.jnr</groupId>
+  <artifactId>jnr-enxio</artifactId>
+  <packaging>jar</packaging>
+  <version>0.32.17</version>
+  <name>jnr-enxio</name>
+  <description>Native I/O access for java</description>
+  <url>http://github.com/jnr/jnr-enxio</url>
+
+  <licenses>
+    <license>
+      <name>The Apache Software License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+
+  <scm>
+    <connection>scm:git:git@github.com:jnr/jnr-enxio.git</connection>
+    <developerConnection>scm:git:git@github.com:jnr/jnr-enxio.git</developerConnection>
+    <url>git@github.com:jnr/jnr-enxio.git</url>
+  </scm>
+
+  <developers>
+    <developer>
+      <id>wmeissner</id>
+      <name>Wayne Meissner</name>
+      <email>wmeissner@gmail.com</email>
+    </developer>
+  </developers>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <maven.compiler.source>8</maven.compiler.source>
+    <maven.compiler.target>8</maven.compiler.target>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.13.1</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.github.jnr</groupId>
+      <artifactId>jnr-constants</artifactId>
+      <version>0.10.4</version>
+    </dependency>
+    <dependency>
+      <groupId>com.github.jnr</groupId>
+      <artifactId>jnr-ffi</artifactId>
+      <version>2.2.16</version>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <version>2.3.7</version>
+        <configuration>
+          <instructions>
+            <_nouses>true</_nouses>
+            <Import-Package>*,jnr.ffi.mapper,jnr.ffi.provider.converters,com.kenai.jffi</Import-Package>
+            <Automatic-Module-Name>jnr.enxio</Automatic-Module-Name>
+          </instructions>
+        </configuration>
+        <executions>
+          <execution>
+            <id>bundle-manifest</id>
+            <phase>process-classes</phase>
+            <goals>
+              <goal>manifest</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>2.3.1</version>
+        <configuration>
+          <archive>
+            <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
+            <manifestEntries>
+              <Automatic-Module-Name>org.jnrproject.enxio</Automatic-Module-Name>
+            </manifestEntries>
+          </archive>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-source-plugin</artifactId>
+        <version>2.2.1</version>
+        <executions>
+          <execution>
+            <id>attach-sources</id>
+            <goals>
+              <goal>jar-no-fork</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>3.2.0</version>
+        <executions>
+          <execution>
+            <id>attach-javadocs</id>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.8.1</version>
+      </plugin>
+    </plugins>
+  </build>
+
+  <profiles>
+    <profile>
+      <id>java9</id>
+      <build>
+        <plugins>
+          <plugin>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <version>3.0.0-M5</version>
+            <configuration>
+              <!-- open up java.io so we can access file descriptor during testing -->
+              <argLine>--add-opens java.base/java.io=ALL-UNNAMED</argLine>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+      <activation>
+        <jdk>[9,)</jdk>
+      </activation>
+      <properties>
+        <maven.compiler.release>8</maven.compiler.release>
+      </properties>
+    </profile>
+  </profiles>
+</project>

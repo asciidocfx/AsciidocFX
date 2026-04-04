@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>io.github.netmikey.logunit</groupId>
+  <artifactId>logunit-logback</artifactId>
+  <version>1.1.0</version>
+  <name>io.github.netmikey.logunit:logunit-logback</name>
+  <description>LogUnit's Logback implementation.</description>
+  <url>https://github.com/netmikey/logunit</url>
+  <licenses>
+    <license>
+      <name>The Apache License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+    </license>
+  </licenses>
+  <developers>
+    <developer>
+      <name>Mike Meessen</name>
+      <email>netmikey@gmail.com</email>
+    </developer>
+  </developers>
+  <scm>
+    <connection>scm:git:git://github.com/netmikey/logunit.git</connection>
+    <developerConnection>scm:git:ssh://github.com:netmikey/logunit.git</developerConnection>
+    <url>https://github.com/netmikey/logunit</url>
+  </scm>
+  <dependencies>
+    <dependency>
+      <groupId>io.github.netmikey.logunit</groupId>
+      <artifactId>logunit-core</artifactId>
+      <version>1.1.0</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-api</artifactId>
+      <version>5.4.0</version>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-classic</artifactId>
+      <version>1.2.3</version>
+      <scope>runtime</scope>
+    </dependency>
+  </dependencies>
+</project>

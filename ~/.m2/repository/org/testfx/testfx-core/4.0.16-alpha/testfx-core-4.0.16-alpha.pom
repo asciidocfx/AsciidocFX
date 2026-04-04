@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.testfx</groupId>
+  <artifactId>testfx-core</artifactId>
+  <version>4.0.16-alpha</version>
+  <dependencies>
+    <dependency>
+      <groupId>org.hamcrest</groupId>
+      <artifactId>hamcrest-core</artifactId>
+      <version>1.3</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.assertj</groupId>
+      <artifactId>assertj-core</artifactId>
+      <version>3.13.2</version>
+      <scope>compile</scope>
+    </dependency>
+  </dependencies>
+  <name>testfx-core</name>
+  <url>https://github.com/TestFX/TestFX</url>
+  <inceptionYear>2013</inceptionYear>
+  <licenses>
+    <license>
+      <name>European Union Public Licence, Version 1.1</name>
+      <url>http://ec.europa.eu/idabc/eupl.html</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+  <scm>
+    <url>https://github.com/TestFX/TestFX</url>
+  </scm>
+  <developers>
+    <developer>
+      <id>minisu</id>
+      <name>Henrik Olsson</name>
+      <url>https://github.com/minisu</url>
+      <timezone>+1</timezone>
+      <roles>
+        <role>former developer</role>
+      </roles>
+    </developer>
+    <developer>
+      <id>dainnilsson</id>
+      <name>Dain Nilsson</name>
+      <url>https://github.com/dainnilsson</url>
+      <timezone>+1</timezone>
+      <roles>
+        <role>project founder</role>
+        <role>former developer</role>
+      </roles>
+    </developer>
+    <developer>
+      <id>hastebrot</id>
+      <name>Benjamin Gudehus</name>
+      <url>https://github.com/hastebrot</url>
+      <timezone>+1</timezone>
+      <roles>
+        <role>project maintainer</role>
+      </roles>
+    </developer>
+  </developers>
+  <description>TestFX Core</description>
+</project>

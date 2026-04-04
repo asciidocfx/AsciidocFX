@@ -1,0 +1,408 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (c) 2011, 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+-->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.eclipse.ee4j</groupId>
+        <artifactId>project</artifactId>
+        <version>1.0.7</version>
+        <relativePath/>
+    </parent>
+
+    <groupId>jakarta.json</groupId>
+    <artifactId>jakarta.json-api</artifactId>
+
+    <version>2.1.1</version>
+    <name>Jakarta JSON Processing API</name>
+    <description>Jakarta JSON Processing defines a Java(R) based framework for parsing, generating, transforming, and querying JSON documents.</description>
+    <url>https://github.com/eclipse-ee4j/jsonp</url>
+
+    <scm>
+        <connection>scm:git:git://github.com/eclipse-ee4j/jsonp.git</connection>
+        <developerConnection>scm:git:git@github.com:eclipse-ee4j/jsonp.git</developerConnection>
+        <url>https://github.com/eclipse-ee4j/jsonp</url>
+        <tag>HEAD</tag>
+    </scm>
+
+    <licenses>
+        <license>
+            <name>Eclipse Public License 2.0</name>
+            <url>https://projects.eclipse.org/license/epl-2.0</url>
+            <distribution>repo</distribution>
+        </license>
+        <license>
+            <name>GNU General Public License, version 2 with the GNU Classpath Exception</name>
+            <url>https://projects.eclipse.org/license/secondary-gpl-2.0-cp</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <id>m0mus</id>
+            <name>Dmitry Kornilov</name>
+            <organization>Oracle</organization>
+            <roles>
+                <role>project lead</role>
+            </roles>
+        </developer>
+        <developer>
+            <id>lukasj</id>
+            <name>Lukas Jungmann</name>
+            <organization>Oracle</organization>
+            <roles>
+                <role>dev lead</role>
+            </roles>
+        </developer>
+    </developers>
+
+    <properties>
+        <copyright.exclude>${project.basedir}/../etc/copyright-exclude</copyright.exclude>
+        <copyright.templatefile>${project.basedir}/../etc/copyright.txt</copyright.templatefile>
+        <copyright.ignoreyear>true</copyright.ignoreyear>
+        <copyright.scmonly>true</copyright.scmonly>
+        <copyright.update>false</copyright.update>
+        <spotbugs.exclude>${project.basedir}/../etc/spotbugs-exclude.xml</spotbugs.exclude>
+        <spotbugs.skip>false</spotbugs.skip>
+        <spotbugs.threshold>Low</spotbugs.threshold>
+        <spotbugs.version>4.7.1.0</spotbugs.version>
+
+        <non.final>false</non.final>
+        <extension.name>jakarta.json</extension.name>
+        <spec.version>2.1</spec.version>
+        <legal.doc.source>${project.basedir}/..</legal.doc.source>
+        <vendor.name>Eclipse Foundation</vendor.name>
+    </properties>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>buildnumber-maven-plugin</artifactId>
+                    <version>3.0.0</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>build-helper-maven-plugin</artifactId>
+                    <version>3.3.0</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.glassfish.copyright</groupId>
+                    <artifactId>glassfish-copyright-maven-plugin</artifactId>
+                    <version>2.4</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>3.10.1</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.glassfish.build</groupId>
+                    <artifactId>spec-version-maven-plugin</artifactId>
+                    <version>2.1</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.felix</groupId>
+                    <artifactId>maven-bundle-plugin</artifactId>
+                    <version>5.1.7</version>
+                    <configuration>
+                        <instructions>
+                            <_noextraheaders>true</_noextraheaders>
+                        </instructions>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-jar-plugin</artifactId>
+                    <version>3.2.2</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-source-plugin</artifactId>
+                    <version>3.2.1</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-javadoc-plugin</artifactId>
+                    <version>3.4.0</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-enforcer-plugin</artifactId>
+                    <version>3.1.0</version>
+                </plugin>
+                <plugin>
+                    <groupId>com.github.spotbugs</groupId>
+                    <artifactId>spotbugs-maven-plugin</artifactId>
+                    <version>${spotbugs.version}</version>
+                    <configuration>
+                        <skip>${spotbugs.skip}</skip>
+                        <threshold>${spotbugs.threshold}</threshold>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>enforce-maven</id>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                                <requireJavaVersion>
+                                    <version>[11,)</version>
+                                </requireJavaVersion>
+                                <requireMavenVersion>
+                                    <version>[3.6.0,)</version>
+                                </requireMavenVersion>
+                            </rules>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <!-- e.g. mvn validate glassfish-copyright:repair -->
+                <groupId>org.glassfish.copyright</groupId>
+                <artifactId>glassfish-copyright-maven-plugin</artifactId>
+                <configuration>
+                    <excludeFile>${copyright.exclude}</excludeFile>
+                    <scmOnly>${copyright.scmonly}</scmOnly>
+                    <update>${copyright.update}</update>
+                    <ignoreYear>${copyright.ignoreyear}</ignoreYear>
+                    <quiet>false</quiet>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>buildnumber-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>validate</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>create</goal>
+                        </goals>
+                        <configuration>
+                            <getRevisionOnlyOnce>true</getRevisionOnlyOnce>
+                            <shortRevisionLength>7</shortRevisionLength>
+                            <revisionOnScmFailure>false</revisionOnScmFailure>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>add-legal-resource</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>add-resource</goal>
+                        </goals>
+                        <configuration>
+                            <resources>
+                                <resource>
+                                    <directory>${legal.doc.source}</directory>
+                                    <includes>
+                                        <include>NOTICE.md</include>
+                                        <include>LICENSE.md</include>
+                                    </includes>
+                                    <targetPath>META-INF</targetPath>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                     <execution>
+                        <id>currentyear-property</id>
+                        <goals>
+                            <goal>timestamp-property</goal>
+                        </goals>
+                        <phase>validate</phase>
+                        <configuration>
+                            <name>current.year</name>
+                            <locale>en,US</locale>
+                            <pattern>yyyy</pattern>
+                        </configuration>
+                     </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <release>9</release>
+                    <compilerArgs>
+                        <arg>-Xlint:all</arg>
+                        <arg>-Xdoclint:all</arg>
+                        <arg>-Werror</arg>
+                    </compilerArgs>
+                    <showDeprecation>true</showDeprecation>
+                    <showWarnings>true</showWarnings>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>base-compile</id>
+                        <goals>
+                            <goal>compile</goal>
+                        </goals>
+                        <configuration>
+                            <release>8</release>
+                            <excludes>
+                                <exclude>module-info.java</exclude>
+                            </excludes>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.glassfish.build</groupId>
+                <artifactId>spec-version-maven-plugin</artifactId>
+                <configuration>
+                    <spec>
+                        <nonFinal>${non.final}</nonFinal>
+                        <jarType>api</jarType>
+                        <specVersion>${spec.version}</specVersion>
+                        <specImplVersion>${project.version}</specImplVersion>
+                        <apiPackage>${extension.name}</apiPackage>
+                    </spec>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>set-spec-properties</goal>
+                            <!-- TODO:
+                            glassfish-spec-version-maven-plugin needs to be updated
+                            in order to check 'jakarta.' prefixed values in manifest entries
+                            -->
+                            <!--<goal>check-module</goal>-->
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <configuration>
+                    <instructions>
+                        <Bundle-Version>${spec.bundle.version}</Bundle-Version>
+                        <Bundle-SymbolicName>${spec.bundle.symbolic-name}</Bundle-SymbolicName>
+                        <Extension-Name>${spec.extension.name}</Extension-Name>
+                        <Implementation-Version>${spec.implementation.version}</Implementation-Version>
+                        <Specification-Version>${spec.specification.version}</Specification-Version>
+                        <Bundle-Description>Jakarta JSON Processing API ${spec.version}</Bundle-Description>
+                        <Specification-Vendor>${vendor.name}</Specification-Vendor>
+                        <Implementation-Build-Id>${buildNumber}</Implementation-Build-Id>
+                        <DynamicImport-Package>*</DynamicImport-Package>
+                        <Import-Package>
+                            !org.glassfish.hk2.osgiresourcelocator,
+                            !org.eclipse.parsson,
+                            *
+                        </Import-Package>
+                    </instructions>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>bundle-manifest</id>
+                        <phase>process-classes</phase>
+                        <goals>
+                            <goal>manifest</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
+                    </archive>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addDefaultEntries>false</addDefaultEntries>
+                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                        </manifest>
+                        <manifestEntries>
+                            <Implementation-Build-Id>${buildNumber}</Implementation-Build-Id>
+                        </manifestEntries>
+                    </archive>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addDefaultEntries>false</addDefaultEntries>
+                        </manifest>
+                    </archive>
+                    <release>11</release>
+                    <notimestamp>true</notimestamp>
+                    <docfilessubdirs>true</docfilessubdirs>
+                    <description>JSON Processing API documentation</description>
+                    <doctitle>JSON Processing API documentation</doctitle>
+                    <windowtitle>JSON Processing API documentation</windowtitle>
+                    <header><![CDATA[<br>JSON Processing API v${project.version}]]></header>
+                    <bottom><![CDATA[
+Comments to: <a href="mailto:jsonp-dev@eclipse.org">jsonp-dev@eclipse.org</a>.<br>
+Copyright &#169; 2019, ${current.year} Eclipse Foundation. All rights reserved.<br>
+Use is subject to <a href="{@docRoot}/doc-files/speclicense.html" target="_top">license terms</a>.]]>
+                    </bottom>
+                    <quiet>true</quiet>
+                    <failOnWarnings>true</failOnWarnings>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>com.github.spotbugs</groupId>
+                <artifactId>spotbugs-maven-plugin</artifactId>
+                <configuration>
+                    <fork>true</fork>
+                    <excludeFilterFile>${spotbugs.exclude}</excludeFilterFile>
+                    <failThreshold>High</failThreshold>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+    
+</project>

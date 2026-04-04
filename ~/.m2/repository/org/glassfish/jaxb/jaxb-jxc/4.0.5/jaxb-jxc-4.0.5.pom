@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (c) 2013, 2023 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Distribution License v. 1.0, which is available at
+    http://www.eclipse.org/org/documents/edl-v10.php.
+
+    SPDX-License-Identifier: BSD-3-Clause
+
+-->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.sun.xml.bind.mvn</groupId>
+        <artifactId>jaxb-parent</artifactId>
+        <version>4.0.5</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <groupId>org.glassfish.jaxb</groupId>
+    <artifactId>jaxb-jxc</artifactId>
+
+    <packaging>jar</packaging>
+    <name>JAXB JXC</name>
+    <description>
+        JAXB schema generator.The *tool* to generate XML schema based on java classes.
+        <!--todo: finish me-->
+    </description>
+    <url>https://eclipse-ee4j.github.io/jaxb-ri/</url>
+
+    <properties>
+        <spotbugs.exclude>${project.basedir}/exclude-jxc.xml</spotbugs.exclude>
+        <argLine>
+            --add-opens org.glassfish.jaxb.jxc/com.sun.tools.jxc.ap=ALL-UNNAMED
+            --add-opens org.glassfish.jaxb.jxc/com.sun.tools.jxc=ALL-UNNAMED
+            --module-path "${module.path}"
+            -Djdk.attach.allowAttachSelf
+        </argLine>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>jaxb-runtime</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>jaxb-xjc</artifactId>
+        </dependency>
+
+        <dependency><!-- Ant is provided through transitive dependency from XJC. But to be consistent we have it also here -->
+            <groupId>org.apache.ant</groupId>
+            <artifactId>ant</artifactId>
+            <scope>provided</scope>
+            <optional>true</optional>
+        </dependency>
+
+        <!-- CQ #20807 -->
+        <dependency>
+            <groupId>org.checkerframework</groupId>
+            <artifactId>compiler</artifactId>
+            <scope>provided</scope>
+            <optional>true</optional>
+        </dependency>
+
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+            <resource>
+                <directory>src/main/schemas</directory>
+                <filtering>false</filtering>
+            </resource>
+        </resources>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy-schemagen</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/schemagen-cp</outputDirectory>
+                            <includeArtifactIds>
+                                jakarta.activation-api,angus-activation,jakarta.xml.bind-api,
+                                jaxb-core,jaxb-runtime,jaxb-xjc,
+                                stax-ex,istack-commons-runtime,istack-commons-tools,dtd-parser,
+                                rngom,relaxng-datatype,xsom,codemodel,txw2
+                            </includeArtifactIds>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>copy-ant</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/lib/ant</outputDirectory>
+                            <includeArtifactIds>ant,ant-launcher</includeArtifactIds>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <systemPropertyVariables>
+                        <java.io.tmpdir>${project.build.directory}/test-antprojects</java.io.tmpdir>
+                        <bin.folder>${project.build.directory}</bin.folder>
+                    </systemPropertyVariables>
+                    <forkCount>1</forkCount>
+                    <reuseForks>true</reuseForks>
+                </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addDefaultEntries>false</addDefaultEntries>
+                            <mainClass>com.sun.tools.jxc.SchemaGeneratorFacade</mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>default-compile</id>
+                        <configuration>
+                            <compilerArgs>
+                                <arg>--add-reads</arg>
+                                <arg>org.glassfish.jaxb.jxc=ALL-UNNAMED</arg>
+                                <arg>--add-reads</arg>
+                                <arg>com.sun.istack.tools=ALL-UNNAMED</arg>
+                            </compilerArgs>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <configuration>
+                    <additionalJOptions>
+                        <additionalJOption>--add-reads</additionalJOption>
+                        <additionalJOption>org.glassfish.jaxb.jxc=ALL-UNNAMED</additionalJOption>
+                        <additionalJOption>--add-reads</additionalJOption>
+                        <additionalJOption>com.sun.istack.tools=ALL-UNNAMED</additionalJOption>
+                    </additionalJOptions>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <profiles>
+        <profile>
+            <id>coverage</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration>
+                            <excludes>
+                                <exclude>**/ApNavigatorTest.java</exclude>
+                                <exclude>**/SchemaGeneratorTest.java</exclude>
+                            </excludes>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+</project>

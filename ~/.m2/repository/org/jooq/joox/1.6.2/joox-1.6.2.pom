@@ -1,0 +1,273 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <parent>
+        <artifactId>oss-parent</artifactId>
+        <groupId>org.sonatype.oss</groupId>
+        <version>7</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.jooq</groupId>
+    <artifactId>joox</artifactId>
+    <version>1.6.2</version>
+    <packaging>bundle</packaging>
+
+    <name>jOOX</name>
+    <description>jOOX is a recursive acronym that stands for jOOX Object Oriented XML. It is a simple wrapper for the org.w3c.dom package, to allow for fluent XML document creation and manipulation where DOM is required but too verbose.</description>
+    <url>https://github.com/jOOQ/jOOX</url>
+
+    <licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <scm>
+        <developerConnection>https://github.com/jOOQ/jOOX</developerConnection>
+        <url>https://github.com/jOOQ/jOOX</url>
+        <connection>https://github.com/jOOQ/jOOX</connection>
+    </scm>
+
+    <build>
+        <defaultGoal>deploy</defaultGoal>
+        <finalName>${project.artifactId}-${project.version}</finalName>
+
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.0</version>
+                <configuration>
+                    <fork>true</fork>
+                    <maxmem>512m</maxmem>
+                    <meminitial>256m</meminitial>
+                    <encoding>UTF-8</encoding>
+                    <!-- [java-9] -->
+                    <release>11</release>
+                    <!-- [/java-9] -->
+
+                    <source>11</source>
+                    <target>11</target>
+                    <debug>true</debug>
+                    <debuglevel>lines,vars,source</debuglevel>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>2.5</version>
+                <configuration>
+                    <encoding>UTF-8</encoding>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <version>3.5.0</version>
+                <extensions>true</extensions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.22.1</version>
+            </plugin>
+        </plugins>
+    </build>
+
+    <profiles>
+        <profile>
+            <id>release</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <inherited>true</inherited>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-source-plugin</artifactId>
+                        <version>2.1.2</version>
+                        <executions>
+                            <execution>
+                                <id>attach-sources</id>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+
+                        <configuration>
+                            <excludeResources>true</excludeResources>
+                            <useDefaultExcludes>true</useDefaultExcludes>
+                        </configuration>
+                    </plugin>
+
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <version>3.0.1</version>
+                        <inherited>true</inherited>
+                        <executions>
+                            <execution>
+                                <id>bundle-sources</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <maxmemory>1024</maxmemory>
+                            <encoding>UTF-8</encoding>
+                            <show>protected</show>
+                            <notree>true</notree>
+
+                            <!-- Avoid running into Java 8's very restrictive doclint issues -->
+                            <additionalparam>-Xdoclint:none</additionalparam>
+                            <additionalOptions>-Xdoclint:none</additionalOptions>
+                        </configuration>
+                    </plugin>
+
+                    <!-- Copy API docs to new directory first (replacer plugin seems to be unable to create dirs) -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-resources-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>copy-folder</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>copy-resources</goal>
+                                </goals>
+                                <configuration>
+                                    <outputDirectory>${project.build.directory}/apidocs-ga</outputDirectory>
+                                    <resources>
+                                        <resource>
+                                            <filtering>false</filtering>
+                                            <directory>${project.build.directory}/apidocs</directory>
+                                        </resource>
+                                    </resources>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <!-- Then, patch Google Analytics code inside. -->
+                    <plugin>
+                        <groupId>com.google.code.maven-replacer-plugin</groupId>
+                        <artifactId>replacer</artifactId>
+                        <version>1.5.2</version>
+                        <executions>
+                            <execution>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>replace</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+
+                            <!-- There's an error when trying to find the top module's /target/apidocs-ga directory -->
+                            <ignoreErrors>true</ignoreErrors>
+                            <basedir>${project.build.directory}/apidocs-ga</basedir>
+                            <includes>
+                                <include>**/*.html</include>
+                            </includes>
+                            <replacements>
+                                <replacement>
+                                    <token><![CDATA[<body>]]></token>
+                                    <value><![CDATA[<body>
+                                        <script type="text/javascript">
+                                          var _gaq = _gaq || [];
+                                          _gaq.push(['_setAccount', 'UA-30716479-1']);
+                                          _gaq.push(['_trackPageview']);
+
+                                          (function() {
+                                            var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+                                            ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+                                            var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+                                          })();
+                                        </script>
+                                    ]]></value>
+                                </replacement>
+                            </replacements>
+                        </configuration>
+                    </plugin>
+
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>1.1</version>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
+    <issueManagement>
+        <system>GitHub</system>
+        <url>https://github.com/jOOQ/jOOX/issues</url>
+    </issueManagement>
+
+    <developers>
+        <developer>
+            <name>Lukas Eder</name>
+            <email>lukas.eder@gmail.com</email>
+        </developer>
+    </developers>
+
+    <dependencies>
+
+        <!-- Runtime dependencies -->
+        <!-- [java-9] -->
+        <!-- Prior to Java 9, the JAXB dependency was shipped with the JDK -->
+        <dependency>
+            <groupId>javax.xml.bind</groupId>
+            <artifactId>jaxb-api</artifactId>
+            <version>2.3.0</version>
+        </dependency>
+
+        <!-- From JDK 9 onwards, the JAXB dependency needs to be made explicit -->
+        <!-- See: https://github.com/javaee/jaxb-v2/issues/1168 -->
+        <dependency>
+            <groupId>org.glassfish.jaxb</groupId>
+            <artifactId>jaxb-runtime</artifactId>
+            <version>2.4.0-b180830.0438</version>
+            <scope>provided</scope>
+        </dependency>
+        <!-- [/java-9] -->
+
+        <!-- Test dependencies -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.12</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.4</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>xalan</groupId>
+            <artifactId>xalan</artifactId>
+            <version>2.7.2</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+</project>

@@ -1,0 +1,128 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.github.davidmoten</groupId>
+        <artifactId>sonatype-parent</artifactId>
+        <version>0.1</version>
+    </parent>
+    <!--<groupId>org.scilab.forge</groupId> -->
+    <groupId>org.scilab.forge</groupId>
+    <artifactId>jlatexmath-parent</artifactId>
+    <version>1.0.7</version>
+    <name>${project.artifactId}</name>
+    <description>parent pom for jlatexmath artifacts</description>
+    <packaging>pom</packaging>
+    <url>https://github.com/opencollab/jlatexmath/</url>
+
+    <licenses>
+        <license>
+            <name>GPLv2 with Classpath Exception</name>
+            <url>http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <id>ledru</id>
+            <name>Sylvestre Ledru</name>
+        </developer>
+        <developer>
+            <id>denizet</id>
+            <name>Calixte Denizet</name>
+        </developer>
+    </developers>
+
+    <scm>
+        <connection>${scm.url}</connection>
+        <developerConnection>${scm.url}</developerConnection>
+        <url>${scm.url}</url>
+      <tag>1.0.7</tag>
+  </scm>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <java.version>1.7</java.version>
+        <fop.version>1.0</fop.version>
+        <junit.version>4.12</junit.version>
+        <jar.plugin.version>3.0.2</jar.plugin.version>
+        <build.helper.plugin.version>1.12</build.helper.plugin.version>
+        <!-- nexus staging version should match the one used in sonatype-parent -->
+        <nexus.staging.plugin.version>1.6.5</nexus.staging.plugin.version>
+        <scm.url>scm:git:https://github.com/opencollab/jlatexmath.git</scm.url>
+    </properties>
+
+    <modules>
+        <module>jlatexmath-font-cyrillic</module>
+        <module>jlatexmath-font-greek</module>
+        <module>jlatexmath</module>
+        <module>jlatexmath-fop</module>
+        <module>jlatexmath-example-giws</module>
+        <module>jlatexmath-example-export</module>
+        <!-- require a dummy artifact so can ignore deployment of previous two example modules -->
+        <!-- see https://issues.sonatype.org/browse/NEXUS-9138 -->
+        <module>jlatexmath-ignore</module>
+    </modules>
+
+    <build>
+        <plugins>
+            <plugin>
+                <inherited>true</inherited>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.5.1</version>
+                <configuration>
+                    <verbose>true</verbose>
+                    <fork>true</fork>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>3.0.1</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.10.4</version>
+                <configuration>
+                    <additionalparam>-Xdoclint:none</additionalparam>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+              <groupId>org.codehaus.mojo</groupId>
+              <artifactId>cobertura-maven-plugin</artifactId>
+              <version>2.7</version>
+              <configuration>
+                <format>xml</format>
+                <maxmem>256m</maxmem>
+                <!-- aggregated reports for multi-module projects -->
+                <aggregate>true</aggregate>
+              </configuration>
+            </plugin>
+            <plugin>
+              <groupId>org.eluder.coveralls</groupId>
+              <artifactId>coveralls-maven-plugin</artifactId>
+              <version>4.3.0</version>
+            </plugin>
+        </plugins>
+    </build>
+</project>

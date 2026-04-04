@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>io.github.sebivenlo</groupId>
+    <artifactId>openjfx-monocle</artifactId>
+    <version>jdk-21.0.1</version>
+    <packaging>jar</packaging>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.release>21</maven.compiler.release>
+    </properties>
+    <name>openjfx monocle headless driver</name>
+    <description>
+      Headless graphics driver for JavaFX.
+      Cloned from https://github.com/TestFX/Monocle and adapted form maven, java 21 and javafx 21
+    </description>
+    <url>https://github.com/sebivenlo/testfx-monocle</url>
+     <developers>
+        <developer>
+            <id>hom</id>
+            <email>pieter.van.den.hombergh@gmail.com</email>
+            <name>Pieter van den Hombergh</name>
+            <organization>Fontys Hogeschool voor Techniek en Logistiek,
+                Opleidingen Software Engineering en Business Informatica (SEBI)</organization>
+            <timezone>2.0.0+</timezone>
+            <roles>
+                <role>main developer</role>
+            </roles>
+        </developer>
+     </developers>
+      <scm>
+        <connection>scm:git:git@github.com:sebivenlo/testfx-monocle.git</connection>
+        <developerConnection>scm:git:ssh://github.com:sebivenlo/testfx-monocle.git</developerConnection>
+        <url>https://github.com/sebivenlo/testfx-monocle/tree/main</url>
+    </scm>
+    <licenses>
+        <license>
+        <name>GNU General Public License, version 2, with the Classpath Exception</name>
+        <url>https://github.com/TestFX/Monocle/blob/master/LICENSE</url>
+        </license>
+    </licenses>
+    <distributionManagement>
+        <snapshotRepository>
+            <id>ossrh</id>
+            <url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
+        </snapshotRepository>
+        <repository>
+            <id>ossrh</id>
+            <url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
+    </distributionManagement>
+    <dependencies>
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-graphics</artifactId>
+            <version>21.0.1</version>
+            <type>jar</type>
+        </dependency>
+    </dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.6.3</version>
+            </plugin>
+        </plugins>
+    </build>
+    <profiles>
+        <profile>
+            <id>ossrh-release</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>3.0.1</version>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+</project>

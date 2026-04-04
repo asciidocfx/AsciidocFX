@@ -6,6 +6,7 @@ import com.kodedu.service.ThreadService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import jakarta.json.*;
@@ -35,6 +36,9 @@ public class CopilotApiClient {
     private final CopilotAuthService authService;
     private final CopilotConfigBean configBean;
     private final ThreadService threadService;
+
+    @Value("${application.version}")
+    private String appVersion;
 
     @Autowired
     public CopilotApiClient(CopilotAuthService authService, CopilotConfigBean configBean,
@@ -75,7 +79,7 @@ public class CopilotApiClient {
                         .header("Authorization", "Bearer " + token)
                         .header("Content-Type", "application/json")
                         .header("Accept", "text/event-stream")
-                        .header("Editor-Version", "AsciidocFX/1.8.10")
+                        .header("Editor-Version", "AsciidocFX/" + appVersion)
                         .header("Editor-Plugin-Version", "copilot-asciidocfx/1.0.0")
                         .header("Copilot-Integration-Id", "asciidocfx")
                         .POST(HttpRequest.BodyPublishers.ofString(requestBody))
@@ -126,7 +130,7 @@ public class CopilotApiClient {
                     .header("Authorization", "Bearer " + token)
                     .header("Content-Type", "application/json")
                     .header("Accept", "application/json")
-                    .header("Editor-Version", "AsciidocFX/1.8.10")
+                    .header("Editor-Version", "AsciidocFX/" + appVersion)
                     .header("Editor-Plugin-Version", "copilot-asciidocfx/1.0.0")
                     .POST(HttpRequest.BodyPublishers.ofString(requestBody))
                     .build();

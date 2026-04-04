@@ -38,10 +38,9 @@ public class FileContextCollector {
 
     private String readTruncated(Path path) {
         try {
-            byte[] bytes = new byte[(int) MAX_FILE_SIZE];
             try (var is = Files.newInputStream(path)) {
-                int read = is.read(bytes);
-                return new String(bytes, 0, read) + "\n... (truncated)";
+                byte[] bytes = is.readNBytes((int) MAX_FILE_SIZE);
+                return new String(bytes) + "\n... (truncated)";
             }
         } catch (IOException e) {
             return null;

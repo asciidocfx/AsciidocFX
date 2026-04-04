@@ -10,6 +10,7 @@ import javafx.scene.layout.VBox;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.net.URI;
@@ -39,6 +40,9 @@ public class CopilotAuthService {
     private final ObjectMapper objectMapper;
     private final CopilotConfigBean configBean;
     private final ThreadService threadService;
+
+    @Value("${application.version}")
+    private String appVersion;
 
     @Autowired
     public CopilotAuthService(CopilotConfigBean configBean, ThreadService threadService) {
@@ -140,7 +144,7 @@ public class CopilotAuthService {
                     .uri(URI.create(COPILOT_TOKEN_URL))
                     .header("Authorization", "token " + githubAccessToken)
                     .header("Accept", "application/json")
-                    .header("Editor-Version", "AsciidocFX/1.8.10")
+                    .header("Editor-Version", "AsciidocFX/" + appVersion)
                     .header("Editor-Plugin-Version", "copilot/1.0.0")
                     .GET()
                     .build();

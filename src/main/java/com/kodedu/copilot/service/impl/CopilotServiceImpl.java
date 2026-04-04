@@ -36,6 +36,7 @@ public class CopilotServiceImpl implements CopilotService {
     private CopilotMode currentMode = CopilotMode.ASK;
     private CopilotConversation conversation;
     private volatile boolean requestInProgress = false;
+    private volatile Thread currentRequestThread;
 
     @Autowired
     public CopilotServiceImpl(AskModeService askModeService, PlanModeService planModeService,
@@ -71,14 +72,17 @@ public class CopilotServiceImpl implements CopilotService {
         }
 
         requestInProgress = true;
+        currentRequestThread = Thread.currentThread();
 
         Runnable wrappedComplete = () -> {
             requestInProgress = false;
+            currentRequestThread = null;
             onComplete.run();
         };
 
         Consumer<String> wrappedError = (error) -> {
             requestInProgress = false;
+            currentRequestThread = null;
             onError.accept(error);
         };
 
@@ -139,5 +143,10 @@ public class CopilotServiceImpl implements CopilotService {
     @Override
     public void stopCurrentRequest() {
         requestInProgress = false;
+        Thread thread = currentRequestThread;
+        if (thread != null) {
+            thread.interrupt();
+            currentRequestThread = null;
+        }
     }
 }

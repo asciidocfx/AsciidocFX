@@ -1,0 +1,335 @@
+<?xml version="1.0"?>
+<!--
+
+    Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Distribution License v. 1.0, which is available at
+    http://www.eclipse.org/org/documents/edl-v10.php.
+
+    SPDX-License-Identifier: BSD-3-Clause
+
+-->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.eclipse.ee4j</groupId>
+        <artifactId>project</artifactId>
+        <version>1.0.8</version>
+        <relativePath/>
+    </parent>
+
+    <groupId>com.sun.xml.dtd-parser</groupId>
+    <artifactId>dtd-parser</artifactId>
+    <version>1.5.1</version>
+    <packaging>jar</packaging>
+    <name>DTD Parser</name>
+    <description>SAX-like API for parsing XML DTDs.</description>
+    <url>https://github.com/eclipse-ee4j/jaxb-dtd-parser</url>
+
+    <scm>
+        <connection>scm:git:ssh://git@github.com/eclipse-ee4j/jaxb-dtd-parser.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com/eclipse-ee4j/jaxb-dtd-parser.git</developerConnection>
+        <url>https://github.com/eclipse-ee4j/jaxb-dtd-parser</url>
+        <tag>HEAD</tag>
+    </scm>
+
+    <licenses>
+        <license>
+            <name>Eclipse Distribution License - v 1.0</name>
+            <url>https://www.eclipse.org/org/documents/edl-v10.php</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <id>bravehorsie</id>
+            <name>Roman Grigoriadi</name>
+            <email>Roman.Grigoriadi@oracle.com</email>
+        </developer>
+    </developers>
+
+    <issueManagement>
+        <system>github</system>
+        <url>https://github.com/eclipse-ee4j/jaxb-dtd-parser/issues</url>
+    </issueManagement>
+
+    <mailingLists>
+        <mailingList>
+            <name>Eclipse Implementation of JAXB mailing list</name>
+            <post>jaxb-impl-dev@eclipse.org</post>
+            <subscribe>https://dev.eclipse.org/mailman/listinfo/jaxb-impl-dev</subscribe>
+            <unsubscribe>https://dev.eclipse.org/mailman/listinfo/jaxb-impl-dev</unsubscribe>
+            <archive>https://dev.eclipse.org/mhonarc/lists/jaxb-impl-dev</archive>
+        </mailingList>
+    </mailingLists>
+
+    <properties>
+        <copyright.exclude>${project.basedir}/../etc/copyright-exclude</copyright.exclude>
+        <copyright.ignoreyear>false</copyright.ignoreyear>
+        <copyright.scmonly>true</copyright.scmonly>
+        <copyright.update>false</copyright.update>
+        <spotbugs.exclude>${project.basedir}/../etc/spotbugs-exclude.xml</spotbugs.exclude>
+        <spotbugs.skip>false</spotbugs.skip>
+        <spotbugs.threshold>Low</spotbugs.threshold>
+        <spotbugs.version>4.7.3.6</spotbugs.version>
+        <legal.doc.source>${project.basedir}/..</legal.doc.source>
+
+        <maven.compiler.release>11</maven.compiler.release>
+        <maven.compiler.testRelease>${maven.compiler.release}</maven.compiler.testRelease>
+    </properties>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>build-helper-maven-plugin</artifactId>
+                    <version>3.4.0</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>3.11.0</version>
+                </plugin>
+                <plugin>
+                    <groupId>com.github.spotbugs</groupId>
+                    <artifactId>spotbugs-maven-plugin</artifactId>
+                    <version>${spotbugs.version}</version>
+                    <configuration>
+                        <skip>${spotbugs.skip}</skip>
+                        <threshold>${spotbugs.threshold}</threshold>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.glassfish.copyright</groupId>
+                    <artifactId>glassfish-copyright-maven-plugin</artifactId>
+                    <version>2.4</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-enforcer-plugin</artifactId>
+                    <version>3.4.1</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>buildnumber-maven-plugin</artifactId>
+                    <version>3.2.0</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.felix</groupId>
+                    <artifactId>maven-bundle-plugin</artifactId>
+                    <version>5.1.9</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-jar-plugin</artifactId>
+                    <version>3.3.0</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-source-plugin</artifactId>
+                    <version>3.2.1</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-javadoc-plugin</artifactId>
+                    <version>3.6.0</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.jacoco</groupId>
+                    <artifactId>jacoco-maven-plugin</artifactId>
+                    <version>0.8.11</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+
+        <plugins>
+            <plugin>
+                <groupId>com.github.spotbugs</groupId>
+                <artifactId>spotbugs-maven-plugin</artifactId>
+                <configuration>
+                    <fork>true</fork>
+                    <excludeFilterFile>${spotbugs.exclude}</excludeFilterFile>
+                    <failThreshold>High</failThreshold>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.glassfish.copyright</groupId>
+                <artifactId>glassfish-copyright-maven-plugin</artifactId>
+                <configuration>
+                    <excludeFile>${copyright.exclude}</excludeFile>
+                    <!-- skip files not under SCM-->
+                    <scmOnly>${copyright.scmonly}</scmOnly>
+                    <!-- for use with repair -->
+                    <update>${copyright.update}</update>
+                    <!-- check that year is correct -->
+                    <ignoreYear>${copyright.ignoreyear}</ignoreYear>
+                    <quiet>false</quiet>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>buildnumber-maven-plugin</artifactId>
+                <configuration>
+                    <getRevisionOnlyOnce>true</getRevisionOnlyOnce>
+                    <revisionOnScmFailure>false</revisionOnScmFailure>
+                    <shortRevisionLength>7</shortRevisionLength>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>create</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>add-legal-resource</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>add-resource</goal>
+                        </goals>
+                        <configuration>
+                            <resources>
+                                <resource>
+                                    <directory>${legal.doc.source}</directory>
+                                    <includes>
+                                        <include>NOTICE.md</include>
+                                        <include>LICENSE.md</include>
+                                    </includes>
+                                    <targetPath>META-INF</targetPath>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <compilerArgs>
+                        <arg>-Xlint:all</arg>
+                        <arg>-Xdoclint:all,-missing</arg>
+                        <arg>-Werror</arg>
+                    </compilerArgs>
+                    <showDeprecation>true</showDeprecation>
+                    <showWarnings>true</showWarnings>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>bundle-manifest</id>
+                        <phase>process-classes</phase>
+                        <goals>
+                            <goal>manifest</goal>
+                        </goals>
+                        <configuration>
+                            <archive>
+                                <manifest>
+                                    <addDefaultEntries>false</addDefaultEntries>
+                                </manifest>
+                            </archive>
+                            <instructions>
+                                <_noextraheaders>true</_noextraheaders>
+                                <Implementation-Build-Id>${project.version} - ${buildNumber}</Implementation-Build-Id>
+                            </instructions>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
+                        <manifest>
+                            <addDefaultEntries>false</addDefaultEntries>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addDefaultEntries>false</addDefaultEntries>
+                        </manifest>
+                        <manifestEntries>
+                            <Implementation-Build-Id>${project.version} - ${buildNumber}</Implementation-Build-Id>
+                        </manifestEntries>
+                    </archive>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addDefaultEntries>false</addDefaultEntries>
+                        </manifest>
+                    </archive>
+                    <notimestamp>true</notimestamp>
+                    <quiet>true</quiet>
+                    <doclint>all,-missing</doclint>
+                    <failOnWarnings>true</failOnWarnings>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <dependencies>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.13.2</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <profiles>
+        <profile>
+            <id>coverage</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.jacoco</groupId>
+                        <artifactId>jacoco-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>default-prepare-agent</id>
+                                <goals>
+                                    <goal>prepare-agent</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>default-report</id>
+                                <goals>
+                                    <goal>report</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
+</project>

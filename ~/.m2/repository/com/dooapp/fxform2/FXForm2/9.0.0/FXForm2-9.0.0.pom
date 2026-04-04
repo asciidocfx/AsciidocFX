@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) 2013, dooApp <contact@dooapp.com>
+  ~ All rights reserved.
+  ~
+  ~ Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+  ~
+  ~ Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+  ~ Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+  ~ Neither the name of dooApp nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+  ~ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+  -->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <packaging>pom</packaging>
+    <modules>
+        <module>core</module>
+        <module>demo</module>
+        <module>samples</module>
+        <module>extensions</module>
+    </modules>
+    <parent>
+        <groupId>org.sonatype.oss</groupId>
+        <artifactId>oss-parent</artifactId>
+        <version>9</version>
+    </parent>
+    <groupId>com.dooapp.fxform2</groupId>
+    <artifactId>FXForm2</artifactId>
+    <version>9.0.0</version>
+    <name>FXForm 2</name>
+    <description>Dynamic JavaFX 2.0 form generation</description>
+    <url>http://dooapp.github.com/FXForm2/</url>
+    <licenses>
+        <license>
+            <name>GNU Library or Lesser General Public License (LGPL)</name>
+            <url>http://www.gnu.org/licenses/lgpl.html</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+    <issueManagement>
+        <system>GitHub</system>
+        <url>https://github.com/dooApp/FXForm2/issues</url>
+    </issueManagement>
+    <scm>
+        <url>git@github.com:dooApp/FXForm2.git</url>
+        <connection>scm:git:git@github.com:dooApp/FXForm2.git</connection>
+        <developerConnection>scm:git:git@github.com:dooApp/FXForm2.git</developerConnection>
+        <tag>FXForm2-9.0.0</tag>
+    </scm>
+    <developers>
+        <developer>
+            <name>Antoine Mischler</name>
+            <email>antoine@dooapp.com</email>
+            <organization>dooApp</organization>
+            <organizationUrl>www.dooapp.com</organizationUrl>
+        </developer>
+    </developers>
+    <ciManagement>
+        <system>Jenkins</system>
+        <url>https://buildhive.cloudbees.com/job/dooApp/job/FXForm2/</url>
+    </ciManagement>
+    <repositories>
+        <repository>
+            <id>jboss-maven2-release-repository</id>
+            <url>http://repository.jboss.org/nexus/content/groups/public-jboss/</url>
+        </repository>
+    </repositories>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-release-plugin</artifactId>
+                <version>2.5.3</version>
+                <configuration>
+                    <goals>deploy</goals>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>com.github.github</groupId>
+                <artifactId>site-maven-plugin</artifactId>
+                <version>0.12</version>
+                <configuration>
+                    <message>Creating site for ${project.artifactId}, ${project.version}</message>
+                    <path>${project.distributionManagement.site.url}</path>
+                    <merge>true</merge>
+                    <repositoryName>FXForm2</repositoryName>
+                    <repositoryOwner>dooapp</repositoryOwner>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>github-site</id>
+                        <goals>
+                            <goal>site</goal>
+                        </goals>
+                        <phase>site-deploy</phase>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-site-plugin</artifactId>
+                <version>3.7.1</version>
+                <configuration>
+                    <skip>true</skip>
+                    <skipDeploy>true</skipDeploy>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.0.1</version>
+                <configuration>
+                    <doclint>none</doclint>
+                </configuration>
+            </plugin>
+        </plugins>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>3.8.0</version>
+                    <configuration>
+                        <source>9</source>
+                        <target>9</target>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-javadoc-plugin</artifactId>
+                    <version>3.0.1</version>
+                    <configuration>
+                        <doclint>none</doclint>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+    <distributionManagement>
+        <site>
+            <id>github-pages-site</id>
+            <name>Deployment through GitHub's site deployment plugin</name>
+            <url>${project.version}/site</url>
+        </site>
+    </distributionManagement>
+    <reporting>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.0.1</version>
+                <configuration>
+                    <show>public</show>
+                    <doclint>none</doclint>
+                </configuration>
+            </plugin>
+        </plugins>
+    </reporting>
+</project>
