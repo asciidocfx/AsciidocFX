@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.carrot2</groupId>
+    <artifactId>morfologik-parent</artifactId>
+    <version>2.1.9</version>
+    <relativePath>../pom.xml</relativePath>
+  </parent>
+
+  <artifactId>morfologik-speller</artifactId>
+  <packaging>bundle</packaging>
+
+  <name>Morfologik Speller</name>
+  <description>Morfologik Speller</description>
+
+  <properties>
+    <forbiddenapis.signaturefile>../etc/forbidden-apis/signatures.txt</forbiddenapis.signaturefile>
+    <project.moduleId>org.carrot2.morfologik.speller</project.moduleId>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.carrot2</groupId>
+      <artifactId>morfologik-stemming</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <configuration>
+          <instructions>
+            <Export-Package>morfologik.speller</Export-Package>
+            <Import-Package>*</Import-Package>
+          </instructions>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>

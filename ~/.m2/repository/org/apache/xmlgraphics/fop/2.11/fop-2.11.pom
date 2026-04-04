@@ -1,0 +1,82 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>org.apache.xmlgraphics</groupId>
+  <artifactId>fop</artifactId>
+  <name>Apache FOP All-In-One</name>
+  <description>XML Graphics Format Object Processor All-In-One</description>
+
+  <parent>
+    <groupId>org.apache.xmlgraphics</groupId>
+    <artifactId>fop-parent</artifactId>
+    <version>2.11</version>
+  </parent>
+
+  <dependencies>
+    <!-- fop deps -->
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>fop-util</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>fop-events</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>fop-core</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <!-- test deps -->
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>${junit.version}</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <configuration>
+          <archive>
+            <manifest>
+              <addClasspath>true</addClasspath>
+              <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+              <mainClass>org.apache.fop.cli.Main</mainClass>
+            </manifest>
+            <manifestEntries>
+              <Automatic-Module-Name>org.apache.xmlgraphics.fop</Automatic-Module-Name>
+              <SpecificationTitle>XSL-FO - Extensible Stylesheet Language</SpecificationTitle>
+              <SpecificationVersion>1.1</SpecificationVersion>
+              <SpecificationVendor>World Wide Web Consortium</SpecificationVendor>
+              <SpecificationURL>http://www.w3.org/TR/xsl</SpecificationURL>
+            </manifestEntries>
+          </archive>
+        </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>install</phase>
+            <goals>
+              <goal>copy-dependencies</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.directory}</outputDirectory>
+              <includeArtifactIds>fop-core,fop-util,fop-events</includeArtifactIds>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
+</project>

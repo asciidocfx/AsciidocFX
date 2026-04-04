@@ -1,0 +1,9 @@
+#NOTE: This is a Maven Resolver internal implementation file, its format can be changed without prior notice.
+#Sat Apr 04 10:29:38 UTC 2026
+@default-spring-release-https\://repo.spring.io/release/.lastUpdated=1775298578156
+https\://repo.maven.apache.org/maven2/.lastUpdated=1775298578199
+https\://repo.spring.io/milestone/.error=
+@default-ej-technologies-https\://maven.ej-technologies.com/repository/.lastUpdated=1775298578139
+https\://repo.spring.io/milestone/.lastUpdated=1775298578175
+https\://maven.ej-technologies.com/repository/.error=Could not transfer artifact org.apache.maven.plugins\:maven-compiler-plugin\:pom\:3.14.0 from/to ej-technologies (https\://maven.ej-technologies.com/repository)\: maven.ej-technologies.com
+https\://repo.spring.io/release/.error=Could not transfer artifact org.apache.maven.plugins\:maven-compiler-plugin\:pom\:3.14.0 from/to spring-release (https\://repo.spring.io/release)\: status code\: 401, reason phrase\:  (401)

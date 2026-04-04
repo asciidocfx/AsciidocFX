@@ -1,0 +1,16 @@
+#NOTE: This is a Maven Resolver internal implementation file, its format can be changed without prior notice.
+#Sat Apr 04 10:29:43 UTC 2026
+@default-spring-release-https\://repo.spring.io/release/.lastUpdated=1775298583361
+https\://jcenter.bintray.com/.error=
+https\://repo1.maven.org/maven2/.error=
+https\://github.com/javaterminal/TerminalFX/raw/master/releases/.error=
+https\://jcenter.bintray.com/.lastUpdated=1775298583341
+https\://repo.eclipse.org/content/groups/releases/.error=Could not transfer artifact com.install4j\:install4j-runtime\:pom\:10.0.8 from/to Eclipse Maven Repo (https\://repo.eclipse.org/content/groups/releases/)\: repo.eclipse.org\: No address associated with hostname
+https\://repo1.maven.org/maven2/.lastUpdated=1775298583263
+https\://repo.spring.io/milestone/.error=
+@default-ej-technologies-https\://maven.ej-technologies.com/repository/.lastUpdated=1775298583343
+@default-Eclipse\ Maven\ Repo-https\://repo.eclipse.org/content/groups/releases/.lastUpdated=1775298583345
+https\://repo.spring.io/milestone/.lastUpdated=1775298583379
+https\://maven.ej-technologies.com/repository/.error=Could not transfer artifact com.install4j\:install4j-runtime\:pom\:10.0.8 from/to ej-technologies (https\://maven.ej-technologies.com/repository)\: maven.ej-technologies.com
+https\://github.com/javaterminal/TerminalFX/raw/master/releases/.lastUpdated=1775298583291
+https\://repo.spring.io/release/.error=Could not transfer artifact com.install4j\:install4j-runtime\:pom\:10.0.8 from/to spring-release (https\://repo.spring.io/release)\: status code\: 401, reason phrase\:  (401)

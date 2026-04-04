@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (c) 2013, 2023 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Distribution License v. 1.0, which is available at
+    http://www.eclipse.org/org/documents/edl-v10.php.
+
+    SPDX-License-Identifier: BSD-3-Clause
+
+-->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.sun.xml.bind.mvn</groupId>
+        <artifactId>jaxb-parent</artifactId>
+        <version>4.0.5</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <groupId>org.glassfish.jaxb</groupId>
+    <artifactId>jaxb-xjc</artifactId>
+
+    <packaging>jar</packaging>
+    <name>JAXB XJC</name>
+    <description>
+        JAXB Binding Compiler. Contains source code needed for binding customization files into java sources.
+        In other words: the *tool* to generate java classes for the given xml representation.
+        <!--todo: finish me-->
+    </description>
+    <url>https://eclipse-ee4j.github.io/jaxb-ri/</url>
+
+    <properties>
+        <spotbugs.threshold>Low</spotbugs.threshold>
+        <spotbugs.exclude>${project.basedir}/exclude.xml</spotbugs.exclude>
+        <argLine>
+            --add-exports org.glassfish.jaxb.xjc/com.sun.tools.xjc.outline=ALL-UNNAMED
+            --add-exports org.glassfish.jaxb.xjc/com.sun.tools.xjc.generator.bean=ALL-UNNAMED
+            --add-opens org.glassfish.jaxb.xjc/com.sun.tools.xjc.addon.code_injector=ALL-UNNAMED
+            --add-opens org.glassfish.jaxb.core/org.glassfish.jaxb.core.v2.model.nav=ALL-UNNAMED
+            -Djdk.attach.allowAttachSelf
+        </argLine>
+        <cac.sources>${project.build.directory}/generated-sources/cac</cac.sources>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.glassfish.jaxb</groupId>
+            <artifactId>jaxb-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.jaxb</groupId>
+            <artifactId>jaxb-runtime</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.jaxb</groupId>
+            <artifactId>xsom</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.jaxb</groupId>
+            <artifactId>codemodel</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.xml.bind.external</groupId>
+            <artifactId>rngom</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.xml.dtd-parser</groupId>
+            <artifactId>dtd-parser</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.istack</groupId>
+            <artifactId>istack-commons-tools</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.ant</groupId>
+            <artifactId>ant</artifactId>
+            <optional>true</optional>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+            <resource>
+                <directory>src/main/schemas</directory>
+            </resource>
+            <resource>
+                <directory>src/main/java/com/sun/tools/xjc/runtime</directory>
+                <targetPath>com/sun/tools/xjc/runtime</targetPath>
+                <excludes>
+                    <exclude>package-info.java</exclude>
+                </excludes>
+            </resource>
+        </resources>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy-ant</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/lib/ant</outputDirectory>
+                            <includeArtifactIds>ant,ant-launcher,ant-nodeps</includeArtifactIds>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <!--Dependencies for XJCTask see xjc.xml-->
+                        <id>copy-xjctask</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/xjctask-cp</outputDirectory>
+                            <includeArtifactIds>
+                                jakarta.activation-api,angus-activation,istack-commons-tools,istack-commons-runtime,
+                                jaxb-core,jaxb-runtime,jakarta.xml.bind-api,
+                                codemodel,xsom,relaxng-datatype,rngom,txw2
+                            </includeArtifactIds>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <systemPropertyVariables>
+                        <java.io.tmpdir>${project.build.directory}/test-antprojects</java.io.tmpdir>
+                        <bin.folder>${project.build.directory}</bin.folder>
+                        <jaxb-api.version>${xml.bind-api.version}</jaxb-api.version>
+                    </systemPropertyVariables>
+                    <forkCount>1</forkCount>
+                    <reuseForks>true</reuseForks>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addDefaultEntries>false</addDefaultEntries>
+                            <mainClass>com.sun.tools.xjc.XJCFacade</mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.glassfish.jaxb</groupId>
+                        <artifactId>codemodel-annotation-compiler</artifactId>
+                        <version>${project.version}</version>
+                    </dependency>
+                </dependencies>
+                <executions>
+                    <execution>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <taskdef name="cac" classname="com.sun.codemodel.ac.ACTask">
+                                    <classpath refid="maven.plugin.classpath"/>
+                                </taskdef>
+                                <property name="gen.out" value="${cac.sources}"/>
+                                <property name="runtime.src" value="${project.build.sourceDirectory}/../resources"/>
+                                <mkdir dir="${gen.out}"/>
+                                <cac destdir="${gen.out}"
+                                     license="${copyright.template}"
+                                     silent="true"
+                                     package="com.sun.tools.xjc.generator.annotation.spec">
+                                    <classes includes="jakarta.xml.bind.annotation.*" />
+                                    <classes includes="jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter" />
+                                    <classpath refid="maven.compile.classpath"/>
+                                </cac>
+                                <cac destdir="${gen.out}"
+                                     license="${copyright.template}"
+                                     package="com.sun.tools.xjc.generator.annotation.ri">
+                                    <classes includes="org.glassfish.jaxb.core.annotation.*" />
+                                    <classpath refid="maven.compile.classpath"/>
+                                </cac>
+                            </target>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>add-sources</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>add-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>${cac.sources}</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>default-compile</id>
+                        <configuration>
+                            <compilerArgs>
+                                <arg>--add-reads</arg>
+                                <arg>org.glassfish.jaxb.xjc=ALL-UNNAMED</arg>
+                                <arg>--add-reads</arg>
+                                <arg>com.sun.istack.tools=ALL-UNNAMED</arg>
+                            </compilerArgs>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <configuration>
+                    <additionalJOptions>
+                        <additionalJOption>--add-reads</additionalJOption>
+                        <additionalJOption>org.glassfish.jaxb.xjc=ALL-UNNAMED</additionalJOption>
+                        <additionalJOption>--add-reads</additionalJOption>
+                        <additionalJOption>com.sun.istack.tools=ALL-UNNAMED</additionalJOption>
+                    </additionalJOptions>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

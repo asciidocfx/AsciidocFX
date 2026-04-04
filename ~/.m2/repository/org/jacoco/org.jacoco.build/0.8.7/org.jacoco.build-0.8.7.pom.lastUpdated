@@ -1,0 +1,9 @@
+#NOTE: This is a Maven Resolver internal implementation file, its format can be changed without prior notice.
+#Sat Apr 04 10:29:37 UTC 2026
+@default-spring-release-https\://repo.spring.io/release/.lastUpdated=1775298577749
+https\://repo.maven.apache.org/maven2/.lastUpdated=1775298577793
+https\://repo.spring.io/milestone/.error=
+@default-ej-technologies-https\://maven.ej-technologies.com/repository/.lastUpdated=1775298577730
+https\://repo.spring.io/milestone/.lastUpdated=1775298577768
+https\://maven.ej-technologies.com/repository/.error=Could not transfer artifact org.jacoco\:org.jacoco.build\:pom\:0.8.7 from/to ej-technologies (https\://maven.ej-technologies.com/repository)\: maven.ej-technologies.com
+https\://repo.spring.io/release/.error=Could not transfer artifact org.jacoco\:org.jacoco.build\:pom\:0.8.7 from/to spring-release (https\://repo.spring.io/release)\: status code\: 401, reason phrase\:  (401)
