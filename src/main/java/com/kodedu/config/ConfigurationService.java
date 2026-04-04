@@ -2,6 +2,7 @@ package com.kodedu.config;
 
 import com.kodedu.component.ToggleButtonBuilt;
 import com.kodedu.config.templates.TemplatesConfigBean;
+import com.kodedu.copilot.config.CopilotConfigBean;
 import com.kodedu.controller.ApplicationController;
 import com.kodedu.service.ThreadService;
 import javafx.geometry.Insets;
@@ -42,6 +43,7 @@ public class ConfigurationService {
     private final PdfConfigBean pdfConfigBean;
 	private final TemplatesConfigBean templatesConfigBean;
     private final FileHistoryConfigBean fileHistoryConfigBean;
+    private final CopilotConfigBean copilotConfigBean;
     private VBox configBox;
 
     @Autowired
@@ -52,7 +54,8 @@ public class ConfigurationService {
                                 SpellcheckConfigBean spellcheckConfigBean, TerminalConfigBean terminalConfigBean,
                                 ExtensionConfigBean extensionConfigBean, Epub3ConfigBean epub3ConfigBean,
                                 RevealjsConfigBean revealjsConfigBean, PdfConfigBean pdfConfigBean,
-                                TemplatesConfigBean templatesConfigBean, FileHistoryConfigBean fileHistoryConfigBean) {
+                                TemplatesConfigBean templatesConfigBean, FileHistoryConfigBean fileHistoryConfigBean,
+                                CopilotConfigBean copilotConfigBean) {
         this.shortCutConfigBean = shortCutConfigBean;
         this.locationConfigBean = locationConfigBean;
         this.editorConfigBean = editorConfigBean;
@@ -70,6 +73,7 @@ public class ConfigurationService {
         this.pdfConfigBean = pdfConfigBean;
         this.templatesConfigBean = templatesConfigBean;
         this.fileHistoryConfigBean = fileHistoryConfigBean;
+        this.copilotConfigBean = copilotConfigBean;
     }
 
     public void loadConfigurations(Runnable... runnables) {
@@ -89,6 +93,7 @@ public class ConfigurationService {
         epub3ConfigBean.load();
         revealjsConfigBean.load();
         templatesConfigBean.load();
+        copilotConfigBean.load();
 
         List<ConfigurationBase> configBeanList = Arrays.asList(
                 shortCutConfigBean,
@@ -104,7 +109,8 @@ public class ConfigurationService {
                 epub3ConfigBean,
                 revealjsConfigBean,
                 templatesConfigBean,
-                fileHistoryConfigBean
+                fileHistoryConfigBean,
+                copilotConfigBean
 //                ,spellcheckConfigBean
         );
 
