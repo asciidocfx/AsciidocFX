@@ -1,0 +1,667 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  ~ JBoss, Home of Professional Open Source.
+  ~ Copyright 2012 Red Hat, Inc., and individual contributors
+  ~ as indicated by the @author tags.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.jboss</groupId>
+        <artifactId>jboss-parent</artifactId>
+        <version>35</version>
+    </parent>
+
+    <groupId>io.undertow</groupId>
+    <artifactId>undertow-parent</artifactId>
+    <version>2.3.18.Final</version>
+
+    <name>Undertow</name>
+    <description>Undertow</description>
+
+    <packaging>pom</packaging>
+
+    <licenses>
+        <license>
+            <name>Apache License Version 2.0</name>
+            <url>http://repository.jboss.org/licenses/apache-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <scm>
+        <connection>scm:git://github.com/undertow-io/undertow.git</connection>
+        <developerConnection>scm:git://github.com/undertow-io/undertow.git</developerConnection>
+        <url>https://github.com/undertow-io/undertow</url>
+    </scm>
+
+    <properties>
+        <!--
+            Dependency versions. Please keep alphabetical.
+
+            Each version property should be of the form "version.<groupId>".
+            For example: <version.org.jboss.as>
+
+            In cases where multiple artifacts use the same groupId but have different
+            versions, add the artifactId or other qualifier to the property name.
+            For example: <version.org.jboss.as.console>
+         -->
+        <version.com.h2database>2.1.214</version.com.h2database>
+        <version.easymock>4.3</version.easymock>
+        <version.jakarta.annotation.jakarta-annotation-api>2.1.1</version.jakarta.annotation.jakarta-annotation-api>
+        <version.jakarta.servlet.jakarta-servlet-api>6.0.0</version.jakarta.servlet.jakarta-servlet-api>
+        <version.jakarta.websocket.jakarta-websocket-api>2.1.0</version.jakarta.websocket.jakarta-websocket-api>
+        <version.junit>4.13.2</version.junit>
+        <version.netty>4.1.82.Final</version.netty>
+        <version.org.apache.directory.server>2.0.0.AM26</version.org.apache.directory.server>
+        <version.org.apache.httpcomponents>4.5.12</version.org.apache.httpcomponents>
+        <version.org.jboss.classfilewriter>1.2.5.Final</version.org.jboss.classfilewriter>
+        <version.org.jboss.logging>3.4.3.Final</version.org.jboss.logging>
+        <version.org.jboss.logging.processor>2.2.1.Final</version.org.jboss.logging.processor>
+        <version.org.jboss.logmanager>2.1.19.Final</version.org.jboss.logmanager>
+        <version.xnio>3.8.16.Final</version.xnio>
+        <!-- TODO remove this dependency once xnio upgrades to latest jboss threads -->
+        <version.org.jboss.threads>3.5.0.Final</version.org.jboss.threads>
+        <version.org.wildfly.common>1.6.0.Final</version.org.wildfly.common>
+        <version.org.wildfly.client-config>1.0.1.Final</version.org.wildfly.client-config>
+
+        <!-- jacoco -->
+        <version.org.jacoco>0.7.9</version.org.jacoco>
+        <jacoco.agent.argLine></jacoco.agent.argLine>
+
+        <!-- Spotbugs properties -->
+        <spotbugs.exclude.filter.file>../spotbugs-exclude.xml</spotbugs.exclude.filter.file>
+
+        <!-- Surefire args -->
+        <modular.jdk.props></modular.jdk.props>
+        <surefire.jpda.args/>
+        <surefire.system.args>-ea ${surefire.jpda.args} -Xmx1024m ${modular.jdk.props}</surefire.system.args>
+        <!--by default run all tests-->
+        <test.categories>io.undertow.testutils.category.UnitTest OR NOT io.undertow.testutils.category.UnitTest</test.categories>
+
+        <!-- Checkstyle configuration -->
+        <linkXRef>false</linkXRef>
+        <version.io.undertow.build.checkstyle-config>1.0.1.Final</version.io.undertow.build.checkstyle-config>
+        <version.com.github.spotbugs-maven-plugin>4.7.3.4</version.com.github.spotbugs-maven-plugin>
+
+        <version.com.twitter.hpack>1.0.2</version.com.twitter.hpack>
+
+        <!-- Non-default maven plugin versions and configuration -->
+        <version.org.wildfly.openssl>2.2.1.Final</version.org.wildfly.openssl>
+        <version.checkstyle>7.1</version.checkstyle>
+        <version.bundle.plugin>5.1.1</version.bundle.plugin>
+
+        <version.jmh>1.21</version.jmh>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
+        <maven.javadoc.plugin.quiet>true</maven.javadoc.plugin.quiet>
+        <maven.compiler.showDeprecation>false</maven.compiler.showDeprecation>
+        <maven.compiler.showWarnings>false</maven.compiler.showWarnings>
+    </properties>
+
+    <modules>
+        <module>parser-generator</module>
+        <module>core</module>
+        <module>servlet</module>
+        <module>examples</module>
+        <module>websockets-jsr</module>
+        <module>benchmarks</module>
+    </modules>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+            </plugin>
+
+            <!-- Javadoc -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <configuration>
+                    <!--
+                        The Javadoc comments contain a lot of warnings
+                        that add a lot of noise to the build without the
+                        following setting.
+                    -->
+                    <doclint>none</doclint>
+                    <quiet>${maven.javadoc.plugin.quiet}</quiet>
+                    <!-- @implNote is a non-standard tag and must be declared or the build will fail -->
+                    <tags>
+                        <tag>
+                            <name>implNote</name>
+                            <placement>a</placement>
+                            <head>Implementation Note:</head>
+                        </tag>
+                    </tags>
+                    <source>1.8</source> 
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            
+            <!-- Zanata translations -->
+            <plugin>
+                <groupId>org.zanata</groupId>
+                <artifactId>zanata-maven-plugin</artifactId>
+                <version>${version.zanata.plugin}</version>
+                <configuration>
+                    <!-- Process sub-modules separately, sharing parent config -->
+                    <enableModules>true</enableModules>
+                    <projectConfig>${session.executionRootDirectory}/zanata.xml</projectConfig>
+                    <!-- Generated English i18n.properties are written here: -->
+                    <srcDir>target/classes</srcDir>
+                    <transDir>src/main/resources</transDir>
+                    <includes>**/*.i18n.properties,**/LocalDescriptions.properties</includes>
+                </configuration>
+            </plugin>
+        </plugins>
+        <pluginManagement>
+            <plugins>
+                <!-- Compiler -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>${version.compiler.plugin}</version>
+                    <configuration>
+                        <!-- fork is needed so compiler args can be used -->
+                        <fork>true</fork>
+                        <failOnError>false</failOnError>
+                        <compilerArgs>
+                            <arg>-J--add-opens=java.base/java.lang=ALL-UNNAMED</arg>
+                        </compilerArgs>
+                        <!-- need to specify directly, for some reason properties are ignored -->
+                        <showDeprecation>${maven.compiler.showDeprecation}</showDeprecation>
+                        <showWarnings>${maven.compiler.showWarnings}</showWarnings>
+                    </configuration>
+                </plugin>
+
+                <!-- Checkstyle -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-checkstyle-plugin</artifactId>
+                    <version>${version.checkstyle.plugin}</version>
+                    <configuration>
+                        <configLocation>undertow-checkstyle/checkstyle.xml</configLocation>
+                        <consoleOutput>true</consoleOutput>
+                        <failsOnError>true</failsOnError>
+                        <includeTestSourceDirectory>true</includeTestSourceDirectory>
+                        <useFile/>
+                        <sourceDirectories>
+                            <sourceDirectory>${project.build.sourceDirectory}</sourceDirectory>
+                        </sourceDirectories>
+                    </configuration>
+                    <dependencies>
+                        <dependency>
+                            <groupId>io.undertow.build</groupId>
+                            <artifactId>undertow-checkstyle-config</artifactId>
+                            <version>${version.io.undertow.build.checkstyle-config}</version>
+                        </dependency>
+                    </dependencies>
+                    <executions>
+                        <execution>
+                            <id>check-style</id>
+                            <phase>compile</phase>
+                            <goals>
+                                <goal>checkstyle</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+
+                <!-- FindBugs -->
+                <plugin>
+                    <groupId>com.github.spotbugs</groupId>
+                    <artifactId>spotbugs-maven-plugin</artifactId>
+                    <version>${version.com.github.spotbugs-maven-plugin}</version>
+                    <configuration>
+                        <excludeFilterFile>${spotbugs.exclude.filter.file}</excludeFilterFile>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <id>find-bugs</id>
+                            <phase>verify</phase>
+                            <goals>
+                                <goal>check</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>${version.surefire.plugin}</version>
+                    <configuration>
+                        <groups>${test.categories}</groups>
+                        <redirectTestOutputToFile>true</redirectTestOutputToFile>
+                    </configuration>
+                </plugin>
+                <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+                <plugin>
+                    <!--suppress MavenModelInspection -->
+                    <groupId>org.eclipse.m2e</groupId>
+                    <!--suppress MavenModelInspection -->
+                    <artifactId>lifecycle-mapping</artifactId>
+                    <!--suppress MavenModelInspection -->
+                    <version>1.0.0</version>
+                    <configuration>
+                        <lifecycleMappingMetadata>
+                            <pluginExecutions>
+                                <pluginExecution>
+                                    <pluginExecutionFilter>
+                                        <groupId>
+                                            org.apache.maven.plugins
+                                        </groupId>
+                                        <artifactId>
+                                            maven-checkstyle-plugin
+                                        </artifactId>
+                                        <versionRange>
+                                            [2.5,)
+                                        </versionRange>
+                                        <goals>
+                                            <goal>checkstyle</goal>
+                                        </goals>
+                                    </pluginExecutionFilter>
+                                    <action>
+                                        <ignore></ignore>
+                                    </action>
+                                </pluginExecution>
+                            </pluginExecutions>
+                        </lifecycleMappingMetadata>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.felix</groupId>
+                    <artifactId>maven-bundle-plugin</artifactId>
+                    <version>${version.bundle.plugin}</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+
+    <dependencyManagement>
+        <dependencies>
+
+            <!-- Modules in this project -->
+
+            <dependency>
+                <groupId>io.undertow</groupId>
+                <artifactId>undertow-core</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>io.undertow</groupId>
+                <artifactId>undertow-core</artifactId>
+                <version>${project.version}</version>
+                <type>test-jar</type>
+                <scope>test</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>io.undertow</groupId>
+                <artifactId>undertow-examples</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>io.undertow</groupId>
+                <artifactId>undertow-parser-generator</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>io.undertow</groupId>
+                <artifactId>undertow-servlet</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>io.undertow</groupId>
+                <artifactId>undertow-servlet</artifactId>
+                <version>${project.version}</version>
+                <type>test-jar</type>
+                <scope>test</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>io.undertow</groupId>
+                <artifactId>undertow-websockets-jsr</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>io.undertow</groupId>
+                <artifactId>undertow-benchmarks</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- External Dependencies -->
+
+            <dependency>
+                <groupId>io.undertow.build</groupId>
+                <artifactId>undertow-checkstyle-config</artifactId>
+                <version>${version.io.undertow.build.checkstyle-config}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>jakarta.servlet</groupId>
+                <artifactId>jakarta.servlet-api</artifactId>
+                <version>${version.jakarta.servlet.jakarta-servlet-api}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>jakarta.annotation</groupId>
+                <artifactId>jakarta.annotation-api</artifactId>
+                <version>${version.jakarta.annotation.jakarta-annotation-api}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>jakarta.websocket</groupId>
+                <artifactId>jakarta.websocket-api</artifactId>
+                <version>${version.jakarta.websocket.jakarta-websocket-api}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>jakarta.websocket</groupId>
+                <artifactId>jakarta.websocket-client-api</artifactId>
+                <version>${version.jakarta.websocket.jakarta-websocket-api}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.jboss.classfilewriter</groupId>
+                <artifactId>jboss-classfilewriter</artifactId>
+                <version>${version.org.jboss.classfilewriter}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <version>${version.junit}</version>
+                <scope>test</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.easymock</groupId>
+                <artifactId>easymock</artifactId>
+                <version>${version.easymock}</version>
+                <scope>test</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>io.netty</groupId>
+                <artifactId>netty-all</artifactId>
+                <version>${version.netty}</version>
+                <scope>test</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>com.twitter</groupId>
+                <artifactId>hpack</artifactId>
+                <version>${version.com.twitter.hpack}</version>
+                <scope>test</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.directory.server</groupId>
+                <artifactId>apacheds-test-framework</artifactId>
+                <version>${version.org.apache.directory.server}</version>
+                <scope>test</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.directory.server</groupId>
+                <artifactId>apacheds-interceptor-kerberos</artifactId>
+                <version>${version.org.apache.directory.server}</version>
+                <scope>test</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.httpcomponents</groupId>
+                <artifactId>httpclient</artifactId>
+                <version>${version.org.apache.httpcomponents}</version>
+                <scope>test</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.httpcomponents</groupId>
+                <artifactId>httpmime</artifactId>
+                <version>${version.org.apache.httpcomponents}</version>
+                <scope>test</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.jboss.logging</groupId>
+                <artifactId>jboss-logging</artifactId>
+                <version>${version.org.jboss.logging}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.jboss.logging</groupId>
+                <artifactId>jboss-logging-processor</artifactId>
+                <version>${version.org.jboss.logging.processor}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.jboss.logmanager</groupId>
+                <artifactId>jboss-logmanager</artifactId>
+                <version>${version.org.jboss.logmanager}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.jboss.xnio</groupId>
+                <artifactId>xnio-api</artifactId>
+                <version>${version.xnio}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.jboss.threads</groupId>
+                        <artifactId>jboss-threads</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
+            <dependency>
+                <groupId>org.jboss.xnio</groupId>
+                <artifactId>xnio-nio</artifactId>
+                <version>${version.xnio}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.wildfly.common</groupId>
+                        <artifactId>wildfly-common</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
+            <dependency>
+                <groupId>org.jboss.threads</groupId>
+                <artifactId>jboss-threads</artifactId>
+                <version>${version.org.jboss.threads}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.wildfly.common</groupId>
+                        <artifactId>wildfly-common</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
+            <dependency>
+                <groupId>org.wildfly.common</groupId>
+                <artifactId>wildfly-common</artifactId>
+                <version>${version.org.wildfly.common}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.h2database</groupId>
+                <artifactId>h2</artifactId>
+                <version>${version.com.h2database}</version>
+                <scope>test</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.wildfly.openssl</groupId>
+                <artifactId>wildfly-openssl</artifactId>
+                <version>${version.org.wildfly.openssl}</version>
+                <scope>test</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.openjdk.jmh</groupId>
+                <artifactId>jmh-core</artifactId>
+                <version>${version.jmh}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.openjdk.jmh</groupId>
+                <artifactId>jmh-generator-annprocess</artifactId>
+                <version>${version.jmh}</version>
+                <scope>provided</scope>
+            </dependency>
+
+        </dependencies>
+    </dependencyManagement>
+
+    <profiles>
+        <profile>
+            <id>spotbugs</id>
+            <activation>
+                <property>
+                    <name>findbugs</name> <!-- not modified just for compatibility reason -->
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>com.github.spotbugs</groupId>
+                        <artifactId>spotbugs-maven-plugin</artifactId>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <profile>
+            <id>dist</id>
+            <activation>
+                <property>
+                    <name>release</name>
+                </property>
+            </activation>
+            <modules>
+                <module>dist</module>
+            </modules>
+        </profile>
+
+        <profile>
+            <id>test-coverage</id>
+            <modules>
+                <module>coverage-report</module>
+            </modules>
+            <properties>
+                <jacoco.agent.argLine>${jacoco.activated.agent.argLine}</jacoco.agent.argLine>
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.jacoco</groupId>
+                        <artifactId>jacoco-maven-plugin</artifactId>
+                        <version>${version.org.jacoco}</version>
+                        <executions>
+                            <execution>
+                                <id>agent</id>
+                                <goals>
+                                    <goal>prepare-agent</goal>
+                                </goals>
+                                <configuration>
+                                    <includes>
+                                        <include>io.undertow*</include>
+                                    </includes>
+                                    <propertyName>jacoco.activated.agent.argLine</propertyName>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <profile>
+            <id>only-unit-tests</id>
+            <activation>
+                <property>
+                    <name>onlyUnitTests</name>
+                </property>
+            </activation>
+            <properties>
+                <test.categories>io.undertow.testutils.category.UnitTest</test.categories>
+            </properties>
+        </profile>
+
+        <profile>
+            <id>skip-unit-tests</id>
+            <activation>
+                <property>
+                    <name>skipUnitTests</name>
+                </property>
+            </activation>
+            <properties>
+                <test.categories>NOT io.undertow.testutils.category.UnitTest</test.categories>
+            </properties>
+        </profile>
+
+        <profile>
+            <id>osgi</id>
+            <activation>
+                <property>
+                    <name>osgi</name>
+                </property>
+            </activation>
+            <modules>
+                <module>karaf</module>
+            </modules>
+        </profile>
+
+        <profile>
+            <id>jdk18</id>
+            <activation>
+                <jdk>[18,)</jdk>
+            </activation>
+            <properties>
+                <modular.jdk.props>-Djava.security.manager=allow</modular.jdk.props>
+            </properties>
+        </profile>
+		<profile>
+			<id>verbose</id>
+			<activation>
+				<property>
+					<name>findbugs</name>
+				</property>
+			</activation>
+			<properties>
+				<maven.javadoc.plugin.quiet>false</maven.javadoc.plugin.quiet>
+				<maven.compiler.showDeprecation>true</maven.compiler.showDeprecation>
+				<maven.compiler.showWarnings>false</maven.compiler.showWarnings>
+			</properties>
+		</profile>
+    </profiles>
+</project>

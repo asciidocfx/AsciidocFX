@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.ibm.icu</groupId>
+  <artifactId>icu4j</artifactId>
+  <name>ICU4J</name>
+  <version>77.1</version>
+  <description>International Components for Unicode for Java (ICU4J) is a mature, widely used Java library
+    providing Unicode and Globalization support</description>
+  <url>https://icu.unicode.org/</url>
+  <developers>
+    <developer>
+      <id>markusicu</id>
+      <name>Markus Scherer</name>
+      <organization>Google</organization>
+      <roles>
+        <role>Chair</role>
+      </roles>
+    </developer>
+    <developer>
+      <id>richgillam</id>
+      <name>Richard Gillam</name>
+      <roles>
+        <role>Vice chair</role>
+      </roles>
+    </developer>
+  </developers>
+  <licenses>
+    <license>
+      <name>Unicode-3.0</name>
+      <url>https://raw.githubusercontent.com/unicode-org/icu/maint/maint-77/LICENSE</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+  <scm>
+    <connection>scm:git:git://github.com/unicode-org/icu.git</connection>
+    <developerConnection>scm:git:git@github.com:unicode-org/icu.git</developerConnection>
+    <url>https://github.com/unicode-org/icu</url>
+  </scm>
+</project>

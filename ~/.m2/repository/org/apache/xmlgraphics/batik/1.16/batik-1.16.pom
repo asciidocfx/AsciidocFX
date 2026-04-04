@@ -1,0 +1,203 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>org.apache.xmlgraphics</groupId>
+  <artifactId>batik</artifactId>
+  <version>1.16</version>
+  <name>${project.groupId}:${project.artifactId}</name>
+  <description>XML Graphics Batik</description>
+  <packaging>pom</packaging>
+  <url>http://xmlgraphics.apache.org/batik/</url>
+  <inceptionYear>2000</inceptionYear>
+
+  <properties>
+    <checkstyle.version>2.15</checkstyle.version>
+    <compiler.version>3.3</compiler.version>
+    <dependency.version>3.1.1</dependency.version>
+    <findbugs.version>3.0.1</findbugs.version>
+    <jar.version>3.1.1</jar.version>
+    <java.version>1.8</java.version>
+    <junit.version>4.11</junit.version>
+    <jython.version>2.7.0</jython.version>
+    <org.slf4j.simpleLogger.defaultLogLevel>error</org.slf4j.simpleLogger.defaultLogLevel>
+    <project.info.reports.version>2.8</project.info.reports.version>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <release.version>2.5.2</release.version>
+    <rhino.version>1.7.7</rhino.version>
+    <surefire.version>2.18.1</surefire.version>
+    <xmlapis.version>1.4.01</xmlapis.version>
+    <xmlapisext.version>1.3.04</xmlapisext.version>
+    <xmlgraphics.commons.version>2.7</xmlgraphics.commons.version>
+    <jdk.path>${env.JAVA_HOME}</jdk.path>
+  </properties>
+
+  <mailingLists>
+    <mailingList>
+      <name>Batik Users List</name>
+      <subscribe>batik-users-subscribe@xmlgraphics.apache.org</subscribe>
+      <unsubscribe>batik-users-unsubscribe@xmlgraphics.apache.org</unsubscribe>
+      <archive>http://mail-archives.apache.org/mod_mbox/xmlgraphics-batik-users/</archive>
+    </mailingList>
+    <mailingList>
+      <name>Batik Developer List</name>
+      <subscribe>batik-dev-subscribe@xmlgraphics.apache.org</subscribe>
+      <unsubscribe>batik-dev-unsubscribe@xmlgraphics.apache.org</unsubscribe>
+      <archive>http://mail-archives.apache.org/mod_mbox/xmlgraphics-batik-dev/</archive>
+    </mailingList>
+    <mailingList>
+      <name>Batik Commit List</name>
+      <subscribe>batik-commits-subscribe@xmlgraphics.apache.org</subscribe>
+      <unsubscribe>batik-commits-unsubscribe@xmlgraphics.apache.org</unsubscribe>
+      <archive>http://mail-archives.apache.org/mod_mbox/xmlgraphics-batik-commits/</archive>
+    </mailingList>
+  </mailingLists>
+
+  <licenses>
+    <license>
+      <name>The Apache Software License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+
+  <organization>
+    <name>Apache Software Foundation</name>
+    <url>http://www.apache.org/</url>
+  </organization>
+
+  <modules>
+    <module>batik-all</module>
+    <module>batik-anim</module>
+    <module>batik-awt-util</module>
+    <module>batik-bridge</module>
+    <module>batik-codec</module>
+    <module>batik-constants</module>
+    <module>batik-css</module>
+    <module>batik-dom</module>
+    <module>batik-ext</module>
+    <module>batik-extension</module>
+    <module>batik-gui-util</module>
+    <module>batik-gvt</module>
+    <module>batik-i18n</module>
+    <module>batik-parser</module>
+    <module>batik-rasterizer-ext</module>
+    <module>batik-rasterizer</module>
+    <module>batik-script</module>
+    <module>batik-shared-resources</module>
+    <module>batik-slideshow</module>
+    <module>batik-squiggle-ext</module>
+    <module>batik-squiggle</module>
+    <module>batik-svg-dom</module>
+    <module>batik-svgbrowser</module>
+    <module>batik-svggen</module>
+    <module>batik-svgpp</module>
+    <module>batik-svgrasterizer</module>
+    <module>batik-swing</module>
+    <module>batik-test</module>
+    <module>batik-transcoder</module>
+    <module>batik-util</module>
+    <module>batik-ttf2svg</module>
+    <module>batik-xml</module>
+    <module>batik-test-old</module>
+    <module>batik-test-svg</module>
+    <module>batik-test-swing</module>
+  </modules>
+
+  <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <version>${compiler.version}</version>
+          <configuration>
+            <source>${java.version}</source>
+            <target>${java.version}</target>
+            <compilerArgs></compilerArgs>
+            <showWarnings>false</showWarnings>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-project-info-reports-plugin</artifactId>
+          <version>${project.info.reports.version}</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-surefire-plugin</artifactId>
+          <version>${surefire.version}</version>
+        </plugin>
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>findbugs-maven-plugin</artifactId>
+          <version>${findbugs.version}</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-checkstyle-plugin</artifactId>
+          <version>${checkstyle.version}</version>
+          <configuration>
+            <configLocation>checkstyle.xml</configLocation>
+            <violationSeverity>warning</violationSeverity>
+            <includeResources>false</includeResources>
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
+
+  <profiles>
+    <profile>
+      <id>custom-javac</id>
+      <activation>
+        <property>
+          <name>jdk.path</name>
+        </property>
+      </activation>
+      <build>
+        <pluginManagement>
+          <plugins>
+            <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-compiler-plugin</artifactId>
+              <version>${compiler.version}</version>
+              <configuration>
+                <source>${java.version}</source>
+                <target>${java.version}</target>
+                <executable>${jdk.path}/bin/javac</executable>
+                <fork>true</fork>
+              </configuration>
+            </plugin>
+          </plugins>
+        </pluginManagement>
+      </build>
+    </profile>
+  </profiles>
+
+  <scm>
+    <connection>scm:svn:https://svn.apache.org/repos/asf/xmlgraphics/batik/trunk/</connection>
+    <url>scm:svn:https://svn.apache.org/repos/asf/xmlgraphics/batik/trunk/</url>
+    <developerConnection></developerConnection>
+  </scm>
+
+  <repositories>
+    <repository>
+      <id>apache.snapshots.https</id>
+      <url>https://repository.apache.org/content/repositories/snapshots</url>
+      <snapshots>
+        <enabled>true</enabled>
+        <updatePolicy>always</updatePolicy>
+      </snapshots>
+    </repository>
+  </repositories>
+
+  <distributionManagement>
+    <site>
+      <id>${project.artifactId}-site</id>
+      <url>${project.baseUri}</url>
+    </site>
+  </distributionManagement>
+
+</project>

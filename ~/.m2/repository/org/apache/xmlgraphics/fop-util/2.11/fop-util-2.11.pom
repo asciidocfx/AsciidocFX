@@ -1,0 +1,105 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>org.apache.xmlgraphics</groupId>
+  <artifactId>fop-util</artifactId>
+  <name>Apache FOP Utilities</name>
+  <description>XML Graphics Format Object Processor Utilities</description>
+
+  <parent>
+    <groupId>org.apache.xmlgraphics</groupId>
+    <artifactId>fop-parent</artifactId>
+    <version>2.11</version>
+  </parent>
+
+  <dependencies>
+    <!-- compile deps -->
+    <dependency>
+      <groupId>org.apache.xmlgraphics</groupId>
+      <artifactId>xmlgraphics-commons</artifactId>
+      <version>${xmlgraphics.commons.version}</version>
+    </dependency>
+    <!-- test deps -->
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>${junit.version}</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <configuration>
+          <archive>
+            <manifestEntries>
+              <Automatic-Module-Name>org.apache.xmlgraphics.fop.util</Automatic-Module-Name>
+            </manifestEntries>
+          </archive>
+        </configuration>
+      </plugin>
+      <!-- junit testing -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <includes>
+            <include>**/*TestCase.java</include>
+          </includes>
+          <redirectTestOutputToFile>true</redirectTestOutputToFile>
+        </configuration>
+      </plugin>
+      <!-- code analysis - checkstyle -->
+      <plugin>
+        <artifactId>maven-checkstyle-plugin</artifactId>
+        <configuration>
+          <configLocation>${project.baseUri}../fop-core/src/tools/resources/checkstyle/checkstyle.xml</configLocation>
+          <headerLocation>${project.baseUri}../fop-core/src/tools/resources/checkstyle/LICENSE.txt</headerLocation>
+          <includeResources>false</includeResources>
+          <includeTestResources>false</includeTestResources>
+          <linkXRef>false</linkXRef>
+          <logViolationsToConsole>true</logViolationsToConsole>
+          <suppressionsLocation>${project.baseUri}../fop-core/src/tools/resources/checkstyle/suppressions.xml</suppressionsLocation>
+          <violationSeverity>warning</violationSeverity>
+        </configuration>
+      </plugin>
+      <!-- code analysis - findbugs -->
+      <plugin>
+        <groupId>com.github.spotbugs</groupId>
+        <artifactId>spotbugs-maven-plugin</artifactId>
+        <version>${findbugs.plugin.version}</version>
+        <configuration>
+          <excludeFilterFile>../fop-core/src/tools/resources/findbugs/exclusions.xml</excludeFilterFile>
+          <effort>Max</effort>
+          <threshold>Low</threshold>
+        </configuration>
+      </plugin>
+    </plugins>
+    <resources>
+      <resource>
+        <directory>src/main/resources</directory>
+      </resource>
+      <resource>
+        <directory>${basedir}/..</directory>
+        <includes>
+          <include>LICENSE</include>
+          <include>NOTICE</include>
+        </includes>
+        <targetPath>META-INF</targetPath>
+      </resource>
+    </resources>
+    <testResources>
+      <testResource>
+        <directory>src/test/resources</directory>
+        <includes>
+          <include>**/*</include>
+        </includes>
+      </testResource>
+    </testResources>
+  </build>
+
+</project>

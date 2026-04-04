@@ -38,7 +38,6 @@ public class CopilotPanel extends VBox {
     private Button stopButton;
     private Button newChatButton;
     private Button authButton;
-    private SegmentedButton modeSelector;
     private ToggleGroup modeToggleGroup;
     private Label statusLabel;
     private boolean chatViewReady = false;
@@ -521,15 +520,5 @@ public class CopilotPanel extends VBox {
                 </body>
                 </html>
                 """;
-    }
-
-    /**
-     * Custom SegmentedButton for mode selection (simple HBox wrapper).
-     */
-    private static class SegmentedButton extends HBox {
-        SegmentedButton(ToggleButton... buttons) {
-            getChildren().addAll(buttons);
-            setSpacing(0);
-        }
     }
 }
