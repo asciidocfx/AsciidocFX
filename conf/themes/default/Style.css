@@ -70,3 +70,57 @@
 .paypal-button:hover {
     -fx-background-color: rgb(246, 185, 72) !important;
 }
+
+/* Copilot Panel Styles */
+.copilot-mode-button {
+    -fx-background-color: rgb(220, 220, 220);
+    -fx-text-fill: #333;
+    -fx-border-color: rgb(200, 200, 200);
+    -fx-padding: 4 12;
+    -fx-font-size: 11px;
+}
+
+.copilot-mode-button:selected {
+    -fx-background-color: #0078d4;
+    -fx-text-fill: white;
+}
+
+.copilot-mode-selector {
+    -fx-padding: 2 0;
+}
+
+.copilot-send-button {
+    -fx-background-color: #0078d4;
+    -fx-text-fill: white;
+}
+
+.copilot-send-button:hover {
+    -fx-background-color: #005a9e;
+}
+
+.copilot-stop-button {
+    -fx-background-color: #d13438;
+    -fx-text-fill: white;
+}
+
+.copilot-input {
+    -fx-border-color: rgb(200, 200, 200);
+    -fx-prompt-text-fill: #888;
+}
+
+.copilot-status {
+    -fx-text-fill: #666;
+    -fx-font-size: 11px;
+    -fx-padding: 2 5;
+}
+
+.copilot-auth-button, .copilot-new-chat-button {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-padding: 2;
+}
+
+.copilot-auth-button:hover, .copilot-new-chat-button:hover {
+    -fx-background-color: rgb(220, 220, 220);
+}
+}

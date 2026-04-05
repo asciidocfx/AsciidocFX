@@ -1,0 +1,12 @@
+{
+    "defaultMode": "ASK",
+    "inlineCompletionEnabled": false,
+    "contextWindowSize": 4000,
+    "temperature": 0.3,
+    "maxTokens": 4096,
+    "model": "gpt-4o",
+    "enabled": true,
+    "accessToken": "",
+    "refreshToken": "",
+    "tokenExpiresAt": 0
+}

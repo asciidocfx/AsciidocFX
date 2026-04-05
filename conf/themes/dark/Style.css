@@ -119,3 +119,59 @@
     -fx-border-color: #b42e25;
     -fx-background-color: #b42e25;
 }
+
+/* Copilot Panel Styles */
+.copilot-mode-button {
+    -fx-background-color: rgb(70, 70, 70);
+    -fx-text-fill: #ccc;
+    -fx-border-color: rgb(60, 60, 60);
+    -fx-padding: 4 12;
+    -fx-font-size: 11px;
+}
+
+.copilot-mode-button:selected {
+    -fx-background-color: #264f78;
+    -fx-text-fill: white;
+}
+
+.copilot-mode-selector {
+    -fx-padding: 2 0;
+}
+
+.copilot-send-button {
+    -fx-background-color: #264f78;
+    -fx-text-fill: white;
+}
+
+.copilot-send-button:hover {
+    -fx-background-color: #1a3a5c;
+}
+
+.copilot-stop-button {
+    -fx-background-color: #5a1d1d;
+    -fx-text-fill: white;
+}
+
+.copilot-input {
+    -fx-background-color: rgb(40, 40, 40);
+    -fx-text-fill: #d4d4d4;
+    -fx-border-color: rgb(60, 60, 60);
+    -fx-prompt-text-fill: #888;
+}
+
+.copilot-status {
+    -fx-text-fill: #888;
+    -fx-font-size: 11px;
+    -fx-padding: 2 5;
+}
+
+.copilot-auth-button, .copilot-new-chat-button {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-padding: 2;
+}
+
+.copilot-auth-button:hover, .copilot-new-chat-button:hover {
+    -fx-background-color: rgb(80, 80, 80);
+}
+}
