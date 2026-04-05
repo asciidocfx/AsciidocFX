@@ -82,7 +82,7 @@ public class CopilotConfigBean extends ConfigurationBase {
 
         DefaultFactoryProvider factoryProvider = new DefaultFactoryProvider();
         factoryProvider.addFactory(new NamedFieldHandler("temperature"),
-                new SliderFactory(SliderBuilt.create(0.0, 2.0, 0.3).step(0.1)));
+                new SliderFactory(SliderBuilt.create(0.0, 2, 0.3).step(0.1)));
         form.setEditorFactoryProvider(factoryProvider);
         form.setSource(this);
 
