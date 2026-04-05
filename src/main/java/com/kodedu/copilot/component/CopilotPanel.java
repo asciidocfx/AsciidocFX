@@ -53,7 +53,9 @@ public class CopilotPanel extends VBox {
 
     @PostConstruct
     public void initialize() {
-        buildUI();
+        threadService.runActionLater(() -> {
+            buildUI();
+        });
     }
 
     private void buildUI() {
