@@ -16,7 +16,7 @@ import java.nio.file.Path;
 public class FileContextCollector {
 
     private static final Logger logger = LoggerFactory.getLogger(FileContextCollector.class);
-    private static final long MAX_FILE_SIZE = 100_000; // 100KB limit
+    public static final long MAX_FILE_SIZE = 100_000; // 100KB limit
 
     /**
      * Reads the content of a file, respecting size limits.
