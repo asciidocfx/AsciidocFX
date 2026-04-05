@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 /**
@@ -134,10 +135,16 @@ public class CopilotServiceImpl implements CopilotService {
     }
 
     @Override
-    public void authenticate(Consumer<Boolean> callback) {
-        authService.authenticate().thenAccept(success -> {
+    public void authenticate(BiConsumer<String, String> onDeviceCode, Consumer<Boolean> callback) {
+        authService.authenticate(onDeviceCode).thenAccept(success -> {
             threadService.runActionLater(() -> callback.accept(success));
         });
+    }
+
+    @Override
+    public void logout() {
+        authService.logout();
+        newConversation();
     }
 
     @Override

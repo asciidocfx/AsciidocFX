@@ -220,4 +220,10 @@ public class CopilotConfigBean extends ConfigurationBase {
     public boolean hasValidToken() {
         return !getAccessToken().isEmpty() && getTokenExpiresAt() > System.currentTimeMillis() / 1000;
     }
+
+    public void clearTokens() {
+        setAccessToken("");
+        setRefreshToken("");
+        setTokenExpiresAt(0);
+    }
 }

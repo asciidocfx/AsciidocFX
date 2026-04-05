@@ -174,4 +174,15 @@
 .copilot-auth-button:hover, .copilot-new-chat-button:hover {
     -fx-background-color: rgb(80, 80, 80);
 }
+
+.copilot-model-selector {
+    -fx-background-color: rgb(40, 40, 40);
+    -fx-border-color: rgb(60, 60, 60);
+    -fx-font-size: 11px;
+}
+
+.copilot-model-selector .text-input {
+    -fx-text-fill: #d4d4d4;
+    -fx-background-color: rgb(40, 40, 40);
+}
 }

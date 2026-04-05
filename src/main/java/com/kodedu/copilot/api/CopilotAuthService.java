@@ -4,9 +4,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kodedu.copilot.config.CopilotConfigBean;
 import com.kodedu.service.ThreadService;
-import javafx.application.Platform;
-import javafx.scene.control.*;
-import javafx.scene.layout.VBox;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +18,7 @@ import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.BiConsumer;
 
 /**
  * Handles GitHub OAuth Device Flow authentication for Copilot access.
@@ -55,10 +53,12 @@ public class CopilotAuthService {
     }
 
     /**
-     * Initiates the OAuth Device Flow. Shows a dialog to the user with the device code.
-     * Returns a CompletableFuture that resolves when auth is complete.
+     * Initiates the OAuth Device Flow. Calls onDeviceCode with the user code and verification URI
+     * so the caller can display them in the UI. Returns a CompletableFuture that resolves when auth is complete.
+     *
+     * @param onDeviceCode Called with (userCode, verificationUri) when the device code is ready
      */
-    public CompletableFuture<Boolean> authenticate() {
+    public CompletableFuture<Boolean> authenticate(BiConsumer<String, String> onDeviceCode) {
         return CompletableFuture.supplyAsync(() -> {
             try {
                 // Step 1: Request device code
@@ -81,8 +81,10 @@ public class CopilotAuthService {
                 int interval = deviceResponse.has("interval") ? deviceResponse.get("interval").asInt() : 5;
                 int expiresIn = deviceResponse.has("expires_in") ? deviceResponse.get("expires_in").asInt() : 900;
 
-                // Step 2: Show dialog to user on JavaFX thread
-                Platform.runLater(() -> showDeviceCodeDialog(userCode, verificationUri));
+                // Step 2: Notify caller with device code info so it can display in UI
+                if (onDeviceCode != null) {
+                    onDeviceCode.accept(userCode, verificationUri);
+                }
 
                 // Step 3: Poll for access token
                 long deadline = System.currentTimeMillis() + (expiresIn * 1000L);
@@ -177,6 +179,17 @@ public class CopilotAuthService {
     }
 
     /**
+     * Logs out from GitHub Copilot by clearing stored tokens.
+     */
+    public void logout() {
+        threadService.runActionLater(() -> {
+            configBean.clearTokens();
+            configBean.save();
+        });
+        logger.info("Logged out from GitHub Copilot");
+    }
+
+    /**
      * Ensures we have a valid Copilot token, refreshing if necessary.
      */
     public String getValidToken() {
@@ -191,22 +204,5 @@ public class CopilotAuthService {
             }
         }
         return null;
-    }
-
-    private void showDeviceCodeDialog(String userCode, String verificationUri) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("GitHub Copilot Authentication");
-        alert.setHeaderText("Sign in to GitHub Copilot");
-
-        VBox content = new VBox(10);
-        Label instructionLabel = new Label("1. Open " + verificationUri + " in your browser");
-        Label codeLabel = new Label("2. Enter this code:");
-        TextField codeField = new TextField(userCode);
-        codeField.setEditable(false);
-        codeField.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-alignment: center;");
-        Label waitLabel = new Label("3. After authorizing, this dialog will close automatically.");
-        content.getChildren().addAll(instructionLabel, codeLabel, codeField, waitLabel);
-        alert.getDialogPane().setContent(content);
-        alert.show();
     }
 }
