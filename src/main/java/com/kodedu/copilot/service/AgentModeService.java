@@ -111,7 +111,7 @@ public class AgentModeService {
                 "type": "function",
                 "function": {
                   "name": "edit_file",
-                  "description": "Edit a file by finding and replacing specific text. The old_text must match exactly.",
+                  "description": "Edit a file by finding and replacing the first occurrence of specific text. The old_text must match exactly.",
                   "parameters": {
                     "type": "object",
                     "properties": {
@@ -504,8 +504,15 @@ public class AgentModeService {
         try (Stream<Path> walk = Files.walk(resolved, MAX_LIST_DEPTH)) {
             String fileList = walk
                     .filter(p -> !p.equals(resolved))
-                    .filter(p -> !p.toString().contains(".git"))
-                    .filter(p -> !p.toString().contains("node_modules"))
+                    .filter(p -> {
+                        for (Path component : p) {
+                            String name = component.toString();
+                            if (".git".equals(name) || "node_modules".equals(name)) {
+                                return false;
+                            }
+                        }
+                        return true;
+                    })
                     .limit(MAX_LIST_FILES)
                     .map(p -> {
                         String relative = workDir.relativize(p).toString();
@@ -549,9 +556,6 @@ public class AgentModeService {
                         public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
                             if (results.size() >= MAX_SEARCH_RESULTS) {
                                 return FileVisitResult.TERMINATE;
-                            }
-                            if (file.toString().contains(".git") || file.toString().contains("node_modules")) {
-                                return FileVisitResult.CONTINUE;
                             }
                             if (!attrs.isRegularFile() || attrs.size() > FileContextCollector.MAX_FILE_SIZE) {
                                 return FileVisitResult.CONTINUE;
@@ -631,20 +635,21 @@ public class AgentModeService {
         }
 
         // Parse AsciiDoc headings (= Title, == Section, === Subsection, etc.)
+        // Check from longest prefix to shortest to avoid false matches
         String[] lines = content.split("\n");
         StringBuilder outline = new StringBuilder();
         for (int i = 0; i < lines.length; i++) {
             String line = lines[i].trim();
-            if (line.startsWith("= ")) {
-                outline.append("L").append(i + 1).append(": ").append(line).append("\n");
-            } else if (line.startsWith("== ")) {
-                outline.append("L").append(i + 1).append(":   ").append(line).append("\n");
-            } else if (line.startsWith("=== ")) {
-                outline.append("L").append(i + 1).append(":     ").append(line).append("\n");
+            if (line.startsWith("===== ")) {
+                outline.append("L").append(i + 1).append(":         ").append(line).append("\n");
             } else if (line.startsWith("==== ")) {
                 outline.append("L").append(i + 1).append(":       ").append(line).append("\n");
-            } else if (line.startsWith("===== ")) {
-                outline.append("L").append(i + 1).append(":         ").append(line).append("\n");
+            } else if (line.startsWith("=== ")) {
+                outline.append("L").append(i + 1).append(":     ").append(line).append("\n");
+            } else if (line.startsWith("== ")) {
+                outline.append("L").append(i + 1).append(":   ").append(line).append("\n");
+            } else if (line.startsWith("= ")) {
+                outline.append("L").append(i + 1).append(": ").append(line).append("\n");
             }
         }
 
