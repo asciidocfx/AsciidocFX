@@ -7,6 +7,7 @@ import com.kodedu.animation.GifExporterFX;
 import com.kodedu.boot.AppStarter;
 import com.kodedu.component.*;
 import com.kodedu.config.*;
+import com.kodedu.copilot.component.CopilotPanel;
 import com.kodedu.engine.AsciidocAsciidoctorjConverter;
 import com.kodedu.engine.AsciidocConverterProvider;
 import com.kodedu.helper.*;
@@ -163,6 +164,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     public VBox configBox;
     public ToggleGroup rightToggleGroup;
     public ToggleButton toggleConfigButton;
+    public ToggleButton toggleCopilotButton;
     public Label basicSearch;
     public Button newTerminalButton;
     public Button closeTerminalButton;
@@ -322,6 +324,10 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     @Autowired
     private EventService eventService;
+
+    @Autowired
+    private CopilotPanel copilotPanel;
+
     private Stage stage;
     private List<WebSocketSession> sessionList = new ArrayList<>();
     private Scene scene;
@@ -3127,6 +3133,16 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             rightShowerHider.showNode(configBox);
         }
 
+    }
+
+    @FXML
+    public void toggleCopilotView(ActionEvent actionEvent) {
+        browserPro.setVisible(false);
+        final ToggleButton source = (ToggleButton) actionEvent.getSource();
+        splitPane.setDividerPosition(1, source.isSelected() ? 0.59 : 1);
+        if (source.isSelected()) {
+            rightShowerHider.showNode(copilotPanel);
+        }
     }
 
     @FXML
