@@ -81,7 +81,7 @@ public class CopilotApiClient {
                         .header("Accept", "text/event-stream")
                         .header("Editor-Version", "AsciidocFX/" + appVersion)
                         .header("Editor-Plugin-Version", "copilot-asciidocfx/1.0.0")
-                        .header("Copilot-Integration-Id", "asciidocfx")
+                        .header("Copilot-Integration-Id", "vscode-chat")
                         .POST(HttpRequest.BodyPublishers.ofString(requestBody))
                         .build();
 
@@ -132,6 +132,7 @@ public class CopilotApiClient {
                     .header("Accept", "application/json")
                     .header("Editor-Version", "AsciidocFX/" + appVersion)
                     .header("Editor-Plugin-Version", "copilot-asciidocfx/1.0.0")
+                    .header("Copilot-Integration-Id", "vscode-chat")
                     .POST(HttpRequest.BodyPublishers.ofString(requestBody))
                     .build();
 

@@ -3,6 +3,7 @@ package com.kodedu.copilot;
 import com.kodedu.copilot.model.CopilotConversation;
 import com.kodedu.copilot.model.CopilotPlan;
 
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 /**
@@ -54,8 +55,15 @@ public interface CopilotService {
 
     /**
      * Initiates authentication.
+     * @param onDeviceCode Called with (userCode, verificationUri) when device code is ready
+     * @param callback Called with true/false when auth completes
      */
-    void authenticate(Consumer<Boolean> callback);
+    void authenticate(BiConsumer<String, String> onDeviceCode, Consumer<Boolean> callback);
+
+    /**
+     * Logs out from GitHub Copilot, clearing stored tokens.
+     */
+    void logout();
 
     /**
      * Stops any ongoing request.
