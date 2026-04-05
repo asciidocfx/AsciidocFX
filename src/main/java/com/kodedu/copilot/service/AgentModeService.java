@@ -357,7 +357,7 @@ public class AgentModeService {
                 return args;
             }
         } catch (Exception e) {
-            // Ignore
+            // JSON parsing failed — fallback returns empty object node
         }
         return objectMapper.createObjectNode();
     }
@@ -572,7 +572,7 @@ public class AgentModeService {
                                     }
                                 }
                             } catch (IOException e) {
-                                // Skip binary or unreadable files
+                                logger.debug("Skipping unreadable file: {}", file, e);
                             }
                             return FileVisitResult.CONTINUE;
                         }
