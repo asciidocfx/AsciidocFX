@@ -1,4 +1,11 @@
 var editor = ace.edit("editor");
+var onThemeLoaded = function () {
+    if (window.editorPane && editorPane.onThemeLoaded) {
+        editorPane.onThemeLoaded();
+    }
+};
+editor.renderer.on("themeLoaded", onThemeLoaded);
+editor.setTheme("ace/theme/tomorrow_night");
 editor.renderer.setScrollMargin(5, 0);
 var modelist = ace.require("ace/ext/modelist");
 var keyboard = ace.require("ace/ext/menu_tools/get_editor_keyboard_shortcuts");
@@ -17,7 +24,6 @@ editor.setOptions({
     dragEnabled: true
 });
 editor.setScrollSpeed("0.1");
-editor.setTheme("ace/theme/xcode");
 
 var lastEditorRow = 0;
 var afterFirstChange = false;
@@ -519,10 +525,6 @@ function resizeAceEditor() {
     e.stop();
 }*/
 
-var onThemeLoaded = function () {
-    editorPane.onThemeLoaded();
-};
-
 function getLanguage() {
     var session = editor.getSession();
     var fullMode = session.getMode().$id;
@@ -565,5 +567,3 @@ function moveCursorLineEnd() {
     var lineEndPosition = editor.getSession().getLine(currentPosition.row).length;
     editor.moveCursorTo(currentPosition.row, lineEndPosition);
 }
-
-editor.renderer.on("themeLoaded", onThemeLoaded);

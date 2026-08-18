@@ -38,6 +38,7 @@ import javafx.scene.input.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.web.PopupFeatures;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
@@ -154,6 +155,21 @@ public class EditorPane extends AnchorPane {
         initializeMargins();
         initializeEditorContextMenus();
         enableEventHandler();
+        applyEditorSurfaceColors();
+        webView.setOpacity(0);
+    }
+
+    public void applyEditorSurfaceColors() {
+        boolean dark = editorConfigBean.getEditorTheme().stream()
+                .findFirst()
+                .map(t -> "Dark".equalsIgnoreCase(t.getThemeName()))
+                .orElse(true);
+        String fill = dark ? "#1e1e1e" : "#ffffff";
+        webView.setPageFill(Color.web(fill));
+        webView.setStyle("-fx-background-color: " + fill + ";");
+        setStyle("-fx-background-color: " + fill + ";");
+        webEngine().setUserStyleSheetLocation(
+                "data:text/css,html,body,#editor,.ace_editor{background:" + fill + "!important;}");
     }
 
     public void resizeAceEditor() {
@@ -216,6 +232,7 @@ public class EditorPane extends AnchorPane {
         getWindow().setMember("editorPane", this);
         getWindow().setMember("clipboardHelper", clipboardHelper);
         updateOptions();
+        onThemeLoaded();
 
         threadService.runTaskLater(() -> {
             shortCutConfigBean.awaitDisabledLoading();
@@ -363,6 +380,17 @@ public class EditorPane extends AnchorPane {
 
     @WebkitCall(from = "editor")
     public void onThemeLoaded() {
+        String aceTheme = editorConfigBean.getEditorTheme().stream()
+                .findFirst()
+                .map(EditorConfigBean.Theme::getAceTheme)
+                .orElse("tomorrow_night");
+        try {
+            call("changeTheme", aceTheme);
+        } catch (Exception e) {
+            logger.debug("Ace theme apply skipped: {}", e.getMessage());
+        }
+        applyEditorSurfaceColors();
+        webView.setOpacity(1);
         if (!isVisible()) {
             setVisible(true);
             getWebView().requestFocus();

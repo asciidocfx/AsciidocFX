@@ -5,6 +5,17 @@
     <meta charset="UTF-8">
     <link rel="stylesheet" href="/afx/resource/css/?p=css/three-dots.css" type="text/css"/>
     <link rel="stylesheet" href="/afx/dynamic/css/?p=asciidoctor-default-overrides.css"/>
+    <script>
+        (function () {
+            var params = new URLSearchParams(window.location.search);
+            if (params.get("theme") === "dark") {
+                var link = document.createElement("link");
+                link.rel = "stylesheet";
+                link.href = "/afx/dynamic/css/?p=asciidoctor-preview-theme.css&mode=dark";
+                document.head.appendChild(link);
+            }
+        })();
+    </script>
 </head>
 <body>
 <div class="asciidocfx-container">

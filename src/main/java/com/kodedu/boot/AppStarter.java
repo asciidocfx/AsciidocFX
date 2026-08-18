@@ -2,7 +2,9 @@ package com.kodedu.boot;
 
 import com.install4j.api.launcher.StartupNotification;
 import com.kodedu.config.ConfigurationService;
+import com.kodedu.config.EditorConfigBean;
 import com.kodedu.controller.ApplicationController;
+import com.kodedu.component.WindowPlacement;
 import com.kodedu.helper.IOHelper;
 import com.kodedu.helper.TaskbarHelper;
 import com.kodedu.other.RenderResult;
@@ -19,16 +21,15 @@ import de.tototec.cmdoption.CmdlineParserException;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
-import javafx.geometry.Rectangle2D;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
+import javafx.scene.paint.Color;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.text.Font;
 import javafx.stage.Modality;
-import javafx.stage.Screen;
 import javafx.stage.Stage;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -96,6 +97,10 @@ public class AppStarter extends Application {
             }
         });
 
+    }
+
+    private static boolean isHeadless() {
+        return config != null && config.headless;
     }
 
     private static void setupMonocle() {
@@ -180,24 +185,13 @@ public class AppStarter extends Application {
         final FXMLLoader parentLoader = new FXMLLoader();
         parentLoader.setControllerFactory(context::getBean);
 
-        Parent root;
+        Parent content;
         try (InputStream sceneStream = AppStarter.class.getResourceAsStream("/scenes/AsciidocFX_Scene.fxml")) {
-            root = parentLoader.load(sceneStream);
+            content = parentLoader.load(sceneStream);
         }
 
-        Scene scene = new Scene(root);
-        threadService.runActionLater(stage::setScene, scene);
-
-        stage.setOnShowing(e -> {
-
-            controller.setStage(stage);
-            controller.setScene(scene);
-            controller.setHostServices(getHostServices());
-
-            configurationService.loadConfigurations();
-            controller.applyInitialConfigurations();
-            controller.checkStageInsideScreens();
-        });
+        Scene scene = new Scene(content);
+        scene.setFill(Color.web("#191A1B"));
 
         stage.setOnShown(e -> {
             controller.bindConfigurations();
@@ -207,18 +201,42 @@ public class AppStarter extends Application {
         });
 
         threadService.runActionLater(() -> {
-            setMaximized();
+            controller.setStage(stage);
+            controller.setScene(scene);
+            controller.setHostServices(getHostServices());
+            configurationService.loadConfigurations();
+
+            EditorConfigBean editorConfig = context.getBean(EditorConfigBean.class);
+            boolean dark = editorConfig.getEditorTheme().stream()
+                    .findFirst()
+                    .map(t -> "Dark".equalsIgnoreCase(t.getThemeName()))
+                    .orElse(true);
+            scene.setFill(WindowPlacement.defaultSceneFill(dark));
+
+            stage.setScene(scene);
+            controller.applyInitialConfigurations();
+            if (!isHeadless()) {
+                WindowPlacement.apply(stage,
+                        editorConfig.getScreenX(),
+                        editorConfig.getScreenY(),
+                        editorConfig.getScreenWidth(),
+                        editorConfig.getScreenHeight(),
+                        editorConfig.isMaximized());
+            }
+            controller.checkStageInsideScreens();
+            stage.setOnCloseRequest(controller::closeAllTabs);
 
             int random = ThreadLocalRandom.current().nextInt(1, 11);
             if (random == 1) {
                 controller.showSupportAsciidocFX();
-            } else {
-                if (controller.getTabPane().getTabs().isEmpty()) {
-                    controller.newDoc();
-                }
+            } else if (controller.getTabPane().getTabs().isEmpty()) {
+                controller.newDoc();
             }
 
             stage.show();
+            if (!isHeadless()) {
+                WindowPlacement.ensureWindowedAfterShow(stage);
+            }
         });
 
         final FXMLLoader asciidocTableLoader = new FXMLLoader();
@@ -241,14 +259,14 @@ public class AppStarter extends Application {
         threadService.runActionLater(asciidocTableStage::setScene, new Scene(asciidocTableAnchor));
         asciidocTableStage.setTitle("Table Generator");
         asciidocTableStage.initModality(Modality.WINDOW_MODAL);
-        asciidocTableStage.initOwner(scene.getWindow());
+        asciidocTableStage.initOwner(stage);
         asciidocTableStage.getIcons().add(logoImage);
 
         Stage markdownTableStage = threadService.supply(Stage::new);
         threadService.runActionLater(markdownTableStage::setScene, new Scene(markdownTableAnchor));
         markdownTableStage.setTitle("Table Generator");
         markdownTableStage.initModality(Modality.WINDOW_MODAL);
-        markdownTableStage.initOwner(scene.getWindow());
+        markdownTableStage.initOwner(stage);
         markdownTableStage.getIcons().add(logoImage);
 
         controller.setAsciidocTableAnchor(asciidocTableAnchor);
@@ -284,7 +302,7 @@ public class AppStarter extends Application {
             }
         });
 
-        scene.getWindow().setOnCloseRequest(controller::closeAllTabs);
+        stage.setOnCloseRequest(controller::closeAllTabs);
 
         stage.widthProperty().addListener(controller::stageWidthChanged);
         stage.heightProperty().addListener(controller::stageWidthChanged);
@@ -321,16 +339,6 @@ public class AppStarter extends Application {
 
         }
         return logoImage;
-    }
-
-    private void setMaximized() {
-
-        Rectangle2D bounds = Screen.getPrimary().getVisualBounds();
-        stage.setX(bounds.getMinX());
-        stage.setY(bounds.getMinY());
-        stage.setWidth(bounds.getWidth());
-        stage.setHeight(bounds.getHeight());
-
     }
 
     private void registerStartupListener(CmdlineConfig config) {

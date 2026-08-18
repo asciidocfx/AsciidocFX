@@ -1,0 +1,8 @@
+# Declarative toolchain pins for local AsciidocFX development.
+# https://mise.jdx.dev/ — `mise install` then `mise exec -- mvn -Plocal-run spring-boot:run`
+[tools]
+java = "25"
+
+[env]
+# Prefer project-local Maven output for JavaFX modules (filled by -Plocal-run).
+# JAVA_HOME is set by mise from the java tool above.

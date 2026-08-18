@@ -17,11 +17,26 @@ interface DefenderDialog {
     public Logger logger = LoggerFactory.getLogger(DefenderDialog.class);
 
     default void setDefaultIcon(DialogPane dialog) {
-        Stage stage = (Stage) dialog.getScene().getWindow();
-        try (InputStream logoStream = DefenderDialog.class.getResourceAsStream("/logo.png")) {
-            stage.getIcons().add(new Image(logoStream));
-        } catch (IOException e) {
-            logger.error("logo.png is not found", e);
+        Runnable apply = () -> {
+            if (dialog.getScene() == null || !(dialog.getScene().getWindow() instanceof Stage stage)) {
+                return;
+            }
+            try (InputStream logoStream = DefenderDialog.class.getResourceAsStream("/logo.png")) {
+                if (logoStream != null) {
+                    stage.getIcons().add(new Image(logoStream));
+                }
+            } catch (IOException e) {
+                logger.error("logo.png is not found", e);
+            }
+        };
+        if (dialog.getScene() != null) {
+            apply.run();
+            return;
         }
+        dialog.sceneProperty().addListener((obs, oldScene, scene) -> {
+            if (scene != null) {
+                apply.run();
+            }
+        });
     }
 }

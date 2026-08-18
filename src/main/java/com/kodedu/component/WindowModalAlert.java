@@ -21,7 +21,15 @@ public class WindowModalAlert extends Alert {
 
 
     private static void showAlwaysOnTop(DialogPane dialogPane) {
-        ((Stage) dialogPane.getScene().getWindow()).setAlwaysOnTop(true);
+        if (dialogPane.getScene() != null && dialogPane.getScene().getWindow() instanceof Stage stage) {
+            stage.setAlwaysOnTop(true);
+            return;
+        }
+        dialogPane.sceneProperty().addListener((obs, oldScene, scene) -> {
+            if (scene != null && scene.getWindow() instanceof Stage stage) {
+                stage.setAlwaysOnTop(true);
+            }
+        });
     }
 
     private static void showAlwaysOnTop(Alert alert) {

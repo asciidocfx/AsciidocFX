@@ -424,13 +424,29 @@
                                                         <Insets/>
                                                     </HBox.margin>
                                                 </Pane>
-                                                <Label fx:id="browserPro" alignment="TOP_RIGHT" minWidth="-Infinity"
+                                                <HBox alignment="CENTER_RIGHT" spacing="10">
+                                                <Label fx:id="browserPro" alignment="CENTER" minWidth="-Infinity"
                                                        styleClass="output-button,browser" text="Browser"
                                                        textAlignment="LEFT">
                                                     <graphic>
                                                         <FontIcon iconLiteral="fa-flash"/>
                                                     </graphic>
                                                 </Label>
+                                                <ToggleButton fx:id="previewDarkToggle" alignment="CENTER"
+                                                              contentDisplay="GRAPHIC_ONLY"
+                                                              focusTraversable="false"
+                                                              minHeight="28.0" minWidth="32.0"
+                                                              prefHeight="28.0" prefWidth="32.0"
+                                                              mnemonicParsing="false" text=""
+                                                              styleClass="preview-theme-toggle">
+                                                    <graphic>
+                                                        <FontIcon iconLiteral="fa-moon-o"/>
+                                                    </graphic>
+                                                    <tooltip>
+                                                        <Tooltip text="Dark or light document preview in the app. Browser stays light unless you choose Open dark."/>
+                                                    </tooltip>
+                                                </ToggleButton>
+                                                </HBox>
                                             </children>
                                             <padding>
                                                 <Insets bottom="5.0" left="15.0" right="15.0" top="5.0"/>

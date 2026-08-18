@@ -512,10 +512,6 @@ public class TerminalConfigBean extends ConfigurationBase {
     }
 
     public void changeTheme(EditorConfigBean.Theme theme) {
-        if (initialized.get()) {
-            return;
-        }
-        initialized.set(true);
         Platform.runLater(() -> {
             if (theme.getThemeName().equals("Dark")) {
                 setBackgroundColor(Color.rgb(16, 16, 16));

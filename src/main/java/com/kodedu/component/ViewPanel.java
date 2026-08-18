@@ -27,6 +27,7 @@ import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import javafx.stage.Modality;
@@ -89,7 +90,20 @@ public abstract class ViewPanel extends AnchorPane {
             initializeMargins();
             initializePreviewContextMenus();
             initializePopupView();
+            applySurfaceColors();
         });
+    }
+
+    public void applySurfaceColors() {
+        boolean dark = editorConfigBean.getEditorTheme().stream()
+                .findFirst()
+                .map(t -> "Dark".equalsIgnoreCase(t.getThemeName()))
+                .orElse(true);
+        String fill = dark ? "#191A1B" : "#F3F3F3";
+        WebView wv = getWebView();
+        wv.setPageFill(Color.web(fill));
+        wv.setStyle("-fx-background-color: " + fill + ";");
+        setStyle("-fx-background-color: " + fill + ";");
     }
 
     private void initializeSearchBox(VBox box) {
@@ -200,6 +214,7 @@ public abstract class ViewPanel extends AnchorPane {
         CheckMenuItem stopRenderingItem = new CheckMenuItem("Stop rendering");
         CheckMenuItem stopScrollingItem = new CheckMenuItem("Stop scrolling");
         CheckMenuItem stopJumpingItem = new CheckMenuItem("Stop jumping");
+        CheckMenuItem darkPreviewItem = new CheckMenuItem("Dark preview");
         detachPreviewItem = new CheckMenuItem("Detach preview");
 
 
@@ -215,6 +230,7 @@ public abstract class ViewPanel extends AnchorPane {
             stopJumping.setValue(newValue);
         });
 
+        darkPreviewItem.selectedProperty().bindBidirectional(editorConfigBean.previewDarkProperty());
         detachPreviewItem.selectedProperty().bindBidirectional(editorConfigBean.detachedPreviewProperty());
 
         getWebView().setOnContextMenuRequested(event -> {
@@ -242,6 +258,7 @@ public abstract class ViewPanel extends AnchorPane {
                         cmc.getItemsContainer().getChildren().add(cmc.new MenuItemContainer(stopRenderingItem));
                         cmc.getItemsContainer().getChildren().add(cmc.new MenuItemContainer(stopScrollingItem));
                         cmc.getItemsContainer().getChildren().add(cmc.new MenuItemContainer(stopJumpingItem));
+                        cmc.getItemsContainer().getChildren().add(cmc.new MenuItemContainer(darkPreviewItem));
                         cmc.getItemsContainer().getChildren().add(cmc.new MenuItemContainer(detachPreviewItem));
                     }
                 }
@@ -263,9 +280,26 @@ public abstract class ViewPanel extends AnchorPane {
         });
     }
 
+    public void browseDark() {
+        threadService.runActionLater(() -> {
+            final String documentURI = webEngine().getDocument().getDocumentURI();
+            controller.browseInDesktop(appendQuery(documentURI, "theme", "dark"));
+        });
+    }
+
     public void browse(BrowserType browserType) {
         final String documentURI = webEngine().getDocument().getDocumentURI();
         controller.browseInDesktop(browserType, documentURI);
+    }
+
+    protected static String appendQuery(String url, String name, String value) {
+        if (url == null || url.isBlank()) {
+            return url;
+        }
+        if (url.contains(name + "=")) {
+            return url;
+        }
+        return url + (url.contains("?") ? "&" : "?") + name + "=" + value;
     }
 
     public static CheckMenuItem getDetachPreviewItem() {

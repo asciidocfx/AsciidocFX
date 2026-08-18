@@ -1,0 +1,91 @@
+/*
+ * Preview-only dark stylesheet. Used by the in-app preview switcher and by
+ * Browser → Open dark. Does not change HTML export.
+ *
+ * Color layering inspired by modern editor dark themes (concepts only).
+ */
+
+html, body {
+    background: #121314 !important;
+    color: #d4d4d4 !important;
+}
+
+#header, #content, #footnotes, #footer {
+    background: transparent !important;
+    color: inherit !important;
+}
+
+h1, h2, h3, h4, h5, h6,
+#toctitle,
+.sidebarblock > .content > .title {
+    color: #e8e8e8 !important;
+}
+
+a {
+    color: #6cb6ff !important;
+}
+
+a:hover, a:focus {
+    color: #9fd0ff !important;
+}
+
+p, li, dt, dd, td, th, blockquote, .paragraph, .ulist, .olist, .dlist {
+    color: #d4d4d4 !important;
+}
+
+code, kbd, pre, .literalblock pre, .listingblock pre:not(.highlight),
+.listingblock pre:not(.highlight) code,
+.listingblock > .content > pre:not(.highlight) {
+    background: #1e1f20 !important;
+    color: #dcdcdc !important;
+    border-color: #2A2B2C !important;
+}
+
+.sidebarblock, .exampleblock > .content, .quoteblock, .verseblock,
+.admonitionblock td.icon, .admonitionblock td.content {
+    background: #191A1B !important;
+    color: #d4d4d4 !important;
+    border-color: #2A2B2C !important;
+}
+
+.admonitionblock td.icon .title {
+    color: #e8e8e8 !important;
+}
+
+table.tableblock, table.frame-all, table.grid-all {
+    background: #191A1B !important;
+    border-color: #2A2B2C !important;
+}
+
+table.tableblock td, table.tableblock th,
+td.tableblock, th.tableblock {
+    background: #191A1B !important;
+    color: #d4d4d4 !important;
+    border-color: #2A2B2C !important;
+}
+
+th.tableblock.halign-left, th.tableblock {
+    background: #202122 !important;
+    color: #e8e8e8 !important;
+}
+
+#toc, #toctitle, .sectlevel1, .sectlevel2, .sectlevel3 {
+    background: #191A1B !important;
+    color: #d4d4d4 !important;
+    border-color: #2A2B2C !important;
+}
+
+hr {
+    border-color: #2A2B2C !important;
+    background: #2A2B2C !important;
+}
+
+.hljs, .highlight {
+    background: #1e1f20 !important;
+    color: #dcdcdc !important;
+}
+
+.asciidocfx-container, #placeholder {
+    background: #121314 !important;
+    color: #d4d4d4 !important;
+}

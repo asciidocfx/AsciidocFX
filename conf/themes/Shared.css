@@ -38,7 +38,13 @@
 }
 
 .tab-header-background, .tab-header-area {
-    -fx-background-color: null;
+    -fx-background-color: -fx-background;
+}
+
+.root-container,
+.tab-pane > .tab-content-area,
+.web-view {
+    -fx-background-color: -fx-background;
 }
 
 .tab-pane.floating > .tab-content-area {
@@ -297,6 +303,19 @@
 
 .output-button.docbook *:hover, .output-button.docbook:hover {
     -fx-text-fill: rgba(90, 180, 106, 0.82);
+    -fx-icon-color: -fx-text-fill;
+}
+
+.convert-box .preview-theme-toggle {
+    -fx-background-radius: 6;
+    -fx-border-radius: 6;
+    -fx-padding: 4 8;
+    -fx-cursor: hand;
+    -fx-alignment: center;
+    -fx-content-display: graphic-only;
+}
+
+.convert-box .preview-theme-toggle .ikonli-font-icon {
     -fx-icon-color: -fx-text-fill;
 }
 

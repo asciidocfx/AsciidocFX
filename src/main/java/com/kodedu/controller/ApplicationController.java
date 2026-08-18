@@ -208,6 +208,7 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     public Label ebookPro;
     public Label docbookPro;
     public Label browserPro;
+    public ToggleButton previewDarkToggle;
     public VBox previewBox;
     public SeparatorMenuItem renameSeparator;
     public SeparatorMenuItem addToFavSeparator;
@@ -768,6 +769,9 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
         ContextMenu browserContextMenu = new ContextMenu();
         browserContextMenu.getStyleClass().add("build-menu");
+        browserContextMenu.getItems().add(MenuItemBuilt.item("Open light").click(event -> externalBrowse()));
+        browserContextMenu.getItems().add(MenuItemBuilt.item("Open dark").click(event -> externalBrowseDark()));
+        browserContextMenu.getItems().add(new SeparatorMenuItem());
         List<MenuItem> browserMenuItem = Stream.of(BrowserType.values()).map(b -> MenuItemBuilt.item(b.name()).click(event -> {
             externalBrowse(b);
         })).collect(Collectors.toList());
@@ -1045,31 +1049,12 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     }
 
     private void applyDetachedStagePosition(Stage stage) {
-        double screenX = editorConfigBean.getPreviewScreenX();
-        double screenY = editorConfigBean.getPreviewScreenY();
-        double screenHeight = editorConfigBean.getPreviewScreenHeight();
-        double screenWidth = editorConfigBean.getPreviewScreenWidth();
-
-        if (nonNull(screenX)) {
-            stage.setX(screenX);
-        }
-
-        if (nonNull(screenY)) {
-            stage.setY(screenY);
-        }
-
-        if (nonNull(screenWidth)) {
-            if (screenWidth != 0) {
-                stage.setWidth(screenWidth);
-            }
-        }
-
-        if (nonNull(screenHeight)) {
-            if (screenHeight != 0) {
-                stage.setHeight(screenHeight);
-            }
-        }
-
+        WindowPlacement.apply(stage,
+                editorConfigBean.getPreviewScreenX(),
+                editorConfigBean.getPreviewScreenY(),
+                editorConfigBean.getPreviewScreenWidth(),
+                editorConfigBean.getPreviewScreenHeight(),
+                false);
     }
 
 
@@ -1399,47 +1384,17 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
             editorConfigBean.updateAceFontFamily(fontFamily);
         });
 
-        Double screenX = editorConfigBean.getScreenX();
-        Double screenY = editorConfigBean.getScreenY();
-        Double screenWidth = editorConfigBean.getScreenWidth();
-        Double screenHeight = editorConfigBean.getScreenHeight();
-
-        if (nonNull(screenX)) {
-            stage.setX(screenX);
-        }
-
-        if (nonNull(screenY)) {
-            stage.setY(screenY);
-        }
-
-        if (nonNull(screenWidth)) {
-            if (screenWidth != 0) {
-                stage.setWidth(screenWidth);
-            }
-        }
-
-        if (nonNull(screenHeight)) {
-            if (screenHeight != 0) {
-                stage.setHeight(screenHeight);
-            }
-        }
-
         ObservableList<SplitPane.Divider> dividers = splitPane.getDividers();
         dividers.get(0).setPosition(editorConfigBean.getFirstSplitter());
         if (dividers.size() > 1) {
             dividers.get(1).setPosition(editorConfigBean.getSecondSplitter());
         }
 
-        String aceTheme = editorConfigBean.getAceTheme().get(0);
-
         editorConfigBean.getEditorTheme().stream().findFirst().ifPresent(theme -> {
             applyTheme(theme, getAllStages());
-            editorConfigBean.updateAceTheme(aceTheme);
+            applyForAllEditorPanes(editorPane -> editorPane.setTheme(theme.getAceTheme()));
         });
-
-        editorConfigBean.getAceTheme().stream().findFirst().ifPresent(ace -> {
-            applyForAllEditorPanes(editorPane -> editorPane.setTheme(ace));
-        });
+        applyPreviewTheme();
 
         applyForAllEditorPanes(editorPane -> editorPane.setShowGutter(editorConfigBean.getShowGutter()));
         applyForAllEditorPanes(editorPane -> editorPane.setUseWrapMode(editorConfigBean.getUseWrapMode()));
@@ -1618,6 +1573,17 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
         editorConfigBean.showHiddenFilesProperty().bindBidirectional(showHiddenFiles.selectedProperty());
 
+        if (nonNull(previewDarkToggle)) {
+            previewDarkToggle.setFocusTraversable(false);
+            previewDarkToggle.setText("");
+            previewDarkToggle.selectedProperty().bindBidirectional(editorConfigBean.previewDarkProperty());
+            syncPreviewDarkToggle();
+        }
+        editorConfigBean.previewDarkProperty().addListener((observable, wasDark, dark) -> {
+            applyPreviewTheme();
+            syncPreviewDarkToggle();
+        });
+
         storedConfigBean.workingDirectoryProperty().addListener((observable, oldValue, newValue) -> {
             if (nonNull(newValue) && isNull(oldValue)) {
                 directoryService.changeWorkigDir(IOHelper.getPath(newValue));
@@ -1625,19 +1591,31 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         });
 
         stage.xProperty().addListener((observable, oldValue, newValue) -> {
-            editorConfigBean.setScreenX(newValue.doubleValue());
+            if (!stage.isMaximized() && !stage.isIconified()) {
+                editorConfigBean.setScreenX(newValue.doubleValue());
+            }
         });
 
         stage.yProperty().addListener((observable, oldValue, newValue) -> {
-            editorConfigBean.setScreenY(newValue.doubleValue());
+            if (!stage.isMaximized() && !stage.isIconified()) {
+                editorConfigBean.setScreenY(newValue.doubleValue());
+            }
         });
 
         stage.widthProperty().addListener((observable, oldValue, newValue) -> {
-            editorConfigBean.setScreenWidth(newValue.doubleValue());
+            if (!stage.isMaximized() && !stage.isIconified()) {
+                editorConfigBean.setScreenWidth(newValue.doubleValue());
+            }
         });
 
         stage.heightProperty().addListener((observable, oldValue, newValue) -> {
-            editorConfigBean.setScreenHeight(newValue.doubleValue());
+            if (!stage.isMaximized() && !stage.isIconified()) {
+                editorConfigBean.setScreenHeight(newValue.doubleValue());
+            }
+        });
+
+        stage.maximizedProperty().addListener((observable, wasMaximized, maximized) -> {
+            editorConfigBean.setMaximized(maximized);
         });
 
 
@@ -1775,6 +1753,11 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
         threadService.schedule(() -> {
             try {
                 if (!editorConfigBean.getAutoUpdate()) {
+                    return;
+                }
+                // install4j updater (application 504) only exists inside a packaged build.
+                if (System.getProperty("install4j.appDir") == null
+                        && System.getProperty("exe4j.moduleName") == null) {
                     return;
                 }
 
@@ -2094,6 +2077,10 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
     public void externalBrowse() {
         rightShowerHider.getShowing().ifPresent(ViewPanel::browse);
+    }
+
+    public void externalBrowseDark() {
+        rightShowerHider.getShowing().ifPresent(ViewPanel::browseDark);
     }
 
     public void externalBrowse(BrowserType browserType) {
@@ -3282,10 +3269,11 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
                 Integer editorFontSize = editorConfigBean.getEditorFontSize();
 
+                boolean dark = "Dark".equalsIgnoreCase(theme.getThemeName());
                 for (Stage stage : stages) {
                     if (nonNull(stage) && nonNull(stage.getScene())) {
                         Scene stageScene = stage.getScene();
-                        Parent root = stageScene.getRoot();
+                        stageScene.setFill(WindowPlacement.defaultSceneFill(dark));
                         ObservableList<String> stylesheets = stageScene.getStylesheets();
                         stylesheets.clear();
                         stylesheets.add(themeUri);
@@ -3301,13 +3289,57 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
 
                 String aceTheme = theme.getAceTheme();
                 editorConfigBean.updateAceTheme(aceTheme);
+                applyForAllEditorPanes(EditorPane::applyEditorSurfaceColors);
+                if (nonNull(htmlPane)) {
+                    htmlPane.applySurfaceColors();
+                }
 
                 terminalConfigBean.changeTheme(theme);
+                applyForEachTerminal(terminalTab ->
+                        terminalTab.getTerminal().updatePrefs(terminalConfigBean.createTerminalConfig()));
 
             } catch (Exception e) {
                 logger.error("Error occured while setting new theme {}", theme);
             }
         });
+    }
+
+    public Path getPreviewThemeStylesheet() {
+        return getPreviewThemeStylesheet(null);
+    }
+
+    public Path getPreviewThemeStylesheet(String mode) {
+        boolean dark;
+        if ("dark".equalsIgnoreCase(mode)) {
+            dark = true;
+        } else if ("light".equalsIgnoreCase(mode)) {
+            dark = false;
+        } else {
+            dark = editorConfigBean.isPreviewDark();
+        }
+        Path stylesheet = getConfigPath().resolve(
+                dark ? "public/css/asciidoctor-dark.css" : "public/css/asciidoctor-preview-theme-light.css");
+        if (Files.exists(stylesheet)) {
+            return stylesheet;
+        }
+        return getConfigPath().resolve("public/css/asciidoctor-preview-theme-light.css");
+    }
+
+    private void applyPreviewTheme() {
+        if (nonNull(htmlPane)) {
+            htmlPane.applyPreviewStylesheet();
+        }
+        syncPreviewDarkToggle();
+    }
+
+    private void syncPreviewDarkToggle() {
+        if (isNull(previewDarkToggle)) {
+            return;
+        }
+        boolean dark = editorConfigBean.isPreviewDark();
+        if (previewDarkToggle.getGraphic() instanceof FontIcon icon) {
+            icon.setIconLiteral(dark ? "fa-moon-o" : "fa-sun-o");
+        }
     }
 
     public void setAsciidocTableScene(Scene asciidocTableScene) {
@@ -3331,20 +3363,15 @@ public class ApplicationController extends TextWebSocketHandler implements Initi
     }
 
     public void checkStageInsideScreens() {
-
-        if (stageNoteInScreens(stage)) {
-            logger.info("Main stage is not in visible part of any screen. It will be moved to x=0,y=0");
-            stage.setX(0);
-            stage.setY(0);
-            editorConfigBean.setScreenX(0);
-            editorConfigBean.setScreenY(0);
+        if (WindowPlacement.ensureOnScreen(stage)) {
+            logger.info("Main stage was off-screen; moved onto a visible display");
+            if (!stage.isMaximized()) {
+                editorConfigBean.setScreenX(stage.getX());
+                editorConfigBean.setScreenY(stage.getY());
+                editorConfigBean.setScreenWidth(stage.getWidth());
+                editorConfigBean.setScreenHeight(stage.getHeight());
+            }
         }
-    }
-
-    private boolean stageNoteInScreens(Stage stage) {
-        return Screen.getScreens().stream()
-                .map(Screen::getBounds)
-                .noneMatch(bounds -> bounds.contains(stage.getX(), stage.getY()));
     }
 
     public void openPaypal(ActionEvent actionEvent) {

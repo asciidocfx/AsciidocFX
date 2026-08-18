@@ -69,6 +69,7 @@ public class EditorConfigBean extends ConfigurationBase {
     private BooleanProperty autoUpdate = new SimpleBooleanProperty(true);
     private BooleanProperty validateDocbook = new SimpleBooleanProperty(false);
     private BooleanProperty detachedPreview = new SimpleBooleanProperty(false);
+    private BooleanProperty previewDark = new SimpleBooleanProperty(true);
     private BooleanProperty showHiddenFiles = new SimpleBooleanProperty(false);
     private ObjectProperty<Boolean> newInstall = new SimpleObjectProperty<>();
     private StringProperty clipboardImageFilePattern = new SimpleStringProperty("'Image'-ddMMyy-hhmmss.SSS'.png'");
@@ -76,6 +77,7 @@ public class EditorConfigBean extends ConfigurationBase {
     private DoubleProperty screenY = new SimpleDoubleProperty(0);
     private DoubleProperty screenWidth = new SimpleDoubleProperty();
     private DoubleProperty screenHeight = new SimpleDoubleProperty();
+    private BooleanProperty maximized = new SimpleBooleanProperty(false);
 
     private DoubleProperty previewScreenX = new SimpleDoubleProperty(0);
     private DoubleProperty previewScreenY = new SimpleDoubleProperty(0);
@@ -139,6 +141,18 @@ public class EditorConfigBean extends ConfigurationBase {
 
     public void setDetachedPreview(boolean detachedPreview) {
         this.detachedPreview.set(detachedPreview);
+    }
+
+    public boolean isPreviewDark() {
+        return previewDark.get();
+    }
+
+    public BooleanProperty previewDarkProperty() {
+        return previewDark;
+    }
+
+    public void setPreviewDark(boolean previewDark) {
+        this.previewDark.set(previewDark);
     }
 
     public double getPreviewScreenX() {
@@ -417,6 +431,18 @@ public class EditorConfigBean extends ConfigurationBase {
         this.screenHeight.set(screenHeight);
     }
 
+    public boolean isMaximized() {
+        return maximized.get();
+    }
+
+    public BooleanProperty maximizedProperty() {
+        return maximized;
+    }
+
+    public void setMaximized(boolean maximized) {
+        this.maximized.set(maximized);
+    }
+
     public FoldStyle getFoldStyle() {
         return foldStyle.get();
     }
@@ -487,7 +513,7 @@ public class EditorConfigBean extends ConfigurationBase {
 
         FXForm editorConfigForm = new FXFormBuilder<>()
                 .resourceBundle(ResourceBundle.getBundle("editorConfig"))
-                .includeAndReorder("browser", "editorTheme", "aceTheme", "detachedPreview", "validateDocbook", "fontFamily", "aceFontFamily",
+                .includeAndReorder("browser", "editorTheme", "aceTheme", "previewDark", "detachedPreview", "validateDocbook", "fontFamily", "aceFontFamily",
                         "editorFontSize", "aceFontSize", "scrollSpeed", "useWrapMode", "wrapLimit", "foldStyle", "showGutter", "defaultLanguage",
                         "autoUpdate", "showHiddenFiles", "clipboardImageFilePattern", "hangFileSizeLimit", "extensionImageScale")
                 .build();
@@ -584,7 +610,7 @@ public class EditorConfigBean extends ConfigurationBase {
         String aceFontFamily = jsonObject.getString("aceFontFamily-1", aceDefaultFont);
         int aceFontSize = jsonObject.getInt("aceFontSize-1", 16);
         int editorFontSize = jsonObject.getInt("editorFontSize", 14);
-        String aceTheme = jsonObject.getString("aceTheme", "xcode");
+        String aceTheme = jsonObject.getString("aceTheme", "tomorrow_night");
         String defaultLanguage = jsonObject.getString("defaultLanguage", "en");
         boolean useWrapMode = jsonObject.getBoolean("useWrapMode", true);
         boolean showGutter = jsonObject.getBoolean("showGutter", false);
@@ -651,6 +677,12 @@ public class EditorConfigBean extends ConfigurationBase {
             this.setUseWrapMode(useWrapMode);
             this.setShowGutter(showGutter);
             this.setDetachedPreview(detachedPreview);
+            boolean previewDarkDefault = themeOptional
+                    .map(t -> "Dark".equalsIgnoreCase(t.getThemeName()))
+                    .orElse(true);
+            this.setPreviewDark(jsonObject.containsKey("previewDark")
+                    ? jsonObject.getBoolean("previewDark", previewDarkDefault)
+                    : previewDarkDefault);
             this.setWrapLimit(wrapLimit);
             this.setAutoUpdate(autoUpdate);
             this.setShowHiddenFiles(showHiddenFiles);
@@ -745,6 +777,8 @@ public class EditorConfigBean extends ConfigurationBase {
             double screenHeight = jsonObject.getJsonNumber("screenHeight").doubleValue();
             this.setScreenHeight(screenHeight);
         }
+
+        this.setMaximized(jsonObject.getBoolean("maximized", false));
     }
 
     private void setDetachedStagePositions(JsonObject jsonObject) {
@@ -796,6 +830,7 @@ public class EditorConfigBean extends ConfigurationBase {
                 .add("wrapLimit", getWrapLimit())
                 .add("showGutter", getShowGutter())
                 .add("detachedPreview", isDetachedPreview())
+                .add("previewDark", isPreviewDark())
                 .add("aceTheme", getAceTheme().get(0))
                 .add("editorTheme", getEditorTheme().get(0).getThemeName())
                 .add("defaultLanguage", getDefaultLanguage().get(0))
@@ -811,6 +846,7 @@ public class EditorConfigBean extends ConfigurationBase {
                 .add("screenY", getScreenY())
                 .add("screenWidth", getScreenWidth())
                 .add("screenHeight", getScreenHeight())
+                .add("maximized", isMaximized())
                 .add("previewScreenX", getPreviewScreenX())
                 .add("previewScreenY", getPreviewScreenY())
                 .add("previewScreenWidth", getPreviewScreenWidth())

@@ -28,6 +28,9 @@
         <jaxb.version>2.3.2</jaxb.version>
         <jacoco.version>0.8.7</jacoco.version>
         <logunit.version>1.1.0</logunit.version>
+        <!-- Packaging keeps JavaFX provided; -Plocal-run flips this to compile and copies jars to target/javafx-mods. -->
+        <javafx.scope>provided</javafx.scope>
+        <javafx.module.path>${project.build.directory}/javafx-mods</javafx.module.path>
     </properties>
 
     <organization>
@@ -289,31 +292,37 @@
             <version>2.11.5</version>
         </dependency>
 
-        <!--  Uncomment 'scope' for local run -->
+        <!--  Scope is ${javafx.scope}: provided for packaging; compile under -Plocal-run -->
 
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-swing</artifactId>
             <version>${openjfx.version}</version>
-            <scope>provided</scope>
+            <scope>${javafx.scope}</scope>
         </dependency>
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-controls</artifactId>
             <version>${openjfx.version}</version>
-            <scope>provided</scope>
+            <scope>${javafx.scope}</scope>
         </dependency>
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-web</artifactId>
             <version>${openjfx.version}</version>
-            <scope>provided</scope>
+            <scope>${javafx.scope}</scope>
         </dependency>
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-fxml</artifactId>
             <version>${openjfx.version}</version>
-            <scope>provided</scope>
+            <scope>${javafx.scope}</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-media</artifactId>
+            <version>${openjfx.version}</version>
+            <scope>${javafx.scope}</scope>
         </dependency>
         <dependency>
             <groupId>io.github.sebivenlo</groupId>
@@ -428,6 +437,107 @@
     </build>
 
     <profiles>
+        <!--
+          Local GUI run: Maven Central supplies OS-native JavaFX jars (no Gluon zip / PATH surgery).
+          Usage: mvn -DskipTests -Plocal-run spring-boot:run
+        -->
+        <profile>
+            <id>local-run</id>
+            <properties>
+                <javafx.scope>compile</javafx.scope>
+                <javafx.module.path>${project.build.directory}/javafx-mods</javafx.module.path>
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-dependency-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>copy-javafx-modules</id>
+                                <phase>process-classes</phase>
+                                <goals>
+                                    <goal>copy-dependencies</goal>
+                                </goals>
+                                <configuration>
+                                    <includeGroupIds>org.openjfx</includeGroupIds>
+                                    <outputDirectory>${project.build.directory}/javafx-mods</outputDirectory>
+                                    <overWriteReleases>false</overWriteReleases>
+                                    <overWriteSnapshots>true</overWriteSnapshots>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.springframework.boot</groupId>
+                        <artifactId>spring-boot-maven-plugin</artifactId>
+                        <configuration>
+                            <mainClass>com.kodedu.boot.AppStarter</mainClass>
+                            <jvmArguments>
+                                -XX:+OptimizeStringConcat
+                                -Duser.language=en
+                                -Duser.country=US
+                                -Dfile.encoding=UTF-8
+                                -Djava.awt.headless=false
+                                -Dsun.java2d.metal=true
+                                -Dorg.apache.xml.dtm.DTMManager=org.apache.xml.dtm.ref.DTMManagerDefault
+                                -Djdk.xml.xpathExprGrpLimit=0
+                                -Djdk.xml.xpathExprOpLimit=0
+                                -Djdk.xml.xpathTotalOpLimit=0
+                                -Djavafx.autoproxy.disable=true
+                                --enable-native-access=javafx.graphics
+                                --enable-native-access=javafx.web
+                                --enable-native-access=ALL-UNNAMED
+                                --add-opens=java.base/sun.nio.ch=ALL-UNNAMED
+                                --add-opens=java.base/java.io=ALL-UNNAMED
+                                --add-exports=javafx.graphics/com.sun.javafx.scene.layout=ALL-UNNAMED
+                                --add-exports=javafx.graphics/com.sun.javafx.util=ALL-UNNAMED
+                                --add-exports=javafx.graphics/com.sun.javafx.application=ALL-UNNAMED
+                                --add-exports=javafx.graphics/com.sun.javafx.sg.prism=ALL-UNNAMED
+                                --add-exports=javafx.graphics/com.sun.javafx.scene=ALL-UNNAMED
+                                --add-exports=javafx.base/com.sun.javafx.logging=ALL-UNNAMED
+                                --add-exports=javafx.graphics/com.sun.prism=ALL-UNNAMED
+                                --add-exports=javafx.graphics/com.sun.glass.ui=ALL-UNNAMED
+                                --add-exports=javafx.graphics/com.sun.javafx.geom.transform=ALL-UNNAMED
+                                --add-exports=javafx.graphics/com.sun.javafx.tk=ALL-UNNAMED
+                                --add-exports=javafx.graphics/com.sun.glass.utils=ALL-UNNAMED
+                                --add-exports=javafx.graphics/com.sun.javafx.font=ALL-UNNAMED
+                                --add-exports=javafx.graphics/com.sun.javafx.scene.input=ALL-UNNAMED
+                                --add-exports=javafx.graphics/com.sun.javafx.scene.text=ALL-UNNAMED
+                                --add-exports=javafx.base/com.sun.javafx.event=ALL-UNNAMED
+                                --add-exports=javafx.base/com.sun.javafx.reflect=ALL-UNNAMED
+                                --add-exports=javafx.base/com.sun.javafx.beans=ALL-UNNAMED
+                                --add-exports=javafx.base/com.sun.javafx.collections=ALL-UNNAMED
+                                --add-exports=javafx.graphics/com.sun.javafx.scene.traversal=ALL-UNNAMED
+                                --add-exports=javafx.graphics/com.sun.javafx.stage=ALL-UNNAMED
+                                --add-exports=javafx.base/com.sun.javafx.binding=ALL-UNNAMED
+                                --add-exports=javafx.graphics/com.sun.javafx.geom=ALL-UNNAMED
+                                --add-exports=javafx.graphics/com.sun.javafx.iio=ALL-UNNAMED
+                                --add-exports=javafx.base/com.sun.javafx=ALL-UNNAMED
+                                --add-exports=javafx.graphics/com.sun.prism.paint=ALL-UNNAMED
+                                --add-exports=javafx.graphics/com.sun.scenario.effect=ALL-UNNAMED
+                                --add-exports=javafx.graphics/com.sun.javafx.text=ALL-UNNAMED
+                                --add-opens=javafx.base/com.sun.javafx.collections=ALL-UNNAMED
+                                --add-exports=javafx.graphics/com.sun.scenario.effect.impl.prism=ALL-UNNAMED
+                                --add-exports=javafx.graphics/com.sun.javafx.css=ALL-UNNAMED
+                                --add-opens=javafx.base/com.sun.javafx.collections=javafx.web
+                                --add-opens=javafx.controls/javafx.scene.control=ALL-UNNAMED
+                                --add-opens=javafx.controls/javafx.scene.control.skin=ALL-UNNAMED
+                                --add-opens=javafx.graphics/javafx.scene.input=ALL-UNNAMED
+                                --add-opens=javafx.web/javafx.scene.web=ALL-UNNAMED
+                                --add-opens=javafx.web/com.sun.webkit=ALL-UNNAMED
+                                --add-opens=javafx.controls/com.sun.javafx.scene.control.skin=ALL-UNNAMED
+                                --add-exports=javafx.base/com.sun.javafx.property=ALL-UNNAMED
+                                --add-exports=javafx.controls/com.sun.javafx.scene.control=ALL-UNNAMED
+                                --module-path ${javafx.module.path}
+                                -Djava.library.path=${javafx.module.path}
+                                --add-modules=javafx.controls,javafx.fxml,javafx.graphics,javafx.media,javafx.swing,javafx.web
+                            </jvmArguments>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
         <profile>
             <id>install4j-package</id>
             <build>
@@ -615,82 +725,6 @@
                                 </configuration>
                             </execution>
                         </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-        <profile>
-            <id>local-run</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.springframework.boot</groupId>
-                        <artifactId>spring-boot-maven-plugin</artifactId>
-                        <configuration>
-                            <mainClass>com.kodedu.boot.AppStarter</mainClass>
-                            <jvmArguments>
-                                -XX:+OptimizeStringConcat
-                                -Duser.language=en
-                                -Duser.country=US
-                                -Dfile.encoding=UTF-8
-                                -Djava.awt.headless=false
-                                -Dsun.java2d.metal=true
-                                -Dorg.apache.xml.dtm.DTMManager=org.apache.xml.dtm.ref.DTMManagerDefault
-                                -Djdk.xml.xpathExprGrpLimit=0
-                                -Djdk.xml.xpathExprOpLimit=0
-                                -Djdk.xml.xpathTotalOpLimit=0
-                                -Djavafx.autoproxy.disable=true
-                                --enable-native-access=javafx.graphics
-                                --enable-native-access=javafx.web
-                                --enable-native-access=ALL-UNNAMED
-                                --add-opens=java.base/sun.nio.ch=ALL-UNNAMED
-                                --add-opens=java.base/java.io=ALL-UNNAMED
-                                --add-exports=javafx.graphics/com.sun.javafx.scene.layout=ALL-UNNAMED
-                                --add-exports=javafx.graphics/com.sun.javafx.util=ALL-UNNAMED
-                                --add-exports=javafx.graphics/com.sun.javafx.application=ALL-UNNAMED
-                                --add-exports=javafx.graphics/com.sun.javafx.sg.prism=ALL-UNNAMED
-                                --add-exports=javafx.graphics/com.sun.javafx.scene=ALL-UNNAMED
-                                --add-exports=javafx.base/com.sun.javafx.logging=ALL-UNNAMED
-                                --add-exports=javafx.graphics/com.sun.prism=ALL-UNNAMED
-                                --add-exports=javafx.graphics/com.sun.glass.ui=ALL-UNNAMED
-                                --add-exports=javafx.graphics/com.sun.javafx.geom.transform=ALL-UNNAMED
-                                --add-exports=javafx.graphics/com.sun.javafx.tk=ALL-UNNAMED
-                                --add-exports=javafx.graphics/com.sun.glass.utils=ALL-UNNAMED
-                                --add-exports=javafx.graphics/com.sun.javafx.font=ALL-UNNAMED
-                                --add-exports=javafx.graphics/com.sun.javafx.scene.input=ALL-UNNAMED
-                                --add-exports=javafx.graphics/com.sun.javafx.scene.text=ALL-UNNAMED
-                                --add-exports=javafx.base/com.sun.javafx.event=ALL-UNNAMED
-                                --add-exports=javafx.base/com.sun.javafx.reflect=ALL-UNNAMED
-                                --add-exports=javafx.base/com.sun.javafx.beans=ALL-UNNAMED
-                                --add-exports=javafx.base/com.sun.javafx.collections=ALL-UNNAMED
-                                --add-exports=javafx.graphics/com.sun.javafx.scene.traversal=ALL-UNNAMED
-                                --add-exports=javafx.graphics/com.sun.javafx.stage=ALL-UNNAMED
-                                --add-exports=javafx.base/com.sun.javafx.binding=ALL-UNNAMED
-                                --add-exports=javafx.graphics/com.sun.javafx.geom=ALL-UNNAMED
-                                --add-exports=javafx.graphics/com.sun.javafx.iio=ALL-UNNAMED
-                                --add-exports=javafx.base/com.sun.javafx=ALL-UNNAMED
-                                --add-exports=javafx.graphics/com.sun.prism.paint=ALL-UNNAMED
-                                --add-exports=javafx.graphics/com.sun.scenario.effect=ALL-UNNAMED
-                                --add-exports=javafx.graphics/com.sun.javafx.text=ALL-UNNAMED
-                                --add-opens=javafx.base/com.sun.javafx.collections=ALL-UNNAMED
-                                --add-exports=javafx.graphics/com.sun.scenario.effect.impl.prism=ALL-UNNAMED
-                                --add-exports=javafx.graphics/com.sun.javafx.css=ALL-UNNAMED
-                                --add-opens=javafx.base/com.sun.javafx.collections=javafx.web
-                                --add-opens=javafx.controls/javafx.scene.control=ALL-UNNAMED
-                                --add-opens=javafx.controls/javafx.scene.control.skin=ALL-UNNAMED
-                                --add-opens=javafx.graphics/javafx.scene.input=ALL-UNNAMED
-                                --add-opens=javafx.web/javafx.scene.web=ALL-UNNAMED
-                                --add-opens=javafx.web/com.sun.webkit=ALL-UNNAMED
-                                --add-opens=javafx.controls/com.sun.javafx.scene.control.skin=ALL-UNNAMED
-                                --add-exports=javafx.base/com.sun.javafx.property=ALL-UNNAMED
-                                --add-exports=javafx.controls/com.sun.javafx.scene.control=ALL-UNNAMED
-                                --add-modules=javafx.controls,javafx.fxml,javafx.graphics,javafx.media,javafx.swing,javafx.web
-                                --add-modules=ALL-MODULE-PATH
-                                --module-path ./jmods/mac-m1-jars
-                            </jvmArguments>
-                        </configuration>
-                        <dependencies>
-                        </dependencies>
                     </plugin>
                 </plugins>
             </build>
