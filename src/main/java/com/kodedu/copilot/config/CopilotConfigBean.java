@@ -26,8 +26,12 @@ import jakarta.json.Json;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonObjectBuilder;
 import jakarta.json.JsonReader;
+import jakarta.json.JsonString;
+import jakarta.json.JsonValue;
 import java.io.Reader;
 import java.nio.file.Path;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.ResourceBundle;
 
 /**
@@ -46,6 +50,9 @@ public class CopilotConfigBean extends ConfigurationBase {
     private IntegerProperty maxTokens = new SimpleIntegerProperty(4096);
     private StringProperty model = new SimpleStringProperty("gpt-4o");
     private BooleanProperty enabled = new SimpleBooleanProperty(true);
+    private StringProperty provider = new SimpleStringProperty("github-copilot");
+    private StringProperty providerApiKey = new SimpleStringProperty("");
+    private final Map<String, String> apiKeys = new LinkedHashMap<>();
 
     // Auth tokens — stored but not shown in UI form
     private StringProperty accessToken = new SimpleStringProperty("");
@@ -72,6 +79,8 @@ public class CopilotConfigBean extends ConfigurationBase {
                 .resourceBundle(ResourceBundle.getBundle("copilotConfig"))
                 .includeAndReorder(
                         "enabled",
+                        "provider",
+                        "providerApiKey",
                         "defaultMode",
                         "model",
                         "inlineCompletionEnabled",
@@ -117,6 +126,16 @@ public class CopilotConfigBean extends ConfigurationBase {
         int contextWindowSize = json.getInt("contextWindowSize", this.contextWindowSize.getValue());
         String model = json.getString("model", this.model.getValue());
         boolean enabled = json.getBoolean("enabled", this.enabled.getValue());
+        String provider = json.getString("provider", this.provider.getValue());
+        Map<String, String> loadedKeys = new LinkedHashMap<>();
+        if (json.containsKey("apiKeys") && json.get("apiKeys").getValueType() == JsonValue.ValueType.OBJECT) {
+            JsonObject keys = json.getJsonObject("apiKeys");
+            keys.forEach((id, value) -> {
+                if (value instanceof JsonString js && !js.getString().isBlank()) {
+                    loadedKeys.put(id, js.getString());
+                }
+            });
+        }
         int maxTokens = json.getInt("maxTokens", this.maxTokens.getValue());
         String accessToken = json.getString("accessToken", this.accessToken.getValue());
         String refreshToken = json.getString("refreshToken", this.refreshToken.getValue());
@@ -129,6 +148,10 @@ public class CopilotConfigBean extends ConfigurationBase {
             this.setContextWindowSize(contextWindowSize);
             this.setModel(model);
             this.setEnabled(enabled);
+            this.setProvider(provider);
+            this.apiKeys.clear();
+            this.apiKeys.putAll(loadedKeys);
+            this.setProviderApiKey(loadedKeys.getOrDefault(provider, this.providerApiKey.getValue()));
             this.setMaxTokens(maxTokens);
             this.setAccessToken(accessToken);
             this.setRefreshToken(refreshToken);
@@ -161,18 +184,44 @@ public class CopilotConfigBean extends ConfigurationBase {
 
     @Override
     public JsonObject getJSON() {
+        syncCurrentApiKey();
         JsonObjectBuilder builder = Json.createObjectBuilder();
+        JsonObjectBuilder keysBuilder = Json.createObjectBuilder();
+        apiKeys.forEach((id, key) -> {
+            if (key != null && !key.isBlank()) {
+                keysBuilder.add(id, key);
+            }
+        });
         builder.add("defaultMode", getDefaultMode())
                 .add("inlineCompletionEnabled", isInlineCompletionEnabled())
                 .add("contextWindowSize", getContextWindowSize())
                 .add("temperature", getTemperature())
                 .add("maxTokens", getMaxTokens())
                 .add("model", getModel())
+                .add("provider", getProvider())
+                .add("apiKeys", keysBuilder)
                 .add("enabled", isEnabled())
                 .add("accessToken", getAccessToken())
                 .add("refreshToken", getRefreshToken())
                 .add("tokenExpiresAt", getTokenExpiresAt());
         return builder.build();
+    }
+
+    public String findApiKey(String providerId) {
+        if (providerId == null) {
+            return "";
+        }
+        syncCurrentApiKey();
+        String stored = apiKeys.get(providerId);
+        return stored != null ? stored : "";
+    }
+
+    private void syncCurrentApiKey() {
+        String id = getProvider();
+        String key = getProviderApiKey();
+        if (id != null && !id.isBlank() && key != null && !key.isBlank()) {
+            apiKeys.put(id, key);
+        }
     }
 
     // --- Property accessors ---
@@ -204,6 +253,27 @@ public class CopilotConfigBean extends ConfigurationBase {
     public boolean isEnabled() { return enabled.get(); }
     public BooleanProperty enabledProperty() { return enabled; }
     public void setEnabled(boolean v) { this.enabled.set(v); }
+
+    public String getProvider() { return provider.get(); }
+    public StringProperty providerProperty() { return provider; }
+    public void setProvider(String v) {
+        if (v == null || v.isBlank()) {
+            this.provider.set("github-copilot");
+            return;
+        }
+        this.provider.set(v);
+        String stored = apiKeys.get(v);
+        if (stored != null && (getProviderApiKey() == null || getProviderApiKey().isBlank())) {
+            this.providerApiKey.set(stored);
+        }
+    }
+
+    public String getProviderApiKey() { return providerApiKey.get(); }
+    public StringProperty providerApiKeyProperty() { return providerApiKey; }
+    public void setProviderApiKey(String v) {
+        this.providerApiKey.set(v == null ? "" : v);
+        syncCurrentApiKey();
+    }
 
     public String getAccessToken() { return accessToken.get(); }
     public StringProperty accessTokenProperty() { return accessToken; }

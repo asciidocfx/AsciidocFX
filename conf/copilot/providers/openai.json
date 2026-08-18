@@ -1,0 +1,12 @@
+{
+  "id": "openai",
+  "name": "OpenAI",
+  "kind": "openai-compatible",
+  "baseUrl": "https://api.openai.com/v1",
+  "apiKeyEnv": "OPENAI_API_KEY",
+  "models": [
+    { "id": "gpt-4o", "label": "GPT-4o" },
+    { "id": "gpt-4.1", "label": "GPT-4.1" },
+    { "id": "o4-mini", "label": "o4-mini" }
+  ]
+}

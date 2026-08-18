@@ -1,0 +1,16 @@
+{
+  "id": "github-copilot",
+  "name": "GitHub Copilot",
+  "kind": "github-copilot",
+  "baseUrl": "https://api.githubcopilot.com",
+  "models": [
+    { "id": "gpt-4o", "label": "GPT-4o" },
+    { "id": "gpt-4.1", "label": "GPT-4.1" },
+    { "id": "gpt-4o-mini", "label": "GPT-4o mini" },
+    { "id": "gpt-4-turbo", "label": "GPT-4 Turbo" },
+    { "id": "o3-mini", "label": "o3-mini" },
+    { "id": "claude-sonnet-4", "label": "Claude Sonnet 4" },
+    { "id": "claude-3.5-sonnet", "label": "Claude 3.5 Sonnet" },
+    { "id": "claude-3.5-haiku", "label": "Claude 3.5 Haiku" }
+  ]
+}

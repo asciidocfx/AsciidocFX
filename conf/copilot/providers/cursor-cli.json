@@ -1,0 +1,10 @@
+{
+  "id": "cursor-cli",
+  "name": "Cursor CLI",
+  "kind": "cli",
+  "command": "agent",
+  "args": ["-p", "--print"],
+  "models": [
+    { "id": "auto", "label": "Cursor agent (CLI on PATH)", "notes": "Uses the Cursor CLI if installed. Prefer the API when you have a key." }
+  ]
+}

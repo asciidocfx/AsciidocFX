@@ -1,0 +1,10 @@
+{
+  "id": "claude-cli",
+  "name": "Claude Code CLI",
+  "kind": "cli",
+  "command": "claude",
+  "args": ["-p"],
+  "models": [
+    { "id": "default", "label": "claude (CLI on PATH)", "notes": "Uses your local Claude Code login. Anthropic's HTTP API is preferred when you have a key." }
+  ]
+}

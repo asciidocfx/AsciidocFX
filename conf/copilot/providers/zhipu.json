@@ -1,0 +1,11 @@
+{
+  "id": "zhipu",
+  "name": "Zhipu GLM",
+  "kind": "openai-compatible",
+  "baseUrl": "https://open.bigmodel.cn/api/paas/v4",
+  "apiKeyEnv": "ZHIPU_API_KEY",
+  "models": [
+    { "id": "glm-4.5", "label": "GLM-4.5" },
+    { "id": "glm-4-flash", "label": "GLM-4 Flash" }
+  ]
+}

@@ -6,8 +6,7 @@ import org.slf4j.LoggerFactory;
 import java.util.function.Consumer;
 
 /**
- * Handles parsing of Server-Sent Events (SSE) stream from the Copilot API.
- * Processes incoming text lines and extracts content deltas.
+ * Handles parsing of Server-Sent Events (SSE) stream from chat APIs.
  */
 public class CopilotStreamHandler {
 
@@ -17,7 +16,7 @@ public class CopilotStreamHandler {
     private final Consumer<String> onToolCall;
     private final Runnable onComplete;
     private final Consumer<String> onError;
-    private final StringBuilder buffer = new StringBuilder();
+    private boolean completed;
 
     public CopilotStreamHandler(Consumer<String> onContent, Consumer<String> onToolCall,
                                 Runnable onComplete, Consumer<String> onError) {
@@ -28,7 +27,7 @@ public class CopilotStreamHandler {
     }
 
     /**
-     * Process a single line from the SSE stream.
+     * Process a single line from an OpenAI-style SSE stream.
      */
     public void processLine(String line) {
         if (line == null || line.isEmpty()) {
@@ -38,13 +37,11 @@ public class CopilotStreamHandler {
         if (line.startsWith("data: ")) {
             String data = line.substring(6).trim();
             if ("[DONE]".equals(data)) {
-                onComplete.run();
+                completeOnce();
                 return;
             }
 
             try {
-                // Parse JSON data to extract content
-                // The format is: {"choices":[{"delta":{"content":"text"}}]}
                 processJsonData(data);
             } catch (Exception e) {
                 logger.debug("Failed to parse SSE data: {}", data, e);
@@ -52,69 +49,100 @@ public class CopilotStreamHandler {
         }
     }
 
+    /**
+     * Process a line from Anthropic's {@code /v1/messages} SSE stream.
+     */
+    public void processAnthropicLine(String line) {
+        if (line == null || line.isEmpty()) {
+            return;
+        }
+        if (line.startsWith("event: ") && line.contains("message_stop")) {
+            completeOnce();
+            return;
+        }
+        if (!line.startsWith("data: ")) {
+            return;
+        }
+        String data = line.substring(6).trim();
+        if (data.contains("\"message_stop\"")) {
+            completeOnce();
+            return;
+        }
+        if (!data.contains("text_delta") && !data.contains("\"type\":\"text\"")) {
+            return;
+        }
+        extractJsonStringField(data, "text");
+    }
+
+    public void completeOnce() {
+        if (completed) {
+            return;
+        }
+        completed = true;
+        onComplete.run();
+    }
+
+    public boolean isCompleted() {
+        return completed;
+    }
+
     private void processJsonData(String jsonData) {
         try {
-            // Simple JSON parsing without full ObjectMapper to keep it lightweight
-            // Look for "content":" pattern in delta
             int choicesIdx = jsonData.indexOf("\"choices\"");
             if (choicesIdx == -1) return;
 
             int deltaIdx = jsonData.indexOf("\"delta\"", choicesIdx);
             if (deltaIdx == -1) return;
 
-            // Check for tool_calls first
             int toolCallsIdx = jsonData.indexOf("\"tool_calls\"", deltaIdx);
             if (toolCallsIdx != -1) {
                 onToolCall.accept(jsonData);
                 return;
             }
 
-            // Extract content
-            int contentIdx = jsonData.indexOf("\"content\"", deltaIdx);
-            if (contentIdx == -1) return;
-
-            int colonIdx = jsonData.indexOf(":", contentIdx + 9);
-            if (colonIdx == -1) return;
-
-            // Find the start of the string value
-            int startQuote = jsonData.indexOf("\"", colonIdx + 1);
-            if (startQuote == -1) {
-                // Check for null
-                if (jsonData.indexOf("null", colonIdx) != -1) {
-                    return;
-                }
-                return;
-            }
-
-            // Find the end of the string value, handling escape characters
-            StringBuilder content = new StringBuilder();
-            int i = startQuote + 1;
-            while (i < jsonData.length()) {
-                char c = jsonData.charAt(i);
-                if (c == '\\' && i + 1 < jsonData.length()) {
-                    char next = jsonData.charAt(i + 1);
-                    switch (next) {
-                        case '"': content.append('"'); i += 2; break;
-                        case '\\': content.append('\\'); i += 2; break;
-                        case 'n': content.append('\n'); i += 2; break;
-                        case 't': content.append('\t'); i += 2; break;
-                        case 'r': content.append('\r'); i += 2; break;
-                        default: content.append(c); i++; break;
-                    }
-                } else if (c == '"') {
-                    break;
-                } else {
-                    content.append(c);
-                    i++;
-                }
-            }
-
-            if (!content.isEmpty()) {
-                onContent.accept(content.toString());
-            }
-
+            extractJsonStringField(jsonData.substring(deltaIdx), "content");
         } catch (Exception e) {
             logger.debug("Error parsing SSE JSON", e);
+        }
+    }
+
+    private void extractJsonStringField(String json, String field) {
+        String needle = "\"" + field + "\"";
+        int contentIdx = json.indexOf(needle);
+        if (contentIdx == -1) return;
+
+        int colonIdx = json.indexOf(":", contentIdx + needle.length());
+        if (colonIdx == -1) return;
+
+        int startQuote = json.indexOf("\"", colonIdx + 1);
+        if (startQuote == -1) {
+            return;
+        }
+
+        StringBuilder content = new StringBuilder();
+        int i = startQuote + 1;
+        while (i < json.length()) {
+            char c = json.charAt(i);
+            if (c == '\\' && i + 1 < json.length()) {
+                char next = json.charAt(i + 1);
+                switch (next) {
+                    case '"': content.append('"'); i += 2; break;
+                    case '\\': content.append('\\'); i += 2; break;
+                    case 'n': content.append('\n'); i += 2; break;
+                    case 't': content.append('\t'); i += 2; break;
+                    case 'r': content.append('\r'); i += 2; break;
+                    default: content.append(c); i++; break;
+                }
+            } else if (c == '"') {
+                break;
+            } else {
+                content.append(c);
+                i++;
+            }
+        }
+
+        if (!content.isEmpty()) {
+            onContent.accept(content.toString());
         }
     }
 }

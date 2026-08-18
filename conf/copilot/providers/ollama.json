@@ -1,0 +1,50 @@
+{
+  "id": "ollama",
+  "name": "On-device (Ollama)",
+  "kind": "ollama",
+  "baseUrl": "http://127.0.0.1:11434/v1",
+  "models": [
+    {
+      "id": "tinyllama:1.1b",
+      "label": "TinyLlama 1.1B",
+      "minRamGb": 4,
+      "stripped": true,
+      "notes": "Last-resort tiny model when larger ones will not fit"
+    },
+    {
+      "id": "llama3.2:1b",
+      "label": "Llama 3.2 1B",
+      "minRamGb": 6,
+      "stripped": true,
+      "notes": "Small open instruct model"
+    },
+    {
+      "id": "llama3.2:3b",
+      "label": "Llama 3.2 3B",
+      "minRamGb": 8,
+      "notes": "Good default for 8–16 GB machines"
+    },
+    {
+      "id": "qwen2.5:3b",
+      "label": "Qwen2.5 3B",
+      "minRamGb": 8
+    },
+    {
+      "id": "llama3.1:8b",
+      "label": "Llama 3.1 8B",
+      "minRamGb": 16
+    },
+    {
+      "id": "qwen2.5:14b",
+      "label": "Qwen2.5 14B",
+      "minRamGb": 24
+    },
+    {
+      "id": "llama3.1:70b",
+      "label": "Llama 3.1 70B",
+      "minRamGb": 64,
+      "minVramGb": 40,
+      "notes": "Needs a workstation or server GPU"
+    }
+  ]
+}

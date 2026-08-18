@@ -1,0 +1,10 @@
+{
+  "id": "gemini-cli",
+  "name": "Gemini CLI",
+  "kind": "cli",
+  "command": "gemini",
+  "args": ["-p"],
+  "models": [
+    { "id": "default", "label": "gemini (CLI on PATH)", "notes": "Uses your local Gemini CLI login. Google's HTTP API is preferred when you have a key." }
+  ]
+}

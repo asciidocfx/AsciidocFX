@@ -3,6 +3,9 @@ package com.kodedu.copilot.component;
 import com.kodedu.copilot.CopilotMode;
 import com.kodedu.copilot.CopilotService;
 import com.kodedu.copilot.config.CopilotConfigBean;
+import com.kodedu.copilot.provider.ChatModelSpec;
+import com.kodedu.copilot.provider.ChatProviderSpec;
+import com.kodedu.copilot.provider.CopilotProviderCatalog;
 import com.kodedu.config.EditorConfigBean;
 import com.kodedu.controller.ApplicationController;
 import com.kodedu.service.ThreadService;
@@ -36,6 +39,7 @@ public class CopilotPanel extends VBox {
     private final ThreadService threadService;
     private final EditorConfigBean editorConfigBean;
     private final CopilotConfigBean copilotConfigBean;
+    private final CopilotProviderCatalog providerCatalog;
     private final ApplicationController controller;
 
     private WebView chatWebView;
@@ -47,7 +51,11 @@ public class CopilotPanel extends VBox {
     private Button authButton;
     private Button logoutButton;
     private ToggleGroup modeToggleGroup;
-    private ComboBox<String> modelComboBox;
+    private ComboBox<ChatProviderSpec> providerComboBox;
+    private ComboBox<ChatModelSpec> modelComboBox;
+    private Label modelHintLabel;
+    private PasswordField apiKeyField;
+    private HBox apiKeyBox;
     private Label statusLabel;
     private boolean chatViewReady = false;
 
@@ -57,11 +65,12 @@ public class CopilotPanel extends VBox {
     @Autowired
     public CopilotPanel(CopilotService copilotService, ThreadService threadService,
                         EditorConfigBean editorConfigBean, CopilotConfigBean copilotConfigBean,
-                        ApplicationController controller) {
+                        CopilotProviderCatalog providerCatalog, ApplicationController controller) {
         this.copilotService = copilotService;
         this.threadService = threadService;
         this.editorConfigBean = editorConfigBean;
         this.copilotConfigBean = copilotConfigBean;
+        this.providerCatalog = providerCatalog;
         this.controller = controller;
     }
 
@@ -139,28 +148,8 @@ public class CopilotPanel extends VBox {
             }
         });
 
-        // --- Model selector ---
-        modelComboBox = new ComboBox<>(FXCollections.observableArrayList(
-                "gpt-4o", "gpt-4o-mini", "gpt-4", "gpt-4-turbo", "gpt-3.5-turbo",
-                "claude-3.5-sonnet", "claude-3.5-haiku", "o3-mini"
-        ));
-        modelComboBox.setValue(copilotConfigBean.getModel());
-        modelComboBox.setMaxWidth(Double.MAX_VALUE);
-        modelComboBox.setEditable(true);
-        modelComboBox.getStyleClass().add("copilot-model-selector");
-        modelComboBox.setTooltip(new Tooltip("Select AI model"));
-        modelComboBox.valueProperty().addListener((obs, oldVal, newVal) -> {
-            if (newVal != null && !newVal.isBlank()) {
-                copilotConfigBean.setModel(newVal);
-            }
-        });
-
-        HBox modelBox = new HBox(5);
-        modelBox.setAlignment(Pos.CENTER_LEFT);
-        Label modelLabel = new Label("Model:");
-        modelLabel.getStyleClass().add("copilot-status");
-        HBox.setHgrow(modelComboBox, Priority.ALWAYS);
-        modelBox.getChildren().addAll(modelLabel, modelComboBox);
+        // --- Provider + model ---
+        VBox providerModelBox = buildProviderModelBox();
 
         // --- Chat WebView ---
         chatWebView = new WebView();
@@ -228,10 +217,183 @@ public class CopilotPanel extends VBox {
         HBox.setHgrow(sendButton, Priority.ALWAYS);
         HBox.setHgrow(stopButton, Priority.ALWAYS);
 
-        getChildren().addAll(header, modeBox, modelBox, chatWebView, statusLabel, inputArea, buttonBox);
+        getChildren().addAll(header, modeBox, providerModelBox, chatWebView, statusLabel, inputArea, buttonBox);
 
         // Update auth button state
         updateAuthButtons();
+        if (providerComboBox.getValue() != null) {
+            updateProviderChrome(providerComboBox.getValue());
+        }
+    }
+
+    private VBox buildProviderModelBox() {
+        providerComboBox = new ComboBox<>(FXCollections.observableArrayList(providerCatalog.providers()));
+        providerComboBox.setMaxWidth(Double.MAX_VALUE);
+        providerComboBox.getStyleClass().add("copilot-model-selector");
+        providerComboBox.setTooltip(new Tooltip("Chat provider"));
+        providerComboBox.setConverter(new javafx.util.StringConverter<>() {
+            @Override
+            public String toString(ChatProviderSpec spec) {
+                return spec == null ? "" : spec.name();
+            }
+
+            @Override
+            public ChatProviderSpec fromString(String string) {
+                return providerCatalog.providers().stream()
+                        .filter(p -> p.name().equals(string) || p.id().equals(string))
+                        .findFirst()
+                        .orElse(null);
+            }
+        });
+
+        modelComboBox = new ComboBox<>();
+        modelComboBox.setMaxWidth(Double.MAX_VALUE);
+        modelComboBox.getStyleClass().add("copilot-model-selector");
+        modelComboBox.setCellFactory(list -> new ListCell<>() {
+            @Override
+            protected void updateItem(ChatModelSpec item, boolean empty) {
+                super.updateItem(item, empty);
+                setText(empty || item == null ? null : formatModel(item));
+            }
+        });
+        modelComboBox.setButtonCell(new ListCell<>() {
+            @Override
+            protected void updateItem(ChatModelSpec item, boolean empty) {
+                super.updateItem(item, empty);
+                setText(empty || item == null ? null : formatModel(item));
+            }
+        });
+
+        modelHintLabel = new Label();
+        modelHintLabel.setWrapText(true);
+        modelHintLabel.getStyleClass().add("copilot-status");
+
+        apiKeyField = new PasswordField();
+        apiKeyField.setPromptText("API key for this provider");
+        HBox.setHgrow(apiKeyField, Priority.ALWAYS);
+        apiKeyField.focusedProperty().addListener((obs, was, focused) -> {
+            if (!focused) {
+                persistApiKeyFromField();
+            }
+        });
+        Label apiKeyLabel = new Label("API key:");
+        apiKeyLabel.getStyleClass().add("copilot-status");
+        apiKeyBox = new HBox(5, apiKeyLabel, apiKeyField);
+        apiKeyBox.setAlignment(Pos.CENTER_LEFT);
+
+        ChatProviderSpec initial = providerCatalog.findProvider(copilotConfigBean.getProvider())
+                .or(() -> providerCatalog.providers().stream().findFirst())
+                .orElse(null);
+        if (initial != null) {
+            providerComboBox.setValue(initial);
+        }
+
+        providerComboBox.valueProperty().addListener((obs, oldVal, newVal) -> {
+            if (newVal != null) {
+                copilotConfigBean.setProvider(newVal.id());
+                apiKeyField.setText(copilotConfigBean.findApiKey(newVal.id()));
+                refillModels(newVal);
+                updateProviderChrome(newVal);
+            }
+        });
+        modelComboBox.valueProperty().addListener((obs, oldVal, newVal) -> {
+            if (newVal != null && !newVal.id().isBlank()) {
+                copilotConfigBean.setModel(newVal.id());
+                updateModelHint(newVal);
+            }
+        });
+
+        if (initial != null) {
+            refillModels(initial);
+            apiKeyField.setText(copilotConfigBean.findApiKey(initial.id()));
+        }
+
+        HBox providerRow = new HBox(5);
+        providerRow.setAlignment(Pos.CENTER_LEFT);
+        Label providerLabel = new Label("Provider:");
+        providerLabel.getStyleClass().add("copilot-status");
+        HBox.setHgrow(providerComboBox, Priority.ALWAYS);
+        providerRow.getChildren().addAll(providerLabel, providerComboBox);
+
+        HBox modelBox = new HBox(5);
+        modelBox.setAlignment(Pos.CENTER_LEFT);
+        Label modelLabel = new Label("Model:");
+        modelLabel.getStyleClass().add("copilot-status");
+        HBox.setHgrow(modelComboBox, Priority.ALWAYS);
+        modelBox.getChildren().addAll(modelLabel, modelComboBox);
+
+        VBox box = new VBox(5, providerRow, modelBox, modelHintLabel, apiKeyBox);
+        return box;
+    }
+
+    private void refillModels(ChatProviderSpec provider) {
+        var models = FXCollections.observableArrayList(provider.models());
+        modelComboBox.setItems(models);
+        ChatModelSpec selected = providerCatalog.findModel(provider.id(), copilotConfigBean.getModel())
+                .orElse(null);
+        if (selected == null && provider.kind() == com.kodedu.copilot.provider.ChatProviderKind.OLLAMA) {
+            selected = providerCatalog.recommendedLocalModel().orElse(null);
+        }
+        if (selected == null && !models.isEmpty()) {
+            selected = models.get(0);
+        }
+        modelComboBox.setValue(selected);
+        if (selected != null) {
+            copilotConfigBean.setModel(selected.id());
+            updateModelHint(selected);
+        }
+    }
+
+    private String formatModel(ChatModelSpec model) {
+        String text = model.displayName();
+        if (providerCatalog.isRecommended("ollama", model.id())
+                && providerComboBox.getValue() != null
+                && "ollama".equalsIgnoreCase(providerComboBox.getValue().id())) {
+            text += " ★ recommended";
+        }
+        return text;
+    }
+
+    private void updateModelHint(ChatModelSpec model) {
+        String req = model.requirementText();
+        String hardware = providerCatalog.hardware().summary();
+        if (providerComboBox.getValue() != null
+                && providerComboBox.getValue().kind() == com.kodedu.copilot.provider.ChatProviderKind.OLLAMA) {
+            String rec = providerCatalog.recommendedLocalModel()
+                    .map(m -> " Suggested: " + m.displayName() + ".")
+                    .orElse(" No catalogued model fits with the current headroom.");
+            modelHintLabel.setText(hardware + "." + rec
+                    + (req.isBlank() ? "" : " This model needs " + req + "."));
+        } else if (!req.isBlank()) {
+            modelHintLabel.setText(req);
+        } else {
+            modelHintLabel.setText("");
+        }
+    }
+
+    private void updateProviderChrome(ChatProviderSpec provider) {
+        boolean github = provider.usesGithubOAuth();
+        boolean needsKey = provider.needsApiKey();
+        apiKeyBox.setVisible(needsKey);
+        apiKeyBox.setManaged(needsKey);
+        authButton.setVisible(github && !copilotService.isAuthenticated());
+        authButton.setManaged(github && !copilotService.isAuthenticated());
+        logoutButton.setVisible(github && copilotService.isAuthenticated());
+        logoutButton.setManaged(github && copilotService.isAuthenticated());
+        if (provider.kind() == com.kodedu.copilot.provider.ChatProviderKind.OLLAMA) {
+            statusLabel.setText("On-device Ollama (no API key). Start Ollama locally.");
+        } else if (provider.kind() == com.kodedu.copilot.provider.ChatProviderKind.CLI) {
+            statusLabel.setText("Uses " + provider.command() + " on PATH. HTTP APIs are preferred when you have a key.");
+        }
+    }
+
+    private void persistApiKeyFromField() {
+        String key = apiKeyField.getText();
+        if (key == null) {
+            return;
+        }
+        copilotConfigBean.setProviderApiKey(key);
+        copilotConfigBean.save();
     }
 
     private void handleSend() {
@@ -328,12 +490,14 @@ public class CopilotPanel extends VBox {
     }
 
     private void updateAuthButtons() {
+        ChatProviderSpec provider = providerComboBox == null ? null : providerComboBox.getValue();
+        boolean github = provider == null || provider.usesGithubOAuth();
         boolean authenticated = copilotService.isAuthenticated();
-        authButton.setVisible(!authenticated);
-        authButton.setManaged(!authenticated);
-        logoutButton.setVisible(authenticated);
-        logoutButton.setManaged(authenticated);
-        if (authenticated) {
+        authButton.setVisible(github && !authenticated);
+        authButton.setManaged(github && !authenticated);
+        logoutButton.setVisible(github && authenticated);
+        logoutButton.setManaged(github && authenticated);
+        if (github && authenticated) {
             statusLabel.setText("Authenticated ✓");
         }
     }
@@ -586,8 +750,8 @@ public class CopilotPanel extends VBox {
                 <body>
                 <div id="chat-container">
                     <div class="welcome-message">
-                        <h3>\uD83E\uDD16 GitHub Copilot</h3>
-                        <p>Ask questions, create plans, or let the agent help you with your AsciiDoc documents.</p>
+                        <h3>\uD83E\uDD16 Copilot</h3>
+                        <p>Ask questions, create plans, or let the agent help you with your AsciiDoc documents. Pick a provider — GitHub Copilot, OpenRouter, on-device Ollama, and others.</p>
                     </div>
                 </div>
                 <script>
@@ -596,7 +760,7 @@ public class CopilotPanel extends VBox {
                 var currentAssistantContent = '';
 
                 function clearChat() {
-                    chatContainer.innerHTML = '<div class="welcome-message"><h3>\uD83E\uDD16 GitHub Copilot</h3><p>New conversation started.</p></div>';
+                    chatContainer.innerHTML = '<div class="welcome-message"><h3>\uD83E\uDD16 Copilot</h3><p>New conversation started.</p></div>';
                     currentAssistantDiv = null;
                     currentAssistantContent = '';
                 }

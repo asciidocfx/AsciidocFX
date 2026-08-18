@@ -1,0 +1,12 @@
+{
+  "id": "qwen",
+  "name": "Alibaba Qwen (DashScope)",
+  "kind": "openai-compatible",
+  "baseUrl": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+  "apiKeyEnv": "DASHSCOPE_API_KEY",
+  "models": [
+    { "id": "qwen-plus", "label": "Qwen Plus" },
+    { "id": "qwen-turbo", "label": "Qwen Turbo" },
+    { "id": "qwen-max", "label": "Qwen Max" }
+  ]
+}

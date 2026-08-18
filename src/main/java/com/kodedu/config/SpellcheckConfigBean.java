@@ -6,6 +6,7 @@ import com.kodedu.controller.ApplicationController;
 import com.kodedu.helper.IOHelper;
 import com.kodedu.service.ThreadService;
 import com.kodedu.service.ui.TabService;
+import com.kodedu.spell.dictionary.SpellcheckDictionaryMatcher;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -30,7 +31,8 @@ import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Collections;
+import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -67,11 +69,7 @@ public class SpellcheckConfigBean extends ConfigurationBase {
 
     public Path getDefaultLanguage() {
         if (Objects.isNull(defaultLanguage.get())) {
-            Optional.ofNullable(getLanguages())
-                    .filter(langs -> !langs.isEmpty())
-                    .ifPresent(langs -> {
-                        setDefaultLanguage(langs.get(0));
-                    });
+            resolveDefaultLanguageFromOs().ifPresent(this::setDefaultLanguage);
         }
         return defaultLanguage.get();
     }
@@ -170,16 +168,23 @@ public class SpellcheckConfigBean extends ConfigurationBase {
 
         IOHelper.close(jsonReader, fileReader);
 
-        final Optional<Path> defaultLanguagePath = Optional.ofNullable(defaultLanguage)
+        final Optional<Path> savedLanguagePath = Optional.ofNullable(defaultLanguage)
                 .map(Paths::get)
                 .filter(Files::exists);
+        final Path languageToApply = savedLanguagePath
+                .or(this::resolveDefaultLanguageFromOs)
+                .orElse(null);
+
+        if (languageToApply != null) {
+            this.setDefaultLanguage(languageToApply);
+        }
 
         threadService.runActionLater(() -> {
 
             this.setDisableSpellCheck(disableSpellCheck);
 
             languagePathList.itemsProperty().addListener((observable, oldValue, newValue) -> {
-                defaultLanguagePath
+                Optional.ofNullable(languageToApply)
                         .ifPresent(languagePathList.getSelectionModel()::select);
             });
 
@@ -188,8 +193,9 @@ public class SpellcheckConfigBean extends ConfigurationBase {
                         .ifPresent(languagePathList.getSelectionModel()::select);
             });
 
-            defaultLanguagePath
-                    .ifPresent(this::setDefaultLanguage);
+            if (languageToApply != null) {
+                this.setDefaultLanguage(languageToApply);
+            }
 
             fadeOut(infoLabel, "Loaded...");
         });
@@ -215,8 +221,13 @@ public class SpellcheckConfigBean extends ConfigurationBase {
 
         final Stream<Path> dictStream = Stream.concat(localDictStream, addedDictStream);
 
-        languages.set(FXCollections.observableArrayList(dictStream.sorted(Collections.reverseOrder()).collect(Collectors.toList())));
+        List<Path> found = dictStream.collect(Collectors.toList());
+        languages.set(FXCollections.observableArrayList(SpellcheckDictionaryMatcher.sortedByFileName(found)));
 
+    }
+
+    private Optional<Path> resolveDefaultLanguageFromOs() {
+        return SpellcheckDictionaryMatcher.selectDefault(getLanguages(), Locale.getDefault());
     }
 
     @Override

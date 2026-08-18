@@ -1,0 +1,17 @@
+{
+  "id": "openrouter",
+  "name": "OpenRouter",
+  "kind": "openai-compatible",
+  "baseUrl": "https://openrouter.ai/api/v1",
+  "apiKeyEnv": "OPENROUTER_API_KEY",
+  "models": [
+    { "id": "openai/gpt-4o", "label": "GPT-4o" },
+    { "id": "anthropic/claude-sonnet-4", "label": "Claude Sonnet 4" },
+    { "id": "google/gemini-2.5-pro", "label": "Gemini 2.5 Pro" },
+    { "id": "x-ai/grok-3", "label": "Grok 3" },
+    { "id": "deepseek/deepseek-chat", "label": "DeepSeek Chat" },
+    { "id": "moonshotai/kimi-k2", "label": "Kimi K2" },
+    { "id": "z-ai/glm-4.5", "label": "GLM 4.5" },
+    { "id": "qwen/qwen3-235b-a22b", "label": "Qwen3 235B" }
+  ]
+}

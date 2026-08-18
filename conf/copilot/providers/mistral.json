@@ -1,0 +1,11 @@
+{
+  "id": "mistral",
+  "name": "Mistral",
+  "kind": "openai-compatible",
+  "baseUrl": "https://api.mistral.ai/v1",
+  "apiKeyEnv": "MISTRAL_API_KEY",
+  "models": [
+    { "id": "mistral-large-latest", "label": "Mistral Large" },
+    { "id": "mistral-small-latest", "label": "Mistral Small" }
+  ]
+}

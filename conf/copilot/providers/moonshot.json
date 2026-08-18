@@ -1,0 +1,11 @@
+{
+  "id": "moonshot",
+  "name": "Moonshot Kimi",
+  "kind": "openai-compatible",
+  "baseUrl": "https://api.moonshot.ai/v1",
+  "apiKeyEnv": "MOONSHOT_API_KEY",
+  "models": [
+    { "id": "kimi-k2-turbo-preview", "label": "Kimi K2 Turbo" },
+    { "id": "moonshot-v1-128k", "label": "Moonshot v1 128k" }
+  ]
+}

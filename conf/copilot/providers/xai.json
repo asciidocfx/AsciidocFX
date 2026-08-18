@@ -1,0 +1,12 @@
+{
+  "id": "xai",
+  "name": "xAI Grok",
+  "kind": "openai-compatible",
+  "baseUrl": "https://api.x.ai/v1",
+  "apiKeyEnv": "XAI_API_KEY",
+  "models": [
+    { "id": "grok-3", "label": "Grok 3" },
+    { "id": "grok-3-mini", "label": "Grok 3 mini" },
+    { "id": "grok-2", "label": "Grok 2" }
+  ]
+}

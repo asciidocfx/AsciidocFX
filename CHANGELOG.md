@@ -1,6 +1,12 @@
 # Changelog
 
 All notable changes are documented in this file.
+
+## Unreleased
+
+* Default spell check follows the OS locale instead of the first reverse-sorted dictionary (Turkish)
+* Copilot: load providers from `conf/copilot/providers/*.json` (OpenRouter, OpenAI, Gemini, xAI, Anthropic, DeepSeek, Qwen, Kimi, GLM, Mistral, Ollama, CLIs) with RAM-based local model hints
+
 ## [Version ~1.8.11](https://github.com/asciidocfx/AsciidocFX/releases/tag/v1.8.11) (10.2025)
 
 * Java/FX 25
